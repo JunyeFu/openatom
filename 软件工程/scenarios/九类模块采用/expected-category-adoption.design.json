@@ -1,5 +1,7 @@
 {
   "document_kind": "finite_category_design_expectations_not_runtime",
+  "checkpoint": "S03-03",
+  "contract_ref": "packages/module-kit/category-contracts.design.json",
   "categories_checked": [
     "items",
     "devices",
@@ -11,7 +13,7 @@
     "professional",
     "media"
   ],
-  "declaration_entries": 20,
+  "declaration_entries": 21,
   "cases": [
     {
       "id": "item_definition_import",
@@ -20,6 +22,7 @@
         "current_items_created": 0,
         "current_stock_created": 0
       },
+      "release_scope": "first_release_design_expectation",
       "actual_result": null
     },
     {
@@ -29,6 +32,7 @@
         "current_workers_created": 0,
         "occupation_copied": false
       },
+      "release_scope": "first_release_design_expectation",
       "actual_result": null
     },
     {
@@ -56,6 +60,7 @@
         "composition_preserved": true,
         "stock_commit_owner": "factory_engine"
       },
+      "release_scope": "first_release_design_expectation",
       "actual_result": null
     },
     {
@@ -65,6 +70,7 @@
         "execute_both_allowed": false,
         "duplicate_output_allowed": false
       },
+      "release_scope": "first_release_design_expectation",
       "actual_result": null
     },
     {
@@ -78,6 +84,7 @@
         "target_and_qualified_setter_required": true,
         "definition_import_does_not_execute_task": true
       },
+      "release_scope": "first_release_design_expectation",
       "actual_result": null
     },
     {
@@ -89,6 +96,7 @@
         "stock_created": 0,
         "energy_or_cost_not_inferred": true
       },
+      "release_scope": "deferred_design_expectation",
       "actual_result": null
     },
     {
@@ -103,6 +111,7 @@
         "material_created": 0,
         "scope": "original_complete_machining_design_preserved"
       },
+      "release_scope": "deferred_design_expectation",
       "actual_result": null
     },
     {
@@ -120,6 +129,7 @@
         "quantity_changed": false,
         "missing_visual_anchor_is_not_missing_material_port": true
       },
+      "release_scope": "first_release_design_expectation",
       "actual_result": null
     },
     {
@@ -129,6 +139,7 @@
         "current_stock_copied": false,
         "current_demand_copied": false
       },
+      "release_scope": "first_release_design_expectation",
       "actual_result": null
     },
     {
@@ -140,6 +151,106 @@
         "receive_on_unloading_completion": true,
         "free_on_declared_return_or_position": true
       },
+      "release_scope": "first_release_design_expectation",
+      "actual_result": null
+    },
+    {
+      "id": "first_release_and_deferred_scope",
+      "manual_expected": {
+        "categories_with_authoring_entry": [
+          "items",
+          "devices",
+          "resources",
+          "tasks",
+          "operations",
+          "transport",
+          "templates",
+          "professional",
+          "media"
+        ],
+        "real_professional_owner": "packages/packaging",
+        "deferred_tasks": [
+          "P1-06",
+          "P1-07",
+          "P1-08",
+          "P2-07",
+          "P2-08",
+          "P2-09",
+          "P4-03"
+        ],
+        "P0_03_scope": "artifact/acceptance/consumer_binding/execution_result",
+        "service_example_is_first_release_solver": false,
+        "machining_example_is_first_release_solver": false
+      },
+      "release_scope": "first_release_design_expectation",
+      "actual_result": null
+    },
+    {
+      "id": "template_new_project_explicit_seed",
+      "manual_expected": {
+        "explicit_seed_selection_required": true,
+        "seed_is_new_scenario_input": true,
+        "old_runtime_restored": false,
+        "new_namespace_and_reference_rewrite": true
+      },
+      "release_scope": "first_release_design_expectation",
+      "actual_result": null
+    },
+    {
+      "id": "packaging_artifact_acceptance_binding_handoff",
+      "manual_expected": {
+        "handoff_order": [
+          "actual_supported_computation",
+          "artifact",
+          "human_acceptance",
+          "consumer_binding",
+          "factory_run"
+        ],
+        "binding_requirements": [
+          "actual_supported_mode_and_result",
+          "subject_revision_matches",
+          "requested_scope_is_supported",
+          "required_payload_present",
+          "explicit_unit_and_coordinate_mapping",
+          "existing_human_acceptance_for_same_artifact_and_use"
+        ],
+        "agent_cannot_create_human_acceptance": true,
+        "computation_creates_stock": false,
+        "acceptance_creates_stock": false,
+        "binding_creates_stock": false
+      },
+      "release_scope": "first_release_design_expectation",
+      "actual_result": null
+    },
+    {
+      "id": "packaging_nonpass_or_declared_process",
+      "manual_expected": {
+        "required_checks": {
+          "Pass": "eligible_for_human_acceptance_and_matching_binding",
+          "Fail": "save_check_artifact_no_qualified_packaging_binding",
+          "Undetermined": "save_check_artifact_no_qualified_packaging_binding"
+        },
+        "declared_process_is_real_packaging_computation": false,
+        "nonpass_human_acceptance_does_not_change_check_result": true
+      },
+      "release_scope": "first_release_design_expectation",
+      "actual_result": null
+    },
+    {
+      "id": "external_agent_and_professional_connectors",
+      "manual_expected": {
+        "first_release_bridge_task": "P3-04",
+        "deferred_connector_task": "P4-03",
+        "available_connectors": [],
+        "connector_ids": [
+          "connector.unity",
+          "connector.blender",
+          "connector.freecad"
+        ],
+        "same_host_commands_required": true,
+        "second_factory_state_created": false
+      },
+      "release_scope": "first_release_design_expectation",
       "actual_result": null
     }
   ]

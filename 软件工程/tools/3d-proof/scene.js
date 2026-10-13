@@ -5,6 +5,9 @@ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { rigRobot, rigAssembly, rigConveyor, markSamples } from './equipment-motion.js';
+import { LineSimulation } from './line-simulation.mjs';
+import { LineView } from './line-view.js';
 
 const started = performance.now();
 const $ = id => document.getElementById(id);
@@ -255,7 +258,7 @@ function assembly(high) {
     box(root, [0.29, 0.012, 0.24], [0.5, 0.849, 0.08], M.aluminum, 'housing-cover');
     for (const x of [0.39, 0.61]) for (const z of [-0.008, 0.168]) bolt(root, [x, 0.86, z], 'y', 0.008);
   }
-  return root;
+  return rigAssembly(root);
 }
 function link(parent, a, b, width, depth, name) {
   const start = new THREE.Vector3(...a), end = new THREE.Vector3(...b), delta = end.clone().sub(start);
@@ -298,12 +301,12 @@ function robot(high) {
   rollSeal.quaternion.copy(roll.quaternion);
   cylinder(root, 0.064, 0.12, [d[0], 1.17, 0], M.dark, 'axis6-tool-mount');
   cylinder(root, 0.074, 0.020, [d[0], 1.115, 0], M.aluminum, 'tool-flange');
-  box(root, [0.16, 0.08, 0.13], [d[0], 1.07, 0], M.steel, 'parallel-gripper');
+  box(root, [0.48, 0.08, 0.13], [d[0], 1.07, 0], M.steel, 'parallel-gripper');
   for (const sign of [-1, 1]) {
     const jaw = new THREE.Group(); jaw.name = sign < 0 ? 'gripper-left-slide' : 'gripper-right-slide';
     jaw.userData.motion = 'gripper'; jaw.userData.side = sign; root.add(jaw);
-    box(jaw, [0.022, 0.12, 0.07], [d[0] + sign * 0.05, 0.97, 0], M.aluminum, 'gripper-jaw');
-    box(jaw, [0.005, 0.045, 0.055], [d[0] + sign * 0.0365, 0.935, 0], M.rubber, 'jaw-contact-pad', 0.002);
+    box(jaw, [0.022, 0.12, 0.07], [d[0] + sign * 0.21, 0.97, 0], M.aluminum, 'gripper-jaw');
+    box(jaw, [0.005, 0.045, 0.055], [d[0] + sign * 0.1965, 0.935, 0], M.rubber, 'jaw-contact-pad', 0.002);
   }
   if (high) {
     cable(root, [[0, 0.47, -0.14], [-0.10, 0.76, -0.17], [-0.24, 1.25, -0.17], [-0.34, 1.45, -0.18], [-0.20, 1.59, -0.16], [0.30, 1.60, -0.17], [0.57, 1.60, -0.17], [0.72, 1.47, -0.14], [0.98, 1.29, -0.15], [0.89, 1.09, -0.065]], 0.018, 'robot-dress-pack', 64);
@@ -319,7 +322,7 @@ function robot(high) {
     }
     for (const x of [-0.3, 0.3]) for (const z of [-0.27, 0.27]) bolt(root, [x, 0.0945, z], 'y', 0.017);
   }
-  return root;
+  return rigRobot(root);
 }
 function conveyor(high) {
   const root = new THREE.Group(); root.name = 'CV01-belt-conveyor';
@@ -334,7 +337,7 @@ function conveyor(high) {
     for (let i = 0; i < 9; i++) for (const sign of [-1, 1]) bolt(root, [-0.95 + i * 0.24, 0.76, sign * 0.337], 'z', 0.006, sign);
     cable(root, [[-1.04, 0.64, 0.54], [-0.64, 0.43, 0.34], [-0.25, 0.21, 0.27]], 0.008, 'motor-cable');
   }
-  return root;
+  return rigConveyor(root, M.dark);
 }
 function inspection(high) {
   const root = conveyor(high); root.name = 'V01-camera-inspection';
@@ -346,7 +349,7 @@ function inspection(high) {
   for (const x of [0.05, 0.15]) cylinder(root, 0.004, 0.12, [x, 1.38, -0.05], M.steel, 'ring-light-mount');
   controlPanel(root, [0.2, 1.16, 0.46], high);
   if (high) cable(root, [[0.1, 1.55, -0.05], [0.1, 1.7, -0.36], [0.1, 1.08, -0.39], [0.4, 0.65, -0.39]], 0.008, 'camera-cable');
-  return root;
+  return markSamples(root, []);
 }
 function sealer(high) {
   const root = conveyor(high); root.name = 'CASE01-carton-sealer';
@@ -364,7 +367,7 @@ function sealer(high) {
     box(root, [0.12, 0.06, 0.19], [0, 0.98, sign * 0.305], M.steel, 'side-drive-mount');
   }
   controlPanel(root, [-0.44, 1.15, 0.4], high);
-  return root;
+  return markSamples(root, ['carton', 'carton-tape']);
 }
 function pallet(high) {
   const root = new THREE.Group(); root.name = 'PAL01-finished-cartons';
@@ -374,7 +377,7 @@ function pallet(high) {
     box(root, [0.47, 0.32, 0.41], [x, 0.275 + y * 0.32, z], M.cardboard, 'finished-carton', 0.007);
     if (high) box(root, [0.47, 0.004, 0.045], [x, 0.437 + y * 0.32, z], M.gold, 'tape-strip', 0);
   }
-  return root;
+  return markSamples(root, ['finished-carton', 'tape-strip']);
 }
 const builders = { assembly, robot, conveyor, inspection, sealer, pallet };
 const originals = {}, optimized = {};
