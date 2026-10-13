@@ -65,10 +65,10 @@ export class LineView {
       const [w, h, d] = this.config.item_visual_spec.package_dimensions_meter;
       for (const [dims, pos] of [[[w, .015, d], [0, .0075, 0]], [[.012, h, d], [-w / 2 + .006, h / 2, 0]],
         [[.012, h, d], [w / 2 - .006, h / 2, 0]], [[w, h, .012], [0, h / 2, -d / 2 + .006]], [[w, h, .012], [0, h / 2, d / 2 - .006]]]) {
-        const wall = new THREE.Mesh(new THREE.BoxGeometry(...dims), this.materials.cardboard); wall.position.set(...pos); wall.castShadow = true; root.add(wall);
+        const wall = new THREE.Mesh(new THREE.BoxGeometry(...dims), this.materials.cardboard); wall.geometry.userData.owned_package_geometry = true; wall.position.set(...pos); wall.castShadow = true; root.add(wall);
       }
-      const lid = new THREE.Mesh(new THREE.BoxGeometry(w, .008, d), this.materials.cardboard); lid.name = 'package-lid'; lid.position.y = h; root.add(lid);
-      const tape = new THREE.Mesh(new THREE.BoxGeometry(w, .003, .047), this.materials.gold); tape.name = 'package-tape'; tape.position.y = h + .006; root.add(tape);
+      const lid = new THREE.Mesh(new THREE.BoxGeometry(w, .008, d), this.materials.cardboard); lid.geometry.userData.owned_package_geometry = true; lid.name = 'package-lid'; lid.position.y = h; root.add(lid);
+      const tape = new THREE.Mesh(new THREE.BoxGeometry(w, .003, .047), this.materials.gold); tape.geometry.userData.owned_package_geometry = true; tape.name = 'package-tape'; tape.position.y = h + .006; root.add(tape);
       const content = new THREE.Group(); content.name = 'package-content'; content.position.set(0, .018, 0); this.makeProduct(content, [0, 0, 0], true); root.add(content);
     }
     this.world.add(root); this.goods.set(id, root); return root;
@@ -83,6 +83,7 @@ export class LineView {
     if (type === 'package') {
       const sealed = item?.closure === 'sealed'; root.getObjectByName('package-lid').visible = sealed;
       root.getObjectByName('package-tape').visible = sealed; root.getObjectByName('package-content').visible = !sealed;
+      root.getObjectByName('package-content').userData.item_id = item?.contents?.[0] ?? null;
     }
     return root;
   }
@@ -184,6 +185,6 @@ export class LineView {
   dispose() {
     for (const { label } of this.labels.values()) label.remove();
     for (const root of this.roots.values()) root.traverse(part => { if (part.userData.live_geometry) part.geometry.dispose(); });
-    for (const root of this.goods.values()) root.traverse(part => { if (part.isMesh && !part.geometry.userData.shared_product_geometry) part.geometry.dispose(); });
+    for (const root of this.goods.values()) root.traverse(part => { if (part.isMesh && part.geometry.userData.owned_package_geometry) part.geometry.dispose(); });
   }
 }

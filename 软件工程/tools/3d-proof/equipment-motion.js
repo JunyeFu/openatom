@@ -82,9 +82,11 @@ export function robotPose(root, target, closed) {
   const wire = root.getObjectByName('robot-dress-pack');
   const offsets = [[0, .14, -.14], [0, .1, -.17], [0, .06, -.17], [0, .02, -.17], [0, .08, -.11], [0, .03, -.10]];
   const points = j.map((joint, i) => root.worldToLocal(joint.localToWorld(new THREE.Vector3(...offsets[i]))));
-  if (wire.userData.live_geometry) wire.geometry.dispose();
-  wire.geometry = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points), 48, .018, 8, false);
-  wire.userData.live_geometry = true;
+  if (wire) { // The simplified asset intentionally omits the cable.
+    if (wire.userData.live_geometry) wire.geometry.dispose();
+    wire.geometry = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points), 48, .018, 8, false);
+    wire.userData.live_geometry = true;
+  }
   return j[5].localToWorld(new THREE.Vector3(0, -.235, 0));
 }
 

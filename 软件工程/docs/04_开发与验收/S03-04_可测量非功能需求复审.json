@@ -1,0 +1,131 @@
+{
+  "document_kind": "S03_04_independent_nonfunctional_review_not_runtime_performance",
+  "checkpoint": "S03-04",
+  "date": "2026-10-13 Asia/Shanghai",
+  "status": "passed_document_specification",
+  "spec_ref": "docs/01_业务需求/非功能需求与测量验收.json",
+  "report_md_ref": "docs/04_开发与验收/S03-04_可测量非功能需求复审.md",
+  "criteria": [
+    {
+      "id": "C01",
+      "subject": "既有目标与功能不变",
+      "status": "passed_document_or_finite_reasoning",
+      "basis": "继承3/60/3000、1920×1080、中位FPS≥30、反馈p95≤200ms、存取每次≤3000ms；不改S03-01功能/21任务/18操作"
+    },
+    {
+      "id": "C02",
+      "subject": "明确负载与显示条件",
+      "status": "passed_document_or_finite_reasoning",
+      "basis": "3厂房/6线/60容量一工位/3000独立身份，balanced/dense、路由/时长/观察窗及固定相机/素材范围明确；当前是设计，真实工程/素材仍待构建"
+    },
+    {
+      "id": "C03",
+      "subject": "环境与采样",
+      "status": "passed_document_or_finite_reasoning",
+      "basis": "只读记录实际机器库存，实际WebView/GPU/会话/画布条件仍待验证；每LOD/运行与运动窗口预热/采样/重复，动作100样本/存取5次均明确"
+    },
+    {
+      "id": "C04",
+      "subject": "计时终点与统计",
+      "status": "passed_document_or_finite_reasoning",
+      "basis": "FPS有实际正确画面证据，rAF仅辅助；UI到可见帧、保存到提交/打开到可编辑正确帧，单调时间原点分开；p95 nearest-rank逐类逐轮，存取逐次判"
+    },
+    {
+      "id": "C05",
+      "subject": "离线/持久化/并发可检查",
+      "status": "passed_document_or_finite_reasoning",
+      "basis": "普通离线含新进程/本地资产/交付；失败保留旧清单与缺项显式；同R并发只先处理者成功/另一RevisionConflict，当前Run不改写"
+    },
+    {
+      "id": "C06",
+      "subject": "长任务/专业/大媒体边界",
+      "status": "passed_document_or_finite_reasoning",
+      "basis": "立即状态具体化到本地反馈200ms口径，不新增整体求解/网络时长承诺；专业有限预算三态/取消不伪成功，大媒体单列不冒充3秒"
+    },
+    {
+      "id": "C07",
+      "subject": "实测与文档分离、责任及消费者",
+      "status": "passed_document_or_finite_reasoning",
+      "basis": "11条NFR有窗口/既有任务/SF/步骤/判定；6数学例仅静态验证。状态只精准合入S03-04，其余复审与实际完成不自动推进"
+    }
+  ],
+  "closed_findings": [
+    {
+      "id": "F34-01",
+      "before": "只有指标目标和当前机器原则，缺固定负载/素材/画面与环境记录",
+      "correction": "新增NFR-B60明确60设备/3000独立身份、两种分布、显式路由时间和观察；记录只读机器及实测前仍需填项，素材/真实工程不伪填"
+    },
+    {
+      "id": "F34-02",
+      "before": "响应/存取起止点、p95算法/分组、重复与失败样本口径未明确",
+      "correction": "到可见正确帧/实际提交/可编辑首帧结束，单调时钟分开，逐类逐轮100样本/3轮和存取4变体各5次；六数学例核对临界值"
+    },
+    {
+      "id": "F34-03",
+      "before": "帧率回调/真正呈现、长任务/普通编辑、专业/大素材与3秒目标容易混用",
+      "correction": "需Frames/正确画面证据，rAF仅诊断；长任务接收/网络等待/求解预算/大媒体分别记录，不降低既有目标或声称最低硬件"
+    },
+    {
+      "id": "F34-04",
+      "before": "离线/失败保存/并发编辑与确定性虽有契约，缺同一非功能项的可执行检查",
+      "correction": "11条独立规范包含真实步骤、观察和判定，沿用旧持久化/base_revision与单一Engine，不新增业务或运行API"
+    }
+  ],
+  "static_verification": {
+    "status": "passed_static_specification_and_finite_math",
+    "command": "python tools/检查非功能规格.py",
+    "result_ref": "docs/04_开发与验收/非功能规格检查结果.json",
+    "NFR_rows": 11,
+    "math_cases": 6,
+    "load_profile": {
+      "halls": 3,
+      "devices": 60,
+      "tracked_identities": 3000,
+      "variants": 2
+    },
+    "errors": [],
+    "actual_performance_result": null
+  },
+  "numeric_targets_preserved": true,
+  "protected_functional_sources": [
+    "docs/00_项目基线/首版需求与验收.md",
+    "docs/00_项目基线/用户任务与产品边界.md",
+    "docs/00_项目基线/用户任务与需求映射.json",
+    "docs/01_业务需求/业务设计.md",
+    "docs/02_交互设计/完整操作流程与方案交付.md",
+    "docs/04_开发与验收/S03-01_用户任务与功能需求复审.md",
+    "docs/04_开发与验收/S03-01_用户任务与功能需求复审.json"
+  ],
+  "functional_source_edit_by_this_review": false,
+  "actual_runtime": null,
+  "actual_performance_result": null,
+  "actual_frontend_or_Figma_start": null,
+  "actual_software_benchmark_available": false,
+  "actual_machine_inventory_read": true,
+  "external_actions": [],
+  "open_evidence": [
+    "S06具体计时/Frame trace关联、真实Project映射与完整保存字段落实",
+    "S07/S08真实基准工程、固定模型许可/几何统计及Windows候选形成",
+    "S09/P5实际GPU/会话/素材/帧与延时/存取/离线/并发验证",
+    "目标用户/第三人/真实课程参赛材料和完整按期事实"
+  ],
+  "maturity_effect": {
+    "completion_credit": [
+      1,
+      1
+    ],
+    "evidence_credit": [
+      0.5,
+      0.5
+    ],
+    "S03": [
+      90.0,
+      70.0
+    ],
+    "formal_reviews": 13,
+    "pending_reviews": 47,
+    "pending_design_reviews": 17,
+    "earliest_pending_checkpoint": "S03-03",
+    "other_checkpoint_rows_unchanged": true
+  }
+}

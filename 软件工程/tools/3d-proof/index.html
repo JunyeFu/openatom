@@ -7,7 +7,7 @@
   <script type="importmap">{"imports":{"three":"./vendor/three.module.js","three/addons/":"./vendor/addons/"}}</script>
 </head>
 <body>
-  <header><strong>超级工厂 · 真实3D表现试样</strong><span>模型表现与负载测试；未接入生产仿真</span></header>
+  <header><strong>超级工厂 · L03业务与3D试样</strong><span>八设备共同仿真＋托盘资源 · 局部演示</span></header>
   <nav><span>工程</span><span>编辑</span><span>视图</span><span>模块</span><span>模拟</span><span>交付</span><span>帮助</span></nav>
   <div class="toolbar">
     <button data-scene="device" aria-pressed="true">设备详情</button><button data-scene="line">流水线</button><button data-scene="load">3厂房 / 60设备 / 3000物品</button>
@@ -16,12 +16,19 @@
     <label><input id="shadow" type="checkbox" checked>阴影</label>
     <button id="benchmark">测量10秒</button><button id="save">保存模型、画面与测量</button><button id="reopen">重开导出的GLB</button><button id="record">录制设备动作视频</button>
   </div>
+  <section class="simulation-bar" aria-label="流水线业务仿真">
+    <label>情景 <select id="line-scenario"><option value="baseline">六套交付 · PCB延迟到料 · 一次返工</option><option value="missing_pcb">缺PCB · 可补料恢复</option><option value="missing_quality">缺检验结果 · 可补充恢复</option><option value="output_blocked">托盘暂停接收至180秒</option><option value="reject">第五套复检失败隔离</option></select></label>
+    <button id="line-run">运行产线</button><button id="line-pause">暂停</button><button id="line-step">单步1秒</button><button id="line-reset">重置本情景</button>
+    <label>速度 <select id="line-speed"><option value="1">1倍</option><option value="5">5倍</option><option value="10" selected>10倍</option><option value="20">20倍</option></select></label>
+    <strong id="line-clock">0.0 s</strong><span id="line-count">接受0 / 6</span>
+    <button id="line-supply">补PCB 4片</button><button id="line-quality">补当前检验：合格</button><button id="line-open">恢复托盘接收</button><button id="line-export">导出本次业务结果</button>
+  </section>
   <main>
-    <aside class="tree"><h2>工程对象</h2><p>E01 工厂工程</p><p>　H01 总装厂房</p><button data-device="assembly" aria-pressed="true">ASM01 定位与紧固装配台</button><button data-device="robot">R01 六轴搬运机器人</button><button data-device="conveyor">CV01 输送机</button><button data-device="inspection">V01 相机检验工位</button><button data-device="sealer">CASE01 封箱工位</button><button data-device="pallet">PAL01 成品托盘</button><hr><p class="secondary">鼠标左键旋转<br>滚轮缩放<br>右键平移<br>可查看背面和底部</p></aside>
+    <aside class="tree"><h2>工程对象</h2><p>E01 工厂工程</p><p>　H01 总装厂房 / L03</p><div id="line-instances"></div><details><summary>模型外观与隔离预览</summary><button data-device="assembly" aria-pressed="true">定位紧固台外观</button><button data-device="robot">六轴机器人外观</button><button data-device="conveyor">输送机外观</button><button data-device="inspection">相机检查台外观</button><button data-device="sealer">封箱机外观</button><button data-device="pallet">托盘外观</button></details><hr><p class="secondary">鼠标左键旋转<br>滚轮缩放<br>右键平移<br>单击实例查看同一运行状态</p></aside>
     <section class="viewport"><div class="crumb">E01 / H01 / <span id="scene-name">ASM01 定位与紧固装配台</span></div><div id="canvas-wrap"></div><div class="view-foot"><span id="pose">视角</span><span>完整网格 · 无AI图片背景</span></div></section>
-    <aside class="inspector"><h2>属性 / 表现测量</h2><dl><dt>对象</dt><dd id="object-name">装配台</dd><dt>表现分辨率</dt><dd>1920 × 1080 / DPR 1</dd><dt>浏览器帧回调</dt><dd id="fps">等待渲染</dd><dt>三角面 / 当前帧</dt><dd id="triangles">—</dd><dt>绘制调用 / 当前帧</dt><dd id="calls">—</dd><dt>几何缓冲</dt><dd id="geometry-memory">—</dd><dt>纹理缓冲估算</dt><dd id="texture-memory">—</dd><dt>渲染设备</dt><dd id="renderer">—</dd><dt>资源文件</dt><dd id="export-status">尚未导出</dd></dl><p class="secondary">面数和调用包含阴影绘制。缓冲统计不等于进程全部显存。</p><h2>测量结果</h2><pre id="summary">尚未测量</pre></aside>
+    <aside class="inspector"><h2>业务状态</h2><pre id="line-business">正在加载业务输入…</pre><h2>属性 / 表现测量</h2><dl><dt>对象</dt><dd id="object-name">装配台</dd><dt>表现分辨率</dt><dd>1920 × 1080 / DPR 1</dd><dt>浏览器帧回调</dt><dd id="fps">等待渲染</dd><dt>三角面 / 当前帧</dt><dd id="triangles">—</dd><dt>绘制调用 / 当前帧</dt><dd id="calls">—</dd><dt>几何缓冲</dt><dd id="geometry-memory">—</dd><dt>纹理缓冲估算</dt><dd id="texture-memory">—</dd><dt>渲染设备</dt><dd id="renderer">—</dd><dt>资源文件</dt><dd id="export-status">尚未导出</dd></dl><p class="secondary">面数和调用包含阴影绘制。缓冲统计不等于进程全部显存。</p><h2>测量结果</h2><pre id="summary">尚未测量</pre></aside>
   </main>
-  <section class="bottom"><div><strong>设备过程预览</strong><label>　姿态 <input id="phase" type="range" min="0" max="1" step="0.01" value="0"><span id="phase-value">0%</span></label><span class="secondary">　只改变表现，不产生物品或业务事件</span></div><div class="tracks"><span>部件</span><div>滑台、主轴、夹爪的命名节点</div><span>数据</span><div>真实库存与时间轴由后续Rust引擎提供</div></div></section>
+  <section class="bottom"><div><strong>隔离姿态预览</strong><label>　姿态 <input id="phase" type="range" min="0" max="1" step="0.01" value="0"><span id="phase-value">0%</span></label><span class="secondary">　只调外观；运行产线恢复跟随业务状态</span></div><div class="tracks"><span>业务</span><div id="line-timeline">等待同一仿真时钟下的业务事件</div><span>范围</span><div>本地JS离散事件驱动实际库存与部件；工时是声明输入，尚非Rust桌面产品或纸包装专业验收</div></div></section>
   <footer><span id="status" role="status">初始化真实三维场景…</span><span>自建示意几何与参数 · 非实测设备尺寸</span></footer>
   <textarea id="metrics-json" aria-label="完整测量JSON" readonly></textarea>
   <section id="record-result" hidden style="padding:16px"><p>设备部件动作预览 · 24秒 / 1920×1080 / 30帧每秒 · 尚未接业务仿真　<a href="output/device-motion.mp4" download>下载MP4</a></p><video id="record-video" controls preload="metadata" style="width:100%;max-width:1280px"></video></section>
