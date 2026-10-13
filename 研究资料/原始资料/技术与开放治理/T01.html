@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Time and Scheduling &mdash; SimPy 4.1.2.dev16+gf43816490 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=daa39cb4"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Porting from SimPy 3 to 4" href="porting_from_simpy3.html" />
+    <link rel="prev" title="Monitoring" href="monitoring.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="simpy" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/topical_guides/time_and_scheduling.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../contents.html" class="icon icon-home">
+            SimPy
+          </a>
+              <div class="version">
+                4.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../simpy_intro/index.html">SimPy in 10 Minutes</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Topical Guides</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="simpy_basics.html">SimPy basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="environments.html">Environments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="events.html">Events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="process_interaction.html">Process Interaction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="resources.html">Shared Resources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="real-time-simulations.html">Real-time simulations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="monitoring.html">Monitoring</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Time and Scheduling</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#what-is-time">What is time?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-s-the-problem-with-it">What’s the problem with it?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#simpy-events-and-time">SimPy Events and time</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="porting_from_simpy3.html">Porting from SimPy 3 to 4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="porting_from_simpy2.html">Porting from SimPy 2 to 3</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_reference/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about/index.html">About SimPy</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../contents.html">SimPy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../contents.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Topical Guides</a></li>
+      <li class="breadcrumb-item active">Time and Scheduling</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/topical_guides/time_and_scheduling.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="time-and-scheduling">
+<h1>Time and Scheduling<a class="headerlink" href="#time-and-scheduling" title="Link to this heading"></a></h1>
+<p>The aim of this section is to give you a deeper understanding of how time
+passes in SimPy and how it schedules and processes events.</p>
+<section id="what-is-time">
+<h2>What is time?<a class="headerlink" href="#what-is-time" title="Link to this heading"></a></h2>
+<p><em>Time</em> itself is not easy to grasp.  The <a class="reference external" href="https://en.wikipedia.org/wiki/Time">wikipedians describe it</a> this way:</p>
+<blockquote>
+<div><p><em>«Time is the indefinite continued progress of existence and events that
+occur in apparently irreversible succession from the past through the
+present to the future.  Time is a component quantity of various
+measurements used to sequence events, to compare the duration of events
+or the intervals between them, and to quantify rates of change of
+quantities in material reality or in the conscious experience.  Time is
+often referred to as the fourth dimension, along with the three spatial
+dimensions.»</em></p>
+</div></blockquote>
+</section>
+<section id="what-s-the-problem-with-it">
+<h2>What’s the problem with it?<a class="headerlink" href="#what-s-the-problem-with-it" title="Link to this heading"></a></h2>
+<p>Often, events (in the real world) appear to happen “at the same time”, when
+they are in fact happening at slightly different times.  Here is an obvious
+example: Alice and Bob have birthday on the same day.  If your time scale is in
+days, both birthday events happen at the same time.  If you increase the
+resolution of you clock, e.g. to minutes, you may realise that Alice was
+actually born at 0:42 in the morning and Bob at 11:14 and that there’s quite
+a difference between the time of both events.</p>
+<p>Doing simulation on computers suffers from similar problems.  Integers (<a class="reference external" href="http://blog.reverberate.org/2014/09/what-every-computer-programmer-should.html">and
+floats, too</a>)
+are discrete numbers with a lot of void in between them.  Thus, events that
+would occur after each other in the real world (e.g., at <em>t</em><sub>1</sub> = 0.1 and
+<em>t</em><sub>2</sub> = 0.2) might occur at the “same” time if mapped to an integer scale
+(e.g., at <em>t</em> = 0).</p>
+<p>On the other hand, SimPy is (like most simulation frameworks)
+a single-threaded, deterministic library.  It processes events sequentially
+– one after another.  If two events are scheduled at the same time, the one
+that is scheduled first will also be the processed first (FIFO).</p>
+<p>That is very important for you to understand.  The processes in your
+modeled/simulated world may run “in parallel”, but when the simulation runs on
+your CPU, all events are processed sequentially and deterministically.  If you
+run your simulation multiple times (and if you don’t use <a class="reference external" href="https://docs.python.org/3/library/random.html#module-random" title="(in Python v3.14)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">random</span></code></a> ;-)),
+you will <em>always</em> get the same results.</p>
+<p>So keep this in mind:</p>
+<ul class="simple">
+<li><p>In the real world, there’s usually no <em>at the same time</em>.</p></li>
+<li><p>Discretization of the time scale can make events appear to be <em>at the same
+time</em>.</p></li>
+<li><p>SimPy processes events <em>one after another</em>, even if they have the <em>same
+time</em>.</p></li>
+</ul>
+</section>
+<section id="simpy-events-and-time">
+<h2>SimPy Events and time<a class="headerlink" href="#simpy-events-and-time" title="Link to this heading"></a></h2>
+<p>Before we continue, let’s recap the states an event can be in (see
+<a class="reference internal" href="events.html"><span class="doc">Events</span></a> for details):</p>
+<ul class="simple">
+<li><p>untriggered: not known to the event queue</p></li>
+<li><p>triggered: scheduled at a time <em>t</em> and inserted into the event queue</p></li>
+<li><p>processed: removed from the event queue</p></li>
+</ul>
+<p>SimPy’s event queue is implemented as a <a class="reference external" href="https://docs.python.org/3/library/heapq.html">heap queue</a>: “Heaps are binary trees for
+which every parent node has a value less than or equal to any of its children.”
+So if we insert events as tuples <em>(t, event)</em> (with <em>t</em> being the scheduled
+time) into it, the first element in the queue will by definition always be the
+one with the smallest <em>t</em> and the next one to be processed.</p>
+<p>However, storing <em>(t, event)</em> tuples will not work if two events are scheduled
+at the same time because events are not comparable.  To fix this, we also store
+a strictly increasing event ID with them: <em>(t, eid, event)</em>.  That way, if two
+events get scheduled for the same time, the one scheduled first will always be
+processed first.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="monitoring.html" class="btn btn-neutral float-left" title="Monitoring" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="porting_from_simpy3.html" class="btn btn-neutral float-right" title="Porting from SimPy 3 to 4" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2002–2026, Team SimPy.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,116 @@
+{
+  "document_kind": "logistics_maintenance_business_design_not_runtime_api",
+  "time_unit": "relative_ms",
+  "layout_length_unit": "meter",
+  "references": [
+    "../../docs/90_后续扩展/运输路径与接收设计.md",
+    "../../docs/90_后续扩展/停机维修与恢复.md"
+  ],
+  "route": {
+    "fields": [
+      "id",
+      "mode",
+      "layout_revision",
+      "source_dock",
+      "destination_dock",
+      "directed_edges",
+      "approved_path",
+      "declared_segment_speed",
+      "fixed_durations",
+      "conflict_zone_refs",
+      "waiting_position_refs"
+    ],
+    "modes": [
+      "fixed_time",
+      "explicit_path"
+    ],
+    "layout_transform_consumers": [
+      "presentation",
+      "layout_envelopes",
+      "path_logistics"
+    ],
+    "unreachable_effect": "await_reconnection_not_straight_line_fallback",
+    "cross_hall_card_distance_is_geographic": false
+  },
+  "transport_task": {
+    "fields": [
+      "id",
+      "item_refs",
+      "source_store",
+      "destination_store",
+      "vehicle_ref",
+      "role_bindings",
+      "actual_vehicle_position",
+      "empty_reposition",
+      "load",
+      "outbound",
+      "receiver_wait",
+      "unload",
+      "post_delivery_policy",
+      "return_or_next_position"
+    ],
+    "post_delivery_policies": [
+      "return_origin",
+      "stay_at_destination"
+    ],
+    "cargo_holder": "source_until_departure_then_vehicle_until_receiver_acceptance",
+    "accepted_event": "unload_completed_and_committed",
+    "vehicle_free_event": "declared_reposition_completed_and_calendar_allows"
+  },
+  "path_resource": {
+    "category": "resources",
+    "fields": [
+      "id",
+      "capacity",
+      "calendar",
+      "conflicting_edge_refs",
+      "safe_exit_position",
+      "release_condition"
+    ],
+    "shared_opposing_directions": "same_resource_not_two_directional_copies",
+    "entry": "acquire_required_zone_and_safe_next_position_before_leaving_current_position",
+    "wait_position_vs_material_store_capacity": "distinct",
+    "cycle_wait": "show_holder_requests_and_known_release_events_no_teleport"
+  },
+  "maintenance_task": {
+    "category": "tasks",
+    "fields": [
+      "id",
+      "equipment_ref",
+      "request_at",
+      "stop_policy",
+      "keep_wip_allowed",
+      "wip_disposition",
+      "worker_refs",
+      "tool_refs",
+      "spare_inputs",
+      "service_conditions",
+      "repair_duration",
+      "qualification_ref",
+      "release_decision_ref",
+      "resume_ref"
+    ],
+    "stop_policies": [
+      "finish_current",
+      "pause_resume",
+      "abort_disposition"
+    ],
+    "missing_policy_effect": "awaiting_disposition",
+    "spares_are_consumed_items": true,
+    "tools_are_reusable_resources": true
+  },
+  "equipment_access": {
+    "fields": [
+      "equipment_ref",
+      "current_exclusive_user",
+      "availability_state",
+      "resume_ref"
+    ],
+    "production_and_maintenance_share_one_capacity": true,
+    "resume_ref_consumes_extra_capacity": false,
+    "wip_holder_changes_on_access_transfer": false,
+    "repair_finish_is_production_release": false
+  },
+  "implementation_status": "planned",
+  "actual_result": null
+}

@@ -1,0 +1,116 @@
+{
+  "document_kind": "design_example_not_runtime_plugin",
+  "id": "community.manual-assembly",
+  "version": "0.1.0",
+  "category": "devices",
+  "title": "自定义装配台",
+  "placement": "fixed_during_simulation",
+  "parameters": [
+    {
+      "id": "cycle_seconds",
+      "label": "单周期工时",
+      "type": "duration",
+      "unit": "second",
+      "binding": "behavior.duration.value"
+    },
+    {
+      "id": "run_mode",
+      "label": "作业策略",
+      "type": "enum",
+      "binding": "behavior.repeat_mode",
+      "options": [
+        "single_cycle",
+        "continuous_when_ready"
+      ]
+    }
+  ],
+  "ports": [
+    {
+      "id": "shell",
+      "kind": "material",
+      "direction": "in",
+      "item": "shell",
+      "unit": "piece"
+    },
+    {
+      "id": "pcb",
+      "kind": "material",
+      "direction": "in",
+      "item": "pcb",
+      "unit": "piece"
+    },
+    {
+      "id": "assembled",
+      "kind": "material",
+      "direction": "out",
+      "item": "assembly",
+      "unit": "piece"
+    }
+  ],
+  "behavior": {
+    "builtin": "assemble",
+    "repeat_mode": "continuous_when_ready",
+    "inputs": [
+      {
+        "port": "shell",
+        "quantity": 1
+      },
+      {
+        "port": "pcb",
+        "quantity": 1
+      }
+    ],
+    "outputs": [
+      {
+        "port": "assembled",
+        "quantity": 1
+      }
+    ],
+    "duration": {
+      "value": 60,
+      "unit": "second",
+      "basis": "自建演示假设"
+    },
+    "resources": [
+      {
+        "role": "assembler",
+        "quantity": 1
+      }
+    ],
+    "start": "inputs_ready_and_worker_available",
+    "finish": "duration_elapsed",
+    "blocked": "output_capacity_unavailable"
+  },
+  "presentation": {
+    "media": {
+      "kind": "native_scene",
+      "path": "presentation/native-scene.json"
+    },
+    "timeline": {
+      "path": "presentation/timeline.json"
+    },
+    "states": [
+      "idle",
+      "working",
+      "waiting"
+    ],
+    "lod": {
+      "detailed": "media_and_ports",
+      "simplified": "icon_and_state",
+      "region": "parent_aggregate"
+    }
+  },
+  "operations": [
+    "configure",
+    "inspect",
+    "preview_cycle"
+  ],
+  "contribution": {
+    "author": "待填写",
+    "code_license": "待声明",
+    "asset_license": "无第三方素材；原生几何声明数据待随项目明确许可",
+    "example": "人工装配样例",
+    "status": "design"
+  },
+  "definition_state": "design"
+}

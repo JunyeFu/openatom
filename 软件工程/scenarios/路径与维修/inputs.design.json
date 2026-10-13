@@ -1,0 +1,165 @@
+{
+  "document_kind": "self_built_logistics_and_maintenance_inputs_not_runtime",
+  "length_unit": "meter",
+  "time_unit": "millisecond",
+  "single_trip": {
+    "load_ms": 2000,
+    "unload_ms": 3000,
+    "speed_m_per_s": 1,
+    "fixed_outbound_ms": 10000,
+    "fixed_return_ms": 10000,
+    "base_points": [
+      [
+        0,
+        0
+      ],
+      [
+        10,
+        0
+      ]
+    ],
+    "moved_points": [
+      [
+        0,
+        0
+      ],
+      [
+        10,
+        0
+      ],
+      [
+        10,
+        10
+      ]
+    ],
+    "empty_points": [
+      [
+        0,
+        5
+      ],
+      [
+        0,
+        0
+      ]
+    ],
+    "post_delivery_policy": "return_origin"
+  },
+  "shared_corridor": {
+    "length_m": 8,
+    "speed_m_per_s": 1,
+    "capacity": 1,
+    "load_ms": 2000,
+    "unload_ms": 3000,
+    "vehicles": [
+      "A",
+      "B"
+    ],
+    "priority": "ready_time_then_vehicle_id",
+    "origin_and_destination_positions": "distinct_loading_and_unloading_positions_at_each_endpoint; whether outside conflict zone is explicitly chosen by each variant",
+    "blocked_destination_A_free_at_ms": 20000,
+    "return_uses_same_corridor": true
+  },
+  "unreachable": {
+    "approved_route": [
+      "P",
+      "Q",
+      "R"
+    ],
+    "remaining_directed_edges": [
+      [
+        "P",
+        "Q"
+      ]
+    ],
+    "cargo": "part-U"
+  },
+  "cycle_wait": {
+    "positions": {
+      "P1": "A",
+      "P2": "B"
+    },
+    "requested_positions": {
+      "A": "P2",
+      "B": "P1"
+    },
+    "future_release_events": []
+  },
+  "maintenance": {
+    "request_at_ms": 30000,
+    "work_ms": 60000,
+    "repair_worker_available_at_ms": 40000,
+    "spare_arrives_at_ms": 50000,
+    "repair_ms": 20000,
+    "qualification_ms": 10000,
+    "drain_receiver_ready_at_ms": 80000,
+    "abort_transfer_ms": 5000,
+    "initial_input_kits": 2,
+    "spare_quantity": 1,
+    "cases": [
+      {
+        "id": "finish_current",
+        "stop_policy": "finish_current",
+        "scheduled_jobs": [
+          "first",
+          "second"
+        ],
+        "qualification": "PASS"
+      },
+      {
+        "id": "pause_resume",
+        "stop_policy": "pause_resume",
+        "keep_wip_allowed": true,
+        "scheduled_jobs": [
+          "first"
+        ],
+        "qualification": "PASS"
+      },
+      {
+        "id": "abort_isolate",
+        "stop_policy": "abort_disposition",
+        "keep_wip_allowed": false,
+        "scheduled_jobs": [
+          "first",
+          "second"
+        ],
+        "qualification": "PASS"
+      },
+      {
+        "id": "qualification_fail",
+        "stop_policy": "pause_resume",
+        "keep_wip_allowed": true,
+        "scheduled_jobs": [
+          "first"
+        ],
+        "qualification": "FAIL"
+      },
+      {
+        "id": "missing_stop_policy",
+        "stop_policy": null,
+        "scheduled_jobs": [
+          "first"
+        ],
+        "qualification": null
+      },
+      {
+        "id": "known_non_preemptive_window",
+        "known_unavailable_ms": [
+          30000,
+          80000
+        ],
+        "scheduled_jobs": [
+          "first"
+        ],
+        "phase_policy": "non_preemptive"
+      }
+    ],
+    "production_requires": [
+      "equipment"
+    ],
+    "qualification_requires": [
+      "equipment"
+    ],
+    "qualification_source": "preset_not_field_measurement"
+  },
+  "observation_end_ms": 200000
+}

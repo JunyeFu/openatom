@@ -1,0 +1,294 @@
+{
+  "document_kind": "finite_manual_design_expectations",
+  "cases": [
+    {
+      "id": "fixed_60s",
+      "manual_expected": {
+        "clips": [
+          {
+            "id": "frame-a",
+            "start_ms": 0.0,
+            "end_ms": 12000.0
+          },
+          {
+            "id": "frame-b",
+            "start_ms": 12000.0,
+            "end_ms": 33000.0
+          },
+          {
+            "id": "frame-c",
+            "start_ms": 33000.0,
+            "end_ms": 51000.0
+          },
+          {
+            "id": "frame-d",
+            "start_ms": 51000.0,
+            "end_ms": 60000.0
+          }
+        ],
+        "effective_duration_ms": 60000,
+        "completed": 1,
+        "input_remaining": {
+          "shell": 1,
+          "pcb": 0
+        },
+        "blocked_next_cycle_by": "pcb",
+        "new_engine_result_created": false
+      },
+      "actual_result": null
+    },
+    {
+      "id": "fixed_30s",
+      "manual_expected": {
+        "clips": [
+          {
+            "id": "frame-a",
+            "start_ms": 0.0,
+            "end_ms": 6000.0
+          },
+          {
+            "id": "frame-b",
+            "start_ms": 6000.0,
+            "end_ms": 16500.0
+          },
+          {
+            "id": "frame-c",
+            "start_ms": 16500.0,
+            "end_ms": 25500.0
+          },
+          {
+            "id": "frame-d",
+            "start_ms": 25500.0,
+            "end_ms": 30000.0
+          }
+        ],
+        "effective_duration_ms": 30000,
+        "completed": 1,
+        "input_remaining": {
+          "shell": 1,
+          "pcb": 0
+        },
+        "blocked_next_cycle_by": "pcb",
+        "new_engine_result_created": false
+      },
+      "actual_result": null
+    },
+    {
+      "id": "visual_reorder_60s",
+      "manual_expected": {
+        "clips": [
+          {
+            "id": "frame-b",
+            "start_ms": 0.0,
+            "end_ms": 21000.0
+          },
+          {
+            "id": "frame-a",
+            "start_ms": 21000.0,
+            "end_ms": 33000.0
+          },
+          {
+            "id": "frame-c",
+            "start_ms": 33000.0,
+            "end_ms": 51000.0
+          },
+          {
+            "id": "frame-d",
+            "start_ms": 51000.0,
+            "end_ms": 60000.0
+          }
+        ],
+        "effective_duration_ms": 60000,
+        "completed": 1,
+        "input_remaining": {
+          "shell": 1,
+          "pcb": 0
+        },
+        "blocked_next_cycle_by": "pcb",
+        "new_engine_result_created": false
+      },
+      "actual_result": null
+    },
+    {
+      "id": "phase_wait_and_output_hold",
+      "manual_expected": {
+        "intervals": [
+          {
+            "phase": "load",
+            "start_ms": 0,
+            "end_ms": 10000,
+            "end_pose": "loaded"
+          },
+          {
+            "phase": "auto",
+            "start_ms": 10000,
+            "end_ms": 55000,
+            "end_pose": "auto_end"
+          },
+          {
+            "phase": "unload",
+            "start_ms": 70000,
+            "end_ms": 75000,
+            "end_pose": "finished"
+          }
+        ],
+        "waits": [
+          {
+            "start_ms": 55000,
+            "end_ms": 70000,
+            "reason": "phase_resource",
+            "kept_pose": "auto_end"
+          },
+          {
+            "start_ms": 75000,
+            "end_ms": 85000,
+            "reason": "output_capacity",
+            "kept_pose": "finished"
+          }
+        ],
+        "worker_intervals": [
+          [
+            0,
+            10000
+          ],
+          [
+            70000,
+            75000
+          ]
+        ],
+        "effective_ms": 60000,
+        "work_finished_ms": 75000,
+        "received_ms": 85000,
+        "machine_held_ms": 85000,
+        "samples": [
+          {
+            "at_ms": 55000,
+            "state": "waiting_phase_resource",
+            "pose": "auto_end",
+            "holder": "machine",
+            "local_progress": null,
+            "work_finished_count": 0,
+            "received_count": 0
+          },
+          {
+            "at_ms": 60000,
+            "state": "waiting_phase_resource",
+            "pose": "auto_end",
+            "holder": "machine",
+            "local_progress": null,
+            "work_finished_count": 0,
+            "received_count": 0
+          },
+          {
+            "at_ms": 70000,
+            "state": "working_unload",
+            "pose": "unload_progress",
+            "holder": "machine",
+            "local_progress": 0.0,
+            "work_finished_count": 0,
+            "received_count": 0
+          },
+          {
+            "at_ms": 72000,
+            "state": "working_unload",
+            "pose": "unload_progress",
+            "holder": "machine",
+            "local_progress": 0.4,
+            "work_finished_count": 0,
+            "received_count": 0
+          },
+          {
+            "at_ms": 75000,
+            "state": "waiting_output_capacity",
+            "pose": "finished",
+            "holder": "machine",
+            "local_progress": null,
+            "work_finished_count": 1,
+            "received_count": 0
+          },
+          {
+            "at_ms": 80000,
+            "state": "waiting_output_capacity",
+            "pose": "finished",
+            "holder": "machine",
+            "local_progress": null,
+            "work_finished_count": 1,
+            "received_count": 0
+          },
+          {
+            "at_ms": 85000,
+            "state": "idle",
+            "pose": "idle",
+            "holder": "output_store",
+            "local_progress": null,
+            "work_finished_count": 1,
+            "received_count": 1
+          }
+        ]
+      },
+      "actual_result": null
+    },
+    {
+      "id": "selected_visual_upgrade",
+      "manual_expected": {
+        "versions_after": {
+          "A": "0.1.1",
+          "B": "0.1.0"
+        },
+        "durations_ms": {
+          "A": 60000,
+          "B": 60000
+        },
+        "prior_result_scope": "original_scheme",
+        "new_engine_result_created": false
+      },
+      "actual_result": null
+    },
+    {
+      "id": "selected_behavior_upgrade",
+      "manual_expected": {
+        "versions_after": {
+          "A": "0.2.0",
+          "B": "0.1.0"
+        },
+        "durations_ms": {
+          "A": 30000,
+          "B": 60000
+        },
+        "changed_scheme_requires_new_execution": true,
+        "prior_result_scope": "original_scheme"
+      },
+      "actual_result": null
+    },
+    {
+      "id": "port_id_change",
+      "manual_expected": {
+        "affected_instance": "A",
+        "required_rebinding": [
+          "pcb-store-to-A",
+          "A-pcb-stock"
+        ],
+        "untouched_instance": "B",
+        "automatic_rewire": false,
+        "old_scheme_changed": false
+      },
+      "actual_result": null
+    },
+    {
+      "id": "public_handoff",
+      "manual_expected": {
+        "included_assets": [
+          "own-geometry"
+        ],
+        "omitted_assets": [
+          "private-photo",
+          "industry-report"
+        ],
+        "replacement_slot": "private-photo",
+        "behavior_preserved": true,
+        "permission_basis": "self_built_inputs_not_actual_permission_evidence"
+      },
+      "actual_result": null
+    }
+  ]
+}

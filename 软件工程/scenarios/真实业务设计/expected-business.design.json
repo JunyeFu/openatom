@@ -1,0 +1,841 @@
+{
+  "document_kind": "manual_business_expectations_not_engine_results",
+  "time_unit": "millisecond",
+  "source": "self-built explicit scenario arithmetic",
+  "cases": [
+    {
+      "id": "multi_a_first",
+      "family": "multi_order",
+      "changes": {
+        "dispatch_first": "A"
+      },
+      "jobs": [
+        {
+          "kind": "setup",
+          "item": "A_to_B",
+          "start_ms": 60000,
+          "end_ms": 75000,
+          "resources": [
+            "W-A",
+            "Assembly"
+          ]
+        },
+        {
+          "kind": "assembly",
+          "item": "A1",
+          "start_ms": 0,
+          "end_ms": 30000,
+          "resources": [
+            "W-A",
+            "Assembly"
+          ]
+        },
+        {
+          "kind": "inspection",
+          "item": "A1",
+          "start_ms": 30000,
+          "end_ms": 40000,
+          "resources": [
+            "W-B",
+            "Inspection"
+          ]
+        },
+        {
+          "kind": "packing",
+          "item": "A1",
+          "start_ms": 40000,
+          "end_ms": 50000,
+          "resources": [
+            "W-B",
+            "Packing"
+          ]
+        },
+        {
+          "kind": "assembly",
+          "item": "A2",
+          "start_ms": 30000,
+          "end_ms": 60000,
+          "resources": [
+            "W-A",
+            "Assembly"
+          ]
+        },
+        {
+          "kind": "inspection",
+          "item": "A2",
+          "start_ms": 60000,
+          "end_ms": 70000,
+          "resources": [
+            "W-B",
+            "Inspection"
+          ]
+        },
+        {
+          "kind": "packing",
+          "item": "A2",
+          "start_ms": 70000,
+          "end_ms": 80000,
+          "resources": [
+            "W-B",
+            "Packing"
+          ]
+        },
+        {
+          "kind": "assembly",
+          "item": "B1",
+          "start_ms": 100000,
+          "end_ms": 130000,
+          "resources": [
+            "W-A",
+            "Assembly"
+          ]
+        },
+        {
+          "kind": "inspection",
+          "item": "B1",
+          "start_ms": 130000,
+          "end_ms": 140000,
+          "resources": [
+            "W-B",
+            "Inspection"
+          ]
+        },
+        {
+          "kind": "packing",
+          "item": "B1",
+          "start_ms": 140000,
+          "end_ms": 150000,
+          "resources": [
+            "W-B",
+            "Packing"
+          ]
+        },
+        {
+          "kind": "assembly",
+          "item": "B2",
+          "start_ms": 130000,
+          "end_ms": 160000,
+          "resources": [
+            "W-A",
+            "Assembly"
+          ]
+        },
+        {
+          "kind": "inspection",
+          "item": "B2",
+          "start_ms": 160000,
+          "end_ms": 170000,
+          "resources": [
+            "W-B",
+            "Inspection"
+          ]
+        },
+        {
+          "kind": "packing",
+          "item": "B2",
+          "start_ms": 170000,
+          "end_ms": 180000,
+          "resources": [
+            "W-B",
+            "Packing"
+          ]
+        },
+        {
+          "kind": "transport",
+          "item": "A",
+          "start_ms": 120000,
+          "end_ms": 140000,
+          "resources": [
+            "T1"
+          ]
+        },
+        {
+          "kind": "unload",
+          "item": "A",
+          "start_ms": 140000,
+          "end_ms": 145000,
+          "resources": [
+            "T1"
+          ]
+        },
+        {
+          "kind": "return",
+          "item": "A",
+          "start_ms": 145000,
+          "end_ms": 165000,
+          "resources": [
+            "T1"
+          ]
+        },
+        {
+          "kind": "transport",
+          "item": "B",
+          "start_ms": 180000,
+          "end_ms": 200000,
+          "resources": [
+            "T1"
+          ]
+        },
+        {
+          "kind": "unload",
+          "item": "B",
+          "start_ms": 200000,
+          "end_ms": 205000,
+          "resources": [
+            "T1"
+          ]
+        },
+        {
+          "kind": "return",
+          "item": "B",
+          "start_ms": 205000,
+          "end_ms": 225000,
+          "resources": [
+            "T1"
+          ]
+        }
+      ],
+      "products": [
+        {
+          "id": "A1",
+          "order": "A",
+          "pcb": "pcb1",
+          "assembly_start_ms": 0,
+          "packaged_at_ms": 50000,
+          "quality": "released"
+        },
+        {
+          "id": "A2",
+          "order": "A",
+          "pcb": "pcb2",
+          "assembly_start_ms": 30000,
+          "packaged_at_ms": 80000,
+          "quality": "released"
+        },
+        {
+          "id": "B1",
+          "order": "B",
+          "pcb": "pcb3",
+          "assembly_start_ms": 100000,
+          "packaged_at_ms": 150000,
+          "quality": "released"
+        },
+        {
+          "id": "B2",
+          "order": "B",
+          "pcb": "pcb4",
+          "assembly_start_ms": 130000,
+          "packaged_at_ms": 180000,
+          "quality": "released"
+        }
+      ],
+      "shipments": [
+        {
+          "order": "A",
+          "items": [
+            "A1",
+            "A2"
+          ],
+          "quantity": 2,
+          "depart_ms": 120000,
+          "accepted_ms": 145000,
+          "cart_available_ms": 165000
+        },
+        {
+          "order": "B",
+          "items": [
+            "B1",
+            "B2"
+          ],
+          "quantity": 2,
+          "depart_ms": 180000,
+          "accepted_ms": 205000,
+          "cart_available_ms": 225000
+        }
+      ],
+      "expected_orders": [
+        {
+          "order": "A",
+          "demand": 2,
+          "accepted": 2,
+          "completion_ms": 145000,
+          "due_ms": 160000,
+          "tardiness_ms": 0
+        },
+        {
+          "order": "B",
+          "demand": 2,
+          "accepted": 2,
+          "completion_ms": 205000,
+          "due_ms": 200000,
+          "tardiness_ms": 5000
+        }
+      ],
+      "expected_last_acceptance_ms": 205000,
+      "expected_worker_a_occupied_ms": 135000,
+      "actual_result": null
+    },
+    {
+      "id": "multi_b_first",
+      "family": "multi_order",
+      "changes": {
+        "dispatch_first": "B"
+      },
+      "jobs": [
+        {
+          "kind": "setup",
+          "item": "A_to_B",
+          "start_ms": 0,
+          "end_ms": 15000,
+          "resources": [
+            "W-A",
+            "Assembly"
+          ]
+        },
+        {
+          "kind": "setup",
+          "item": "B_to_A",
+          "start_ms": 75000,
+          "end_ms": 100000,
+          "resources": [
+            "W-A",
+            "Assembly"
+          ]
+        },
+        {
+          "kind": "assembly",
+          "item": "B1",
+          "start_ms": 15000,
+          "end_ms": 45000,
+          "resources": [
+            "W-A",
+            "Assembly"
+          ]
+        },
+        {
+          "kind": "inspection",
+          "item": "B1",
+          "start_ms": 45000,
+          "end_ms": 55000,
+          "resources": [
+            "W-B",
+            "Inspection"
+          ]
+        },
+        {
+          "kind": "packing",
+          "item": "B1",
+          "start_ms": 55000,
+          "end_ms": 65000,
+          "resources": [
+            "W-B",
+            "Packing"
+          ]
+        },
+        {
+          "kind": "assembly",
+          "item": "B2",
+          "start_ms": 45000,
+          "end_ms": 75000,
+          "resources": [
+            "W-A",
+            "Assembly"
+          ]
+        },
+        {
+          "kind": "inspection",
+          "item": "B2",
+          "start_ms": 75000,
+          "end_ms": 85000,
+          "resources": [
+            "W-B",
+            "Inspection"
+          ]
+        },
+        {
+          "kind": "packing",
+          "item": "B2",
+          "start_ms": 85000,
+          "end_ms": 95000,
+          "resources": [
+            "W-B",
+            "Packing"
+          ]
+        },
+        {
+          "kind": "assembly",
+          "item": "A1",
+          "start_ms": 100000,
+          "end_ms": 130000,
+          "resources": [
+            "W-A",
+            "Assembly"
+          ]
+        },
+        {
+          "kind": "inspection",
+          "item": "A1",
+          "start_ms": 130000,
+          "end_ms": 140000,
+          "resources": [
+            "W-B",
+            "Inspection"
+          ]
+        },
+        {
+          "kind": "packing",
+          "item": "A1",
+          "start_ms": 140000,
+          "end_ms": 150000,
+          "resources": [
+            "W-B",
+            "Packing"
+          ]
+        },
+        {
+          "kind": "assembly",
+          "item": "A2",
+          "start_ms": 130000,
+          "end_ms": 160000,
+          "resources": [
+            "W-A",
+            "Assembly"
+          ]
+        },
+        {
+          "kind": "inspection",
+          "item": "A2",
+          "start_ms": 160000,
+          "end_ms": 170000,
+          "resources": [
+            "W-B",
+            "Inspection"
+          ]
+        },
+        {
+          "kind": "packing",
+          "item": "A2",
+          "start_ms": 170000,
+          "end_ms": 180000,
+          "resources": [
+            "W-B",
+            "Packing"
+          ]
+        },
+        {
+          "kind": "transport",
+          "item": "A",
+          "start_ms": 180000,
+          "end_ms": 200000,
+          "resources": [
+            "T1"
+          ]
+        },
+        {
+          "kind": "unload",
+          "item": "A",
+          "start_ms": 200000,
+          "end_ms": 205000,
+          "resources": [
+            "T1"
+          ]
+        },
+        {
+          "kind": "return",
+          "item": "A",
+          "start_ms": 205000,
+          "end_ms": 225000,
+          "resources": [
+            "T1"
+          ]
+        },
+        {
+          "kind": "transport",
+          "item": "B",
+          "start_ms": 120000,
+          "end_ms": 140000,
+          "resources": [
+            "T1"
+          ]
+        },
+        {
+          "kind": "unload",
+          "item": "B",
+          "start_ms": 140000,
+          "end_ms": 145000,
+          "resources": [
+            "T1"
+          ]
+        },
+        {
+          "kind": "return",
+          "item": "B",
+          "start_ms": 145000,
+          "end_ms": 165000,
+          "resources": [
+            "T1"
+          ]
+        }
+      ],
+      "products": [
+        {
+          "id": "B1",
+          "order": "B",
+          "pcb": "pcb1",
+          "assembly_start_ms": 15000,
+          "packaged_at_ms": 65000,
+          "quality": "released"
+        },
+        {
+          "id": "B2",
+          "order": "B",
+          "pcb": "pcb2",
+          "assembly_start_ms": 45000,
+          "packaged_at_ms": 95000,
+          "quality": "released"
+        },
+        {
+          "id": "A1",
+          "order": "A",
+          "pcb": "pcb3",
+          "assembly_start_ms": 100000,
+          "packaged_at_ms": 150000,
+          "quality": "released"
+        },
+        {
+          "id": "A2",
+          "order": "A",
+          "pcb": "pcb4",
+          "assembly_start_ms": 130000,
+          "packaged_at_ms": 180000,
+          "quality": "released"
+        }
+      ],
+      "shipments": [
+        {
+          "order": "A",
+          "items": [
+            "A1",
+            "A2"
+          ],
+          "quantity": 2,
+          "depart_ms": 180000,
+          "accepted_ms": 205000,
+          "cart_available_ms": 225000
+        },
+        {
+          "order": "B",
+          "items": [
+            "B1",
+            "B2"
+          ],
+          "quantity": 2,
+          "depart_ms": 120000,
+          "accepted_ms": 145000,
+          "cart_available_ms": 165000
+        }
+      ],
+      "expected_orders": [
+        {
+          "order": "A",
+          "demand": 2,
+          "accepted": 2,
+          "completion_ms": 205000,
+          "due_ms": 160000,
+          "tardiness_ms": 45000
+        },
+        {
+          "order": "B",
+          "demand": 2,
+          "accepted": 2,
+          "completion_ms": 145000,
+          "due_ms": 200000,
+          "tardiness_ms": 0
+        }
+      ],
+      "expected_last_acceptance_ms": 205000,
+      "expected_worker_a_occupied_ms": 160000,
+      "actual_result": null
+    },
+    {
+      "id": "phase_calendar",
+      "family": "calendar",
+      "jobs": [
+        {
+          "kind": "load",
+          "item": "part1",
+          "start_ms": 0,
+          "end_ms": 5000,
+          "resources": [
+            "W-C",
+            "CNC"
+          ]
+        },
+        {
+          "kind": "auto",
+          "item": "part1",
+          "start_ms": 5000,
+          "end_ms": 35000,
+          "resources": [
+            "CNC"
+          ]
+        },
+        {
+          "kind": "wait_for_worker",
+          "item": "part1",
+          "start_ms": 35000,
+          "end_ms": 40000,
+          "resources": [
+            "CNC"
+          ]
+        },
+        {
+          "kind": "unload",
+          "item": "part1",
+          "start_ms": 40000,
+          "end_ms": 45000,
+          "resources": [
+            "W-C",
+            "CNC"
+          ]
+        }
+      ],
+      "expected_completion_ms": 45000,
+      "expected_process_ms": 40000,
+      "expected_worker_occupied_ms": 10000,
+      "expected_wait_ms": 5000,
+      "actual_result": null
+    },
+    {
+      "id": "quality_pending_and_scrap",
+      "family": "quality",
+      "jobs": [
+        {
+          "kind": "assembly",
+          "item": "assembly1",
+          "start_ms": 0,
+          "end_ms": 20000,
+          "resources": [
+            "W-A",
+            "Assembly"
+          ]
+        },
+        {
+          "kind": "inspection",
+          "item": "assembly1",
+          "start_ms": 20000,
+          "end_ms": 30000,
+          "resources": [
+            "W-Q",
+            "Inspection"
+          ]
+        },
+        {
+          "kind": "assembly",
+          "item": "assembly2",
+          "start_ms": 20000,
+          "end_ms": 40000,
+          "resources": [
+            "W-A",
+            "Assembly"
+          ]
+        },
+        {
+          "kind": "inspection",
+          "item": "assembly2",
+          "start_ms": 40000,
+          "end_ms": 50000,
+          "resources": [
+            "W-Q",
+            "Inspection"
+          ]
+        },
+        {
+          "kind": "assembly",
+          "item": "assembly3",
+          "start_ms": 40000,
+          "end_ms": 60000,
+          "resources": [
+            "W-A",
+            "Assembly"
+          ]
+        },
+        {
+          "kind": "inspection",
+          "item": "assembly3",
+          "start_ms": 60000,
+          "end_ms": 70000,
+          "resources": [
+            "W-Q",
+            "Inspection"
+          ]
+        },
+        {
+          "kind": "packing",
+          "item": "assembly1",
+          "start_ms": 30000,
+          "end_ms": 40000,
+          "resources": [
+            "W-P",
+            "Packing"
+          ]
+        },
+        {
+          "kind": "rework",
+          "item": "assembly2",
+          "start_ms": 60000,
+          "end_ms": 75000,
+          "resources": [
+            "W-A",
+            "Rework"
+          ]
+        },
+        {
+          "kind": "reinspection",
+          "item": "assembly2",
+          "start_ms": 75000,
+          "end_ms": 85000,
+          "resources": [
+            "W-Q",
+            "Inspection"
+          ]
+        },
+        {
+          "kind": "packing",
+          "item": "assembly3",
+          "start_ms": 90000,
+          "end_ms": 100000,
+          "resources": [
+            "W-P",
+            "Packing"
+          ]
+        }
+      ],
+      "events": [
+        {
+          "at_ms": 30000,
+          "item": "assembly1",
+          "decision": "PASS",
+          "destination": "packing"
+        },
+        {
+          "at_ms": 50000,
+          "item": "assembly2",
+          "decision": "FAIL",
+          "destination": "rework"
+        },
+        {
+          "at_ms": 70000,
+          "item": "assembly3",
+          "decision": "UNKNOWN",
+          "destination": "pending_store",
+          "release_inspection_resources": true
+        },
+        {
+          "at_ms": 85000,
+          "item": "assembly2",
+          "decision": "FAIL_after_one_rework",
+          "destination": "isolation_store"
+        },
+        {
+          "at_ms": 90000,
+          "item": "assembly3",
+          "decision": "manual_release_preset",
+          "destination": "packing"
+        },
+        {
+          "at_ms": 100000,
+          "item": "assembly2",
+          "decision": "scrap_preset",
+          "destination": "scrap_record"
+        }
+      ],
+      "expected_inventory": {
+        "packages": 2,
+        "empty_cartons": 1,
+        "pending": 0,
+        "isolated": 0,
+        "scrapped_assemblies": 1
+      },
+      "expected_order": {
+        "demand": 3,
+        "accepted_at_factory_release": 2,
+        "outstanding": 1,
+        "completion_ms": null
+      },
+      "input_consumption": {
+        "shell": 3,
+        "pcb": 3,
+        "fastener": 12,
+        "carton": 2
+      },
+      "expected_quality_at_ms_80": {
+        "pending": [
+          "assembly3"
+        ],
+        "reinspection": [
+          "assembly2"
+        ]
+      },
+      "actual_result": null
+    },
+    {
+      "id": "coarse_full_worker",
+      "family": "refinement",
+      "declared_rule": "single40s_job_requires_worker_fulltime",
+      "expected_completion_ms": null,
+      "reason": "no continuous40s worker interval",
+      "jobs": [],
+      "actual_result": null
+    },
+    {
+      "id": "refined_phases",
+      "family": "refinement",
+      "declared_rule": "load5_auto30_unload5",
+      "expected_completion_ms": 45000,
+      "jobs": [
+        {
+          "kind": "load",
+          "item": "part1",
+          "start_ms": 0,
+          "end_ms": 5000,
+          "resources": [
+            "W-C",
+            "CNC"
+          ]
+        },
+        {
+          "kind": "auto",
+          "item": "part1",
+          "start_ms": 5000,
+          "end_ms": 35000,
+          "resources": [
+            "CNC"
+          ]
+        },
+        {
+          "kind": "wait_for_worker",
+          "item": "part1",
+          "start_ms": 35000,
+          "end_ms": 40000,
+          "resources": [
+            "CNC"
+          ]
+        },
+        {
+          "kind": "unload",
+          "item": "part1",
+          "start_ms": 40000,
+          "end_ms": 45000,
+          "resources": [
+            "W-C",
+            "CNC"
+          ]
+        }
+      ],
+      "reason": "behavior assumption changed; not an appearance-only edit",
+      "actual_result": null
+    }
+  ],
+  "actual_result": null
+}

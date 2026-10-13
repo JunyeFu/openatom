@@ -1,0 +1,261 @@
+{
+  "document_kind": "planned_editor_capabilities_not_callable_api",
+  "status": "design",
+  "schema_revision": "draft-2",
+  "media_kinds": [
+    "image",
+    "image_sequence",
+    "gif",
+    "model",
+    "native_scene"
+  ],
+  "native_primitives": [
+    "box",
+    "cylinder",
+    "plane"
+  ],
+  "timeline": {
+    "clock": "simulation_cycle_progress",
+    "progress_domain": [
+      0,
+      1
+    ],
+    "duration_source": "behavior.duration",
+    "clip_sources": [
+      "image_asset",
+      "gif_segment",
+      "model_animation",
+      "native_pose"
+    ],
+    "image_transitions": [
+      "hold",
+      "crossfade",
+      "pan",
+      "zoom"
+    ],
+    "native_transitions": [
+      "hold",
+      "linear"
+    ],
+    "editor_operations": [
+      "insert_clip",
+      "reorder_clip",
+      "resize_clip_interval",
+      "replace_source",
+      "duplicate_clip",
+      "remove_clip",
+      "preview_loop",
+      "seek_visual",
+      "return_to_live"
+    ],
+    "visual_loop_affects_production": false,
+    "binding_modes": {
+      "cycle_normalized": {
+        "scope": "existing_single_fixed_phase",
+        "duration_source": "behavior.duration",
+        "reorder_effect": "visual_only"
+      },
+      "phase_local": {
+        "scope": "explicit_behavior_phases",
+        "phase_reference": "phase_id",
+        "progress_source": "active_phase.effective_progress",
+        "reorder_scope": "within_bound_phase",
+        "cross_phase_move": "explicit_rebinding_not_behavior_reorder"
+      }
+    },
+    "wait_pose_policy": [
+      {
+        "context": "before_cycle",
+        "pose": "idle",
+        "inventory": "not_claimed_by_job"
+      },
+      {
+        "context": "phase_boundary",
+        "pose": "last_completed_phase_end",
+        "inventory": "held_by_job"
+      },
+      {
+        "context": "active_interruption",
+        "pose": "interruption_position",
+        "disposition": "declared_pause_resume_or_abort"
+      },
+      {
+        "context": "output_wait",
+        "pose": "work_finished",
+        "inventory": "held_until_receiver_accepts"
+      }
+    ],
+    "duration_edit": {
+      "single_fixed_phase": "scale_visual_proportions",
+      "multiple_phases": "edit_declared_scalable_phase_values_only",
+      "unknown_confirmation_duration": "no_invented_global_remaining_time"
+    }
+  },
+  "tag_types": [
+    "data",
+    "parameter",
+    "action",
+    "annotation"
+  ],
+  "anchor_types": [
+    "image_normalized",
+    "scene_node",
+    "viewport"
+  ],
+  "data_bindings": [
+    {
+      "source": "port.available",
+      "value_type": "quantity",
+      "requires": [
+        "port",
+        "unit"
+      ]
+    },
+    {
+      "source": "port.queue",
+      "value_type": "quantity",
+      "requires": [
+        "port",
+        "unit"
+      ]
+    },
+    {
+      "source": "device.cycle.progress",
+      "value_type": "ratio"
+    },
+    {
+      "source": "device.cycle.elapsed",
+      "value_type": "duration",
+      "unit": "second"
+    },
+    {
+      "source": "device.cycle.remaining",
+      "value_type": "duration",
+      "unit": "second"
+    },
+    {
+      "source": "device.state",
+      "value_type": "enum"
+    },
+    {
+      "source": "device.phase",
+      "value_type": "text"
+    },
+    {
+      "source": "device.wait_reason",
+      "value_type": "text"
+    },
+    {
+      "source": "device.completed_output",
+      "value_type": "quantity",
+      "requires": [
+        "port",
+        "unit"
+      ],
+      "meaning": "work_finished_for_selected_output_port_not_receiver_acceptance"
+    },
+    {
+      "source": "parameter",
+      "value_type": "from_parameter_definition",
+      "requires": [
+        "parameter"
+      ]
+    },
+    {
+      "source": "signal.value",
+      "value_type": "from_signal_definition",
+      "requires": [
+        "port"
+      ]
+    },
+    {
+      "source": "active_item.quality_result",
+      "value_type": "enum"
+    },
+    {
+      "source": "active_item.completed_reworks",
+      "value_type": "number"
+    },
+    {
+      "source": "device.accepted_output",
+      "value_type": "quantity",
+      "requires": [
+        "port",
+        "unit"
+      ],
+      "meaning": "receiver_accepted_for_selected_output_port_not_quality_or_customer_acceptance"
+    }
+  ],
+  "device_operations": [
+    {
+      "id": "configure",
+      "effect": "edit_selected_parameter_in_draft",
+      "contexts": [
+        "draft"
+      ],
+      "simulation_view_effect": "open_next_scheme_draft"
+    },
+    {
+      "id": "inspect",
+      "effect": "open_device_state_and_ports",
+      "contexts": [
+        "draft",
+        "isolated_preview",
+        "simulation_view"
+      ]
+    },
+    {
+      "id": "preview_cycle",
+      "effect": "run_isolated_example_when_engine_available",
+      "contexts": [
+        "draft"
+      ],
+      "requires": "implemented_engine_and_supported_behavior"
+    }
+  ],
+  "agent_commands": [
+    "describe_editor",
+    "create_device_draft",
+    "edit_device_draft",
+    "render_device_preview",
+    "preview_device_cycle",
+    "save_device_package",
+    "apply_device_draft"
+  ],
+  "agent_output": "same_module_package_as_human_editor",
+  "implementation_tasks": [
+    "P3-03",
+    "P3-04"
+  ],
+  "authoring": {
+    "reference": "docs/02_交互设计/自定义设备创作与采用.md",
+    "save_does_not_publish": true,
+    "definition_contains_factory_inventory": false,
+    "instance_fields": [
+      "instance_id",
+      "module_id",
+      "module_version",
+      "position",
+      "public_parameter_overrides",
+      "port_bindings",
+      "resource_bindings"
+    ],
+    "adoption": "explicit_selected_instances_with_change_preview",
+    "upgrade_changes": [
+      "visual_only",
+      "behavior_or_parameters",
+      "layout_envelope_or_paths",
+      "ports_or_types"
+    ],
+    "running_edit_effect": "next_scheme_draft_current_execution_unchanged",
+    "result_scope": "executed_scheme_not_latest_library_version",
+    "export_asset_decisions": [
+      "include_if_redistribution_allowed",
+      "reference_missing_asset",
+      "explicit_replacement"
+    ],
+    "current_callable_api": false
+  },
+  "first_release_command_layer": "../commands/command-catalog.design.json",
+  "public_api_policy": "editor_capability_ids_are_features_of_common_commands;not_independent_MCP_servers"
+}

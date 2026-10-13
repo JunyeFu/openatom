@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>超级工厂 · 真实3D表现试样</title>
+  <link rel="stylesheet" href="style.css">
+  <script type="importmap">{"imports":{"three":"./vendor/three.module.js","three/addons/":"./vendor/addons/"}}</script>
+</head>
+<body>
+  <header><strong>超级工厂 · 真实3D表现试样</strong><span>模型表现与负载测试；未接入生产仿真</span></header>
+  <nav><span>工程</span><span>编辑</span><span>视图</span><span>模块</span><span>模拟</span><span>交付</span><span>帮助</span></nav>
+  <div class="toolbar">
+    <button data-scene="device" aria-pressed="true">设备详情</button><button data-scene="line">流水线</button><button data-scene="load">3厂房 / 60设备 / 3000物品</button>
+    <label>精度 <select id="quality"><option value="high">详细</option><option value="low">简化</option></select></label>
+    <button data-view="iso">斜视</button><button data-view="work">工装细节</button><button data-view="front">正面</button><button data-view="back">背面</button><button data-view="top">俯视</button>
+    <label><input id="shadow" type="checkbox" checked>阴影</label>
+    <button id="benchmark">测量10秒</button><button id="save">保存模型、画面与测量</button><button id="reopen">重开导出的GLB</button><button id="record">录制设备动作视频</button>
+  </div>
+  <main>
+    <aside class="tree"><h2>工程对象</h2><p>E01 工厂工程</p><p>　H01 总装厂房</p><button data-device="assembly" aria-pressed="true">ASM01 定位与紧固装配台</button><button data-device="robot">R01 六轴搬运机器人</button><button data-device="conveyor">CV01 输送机</button><button data-device="inspection">V01 相机检验工位</button><button data-device="sealer">CASE01 封箱工位</button><button data-device="pallet">PAL01 成品托盘</button><hr><p class="secondary">鼠标左键旋转<br>滚轮缩放<br>右键平移<br>可查看背面和底部</p></aside>
+    <section class="viewport"><div class="crumb">E01 / H01 / <span id="scene-name">ASM01 定位与紧固装配台</span></div><div id="canvas-wrap"></div><div class="view-foot"><span id="pose">视角</span><span>完整网格 · 无AI图片背景</span></div></section>
+    <aside class="inspector"><h2>属性 / 表现测量</h2><dl><dt>对象</dt><dd id="object-name">装配台</dd><dt>表现分辨率</dt><dd>1920 × 1080 / DPR 1</dd><dt>浏览器帧回调</dt><dd id="fps">等待渲染</dd><dt>三角面 / 当前帧</dt><dd id="triangles">—</dd><dt>绘制调用 / 当前帧</dt><dd id="calls">—</dd><dt>几何缓冲</dt><dd id="geometry-memory">—</dd><dt>纹理缓冲估算</dt><dd id="texture-memory">—</dd><dt>渲染设备</dt><dd id="renderer">—</dd><dt>资源文件</dt><dd id="export-status">尚未导出</dd></dl><p class="secondary">面数和调用包含阴影绘制。缓冲统计不等于进程全部显存。</p><h2>测量结果</h2><pre id="summary">尚未测量</pre></aside>
+  </main>
+  <section class="bottom"><div><strong>设备过程预览</strong><label>　姿态 <input id="phase" type="range" min="0" max="1" step="0.01" value="0"><span id="phase-value">0%</span></label><span class="secondary">　只改变表现，不产生物品或业务事件</span></div><div class="tracks"><span>部件</span><div>滑台、主轴、夹爪的命名节点</div><span>数据</span><div>真实库存与时间轴由后续Rust引擎提供</div></div></section>
+  <footer><span id="status" role="status">初始化真实三维场景…</span><span>自建示意几何与参数 · 非实测设备尺寸</span></footer>
+  <textarea id="metrics-json" aria-label="完整测量JSON" readonly></textarea>
+  <section id="record-result" hidden style="padding:16px"><p>设备部件动作预览 · 24秒 / 1920×1080 / 30帧每秒 · 尚未接业务仿真　<a href="output/device-motion.mp4" download>下载MP4</a></p><video id="record-video" controls preload="metadata" style="width:100%;max-width:1280px"></video></section>
+  <script type="module" src="scene.js"></script>
+</body></html>

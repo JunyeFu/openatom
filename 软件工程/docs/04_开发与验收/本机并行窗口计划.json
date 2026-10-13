@@ -1,0 +1,791 @@
+{
+  "document_kind": "single_owner_local_parallel_window_plan_not_execution",
+  "checkpoint": "S02-03",
+  "updated_at": "2026-10-13 Asia/Shanghai",
+  "checkpoint_change": {
+    "previous_title": "逐任务实际负责人",
+    "current_title": "本机并行窗口切分与协作计划",
+    "authority": "用户明确要求计划本机并行窗口，整个项目由本人负责完成"
+  },
+  "project_owner": {
+    "id": "user",
+    "scope": "whole_project_including_backlog",
+    "responsibilities": [
+      "需求与范围决定",
+      "派发/跨窗口接口变更",
+      "整体集成",
+      "最终验收",
+      "发布及比赛提交"
+    ],
+    "ai_windows_are_team_members": false
+  },
+  "reading_refs": [
+    "AGENTS.md",
+    "docs/00_项目基线/首版交付基线.md",
+    "docs/00_项目基线/首版任务选择.json",
+    "docs/04_开发与验收/任务拆解与依赖.md",
+    "docs/04_开发与验收/本机并行窗口计划.md",
+    "docs/04_开发与验收/完整设计与执行准入.md",
+    "docs/04_开发与验收/任务框架与工量里程碑.json"
+  ],
+  "execution_policy": {
+    "mode": "same_workspace_partitioned_writes",
+    "planned_window_count": 6,
+    "maximum_simultaneously_active_implementation_windows": 5,
+    "integration_window": "W00",
+    "count_basis": "用户明确允许并确认1统筹＋5实施角色；不代表所有时刻均有可用前置或已测得提速",
+    "start_rule": "实际implementation_dependencies产物可用才启动核心切片",
+    "done_rule": "完整release_dependencies/release_acceptance及IX证据齐全，W00核对、用户接收后更新状态",
+    "date_and_work_estimates_checkpoint": "S02-04",
+    "phase_exit_review_checkpoint": "S02-05",
+    "existing_other_windows": "不自动纳入；加入前核对当前未交付改动与归属",
+    "planning_style": "task_deliverable_framework_no_daily_calendar",
+    "daily_capacity_required": false,
+    "material_readiness_before": "2026-10-30T00:00:00+08:00"
+  },
+  "window_roles": [
+    {
+      "id": "W00",
+      "title": "统筹与共同底座",
+      "primary_tasks": [
+        "P0-01",
+        "P0-02",
+        "P0-03",
+        "P5-01"
+      ],
+      "write_roots": [
+        "packages/domain",
+        "packages/commands",
+        "apps/planner/src-tauri",
+        "apps/planner/src/api",
+        "apps/planner/src/shared",
+        "apps/planner/src/host",
+        "docs",
+        "scenarios",
+        "tests/integration",
+        "tools"
+      ],
+      "write_files": [
+        "README.md",
+        "AGENTS.md",
+        "modules/catalog.json",
+        "community/GOVERNANCE.md",
+        "apps/planner/src/App.tsx",
+        "apps/planner/src/main.tsx",
+        "apps/planner/index.html",
+        "tests/README.md"
+      ],
+      "responsibility": "共同类型、宿主/Commands、构建接线、规范场景、任务状态、跨包集成与整体证据",
+      "accountable_owner": "user",
+      "actual_thread_id": null,
+      "dispatch_status": "planned"
+    },
+    {
+      "id": "W01",
+      "title": "生产与物流内核",
+      "primary_tasks": [
+        "P1-01",
+        "P1-02",
+        "P1-03",
+        "P1-04",
+        "P1-05",
+        "P2-02"
+      ],
+      "write_roots": [
+        "packages/simulation",
+        "modules/items",
+        "modules/resources",
+        "modules/tasks",
+        "modules/operations",
+        "modules/transport",
+        "tests/simulation"
+      ],
+      "write_files": [],
+      "responsibility": "唯一Engine、物品/资源/阶段、订单质量与固定时间物流；请求W00共享字段和W03设备声明，W02接入物流界面",
+      "accountable_owner": "user",
+      "actual_thread_id": null,
+      "dispatch_status": "planned"
+    },
+    {
+      "id": "W02",
+      "title": "前端与3D画布",
+      "primary_tasks": [
+        "P2-01",
+        "P2-04",
+        "P2-05"
+      ],
+      "write_roots": [
+        "apps/planner/src/features/factory",
+        "apps/planner/src/features/timeline",
+        "apps/planner/src/features/business",
+        "apps/planner/src/scene",
+        "apps/planner/src/styles",
+        "apps/planner/src/components",
+        "tests/planner"
+      ],
+      "write_files": [],
+      "responsibility": "两画布/三档LOD、完整3D与相机、共同视觉/组件、业务面板/实际时间轴；统一接入其他窗口的独立UI组件",
+      "accountable_owner": "user",
+      "actual_thread_id": null,
+      "dispatch_status": "planned"
+    },
+    {
+      "id": "W03",
+      "title": "模块与设备创作",
+      "primary_tasks": [
+        "P3-01",
+        "P3-02",
+        "P3-03",
+        "P4-01"
+      ],
+      "write_roots": [
+        "packages/module-kit",
+        "packages/presentation",
+        "apps/planner/src/features/modules",
+        "apps/planner/src/features/device-authoring",
+        "modules/devices",
+        "modules/media",
+        "modules/templates",
+        "community/templates",
+        "tests/modules"
+      ],
+      "write_files": [],
+      "responsibility": "九类导入采用、设备编辑/图片时间轴/标签、媒体/原生外观、三模板/纸箱配置；提供展示对象给W02场景容器，不自建另一画布或时钟",
+      "accountable_owner": "user",
+      "actual_thread_id": null,
+      "dispatch_status": "planned"
+    },
+    {
+      "id": "W04",
+      "title": "纸包装专业工程",
+      "primary_tasks": [
+        "P4-02"
+      ],
+      "write_roots": [
+        "packages/packaging",
+        "modules/professional",
+        "apps/planner/src/features/packaging",
+        "tests/packaging"
+      ],
+      "write_files": [],
+      "responsibility": "完整三机制/三变化、三态检查和制造输出；专业工作台独立组件由W02接入，W00四对象/命令接线、W01实际消费",
+      "accountable_owner": "user",
+      "actual_thread_id": null,
+      "dispatch_status": "planned"
+    },
+    {
+      "id": "W05",
+      "title": "Agent与评估交付",
+      "primary_tasks": [
+        "P2-03",
+        "P2-06",
+        "P3-04"
+      ],
+      "write_roots": [
+        "packages/reporting",
+        "apps/mcp-bridge",
+        "integrations/agent",
+        "apps/planner/src/features/agent",
+        "apps/planner/src/features/reporting",
+        "apps/planner/src/features/handoff",
+        ".github",
+        "tests/delivery"
+      ],
+      "write_files": [
+        "community/CONTRIBUTING.md"
+      ],
+      "responsibility": "工程包/重开、同源四格式、真实stdio/命名管道接入同宿主、Agent目标生成/反馈/skills；独立面板由W02接入，公共命令/文件服务交W00",
+      "accountable_owner": "user",
+      "actual_thread_id": null,
+      "dispatch_status": "planned"
+    }
+  ],
+  "write_policy": {
+    "one_writer_per_file": true,
+    "unassigned_new_paths": "W00先指定归属再写；不按release_paths整目录抢写",
+    "shared_contract_owner": "W00",
+    "workspace_control_owner": "W00",
+    "control_file_override": "任何目录内依赖清单/锁文件/构建打包配置及共同类型生成文件由W00写，优先于业务目录分工",
+    "control_basenames": [
+      "Cargo.toml",
+      "Cargo.lock",
+      "package.json",
+      "package-lock.json",
+      "pnpm-lock.yaml",
+      "pnpm-workspace.yaml",
+      "yarn.lock",
+      "bun.lock",
+      "bun.lockb",
+      "tauri.conf.json"
+    ],
+    "additional_control_files": "选定工具的tsconfig/vite/工作区构建配置与自动生成共同类型；由W00登记具体文件，未在本轮选版本或包管理器",
+    "excluded_existing_paths": [
+      "tools/3d-proof"
+    ],
+    "excluded_paths_reason": "原独立3D工作流继续管理；不接管或当产品",
+    "temporary_outputs": "每窗口独立.work/windows/Wxx；构建共享输出默认由W00排队",
+    "path_status": "write范围是计划位置，部分src/tests尚未创建；不代表代码已实现"
+  },
+  "shared_interfaces": [
+    {
+      "id": "engineering_commands",
+      "producer": "W00",
+      "consumers": [
+        "W01",
+        "W02",
+        "W03",
+        "W04",
+        "W05"
+      ],
+      "payload": "同源类型/schema、ID/版本/单位、18操作请求/返回/错误、Windows宿主与局部入口",
+      "shared_type_owner": "W00"
+    },
+    {
+      "id": "run_result",
+      "producer": "W01",
+      "consumers": [
+        "W02",
+        "W04",
+        "W05",
+        "W00"
+      ],
+      "payload": "唯一Engine的实际事件/物品/资源/阶段、RunId/接受结果和输入/验证",
+      "shared_type_owner": "W00"
+    },
+    {
+      "id": "module_adoption_presentation",
+      "producer": "W03",
+      "consumers": [
+        "W01",
+        "W02",
+        "W04",
+        "W05"
+      ],
+      "payload": "九类采用/版本/端口/参数与场景对象/阶段驱动表现；W02消费表现组件，不复制渲染规则",
+      "shared_type_owner": "W00"
+    },
+    {
+      "id": "frontend_composition",
+      "producer": "W02",
+      "consumers": [
+        "W03",
+        "W04",
+        "W05"
+      ],
+      "payload": "共用布局/样式/组件、详情容器、选择/回到画布和真实渲染反馈；业务面板各在独占子目录",
+      "shared_type_owner": "W00"
+    },
+    {
+      "id": "professional_artifact",
+      "producer": "W04",
+      "consumers": [
+        "W00",
+        "W02",
+        "W01",
+        "W05"
+      ],
+      "payload": "专业三态成果/制造层/认可范围与绑定资料；不直接增加库存",
+      "shared_type_owner": "W00"
+    },
+    {
+      "id": "agent_evaluation_handoff",
+      "producer": "W05",
+      "consumers": [
+        "W00",
+        "W02",
+        "W03",
+        "W04",
+        "W01"
+      ],
+      "payload": "真实桥共享命令/修订、Agent草稿/画面/结果和同源四格式/可编辑工程；无第二Engine",
+      "shared_type_owner": "W00"
+    }
+  ],
+  "task_assignments": [
+    {
+      "task_id": "P0-01",
+      "primary_window": "W00",
+      "support_windows": [
+        "W01",
+        "W02",
+        "W03",
+        "W04",
+        "W05"
+      ],
+      "accountable_owner": "user",
+      "scope_source": "selected.scope/release_acceptance/execution_plan",
+      "start_dependency_source": "selected.implementation_dependencies",
+      "acceptance_dependency_source": "selected.release_dependencies",
+      "write_boundary_rule": "本窗口写入区＋W00公共修改；release_paths不授予跨区写权",
+      "status": "planned",
+      "actual_result": null
+    },
+    {
+      "task_id": "P0-02",
+      "primary_window": "W00",
+      "support_windows": [
+        "W01",
+        "W02",
+        "W03"
+      ],
+      "accountable_owner": "user",
+      "scope_source": "selected.scope/release_acceptance/execution_plan",
+      "start_dependency_source": "selected.implementation_dependencies",
+      "acceptance_dependency_source": "selected.release_dependencies",
+      "write_boundary_rule": "本窗口写入区＋W00公共修改；release_paths不授予跨区写权",
+      "status": "planned",
+      "actual_result": null
+    },
+    {
+      "task_id": "P0-03",
+      "primary_window": "W00",
+      "support_windows": [
+        "W04",
+        "W05"
+      ],
+      "accountable_owner": "user",
+      "scope_source": "selected.scope/release_acceptance/execution_plan",
+      "start_dependency_source": "selected.implementation_dependencies",
+      "acceptance_dependency_source": "selected.release_dependencies",
+      "write_boundary_rule": "本窗口写入区＋W00公共修改；release_paths不授予跨区写权",
+      "status": "planned",
+      "actual_result": null
+    },
+    {
+      "task_id": "P1-01",
+      "primary_window": "W01",
+      "support_windows": [
+        "W00",
+        "W02",
+        "W03"
+      ],
+      "accountable_owner": "user",
+      "scope_source": "selected.scope/release_acceptance/execution_plan",
+      "start_dependency_source": "selected.implementation_dependencies",
+      "acceptance_dependency_source": "selected.release_dependencies",
+      "write_boundary_rule": "本窗口写入区＋W00公共修改；release_paths不授予跨区写权",
+      "status": "planned",
+      "actual_result": null
+    },
+    {
+      "task_id": "P1-02",
+      "primary_window": "W01",
+      "support_windows": [
+        "W00",
+        "W02",
+        "W03"
+      ],
+      "accountable_owner": "user",
+      "scope_source": "selected.scope/release_acceptance/execution_plan",
+      "start_dependency_source": "selected.implementation_dependencies",
+      "acceptance_dependency_source": "selected.release_dependencies",
+      "write_boundary_rule": "本窗口写入区＋W00公共修改；release_paths不授予跨区写权",
+      "status": "planned",
+      "actual_result": null
+    },
+    {
+      "task_id": "P1-03",
+      "primary_window": "W01",
+      "support_windows": [
+        "W00",
+        "W02"
+      ],
+      "accountable_owner": "user",
+      "scope_source": "selected.scope/release_acceptance/execution_plan",
+      "start_dependency_source": "selected.implementation_dependencies",
+      "acceptance_dependency_source": "selected.release_dependencies",
+      "write_boundary_rule": "本窗口写入区＋W00公共修改；release_paths不授予跨区写权",
+      "status": "planned",
+      "actual_result": null
+    },
+    {
+      "task_id": "P1-04",
+      "primary_window": "W01",
+      "support_windows": [
+        "W00",
+        "W02"
+      ],
+      "accountable_owner": "user",
+      "scope_source": "selected.scope/release_acceptance/execution_plan",
+      "start_dependency_source": "selected.implementation_dependencies",
+      "acceptance_dependency_source": "selected.release_dependencies",
+      "write_boundary_rule": "本窗口写入区＋W00公共修改；release_paths不授予跨区写权",
+      "status": "planned",
+      "actual_result": null
+    },
+    {
+      "task_id": "P1-05",
+      "primary_window": "W01",
+      "support_windows": [
+        "W00",
+        "W02",
+        "W03"
+      ],
+      "accountable_owner": "user",
+      "scope_source": "selected.scope/release_acceptance/execution_plan",
+      "start_dependency_source": "selected.implementation_dependencies",
+      "acceptance_dependency_source": "selected.release_dependencies",
+      "write_boundary_rule": "本窗口写入区＋W00公共修改；release_paths不授予跨区写权",
+      "status": "planned",
+      "actual_result": null
+    },
+    {
+      "task_id": "P2-01",
+      "primary_window": "W02",
+      "support_windows": [
+        "W00",
+        "W01",
+        "W03"
+      ],
+      "accountable_owner": "user",
+      "scope_source": "selected.scope/release_acceptance/execution_plan",
+      "start_dependency_source": "selected.implementation_dependencies",
+      "acceptance_dependency_source": "selected.release_dependencies",
+      "write_boundary_rule": "本窗口写入区＋W00公共修改；release_paths不授予跨区写权",
+      "status": "planned",
+      "actual_result": null
+    },
+    {
+      "task_id": "P2-02",
+      "primary_window": "W01",
+      "support_windows": [
+        "W00",
+        "W02"
+      ],
+      "accountable_owner": "user",
+      "scope_source": "selected.scope/release_acceptance/execution_plan",
+      "start_dependency_source": "selected.implementation_dependencies",
+      "acceptance_dependency_source": "selected.release_dependencies",
+      "write_boundary_rule": "本窗口写入区＋W00公共修改；release_paths不授予跨区写权",
+      "status": "planned",
+      "actual_result": null
+    },
+    {
+      "task_id": "P2-03",
+      "primary_window": "W05",
+      "support_windows": [
+        "W00",
+        "W02"
+      ],
+      "accountable_owner": "user",
+      "scope_source": "selected.scope/release_acceptance/execution_plan",
+      "start_dependency_source": "selected.implementation_dependencies",
+      "acceptance_dependency_source": "selected.release_dependencies",
+      "write_boundary_rule": "本窗口写入区＋W00公共修改；release_paths不授予跨区写权",
+      "status": "planned",
+      "actual_result": null
+    },
+    {
+      "task_id": "P2-04",
+      "primary_window": "W02",
+      "support_windows": [
+        "W00",
+        "W01"
+      ],
+      "accountable_owner": "user",
+      "scope_source": "selected.scope/release_acceptance/execution_plan",
+      "start_dependency_source": "selected.implementation_dependencies",
+      "acceptance_dependency_source": "selected.release_dependencies",
+      "write_boundary_rule": "本窗口写入区＋W00公共修改；release_paths不授予跨区写权",
+      "status": "planned",
+      "actual_result": null
+    },
+    {
+      "task_id": "P2-05",
+      "primary_window": "W02",
+      "support_windows": [
+        "W00",
+        "W01"
+      ],
+      "accountable_owner": "user",
+      "scope_source": "selected.scope/release_acceptance/execution_plan",
+      "start_dependency_source": "selected.implementation_dependencies",
+      "acceptance_dependency_source": "selected.release_dependencies",
+      "write_boundary_rule": "本窗口写入区＋W00公共修改；release_paths不授予跨区写权",
+      "status": "planned",
+      "actual_result": null
+    },
+    {
+      "task_id": "P2-06",
+      "primary_window": "W05",
+      "support_windows": [
+        "W00",
+        "W02",
+        "W04"
+      ],
+      "accountable_owner": "user",
+      "scope_source": "selected.scope/release_acceptance/execution_plan",
+      "start_dependency_source": "selected.implementation_dependencies",
+      "acceptance_dependency_source": "selected.release_dependencies",
+      "write_boundary_rule": "本窗口写入区＋W00公共修改；release_paths不授予跨区写权",
+      "status": "planned",
+      "actual_result": null
+    },
+    {
+      "task_id": "P3-01",
+      "primary_window": "W03",
+      "support_windows": [
+        "W00",
+        "W02",
+        "W04",
+        "W05"
+      ],
+      "accountable_owner": "user",
+      "scope_source": "selected.scope/release_acceptance/execution_plan",
+      "start_dependency_source": "selected.implementation_dependencies",
+      "acceptance_dependency_source": "selected.release_dependencies",
+      "write_boundary_rule": "本窗口写入区＋W00公共修改；release_paths不授予跨区写权",
+      "status": "planned",
+      "actual_result": null
+    },
+    {
+      "task_id": "P3-02",
+      "primary_window": "W03",
+      "support_windows": [
+        "W00",
+        "W01",
+        "W02"
+      ],
+      "accountable_owner": "user",
+      "scope_source": "selected.scope/release_acceptance/execution_plan",
+      "start_dependency_source": "selected.implementation_dependencies",
+      "acceptance_dependency_source": "selected.release_dependencies",
+      "write_boundary_rule": "本窗口写入区＋W00公共修改；release_paths不授予跨区写权",
+      "status": "planned",
+      "actual_result": null
+    },
+    {
+      "task_id": "P3-03",
+      "primary_window": "W03",
+      "support_windows": [
+        "W00",
+        "W01",
+        "W02"
+      ],
+      "accountable_owner": "user",
+      "scope_source": "selected.scope/release_acceptance/execution_plan",
+      "start_dependency_source": "selected.implementation_dependencies",
+      "acceptance_dependency_source": "selected.release_dependencies",
+      "write_boundary_rule": "本窗口写入区＋W00公共修改；release_paths不授予跨区写权",
+      "status": "planned",
+      "actual_result": null
+    },
+    {
+      "task_id": "P3-04",
+      "primary_window": "W05",
+      "support_windows": [
+        "W00",
+        "W01",
+        "W02",
+        "W03",
+        "W04"
+      ],
+      "accountable_owner": "user",
+      "scope_source": "selected.scope/release_acceptance/execution_plan",
+      "start_dependency_source": "selected.implementation_dependencies",
+      "acceptance_dependency_source": "selected.release_dependencies",
+      "write_boundary_rule": "本窗口写入区＋W00公共修改；release_paths不授予跨区写权",
+      "status": "planned",
+      "actual_result": null
+    },
+    {
+      "task_id": "P4-01",
+      "primary_window": "W03",
+      "support_windows": [
+        "W00",
+        "W01",
+        "W02"
+      ],
+      "accountable_owner": "user",
+      "scope_source": "selected.scope/release_acceptance/execution_plan",
+      "start_dependency_source": "selected.implementation_dependencies",
+      "acceptance_dependency_source": "selected.release_dependencies",
+      "write_boundary_rule": "本窗口写入区＋W00公共修改；release_paths不授予跨区写权",
+      "status": "planned",
+      "actual_result": null
+    },
+    {
+      "task_id": "P4-02",
+      "primary_window": "W04",
+      "support_windows": [
+        "W00",
+        "W01",
+        "W02",
+        "W03",
+        "W05"
+      ],
+      "accountable_owner": "user",
+      "scope_source": "selected.scope/release_acceptance/execution_plan",
+      "start_dependency_source": "selected.implementation_dependencies",
+      "acceptance_dependency_source": "selected.release_dependencies",
+      "write_boundary_rule": "本窗口写入区＋W00公共修改；release_paths不授予跨区写权",
+      "status": "planned",
+      "actual_result": null
+    },
+    {
+      "task_id": "P5-01",
+      "primary_window": "W00",
+      "support_windows": [
+        "W01",
+        "W02",
+        "W03",
+        "W04",
+        "W05"
+      ],
+      "accountable_owner": "user",
+      "scope_source": "selected.scope/release_acceptance/execution_plan",
+      "start_dependency_source": "selected.implementation_dependencies",
+      "acceptance_dependency_source": "selected.release_dependencies",
+      "write_boundary_rule": "本窗口写入区＋W00公共修改；release_paths不授予跨区写权",
+      "status": "planned",
+      "actual_result": null
+    }
+  ],
+  "handoff_fields": [
+    "task_id/internal_step",
+    "changed_files",
+    "consumed_current_interfaces",
+    "actual_inputs_commands_results",
+    "remaining_acceptance_and_dependencies",
+    "requested_cross_window_actions"
+  ],
+  "integration_steps": [
+    "指定有真实前置的切片与明确文件并确认现有修改",
+    "实施窗口只写分区；跨界给W00具体请求",
+    "交付已有工作区增量及真实结果，不重贴旧整文件",
+    "W00接线/验证并通知消费者采用",
+    "主责收齐整项证据；用户接收后登记done"
+  ],
+  "local_operation_policy": {
+    "install_lock_build_package": "W00排队，同输出不能并发清理/重建",
+    "parallel_local_validation": "仅在已确认输出隔离时并行，否则串行",
+    "ports": "实际服务启动前查全局端口注册表；本计划不分配或监听",
+    "git": "当前产品非独立Git根；只按明确路径处理，不在D:/Agent宽泛stage/reset或自动创建worktree",
+    "conflict": "保留双方增量，暂停冲突文件，W00收回写入权修复后归还"
+  },
+  "rounds": [
+    {
+      "id": "R0",
+      "label": "共同底座",
+      "focus": {
+        "W00": "P0-01→P0-02/03",
+        "W01": "读取生产样例",
+        "W02": "准备交互与3D组件设计",
+        "W03": "准备九类/设备/素材样例",
+        "W04": "准备有限包装输入/算法",
+        "W05": "准备桥/工程包/报告契约"
+      },
+      "gate": "前置未可用时只准备独立设计/输入，不登记产品编码闭环"
+    },
+    {
+      "id": "R1",
+      "label": "五条主干",
+      "focus": {
+        "W00": "共享接口/宿主接线",
+        "W01": "P1-01→02→03/05；04局部",
+        "W02": "P2-01→P2-04核心",
+        "W03": "P3-01核心、模板准备",
+        "W04": "P4-02独立核心",
+        "W05": "P0-01后最小桥；读取结果/工程包设计"
+      },
+      "gate": "按每任务implementation_dependencies的真实切片产物，不按整族串行"
+    },
+    {
+      "id": "R2",
+      "label": "实际消费者接入",
+      "focus": {
+        "W00": "类型/入口/规范场景集成",
+        "W01": "P2-02→P1-04/IX-02",
+        "W02": "P2-04/IX-01及P2-05",
+        "W03": "P3-01完整、P3-02/03、P4-01",
+        "W04": "专业认可绑定/制造与工位消费",
+        "W05": "P2-03→P2-06核心，真实Agent工具接入"
+      },
+      "gate": "专业/报告完整验收等待module-kit/P2-06/业务UI等全部release依赖"
+    },
+    {
+      "id": "R3",
+      "label": "闭环与交付",
+      "focus": {
+        "W00": "跨包接口/集成缺陷",
+        "W01": "运行与实际消费者缺陷",
+        "W02": "五个面板与画布一致接入",
+        "W03": "设备/媒体/模板采用缺陷",
+        "W04": "P4-02及IX-03完整验证",
+        "W05": "P2-06及P3-04完整验证"
+      },
+      "gate": "初案达标直交与独立不足例分别验；三机制/三变化/媒体/四格式不删减"
+    },
+    {
+      "id": "R4",
+      "label": "整体与材料",
+      "focus": {
+        "W00": "P5-01/用户接收",
+        "W01": "修真实内核失败",
+        "W02": "真实界面/录像",
+        "W03": "贡献包/模板复现",
+        "W04": "专业失败/制造资料",
+        "W05": "Agent/报告/工程交接与材料"
+      },
+      "gate": "实际17SF/3IX/负载/重开复现，用户最终接收与提交"
+    }
+  ],
+  "actual_execution": {
+    "windows_dispatched_by_this_plan": 0,
+    "actual_windows": [],
+    "parallel_handoff_rehearsal": null,
+    "runtime_result": null,
+    "speedup_measurement": null
+  },
+  "review": {
+    "status": "passed_static_specification",
+    "completion_credit": 1,
+    "evidence_credit": 0.5,
+    "limitations": "静态覆盖与写入划分，不是并行运行/提速/工期或产品完成证明",
+    "static_verification": {
+      "result_ref": "docs/04_开发与验收/主线同步检查结果.json",
+      "planned_roles": 6,
+      "assigned_tasks": 21,
+      "base_write_range_overlap": false,
+      "startup_prompts": 6,
+      "coding_package_drafts": 21,
+      "runtime_execution": false
+    }
+  },
+  "confirmed_user_decisions": {
+    "window_split": "W00底座/W01生产物流/W02前端3D/W03模块设备/W04纸包装/W05Agent评估交付",
+    "design_scope": "首版21项全层完整设计；7后置仅边界",
+    "final_topic_pdf": "S06-05完整设计复审通过后生成最终版，本轮不出最终PDF",
+    "prototype_review": "S04-05由用户实际原型走查，目标用户试用保留S10",
+    "frontend_software": "Figma；用户监督，设计及前端构建需分别明确授权",
+    "work_planning": "不需要日程安排，只需要任务梳理后的框架；工量预算/产物闸门保留"
+  },
+  "frontend_supervision": {
+    "software": "Figma",
+    "software_confirmed_by_user": true,
+    "supervision_owner": "user",
+    "design_start_authorization": null,
+    "frontend_build_authorization": null,
+    "approved_figma_artifact": null,
+    "rule": "在用户监督下使用Figma完成前端设计/原型与设计到代码；未经用户明确授权不得创建/修改Figma设计、制作前端原型或开始前端构建/编码。已授权批次内继续，不为每个小改反复询问。",
+    "applies_to_windows": [
+      "W00",
+      "W02",
+      "W03",
+      "W04",
+      "W05"
+    ],
+    "applies_to": "根前端入口、画布/组件/样式、设备/专业/Agent/报告/接手所有面板，不可绕道其他窗口",
+    "backend_only_rule": "仅在完整设计/执行准入及用户任务授权后，纯后端工作可按自身前置推进；不代替前端批准",
+    "current_status": "software_selected_no_design_or_build_authorized",
+    "figma_shared_design_owner": "W02_under_user_supervision",
+    "approved_file_and_node_ids": null,
+    "shared_design_rule": "W02统筹同一批准Figma设计与组件/节点，其他面板窗口按批准范围采用，不另造相互冲突的设计体系。"
+  },
+  "startup_prompt_index_ref": "docs/04_开发与验收/窗口启动提示词/README.md",
+  "coding_protocol_ref": "docs/04_开发与验收/编码任务包与AI实现审查.md",
+  "coding_package_index_ref": "docs/04_开发与验收/编码任务包/任务包索引.json",
+  "effort_framework_ref": "docs/04_开发与验收/任务框架与工量里程碑.json",
+  "effort_framework_review_ref": "docs/04_开发与验收/S02-04_工量与成果里程碑复审.json",
+  "stage_exit_contract_ref": "docs/04_开发与验收/阶段实现计划.json"
+}

@@ -1,0 +1,305 @@
+{
+  "document_kind": "hand_derived_expectations_not_executed",
+  "basis": "声明工时的手工事件推导；需P1/P2实际运行再验证",
+  "observation_end": 240,
+  "project": "project.design.json",
+  "variants_file": "variants.design.json",
+  "variants": [
+    {
+      "id": "A",
+      "expected_events": [
+        {
+          "time": 0,
+          "kind": "assembly_start",
+          "target": "ASM-01",
+          "inputs": [
+            "shell-001",
+            "pcb-001"
+          ],
+          "resource": "worker-assembly"
+        },
+        {
+          "time": 60,
+          "kind": "assembly_complete",
+          "target": "ASM-01",
+          "result": "assembly-001",
+          "components": [
+            "shell-001",
+            "pcb-001"
+          ],
+          "location": "assemblies-A"
+        },
+        {
+          "time": 60,
+          "kind": "loading_start",
+          "target": "SUP-AB",
+          "cargo": [
+            "assembly-001"
+          ],
+          "reserved_at": "assemblies-A",
+          "resource": "worker-transport"
+        },
+        {
+          "time": 60,
+          "kind": "assembly_wait",
+          "target": "ASM-01",
+          "reason": "缺PCB，剩余壳体1件"
+        },
+        {
+          "time": 70,
+          "kind": "shipment_depart",
+          "target": "SUP-AB",
+          "cargo": [
+            "assembly-001"
+          ]
+        },
+        {
+          "time": 100,
+          "kind": "shipment_arrive",
+          "target": "SUP-AB",
+          "cargo": [
+            "assembly-001"
+          ],
+          "state": "unloading"
+        },
+        {
+          "time": 110,
+          "kind": "shipment_receive",
+          "target": "SUP-AB",
+          "cargo": [
+            "assembly-001"
+          ],
+          "location": "assemblies-B"
+        },
+        {
+          "time": 110,
+          "kind": "pack_start",
+          "target": "PACK-01",
+          "content": "assembly-001",
+          "carton": "carton-001"
+        },
+        {
+          "time": 125,
+          "kind": "pack_complete",
+          "target": "PACK-01",
+          "result": "package-001",
+          "contents": [
+            "assembly-001"
+          ],
+          "location": "packages-B"
+        },
+        {
+          "time": 140,
+          "kind": "carrier_returned",
+          "target": "SUP-AB",
+          "resource": "worker-transport",
+          "location": "H-A"
+        }
+      ],
+      "expected_available_at_end": {
+        "shells-A": 1,
+        "pcbs-A": 0,
+        "assemblies-A": 0,
+        "assemblies-B": 0,
+        "cartons-B": 1,
+        "packages-B": 1
+      },
+      "expected_received": 1,
+      "expected_in_transit": 0,
+      "expected_order_remaining": 1,
+      "actual_result": null
+    },
+    {
+      "id": "B",
+      "expected_events": [
+        {
+          "time": 0,
+          "kind": "assembly_start",
+          "target": "ASM-01",
+          "inputs": [
+            "shell-001",
+            "pcb-001"
+          ],
+          "resource": "worker-assembly"
+        },
+        {
+          "time": 60,
+          "kind": "assembly_complete",
+          "target": "ASM-01",
+          "result": "assembly-001",
+          "components": [
+            "shell-001",
+            "pcb-001"
+          ],
+          "location": "assemblies-A"
+        },
+        {
+          "time": 60,
+          "kind": "loading_start",
+          "target": "SUP-AB",
+          "cargo": [
+            "assembly-001"
+          ],
+          "reserved_at": "assemblies-A",
+          "resource": "worker-transport"
+        },
+        {
+          "time": 60,
+          "kind": "assembly_start",
+          "target": "ASM-01",
+          "inputs": [
+            "shell-002",
+            "pcb-002"
+          ],
+          "resource": "worker-assembly"
+        },
+        {
+          "time": 70,
+          "kind": "shipment_depart",
+          "target": "SUP-AB",
+          "cargo": [
+            "assembly-001"
+          ]
+        },
+        {
+          "time": 100,
+          "kind": "shipment_arrive",
+          "target": "SUP-AB",
+          "cargo": [
+            "assembly-001"
+          ],
+          "state": "unloading"
+        },
+        {
+          "time": 110,
+          "kind": "shipment_receive",
+          "target": "SUP-AB",
+          "cargo": [
+            "assembly-001"
+          ],
+          "location": "assemblies-B"
+        },
+        {
+          "time": 110,
+          "kind": "pack_start",
+          "target": "PACK-01",
+          "content": "assembly-001",
+          "carton": "carton-001"
+        },
+        {
+          "time": 120,
+          "kind": "assembly_complete",
+          "target": "ASM-01",
+          "result": "assembly-002",
+          "components": [
+            "shell-002",
+            "pcb-002"
+          ],
+          "location": "assemblies-A"
+        },
+        {
+          "time": 120,
+          "kind": "transport_wait",
+          "target": "SUP-AB",
+          "cargo": [
+            "assembly-002"
+          ],
+          "reason": "运输资源返程中，尚不可用于下一批"
+        },
+        {
+          "time": 125,
+          "kind": "pack_complete",
+          "target": "PACK-01",
+          "result": "package-001",
+          "contents": [
+            "assembly-001"
+          ],
+          "location": "packages-B"
+        },
+        {
+          "time": 140,
+          "kind": "carrier_returned",
+          "target": "SUP-AB",
+          "resource": "worker-transport",
+          "location": "H-A"
+        },
+        {
+          "time": 140,
+          "kind": "loading_start",
+          "target": "SUP-AB",
+          "cargo": [
+            "assembly-002"
+          ],
+          "reserved_at": "assemblies-A",
+          "resource": "worker-transport"
+        },
+        {
+          "time": 150,
+          "kind": "shipment_depart",
+          "target": "SUP-AB",
+          "cargo": [
+            "assembly-002"
+          ]
+        },
+        {
+          "time": 180,
+          "kind": "shipment_arrive",
+          "target": "SUP-AB",
+          "cargo": [
+            "assembly-002"
+          ],
+          "state": "unloading"
+        },
+        {
+          "time": 190,
+          "kind": "shipment_receive",
+          "target": "SUP-AB",
+          "cargo": [
+            "assembly-002"
+          ],
+          "location": "assemblies-B"
+        },
+        {
+          "time": 190,
+          "kind": "pack_start",
+          "target": "PACK-01",
+          "content": "assembly-002",
+          "carton": "carton-002"
+        },
+        {
+          "time": 205,
+          "kind": "pack_complete",
+          "target": "PACK-01",
+          "result": "package-002",
+          "contents": [
+            "assembly-002"
+          ],
+          "location": "packages-B"
+        },
+        {
+          "time": 220,
+          "kind": "carrier_returned",
+          "target": "SUP-AB",
+          "resource": "worker-transport",
+          "location": "H-A"
+        }
+      ],
+      "expected_available_at_end": {
+        "shells-A": 0,
+        "pcbs-A": 0,
+        "assemblies-A": 0,
+        "assemblies-B": 0,
+        "cartons-B": 0,
+        "packages-B": 2
+      },
+      "expected_received": 2,
+      "expected_in_transit": 0,
+      "expected_order_remaining": 0,
+      "actual_result": null
+    }
+  ],
+  "quantity_bound": "可装盒数量不超过min(可用壳体,可用PCB,可用空盒)，并同时受作业及运输时间/资源/容量限制",
+  "first_package_derivation": "60+10+30+10+15=125秒",
+  "second_package_derivation": "第二件120秒完成，搬运人员140秒返程结束；140+10+30+10+15=205秒",
+  "carrier_wait_derivation": "140-120=20秒；仅是B方案第二件等待运输资源的示意时段"
+}

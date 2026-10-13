@@ -1,0 +1,167 @@
+{
+  "document_kind": "industry_site_generation_profile_design_not_runtime",
+  "industry": "paper_carton_manufacturing",
+  "product_family": "die_cut_fold_glued_paper_carton",
+  "site_unit": "m",
+  "product_geometry_unit": "mm",
+  "goal_fields": [
+    "daily_accepted_quantity",
+    "quantity_unit",
+    "acceptance_scope",
+    "production_day_calendar",
+    "observation_window",
+    "site_length_m",
+    "site_width_m",
+    "site_height_m"
+  ],
+  "parameter_sources": [
+    "user_provided",
+    "module_declared",
+    "template_declared_example",
+    "unknown_requires_input"
+  ],
+  "layout_patterns": [
+    "straight_line",
+    "u_shape",
+    "parallel_lines"
+  ],
+  "layout_rules": [
+    "fit_hall_envelope_and_height",
+    "use_declared_footprint_not_display_scale",
+    "reserve_declared_loading_maintenance_and_transport_spaces",
+    "preserve_internal_port_connections_when_copying_line"
+  ],
+  "process_graph": {
+    "entry": "purchased_board_arrival",
+    "stages": [
+      {
+        "id": "printing",
+        "optional": true,
+        "input": "board",
+        "output": "ready_board"
+      },
+      {
+        "id": "die_cut",
+        "input": "board_or_ready_board",
+        "output": "carton_blank"
+      },
+      {
+        "id": "fold_glue",
+        "input": "carton_blank",
+        "output": "carton"
+      },
+      {
+        "id": "inspect",
+        "input": "carton",
+        "output": "released_or_rework_or_quarantined_carton"
+      },
+      {
+        "id": "bundle",
+        "input": "released_carton",
+        "output": "bundle_preserving_carton_content"
+      }
+    ],
+    "destination": "finished_carton_acceptance_store",
+    "target_measure": "accepted_released_carton_count_not_bundle_count",
+    "upstream_board_manufacturing": "not_in_this_profile"
+  },
+  "nine_category_roles": {
+    "items": [
+      "board",
+      "ready_board",
+      "carton_blank",
+      "carton",
+      "bundle",
+      "waste"
+    ],
+    "devices": [
+      "printing_optional",
+      "die_cut",
+      "fold_glue",
+      "inspection",
+      "bundling",
+      "buffer_transfer"
+    ],
+    "resources": [
+      "operators",
+      "tools",
+      "vehicle_if_selected"
+    ],
+    "tasks": [
+      "setup",
+      "loading_unloading",
+      "supported_rework"
+    ],
+    "operations": [
+      "declared_transform",
+      "inspection_split",
+      "bundle_content_relation"
+    ],
+    "transport": [
+      "internal_transfer_and_finished_goods_supply"
+    ],
+    "templates": [
+      "hall_line_groups_and_site_layout"
+    ],
+    "professional": [
+      "paper_structure_and_manufacturing_artifact_if_required"
+    ],
+    "media": [
+      "declared_native_geometry_or_permitted_assets"
+    ]
+  },
+  "must_resolve_before_evaluation": [
+    "product_specification_and_bom",
+    "stage_cycle_time_and_units_per_cycle",
+    "machine_footprint_height_and_clearance",
+    "operators_and_calendars",
+    "arrival_and_transfer_conditions",
+    "quality_input_source_and_policy",
+    "observation_window_and_acceptance_scope"
+  ],
+  "goal_bindings": [
+    {
+      "from": "goal.daily_accepted_quantity",
+      "to": "demand.quantity"
+    },
+    {
+      "from": "goal.site_dimensions",
+      "to": "hall.envelope"
+    },
+    {
+      "from": "resolved.calendar",
+      "to": "resource_calendars_and_observation_window"
+    }
+  ],
+  "forbidden_bindings": [
+    "goal.daily_accepted_quantity_to_result.accepted_quantity"
+  ],
+  "initial_machine_sizing": "ceil(Q * stage_cycle_seconds / (effective_stage_seconds * equivalent_cartons_per_cycle)); optimistic bound only",
+  "initial_stock_policy": "do_not_copy_template_runtime_stock; generate explicit sourced_supply_assumptions",
+  "example_goal": {
+    "text": "日产一万个纸箱并提供场地长宽高",
+    "daily_accepted_quantity": 10000,
+    "site_dimensions": null,
+    "production_day_calendar": null,
+    "actual_result": null
+  },
+  "ready_for_runtime": false,
+  "actual_result": null,
+  "product_scope_note": "selected die-cut/fold-glued carton family; confirm actual carton specification and route before generation, not every carton type",
+  "site_coordinate_binding": {
+    "user_length_m": "hall.width_m (X)",
+    "user_width_m": "hall.depth_m (Y)",
+    "user_height_m": "hall.height_m (Z)",
+    "note": "existing hall width_m/depth_m naming retained; user L/W labels do not swap product dimensions"
+  },
+  "generic_goal_field_mapping": {
+    "daily_accepted_quantity": "accepted_quantity_per_day",
+    "quantity_unit": "accepted_unit",
+    "acceptance_scope": "acceptance_scope",
+    "production_day_calendar": "production_calendar_ref",
+    "observation_window": "observation_window",
+    "site_length_m": "site_envelope.length",
+    "site_width_m": "site_envelope.width",
+    "site_height_m": "site_envelope.height"
+  }
+}

@@ -1,0 +1,522 @@
+{
+  "document_kind": "factory_project_design_not_runtime_input",
+  "schema_revision": "draft-2-case",
+  "id": "factory-build-control-box",
+  "title": "从空工程搭建控制盒厂房",
+  "status": "design",
+  "actual_result": null,
+  "assumptions": [
+    "所有工时、尺寸、容量、到料与检验结果均为自建演示输入",
+    "声明过程，无NC求解，无真实检验模型",
+    "工位间移交除小车外均瞬时；不计算隐含步行",
+    "phases是拟议扩展；既有样例未声称已经支持"
+  ],
+  "time": {
+    "unit": "millisecond",
+    "origin": "scenario_start",
+    "observation_end": 600000
+  },
+  "demand": {
+    "item_type": "package",
+    "quantity": 6,
+    "unit": "piece",
+    "destination": "finished"
+  },
+  "item_types": [
+    {
+      "id": "blank",
+      "unit": "piece"
+    },
+    {
+      "id": "shell",
+      "unit": "piece"
+    },
+    {
+      "id": "pcb",
+      "unit": "piece"
+    },
+    {
+      "id": "fastener",
+      "unit": "piece"
+    },
+    {
+      "id": "assembly",
+      "unit": "piece"
+    },
+    {
+      "id": "carton",
+      "unit": "piece"
+    },
+    {
+      "id": "package",
+      "unit": "piece"
+    }
+  ],
+  "module_refs": [
+    {
+      "id": "community.fixed-transform",
+      "version": "0.1.0",
+      "manifest": "../../modules/devices/fixed-transform/manifest.json",
+      "status": "declaration_design"
+    },
+    {
+      "id": "community.control-box-assembly",
+      "version": "0.1.0",
+      "manifest": "../../modules/devices/control-box-assembly/manifest.json",
+      "status": "declaration_design"
+    },
+    {
+      "id": "community.inspect-route",
+      "version": "0.1.0",
+      "manifest": "../../modules/devices/inspect-route/manifest.json",
+      "status": "declaration_design"
+    },
+    {
+      "id": "community.identity-rework",
+      "version": "0.1.0",
+      "manifest": "../../modules/devices/identity-rework/manifest.json",
+      "status": "declaration_design"
+    },
+    {
+      "id": "community.carton-pack",
+      "version": "0.1.0",
+      "manifest": "../../modules/devices/carton-pack/manifest.json",
+      "status": "declaration_design"
+    },
+    {
+      "id": "community.batch-transport",
+      "version": "0.1.0",
+      "manifest": "../../modules/transport/batch-transport/manifest.json",
+      "status": "declaration_design"
+    }
+  ],
+  "halls": [
+    {
+      "id": "H1",
+      "width_m": 24,
+      "depth_m": 16
+    }
+  ],
+  "resources": [
+    {
+      "id": "W-C",
+      "kind": "worker",
+      "calendar_ms": [
+        [
+          0,
+          600000
+        ]
+      ],
+      "capacity": 1
+    },
+    {
+      "id": "W-A",
+      "kind": "worker",
+      "calendar_ms": [
+        [
+          0,
+          600000
+        ]
+      ],
+      "capacity": 1
+    },
+    {
+      "id": "W-B",
+      "kind": "worker",
+      "calendar_ms": [
+        [
+          0,
+          600000
+        ]
+      ],
+      "capacity": 1
+    },
+    {
+      "id": "T1",
+      "kind": "mobile_cart",
+      "capacity": 1,
+      "calendar_ms": [
+        [
+          0,
+          600000
+        ]
+      ]
+    }
+  ],
+  "stores": [
+    {
+      "id": "receiving",
+      "hall": "H1",
+      "item_type": "blank",
+      "capacity": 6,
+      "unit": "piece"
+    },
+    {
+      "id": "shell-buffer",
+      "hall": "H1",
+      "item_type": "shell",
+      "capacity": 2,
+      "unit": "piece"
+    },
+    {
+      "id": "pcb-store",
+      "hall": "H1",
+      "item_type": "pcb",
+      "capacity": 6,
+      "unit": "piece"
+    },
+    {
+      "id": "fastener-store",
+      "hall": "H1",
+      "item_type": "fastener",
+      "capacity": 24,
+      "unit": "piece"
+    },
+    {
+      "id": "carton-store",
+      "hall": "H1",
+      "item_type": "carton",
+      "capacity": 6,
+      "unit": "piece"
+    },
+    {
+      "id": "finished",
+      "hall": "H1",
+      "item_type": "package",
+      "capacity": 6,
+      "unit": "piece"
+    }
+  ],
+  "initial_stock": [
+    {
+      "store": "receiving",
+      "item_type": "blank",
+      "quantity": 6,
+      "ids": [
+        "blank001",
+        "blank002",
+        "blank003",
+        "blank004",
+        "blank005",
+        "blank006"
+      ]
+    },
+    {
+      "store": "pcb-store",
+      "item_type": "pcb",
+      "quantity": 3,
+      "ids": [
+        "pcb001",
+        "pcb002",
+        "pcb003"
+      ]
+    },
+    {
+      "store": "fastener-store",
+      "item_type": "fastener",
+      "quantity": 24
+    },
+    {
+      "store": "carton-store",
+      "item_type": "carton",
+      "quantity": 6
+    }
+  ],
+  "arrivals": [
+    {
+      "id": "pcb-batch2",
+      "store": "pcb-store",
+      "at_ms": 240000,
+      "item_type": "pcb",
+      "quantity": 3,
+      "ids": [
+        "pcb004",
+        "pcb005",
+        "pcb006"
+      ]
+    }
+  ],
+  "devices": [
+    {
+      "id": "CNC01",
+      "kind": "fixed",
+      "module": "community.fixed-transform",
+      "process_mode": "declared_process",
+      "input": {
+        "blank": 1
+      },
+      "output": {
+        "shell": 1
+      },
+      "job_resources": [
+        "CNC01"
+      ],
+      "phases": [
+        {
+          "id": "load",
+          "duration_ms": 10000,
+          "phase_resources": [
+            "W-C"
+          ]
+        },
+        {
+          "id": "auto",
+          "duration_ms": 45000,
+          "phase_resources": []
+        },
+        {
+          "id": "unload",
+          "duration_ms": 5000,
+          "phase_resources": [
+            "W-C"
+          ]
+        }
+      ],
+      "hold_on_output_wait": [
+        "CNC01"
+      ],
+      "artifact_ref": "job-self-cnc",
+      "layout_m": [
+        4,
+        8
+      ],
+      "parameters": {
+        "input_item": "blank",
+        "output_item": "shell",
+        "cycle_seconds": 60
+      }
+    },
+    {
+      "id": "Assembly01",
+      "kind": "fixed",
+      "module": "community.control-box-assembly",
+      "inputs": {
+        "shell": 1,
+        "pcb": 1,
+        "fastener": 4
+      },
+      "output": {
+        "assembly": 1
+      },
+      "duration_ms": 40000,
+      "job_resources": [
+        "Assembly01",
+        "W-A"
+      ],
+      "priority": 0,
+      "layout_m": [
+        12,
+        8
+      ],
+      "parameters": {
+        "cycle_seconds": 40
+      },
+      "resource_bindings": {
+        "assembler": "W-A"
+      }
+    },
+    {
+      "id": "Inspection01",
+      "kind": "fixed",
+      "module": "community.inspect-route",
+      "input": "assembly",
+      "routes": {
+        "PASS": "Packing01",
+        "FAIL": "Rework01"
+      },
+      "duration_ms": 10000,
+      "job_resources": [
+        "Inspection01",
+        "W-B"
+      ],
+      "quality_source": "preset_sequence",
+      "layout_m": [
+        15,
+        8
+      ],
+      "parameters": {
+        "cycle_seconds": 10,
+        "max_reworks": 1
+      },
+      "resource_bindings": {
+        "inspector": "W-B"
+      }
+    },
+    {
+      "id": "Rework01",
+      "kind": "fixed",
+      "module": "community.identity-rework",
+      "input": "assembly",
+      "output_same_identity": true,
+      "destination": "Inspection01",
+      "duration_ms": 20000,
+      "job_resources": [
+        "Rework01",
+        "W-A"
+      ],
+      "priority": 1,
+      "max_reworks": 1,
+      "layout_m": [
+        15,
+        4
+      ]
+    },
+    {
+      "id": "Packing01",
+      "kind": "fixed",
+      "module": "community.carton-pack",
+      "inputs": {
+        "assembly": 1,
+        "carton": 1
+      },
+      "output": {
+        "package": 1
+      },
+      "content_identity_preserved": true,
+      "duration_ms": 20000,
+      "job_resources": [
+        "Packing01",
+        "W-B"
+      ],
+      "layout_m": [
+        18,
+        8
+      ],
+      "input_quality": {
+        "assembly": "released"
+      },
+      "parameters": {
+        "cycle_seconds": 20
+      },
+      "resource_bindings": {
+        "packer": "W-B"
+      }
+    }
+  ],
+  "transport": [
+    {
+      "id": "transfer-shell",
+      "source": "CNC01",
+      "destination": "shell-buffer",
+      "item_type": "shell",
+      "batch": 1,
+      "resource": "T1",
+      "travel_ms": 10000,
+      "return_ms": 5000,
+      "hold_on_receive_wait": true
+    }
+  ],
+  "quality_inputs": [
+    {
+      "assembly": "assembly003",
+      "results": [
+        "FAIL",
+        "PASS"
+      ]
+    }
+  ],
+  "quality_default": "PASS",
+  "connections": [
+    {
+      "kind": "material",
+      "from": "receiving",
+      "to": "CNC01",
+      "item_type": "blank"
+    },
+    {
+      "kind": "material",
+      "from": "CNC01",
+      "to": "transfer-shell",
+      "item_type": "shell"
+    },
+    {
+      "kind": "material",
+      "from": "shell-buffer",
+      "to": "Assembly01",
+      "item_type": "shell"
+    },
+    {
+      "kind": "material",
+      "from": "pcb-store",
+      "to": "Assembly01",
+      "item_type": "pcb"
+    },
+    {
+      "kind": "material",
+      "from": "fastener-store",
+      "to": "Assembly01",
+      "item_type": "fastener"
+    },
+    {
+      "kind": "material",
+      "from": "Assembly01",
+      "to": "Inspection01",
+      "item_type": "assembly"
+    },
+    {
+      "kind": "signal",
+      "from": "Inspection01.result",
+      "to": "Inspection01.route",
+      "type": "enum",
+      "values": [
+        "PASS",
+        "FAIL"
+      ]
+    },
+    {
+      "kind": "material",
+      "from": "Inspection01.passed",
+      "to": "Packing01",
+      "item_type": "assembly"
+    },
+    {
+      "kind": "material",
+      "from": "Inspection01.rework",
+      "to": "Rework01",
+      "item_type": "assembly"
+    },
+    {
+      "kind": "material",
+      "from": "Rework01",
+      "to": "Inspection01",
+      "item_type": "assembly"
+    },
+    {
+      "kind": "material",
+      "from": "carton-store",
+      "to": "Packing01",
+      "item_type": "carton"
+    },
+    {
+      "kind": "material",
+      "from": "Packing01",
+      "to": "finished",
+      "item_type": "package"
+    },
+    {
+      "kind": "artifact",
+      "from": "job-self-cnc",
+      "to": "CNC01.job",
+      "artifact_type": "machining_job.design"
+    }
+  ],
+  "handoff": {
+    "kind": "design_package",
+    "actual_result": null,
+    "unsupported": [
+      "NC toolpath solver",
+      "industrial inspection accuracy",
+      "real 3D device files"
+    ]
+  },
+  "output_receiving": {
+    "stations": [
+      "CNC01",
+      "Assembly01",
+      "Inspection01",
+      "Rework01"
+    ],
+    "capacity_each": 6,
+    "instant_transfer_except": "T1"
+  }
+}

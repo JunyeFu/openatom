@@ -1,0 +1,83 @@
+{
+  "document_kind": "draft_contract_design_not_runtime_api",
+  "schema_revision": "draft-1",
+  "endpoint_fields": [
+    "module_id",
+    "module_version",
+    "instance_id",
+    "port_id"
+  ],
+  "connections": {
+    "material": {
+      "fields": [
+        "item_type",
+        "unit",
+        "quantity_rule",
+        "destination_store",
+        "capacity_rule"
+      ],
+      "effect": "physical ownership transfer"
+    },
+    "signal": {
+      "fields": [
+        "direction",
+        "value_type",
+        "enum_values",
+        "effect_target"
+      ],
+      "effect": "information only"
+    },
+    "artifact": {
+      "fields": [
+        "artifact_type",
+        "schema_version",
+        "unit",
+        "coordinate_frame",
+        "supported_scope",
+        "status",
+        "accepted_scope",
+        "content_ref",
+        "calculation_result"
+      ],
+      "effect": "accepted job or engineering condition"
+    }
+  },
+  "resource_phases": {
+    "optional": true,
+    "legacy_behavior": "single phase; resources held for whole job",
+    "fields": [
+      "job_resources",
+      "phases",
+      "phase_resources",
+      "duration_ms",
+      "hold_on_output_wait"
+    ]
+  },
+  "time": {
+    "canonical": "relative millisecond",
+    "event_order": [
+      "completion and arrival",
+      "commit and unblock",
+      "resource acquisition and start"
+    ],
+    "actual_result": null
+  },
+  "sample_artifact": {
+    "id": "job-self-cnc",
+    "artifact_type": "machining_job.design",
+    "schema_version": 1,
+    "unit": "mm",
+    "coordinate_frame": "machine-local",
+    "supported_scope": "nominal self-built geometry and declared duration",
+    "status": "accepted",
+    "accepted_scope": "declared_process_only",
+    "content_ref": "self-built control box example",
+    "calculation_result": null,
+    "phase_durations_ms": [
+      10000,
+      45000,
+      5000
+    ]
+  },
+  "business_rules_ref": "business-objects.design.json"
+}

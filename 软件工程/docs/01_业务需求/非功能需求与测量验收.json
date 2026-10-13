@@ -1,0 +1,544 @@
+{
+  "document_kind": "S03_04_normative_nonfunctional_requirement_and_measurement_design_not_runtime",
+  "checkpoint": "S03-04",
+  "date": "2026-10-13 Asia/Shanghai",
+  "spec_md_ref": "docs/01_业务需求/非功能需求与测量验收.md",
+  "inherited_quality_source_ref": "docs/00_项目基线/首版需求与验收.md",
+  "source_read_position": "性能与质量目标表及基准机器说明",
+  "confirmed_load_source_ref": "docs/00_项目基线/首版交付基线.md",
+  "benchmark_ref": "scenarios/非功能基准/benchmark.design.json",
+  "machine_ref": "scenarios/非功能基准/machine-baseline.json",
+  "sample_examples_ref": "scenarios/非功能基准/统计判定例.design.json",
+  "review_ref": "docs/04_开发与验收/S03-04_可测量非功能需求复审.json",
+  "scope": "继承已写的3厂房/60固定设备/3000件、中位FPS≥30、响应p95≤200ms、目录保存/打开各≤3秒；仅补可执行环境/采样/起止/判定，功能/21任务/18操作与S03-01正文不变",
+  "numeric_targets": {
+    "halls": 3,
+    "devices": 60,
+    "tracked_items": 3000,
+    "canvas_css_px": [
+      1920,
+      1080
+    ],
+    "median_fps_gte": 30,
+    "p95_editor_visible_ms_lte": 200,
+    "save_each_ms_lte": 3000,
+    "open_each_ms_lte": 3000
+  },
+  "requirements": [
+    {
+      "id": "NFR-01",
+      "title": "基准负载/画面与环境一致",
+      "delivery_owners": [
+        "W00",
+        "W01",
+        "W02",
+        "W03"
+      ],
+      "review_owner": "user_W00",
+      "related_SF": [
+        "SF-01",
+        "SF-03",
+        "SF-08"
+      ],
+      "implementation_tasks": [
+        "P0-01",
+        "P1-01",
+        "P2-01",
+        "P3-02",
+        "P5-01"
+      ],
+      "preconditions": [
+        "NFR-B60已映射真实工程；当前候选、固定本地素材和机器记录齐备"
+      ],
+      "procedure": [
+        "分别打开balanced和dense负载，核对3厂房/60设备/3000独立身份；balanced当前厅20台、dense当前厅60台",
+        "记录实际GPU/加速/会话、release候选/WebView2、素材统计及画布截图；统一参考画布CSS1920×1080、DPR1、Windows100%缩放",
+        "普通编辑/运行在同一工程状态；采样前固定电源状态和后台负载，记录是否同时运行AI/录屏/DevTools"
+      ],
+      "measurement": {
+        "reference_canvas_css_px": [
+          1920,
+          1080
+        ],
+        "reference_dpr": 1,
+        "halls": 3,
+        "fixed_devices": 60,
+        "tracked_items": 3000,
+        "diagnostics": [
+          "private_working_set",
+          "native_asset_bytes",
+          "triangles/textures/draw_calls",
+          "actual visible device/token counts"
+        ]
+      },
+      "acceptance": {
+        "rule": "身份/设备/厂房、素材版本和环境可核对；DPR/素材/可见数不能靠未声明降级满足其他指标；缺必要条件则本基准not_evaluable",
+        "no_new_memory_or_asset_limit": true
+      },
+      "limits": "设计负载不是当前可运行工程；硬件列举不是性能；资源/订单/批次/动画数与物品身份数分开；本次不推断最低配置。",
+      "actual_result": null,
+      "runtime_status": "not_executed"
+    },
+    {
+      "id": "NFR-02",
+      "title": "画布中位帧率",
+      "delivery_owners": [
+        "W02",
+        "W03"
+      ],
+      "review_owner": "user_W00",
+      "related_SF": [
+        "SF-03",
+        "SF-08",
+        "SF-10"
+      ],
+      "implementation_tasks": [
+        "P2-01",
+        "P3-02",
+        "P3-03",
+        "P5-01"
+      ],
+      "preconditions": [
+        "NFR-01通过且真实画面具备；前台窗口始终可见，固定场景/资产/LOD"
+      ],
+      "procedure": [
+        "对两个负载各测详细/简化/区域，分别测固定相机的运行过程和暂停后的固定相机运动脚本；多厂房画布另测",
+        "每个条件预热10秒，再记录完整60秒，独立重复3轮；运行过程按10虚拟秒/墙钟秒观察，不能以已跑完静止画面替运行",
+        "取得浏览器Frames/实际帧呈现证据及正确画面截图；rAF及render提交样本只作诊断，不能独自代真实画面证据"
+      ],
+      "measurement": {
+        "warmup_s": 10,
+        "window_s": 60,
+        "repetitions": 3,
+        "statistic": "各有效轮正确场景呈现帧间隔Δt的instantaneous_fps=1000/Δt，按偶数取中间两值均值计算median；不把1000/median(Δt)当同一公式",
+        "sample_source": "实际候选的浏览器Performance Frames时间轴（同一时钟）；帧是否含完整目标场景由对应帧/截图核对；无足够呈现时间证据则not_evaluable",
+        "diagnostics": [
+          "FPS分布",
+          "frame_interval_p95_ms",
+          "dropped/partial frames",
+          "invalid/hidden-window intervals"
+        ],
+        "no_silent_sample_deletion": true
+      },
+      "acceptance": {
+        "median_fps_gte": 30,
+        "rule": "每个要求条件的3个有效轮均达到≥30FPS；原目标是中位数，不声明最差帧达标；无实际呈现证据不写PASS"
+      },
+      "limits": "FPS meter或rAF回调可以辅助定位；空帧、隐藏画布、关闭正确渲染、删设备/物品或降低已认可模型质量均不构成有效基准。诊断trace的开销与采样条件须记录。",
+      "actual_result": null,
+      "runtime_status": "not_executed"
+    },
+    {
+      "id": "NFR-03",
+      "title": "选择/详情/纯参数编辑可见反馈",
+      "delivery_owners": [
+        "W02",
+        "W00",
+        "W03"
+      ],
+      "review_owner": "user_W00",
+      "related_SF": [
+        "SF-03",
+        "SF-04",
+        "SF-05"
+      ],
+      "implementation_tasks": [
+        "P0-01",
+        "P2-01",
+        "P2-05",
+        "P3-01",
+        "P5-01"
+      ],
+      "preconditions": [
+        "NFR-01及相关真实编辑能力可用；输入设备、基础素材已按打开流程加载"
+      ],
+      "procedure": [
+        "三类动作分别串行采样，每轮各100次、3轮；选择和详情循环覆盖基准60设备，不只测同一缓存对象",
+        "纯参数轮对同一既有固定工时参数作2/3秒交替更新，使用当前合法revision；显示新草稿值，当前Run输入/结果不被改写",
+        "每次上一动作完成/失败后才进入下一次，所有失败/卡住样本保留；第一轮首次详情包含在样本并单列记录"
+      ],
+      "measurement": {
+        "actions": [
+          "select_device",
+          "open_device_detail",
+          "edit_existing_scalar_parameter"
+        ],
+        "samples_per_action_per_round": 100,
+        "repetitions": 3,
+        "start": "前端收到操作事件/发出本次命令的同一Renderer单调标记",
+        "end": "首个实际呈现且含预期选择/详情/新草稿值的帧完成；客户端提交/原生命令返回仅为中间点",
+        "clock_rule": "前端UserTiming标记和Frame trace须在同一录制中关联；native Instant只报告自身阶段耗时，不能与JS时间原点直接相减",
+        "percentile_rule": "升序x，nearest_rank_p95=x[ceil(0.95*n)-1]，n≥100；三个动作/各轮分别判，不汇总掩盖慢项"
+      },
+      "acceptance": {
+        "p95_visible_feedback_ms_lte": 200,
+        "rule": "每类每轮有效样本n≥100且p95≤200ms，实际画面与输入一致；缺帧/少样本not_evaluable，错误/无反馈为该条件fail"
+      },
+      "limits": "操作系统输入分发前延迟及人的文件选择时间不在此应用指标内；要记录口径。模型导入、专业求解和模拟整段完成不算纯参数更新，但必须满足NFR-04。",
+      "actual_result": null,
+      "runtime_status": "not_executed"
+    },
+    {
+      "id": "NFR-04",
+      "title": "长任务接收与交互不中断",
+      "delivery_owners": [
+        "W00",
+        "W02",
+        "W04",
+        "W05"
+      ],
+      "review_owner": "user_W00",
+      "related_SF": [
+        "SF-08",
+        "SF-11",
+        "SF-12",
+        "SF-17"
+      ],
+      "implementation_tasks": [
+        "P2-04",
+        "P3-04",
+        "P4-02",
+        "P5-01"
+      ],
+      "preconditions": [
+        "已实现真实TaskHandle/阶段状态和合法长计算输入"
+      ],
+      "procedure": [
+        "发起实际模拟/包装检查/大素材处理，记录收到、处理中、完成/失败/取消的可见状态",
+        "长任务时继续执行NFR-03三类已支持动作；确认当前运行只读结果与下一方案编辑分开",
+        "外部Agent的模型/网络等待单列；本地工具收到请求后到显示任务状态按同一口径记录"
+      ],
+      "measurement": {
+        "receipt_feedback": "使用NFR-03起止点和n/nearest-rank方法；模型网络时间单列不计本地接收",
+        "progress": "每个真实阶段变化/进度从对应任务读取，不循环假进度；有可见结束/错误/已取消状态"
+      },
+      "acceptance": {
+        "p95_receipt_visible_ms_lte": 200,
+        "rule": "长任务至少能及时呈现已接收/处理中，交互仍满足NFR-03；完成/失败/取消与实际任务一致，不把取消当通过"
+      },
+      "limits": "不新增求解/网络完成SLA、自动重试或通用超时；本地接收和外部等待不是同一时间承诺。具体接口/任务边界仍由S06实现设计落实。",
+      "actual_result": null,
+      "runtime_status": "not_executed"
+    },
+    {
+      "id": "NFR-05",
+      "title": "目录保存/打开延迟",
+      "delivery_owners": [
+        "W00",
+        "W05",
+        "W02"
+      ],
+      "review_owner": "user_W00",
+      "related_SF": [
+        "SF-01",
+        "SF-14"
+      ],
+      "implementation_tasks": [
+        "P0-01",
+        "P2-03",
+        "P5-01"
+      ],
+      "preconditions": [
+        "NFR-B60真实工程及固定随包资产；本地正常可写测试目录，不用网络/同步盘或大型外部媒体"
+      ],
+      "procedure": [
+        "新目录保存和已有目录更新分别测5次；应用新进程首次打开和同进程重开分别测5次，保留所有耗时/失败",
+        "选定路径后开始计时，文件选择人的时间另计；保存直到该修订全部内容就绪、工程清单成功切换且界面显示成功",
+        "打开直到项目/引用加载完成、对象连接可编辑并实际呈现正确首帧；不能以空壳或尚未加载的固定资产算结束"
+      ],
+      "measurement": {
+        "samples_per_variant": 5,
+        "variants": [
+          "save_new_directory",
+          "save_update_directory",
+          "open_new_app_process",
+          "reopen_same_process"
+        ],
+        "save_end": "实际文件写入/清单提交完成及成功反馈，不测仅入队/Serialize",
+        "open_end": "解析/引用/固定资产与可编辑状态就绪且正确首帧",
+        "clock_rule": "完整操作的同一调用方单调起止，包含IPC/序列化/读写及必要加载；原生子段仅辅助",
+        "cache_rule": "记录应用首次/重复及OS磁盘缓存未知；不把重启应用称磁盘冷启动，不清系统缓存"
+      },
+      "acceptance": {
+        "each_valid_save_or_open_ms_lte": 3000,
+        "rule": "四个变体每个实际样本均≤3000ms且内容正确；存取不是p95目标，失败不能从样本删除"
+      },
+      "limits": "此3秒适用固定基准目录。大型外部媒体导入/封装与评估PDF导出单列耗时和进度，不将人为取消或无文件写入计成功。",
+      "actual_result": null,
+      "runtime_status": "not_executed"
+    },
+    {
+      "id": "NFR-06",
+      "title": "持久化完整性与失败保留",
+      "delivery_owners": [
+        "W00",
+        "W05"
+      ],
+      "review_owner": "user_W00",
+      "related_SF": [
+        "SF-01",
+        "SF-14",
+        "SF-16"
+      ],
+      "implementation_tasks": [
+        "P0-01",
+        "P2-03",
+        "P2-06",
+        "P5-01"
+      ],
+      "preconditions": [
+        "可重开的旧有效工程和新修订；操作只使用测试目录"
+      ],
+      "procedure": [
+        "保存重开比对对象ID/数量/连接、九类版本/资产引用、所选专业成果/认可/绑定；普通工程从共同起点新跑",
+        "在测试文件IO的写入或清单替换阶段制造明确失败，验证错误被报告、旧有效版本仍可打开，新半写内容未被当正式版本",
+        "缺引用或不支持格式列具体缺项，不静默清零/重置；不给普通保存虚构中间状态续跑"
+      ],
+      "measurement": {
+        "check": "按现有保存格式语义比对字段/引用和实际打开结果；采用测试IO失败入口，实际命令/阶段留记录",
+        "no_checksum_or_unrequested_recovery_system": true
+      },
+      "acceptance": {
+        "rule": "成功保存可正确重开修改；失败保留旧有效工程且未宣称成功；未知格式/缺项显式说明；原文件原状态不被悄悄替换"
+      },
+      "limits": "范围按现行临时写入/清单切换契约；不新增断电安全、通用灾备、运行快照续跑或跨版本迁移承诺。",
+      "actual_result": null,
+      "runtime_status": "not_executed"
+    },
+    {
+      "id": "NFR-07",
+      "title": "普通工作离线与接入边界",
+      "delivery_owners": [
+        "W00",
+        "W02",
+        "W05"
+      ],
+      "review_owner": "user_W00",
+      "related_SF": [
+        "SF-01",
+        "SF-11",
+        "SF-14",
+        "SF-16"
+      ],
+      "implementation_tasks": [
+        "P0-01",
+        "P2-03",
+        "P2-06",
+        "P3-04",
+        "P5-01"
+      ],
+      "preconditions": [
+        "实际Windows安装/构建可用，本地模块/字体/素材齐备；自有测试输入"
+      ],
+      "procedure": [
+        "断开网络后启动新应用进程，打开工程并普通编辑、模拟、保存重开",
+        "生成本地PDF/离线HTML/CSV/JSON并另目录重开；网络轨迹不能有业务必需CDN/远端服务请求",
+        "外部模型不可用时显示其实际接入状态；普通流程不等待模型；本地桥/Commands不自动变成外部联网要求"
+      ],
+      "measurement": {
+        "check": "实际断网/请求记录、本地交付及候选程序行为；不能以已缓存网页冒充离线启动"
+      },
+      "acceptance": {
+        "rule": "上述普通本地工作实际可用并正确；外部模型等待/失败不伪造成Agent成功、不拖住本地流程"
+      },
+      "limits": "不承诺联网模型离线工作、不自动下载模型或绕过用户已有授权。",
+      "actual_result": null,
+      "runtime_status": "not_executed"
+    },
+    {
+      "id": "NFR-08",
+      "title": "人工/Agent并发编辑一致性",
+      "delivery_owners": [
+        "W00",
+        "W05",
+        "W02"
+      ],
+      "review_owner": "user_W00",
+      "related_SF": [
+        "SF-04",
+        "SF-11",
+        "SF-14",
+        "SF-17"
+      ],
+      "implementation_tasks": [
+        "P0-01",
+        "P3-04",
+        "P5-01"
+      ],
+      "preconditions": [
+        "同一宿主、同一工程revision=R；UI和真实外部客户端已接入"
+      ],
+      "procedure": [
+        "让UI及Agent以同一R对同一设备参数提出不同合法编辑，记录共同命令入口处理顺序",
+        "先提交者生成新修订；仍带R的另一请求返回RevisionConflict并读取新修订，不能无声覆盖",
+        "按当前工程修订保存、渲染/新运行；当前旧Run仍归旧输入，反馈不返回别的修订画面"
+      ],
+      "measurement": {
+        "check": "两个实际请求/响应、工程修订、受影响字段、Run/scene revision；不规定人工或Agent固定优先"
+      },
+      "acceptance": {
+        "rule": "同一R只有先处理者可提交；另一请求冲突明确、旧运行不被改写、保存重开和展示归属一致"
+      },
+      "limits": "不扩展为多用户协同服务器或事务引擎；沿用现有共同命令序列化/base_revision契约。",
+      "actual_result": null,
+      "runtime_status": "not_executed"
+    },
+    {
+      "id": "NFR-09",
+      "title": "同输入确定性与视图不改数值",
+      "delivery_owners": [
+        "W01",
+        "W02",
+        "W00"
+      ],
+      "review_owner": "user_W00",
+      "related_SF": [
+        "SF-05",
+        "SF-06",
+        "SF-07",
+        "SF-08",
+        "SF-09"
+      ],
+      "implementation_tasks": [
+        "P1-01",
+        "P2-04",
+        "P5-01"
+      ],
+      "preconditions": [
+        "同NFR-B60输入/模块/规则版本/观察窗和无随机配置；真实引擎"
+      ],
+      "procedure": [
+        "对两负载分别重复运行3次；每次重置同一输入起点，不复制前次在制状态",
+        "在详细/简化/区域及两画布、追踪/回看间切换并记录实际结果，界面帧速/动画循环不得驱动产量",
+        "核对1200仿真秒已接受3000件、单线首件20秒末件1018秒；完整事件/归属/资源及计数按稳定ID比较"
+      ],
+      "measurement": {
+        "semantic_comparison": "归属/生命周期/质量/预留/资源占用/接受量/事件虚拟时间相同；新RunId/墙钟执行时间/显示位置不当业务差异",
+        "synthetic_expected_result": "600秒单线291件×6=1746；1200秒单线500件×6=3000，纯自建流水线推导"
+      },
+      "acceptance": {
+        "rule": "同输入语义结果一致且预期核对正确；视图/回看只改显示，不能重复生产或以目标填结果"
+      },
+      "limits": "该推导不是行业工时或吞吐承诺，也不替实际SF/IX完整业务验收。",
+      "actual_result": null,
+      "runtime_status": "not_executed"
+    },
+    {
+      "id": "NFR-10",
+      "title": "专业计算预算与结果边界",
+      "delivery_owners": [
+        "W04",
+        "W00",
+        "W05"
+      ],
+      "review_owner": "user_W00",
+      "related_SF": [
+        "SF-12",
+        "SF-13"
+      ],
+      "implementation_tasks": [
+        "P4-02",
+        "P2-06",
+        "P5-01"
+      ],
+      "preconditions": [
+        "真实纸包装算法、输入及明确候选/过程细分等预算，已认可专业结果与消费者分开"
+      ],
+      "procedure": [
+        "分别跑既有成功、不满足、预算不足用例，记录预算单位/消耗、真实耗时、范围和三态结果",
+        "预算耗尽不能返回通过；未实现算法不能统一用Undetermined冒充既有三机制/三变化验收",
+        "取消/失败与人工认可/工位绑定分开，报告保留真实结果和所用范围"
+      ],
+      "measurement": {
+        "check": "预算声明、实际已执行过程和Pass/Fail/Undetermined；具体预算结构/算法仍由S06-04定义",
+        "no_unproven_solver_time_limit": true
+      },
+      "acceptance": {
+        "rule": "有限预算执行与三态原因可解释；不满足/未判定不当已认可生产方案；遵守NFR-04交互要求"
+      },
+      "limits": "3秒存取不用于几何求解；不新增防护、机械强度、工业现场时长或无限最优搜索能力。",
+      "actual_result": null,
+      "runtime_status": "not_executed"
+    },
+    {
+      "id": "NFR-11",
+      "title": "大素材/导出进度与测试结论归属",
+      "delivery_owners": [
+        "W03",
+        "W05",
+        "W02"
+      ],
+      "review_owner": "user_W00",
+      "related_SF": [
+        "SF-10",
+        "SF-14",
+        "SF-16"
+      ],
+      "implementation_tasks": [
+        "P3-02",
+        "P3-03",
+        "P2-03",
+        "P2-06",
+        "P5-01"
+      ],
+      "preconditions": [
+        "实际允许格式和许可明确的自有素材/工程/真实结果"
+      ],
+      "procedure": [
+        "额外记录实际媒体字节/模型复杂度、加载/导出耗时、进度及成功/失败/取消",
+        "仍按NFR-04显示任务状态；该组不能替固定基准或只选最小媒体宣称所有文件3秒完成",
+        "保存输出证据必须注明候选/机器/素材/负载、条件、原始样本/统计、对应实际版本和未通过项"
+      ],
+      "measurement": {
+        "runtime_result_states": [
+          "not_executed",
+          "not_evaluable",
+          "pass",
+          "fail"
+        ],
+        "no_arbitrary_media_upper_limit_or_memory_SLA": true
+      },
+      "acceptance": {
+        "rule": "实际能力/耗时有明确条件，未取得样本不能PASS；取消不当成功，结果来自同一输入/Run并可接手"
+      },
+      "limits": "不把研究PDF/AI图/局部3D试样或硬件列举当产品运行证据；不新增首版未要求的运行API。",
+      "actual_result": null,
+      "runtime_status": "not_executed"
+    }
+  ],
+  "source_records": [
+    {
+      "id": "TECH-NFR-01",
+      "title": "MDN performance.now",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/Performance/now",
+      "read_date": "2026-10-13",
+      "reading_position": "Description / Performance.now vs Date.now, lines208–214",
+      "fact": "performance.now uses its time origin and monotonic time; document/renderer timing must not be subtracted directly from unrelated native clock origins."
+    },
+    {
+      "id": "TECH-NFR-02",
+      "title": "MDN requestAnimationFrame",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/Window/requestAnimationFrame",
+      "read_date": "2026-10-13",
+      "reading_position": "opening description lines183–184 and timestamp lines209–212",
+      "fact": "callbacks occur before repaint and may pause when hidden; callback cadence alone is not proof that the expected complete scene was presented."
+    },
+    {
+      "id": "TECH-NFR-03",
+      "title": "Chrome DevTools Performance features reference",
+      "url": "https://developer.chrome.com/docs/devtools/performance/reference",
+      "read_date": "2026-10-13",
+      "reading_position": "Analyze FPS / Frames section lines581–606; screenshots lines665–673",
+      "fact": "Frames distinguish idle, presented/partially presented and dropped frames; use frame evidence/screenshots when assessing visible response and scene FPS."
+    }
+  ],
+  "implementation_boundary": [
+    "本轮只规范/负载设计、数学例和只读机器记录，未构建/执行产品或Figma",
+    "S06落实具体测量钩子/Trace解析与真实Project映射；S07/S08形成实际基准和固定素材，S09/P5再执行性能与质量验证",
+    "当前机器库存列举不代WebView实际GPU/运行环境，也不推最低硬件配置",
+    "测量过程没有额外API、每日工时、自动重试/通用超时或校验和/审计系统"
+  ],
+  "aggregate_rule": "11项均具备实际相应证据且通过才能声称本项运行验收；单项not_executed/not_evaluable不能被其他好成绩冲掉。文档复审通过不表示运行达标。",
+  "actual_runtime": null,
+  "actual_measurements": []
+}

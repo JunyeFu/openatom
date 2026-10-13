@@ -1,0 +1,102 @@
+{
+  "document_kind": "declared_quality_cases_not_measured_results",
+  "project": "project.design.json",
+  "cases": [
+    {
+      "id": "A",
+      "title": "首件返工一次后合格",
+      "quality_inputs": [
+        {
+          "ancestor_id": "raw_shell-001",
+          "inspection_results": [
+            "fail",
+            "pass"
+          ]
+        },
+        {
+          "ancestor_id": "raw_shell-002",
+          "inspection_results": [
+            "pass"
+          ]
+        }
+      ],
+      "expected": {
+        "package_finish_seconds": [
+          145,
+          175
+        ],
+        "packages": 2,
+        "quarantined": 0,
+        "awaiting_result": 0,
+        "rework_cycles": 1,
+        "inspection_started_count": 3,
+        "quality_decisions": 3,
+        "waiting_for_inspector": 0
+      },
+      "actual_result": null
+    },
+    {
+      "id": "Q",
+      "title": "复检仍失败进入隔离",
+      "quality_inputs": [
+        {
+          "ancestor_id": "raw_shell-001",
+          "inspection_results": [
+            "fail",
+            "fail"
+          ]
+        },
+        {
+          "ancestor_id": "raw_shell-002",
+          "inspection_results": [
+            "pass"
+          ]
+        }
+      ],
+      "expected": {
+        "package_finish_seconds": [
+          175
+        ],
+        "packages": 1,
+        "quarantined": 1,
+        "awaiting_result": 0,
+        "rework_cycles": 1,
+        "inspection_started_count": 3,
+        "quality_decisions": 3,
+        "waiting_for_inspector": 0
+      },
+      "actual_result": null
+    },
+    {
+      "id": "U",
+      "title": "首检结果缺失保持待判",
+      "quality_inputs": [
+        {
+          "ancestor_id": "raw_shell-001",
+          "inspection_results": [
+            null
+          ]
+        },
+        {
+          "ancestor_id": "raw_shell-002",
+          "inspection_results": [
+            "pass"
+          ]
+        }
+      ],
+      "expected": {
+        "package_finish_seconds": [],
+        "packages": 0,
+        "quarantined": 0,
+        "awaiting_result": 1,
+        "waiting_for_inspector": 1,
+        "rework_cycles": 0,
+        "inspection_started_count": 1,
+        "quality_decisions": 0
+      },
+      "actual_result": null
+    }
+  ],
+  "shared_conditions": "仅检验输入不同，拓扑、人员、工时与观察窗口完全相同；对照用于验证流程，不代表真实质量改善",
+  "count_definition": "检验进入次数与已有质量决定次数分别统计；unknown没有质量决定。"
+}

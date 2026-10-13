@@ -1,0 +1,99 @@
+{
+  "document_kind": "design_example_not_runtime_plugin",
+  "id": "community.fixed-transform",
+  "version": "0.1.0",
+  "category": "devices",
+  "title": "固定工时加工/准备工位",
+  "placement": "fixed_during_simulation",
+  "parameters": [
+    {
+      "id": "input_item",
+      "type": "item_type",
+      "binding": "configuration.input_item"
+    },
+    {
+      "id": "output_item",
+      "type": "item_type",
+      "binding": "configuration.output_item"
+    },
+    {
+      "id": "cycle_seconds",
+      "type": "duration",
+      "unit": "second",
+      "binding": "behavior.duration.value"
+    }
+  ],
+  "ports": [
+    {
+      "id": "input",
+      "kind": "material",
+      "direction": "in",
+      "item_parameter": "input_item",
+      "unit": "piece"
+    },
+    {
+      "id": "output",
+      "kind": "material",
+      "direction": "out",
+      "item_parameter": "output_item",
+      "unit": "piece"
+    }
+  ],
+  "behavior": {
+    "builtin": "transform",
+    "concurrency": 1,
+    "inputs": [
+      {
+        "port": "input",
+        "quantity": 1
+      }
+    ],
+    "outputs": [
+      {
+        "port": "output",
+        "quantity": 1
+      }
+    ],
+    "duration": {
+      "value": 30,
+      "unit": "second",
+      "basis": "演示假设"
+    },
+    "resources": [],
+    "identity_policy": "new_output_preserves_input_ancestry",
+    "repeat_mode": "continuous_when_ready"
+  },
+  "presentation": {
+    "media": {
+      "kind": "image",
+      "path": null
+    },
+    "states": [
+      "idle",
+      "working",
+      "waiting"
+    ],
+    "lod": {
+      "detailed": "media_and_ports",
+      "simplified": "icon_and_state",
+      "region": "parent_aggregate"
+    }
+  },
+  "operations": [
+    "configure",
+    "inspect",
+    "preview_cycle"
+  ],
+  "contribution": {
+    "author": "待填写",
+    "license": "待声明",
+    "assets": [],
+    "example": "并行汇合与返工",
+    "status": "design"
+  },
+  "configuration": {
+    "input_item": "raw_shell",
+    "output_item": "shell"
+  },
+  "definition_state": "design"
+}

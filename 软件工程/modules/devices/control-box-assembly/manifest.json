@@ -1,0 +1,124 @@
+{
+  "document_kind": "design_example_not_runtime_plugin",
+  "id": "community.control-box-assembly",
+  "version": "0.1.0",
+  "category": "devices",
+  "title": "壳体、PCB与螺钉齐套装配",
+  "placement": "fixed_during_simulation",
+  "parameters": [
+    {
+      "id": "cycle_seconds",
+      "label": "单周期工时",
+      "type": "duration",
+      "unit": "second",
+      "binding": "behavior.duration.value"
+    },
+    {
+      "id": "run_mode",
+      "label": "作业策略",
+      "type": "enum",
+      "binding": "behavior.repeat_mode",
+      "options": [
+        "single_cycle",
+        "continuous_when_ready"
+      ]
+    }
+  ],
+  "ports": [
+    {
+      "id": "shell",
+      "kind": "material",
+      "direction": "in",
+      "item": "shell",
+      "unit": "piece"
+    },
+    {
+      "id": "pcb",
+      "kind": "material",
+      "direction": "in",
+      "item": "pcb",
+      "unit": "piece"
+    },
+    {
+      "id": "fastener",
+      "kind": "material",
+      "direction": "in",
+      "item": "fastener",
+      "unit": "piece"
+    },
+    {
+      "id": "assembled",
+      "kind": "material",
+      "direction": "out",
+      "item": "assembly",
+      "unit": "piece"
+    }
+  ],
+  "behavior": {
+    "builtin": "assemble",
+    "repeat_mode": "continuous_when_ready",
+    "inputs": [
+      {
+        "port": "shell",
+        "quantity": 1
+      },
+      {
+        "port": "pcb",
+        "quantity": 1
+      },
+      {
+        "port": "fastener",
+        "quantity": 4
+      }
+    ],
+    "outputs": [
+      {
+        "port": "assembled",
+        "quantity": 1
+      }
+    ],
+    "duration": {
+      "value": 40,
+      "unit": "second",
+      "basis": "自建演示假设"
+    },
+    "resources": [
+      {
+        "role": "assembler",
+        "quantity": 1
+      }
+    ],
+    "start": "inputs_ready_and_worker_available",
+    "finish": "duration_elapsed",
+    "blocked": "output_capacity_unavailable"
+  },
+  "presentation": {
+    "media": {
+      "kind": "native_scene",
+      "path": "presentation/native-scene.json"
+    },
+    "states": [
+      "idle",
+      "working",
+      "waiting"
+    ],
+    "lod": {
+      "detailed": "media_and_ports",
+      "simplified": "icon_and_state",
+      "region": "parent_aggregate"
+    }
+  },
+  "operations": [
+    "configure",
+    "inspect",
+    "preview_cycle"
+  ],
+  "contribution": {
+    "author": "待填写",
+    "license": "待声明",
+    "assets": [],
+    "status": "design",
+    "source_basis": "本项目已有声明规则和自建原生几何，未发布运行模块"
+  },
+  "definition_state": "design"
+}

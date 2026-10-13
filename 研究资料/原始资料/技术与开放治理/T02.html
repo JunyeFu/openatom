@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shared Resources &mdash; SimPy 4.1.2.dev16+gf43816490 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=daa39cb4"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Real-time simulations" href="real-time-simulations.html" />
+    <link rel="prev" title="Process Interaction" href="process_interaction.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="simpy" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/topical_guides/resources.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../contents.html" class="icon icon-home">
+            SimPy
+          </a>
+              <div class="version">
+                4.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../simpy_intro/index.html">SimPy in 10 Minutes</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Topical Guides</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="simpy_basics.html">SimPy basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="environments.html">Environments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="events.html">Events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="process_interaction.html">Process Interaction</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Shared Resources</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#the-basic-concept-of-resources">The basic concept of resources</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#resources-and-interrupts">Resources and interrupts</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#resources">Resources</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#resource">Resource</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#priorityresource">PriorityResource</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#preemptiveresource">PreemptiveResource</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#containers">Containers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#stores">Stores</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="real-time-simulations.html">Real-time simulations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="monitoring.html">Monitoring</a></li>
+<li class="toctree-l2"><a class="reference internal" href="time_and_scheduling.html">Time and Scheduling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="porting_from_simpy3.html">Porting from SimPy 3 to 4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="porting_from_simpy2.html">Porting from SimPy 2 to 3</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_reference/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about/index.html">About SimPy</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../contents.html">SimPy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../contents.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Topical Guides</a></li>
+      <li class="breadcrumb-item active">Shared Resources</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/topical_guides/resources.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="shared-resources">
+<span id="id1"></span><h1>Shared Resources<a class="headerlink" href="#shared-resources" title="Link to this heading"></a></h1>
+<p>Shared resources are another way to model <a class="reference internal" href="process_interaction.html"><span class="doc">Process Interaction</span></a>. They form
+a congestion point where processes queue up in order to use them.</p>
+<p>SimPy defines three categories of resources:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#res-type-resource"><span class="std std-ref">Resources</span></a> – Resources that can be used by a limited
+number of processes at a time (e.g., a gas station with a limited number of
+fuel pumps).</p></li>
+<li><p><a class="reference internal" href="#res-type-container"><span class="std std-ref">Containers</span></a> – Resources that model the production and
+consumption of a homogeneous, undifferentiated bulk. It may either be
+continuous (like water) or discrete (like apples).</p></li>
+<li><p><a class="reference internal" href="#res-type-store"><span class="std std-ref">Stores</span></a> – Resources that allow the production and
+consumption of Python objects.</p></li>
+</ul>
+<section id="the-basic-concept-of-resources">
+<h2>The basic concept of resources<a class="headerlink" href="#the-basic-concept-of-resources" title="Link to this heading"></a></h2>
+<p>All resources share the same basic concept: The resource itself is some kind of
+a container with a, usually limited, <em>capacity</em>. Processes can either try to
+<em>put</em> something into the resource or try to <em>get</em> something out. If the
+resource is full or empty, they have to <em>queue</em> up and wait.</p>
+<p>This is roughly how every resource looks:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">BaseResource</span><span class="p">(</span><span class="n">capacity</span><span class="p">):</span>
+   <span class="n">put_queue</span>
+   <span class="n">get_queue</span>
+
+   <span class="n">put</span><span class="p">():</span> <span class="n">event</span>
+   <span class="n">get</span><span class="p">():</span> <span class="n">event</span>
+</pre></div>
+</div>
+<p>Every resource has a maximum capacity and two queues: one for processes that want
+to put something into it and one for processes that want to get something out.
+The <code class="docutils literal notranslate"><span class="pre">put()</span></code> and <code class="docutils literal notranslate"><span class="pre">get()</span></code> methods both return an event that is triggered when
+the corresponding action was successful.</p>
+<section id="resources-and-interrupts">
+<h3>Resources and interrupts<a class="headerlink" href="#resources-and-interrupts" title="Link to this heading"></a></h3>
+<p>While a process is waiting for a put or get event to succeed, it may be
+<a class="reference internal" href="process_interaction.html#interrupting-another-process"><span class="std std-ref">interrupted</span></a> by another process. After
+catching the interrupt, the process has two possibilities:</p>
+<ol class="arabic">
+<li><p>It may continue to wait for the request (by yielding the event again).</p></li>
+<li><p>It may stop waiting for the request. In this case, it has to call the
+event’s <code class="docutils literal notranslate"><span class="pre">cancel()</span></code> method.</p>
+<p>Since you can easily forget this, all resources events are <em>context
+managers</em> (see the <a class="reference external" href="https://docs.python.org/3/reference/compound_stmts.html#with">Python docs</a> for
+details).</p>
+</li>
+</ol>
+<hr class="docutils" />
+<p>The resource system is modular and extensible. Resources can, for example, use
+specialized queues and event types. This allows them to use sorted queues, to
+add priorities to events, or to offer preemption.</p>
+</section>
+</section>
+<section id="resources">
+<span id="res-type-resource"></span><h2>Resources<a class="headerlink" href="#resources" title="Link to this heading"></a></h2>
+<p>Resources can be used by a limited number of processes at a time (e.g.,
+a gas station with a limited number of fuel pumps). Processes <em>request</em> these
+resources to become a user (or to “own” them) and have to <em>release</em> them once
+they are done (e.g., vehicles arrive at the gas station, use a fuel-pump, if
+one is available, and leave when they are done).</p>
+<p>Requesting a resource is modeled as “putting a process’ token into the
+resource” and releasing a resource correspondingly as “getting a process’
+token out of the resource”. Thus, calling <code class="docutils literal notranslate"><span class="pre">request()</span></code>/<code class="docutils literal notranslate"><span class="pre">release()</span></code> is
+equivalent to calling <code class="docutils literal notranslate"><span class="pre">put()</span></code>/<code class="docutils literal notranslate"><span class="pre">get()</span></code>. Releasing a resource will always
+succeed immediately.</p>
+<p>SimPy implements three <em>resource</em> types:</p>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="../api_reference/simpy.resources.html#simpy.resources.resource.Resource" title="simpy.resources.resource.Resource"><code class="xref py py-class docutils literal notranslate"><span class="pre">Resource</span></code></a></p></li>
+<li><p><a class="reference internal" href="../api_reference/simpy.resources.html#simpy.resources.resource.PriorityResource" title="simpy.resources.resource.PriorityResource"><code class="xref py py-class docutils literal notranslate"><span class="pre">PriorityResource</span></code></a>, where queueing processes are sorted by priority</p></li>
+<li><p><a class="reference internal" href="../api_reference/simpy.resources.html#simpy.resources.resource.PreemptiveResource" title="simpy.resources.resource.PreemptiveResource"><code class="xref py py-class docutils literal notranslate"><span class="pre">PreemptiveResource</span></code></a>, where processes additionally may preempt other
+processes with a lower priority</p></li>
+</ol>
+<section id="resource">
+<h3>Resource<a class="headerlink" href="#resource" title="Link to this heading"></a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">Resource</span></code> is conceptually a <em>semaphore</em>. Its only parameter – apart from
+the obligatory reference to an <a class="reference internal" href="../api_reference/simpy.core.html#simpy.core.Environment" title="simpy.core.Environment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Environment</span></code></a> – is its
+<em>capacity</em>. It must be a positive number and defaults to 1: <code class="docutils literal notranslate"><span class="pre">Resource(env,</span>
+<span class="pre">capacity=1)</span></code>.</p>
+<p>Instead of just counting its current users, it stores the request event as an
+“access token” for each user. This is, for example, useful for adding
+preemption (see below).</p>
+<p>Here is a basic example for using a resource:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simpy</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">resource_user</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">resource</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">request</span> <span class="o">=</span> <span class="n">resource</span><span class="o">.</span><span class="n">request</span><span class="p">()</span>  <span class="c1"># Generate a request event</span>
+<span class="gp">... </span>    <span class="k">yield</span> <span class="n">request</span>                 <span class="c1"># Wait for access</span>
+<span class="gp">... </span>    <span class="k">yield</span> <span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>          <span class="c1"># Do something</span>
+<span class="gp">... </span>    <span class="n">resource</span><span class="o">.</span><span class="n">release</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>     <span class="c1"># Release the resource</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">env</span> <span class="o">=</span> <span class="n">simpy</span><span class="o">.</span><span class="n">Environment</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">res</span> <span class="o">=</span> <span class="n">simpy</span><span class="o">.</span><span class="n">Resource</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">capacity</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">user</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">resource_user</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">res</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">env</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Note, that you have to release the resource under all conditions; for example,
+if you got interrupted while waiting for or using the resource. In order to
+help you with that and to avoid too many <code class="docutils literal notranslate"><span class="pre">try:</span> <span class="pre">...</span> <span class="pre">finally:</span> <span class="pre">...</span></code> constructs,
+request events can be used as context manager:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">resource_user</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">resource</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">with</span> <span class="n">resource</span><span class="o">.</span><span class="n">request</span><span class="p">()</span> <span class="k">as</span> <span class="n">req</span><span class="p">:</span>  <span class="c1"># Generate a request event</span>
+<span class="gp">... </span>        <span class="k">yield</span> <span class="n">req</span>                    <span class="c1"># Wait for access</span>
+<span class="gp">... </span>        <span class="k">yield</span> <span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>         <span class="c1"># Do something</span>
+<span class="gp">... </span>                                     <span class="c1"># Resource released automatically</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">user</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">resource_user</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">res</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">env</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Resources allow you to retrieve lists of the current users or queued users,
+the number of current users and the resource’s capacity:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">res</span> <span class="o">=</span> <span class="n">simpy</span><span class="o">.</span><span class="n">Resource</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">capacity</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">print_stats</span><span class="p">(</span><span class="n">res</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">res</span><span class="o">.</span><span class="n">count</span><span class="si">}</span><span class="s1"> of </span><span class="si">{</span><span class="n">res</span><span class="o">.</span><span class="n">capacity</span><span class="si">}</span><span class="s1"> slots are allocated.&#39;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;  Users: </span><span class="si">{</span><span class="n">res</span><span class="o">.</span><span class="n">users</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;  Queued events: </span><span class="si">{</span><span class="n">res</span><span class="o">.</span><span class="n">queue</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">user</span><span class="p">(</span><span class="n">res</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">print_stats</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">with</span> <span class="n">res</span><span class="o">.</span><span class="n">request</span><span class="p">()</span> <span class="k">as</span> <span class="n">req</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="k">yield</span> <span class="n">req</span>
+<span class="gp">... </span>        <span class="n">print_stats</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">print_stats</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">procs</span> <span class="o">=</span> <span class="p">[</span><span class="n">env</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">user</span><span class="p">(</span><span class="n">res</span><span class="p">)),</span> <span class="n">env</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">user</span><span class="p">(</span><span class="n">res</span><span class="p">))]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">env</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="go">0 of 1 slots are allocated.</span>
+<span class="go">  Users: []</span>
+<span class="go">  Queued events: []</span>
+<span class="go">1 of 1 slots are allocated.</span>
+<span class="go">  Users: [&lt;Request() object at 0x...&gt;]</span>
+<span class="go">  Queued events: []</span>
+<span class="go">1 of 1 slots are allocated.</span>
+<span class="go">  Users: [&lt;Request() object at 0x...&gt;]</span>
+<span class="go">  Queued events: [&lt;Request() object at 0x...&gt;]</span>
+<span class="go">0 of 1 slots are allocated.</span>
+<span class="go">  Users: []</span>
+<span class="go">  Queued events: [&lt;Request() object at 0x...&gt;]</span>
+<span class="go">1 of 1 slots are allocated.</span>
+<span class="go">  Users: [&lt;Request() object at 0x...&gt;]</span>
+<span class="go">  Queued events: []</span>
+<span class="go">0 of 1 slots are allocated.</span>
+<span class="go">  Users: []</span>
+<span class="go">  Queued events: []</span>
+</pre></div>
+</div>
+</section>
+<section id="priorityresource">
+<h3>PriorityResource<a class="headerlink" href="#priorityresource" title="Link to this heading"></a></h3>
+<p>As you may know from the real world, everything is not equally important. To map
+that to SimPy, there’s the <em>PriorityResource</em>. This subclass of <em>Resource</em> lets
+requesting processes provide a priority for each request. More important
+requests will gain access to the resource earlier than less important ones.
+Priority is expressed by integer numbers; smaller numbers mean a higher
+priority.</p>
+<p>Apart from that, it works like a normal <em>Resource</em>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">resource_user</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">resource</span><span class="p">,</span> <span class="n">wait</span><span class="p">,</span> <span class="n">prio</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">yield</span> <span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="n">wait</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">with</span> <span class="n">resource</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">priority</span><span class="o">=</span><span class="n">prio</span><span class="p">)</span> <span class="k">as</span> <span class="n">req</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> requesting at </span><span class="si">{</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s1"> with priority=</span><span class="si">{</span><span class="n">prio</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="k">yield</span> <span class="n">req</span>
+<span class="gp">... </span>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> got resource at </span><span class="si">{</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="k">yield</span> <span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">env</span> <span class="o">=</span> <span class="n">simpy</span><span class="o">.</span><span class="n">Environment</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">res</span> <span class="o">=</span> <span class="n">simpy</span><span class="o">.</span><span class="n">PriorityResource</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">capacity</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p1</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">resource_user</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">prio</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p2</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">resource_user</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">prio</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p3</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">resource_user</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">prio</span><span class="o">=-</span><span class="mi">1</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">env</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="go">1 requesting at 0 with priority=0</span>
+<span class="go">1 got resource at 0</span>
+<span class="go">2 requesting at 1 with priority=0</span>
+<span class="go">3 requesting at 2 with priority=-1</span>
+<span class="go">3 got resource at 3</span>
+<span class="go">2 got resource at 6</span>
+</pre></div>
+</div>
+<p>Although <em>p3</em> requested the resource later than <em>p2</em>, it could use it earlier
+because its priority was higher.</p>
+</section>
+<section id="preemptiveresource">
+<h3>PreemptiveResource<a class="headerlink" href="#preemptiveresource" title="Link to this heading"></a></h3>
+<p>Sometimes, new requests are so important that queue-jumping is not enough and
+they need to kick existing users out of the resource (this is called
+<em>preemption</em>). The <em>PreemptiveResource</em> allows you to do exactly this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">resource_user</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">resource</span><span class="p">,</span> <span class="n">wait</span><span class="p">,</span> <span class="n">prio</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">yield</span> <span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="n">wait</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">with</span> <span class="n">resource</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">priority</span><span class="o">=</span><span class="n">prio</span><span class="p">)</span> <span class="k">as</span> <span class="n">req</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> requesting at </span><span class="si">{</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s1"> with priority=</span><span class="si">{</span><span class="n">prio</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="k">yield</span> <span class="n">req</span>
+<span class="gp">... </span>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> got resource at </span><span class="si">{</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="k">try</span><span class="p">:</span>
+<span class="gp">... </span>            <span class="k">yield</span> <span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="k">except</span> <span class="n">simpy</span><span class="o">.</span><span class="n">Interrupt</span> <span class="k">as</span> <span class="n">interrupt</span><span class="p">:</span>
+<span class="gp">... </span>            <span class="n">by</span> <span class="o">=</span> <span class="n">interrupt</span><span class="o">.</span><span class="n">cause</span><span class="o">.</span><span class="n">by</span>
+<span class="gp">... </span>            <span class="n">usage</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">now</span> <span class="o">-</span> <span class="n">interrupt</span><span class="o">.</span><span class="n">cause</span><span class="o">.</span><span class="n">usage_since</span>
+<span class="gp">... </span>            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> got preempted by </span><span class="si">{</span><span class="n">by</span><span class="si">}</span><span class="s1"> at </span><span class="si">{</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s1">&#39;</span>
+<span class="gp">... </span>                  <span class="sa">f</span><span class="s1">&#39; after </span><span class="si">{</span><span class="n">usage</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">env</span> <span class="o">=</span> <span class="n">simpy</span><span class="o">.</span><span class="n">Environment</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">res</span> <span class="o">=</span> <span class="n">simpy</span><span class="o">.</span><span class="n">PreemptiveResource</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">capacity</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p1</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">resource_user</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">prio</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p2</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">resource_user</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">prio</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p3</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">resource_user</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">prio</span><span class="o">=-</span><span class="mi">1</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">env</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="go">1 requesting at 0 with priority=0</span>
+<span class="go">1 got resource at 0</span>
+<span class="go">2 requesting at 1 with priority=0</span>
+<span class="go">3 requesting at 2 with priority=-1</span>
+<span class="go">1 got preempted by &lt;Process(resource_user) object at 0x...&gt; at 2 after 2</span>
+<span class="go">3 got resource at 2</span>
+<span class="go">2 got resource at 5</span>
+</pre></div>
+</div>
+<p><em>PreemptiveResource</em> inherits from <em>PriorityResource</em> and adds a <em>preempt</em>
+flag (that defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>) to <code class="docutils literal notranslate"><span class="pre">request()</span></code>. By setting this to <code class="docutils literal notranslate"><span class="pre">False</span></code>
+(<code class="docutils literal notranslate"><span class="pre">resource.request(priority=x,</span> <span class="pre">preempt=False)</span></code>), a process can decide to not
+preempt another resource user. It will still be put in the queue according to
+its priority, though.</p>
+<p>The implementation of <em>PreemptiveResource</em> values priorities higher than
+preemption. That means preempt requests are not allowed to cheat and jump over
+a higher prioritized request. The following example shows that preemptive low
+priority requests cannot queue-jump over high priority requests:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">user</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">prio</span><span class="p">,</span> <span class="n">preempt</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">with</span> <span class="n">res</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">priority</span><span class="o">=</span><span class="n">prio</span><span class="p">,</span> <span class="n">preempt</span><span class="o">=</span><span class="n">preempt</span><span class="p">)</span> <span class="k">as</span> <span class="n">req</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="k">try</span><span class="p">:</span>
+<span class="gp">... </span>            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> requesting at </span><span class="si">{</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="gp">... </span>            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="nb">type</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="p">)</span>
+<span class="gp">... </span>            <span class="k">yield</span> <span class="n">req</span>
+<span class="gp">... </span>            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="nb">type</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="p">)</span>
+<span class="gp">... </span>            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> got resource at </span><span class="si">{</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="gp">... </span>            <span class="k">yield</span> <span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="k">except</span> <span class="n">simpy</span><span class="o">.</span><span class="n">Interrupt</span><span class="p">:</span>
+<span class="gp">... </span>            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> got preempted at </span><span class="si">{</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">env</span> <span class="o">=</span> <span class="n">simpy</span><span class="o">.</span><span class="n">Environment</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">res</span> <span class="o">=</span> <span class="n">simpy</span><span class="o">.</span><span class="n">PreemptiveResource</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">capacity</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">A</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">user</span><span class="p">(</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">prio</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">preempt</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">env</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">until</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># Give A a head start</span>
+<span class="go">A requesting at 0</span>
+<span class="go">A got resource at 0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">B</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">user</span><span class="p">(</span><span class="s1">&#39;B&#39;</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">prio</span><span class="o">=-</span><span class="mi">2</span><span class="p">,</span> <span class="n">preempt</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">C</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">user</span><span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">prio</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">preempt</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">env</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="go">B requesting at 1</span>
+<span class="go">C requesting at 1</span>
+<span class="go">B got resource at 3</span>
+<span class="go">C got resource at 6</span>
+</pre></div>
+</div>
+<ol class="arabic simple">
+<li><p>Process <em>A</em> requests the resource with priority 0. It immediately becomes
+a user.</p></li>
+<li><p>Process <em>B</em> requests the resource with priority -2 but sets <em>preempt</em> to
+<code class="docutils literal notranslate"><span class="pre">False</span></code>. It will queue up and wait.</p></li>
+<li><p>Process <em>C</em> requests the resource with priority -1 but leaves <em>preempt</em>
+<code class="docutils literal notranslate"><span class="pre">True</span></code>. Normally, it would preempt <em>A</em> but in this case, <em>B</em> is queued up
+before <em>C</em> and prevents <em>C</em> from preempting <em>A</em>. <em>C</em> can also not preempt
+<em>B</em> since its priority is not high enough.</p></li>
+</ol>
+<p>Thus, the behavior in the example is the same as if no preemption was used at
+all. Be careful when using mixed preemption!</p>
+<p>Due to the higher priority of process <em>B</em>, no preemption occurs in this
+example. Note that an additional request with a priority of -3 would be able
+to preempt <em>A</em>.</p>
+<p>If your use-case requires a different behaviour, for example queue-jumping or
+valuing preemption over priorities, you can subclass <em>PreemptiveResource</em> and
+override the default behaviour.</p>
+</section>
+</section>
+<section id="containers">
+<span id="res-type-container"></span><h2>Containers<a class="headerlink" href="#containers" title="Link to this heading"></a></h2>
+<p>Containers help you modelling the production and consumption of a homogeneous,
+undifferentiated bulk. It may either be continuous (like water) or discrete
+(like apples).</p>
+<p>You can use this, for example, to model the gas / petrol tank of a gas station.
+Tankers increase the amount of gasoline in the tank while cars decrease it.</p>
+<p>The following example is a very simple model of a gas station with a limited
+number of fuel dispensers (modeled as <code class="docutils literal notranslate"><span class="pre">Resource</span></code>) and a tank modeled as
+<code class="docutils literal notranslate"><span class="pre">Container</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">GasStation</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">env</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">fuel_dispensers</span> <span class="o">=</span> <span class="n">simpy</span><span class="o">.</span><span class="n">Resource</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">capacity</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">gas_tank</span> <span class="o">=</span> <span class="n">simpy</span><span class="o">.</span><span class="n">Container</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">capacity</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">mon_proc</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">monitor_tank</span><span class="p">(</span><span class="n">env</span><span class="p">))</span>
+<span class="gp">...</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">monitor_tank</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">env</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+<span class="gp">... </span>            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gas_tank</span><span class="o">.</span><span class="n">level</span> <span class="o">&lt;</span> <span class="mi">100</span><span class="p">:</span>
+<span class="gp">... </span>                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Calling tanker at </span><span class="si">{</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="gp">... </span>                <span class="n">env</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">tanker</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="bp">self</span><span class="p">))</span>
+<span class="gp">... </span>            <span class="k">yield</span> <span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="mi">15</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">tanker</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">gas_station</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">yield</span> <span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>  <span class="c1"># Need 10 Minutes to arrive</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Tanker arriving at </span><span class="si">{</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">amount</span> <span class="o">=</span> <span class="n">gas_station</span><span class="o">.</span><span class="n">gas_tank</span><span class="o">.</span><span class="n">capacity</span> <span class="o">-</span> <span class="n">gas_station</span><span class="o">.</span><span class="n">gas_tank</span><span class="o">.</span><span class="n">level</span>
+<span class="gp">... </span>    <span class="k">yield</span> <span class="n">gas_station</span><span class="o">.</span><span class="n">gas_tank</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">car</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">gas_station</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Car </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> arriving at </span><span class="si">{</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">with</span> <span class="n">gas_station</span><span class="o">.</span><span class="n">fuel_dispensers</span><span class="o">.</span><span class="n">request</span><span class="p">()</span> <span class="k">as</span> <span class="n">req</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="k">yield</span> <span class="n">req</span>
+<span class="gp">... </span>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Car </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> starts refueling at </span><span class="si">{</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="k">yield</span> <span class="n">gas_station</span><span class="o">.</span><span class="n">gas_tank</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">40</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="k">yield</span> <span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Car </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> done refueling at </span><span class="si">{</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">car_generator</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">gas_station</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="n">env</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">car</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">gas_station</span><span class="p">))</span>
+<span class="gp">... </span>        <span class="k">yield</span> <span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">env</span> <span class="o">=</span> <span class="n">simpy</span><span class="o">.</span><span class="n">Environment</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gas_station</span> <span class="o">=</span> <span class="n">GasStation</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">car_gen</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">car_generator</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">gas_station</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">env</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="mi">35</span><span class="p">)</span>
+<span class="go">Car 0 arriving at 0</span>
+<span class="go">Car 0 starts refueling at 0</span>
+<span class="go">Car 1 arriving at 5</span>
+<span class="go">Car 0 done refueling at 5</span>
+<span class="go">Car 1 starts refueling at 5</span>
+<span class="go">Car 2 arriving at 10</span>
+<span class="go">Car 1 done refueling at 10</span>
+<span class="go">Car 2 starts refueling at 10</span>
+<span class="go">Calling tanker at 15</span>
+<span class="go">Car 3 arriving at 15</span>
+<span class="go">Car 3 starts refueling at 15</span>
+<span class="go">Tanker arriving at 25</span>
+<span class="go">Car 2 done refueling at 30</span>
+<span class="go">Car 3 done refueling at 30</span>
+</pre></div>
+</div>
+<p>Containers allow you to retrieve their current <code class="docutils literal notranslate"><span class="pre">level</span></code> as well as their
+<code class="docutils literal notranslate"><span class="pre">capacity</span></code> (see <code class="docutils literal notranslate"><span class="pre">GasStation.monitor_tank()</span></code> and <code class="docutils literal notranslate"><span class="pre">tanker()</span></code>). You can also
+access the list of waiting events via the <code class="docutils literal notranslate"><span class="pre">put_queue</span></code> and <code class="docutils literal notranslate"><span class="pre">get_queue</span></code>
+attributes (similar to <code class="docutils literal notranslate"><span class="pre">Resource.queue</span></code>).</p>
+</section>
+<section id="stores">
+<span id="res-type-store"></span><h2>Stores<a class="headerlink" href="#stores" title="Link to this heading"></a></h2>
+<p>Using Stores you can model the production and consumption of concrete objects
+(in contrast to the rather abstract “amount” stored in containers). A single
+Store can even contain multiple types of objects.</p>
+<p>Beside <a class="reference internal" href="../api_reference/simpy.resources.html#simpy.resources.store.Store" title="simpy.resources.store.Store"><code class="xref py py-class docutils literal notranslate"><span class="pre">Store</span></code></a>, there is a <a class="reference internal" href="../api_reference/simpy.resources.html#simpy.resources.store.FilterStore" title="simpy.resources.store.FilterStore"><code class="xref py py-class docutils literal notranslate"><span class="pre">FilterStore</span></code></a> that lets you use
+a custom function to filter the objects you get out of the store and
+<a class="reference internal" href="../api_reference/simpy.resources.html#simpy.resources.store.PriorityStore" title="simpy.resources.store.PriorityStore"><code class="xref py py-class docutils literal notranslate"><span class="pre">PriorityStore</span></code></a> where items come out of the store in priority
+order.</p>
+<p>Here is a simple example modelling a generic producer/consumer scenario:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">producer</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">store</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="k">yield</span> <span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="k">yield</span> <span class="n">store</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;spam </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Produced spam at&#39;</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">consumer</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">store</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="k">yield</span> <span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="nb">print</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;requesting spam at&#39;</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="n">item</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">store</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+<span class="gp">... </span>        <span class="nb">print</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;got&#39;</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="s1">&#39;at&#39;</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">env</span> <span class="o">=</span> <span class="n">simpy</span><span class="o">.</span><span class="n">Environment</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">store</span> <span class="o">=</span> <span class="n">simpy</span><span class="o">.</span><span class="n">Store</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">capacity</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">prod</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">producer</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">store</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">consumers</span> <span class="o">=</span> <span class="p">[</span><span class="n">env</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">consumer</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">store</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">)]</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">env</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">until</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="go">0 requesting spam at 1</span>
+<span class="go">1 requesting spam at 1</span>
+<span class="go">Produced spam at 2</span>
+<span class="go">0 got spam 0 at 2</span>
+<span class="go">0 requesting spam at 3</span>
+<span class="go">Produced spam at 4</span>
+<span class="go">1 got spam 1 at 4</span>
+</pre></div>
+</div>
+<p>As with the other resource types, you can get a store’s capacity via the
+<code class="docutils literal notranslate"><span class="pre">capacity</span></code> attribute. The attribute <code class="docutils literal notranslate"><span class="pre">items</span></code> points to the list of items
+currently available in the store. The put and get queues can be accessed via
+the <code class="docutils literal notranslate"><span class="pre">put_queue</span></code> and <code class="docutils literal notranslate"><span class="pre">get_queue</span></code> attributes.</p>
+<p><em>FilterStore</em> can, for example, be used to model machine shops where machines
+have varying attributes. This can be useful if the homogeneous slots of
+a <em>Resource</em> are not what you need:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Machine</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;Machine&#39;</span><span class="p">,</span> <span class="s1">&#39;size, duration&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m1</span> <span class="o">=</span> <span class="n">Machine</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>  <span class="c1"># Small and slow</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m2</span> <span class="o">=</span> <span class="n">Machine</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># Big and fast</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">env</span> <span class="o">=</span> <span class="n">simpy</span><span class="o">.</span><span class="n">Environment</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">machine_shop</span> <span class="o">=</span> <span class="n">simpy</span><span class="o">.</span><span class="n">FilterStore</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">capacity</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">machine_shop</span><span class="o">.</span><span class="n">items</span> <span class="o">=</span> <span class="p">[</span><span class="n">m1</span><span class="p">,</span> <span class="n">m2</span><span class="p">]</span>  <span class="c1"># Pre-populate the machine shop</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">user</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">ms</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">machine</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">ms</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="k">lambda</span> <span class="n">machine</span><span class="p">:</span> <span class="n">machine</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="n">size</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;got&#39;</span><span class="p">,</span> <span class="n">machine</span><span class="p">,</span> <span class="s1">&#39;at&#39;</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">yield</span> <span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="n">machine</span><span class="o">.</span><span class="n">duration</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">yield</span> <span class="n">ms</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">machine</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;released&#39;</span><span class="p">,</span> <span class="n">machine</span><span class="p">,</span> <span class="s1">&#39;at&#39;</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">users</span> <span class="o">=</span> <span class="p">[</span><span class="n">env</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">user</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">machine_shop</span><span class="p">,</span> <span class="p">(</span><span class="n">i</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+<span class="gp">... </span>         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">env</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="go">0 got Machine(size=1, duration=2) at 0</span>
+<span class="go">1 got Machine(size=2, duration=1) at 0</span>
+<span class="go">1 released Machine(size=2, duration=1) at 1</span>
+<span class="go">0 released Machine(size=1, duration=2) at 2</span>
+<span class="go">2 got Machine(size=1, duration=2) at 2</span>
+<span class="go">2 released Machine(size=1, duration=2) at 4</span>
+</pre></div>
+</div>
+<p>With a <a class="reference internal" href="../api_reference/simpy.resources.html#simpy.resources.store.PriorityStore" title="simpy.resources.store.PriorityStore"><code class="xref py py-class docutils literal notranslate"><span class="pre">PriorityStore</span></code></a>, we can model items of differing
+priorities. In the following example, an inspector process finds and
+logs issues that a separate maintainer process repairs in priority
+order.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">env</span> <span class="o">=</span> <span class="n">simpy</span><span class="o">.</span><span class="n">Environment</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">issues</span> <span class="o">=</span> <span class="n">simpy</span><span class="o">.</span><span class="n">PriorityStore</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">inspector</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">issues</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">for</span> <span class="n">issue</span> <span class="ow">in</span> <span class="p">[</span><span class="n">simpy</span><span class="o">.</span><span class="n">PriorityItem</span><span class="p">(</span><span class="s1">&#39;P2&#39;</span><span class="p">,</span> <span class="s1">&#39;#0000&#39;</span><span class="p">),</span>
+<span class="gp">... </span>                  <span class="n">simpy</span><span class="o">.</span><span class="n">PriorityItem</span><span class="p">(</span><span class="s1">&#39;P0&#39;</span><span class="p">,</span> <span class="s1">&#39;#0001&#39;</span><span class="p">),</span>
+<span class="gp">... </span>                  <span class="n">simpy</span><span class="o">.</span><span class="n">PriorityItem</span><span class="p">(</span><span class="s1">&#39;P3&#39;</span><span class="p">,</span> <span class="s1">&#39;#0002&#39;</span><span class="p">),</span>
+<span class="gp">... </span>                  <span class="n">simpy</span><span class="o">.</span><span class="n">PriorityItem</span><span class="p">(</span><span class="s1">&#39;P1&#39;</span><span class="p">,</span> <span class="s1">&#39;#0003&#39;</span><span class="p">)]:</span>
+<span class="gp">... </span>        <span class="k">yield</span> <span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="nb">print</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="p">,</span> <span class="s1">&#39;log&#39;</span><span class="p">,</span> <span class="n">issue</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="k">yield</span> <span class="n">issues</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">issue</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">maintainer</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">issues</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="k">yield</span> <span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="n">issue</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">issues</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+<span class="gp">... </span>        <span class="nb">print</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="p">,</span> <span class="s1">&#39;repair&#39;</span><span class="p">,</span> <span class="n">issue</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">inspector</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">issues</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">maintainer</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">issues</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">env</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="go">1 log PriorityItem(priority=&#39;P2&#39;, item=&#39;#0000&#39;)</span>
+<span class="go">2 log PriorityItem(priority=&#39;P0&#39;, item=&#39;#0001&#39;)</span>
+<span class="go">3 log PriorityItem(priority=&#39;P3&#39;, item=&#39;#0002&#39;)</span>
+<span class="go">3 repair PriorityItem(priority=&#39;P0&#39;, item=&#39;#0001&#39;)</span>
+<span class="go">4 log PriorityItem(priority=&#39;P1&#39;, item=&#39;#0003&#39;)</span>
+<span class="go">6 repair PriorityItem(priority=&#39;P1&#39;, item=&#39;#0003&#39;)</span>
+<span class="go">9 repair PriorityItem(priority=&#39;P2&#39;, item=&#39;#0000&#39;)</span>
+<span class="go">12 repair PriorityItem(priority=&#39;P3&#39;, item=&#39;#0002&#39;)</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="process_interaction.html" class="btn btn-neutral float-left" title="Process Interaction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="real-time-simulations.html" class="btn btn-neutral float-right" title="Real-time simulations" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2002–2026, Team SimPy.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,137 @@
+{
+  "document_kind": "demo_equipment_definition_seed_not_registered_runtime",
+  "revision": "draft-1",
+  "scope": "现有六种GLB试样的业务定义种子；供S05-03/S06复审，不替代首版完整库清单",
+  "state_owner": "project_instances_and_factory_engine",
+  "existing_definitions": [
+    {"id": "community.control-box-assembly", "version": "0.1.0", "category": "devices", "manifest": "modules/devices/control-box-assembly/manifest.json"},
+    {"id": "community.inspect-route", "version": "0.1.0", "category": "devices", "manifest": "modules/devices/inspect-route/manifest.json"}
+  ],
+  "candidate_definitions": [
+    {
+      "id": "superfactory.demo.robot-transfer", "version": "0.1.0", "category": "devices",
+      "title": "单件控制盒夹爪搬运机器人", "definition_state": "design",
+      "contribution": {"author": "本项目自建演示定义", "license": "待项目许可确认", "assets": [], "status": "design"},
+      "placement": "fixed_during_simulation",
+      "parameters": [
+        {"id": "cargo_item", "type": "item_type", "binding": "configuration.cargo_item"},
+        {"id": "cycle_seconds", "type": "duration", "unit": "second", "binding": "behavior.duration.value"}
+      ],
+      "configuration": {"cargo_item": "assembly"},
+      "ports": [
+        {"id": "pickup", "kind": "material", "direction": "in", "item_parameter": "cargo_item", "unit": "piece"},
+        {"id": "place", "kind": "material", "direction": "out", "item_parameter": "cargo_item", "unit": "piece"}
+      ],
+      "behavior": {
+        "declaration": "pick_and_place", "implementation_status": "required_not_implemented",
+        "concurrency": 1, "repeat_mode": "continuous_when_ready",
+        "inputs": [{"port": "pickup", "quantity": 1}],
+        "outputs": [{"port": "place", "quantity": 1}],
+        "duration": {"value": 12, "unit": "second", "basis": "自建演示假设，非真实机器节拍"},
+        "capacity": {"value": 1, "unit": "piece"}, "resources": [],
+        "identity_policy": "same_item_id_type_quality_and_composition",
+        "start": "source_item_available_and_robot_idle",
+        "stages": [
+          {"id": "approach", "ratio": 0.16666666666666666, "effect": "reserve_source_item_without_changing_holder"},
+          {"id": "grip", "ratio": 0.08333333333333333, "effect": "on_finish_transfer_same_item_from_source_to_robot_holder"},
+          {"id": "loaded_move", "ratio": 0.4166666666666667, "effect": "keep_item_held_by_robot"},
+          {"id": "release", "ratio": 0.08333333333333333, "effect": "on_start_reserve_destination_capacity_if_available; on_finish_transfer_same_item_once_and_commit_reserved_capacity"},
+          {"id": "return", "ratio": 0.25, "effect": "robot_becomes_available_only_on_finish"}
+        ],
+        "blocked": "wait_before_release_with_gripper_closed_and_same_cargo_held; freeze_effective_progress",
+        "finish": "return_completed; delivery_occurs_at_release_completion"
+      },
+      "presentation": {"media_ref": {"id": "superfactory.demo-media.robot", "version": "0.1.0"}, "binding_source": "equipment.design.json"},
+      "operations": ["configure", "inspect", "preview_cycle"]
+    },
+    {
+      "id": "superfactory.demo.belt-transfer", "version": "0.1.0", "category": "devices",
+      "title": "单件控制盒直线输送机", "definition_state": "design",
+      "contribution": {"author": "本项目自建演示定义", "license": "待项目许可确认", "assets": [], "status": "design"},
+      "placement": "fixed_during_simulation",
+      "parameters": [
+        {"id": "cargo_item", "type": "item_type", "binding": "configuration.cargo_item"},
+        {"id": "cycle_seconds", "type": "duration", "unit": "second", "binding": "behavior.duration.value"}
+      ],
+      "configuration": {"cargo_item": "assembly"},
+      "ports": [
+        {"id": "input", "kind": "material", "direction": "in", "item_parameter": "cargo_item", "unit": "piece"},
+        {"id": "output", "kind": "material", "direction": "out", "item_parameter": "cargo_item", "unit": "piece"}
+      ],
+      "behavior": {
+        "declaration": "fixed_device_transfer", "implementation_status": "required_not_implemented",
+        "concurrency": 1, "repeat_mode": "continuous_when_ready",
+        "inputs": [{"port": "input", "quantity": 1}], "outputs": [{"port": "output", "quantity": 1}],
+        "duration": {"value": 4, "unit": "second", "basis": "自建演示假设，非真实带速测量"},
+        "capacity": {"value": 1, "unit": "piece"}, "resources": [],
+        "identity_policy": "same_item_id_type_quality_and_composition",
+        "start": "source_available_and_device_idle; atomically_transfer_same_item_to_device_holder",
+        "finish": "travel_elapsed_and_destination_accepts; transfer_same_item_once",
+        "blocked": "hold_same_item_at_output_and_stop_belt_until_destination_accepts"
+      },
+      "presentation": {"media_ref": {"id": "superfactory.demo-media.conveyor", "version": "0.1.0"}, "binding_source": "equipment.design.json"},
+      "operations": ["configure", "inspect", "preview_cycle"]
+    },
+    {
+      "id": "superfactory.demo.carton-sealer", "version": "0.1.0", "category": "devices",
+      "title": "已装箱控制盒胶带封箱机", "definition_state": "design",
+      "contribution": {"author": "本项目自建演示定义", "license": "待项目许可确认", "assets": [], "status": "design"},
+      "placement": "fixed_during_simulation",
+      "parameters": [
+        {"id": "cycle_seconds", "type": "duration", "unit": "second", "binding": "behavior.duration.value"},
+        {"id": "tape_per_carton", "type": "quantity", "unit": "meter", "binding": "behavior.inputs[1].quantity"}
+      ],
+      "ports": [
+        {"id": "loaded", "kind": "material", "direction": "in", "item": "package", "unit": "piece", "required_attribute": {"closure": "open"}},
+        {"id": "tape", "kind": "material", "direction": "in", "item": "sealing_tape", "unit": "meter"},
+        {"id": "sealed", "kind": "material", "direction": "out", "item": "package", "unit": "piece", "result_attribute": {"closure": "sealed"}}
+      ],
+      "behavior": {
+        "declaration": "seal_existing_package", "implementation_status": "required_not_implemented",
+        "concurrency": 1, "repeat_mode": "continuous_when_ready",
+        "inputs": [{"port": "loaded", "quantity": 1}, {"port": "tape", "quantity": 0.6}],
+        "outputs": [{"port": "sealed", "quantity": 1}],
+        "duration": {"value": 8, "unit": "second", "basis": "自建演示假设；胶带0.6m也是演示输入"},
+        "resources": [], "identity_policy": "preserve_package_id_and_all_content_ids",
+        "start": "open_loaded_package_and_configured_tape_quantity_available; reserve_package_and_required_tape",
+        "stages": [
+          {"id": "infeed", "ratio": 0.25, "effect": "on_start_transfer_package_to_device_holder"},
+          {"id": "seal", "ratio": 0.5, "effect": "on_finish_consume_reserved_tape_once_and_set_same_package_closure_sealed"},
+          {"id": "outfeed", "ratio": 0.25, "effect": "on_finish_transfer_same_package_to_destination_if_accepted"}
+        ],
+        "blocked": "hold_sealed_package_at_output; no_second_tape_consumption_or_new_package",
+        "finish": "outfeed_elapsed_and_destination_accepts",
+        "professional_scope": "声明封箱与胶带用量；不计算纸箱展开、折叠、成型或胶带受力"
+      },
+      "presentation": {"media_ref": {"id": "superfactory.demo-media.sealer", "version": "0.1.0"}, "binding_source": "equipment.design.json"},
+      "operations": ["configure", "inspect", "preview_cycle"]
+    },
+    {
+      "id": "superfactory.demo.pallet12", "version": "0.1.0", "category": "resources",
+      "title": "十二箱可复用周转载具", "definition_state": "design",
+      "contribution": {"author": "本项目自建演示定义", "license": "待项目许可确认", "assets": [], "status": "design"},
+      "resource_definition": {
+        "kind": "reusable_carrier", "role": "finished_package_carrier",
+        "capacity": {"value": 12, "unit": "piece", "item": "package"},
+        "capacity_basis": "本演示2×2×3堆放方案；不推算工业承载质量",
+        "reusable": true, "current_occupation_is_instance_state": true,
+        "adoption": "create_empty_carrier_instance_only_after_explicit_adoption",
+        "acceptance": "sealed_package_and_free_slot; bind_existing_package_id_to_carrier_slot",
+        "release": "explicit_unload_or_transport_handoff_of_existing_contents",
+        "full": "reject_thirteenth_package_without_changing_any_existing_holder",
+        "identity_policy": "carrier_and_contents_have_separate_ids; no_product_count_from_carrier_count",
+        "stock_commit_owner": "factory_engine"
+      },
+      "presentation": {"media_ref": {"id": "superfactory.demo-media.pallet", "version": "0.1.0"}, "binding_source": "equipment.design.json"}
+    }
+  ],
+  "reuse_example": {
+    "shared_media_ref": {"id": "superfactory.demo-media.assembly", "version": "0.1.0"},
+    "definitions": [
+      {"id": "community.control-box-assembly", "version": "0.1.0", "manifest": "modules/devices/control-box-assembly/manifest.json", "display_name": "四螺钉控制盒装配台"},
+      {"id": "community.manual-assembly", "version": "0.1.0", "manifest": "modules/devices/manual-assembly/manifest.json", "display_name": "壳体与PCB人工装配台"}
+    ],
+    "rule": "可共享几何；端口、BOM、耗时和动作绑定分别采用，不能按模型文件名合并定义；人工装配版本不播放自动紧固动作"
+  },
+  "actual_result": null
+}

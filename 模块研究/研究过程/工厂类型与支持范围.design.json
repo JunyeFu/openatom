@@ -1,0 +1,101 @@
+{
+  "document_kind": "design_scope_not_runtime_manifest",
+  "date": "2026-10-12",
+  "factory_family": "discrete_manufacturing",
+  "current_delivery": [
+    {
+      "id": "A",
+      "name": "机加工交付型",
+      "route": [
+        "毛坯入口",
+        "受限三轴加工",
+        "下料转移",
+        "名义检查",
+        "包装",
+        "成品出口"
+      ]
+    },
+    {
+      "id": "B",
+      "name": "外购件总装型",
+      "parallel_inputs": [
+        "外购零件分支",
+        "外购PCB分支",
+        "连接件数量分支"
+      ],
+      "join": "按BOM与规格齐套",
+      "route_after_join": [
+        "受限总装",
+        "检查与处置",
+        "包装",
+        "成品出口"
+      ]
+    },
+    {
+      "id": "C",
+      "name": "机电产品并行制造与总装型",
+      "parallel_inputs": [
+        "壳体机加工分支",
+        "PCB准备与贴装循环分支或采购完成PCB",
+        "外购件分支"
+      ],
+      "join": "按同一产品BOM与规格齐套",
+      "route_after_join": [
+        "受限总装",
+        "检查与返工分流",
+        "包装",
+        "成品出口"
+      ]
+    }
+  ],
+  "composition_rules": {
+    "serial": "按相容物料/工程输出与输入连接，接收能力决定移交",
+    "parallel_resources": "多部件支线可以并行；共享设备/人员占用不得重叠",
+    "assembly_join": "按BOM规格及数量组装，保留所用实例/批次关系",
+    "alternative_route": "一件物料按策略选一路，不因分叉自动复制",
+    "rework": "按场景规定的动作与次数返回，保存质量状态和物料关系"
+  },
+  "extensions_reserved": [
+    {
+      "name": "给定固化工位",
+      "status": "design_example",
+      "new_material_mechanism": false,
+      "responsibility": "以声明时间和作业条件延长离散工艺；专业固化质量另需模型"
+    },
+    {
+      "name": "多腔成型工位",
+      "status": "future_type",
+      "new_material_mechanism": true,
+      "responsibility": "批次到多件数量/残余转换与专业成型模型"
+    },
+    {
+      "name": "配料混合灌装",
+      "status": "future_factory_family",
+      "new_material_mechanism": true,
+      "responsibility": "流量/存量/组分/批次与单件转换；可能扩展共同运行层"
+    }
+  ],
+  "engineering_tools": [
+    "数控加工工程模块",
+    "电子装联准备与执行模块",
+    "机器人作业编程模块",
+    "纸包装结构与成型工程模块",
+    "控制柜设计与制造交付模块",
+    "公差与装配条件模块"
+  ],
+  "research_focus_now": [
+    1,
+    2,
+    3,
+    5,
+    6
+  ],
+  "research_4_now": "接入约定；详细批次/连续工厂研究后置",
+  "implementation_status": "design_only",
+  "updated_date": "2026-10-13",
+  "product_mainline_ref": "../../软件工程/docs/00_项目基线/项目主线.json",
+  "first_release_real_professional": "paper_structure_and_forming_only",
+  "additional_generation_profile": "die_cut_fold_glued_paper_carton",
+  "agent_scope": "goal_template_fill_static_check_actual_simulation_finite_repair_and_report",
+  "extension_target": "community_nine_category_support_not_all_industries_implemented"
+}

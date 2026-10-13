@@ -1,0 +1,282 @@
+{
+  "document_kind": "product_task_trace_design_not_runtime",
+  "reference_base": "software_engineering_root",
+  "product_definition": "docs/00_项目基线/用户任务与产品边界.md",
+  "industry_evidence": "docs/00_项目基线/行业需求与原文支撑.md",
+  "requirements": "docs/00_项目基线/首版需求与验收.md",
+  "task_selection": "docs/00_项目基线/首版任务选择.json",
+  "original_backlog": "docs/04_开发与验收/tasks.json",
+  "source_catalog": "../研究资料/来源目录.json",
+  "rows": [
+    {
+      "user_task": "UT-01",
+      "requirements": [
+        "SF-01",
+        "SF-02",
+        "SF-04",
+        "SF-17"
+      ],
+      "implementation_tasks": [
+        "P0-01",
+        "P0-02",
+        "P4-01",
+        "P3-01",
+        "P3-04",
+        "P2-01",
+        "P2-04",
+        "P2-06"
+      ],
+      "background_sources": [
+        "D05",
+        "C01",
+        "PK06"
+      ],
+      "actual_result": null,
+      "user_requirement_note": "用户要求一句话目标/尺寸驱动生成；PK06仅支持纸箱工艺基线，不证明Agent效果或达标",
+      "input": "空工程或模板；产品、接受单位/位置、观察窗或生产日、目标、场地长宽高及参数来源。",
+      "human_actions": "选择起点，确认示例/真实参数、目标口径及允许修改项；可自行编辑或给已连接外部Agent一句话要求。",
+      "agent_actions": "发现能力/上下文，查询模板和九类库，填参布置/连接/排期，检查、渲染、实际运行并读取结果。",
+      "success_condition": "工程可保存继续编辑；输入齐全、检查通过且实际接受量达标时直接交付，不强制修改或比较。",
+      "incomplete_or_unsatisfied": "无匹配、缺输入或布局不满足时保存草稿和具体缺项；实际目标不足时进入UT-06许可变量内有限修正或说明不能修正，不把目标填成结果。",
+      "handoff": "同一工程交UT-02/03配置、UT-05解释或UT-07交付；只有实际运行产生RunId。",
+      "operation_refs": [
+        "describe_capabilities",
+        "get_context",
+        "query_module_library",
+        "get_object",
+        "apply_commands",
+        "check_factory_draft",
+        "render_view",
+        "run_scenario",
+        "get_run",
+        "save_project"
+      ]
+    },
+    {
+      "user_task": "UT-02",
+      "requirements": [
+        "SF-04",
+        "SF-10",
+        "SF-11"
+      ],
+      "implementation_tasks": [
+        "P3-01",
+        "P3-02",
+        "P3-03",
+        "P3-04",
+        "P4-01"
+      ],
+      "background_sources": [
+        "A05",
+        "A08"
+      ],
+      "actual_result": null,
+      "input": "九类中的指定类别、定义/导入包、参数/端口/角色/行为、素材版本及采用消费者。",
+      "human_actions": "按类别新建/编辑/导入，检查样例并明确选择版本、参数及消费者；决定分享内容。",
+      "agent_actions": "查询和读取定义，通过共同操作修改/导入/预览/采用；不运行上传包任意脚本，不自行公开发布。",
+      "success_condition": "九类定义均能继续编辑并被对应消费者采用；表现与行为分开，版本变化不会静默覆盖已有实例。",
+      "incomplete_or_unsatisfied": "仅保存定义不代表运行可用；缺行为/专业提供者定位待补；换素材、循环预览、复制模板不增加库存或人数。",
+      "handoff": "定义及明确采用的实例供UT-03配置和UT-05执行，指定类别贡献交UT-07。",
+      "operation_refs": [
+        "query_module_library",
+        "get_object",
+        "apply_commands",
+        "import_package",
+        "render_view",
+        "run_scenario",
+        "get_run"
+      ]
+    },
+    {
+      "user_task": "UT-03",
+      "requirements": [
+        "SF-03",
+        "SF-05",
+        "SF-06",
+        "SF-07",
+        "SF-17"
+      ],
+      "implementation_tasks": [
+        "P0-02",
+        "P1-01",
+        "P1-02",
+        "P1-03",
+        "P1-04",
+        "P1-05",
+        "P2-01",
+        "P2-02",
+        "P2-05",
+        "P3-04",
+        "P4-01"
+      ],
+      "background_sources": [
+        "D05",
+        "C01",
+        "D10"
+      ],
+      "actual_result": null,
+      "user_requirement_note": "人工或外部Agent在共同工程组织BOM/路线、阶段资源、排期与供货；SF-17关联不要求初案达标后强制修正，与UT-03文字表一致",
+      "input": "产品/订单/BOM/路线、库位和初始物品、阶段资源/班次/到料、换单/质量、运输及目的接受条件。",
+      "human_actions": "在两画布、对象面板和时间轴编辑同一场景输入，连接串并联/厂际供货，确认工艺条件。",
+      "agent_actions": "以共同操作读取/创建/修改/连接对象，检查引用、端口和场地，呈现缺项及未满足条件。",
+      "success_condition": "形成可执行场景输入，面板与时间轴一致，连接有物品含义，复制布局不复制存量。",
+      "incomplete_or_unsatisfied": "缺结构字段保留草稿；已声明的缺料/资源不足允许在UT-05形成真实等待，不要求预先消除所有业务不足。",
+      "handoff": "场景输入交UT-05，工序/物品/物流状态仍由共同引擎拥有，目标供货不是已接受数量。",
+      "operation_refs": [
+        "get_object",
+        "apply_commands",
+        "check_factory_draft"
+      ]
+    },
+    {
+      "user_task": "UT-04",
+      "requirements": [
+        "SF-12",
+        "SF-13"
+      ],
+      "implementation_tasks": [
+        "P0-03",
+        "P4-02"
+      ],
+      "background_sources": [
+        "PK01",
+        "PK02",
+        "PK03",
+        "PK04",
+        "PK05"
+      ],
+      "actual_result": null,
+      "input": "产品版本、三机制/三变化、材料/构件/连接、成型/开合/固定姿态直线取物要求及计算预算。",
+      "human_actions": "检查专业结果与制造层，决定成果认可用途和工位绑定；变更后复核受影响成果。",
+      "agent_actions": "提交专业计算、查看/取消长任务并读取三态结果和制造层；仅以已有人工认可引用执行绑定。",
+      "success_condition": "形成过程判定、刀/折/胶SVG、材料/数量表及可编辑成果；当前成果获人工认可且绑定匹配后才可用于工位。",
+      "incomplete_or_unsatisfied": "Fail/Undetermined可保存检查成果，不能称包装合格；缺认可或产品变更使绑定待复核，Agent不能自造认可或增加成品。",
+      "handoff": "成果/认可/绑定分开交包装消费者；专业变更经UT-06重算复核后影响UT-05工厂结果。",
+      "operation_refs": [
+        "compute_packaging",
+        "get_task",
+        "cancel_task",
+        "adopt_artifact"
+      ]
+    },
+    {
+      "user_task": "UT-05",
+      "requirements": [
+        "SF-06",
+        "SF-07",
+        "SF-08",
+        "SF-11"
+      ],
+      "implementation_tasks": [
+        "P1-01",
+        "P1-02",
+        "P1-03",
+        "P2-04",
+        "P3-04"
+      ],
+      "background_sources": [
+        "D05",
+        "C01"
+      ],
+      "actual_result": null,
+      "input": "可执行方案/输入版本、观察窗、目的接受位置和单位，已有物品/资源/运输条件。",
+      "human_actions": "开始/暂停/单步或取消长任务，选择设备/物品/供货关系查看当前条件和经历。",
+      "agent_actions": "实际运行、读取RunId/对象/经历、渲染；从共同结果解释等待和未交需求，不自动宣布唯一根因。",
+      "success_condition": "结果归属明确，可定位持有者/资源/当前阻断；目标未达仍可正确完成彩排，厂内完成与目的接受分列。",
+      "incomplete_or_unsatisfied": "仅预览、未执行或任务失败不具有成功运行结果；回看和拖动显示位置不重放生产，不改变产量。",
+      "handoff": "实际RunId及经历交UT-06比较或UT-07报告；预期等待与软件执行失败分别判定。",
+      "operation_refs": [
+        "run_scenario",
+        "get_run",
+        "get_object",
+        "get_task",
+        "cancel_task",
+        "render_view"
+      ]
+    },
+    {
+      "user_task": "UT-06",
+      "requirements": [
+        "SF-08",
+        "SF-09",
+        "SF-13"
+      ],
+      "implementation_tasks": [
+        "P2-03",
+        "P2-06",
+        "P4-02"
+      ],
+      "background_sources": [
+        "D05",
+        "C01"
+      ],
+      "actual_result": null,
+      "input": "原方案和实际结果、允许改变的变量、相同接受单位/位置/观察窗及新输入版本。",
+      "human_actions": "决定输入变化，保留原方案；专业输入变更后重新计算并认可受影响成果，选择比较口径。",
+      "agent_actions": "在许可变量内修改、检查、重跑并比较实际结果；不能修正时说明具体不足与缺项。",
+      "success_condition": "变化、两次结果和差异可核对，旧结果保留其原版本归属；初案达标不强制进入此任务。",
+      "incomplete_or_unsatisfied": "缺一侧结果或口径不同不能宣布改善；受影响包装绑定待复核，无界全局最优搜索后置。",
+      "handoff": "可核对比较及变更说明交UT-07，新方案可回UT-03/04/05继续修改与验证。",
+      "operation_refs": [
+        "get_object",
+        "apply_commands",
+        "check_factory_draft",
+        "run_scenario",
+        "get_run",
+        "compare_runs",
+        "compute_packaging"
+      ]
+    },
+    {
+      "user_task": "UT-07",
+      "requirements": [
+        "SF-14",
+        "SF-15",
+        "SF-16"
+      ],
+      "implementation_tasks": [
+        "P2-03",
+        "P5-01",
+        "P2-06"
+      ],
+      "background_sources": [
+        "A05",
+        "D10",
+        "PK01"
+      ],
+      "actual_result": null,
+      "input": "设计工程或实际RunId/比较、EvaluationReport及允许携带的模块/素材/贡献内容。",
+      "human_actions": "选择内容和授权资产，接手者在另一目录重开修改；人决定社区公开发布及比赛正式提交。",
+      "agent_actions": "用同一操作导出PDF/HTML/CSV/JSON，保存目录/工程包、准备指定类别贡献内容，不自动公开发布。",
+      "success_condition": "四格式来自同一EvaluationReport，单位/条件/RunId一致，工程可重开修改且模块可按类别采用。",
+      "incomplete_or_unsatisfied": "未运行仅导出设计说明；缺成果/行为列缺项而不补造结果；工业评估、作品介绍PDF/真实录像、正式手续分别验收。",
+      "handoff": "接手工程回UT-02/03/05继续工作；SF-15材料及手续由开发/发布责任人接收。",
+      "operation_refs": [
+        "save_project",
+        "export_package",
+        "export_evaluation",
+        "import_package",
+        "apply_commands"
+      ]
+    }
+  ],
+  "limits": [
+    "来源说明任务背景，不证明每个交互设计或实现任务由文献直接要求",
+    "P0-03只做专业成果/认可/绑定/执行结果类型，原全产品其余范围后置",
+    "任务关联不是代码、测试或用户验收已完成"
+  ],
+  "functional_contract": {
+    "checkpoint": "S03-01",
+    "spec_ref": "docs/00_项目基线/首版需求与验收.md",
+    "operation_catalog_ref": "packages/commands/command-catalog.design.json",
+    "review_ref": "docs/04_开发与验收/S03-01_用户任务与功能需求复审.json",
+    "implementation_mapping_semantics": "UT关联直接实现任务；共同底座与最终P5完整验收仍取原两种前置和SF/IX，不把此表变成另一套依赖。",
+    "human_reserved_decisions": [
+      "专业成果认可用途",
+      "社区公开发布",
+      "比赛正式提交"
+    ],
+    "runtime_available": false,
+    "actual_user_validation": null
+  }
+}

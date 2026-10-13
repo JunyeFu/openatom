@@ -1,0 +1,46 @@
+{
+  "document_kind": "self_built_device_authoring_inputs_not_runtime",
+  "fixed_cycle": {
+    "inputs": {"shell": 2, "pcb": 1},
+    "recipe": {"shell": 1, "pcb": 1},
+    "workers": 1,
+    "observation_ms": 120000,
+    "clips": [
+      {"id": "frame-a", "weight": "0.2"},
+      {"id": "frame-b", "weight": "0.35"},
+      {"id": "frame-c", "weight": "0.3"},
+      {"id": "frame-d", "weight": "0.15"}
+    ],
+    "baseline_duration_ms": 60000,
+    "changed_duration_ms": 30000,
+    "reordered_ids": ["frame-b", "frame-a", "frame-c", "frame-d"],
+    "phase_binding": null,
+    "actual_result": null
+  },
+  "phase_wait": {
+    "phases": [
+      {"id": "load", "duration_ms": 10000, "worker": true, "end_pose": "loaded"},
+      {"id": "auto", "duration_ms": 45000, "worker": false, "end_pose": "auto_end"},
+      {"id": "unload", "duration_ms": 5000, "worker": true, "end_pose": "finished"}
+    ],
+    "worker_busy_intervals_ms": [[50000, 70000]],
+    "output_ready_at_ms": 85000,
+    "hold_on_output_wait": true,
+    "sample_times_ms": [55000, 60000, 70000, 72000, 75000, 80000, 85000],
+    "actual_result": null
+  },
+  "adoption": {
+    "base_version": "0.1.0", "visual_version": "0.1.1", "behavior_version": "0.2.0",
+    "base_duration_ms": 60000, "changed_duration_ms": 30000,
+    "instances": ["A", "B"], "selected_instance": "A",
+    "old_port_id": "pcb", "new_port_id": "pcb_v2",
+    "dependent_connection_id": "pcb-store-to-A",
+    "dependent_tag_id": "A-pcb-stock",
+    "actual_result": null
+  },
+  "handoff_assets": [
+    {"id": "own-geometry", "redistribute": true, "input_basis": "假设作者明确允许再分发的自建几何数据"},
+    {"id": "private-photo", "redistribute": false, "input_basis": "假设只允许私人使用的照片"},
+    {"id": "industry-report", "redistribute": false, "input_basis": "假设研究原文，不是设备包资产"}
+  ]
+}

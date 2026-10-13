@@ -1,0 +1,261 @@
+{
+  "document_kind": "business_scenario_design_not_runtime_input",
+  "schema_revision": "draft-1",
+  "assumptions": "All durations, deadlines, rates and quality decisions are self-built examples. Inter-station transfers are instantaneous except the declared T1 outbound transport; resource calendars and receiving capacities are explicit below.",
+  "actual_result": null,
+  "cases": [
+    {
+      "id": "multi_order",
+      "time": {
+        "unit": "millisecond",
+        "observation_end_ms": 240000
+      },
+      "products": [
+        {
+          "id": "A",
+          "revision": "r1",
+          "recipe": "shared_hardware_label_A"
+        },
+        {
+          "id": "B",
+          "revision": "r1",
+          "recipe": "shared_hardware_label_B"
+        }
+      ],
+      "orders": [
+        {
+          "id": "A",
+          "product_revision": "A/r1",
+          "quantity": 2,
+          "unit": "piece",
+          "release_ms": 0,
+          "due_ms": 160000,
+          "destination": "customer",
+          "acceptance_stage": "unloaded_and_released",
+          "allow_partial": false
+        },
+        {
+          "id": "B",
+          "product_revision": "B/r1",
+          "quantity": 2,
+          "unit": "piece",
+          "release_ms": 0,
+          "due_ms": 200000,
+          "destination": "customer",
+          "acceptance_stage": "unloaded_and_released",
+          "allow_partial": false
+        }
+      ],
+      "initial_stock": {
+        "shell": 4,
+        "pcb": 2,
+        "fastener": 16,
+        "carton": 4
+      },
+      "arrivals": [
+        {
+          "at_ms": 100000,
+          "pcb": 2
+        }
+      ],
+      "bom": {
+        "assembly": {
+          "shell": 1,
+          "pcb": 1,
+          "fastener": 4
+        },
+        "packing": {
+          "released_assembly": 1,
+          "carton": 1
+        }
+      },
+      "resources": {
+        "assembly_person": "W-A",
+        "inspection_and_packing_person": "W-B",
+        "transport_cart": "T1"
+      },
+      "initial_setup_family": "A",
+      "changeover_ms": {
+        "A_to_B": 15000,
+        "B_to_A": 25000
+      },
+      "operations_ms": {
+        "assembly": 30000,
+        "inspection": 10000,
+        "packing": 10000
+      },
+      "quality": "preset_PASS",
+      "transport": {
+        "capacity": 2,
+        "allow_partial_load": false,
+        "departures_ms": [
+          120000,
+          180000
+        ],
+        "travel_ms": 20000,
+        "unload_ms": 5000,
+        "return_ms": 20000,
+        "receiving_capacity": 4,
+        "load_ms": 0
+      },
+      "variants": [
+        {
+          "id": "multi_a_first",
+          "dispatch": [
+            "A",
+            "A",
+            "B",
+            "B"
+          ]
+        },
+        {
+          "id": "multi_b_first",
+          "dispatch": [
+            "B",
+            "B",
+            "A",
+            "A"
+          ]
+        }
+      ],
+      "resource_calendar_ms": [
+        [
+          0,
+          240000
+        ]
+      ],
+      "station_output_capacity": 4
+    },
+    {
+      "id": "phase_calendar",
+      "time": {
+        "unit": "millisecond",
+        "observation_end_ms": 100000
+      },
+      "machine_calendar_ms": [
+        [
+          0,
+          100000
+        ]
+      ],
+      "worker_calendar_ms": [
+        [
+          0,
+          20000
+        ],
+        [
+          40000,
+          60000
+        ]
+      ],
+      "phases": [
+        {
+          "id": "load",
+          "duration_ms": 5000,
+          "resources": [
+            "CNC",
+            "W-C"
+          ],
+          "interruption_policy": "non_preemptive"
+        },
+        {
+          "id": "auto",
+          "duration_ms": 30000,
+          "resources": [
+            "CNC"
+          ],
+          "interruption_policy": "non_preemptive"
+        },
+        {
+          "id": "unload",
+          "duration_ms": 5000,
+          "resources": [
+            "CNC",
+            "W-C"
+          ],
+          "interruption_policy": "non_preemptive"
+        }
+      ],
+      "job_resources": [
+        "CNC"
+      ]
+    },
+    {
+      "id": "quality_pending_and_scrap",
+      "time": {
+        "unit": "millisecond",
+        "observation_end_ms": 120000
+      },
+      "demand": 3,
+      "initial_stock": {
+        "shell": 3,
+        "pcb": 3,
+        "fastener": 12,
+        "carton": 3
+      },
+      "durations_ms": {
+        "assembly": 20000,
+        "inspection": 10000,
+        "rework": 15000,
+        "packing": 10000
+      },
+      "resources": {
+        "assembly_and_rework": "W-A",
+        "inspection": "W-Q",
+        "packing": "W-P"
+      },
+      "pending_policy": "pending_store",
+      "pending_capacity": 1,
+      "isolation_capacity": 1,
+      "max_reworks": 1,
+      "quality_presets": {
+        "assembly1": [
+          "PASS"
+        ],
+        "assembly2": [
+          "FAIL",
+          "FAIL"
+        ],
+        "assembly3": [
+          "UNKNOWN"
+        ]
+      },
+      "decisions": [
+        {
+          "at_ms": 90000,
+          "item": "assembly3",
+          "kind": "manual_release",
+          "source": "self-built scheduled decision"
+        },
+        {
+          "at_ms": 100000,
+          "item": "assembly2",
+          "kind": "scrap",
+          "source": "self-built scheduled decision"
+        }
+      ],
+      "automatic_replacement": false,
+      "resource_calendar_ms": [
+        [
+          0,
+          120000
+        ]
+      ],
+      "station_output_capacity": 3
+    },
+    {
+      "id": "refinement",
+      "same_calendars_as": "phase_calendar",
+      "coarse": {
+        "single_phase_ms": 40000,
+        "worker_held_whole_job": true,
+        "interruption_policy": "non_preemptive"
+      },
+      "refined": {
+        "phases_from": "phase_calendar",
+        "same_total_active_ms": 40000
+      },
+      "meaning": "change in declared behavior; presentation-only changes would preserve results"
+    }
+  ]
+}

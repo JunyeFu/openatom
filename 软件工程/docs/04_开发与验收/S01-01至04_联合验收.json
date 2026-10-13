@@ -1,0 +1,298 @@
+{
+  "document_kind": "S01_01_to_04_joint_document_acceptance_after_correction",
+  "date": "2026-10-13 Asia/Shanghai",
+  "scope": [
+    "S01-01",
+    "S01-02",
+    "S01-03",
+    "S01-04"
+  ],
+  "basis": "本会话可见最新用户主线与十二项已确认选择；本轮追加初案达标即可交付，S01-04纳入联合检查；原来源/竞品核读记录作为既有文档依据，不虚构本轮联网或用户观测",
+  "conclusion": {
+    "core_product_mainline": "aligned_generic_industrial_platform",
+    "joint_document_acceptance": "passed",
+    "open_document_findings": 0,
+    "product_acceptance": "not_performed",
+    "S01_05_or_later_advanced_by_this_review": false
+  },
+  "closed_findings": [
+    {
+      "id": "F01",
+      "status": "resolved",
+      "correction": "通用输入/规格/接受单位和A(H)采用行业无关合同；纸箱/束换算留在纸箱样例，外购件装配用piece走查同一goal_fields",
+      "evidence": [
+        "docs/03_架构与契约/目标驱动厂房生成.md",
+        "packages/domain/factory-generation.design.json",
+        "modules/templates/carton-factory/generation-profile.design.json",
+        "scenarios/目标驱动建厂/acceptance.design.json"
+      ]
+    },
+    {
+      "id": "F02",
+      "status": "resolved",
+      "correction": "初案输入齐全、检查通过且实际达标直接交付；不足时有限修正/重跑比较或不能修正说明；修正能力以独立不足案例验收，单运行报告无必填修正RunId/比较",
+      "evidence": [
+        "docs/00_项目基线/项目主线.json",
+        "docs/00_项目基线/首版需求与验收.md",
+        "docs/04_开发与验收/tasks.json",
+        "scenarios/目标驱动建厂/acceptance.design.json",
+        "packages/reporting/evaluation-report.contract.design.json",
+        "integrations/agent/skills/superfactory-workflow/SKILL.md"
+      ]
+    },
+    {
+      "id": "F03",
+      "status": "resolved",
+      "correction": "UT-03文字表补SF-17及人工/Agent共同组织说明；七项UT需求集合逐行与JSON核对一致",
+      "evidence": [
+        "docs/00_项目基线/用户任务与产品边界.md",
+        "docs/00_项目基线/用户任务与需求映射.json"
+      ]
+    }
+  ],
+  "chat_alignment": [
+    {
+      "id": "H01",
+      "topic": "产品主线",
+      "user_quote": "想做一个自由度高的工业模拟平台桌面软件",
+      "consumer": "docs/00_项目基线/用户任务与产品边界.md",
+      "judgment": "产品仍是开放工业模拟平台，不是单一纸箱工具。"
+    },
+    {
+      "id": "H02",
+      "topic": "使用者",
+      "user_quote": "本软件的设计目的是解决产业规划的非专业人员或专业人员快速出具方案时的模拟效果",
+      "consumer": "docs/00_项目基线/用户任务与产品边界.md",
+      "judgment": "非专业和快速出方案的专业人员均保留；模板提供输入不等于必须会编程/CAD。"
+    },
+    {
+      "id": "H03",
+      "topic": "画布与排期",
+      "user_quote": "类似UML绘图软件一样有一个画布可以自己设计产线 通过时间轴排期来评估产能",
+      "consumer": "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+      "judgment": "自由搭线与可编辑排期输入保留，实际起止由依赖/资源计算。"
+    },
+    {
+      "id": "H04",
+      "topic": "两画布三档显示",
+      "user_quote": "常态化视图只有流水线画布和多厂房画布，两张画布可以通过菜单切换",
+      "consumer": "../设计预览/当前交互规格.md",
+      "judgment": "设备单击开详情、缩放不切页；整厂是流水线画布缩小端点，详细/简化/区域三档保留。"
+    },
+    {
+      "id": "H05",
+      "topic": "对象及移动",
+      "user_quote": "设备是不可移动的东西",
+      "consumer": "docs/00_项目基线/用户任务与产品边界.md",
+      "judgment": "运行时固定，编辑时可移动；整线移动保留连接，与后续类工厂游戏要求相容。"
+    },
+    {
+      "id": "H06",
+      "topic": "九类自定义与社区",
+      "user_quote": "开放9类业务概念的自定义功能和适配Agent操作",
+      "consumer": "packages/module-kit/category-contracts.design.json",
+      "judgment": "九类有独立载荷/消费者/贡献入口，厂房归templates；既有模板是起点，不是仅可选内置设备。"
+    },
+    {
+      "id": "H07",
+      "topic": "素材/时间轴/原生设备",
+      "user_quote": "设备视图对自定义上传的设备可采用时间轴模式管理，循环操作",
+      "consumer": "docs/02_交互设计/设备时间轴与标签设计.md",
+      "judgment": "插图/序列/GIF/模型、数据与操作标签及可编辑原生部件保留；观看循环与生产循环分开。"
+    },
+    {
+      "id": "H08",
+      "topic": "逐件追踪",
+      "user_quote": "允许追踪一个零件（外部采购）从送入流水线到完成组装的全过程",
+      "consumer": "docs/00_项目基线/用户任务与产品边界.md",
+      "judgment": "采购/加工物品、装配组成和包装内容关联保留，不止移动摄像机看动画。"
+    },
+    {
+      "id": "H09",
+      "topic": "Agent完整建厂",
+      "user_quote": "尝试实现结合预留Agent接口让用户使用外部Agent一句话生成尽量详细和布线合理的厂房",
+      "consumer": "docs/03_架构与契约/目标驱动厂房生成.md",
+      "judgment": "真实模板/九类填充、编辑、检查、渲染/模拟和报告保留；通用合同现采用产品与accepted_unit，纸箱只作行业样例，F01已闭合。"
+    },
+    {
+      "id": "H10",
+      "topic": "首版专业选择",
+      "user_quote": "B．平台闭环＋一个专业工程闭环",
+      "consumer": "docs/00_项目基线/首版确认选择.json",
+      "judgment": "只选纸包装真实专业内核是明确选择；其余40专业保留研究不是擅自砍产品。"
+    },
+    {
+      "id": "H11",
+      "topic": "运行方式和技术栈",
+      "user_quote": "A．Windows本地桌面软件",
+      "consumer": "docs/00_项目基线/首版交付基线.md",
+      "judgment": "Tauri/Rust/React/TypeScript/Three.js及真实3D固定斜视角沿用所选项。"
+    },
+    {
+      "id": "H12",
+      "topic": "额外业务后置",
+      "user_quote": "A．先完成共同必做，复杂路径、维修、建设与公用服务后置",
+      "consumer": "docs/00_项目基线/首版交付基线.md",
+      "judgment": "固定时间运输＋静态场地/连接检查符合首版，不冒充动态交通或机电设计。"
+    },
+    {
+      "id": "H13",
+      "topic": "负载目标",
+      "user_quote": "A．3厂房、60设备、3000件物品，先确保完整流程和稳定交互",
+      "consumer": "docs/00_项目基线/用户任务与产品边界.md",
+      "judgment": "明确是验收基准而非规模禁令，不排斥日产一万目标。"
+    },
+    {
+      "id": "H14",
+      "topic": "材料期限",
+      "user_quote": "10月30日前完成全部比赛提交物品的准备",
+      "consumer": "docs/00_项目基线/首版交付基线.md",
+      "judgment": "现有解释为10月29日结束前备齐；仍是期限，不保留旧固定20天作额外硬约束。"
+    },
+    {
+      "id": "H15",
+      "topic": "课程及赛道",
+      "user_quote": "不需要衔接实验 符合列举的大作业范围即可",
+      "consumer": "docs/00_项目基线/课程与比赛适配.md",
+      "judgment": "竞赛准备＋AI Agent应用，赛道一；没有强塞实验/DragonOS/ONNX/MQTT或实体硬件。",
+      "secondary_user_quote": "要求在原子大赛赛道一中参赛"
+    },
+    {
+      "id": "H16",
+      "topic": "评估交付",
+      "user_quote": "平台能导出工业模拟需要的几种格式的评估文档",
+      "consumer": "docs/03_架构与契约/评估报告与数据导出.md",
+      "judgment": "PDF/HTML/CSV/JSON为既定项目细化；评估、可编辑工程、赛事介绍/视频不混用。"
+    },
+    {
+      "id": "H17",
+      "topic": "达标即交付",
+      "user_quote": "保持通用工业平台主线，初案达标即可交付，S01-04可以加入整体验收",
+      "consumer": "packages/domain/factory-generation.design.json",
+      "judgment": "初案达标直接保存/导出，修正能力仍以单独不足案例证明；四项联合审查不扩大开发范围"
+    }
+  ],
+  "checkpoint_results": [
+    {
+      "id": "S01-01",
+      "review_status": "passed",
+      "completion_credit": 1,
+      "evidence_credit": 1,
+      "scope": "用户、任务和产品边界；对齐规范化目录与开发依据入口，不包含后续检查项复审或产品实现",
+      "runtime_validation": null
+    },
+    {
+      "id": "S01-02",
+      "review_status": "passed",
+      "completion_credit": 1,
+      "evidence_credit": 0.5,
+      "scope": "行业任务、原文支撑及与首版设计的需求关联；不含用户试用、工业收益、市场规模或其他检查项复审",
+      "runtime_validation": null
+    },
+    {
+      "id": "S01-03",
+      "review_status": "passed",
+      "completion_credit": 1,
+      "evidence_credit": 1,
+      "scope": "仅S01-03课程与比赛适配；不含原创性/技术经济证明、产品实现、团队资格审核或正式提交",
+      "runtime_validation": null
+    },
+    {
+      "id": "S01-04",
+      "review_status": "passed",
+      "completion_credit": 1,
+      "evidence_credit": 0.5,
+      "scope": "完整工作链已有方案、贡献边界与开发取舍；不含竞品运行、效率实测、用户采用或技术新颖性认证",
+      "runtime_validation": null
+    }
+  ],
+  "interface_walkthroughs": [
+    {
+      "id": "J01",
+      "scope": "非纸箱与纸箱目标共用行业无关合同",
+      "inputs": "product_family, product_specification_ref, accepted_quantity_per_day, accepted_unit, acceptance_scope, calendar, window, site",
+      "carton_case": "accepted_unit=carton，束按声明内容换算；合格箱在指定接受处计一次",
+      "assembly_case": "accepted_unit=piece，合格装配成品在指定接受处计一次，不把消耗零件数加到产量",
+      "result": "passed_document_walkthrough_only"
+    },
+    {
+      "id": "J02",
+      "scope": "初案达标",
+      "inputs": "完整来源输入、布局检查通过、实际运行在同窗口/接受位置达到Q",
+      "flow": "实际结果→保存工程+四格式评估；只有初案RunId，修正/比较为空，直接结束",
+      "result": "passed_document_walkthrough_only_runtime_pending_GF07"
+    },
+    {
+      "id": "J03",
+      "scope": "初案不足",
+      "inputs": "实际缺口/等待或检查失败，受支持且获许可的修改变量",
+      "flow": "具体原因→有限改动→复核→新运行/比较（有旧运行时）→达标交付或停止说明；缺数据/能力不能报达标",
+      "result": "passed_document_walkthrough_only_runtime_pending_GF05"
+    },
+    {
+      "id": "J04",
+      "scope": "课程/赛事/竞品衔接",
+      "inputs": "同一UT/SF/所选任务与真实版本，研究事实不当软件结果",
+      "flow": "课程竞赛准备/AI Agent应用→赛道一；C1—C3关联既有任务和T1—T3，比较相同业务输入，不制造竞品劣势",
+      "result": "passed_document_walkthrough_only"
+    }
+  ],
+  "static_verification": {
+    "command": "tools/检查主线同步.py",
+    "result_ref": "docs/04_开发与验收/主线同步检查结果.json",
+    "checks": [
+      "七项UT文字/JSON需求集合一致",
+      "通用目标单位与初案达标/独立不足分支一致",
+      "需求/任务/课程/Agent/报告消费者同步",
+      "本地引用/JSON/Python/CSV结构和任务依赖",
+      "成熟度信用值、选择数量与未实现状态保留"
+    ],
+    "scope": "static_design_consistency_not_product_test",
+    "result": "passed",
+    "matrix_passed": 12,
+    "checked_local_references": 2104,
+    "errors": [],
+    "checked_files": 1237
+  },
+  "open_evidence_not_document_conflict": [
+    "S01-02没有目标用户工时/频率/采用与市场量化，仍不能称全部证据100%",
+    "没有实际Agent/引擎/专业/性能运行；声明/截图/手算仍不是产品结果",
+    "原型模板和纸箱种子参数未全部实例化，属于P4执行与验收任务",
+    "代码/素材许可、报名与正式提交尚未完成",
+    "S01-04仍无同输入实际软件对照、净人工收益或独创算法证明，原证据信用0.5保留"
+  ],
+  "unchanged_scope": {
+    "requirements": 17,
+    "planned_operations": 18,
+    "selected_tasks": 21,
+    "deferred_tasks": 7,
+    "professional_research_directions": 41,
+    "selected_real_professional_kernels": 1,
+    "runtime_available_operations": 0,
+    "completed_product_tasks": 0
+  },
+  "actual_runtime_result": null,
+  "parallel_review_preserved": {
+    "checkpoint": "S01-05",
+    "source": "other_window_completed_review_observed_in_shared_table",
+    "passed_reviews": 5,
+    "pending_reviews": 55,
+    "S01_completion_percent": 100,
+    "S01_strength_percent": 60,
+    "next_checkpoint": "S02-01",
+    "not_added_by_this_joint_review": true
+  },
+  "report_update": {
+    "pages": 225,
+    "regenerated": true,
+    "visually_inspected_pages": [
+      8,
+      10,
+      11
+    ],
+    "ref": "../模块研究/输出/报告/超级工厂_九类模块与完整业务设计报告.pdf",
+    "not_runtime_proof": true
+  },
+  "record_status": "previous_four_checkpoint_acceptance_superseded_by_five_checkpoint_scope",
+  "superseded_by": "docs/04_开发与验收/S01-01至05_联合验收.json"
+}

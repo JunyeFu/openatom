@@ -1,0 +1,297 @@
+{
+  "document_kind": "first_release_command_contract_design_not_runtime_registry",
+  "api_design_version": "0.1",
+  "state_owner": "desktop_host_single_engine",
+  "transport_candidates": {
+    "first_release": [
+      "tauri_invoke",
+      "mcp_stdio_to_user_scoped_host_ipc"
+    ],
+    "deferred": [
+      "streamable_http"
+    ]
+  },
+  "request_fields": [
+    "api_version",
+    "operation",
+    "project_id",
+    "params"
+  ],
+  "edit_precondition": "base_revision_and_host_authorized_scope",
+  "operation_catalog": [
+    {
+      "operation": "describe_capabilities",
+      "mcp_tool_name": "superfactory_describe_capabilities",
+      "effect": "readonly",
+      "required_input_fields": [
+        "api_version"
+      ],
+      "output_type": "CapabilityCatalog",
+      "implementation_status": "planned",
+      "runtime_available": false
+    },
+    {
+      "operation": "get_context",
+      "mcp_tool_name": "superfactory_get_context",
+      "effect": "readonly",
+      "required_input_fields": [
+        "project_id",
+        "selection"
+      ],
+      "output_type": "ProjectContext",
+      "implementation_status": "planned",
+      "runtime_available": false
+    },
+    {
+      "operation": "get_object",
+      "mcp_tool_name": "superfactory_get_object",
+      "effect": "readonly",
+      "required_input_fields": [
+        "project_id",
+        "object_id"
+      ],
+      "output_type": "DomainObject",
+      "implementation_status": "planned",
+      "runtime_available": false
+    },
+    {
+      "operation": "apply_commands",
+      "mcp_tool_name": "superfactory_apply_commands",
+      "effect": "draft_write",
+      "required_input_fields": [
+        "project_id",
+        "base_revision",
+        "commands"
+      ],
+      "output_type": "EditCommit",
+      "implementation_status": "planned",
+      "runtime_available": false,
+      "planned_authoring_categories": [
+        "items",
+        "devices",
+        "resources",
+        "tasks",
+        "operations",
+        "transport",
+        "templates",
+        "professional",
+        "media"
+      ]
+    },
+    {
+      "operation": "render_view",
+      "mcp_tool_name": "superfactory_render_view",
+      "effect": "readonly",
+      "required_input_fields": [
+        "project_id",
+        "revision",
+        "view",
+        "object_id"
+      ],
+      "output_type": "RenderTaskHandle",
+      "implementation_status": "planned",
+      "runtime_available": false
+    },
+    {
+      "operation": "run_scenario",
+      "mcp_tool_name": "superfactory_run_scenario",
+      "effect": "execute",
+      "required_input_fields": [
+        "project_id",
+        "scenario_id",
+        "input_revision",
+        "observation_window"
+      ],
+      "output_type": "RunTaskHandle",
+      "implementation_status": "planned",
+      "runtime_available": false
+    },
+    {
+      "operation": "get_run",
+      "mcp_tool_name": "superfactory_get_run",
+      "effect": "readonly",
+      "required_input_fields": [
+        "project_id",
+        "run_id",
+        "query"
+      ],
+      "output_type": "RunView",
+      "implementation_status": "planned",
+      "runtime_available": false
+    },
+    {
+      "operation": "compare_runs",
+      "mcp_tool_name": "superfactory_compare_runs",
+      "effect": "readonly",
+      "required_input_fields": [
+        "project_id",
+        "run_ids",
+        "metric_scope"
+      ],
+      "output_type": "RunComparison",
+      "implementation_status": "planned",
+      "runtime_available": false
+    },
+    {
+      "operation": "compute_packaging",
+      "mcp_tool_name": "superfactory_compute_packaging",
+      "effect": "execute",
+      "required_input_fields": [
+        "project_id",
+        "packaging_job",
+        "input_revision",
+        "computation_budget"
+      ],
+      "output_type": "PackagingTaskHandle",
+      "implementation_status": "planned",
+      "runtime_available": false
+    },
+    {
+      "operation": "get_task",
+      "mcp_tool_name": "superfactory_get_task",
+      "effect": "readonly",
+      "required_input_fields": [
+        "project_id",
+        "task_id"
+      ],
+      "output_type": "TaskState",
+      "implementation_status": "planned",
+      "runtime_available": false
+    },
+    {
+      "operation": "cancel_task",
+      "mcp_tool_name": "superfactory_cancel_task",
+      "effect": "execute",
+      "required_input_fields": [
+        "project_id",
+        "task_id"
+      ],
+      "output_type": "CancellationState",
+      "implementation_status": "planned",
+      "runtime_available": false
+    },
+    {
+      "operation": "adopt_artifact",
+      "mcp_tool_name": "superfactory_adopt_artifact",
+      "effect": "accepted_binding",
+      "required_input_fields": [
+        "project_id",
+        "artifact_id",
+        "acceptance_ref",
+        "consumer_ref",
+        "base_revision"
+      ],
+      "output_type": "BindingCommit",
+      "implementation_status": "planned",
+      "runtime_available": false
+    },
+    {
+      "operation": "import_package",
+      "mcp_tool_name": "superfactory_import_package",
+      "effect": "file_write",
+      "required_input_fields": [
+        "project_id",
+        "selected_file_ref",
+        "import_policy",
+        "base_revision"
+      ],
+      "output_type": "ImportDraft",
+      "implementation_status": "planned",
+      "runtime_available": false
+    },
+    {
+      "operation": "save_project",
+      "mcp_tool_name": "superfactory_save_project",
+      "effect": "file_write",
+      "required_input_fields": [
+        "project_id",
+        "revision",
+        "selected_directory_ref"
+      ],
+      "output_type": "SavedProject",
+      "implementation_status": "planned",
+      "runtime_available": false
+    },
+    {
+      "operation": "export_package",
+      "mcp_tool_name": "superfactory_export_package",
+      "effect": "file_write",
+      "required_input_fields": [
+        "project_id",
+        "revision",
+        "package_scope",
+        "selected_destination_ref"
+      ],
+      "output_type": "ExportPackage",
+      "implementation_status": "planned",
+      "runtime_available": false
+    },
+    {
+      "operation": "export_evaluation",
+      "mcp_tool_name": "superfactory_export_evaluation",
+      "effect": "file_write",
+      "required_input_fields": [
+        "project_id",
+        "revision",
+        "report_mode",
+        "scenario_refs",
+        "run_refs",
+        "metric_scope",
+        "formats",
+        "selected_destination_ref"
+      ],
+      "output_type": "ExportEvaluationTaskHandle",
+      "implementation_status": "planned",
+      "runtime_available": false
+    },
+    {
+      "operation": "query_module_library",
+      "mcp_tool_name": "superfactory_query_module_library",
+      "effect": "readonly",
+      "required_input_fields": [
+        "category_filters",
+        "industry",
+        "product_family",
+        "site_envelope",
+        "source_scope"
+      ],
+      "output_type": "ModuleTemplateCandidates",
+      "implementation_status": "planned",
+      "runtime_available": false
+    },
+    {
+      "operation": "check_factory_draft",
+      "mcp_tool_name": "superfactory_check_factory_draft",
+      "effect": "readonly",
+      "required_input_fields": [
+        "project_id",
+        "revision",
+        "generation_goal",
+        "check_scope"
+      ],
+      "output_type": "FactoryDraftCheckResult",
+      "implementation_status": "planned",
+      "runtime_available": false
+    }
+  ],
+  "error_codes": [
+    "NoActiveProject",
+    "UnsupportedCapability",
+    "InvalidInput",
+    "MissingReference",
+    "RevisionConflict",
+    "PermissionDenied",
+    "ComputationFailed",
+    "Cancelled",
+    "UnsupportedSchema",
+    "IoFailure"
+  ],
+  "error_fields": [
+    "code",
+    "message",
+    "object_refs",
+    "field_errors"
+  ],
+  "schema_generation": "authoritative_Rust_contracts_generate_frontend_types_and_boundary_schemas_in_implementation",
+  "actual_execution_result": null
+}

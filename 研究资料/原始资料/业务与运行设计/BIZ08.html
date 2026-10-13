@@ -1,0 +1,1328 @@
+<!--
+  templateType: "none"
+--><!doctype html><html lang="en"><head>
+    <meta charset="utf-8">
+    <title>Resource Calendar-Based vs Simulation Event-Based Production Scheduling</title>
+    <link rel="shortcut icon" href="https://www.simio.com/hubfs/Imported%20images/cropped-Simio-favicon-32x32.png">
+    <meta name="description" content="This whitepaper offers an in-depth exploration of Simio’s industry leading Simulation Event-Based Production Scheduling solution, highlighting how its results differ significantly from those of traditional Resource Calendar-Based applications.">
+    
+    <style>@font-face {
+        font-family: "Funnel Sans";
+        font-weight: 300;
+        font-style: normal;
+        font-display: swap;
+        src: url("/_hcms/googlefonts/Funnel_Sans/300.woff2") format("woff2"), url("/_hcms/googlefonts/Funnel_Sans/300.woff") format("woff"),
+             url("/_hcms/googlefonts/Funnel_Sans/regular.woff2") format("woff2"), url("/_hcms/googlefonts/Funnel_Sans/regular.woff") format("woff");
+    }
+@font-face {
+        font-family: "Funnel Sans";
+        font-weight: 400;
+        font-style: normal;
+        font-display: swap;
+        src: url("/_hcms/googlefonts/Funnel_Sans/regular.woff2") format("woff2"), url("/_hcms/googlefonts/Funnel_Sans/regular.woff") format("woff"),
+             url("/_hcms/googlefonts/Funnel_Sans/regular.woff2") format("woff2"), url("/_hcms/googlefonts/Funnel_Sans/regular.woff") format("woff");
+    }
+@font-face {
+        font-family: "Funnel Sans";
+        font-weight: 500;
+        font-style: normal;
+        font-display: swap;
+        src: url("/_hcms/googlefonts/Funnel_Sans/500.woff2") format("woff2"), url("/_hcms/googlefonts/Funnel_Sans/500.woff") format("woff"),
+             url("/_hcms/googlefonts/Funnel_Sans/regular.woff2") format("woff2"), url("/_hcms/googlefonts/Funnel_Sans/regular.woff") format("woff");
+    }
+@font-face {
+        font-family: "Funnel Sans";
+        font-weight: 700;
+        font-style: normal;
+        font-display: swap;
+        src: url("/_hcms/googlefonts/Funnel_Sans/700.woff2") format("woff2"), url("/_hcms/googlefonts/Funnel_Sans/700.woff") format("woff"),
+             url("/_hcms/googlefonts/Funnel_Sans/regular.woff2") format("woff2"), url("/_hcms/googlefonts/Funnel_Sans/regular.woff") format("woff");
+    }
+@font-face {
+        font-family: "Funnel Sans";
+        font-weight: 900;
+        font-style: normal;
+        font-display: swap;
+        src: url("/_hcms/googlefonts/Funnel_Sans/900.woff2") format("woff2"), url("/_hcms/googlefonts/Funnel_Sans/900.woff") format("woff"),
+             url("/_hcms/googlefonts/Funnel_Sans/regular.woff2") format("woff2"), url("/_hcms/googlefonts/Funnel_Sans/regular.woff") format("woff");
+    }
+body {
+                font-family: Funnel Sans;
+            }
+        @font-face {
+        font-family: "Space Grotesk";
+        font-weight: 300;
+        font-style: normal;
+        font-display: swap;
+        src: url("/_hcms/googlefonts/Space_Grotesk/300.woff2") format("woff2"), url("/_hcms/googlefonts/Space_Grotesk/300.woff") format("woff"),
+             url("/_hcms/googlefonts/Space_Grotesk/regular.woff2") format("woff2"), url("/_hcms/googlefonts/Space_Grotesk/regular.woff") format("woff");
+    }
+@font-face {
+        font-family: "Space Grotesk";
+        font-weight: 400;
+        font-style: normal;
+        font-display: swap;
+        src: url("/_hcms/googlefonts/Space_Grotesk/regular.woff2") format("woff2"), url("/_hcms/googlefonts/Space_Grotesk/regular.woff") format("woff"),
+             url("/_hcms/googlefonts/Space_Grotesk/regular.woff2") format("woff2"), url("/_hcms/googlefonts/Space_Grotesk/regular.woff") format("woff");
+    }
+@font-face {
+        font-family: "Space Grotesk";
+        font-weight: 500;
+        font-style: normal;
+        font-display: swap;
+        src: url("/_hcms/googlefonts/Space_Grotesk/500.woff2") format("woff2"), url("/_hcms/googlefonts/Space_Grotesk/500.woff") format("woff"),
+             url("/_hcms/googlefonts/Space_Grotesk/regular.woff2") format("woff2"), url("/_hcms/googlefonts/Space_Grotesk/regular.woff") format("woff");
+    }
+@font-face {
+        font-family: "Space Grotesk";
+        font-weight: 700;
+        font-style: normal;
+        font-display: swap;
+        src: url("/_hcms/googlefonts/Space_Grotesk/700.woff2") format("woff2"), url("/_hcms/googlefonts/Space_Grotesk/700.woff") format("woff"),
+             url("/_hcms/googlefonts/Space_Grotesk/regular.woff2") format("woff2"), url("/_hcms/googlefonts/Space_Grotesk/regular.woff") format("woff");
+    }
+@font-face {
+        font-family: "Space Grotesk";
+        font-weight: 800;
+        font-style: normal;
+        font-display: swap;
+        src: url("/_hcms/googlefonts/Space_Grotesk/800.woff2") format("woff2"), url("/_hcms/googlefonts/Space_Grotesk/800.woff") format("woff"),
+             url("/_hcms/googlefonts/Space_Grotesk/regular.woff2") format("woff2"), url("/_hcms/googlefonts/Space_Grotesk/regular.woff") format("woff");
+    }
+@font-face {
+        font-family: "Space Grotesk";
+        font-weight: 900;
+        font-style: normal;
+        font-display: swap;
+        src: url("/_hcms/googlefonts/Space_Grotesk/900.woff2") format("woff2"), url("/_hcms/googlefonts/Space_Grotesk/900.woff") format("woff"),
+             url("/_hcms/googlefonts/Space_Grotesk/regular.woff2") format("woff2"), url("/_hcms/googlefonts/Space_Grotesk/regular.woff") format("woff");
+    }
+@font-face {
+        font-family: "Space Grotesk";
+        font-weight: 400;
+        font-style: italic;
+        font-display: swap;
+        src: url("/_hcms/googlefonts/Space_Grotesk/italic.woff2") format("woff2"), url("/_hcms/googlefonts/Space_Grotesk/italic.woff") format("woff"),
+             url("/_hcms/googlefonts/Space_Grotesk/regular.woff2") format("woff2"), url("/_hcms/googlefonts/Space_Grotesk/regular.woff") format("woff");
+    }
+.pwr-header__skip {
+                font-family: Space Grotesk;
+            }</style>
+
+    
+
+    
+
+    
+
+    
+        
+        <script src="https://kit.fontawesome.com/d6a231a7f4.js" crossorigin="anonymous"></script>
+
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    
+    <meta property="og:description" content="This whitepaper offers an in-depth exploration of Simio’s industry leading Simulation Event-Based Production Scheduling solution, highlighting how its results differ significantly from those of traditional Resource Calendar-Based applications.">
+    <meta property="og:title" content="Resource Calendar-Based vs Simulation Event-Based Production Scheduling">
+    <meta name="twitter:description" content="This whitepaper offers an in-depth exploration of Simio’s industry leading Simulation Event-Based Production Scheduling solution, highlighting how its results differ significantly from those of traditional Resource Calendar-Based applications.">
+    <meta name="twitter:title" content="Resource Calendar-Based vs Simulation Event-Based Production Scheduling">
+
+    
+
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Simio",
+        "logo": { 
+            "@type": "ImageObject",
+            "url": "https://50418038.fs1.hubspotusercontent-na1.net/hubfs/50418038/Full-Color-Black-Simio-%2B-Aegis-Logo-PNG.png"
+        },
+        "url": "https://www.simio.com/whitepapers/resource-calendar-based-vs-simulation-event-based-production-scheduling",
+        "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "USA",
+            "addressRegion": "PA",
+            "addressLocality": "Sewickley",
+            "postalCode":"15143",
+            "streetAddress": "504 Beaver Street"
+        },
+        "knowsLanguage": "en"
+    }
+</script>
+    <style>
+a.cta_button{-moz-box-sizing:content-box !important;-webkit-box-sizing:content-box !important;box-sizing:content-box !important;vertical-align:middle}.hs-breadcrumb-menu{list-style-type:none;margin:0px 0px 0px 0px;padding:0px 0px 0px 0px}.hs-breadcrumb-menu-item{float:left;padding:10px 0px 10px 10px}.hs-breadcrumb-menu-divider:before{content:'›';padding-left:10px}.hs-featured-image-link{border:0}.hs-featured-image{float:right;margin:0 0 20px 20px;max-width:50%}@media (max-width: 568px){.hs-featured-image{float:none;margin:0;width:100%;max-width:100%}}.hs-screen-reader-text{clip:rect(1px, 1px, 1px, 1px);height:1px;overflow:hidden;position:absolute !important;width:1px}
+</style>
+
+<link rel="stylesheet" href="https://www.simio.com/hubfs/hub_generated/template_assets/1/207952797229/1791567755286/template_pwr.min.css">
+
+        <style>
+            body {
+                margin:0px;
+            }
+            img:not([src]):not([srcset]) {
+                visibility:hidden;
+            }
+        </style>
+    
+<link class="hs-async-css" rel="preload" href="https://www.simio.com/hubfs/hub_generated/template_assets/1/205746080011/1791567753589/template_pwr-defer.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://www.simio.com/hubfs/hub_generated/template_assets/1/205746080011/1791567753589/template_pwr-defer.min.css"></noscript>
+<link rel="stylesheet" href="https://www.simio.com/hubfs/hub_generated/template_assets/1/206595083675/1791567757029/template_child.min.css">
+<link rel="stylesheet" href="">
+<style>#hs_cos_wrapper_header_blog .pwr-header-logo,
+#hs_cos_wrapper_header_blog .pwr-header-logo__img {
+  max-width:150px;
+  height:auto;
+}
+
+@media (max-width:575px) {
+  #hs_cos_wrapper_header_blog .pwr-header-logo,
+  #hs_cos_wrapper_header_blog .pwr-header-logo__img { max-width:100px; }
+}
+
+#hs_cos_wrapper_header_blog .scroll .pwr-header-logo,
+#hs_cos_wrapper_header_blog .scroll .pwr-header-logo__img--sticky {
+  max-width:100px;
+  height:auto;
+}
+
+@media (max-width:575px) {
+  #hs_cos_wrapper_header_blog .scroll .pwr-header-logo,
+  #hs_cos_wrapper_header_blog .scroll .pwr-header-logo__img--sticky { max-width:100px; }
+}
+
+#hs_cos_wrapper_header_blog .pwr-header-logo img { vertical-align:middle; }
+</style>
+<link rel="stylesheet" href="https://www.simio.com/hubfs/hub_generated/template_assets/1/205746435201/1791567774566/template_pwr-burger.min.css" fetchpriority="low">
+<link rel="stylesheet" href="https://www.simio.com/hubfs/hub_generated/template_assets/1/205746435127/1791567757639/template_scroll-shadow.min.css" fetchpriority="low">
+<link rel="stylesheet" href="https://www.simio.com/hubfs/hub_generated/template_assets/1/205746080273/1791567765373/template_pwr-search.min.css" defer="true">
+<link rel="stylesheet" href="https://www.simio.com/hubfs/hub_generated/template_assets/1/205746551102/1791567754052/template_pwr-form.min.css" defer="true">
+<style>#hs_cos_wrapper_header_blog .hs-search-field__suggestions li a { padding-right:130px; }
+
+#hs_cos_wrapper_header_blog .hs-search-field__suggestions a:before { content:''; }
+</style>
+<link class="hs-async-css" rel="preload" href="https://www.simio.com/hubfs/hub_generated/template_assets/1/205746551097/1791567754628/template_pwr-sec-cta.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" fetchpriority="low">
+<noscript><link rel="stylesheet" href="https://www.simio.com/hubfs/hub_generated/template_assets/1/205746551097/1791567754628/template_pwr-sec-cta.min.css"></noscript>
+<link class="hs-async-css" rel="preload" href="https://www.simio.com/hubfs/hub_generated/template_assets/1/205746435135/1791567757045/template_pwr-footer.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" fetchpriority="low">
+<noscript><link rel="stylesheet" href="https://www.simio.com/hubfs/hub_generated/template_assets/1/205746435135/1791567757045/template_pwr-footer.min.css"></noscript>
+<style>#hs_cos_wrapper_footer_blog .pwr-footer__content .pwr-adc__wrapper { --col-padding:30px; }
+</style>
+<link class="hs-async-css" rel="preload" href="https://www.simio.com/hubfs/hub_generated/template_assets/1/205746080272/1791567760403/template_advanced-content.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" fetchpriority="low">
+<noscript><link rel="stylesheet" href="https://www.simio.com/hubfs/hub_generated/template_assets/1/205746080272/1791567760403/template_advanced-content.min.css"></noscript>
+<style>#hs_cos_wrapper_footer_blog .pwr-adc-content__image---1-2-1 {
+  object-fit:contain;
+  text-align:center;
+}
+
+@media (max-width:991px) {
+  #hs_cos_wrapper_footer_blog .pwr-adc-content__image---1-2-1 {}
+}
+
+@media (max-width:575px) {
+  #hs_cos_wrapper_footer_blog .pwr-adc-content__image---1-2-1 {}
+}
+</style>
+<link class="hs-async-css" rel="preload" href="https://www.simio.com/hubfs/hub_generated/template_assets/1/205746080285/1791567761583/template_pwr-social.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://www.simio.com/hubfs/hub_generated/template_assets/1/205746080285/1791567761583/template_pwr-social.min.css"></noscript>
+<link class="hs-async-css" rel="preload" href="https://www.simio.com/hubfs/hub_generated/template_assets/1/205746435084/1791567775781/template_pwr-transitions.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://www.simio.com/hubfs/hub_generated/template_assets/1/205746435084/1791567775781/template_pwr-transitions.min.css"></noscript>
+<link class="hs-async-css" rel="preload" href="https://www.simio.com/hubfs/hub_generated/template_assets/1/205746080168/1791567774553/template_custom-styles.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://www.simio.com/hubfs/hub_generated/template_assets/1/205746080168/1791567774553/template_custom-styles.min.css"></noscript>
+<link class="hs-async-css" rel="preload" href="https://www.simio.com/hubfs/hub_generated/template_assets/1/206595083675/1791567757029/template_child.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://www.simio.com/hubfs/hub_generated/template_assets/1/206595083675/1791567757029/template_child.min.css"></noscript>
+<!-- Editor Styles -->
+<style id="hs_editor_style" type="text/css">
+.footer-top-row-0-force-full-width-section > .row-fluid {
+  max-width: none !important;
+}
+/* HubSpot Styles (default) */
+.footer-top-row-0-padding {
+  padding-top: 0px !important;
+  padding-bottom: 0px !important;
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+}
+.footer-top-row-0-background-layers {
+  background-image: linear-gradient(rgba(21, 116, 54, 1), rgba(21, 116, 54, 1)) !important;
+  background-position: left top !important;
+  background-size: auto !important;
+  background-repeat: no-repeat !important;
+}
+.widget_1770925591350-hidden {
+  display: block !important;
+}
+</style>
+    <script type="application/ld+json">
+{
+  "mainEntityOfPage" : {
+    "@type" : "WebPage",
+    "@id" : "https://www.simio.com/whitepapers/resource-calendar-based-vs-simulation-event-based-production-scheduling"
+  },
+  "author" : {
+    "name" : "Simio",
+    "url" : "https://www.simio.com/whitepapers/author/simio",
+    "@type" : "Person"
+  },
+  "headline" : "Resource Calendar-Based vs Simulation Event-Based Production Scheduling",
+  "datePublished" : "2026-02-08T05:00:00.000Z",
+  "dateModified" : "2026-03-27T06:17:44.248Z",
+  "publisher" : {
+    "logo" : {
+      "url" : "https://www.simio.com/hubfs/Full-Color-Black-Simio-+-Aegis-Logo-PNG.png",
+      "@type" : "ImageObject"
+    },
+    "@type" : "Organization"
+  },
+  "@context" : "https://schema.org",
+  "@type" : "BlogPosting",
+  "image" : [ "https://www.simio.com/hubfs/wp8.svg" ]
+}
+</script>
+
+
+    
+<!--  Added by GoogleAnalytics4 integration -->
+<script data-cookieconsent="ignore">
+var _hsp = window._hsp = window._hsp || [];
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+
+var useGoogleConsentModeV2 = true;
+var waitForUpdateMillis = 1000;
+
+
+if (!window._hsGoogleConsentRunOnce) {
+  window._hsGoogleConsentRunOnce = true;
+
+  gtag('consent', 'default', {
+    'ad_storage': 'denied',
+    'analytics_storage': 'denied',
+    'ad_user_data': 'denied',
+    'ad_personalization': 'denied',
+    'wait_for_update': waitForUpdateMillis
+  });
+
+  if (useGoogleConsentModeV2) {
+    _hsp.push(['useGoogleConsentModeV2'])
+  } else {
+    _hsp.push(['addPrivacyConsentListener', function(consent){
+      var hasAnalyticsConsent = consent && (consent.allowed || (consent.categories && consent.categories.analytics));
+      var hasAdsConsent = consent && (consent.allowed || (consent.categories && consent.categories.advertisement));
+
+      gtag('consent', 'update', {
+        'ad_storage': hasAdsConsent ? 'granted' : 'denied',
+        'analytics_storage': hasAnalyticsConsent ? 'granted' : 'denied',
+        'ad_user_data': hasAdsConsent ? 'granted' : 'denied',
+        'ad_personalization': hasAdsConsent ? 'granted' : 'denied'
+      });
+    }]);
+  }
+}
+
+gtag('js', new Date());
+gtag('set', 'developer_id.dZTQ1Zm', true);
+gtag('config', 'G-V50D5B3G8H');
+</script>
+<script data-cookieconsent="ignore" async src="https://www.googletagmanager.com/gtag/js?id=G-V50D5B3G8H"></script>
+
+<!-- /Added by GoogleAnalytics4 integration -->
+
+<!--  Added by GoogleTagManager integration -->
+<script data-cookieconsent="ignore">
+var _hsp = window._hsp = window._hsp || [];
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+
+var useGoogleConsentModeV2 = true;
+var waitForUpdateMillis = 1000;
+
+if (useGoogleConsentModeV2) {
+
+  gtag('set','developer_id.dZTQ1Zm',true);
+
+  gtag('consent', 'default', {
+  'ad_storage': 'denied',
+  'analytics_storage': 'denied',
+  'ad_user_data': 'denied',
+  'ad_personalization': 'denied',
+  'wait_for_update': waitForUpdateMillis
+  });
+}
+
+var hsLoadGtm = function loadGtm() {
+    if(window._hsGtmLoadOnce) {
+      return;
+    }
+
+    if (useGoogleConsentModeV2) {
+      _hsp.push(['useGoogleConsentModeV2'])
+    }
+
+    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-5QM6FW');
+
+    window._hsGtmLoadOnce = true;
+};
+
+_hsp.push(['addPrivacyConsentListener', function(consent){
+  if(consent.allowed || (consent.categories && consent.categories.analytics)){
+    hsLoadGtm();
+  }
+}]);
+
+</script>
+
+<!-- /Added by GoogleTagManager integration -->
+
+
+<link rel="preload" as="image" href="https://www.simio.com/hubfs/Simio-Web-Banner-23.svg">
+
+<style>
+  @media (max-width: 600px) {
+.hs-blog-post table > * {
+  	width: 100% !important;
+  }
+  }
+</style>
+<link rel="amphtml" href="https://www.simio.com/whitepapers/resource-calendar-based-vs-simulation-event-based-production-scheduling?hs_amp=true">
+
+<meta property="og:image" content="https://www.simio.com/hubfs/wp8.svg">
+
+<meta name="twitter:image" content="https://www.simio.com/hubfs/wp8.svg">
+
+
+<meta property="og:url" content="https://www.simio.com/whitepapers/resource-calendar-based-vs-simulation-event-based-production-scheduling">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://www.simio.com/whitepapers/resource-calendar-based-vs-simulation-event-based-production-scheduling">
+
+<meta property="og:type" content="article">
+<link rel="alternate" type="application/rss+xml" href="https://www.simio.com/whitepapers/rss.xml">
+<meta name="twitter:domain" content="www.simio.com">
+<script src="//platform.linkedin.com/in.js" type="text/javascript">
+    lang: en_US
+</script>
+
+<meta http-equiv="content-language" content="en">
+<link rel="alternate" hreflang="de" href="https://www.simio.com/de/whitepapers/resource-calendar-based-vs-simulation-event-based-production-scheduling">
+<link rel="alternate" hreflang="en" href="https://www.simio.com/whitepapers/resource-calendar-based-vs-simulation-event-based-production-scheduling">
+<link rel="alternate" hreflang="es" href="https://www.simio.com/es/whitepapers/resource-calendar-based-vs-simulation-event-based-production-scheduling">
+<link rel="alternate" hreflang="fr" href="https://www.simio.com/fr/whitepapers/resource-calendar-based-vs-simulation-event-based-production-scheduling">
+<link rel="alternate" hreflang="pt" href="https://www.simio.com/pt/whitepapers/resource-calendar-based-vs-simulation-event-based-production-scheduling">
+<link rel="alternate" hreflang="zh-cn" href="https://www.simio.com/zh-cn/whitepapers/resource-calendar-based-vs-simulation-event-based-production-scheduling">
+
+
+
+
+
+
+      
+    
+  <meta name="generator" content="HubSpot"></head>
+  <body>
+<!--  Added by GoogleTagManager integration -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5QM6FW" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+<!-- /Added by GoogleTagManager integration -->
+
+    <div class="body-wrapper   hs-content-id-207120557900 hs-blog-post hs-blog-id-206902559401 
+    pwr-v--48 line-numbers" data-aos-global-disable="phone" data-aos-global-offset="250" data-aos-global-delay="50" data-aos-global-duration="400"><div id="hs_cos_wrapper_page_settings" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_module" style="" data-hs-cos-general-type="widget" data-hs-cos-type="module"></div><div data-global-resource-path="POWER THEME child/templates/partials/header.html"><header class="header">
+
+    
+    <a href="#main-content" class="pwr-header__skip">Skip to content</a><div class="header__container"><div id="hs_cos_wrapper_header_blog" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_module" style="" data-hs-cos-general-type="widget" data-hs-cos-type="module"><!-- templateType: none -->
+<style>
+    .pwr--page-editor-fix {
+        max-height: 120px;
+    }
+ </style><div id="pwr-header-top" class="pwr-header-top vanilla  pwr-header-top--flip-order pwr-header-top--mobile pwr-header-top--mobile-fixed  pwr--light  pwr--page-editor-fix ">
+  <div class="pwr-header-top__content-wrapper pwr--full-width pwr--clearfix"><div class="pwr-header-top__menu  pwr-js-menu">
+        <span id="hs_cos_wrapper_menu_206119491091" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_menu" style="" data-hs-cos-general-type="widget" data-hs-cos-type="menu"><div class="hs-menu-wrapper pwr-a11y-menu no-flyouts hs-menu-flow-horizontal" aria-label="top" role="navigation" data-sitemap-name="default" id="hs_menu_wrapper_menu_206119491091" data-menu-id="206119491091" ">
+            <ul role="menu">
+                
+                    <li class="hs-menu-item hs-menu-depth-1 " role="none">
+        <a href="https://www.simio.com/trial-edition-download" role="menuitem"><span class="focus-target">Trial Download</span></a>
+    </li>
+                    
+                    <li class="hs-menu-item hs-menu-depth-1 " role="none">
+        <a href="https://www.simio.com/commercial-download-simio" role="menuitem"><span class="focus-target">Commercial Download</span></a>
+    </li>
+                    
+                    <li class="hs-menu-item hs-menu-depth-1 " role="none">
+        <a href="https://www.simio.com/academic-licensing/" role="menuitem"><span class="focus-target">Academic Download</span></a>
+    </li>
+                    
+                    <li class="hs-menu-item hs-menu-depth-1 " role="none">
+        <a href="https://myaccount.simio.com/" role="menuitem"><span class="focus-target">My Account Login</span></a>
+    </li>
+                    
+                    <li class="hs-menu-item hs-menu-depth-1 " role="none">
+        <a href="https://university.simio.com/learn" role="menuitem"><span class="focus-target">Simio University Login</span></a>
+    </li>
+                    </ul>
+        </div></span>
+    </div><div class="pwr-header-top__icon-close-wrapper">
+      <span class="pwr-header-top__icon-close"></span>
+    </div></div>
+</div>
+
+
+
+<div id="pwr-js-burger" class="pwr-burger closed vanilla pwr--light pwr--page-editor-fix ">
+  <a href="#" id="pwr-js-burger__trigger-close" aria-label="Close Burger Menu" class="pwr-burger__trigger-close vanilla">
+    Close <span class="pwr-burger__icon-close"></span>
+  </a>
+          
+            
+          
+          <div class="pwr-burger__menu pwr-js-menu pwr-scroll-shadow__wrapper pwr-scroll-shadow__wrapper--vert pwr-scroll-shadow__root pwr-scroll-shadow__root--vert"><span id="hs_cos_wrapper_menu_206119491087" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_menu" style="" data-hs-cos-general-type="widget" data-hs-cos-type="menu"><div class="hs-menu-wrapper pwr-a11y-menu no-flyouts hs-menu-flow-vertical" aria-label="burger" role="navigation" data-sitemap-name="default" id="hs_menu_wrapper_menu_206119491087" data-menu-id="206119491087" ">
+            <ul role="menu">
+                
+                    <li class="hs-menu-item hs-menu-depth-1 hs-item-has-children" role="none">
+        <a href="https://www.simio.com/simio-solutions-for-streamlined-operations-superior-performance/" role="menuitem" aria-haspopup="true" aria-expanded="false"><span class="focus-target">Solutions</span></a>
+    <div class="pwr-menu_submenu-btn keyboard-clickable" role="menuitem" tabindex="0" aria-label="Expand Solutions">
+        <div class="pwr-menu_submenu-arrow"></div>
+    </div><ul role="menu" class="hs-menu-children-wrapper pwr-menu_submenu-child-wrapper">
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://www.simio.com/discrete-event-simulation" role="menuitem"><span class="focus-target">Discrete Event Simulation Software</span></a>
+    </li>
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://www.simio.com/advanced-planning-scheduling" role="menuitem"><span class="focus-target">Advanced Planning and Scheduling Software (APS)</span></a>
+    </li>
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://www.simio.com/ddmrp-software" role="menuitem"><span class="focus-target">Demand Driven DDMRP Digital Twin Software</span></a>
+    </li></ul>
+    </li>
+                    
+                    <li class="hs-menu-item hs-menu-depth-1 hs-item-has-children" role="none">
+        <a href="https://www.simio.com/revolutionizing-operational-success-with-simio-technologies" role="menuitem" aria-haspopup="true" aria-expanded="false"><span class="focus-target">Technology</span></a>
+    <div class="pwr-menu_submenu-btn keyboard-clickable" role="menuitem" tabindex="0" aria-label="Expand Technology">
+        <div class="pwr-menu_submenu-arrow"></div>
+    </div><ul role="menu" class="hs-menu-children-wrapper pwr-menu_submenu-child-wrapper">
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://www.simio.com/process-digital-twin" role="menuitem"><span class="focus-target">Process Digital Twin</span></a>
+    </li>
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://www.simio.com/python-simio-revolutionize-your-digital-twin/" role="menuitem"><span class="focus-target">Python Integration</span></a>
+    </li>
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://www.simio.com/nvidia-omniverse-digital-twin-integration/" role="menuitem"><span class="focus-target">NVIDIA Omniverse</span></a>
+    </li>
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://www.simio.com/ai-optimization" role="menuitem"><span class="focus-target">AI Optimization</span></a>
+    </li>
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://www.simio.com/data-integration-framework/" role="menuitem"><span class="focus-target">Data &amp; Integration Framework</span></a>
+    </li></ul>
+    </li>
+                    
+                    <li class="hs-menu-item hs-menu-depth-1 hs-item-has-children" role="none">
+        <a href="https://www.simio.com/academics/" role="menuitem" aria-haspopup="true" aria-expanded="false"><span class="focus-target">Academic</span></a>
+    <div class="pwr-menu_submenu-btn keyboard-clickable" role="menuitem" tabindex="0" aria-label="Expand Academic">
+        <div class="pwr-menu_submenu-arrow"></div>
+    </div><ul role="menu" class="hs-menu-children-wrapper pwr-menu_submenu-child-wrapper">
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://www.simio.com/academics/" role="menuitem"><span class="focus-target">Program Overview</span></a>
+    </li>
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://www.simio.com/academic-licensing/" role="menuitem"><span class="focus-target">Academic Licensing</span></a>
+    </li>
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://www.simio.com/teaching-resources/" role="menuitem"><span class="focus-target">Academic Program Teaching Resources</span></a>
+    </li>
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://www.simio.com/student-resources" role="menuitem"><span class="focus-target">Academic Program Student Resources</span></a>
+    </li>
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://www.simio.com/academic-case-studies" role="menuitem"><span class="focus-target">Academic Case Studies</span></a>
+    </li></ul>
+    </li>
+                    
+                    <li class="hs-menu-item hs-menu-depth-1 hs-item-has-children" role="none">
+        <a href="javascript:;" role="menuitem" tabindex="-1">Learning</a>
+    <div class="pwr-menu_submenu-btn keyboard-clickable" role="menuitem" tabindex="0" aria-label="Expand Learning">
+        <div class="pwr-menu_submenu-arrow"></div>
+    </div><ul role="menu" class="hs-menu-children-wrapper pwr-menu_submenu-child-wrapper">
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://www.simio.com/simio-university" role="menuitem"><span class="focus-target">Simio University</span></a>
+    </li>
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://www.simio.com/intro-to-simio" role="menuitem"><span class="focus-target">Introduction to Simio</span></a>
+    </li>
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://university.simio.com/pages/34/learning-bytes" role="menuitem"><span class="focus-target">Simio Learning Bytes</span></a>
+    </li>
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://www.simio.com/simio-webinars/" role="menuitem"><span class="focus-target">Simio Webinar Series</span></a>
+    </li>
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://www.simio.com/simio-sync/" role="menuitem"><span class="focus-target">Simio Sync Conferences</span></a>
+    </li>
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://www.simio.com/publications" role="menuitem"><span class="focus-target">Publications</span></a>
+    </li></ul>
+    </li>
+                    
+                    <li class="hs-menu-item hs-menu-depth-1 hs-item-has-children" role="none">
+        <a href="https://www.simio.com/simio-resources-your-comprehensive-hub-for-simulation-excellence/" role="menuitem" aria-haspopup="true" aria-expanded="false"><span class="focus-target">Resources</span></a>
+    <div class="pwr-menu_submenu-btn keyboard-clickable" role="menuitem" tabindex="0" aria-label="Expand Resources">
+        <div class="pwr-menu_submenu-arrow"></div>
+    </div><ul role="menu" class="hs-menu-children-wrapper pwr-menu_submenu-child-wrapper">
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://www.simio.com/my-account-your-centralized-hub-for-simio-resources/" role="menuitem"><span class="focus-target">My Account</span></a>
+    </li>
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://www.simio.com/case-studies" role="menuitem"><span class="focus-target">Case Studies</span></a>
+    </li>
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://www.simio.com/blog" role="menuitem"><span class="focus-target">Simio Blog</span></a>
+    </li>
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://www.simio.com/whitepapers" role="menuitem"><span class="focus-target">Whitepapers</span></a>
+    </li>
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://www.simio.com/forum-insiders" role="menuitem"><span class="focus-target">Forum &amp; Insiders</span></a>
+    </li>
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://www.simio.com/simio-scoop-e-newsletter" role="menuitem"><span class="focus-target">Simio e-Newsletter</span></a>
+    </li></ul>
+    </li>
+                    
+                    <li class="hs-menu-item hs-menu-depth-1 hs-item-has-children" role="none">
+        <a href="https://www.simio.com/about-us" role="menuitem" aria-haspopup="true" aria-expanded="false"><span class="focus-target">Company</span></a>
+    <div class="pwr-menu_submenu-btn keyboard-clickable" role="menuitem" tabindex="0" aria-label="Expand Company">
+        <div class="pwr-menu_submenu-arrow"></div>
+    </div><ul role="menu" class="hs-menu-children-wrapper pwr-menu_submenu-child-wrapper">
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://www.simio.com/about-us" role="menuitem"><span class="focus-target">About Us</span></a>
+    </li>
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://www.simio.com/careers" role="menuitem"><span class="focus-target">Careers</span></a>
+    </li>
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://www.simio.com/simio-global-partner-program" role="menuitem"><span class="focus-target">Global Partner Network</span></a>
+    </li>
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://www.simio.com/contact" role="menuitem"><span class="focus-target">Contact</span></a>
+    </li></ul>
+    </li>
+                    </ul>
+        </div></span></div><div class="pwr-burger-bottom-bar pwr-a11y-menu"><div class="pwr-burger-bottom-bar__item hs-search-field">
+      <a href="#" id="pwr-js-burger-search__trigger" class="pwr-burger-bottom-bar__item-link pwr-burger-search__trigger" tabindex="-1">
+        <div class="pwr-header-right-bar__icon pwr--padding-r-sm"><span id="hs_cos_wrapper_header_blog_" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_icon" style="" data-hs-cos-general-type="widget" data-hs-cos-type="icon"><svg version="1.0" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 512 512" aria-hidden="true"><g id="search1_layer"><path d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z" /></g></svg></span></div>
+        <span>SEARCH</span>
+        <div class="pwr-menu_submenu-btn keyboard-clickable" role="menuitem" tabindex="0" aria-label="Expand SEARCH">
+        <div class="pwr-menu_submenu-arrow"></div>
+    </div>
+      </a>
+      <div id="pwr-js-burger-search__inner" class="pwr-burger-bottom-bar__inner pwr-burger-search__inner pwr-form pwr-form--style-1">
+    <div id="hs-search-field__translations"></div>
+
+    <div class="hs-search-field__bar"> 
+        <form action="/hs-search-results">
+            <div class="pwr--relative">
+                <input type="text" id="pwr-js-burger-search__input" class="pwr-burger-search__input hs-search-field__input" name="term" autocomplete="off" aria-label="Enter search Term" placeholder="Type search here">
+          <button class="pwr-search-field__icon" type="submit" aria-label="Perform Search"><span id="hs_cos_wrapper_header_blog_" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_icon" style="" data-hs-cos-general-type="widget" data-hs-cos-type="icon"><svg version="1.0" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 512 512" aria-hidden="true"><g id="search2_layer"><path d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z" /></g></svg></span></button>
+            </div>
+            <input type="hidden" name="limit" value="5"><input type="hidden" name="property" value="title"><input type="hidden" name="property" value="description"><input type="hidden" name="property" value="html"><input type="hidden" name="property" value="author_full_name"><input type="hidden" name="property" value="author_handle"><input type="hidden" name="property" value="tag"><input type="hidden" name="type" value="SITE_PAGE"><input type="hidden" name="type" value="LISTING_PAGE"><input type="hidden" name="type" value="BLOG_POST"></form>
+    </div></div>
+    </div><div class="pwr-burger-bottom-bar__item">
+      <a href="#" id="pwr-js-burger-language__trigger" class="pwr-burger-bottom-bar__item-link pwr-burger-language__trigger" tabindex="-1">
+        <div class="pwr-header-right-bar__icon pwr-icon pwr--padding-r-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 512 512"><!--!Font Awesome Pro 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2024 Fonticons, Inc.--><path d="M256 464c7.4 0 27-7.2 47.6-48.4c8.8-17.7 16.4-39.2 22-63.6l-139.2 0c5.6 24.4 13.2 45.9 22 63.6C229 456.8 248.6 464 256 464zM178.5 304l155 0c1.6-15.3 2.5-31.4 2.5-48s-.9-32.7-2.5-48l-155 0c-1.6 15.3-2.5 31.4-2.5 48s.9 32.7 2.5 48zm7.9-144l139.2 0c-5.6-24.4-13.2-45.9-22-63.6C283 55.2 263.4 48 256 48s-27 7.2-47.6 48.4c-8.8 17.7-16.4 39.2-22 63.6zm195.3 48c1.5 15.5 2.2 31.6 2.2 48s-.8 32.5-2.2 48l76.7 0c3.6-15.4 5.6-31.5 5.6-48s-1.9-32.6-5.6-48l-76.7 0zm58.8-48c-21.4-41.1-56.1-74.1-98.4-93.4c14.1 25.6 25.3 57.5 32.6 93.4l65.9 0zm-303.3 0c7.3-35.9 18.5-67.7 32.6-93.4c-42.3 19.3-77 52.3-98.4 93.4l65.9 0zM53.6 208c-3.6 15.4-5.6 31.5-5.6 48s1.9 32.6 5.6 48l76.7 0c-1.5-15.5-2.2-31.6-2.2-48s.8-32.5 2.2-48l-76.7 0zM342.1 445.4c42.3-19.3 77-52.3 98.4-93.4l-65.9 0c-7.3 35.9-18.5 67.7-32.6 93.4zm-172.2 0c-14.1-25.6-25.3-57.5-32.6-93.4l-65.9 0c21.4 41.1 56.1 74.1 98.4 93.4zM256 512A256 256 0 1 1 256 0a256 256 0 1 1 0 512z" /></svg>
+        </div>
+        <span>en</span>
+        <div class="pwr-menu_submenu-btn keyboard-clickable" role="menuitem" tabindex="0" aria-label="Expand Language">
+        <div class="pwr-menu_submenu-arrow"></div>
+    </div>
+      </a>
+      <div id="pwr-js-burger-language__inner" class="pwr-burger-bottom-bar__inner pwr-burger-language__inner hs-skip-lang-url-rewrite"><a class="pwr-burger-bottom-bar__item-link pwr-burger-language__link" lang="de" href="https://www.simio.com/de/whitepapers/resource-calendar-based-vs-simulation-event-based-production-scheduling">de</a><a class="pwr-burger-bottom-bar__item-link pwr-burger-language__link" lang="es" href="https://www.simio.com/es/whitepapers/resource-calendar-based-vs-simulation-event-based-production-scheduling">es</a><a class="pwr-burger-bottom-bar__item-link pwr-burger-language__link" lang="fr" href="https://www.simio.com/fr/whitepapers/resource-calendar-based-vs-simulation-event-based-production-scheduling">fr</a><a class="pwr-burger-bottom-bar__item-link pwr-burger-language__link" lang="pt" href="https://www.simio.com/pt/whitepapers/resource-calendar-based-vs-simulation-event-based-production-scheduling">pt</a><a class="pwr-burger-bottom-bar__item-link pwr-burger-language__link" lang="zh-cn" href="https://www.simio.com/zh-cn/whitepapers/resource-calendar-based-vs-simulation-event-based-production-scheduling">zh-cn</a></div>
+    </div><div class="pwr-burger-bottom-bar__item pwr-cta pwr-cta--primary-solid  ">                   
+        <a href="https://www.simio.com/speak-with-an-expert?hsLang=en" class="pwr-cta_button " role="button">Speak with an Expert</a>
+      </div><div class="pwr-burger-bottom-bar__item pwr-cta pwr-cta--regular-solid  ">  
+        <a href="https://www.simio.com/contact?hsLang=en" class="pwr-cta_button " role="button">Contact Us</a>
+      </div></div>
+</div><div id="pwr-header-fixed__spacer" class="pwr-header-fixed__spacer vanilla"></div><div id="pwr-header-fixed" class="pwr-header vanilla pwr-header-fixed  pwr--light  pwr-header--dark-on-scroll  pwr--page-editor-fix " data-mm-anim-fot-reveal="true" data-mm-anim-slide="true" data-mm-anim-fade="true">
+  <div class="pwr--full-width pwr-header--padding">
+    <div class="pwr-header-full pwr--clearfix">
+      <div class="pwr-header-logo pwr-header-logo--has-sticky"><a class="pwr-header__logo-link" href="https://www.simio.com?hsLang=en" aria-label="Back to Home">
+        
+        
+        
+        
+            
+            
+            <img src="https://www.simio.com/hs-fs/hubfs/Full-Color-Black-Simio-+-Aegis-Logo-PNG.png?width=150&amp;height=150&amp;name=Full-Color-Black-Simio-+-Aegis-Logo-PNG.png" alt="Simio Aegis Logo" class="pwr-header-logo__img" width="150" height="150" srcset="https://www.simio.com/hs-fs/hubfs/Full-Color-Black-Simio-+-Aegis-Logo-PNG.png?width=75&amp;height=75&amp;name=Full-Color-Black-Simio-+-Aegis-Logo-PNG.png 75w, https://www.simio.com/hs-fs/hubfs/Full-Color-Black-Simio-+-Aegis-Logo-PNG.png?width=150&amp;height=150&amp;name=Full-Color-Black-Simio-+-Aegis-Logo-PNG.png 150w, https://www.simio.com/hs-fs/hubfs/Full-Color-Black-Simio-+-Aegis-Logo-PNG.png?width=225&amp;height=225&amp;name=Full-Color-Black-Simio-+-Aegis-Logo-PNG.png 225w, https://www.simio.com/hs-fs/hubfs/Full-Color-Black-Simio-+-Aegis-Logo-PNG.png?width=300&amp;height=300&amp;name=Full-Color-Black-Simio-+-Aegis-Logo-PNG.png 300w, https://www.simio.com/hs-fs/hubfs/Full-Color-Black-Simio-+-Aegis-Logo-PNG.png?width=375&amp;height=375&amp;name=Full-Color-Black-Simio-+-Aegis-Logo-PNG.png 375w, https://www.simio.com/hs-fs/hubfs/Full-Color-Black-Simio-+-Aegis-Logo-PNG.png?width=450&amp;height=450&amp;name=Full-Color-Black-Simio-+-Aegis-Logo-PNG.png 450w" sizes="(max-width: 150px) 100vw, 150px"><img src="https://www.simio.com/hs-fs/hubfs/All-White-Simio-Aegis-Logo-PNG.webp?width=170&amp;height=76&amp;name=All-White-Simio-Aegis-Logo-PNG.webp" alt="All-White-Simio-Aegis-Logo-PNG" class="pwr-header-logo__img--sticky" width="170" height="76" fetchpriority="low" decoding="async" srcset="https://www.simio.com/hs-fs/hubfs/All-White-Simio-Aegis-Logo-PNG.webp?width=85&amp;height=38&amp;name=All-White-Simio-Aegis-Logo-PNG.webp 85w, https://www.simio.com/hs-fs/hubfs/All-White-Simio-Aegis-Logo-PNG.webp?width=170&amp;height=76&amp;name=All-White-Simio-Aegis-Logo-PNG.webp 170w, https://www.simio.com/hs-fs/hubfs/All-White-Simio-Aegis-Logo-PNG.webp?width=255&amp;height=114&amp;name=All-White-Simio-Aegis-Logo-PNG.webp 255w, https://www.simio.com/hs-fs/hubfs/All-White-Simio-Aegis-Logo-PNG.webp?width=340&amp;height=152&amp;name=All-White-Simio-Aegis-Logo-PNG.webp 340w, https://www.simio.com/hs-fs/hubfs/All-White-Simio-Aegis-Logo-PNG.webp?width=425&amp;height=190&amp;name=All-White-Simio-Aegis-Logo-PNG.webp 425w, https://www.simio.com/hs-fs/hubfs/All-White-Simio-Aegis-Logo-PNG.webp?width=510&amp;height=228&amp;name=All-White-Simio-Aegis-Logo-PNG.webp 510w" sizes="(max-width: 170px) 100vw, 170px"></a>
+      </div><div id="pwr-js-header__menu" class="pwr-header__menu pwr-header__menu--narrow-24   pwr-header__menu--dropdown " style="left: 40%;"><div class="pwr-js-menu"><span id="hs_cos_wrapper_menu_206119491087" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_menu" style="" data-hs-cos-general-type="widget" data-hs-cos-type="menu"><div class="hs-menu-wrapper pwr-a11y-menu flyouts hs-menu-flow-horizontal" aria-label="main" role="navigation" data-sitemap-name="default" id="hs_menu_wrapper_menu_206119491087" data-menu-id="206119491087" ">
+            <ul role="menu">
+                
+                    <li class="hs-menu-item hs-menu-depth-1 hs-item-has-children" role="none">
+        <a href="https://www.simio.com/simio-solutions-for-streamlined-operations-superior-performance/" role="menuitem" aria-haspopup="true" aria-expanded="false"><span class="focus-target">Solutions</span></a>
+    <div class="pwr-menu_submenu-btn keyboard-clickable" role="menuitem" tabindex="0" aria-label="Expand Solutions" aria-haspopup="true">
+        <div class="pwr-menu_submenu-arrow"></div>
+    </div><ul role="menu" class="hs-menu-children-wrapper pwr-menu_submenu-child-wrapper">
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://www.simio.com/discrete-event-simulation" role="menuitem"><span class="focus-target">Discrete Event Simulation Software</span></a>
+    </li>
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://www.simio.com/advanced-planning-scheduling" role="menuitem"><span class="focus-target">Advanced Planning and Scheduling Software (APS)</span></a>
+    </li>
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://www.simio.com/ddmrp-software" role="menuitem"><span class="focus-target">Demand Driven DDMRP Digital Twin Software</span></a>
+    </li></ul>
+    </li>
+                    
+                    <li class="hs-menu-item hs-menu-depth-1 hs-item-has-children" role="none">
+        <a href="https://www.simio.com/revolutionizing-operational-success-with-simio-technologies" role="menuitem" aria-haspopup="true" aria-expanded="false"><span class="focus-target">Technology</span></a>
+    <div class="pwr-menu_submenu-btn keyboard-clickable" role="menuitem" tabindex="0" aria-label="Expand Technology" aria-haspopup="true">
+        <div class="pwr-menu_submenu-arrow"></div>
+    </div><ul role="menu" class="hs-menu-children-wrapper pwr-menu_submenu-child-wrapper">
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://www.simio.com/process-digital-twin" role="menuitem"><span class="focus-target">Process Digital Twin</span></a>
+    </li>
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://www.simio.com/python-simio-revolutionize-your-digital-twin/" role="menuitem"><span class="focus-target">Python Integration</span></a>
+    </li>
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://www.simio.com/nvidia-omniverse-digital-twin-integration/" role="menuitem"><span class="focus-target">NVIDIA Omniverse</span></a>
+    </li>
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://www.simio.com/ai-optimization" role="menuitem"><span class="focus-target">AI Optimization</span></a>
+    </li>
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://www.simio.com/data-integration-framework/" role="menuitem"><span class="focus-target">Data &amp; Integration Framework</span></a>
+    </li></ul>
+    </li>
+                    
+                    <li class="hs-menu-item hs-menu-depth-1 hs-item-has-children" role="none">
+        <a href="https://www.simio.com/academics/" role="menuitem" aria-haspopup="true" aria-expanded="false"><span class="focus-target">Academic</span></a>
+    <div class="pwr-menu_submenu-btn keyboard-clickable" role="menuitem" tabindex="0" aria-label="Expand Academic" aria-haspopup="true">
+        <div class="pwr-menu_submenu-arrow"></div>
+    </div><ul role="menu" class="hs-menu-children-wrapper pwr-menu_submenu-child-wrapper">
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://www.simio.com/academics/" role="menuitem"><span class="focus-target">Program Overview</span></a>
+    </li>
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://www.simio.com/academic-licensing/" role="menuitem"><span class="focus-target">Academic Licensing</span></a>
+    </li>
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://www.simio.com/teaching-resources/" role="menuitem"><span class="focus-target">Academic Program Teaching Resources</span></a>
+    </li>
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://www.simio.com/student-resources" role="menuitem"><span class="focus-target">Academic Program Student Resources</span></a>
+    </li>
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://www.simio.com/academic-case-studies" role="menuitem"><span class="focus-target">Academic Case Studies</span></a>
+    </li></ul>
+    </li>
+                    
+                    <li class="hs-menu-item hs-menu-depth-1 hs-item-has-children" role="none">
+        <a href="javascript:;" role="menuitem" tabindex="-1">Learning</a>
+    <div class="pwr-menu_submenu-btn keyboard-clickable" role="menuitem" tabindex="0" aria-label="Expand Learning" aria-haspopup="true">
+        <div class="pwr-menu_submenu-arrow"></div>
+    </div><ul role="menu" class="hs-menu-children-wrapper pwr-menu_submenu-child-wrapper">
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://www.simio.com/simio-university" role="menuitem"><span class="focus-target">Simio University</span></a>
+    </li>
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://www.simio.com/intro-to-simio" role="menuitem"><span class="focus-target">Introduction to Simio</span></a>
+    </li>
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://university.simio.com/pages/34/learning-bytes" role="menuitem"><span class="focus-target">Simio Learning Bytes</span></a>
+    </li>
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://www.simio.com/simio-webinars/" role="menuitem"><span class="focus-target">Simio Webinar Series</span></a>
+    </li>
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://www.simio.com/simio-sync/" role="menuitem"><span class="focus-target">Simio Sync Conferences</span></a>
+    </li>
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://www.simio.com/publications" role="menuitem"><span class="focus-target">Publications</span></a>
+    </li></ul>
+    </li>
+                    
+                    <li class="hs-menu-item hs-menu-depth-1 hs-item-has-children" role="none">
+        <a href="https://www.simio.com/simio-resources-your-comprehensive-hub-for-simulation-excellence/" role="menuitem" aria-haspopup="true" aria-expanded="false"><span class="focus-target">Resources</span></a>
+    <div class="pwr-menu_submenu-btn keyboard-clickable" role="menuitem" tabindex="0" aria-label="Expand Resources" aria-haspopup="true">
+        <div class="pwr-menu_submenu-arrow"></div>
+    </div><ul role="menu" class="hs-menu-children-wrapper pwr-menu_submenu-child-wrapper">
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://www.simio.com/my-account-your-centralized-hub-for-simio-resources/" role="menuitem"><span class="focus-target">My Account</span></a>
+    </li>
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://www.simio.com/case-studies" role="menuitem"><span class="focus-target">Case Studies</span></a>
+    </li>
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://www.simio.com/blog" role="menuitem"><span class="focus-target">Simio Blog</span></a>
+    </li>
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://www.simio.com/whitepapers" role="menuitem"><span class="focus-target">Whitepapers</span></a>
+    </li>
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://www.simio.com/forum-insiders" role="menuitem"><span class="focus-target">Forum &amp; Insiders</span></a>
+    </li>
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://www.simio.com/simio-scoop-e-newsletter" role="menuitem"><span class="focus-target">Simio e-Newsletter</span></a>
+    </li></ul>
+    </li>
+                    
+                    <li class="hs-menu-item hs-menu-depth-1 hs-item-has-children" role="none">
+        <a href="https://www.simio.com/about-us" role="menuitem" aria-haspopup="true" aria-expanded="false"><span class="focus-target">Company</span></a>
+    <div class="pwr-menu_submenu-btn keyboard-clickable" role="menuitem" tabindex="0" aria-label="Expand Company" aria-haspopup="true">
+        <div class="pwr-menu_submenu-arrow"></div>
+    </div><ul role="menu" class="hs-menu-children-wrapper pwr-menu_submenu-child-wrapper">
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://www.simio.com/about-us" role="menuitem"><span class="focus-target">About Us</span></a>
+    </li>
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://www.simio.com/careers" role="menuitem"><span class="focus-target">Careers</span></a>
+    </li>
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://www.simio.com/simio-global-partner-program" role="menuitem"><span class="focus-target">Global Partner Network</span></a>
+    </li>
+            <li class="hs-menu-item hs-menu-depth-2 " role="none">
+        <a href="https://www.simio.com/contact" role="menuitem"><span class="focus-target">Contact</span></a>
+    </li></ul>
+    </li>
+                    </ul>
+        </div></span></div></div><div id="pwr-js-header-right-bar" class="pwr-header-right-bar "><div class="pwr-header-right-bar__item vanilla pwr-header-right-bar__search focus-target__icon">
+          <a href="#" id="pwr-js-header-search__trigger" aria-label="Open Search" class="pwr-header-right-bar__link">
+            <div class="pwr-header-right-bar__icon"><span id="hs_cos_wrapper_header_blog_" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_icon" style="" data-hs-cos-general-type="widget" data-hs-cos-type="icon"><svg version="1.0" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 512 512" aria-hidden="true"><g id="search3_layer"><path d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z" /></g></svg></span></div>
+          </a>
+        </div><div class="pwr-header-right-bar__item pwr-header-right-bar__language-switcher focus-target__icon">
+        <a href="#" class="pwr-header-right-bar__link pwr-menu_submenu-btn ">en</a>
+          <div class="pwr-dropdown pwr-dropdown--language hs-skip-lang-url-rewrite pwr-menu_submenu-child-wrapper"><a class="pwr-dropdown__link pwr-header-right-bar__language-link" lang="de" href="https://www.simio.com/de/whitepapers/resource-calendar-based-vs-simulation-event-based-production-scheduling">de</a><a class="pwr-dropdown__link pwr-header-right-bar__language-link" lang="es" href="https://www.simio.com/es/whitepapers/resource-calendar-based-vs-simulation-event-based-production-scheduling">es</a><a class="pwr-dropdown__link pwr-header-right-bar__language-link" lang="fr" href="https://www.simio.com/fr/whitepapers/resource-calendar-based-vs-simulation-event-based-production-scheduling">fr</a><a class="pwr-dropdown__link pwr-header-right-bar__language-link" lang="pt" href="https://www.simio.com/pt/whitepapers/resource-calendar-based-vs-simulation-event-based-production-scheduling">pt</a><a class="pwr-dropdown__link pwr-header-right-bar__language-link" lang="zh-cn" href="https://www.simio.com/zh-cn/whitepapers/resource-calendar-based-vs-simulation-event-based-production-scheduling">zh-cn</a></div>
+        </div><div class="pwr-header-right-bar__item pwr-header-right-bar__cta pwr-cta pwr-cta--primary-solid  ">
+            <a href="https://www.simio.com/speak-with-an-expert?hsLang=en" class="pwr-cta_button " role="button">Speak with an Expert</a>
+          </div><div class="pwr-header-right-bar__item pwr-header-right-bar__cta pwr-header-right-bar__cta--second pwr-cta pwr-cta--regular-solid  ">                   
+            <a href="https://www.simio.com/contact?hsLang=en" class="pwr-cta_button " role="button">Contact Us</a>
+          </div></div><div id="pwr-js-header-search" class="pwr-header-search vanilla hs-search-field">
+        <div class="pwr-header-search__inner">
+    <div id="hs-search-field__translations"></div>
+
+    <div class="hs-search-field__bar"> 
+        <form action="/hs-search-results">
+            <div class="pwr--relative">
+                <input type="text" id="pwr-header-search__input" class="pwr-header-search__input hs-search-field__input hs-search-field__input" name="term" autocomplete="off" aria-label="Enter search Term" placeholder="Type search here">
+            <button class="pwr-search-field__icon" type="submit" aria-label="Perform Search"><span id="hs_cos_wrapper_header_blog_" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_icon" style="" data-hs-cos-general-type="widget" data-hs-cos-type="icon"><svg version="1.0" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 512 512" aria-hidden="true"><g id="search4_layer"><path d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z" /></g></svg></span></button>
+            <a href="#" id="pwr-js-header-search__close" aria-label="Close Search" class="pwr-header-search__close">
+              <span class="pwr-header-search__close-icon"></span>
+            </a>
+            </div>
+            <input type="hidden" name="limit" value="5"><input type="hidden" name="property" value="title"><input type="hidden" name="property" value="description"><input type="hidden" name="property" value="html"><input type="hidden" name="property" value="author_full_name"><input type="hidden" name="property" value="author_handle"><input type="hidden" name="property" value="tag"><input type="hidden" name="type" value="SITE_PAGE"><input type="hidden" name="type" value="LISTING_PAGE"><input type="hidden" name="type" value="BLOG_POST"><div class="hs-search-field__suggestions">
+                <div class="pwr-suggestions-panel">
+                    <div class="pwr-suggestions--title">Quick results for "{search_term}"</div>
+                    <div class="pwr-suggestions-wrapper"></div>
+                </div>
+            </div></form>
+    </div></div>
+      </div><a href="#" id="pwr-js-burger__trigger-open" aria-label="Open Burger Menu" class="pwr-burger__trigger-open vanilla keyboard-clickable  pwr-burger__trigger-open--mobile-only">
+        <div class="pwr-burger__icon-open">
+          <span></span>
+        </div>
+      </a><div class="pwr-header-top__toggle-wrapper ">
+        <div class="pwr-header-top__toggle"></div>
+      </div></div>
+  </div></div></div></div>
+
+    <div class="container-fluid header-bottom__container">
+<div class="row-fluid-wrapper">
+<div class="row-fluid">
+<div class="span12 widget-span widget-type-cell " style="" data-widget-type="cell" data-x="0" data-w="12">
+
+</div><!--end widget-span -->
+</div>
+</div>
+</div>
+
+</header></div><main id="main-content" class="body-container-wrapper body-container-wrapper--whitepapers-post">
+  <div class="body-container">
+
+    <!--  Whitepapers Link Start -->    
+    <div class="simio-whitepapers-link">
+      <div class="page-center">
+        <a href="/whitepapers/?hsLang=en" class="flex items-center font-sans font-semibold text-white">
+          <svg class="w-3.5 h-auto mr-3" xmlns="http://www.w3.org/2000/svg" width="14.114" height="12" viewbox="0 0 14.114 12">
+            <path id="Path_10832" data-name="Path 10832" d="M6.716,13.395,6,14.114l-.716-.719L.719,8.83,0,8.114,1.436,6.681l.716.716,2.834,2.834V0H7.014V10.231L9.848,7.4l.716-.716L12,8.114l-.716.716L6.719,13.395Z" transform="translate(14.114) rotate(90)" fill="#fff"></path>
+          </svg>
+          <span>Back to Whitepapers</span>
+        </a>
+      </div>
+    </div>
+    <!--  Whitepapers Link End -->
+
+    <!--  Hero Section Start -->
+    <div class="simio-whitepapers-hero">      
+      <div class="page-center">
+        <h1><span id="hs_cos_wrapper_name" class="hs_cos_wrapper hs_cos_wrapper_meta_field hs_cos_wrapper_type_text" style="" data-hs-cos-general-type="meta_field" data-hs-cos-type="text">Resource Calendar-Based vs Simulation Event-Based Production Scheduling</span></h1>
+
+        <ul>
+          <li>AUTHOR</li>
+          <li class="simio-whitepapers-author">Simio</li>
+        </ul>
+
+      </div>
+    </div>
+    <!--  Hero Section End -->
+
+    <!--  Whitepapers Post Content Start -->  
+
+    <div class="page-center">
+      <div class="simio-whitepapers-post-content-box">      
+        <div class="simio-whitepapers-post-content">
+          <span id="hs_cos_wrapper_post_body" class="hs_cos_wrapper hs_cos_wrapper_meta_field hs_cos_wrapper_type_rich_text" style="" data-hs-cos-general-type="meta_field" data-hs-cos-type="rich_text"><a href="https://www.simio.com/wp-content/uploads/2024/11/Resource_Calendar_vs_Simulation_Whitepaper_2024_2.pdf?hsLang=en" target="_blank" rel="noopener"> <svg class="w-6 h-auto mr-3 fill-simio-green" xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewbox="0 0 512 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2023 Fonticons, Inc.--><path d="M288 32c0-17.7-14.3-32-32-32s-32 14.3-32 32V274.7l-73.4-73.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l128 128c12.5 12.5 32.8 12.5 45.3 0l128-128c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L288 274.7V32zM64 352c-35.3 0-64 28.7-64 64v32c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V416c0-35.3-28.7-64-64-64H346.5l-45.3 45.3c-25 25-65.5 25-90.5 0L165.5 352H64zm368 56a24 24 0 1 1 0 48 24 24 0 1 1 0-48z"></path></svg> <span>Download PDF Version</span> </a>
+<h2>1. Introduction</h2>
+<p>Today companies compete not only on price and quality, but on their ability to reliably deliver products on time. A good operational production schedule, therefore, influences a company’s throughput, sales, and customer satisfaction. Despite investing millions in Enterprise Resource Planning (ERP) and Manufacturing Execution Systems (MES), many companies find these systems inadequate for detailed production scheduling, leading them to rely on manual methods such as Excel and planning boards. Meanwhile, industry trends toward<span style="text-decoration: line-through;">s</span> reduced inventory, shorter lead times, increased product customization, SKU proliferation, and flexible manufacturing make production scheduling more complicated. Creating a feasible plan requires the simultaneous consideration of materials, labor, equipment, and demand. The complexity of scheduling is too taxing for manual planning methods or optimizer/solver-based approaches, which deliver diminishing value as manufacturing speed and agility increase to meet market requirements.</p>
+<!--more--><p>At the core of effective factory production scheduling is the concept of an actionable schedule. An actionable schedule is one that fully accounts for the detailed constraints and operating rules in the system and can therefore be executed in the factory by the production staff. One common problem with many scheduling solutions is that they overlook one or more detailed constraints, making them impractical to implement on the factory floor. A non-actionable schedule requires the operators to step in and override the planned schedule to accommodate the actual constraints of the system. &nbsp;At this point the schedule is no longer being followed and local decisions are being made that affect system KPIs in ways that are not visible to operators and stakeholders throughout the supply chain. In a more volatile world with increased production and supply chain complexity, higher product mix, shorter order lead times and smaller batch sizes, it is essential to have the ability to rapidly create feasible schedules that are executable on the factory floor. Manufacturing is becoming more agile and automated to support this dynamic flow of product to the market, based on actual demand and therefore the ability to create an actionable schedule in near-real time is becoming a requirement and no longer just an option.</p>
+<p>The fundamental differences between various scheduling approaches can be illustrated with a simple example which highlights the core distinctions at a fundamental level. As production processes become more complex, requiring more agility, the differences in results between the scheduling systems become even more profound and impactful on the factory floor. This example will illustrate the clear advantages of the Simulation Event-Based approach to support the manufacturing and market demand requirements that exist today.</p>
+<h2>2. Approaches to Detailed Production Scheduling</h2>
+<p>The three most common approaches in use today to solve the operational scheduling problem include: 1) manual methods using planning boards or spreadsheets, 2) Resource Calendar-Based models, and 3) Simulation Event-Based models.</p>
+<h3>2.1 Manual Methods</h3>
+<p>The most common method in use today for operational factory production scheduling is the manual method, typically augmented with spreadsheets or planning boards. This process is labor intensive, requiring multiple people to only focus on the generation of schedules and related files. These employees have tribal knowledge of the business rules and experience, if they leave the company, the rest of the organization will be left in the dark about how planning is performed. The use of manual scheduling is typically not a company’s first choice but is often the result of a failure to succeed with automated scheduling systems.</p>
+<p>&nbsp;</p>
+<p><em><strong>Please download the PDF below to continue reading…</strong></em></p>
+<a href="https://www.simio.com/wp-content/uploads/2024/11/Resource_Calendar_vs_Simulation_Whitepaper_2024_2.pdf?hsLang=en" target="_blank" rel="noopener"> <svg class="w-6 h-auto mr-3 fill-simio-green" xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewbox="0 0 512 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2023 Fonticons, Inc.--><path d="M288 32c0-17.7-14.3-32-32-32s-32 14.3-32 32V274.7l-73.4-73.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l128 128c12.5 12.5 32.8 12.5 45.3 0l128-128c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L288 274.7V32zM64 352c-35.3 0-64 28.7-64 64v32c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V416c0-35.3-28.7-64-64-64H346.5l-45.3 45.3c-25 25-65.5 25-90.5 0L165.5 352H64zm368 56a24 24 0 1 1 0 48 24 24 0 1 1 0-48z"></path></svg> <span>Download PDF Version</span> </a></span>
+        </div>
+        <div class="simio-whitepapers-post-content-right">
+
+          
+
+          
+          <section class="related-blogs">
+
+            <h3>More Whitepapers</h3>
+
+            <ul class="related-blogs-list">
+              
+              
+              <li>
+                <a href="https://www.simio.com/whitepapers/digital-twin-simulation-with-ai?hsLang=en">
+                  Building Intelligent Digital Twin Models using AI-based Neural Networks
+                </a>
+              </li>
+              
+              
+              
+              <li>
+                <a href="https://www.simio.com/whitepapers/next-generation-simulation-software-introduction-to-simio?hsLang=en">
+                  Next Generation Simulation Software Introduction to Simio
+                </a>
+              </li>
+              
+              
+              
+              <li>
+                <a href="https://www.simio.com/whitepapers/the-digital-continuum-the-digital-transformation-roadmap?hsLang=en">
+                  The Digital Continuum: The Digital Transformation Roadmap
+                </a>
+              </li>
+              
+              
+              
+              <li>
+                <a href="https://www.simio.com/whitepapers/digital-twin-it-architecture-and-integration?hsLang=en">
+                  Simio Intelligent Adaptive Process Digital Twin IT Architecture and Integration
+                </a>
+              </li>
+              
+              
+            </ul>
+
+          </section>
+          
+
+        </div>
+
+
+      </div>
+    </div>
+
+    <!--  Whitepapers Post Content End -->  
+
+    <!--  Whitepapers Link Start -->    
+    <div class="simio-whitepapers-link">
+      <div class="page-center">
+        <a href="/whitepapers/?hsLang=en" class="flex items-center font-sans font-semibold text-white">
+          <svg class="w-3.5 h-auto mr-3" xmlns="http://www.w3.org/2000/svg" width="14.114" height="12" viewbox="0 0 14.114 12">
+            <path id="Path_10832" data-name="Path 10832" d="M6.716,13.395,6,14.114l-.716-.719L.719,8.83,0,8.114,1.436,6.681l.716.716,2.834,2.834V0H7.014V10.231L9.848,7.4l.716-.716L12,8.114l-.716.716L6.719,13.395Z" transform="translate(14.114) rotate(90)" fill="#fff"></path>
+          </svg>
+          <span>Back to Whitepapers</span>
+        </a>
+      </div>
+    </div>
+    <!--  Whitepapers Link End -->
+
+  </div>
+</main><div data-global-resource-path="POWER THEME child/templates/partials/footer.html"><footer class="footer"><div class="container-fluid footer-top__container">
+<div class="row-fluid-wrapper">
+<div class="row-fluid">
+<div class="span12 widget-span widget-type-cell " style="" data-widget-type="cell" data-x="0" data-w="12">
+
+<div class="row-fluid-wrapper row-depth-1 row-number-1 footer-top-row-0-background-layers dnd-section footer-top-row-0-padding footer-top-row-0-force-full-width-section footer-top-row-0-background-color">
+<div class="row-fluid ">
+<div class="span12 widget-span widget-type-cell dnd-column" style="" data-widget-type="cell" data-x="0" data-w="12">
+
+<div class="row-fluid-wrapper row-depth-1 row-number-2 dnd-row">
+<div class="row-fluid ">
+<div class="span12 widget-span widget-type-custom_widget widget_1770925591350-hidden dnd-module" style="" data-widget-type="custom_widget" data-x="0" data-w="12">
+<div id="hs_cos_wrapper_widget_1770925591350" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_module" style="" data-hs-cos-general-type="widget" data-hs-cos-type="module">
+
+
+<div class="pwr-sec-cta vanilla pwr-sec-cta--vertical pwr-sec-cta--primary     pwr--margin-t-0 pwr--margin-b-0      lazyload" style="background-color: rgba(21, 116, 54, 1.0); ">
+    
+    
+
+    
+    <div class="pwr-sec-cta--content page-center pwr--align-c pwr--relative"><h3 class="pwr-sec-cta__title pwr-heading-style--default pwr-sec-cta__title--vertical  pwr--toc-ignore" tmp-data-aos="fade-in" tmp-data-aos-delay="50">Want to learn more about Simio?</h3><div class="pwr-sec-cta__cta-wrapper"><div class="pwr-sec-cta__cta--vertical pwr-cta pwr-cta--regular-solid-primary-background  " data-is-trigger="">
+            <a href="https://www.simio.com/speak-with-an-expert?hsLang=en" rel=" nofollow" class="pwr-cta_button " role="button">Speak with an Expert</a>
+        </div></div></div>
+    
+    
+</div></div>
+
+</div><!--end widget-span -->
+</div><!--end row-->
+</div><!--end row-wrapper -->
+
+</div><!--end widget-span -->
+</div><!--end row-->
+</div><!--end row-wrapper -->
+
+</div><!--end widget-span -->
+</div>
+</div>
+</div>
+
+	<div class="footer__container"><div id="hs_cos_wrapper_footer_blog" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_module" style="" data-hs-cos-general-type="widget" data-hs-cos-type="module">
+
+<!-- templateType: none -->
+<div class="pwr-footer vanilla pwr-form-style-v4 pwr-footer-advanced  pwr--dark pwr--margin-t-0 pwr--margin-b-0    lazyload" style="background-color: rgba(21, 116, 54, 1.0); ">
+  
+
+  
+  <div class="pwr-footer__content pwr-adc pwr-adc__height-mode--stretch pwr--dark">
+        <div class="pwr-adc__wrapper"><div class="pwr-adc-main page-center pwr--sec-padding-t-sm   pwr--margin-t-0 pwr--margin-b-0"><div class="pwr-adc__cols pwr-adc-main__cols   pwr--relative">
+	<div class="pwr-adc__col pwr-adc__col--width-3 pwr--align-fcol-t pwr--align-fcol-t-t  pwr--relative lazyload" style="">
+        
+
+        <div class="pwr-adc__content-wrappers "><div class="pwr-adc__content-wrapper pwr-adc__content-wrapper--ix-0-1-1 
+                            pwr--align-fcol-t pwr--align-fcol-t-t pwr--align-fcol-m-t pwr--align-l pwr--align-t-l pwr--align-m-l pwr--relative lazyload" style="
+        
+    " data-index="1">
+                    
+
+                    <div class="pwr-adc-content pwr-adc-content--logo pwr-footer__logo pwr-footer__logo--large" style="margin-bottom: 10px;"><a href="https://www.simio.com?hsLang=en"><img data-src="https://50418038.fs1.hubspotusercontent-na1.net/hub/50418038/hubfs/All-White-Simio-Aegis-Logo-PNG.webp?width=143&amp;name=All-White-Simio-Aegis-Logo-PNG.webp" class="lazyload " alt="All-White-Simio-Aegis-Logo-PNG" width="143" style="aspect-ratio: 2.234375; "></a></div></div><div class="pwr-adc__content-wrapper pwr-adc__content-wrapper--ix-0-1-2 
+                            pwr--align-fcol-t pwr--align-fcol-t-t pwr--align-fcol-m-t pwr--align-l pwr--align-t-l pwr--align-m-l pwr--relative lazyload" style="
+        
+    " data-index="2">
+                    
+
+                    <div class="pwr-adc-content pwr-adc-content--image " style="margin-bottom: 20px;"><a href="https://app.drata.com/trust/9cc2bcde-0c38-11ee-865f-029d78a187d9" target="_blank" rel="noopener" class="pwr-adc-content__image-wrapper "><img data-src="https://50418038.fs1.hubspotusercontent-na1.net/hub/50418038/hubfs/aicpa-logo-blue.webp?width=69&amp;name=aicpa-logo-blue.webp" class="lazyload pwr-adc-content__image---1-2-1 pwr--align-div-l pwr--align-div-t-l pwr--align-div-m-l" alt="aicpa-logo-blue" width="69" style="aspect-ratio: 1.0; "></a></div><div class="pwr-adc-content pwr-adc-content--social-icons pwr-footer-company-info__icons" style="margin-bottom: 20px;"><a href="https://www.facebook.com/SimioLLC/" target="_blank" rel="noopener nofollow" class="pwr-social-icon focus-target__icon pwr-adc-content__social-icon "><span id="hs_cos_wrapper_footer_blog_" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_icon" style="" data-hs-cos-general-type="widget" data-hs-cos-type="icon"><svg version="1.0" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 264 512" aria-hidden="true"><g id="facebook-f5_layer"><path d="M76.7 512V283H0v-91h76.7v-71.7C76.7 42.4 124.3 0 193.8 0c33.3 0 61.9 2.5 70.2 3.6V85h-48.2c-37.8 0-45.1 18-45.1 44.3V192H256l-11.7 91h-73.6v229" /></g></svg></span></a><a href="https://www.linkedin.com/company/simio-llc?trk=biz-companies-cym" target="_blank" rel="noopener nofollow" class="pwr-social-icon focus-target__icon pwr-adc-content__social-icon "><span id="hs_cos_wrapper_footer_blog_" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_icon" style="" data-hs-cos-general-type="widget" data-hs-cos-type="icon"><svg version="1.0" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 448 512" aria-hidden="true"><g id="linkedin-in6_layer"><path d="M100.3 480H7.4V180.9h92.9V480zM53.8 140.1C24.1 140.1 0 115.5 0 85.8 0 56.1 24.1 32 53.8 32c29.7 0 53.8 24.1 53.8 53.8 0 29.7-24.1 54.3-53.8 54.3zM448 480h-92.7V334.4c0-34.7-.7-79.2-48.3-79.2-48.3 0-55.7 37.7-55.7 76.7V480h-92.8V180.9h89.1v40.8h1.3c12.4-23.5 42.7-48.3 87.9-48.3 94 0 111.3 61.9 111.3 142.3V480z" /></g></svg></span></a><a href="https://twitter.com/simio" target="_blank" rel="noopener nofollow" class="pwr-social-icon focus-target__icon pwr-adc-content__social-icon "><span id="hs_cos_wrapper_footer_blog_" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_icon" style="" data-hs-cos-general-type="widget" data-hs-cos-type="icon"><svg version="1.0" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 512 512" aria-hidden="true"><g id="twitter7_layer"><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z" /></g></svg></span></a><a href="https://www.youtube.com/SimioSimulation" target="_blank" rel="noopener nofollow" class="pwr-social-icon focus-target__icon pwr-adc-content__social-icon "><span id="hs_cos_wrapper_footer_blog_" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_icon" style="" data-hs-cos-general-type="widget" data-hs-cos-type="icon"><svg version="1.0" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 576 512" aria-hidden="true"><g id="youtube8_layer"><path d="M549.655 124.083c-6.281-23.65-24.787-42.276-48.284-48.597C458.781 64 288 64 288 64S117.22 64 74.629 75.486c-23.497 6.322-42.003 24.947-48.284 48.597-11.412 42.867-11.412 132.305-11.412 132.305s0 89.438 11.412 132.305c6.281 23.65 24.787 41.5 48.284 47.821C117.22 448 288 448 288 448s170.78 0 213.371-11.486c23.497-6.321 42.003-24.171 48.284-47.821 11.412-42.867 11.412-132.305 11.412-132.305s0-89.438-11.412-132.305zm-317.51 213.508V175.185l142.739 81.205-142.739 81.201z" /></g></svg></span></a></div></div></div>								
+	</div>
+	<div class="pwr-adc__col pwr-adc__col--width-3 pwr--align-fcol-t pwr--align-fcol-t-t  pwr--relative lazyload" style="">
+        
+
+        <div class="pwr-adc__content-wrappers "><div class="pwr-adc__content-wrapper pwr-adc__content-wrapper--ix-0-2-1 
+                            pwr--align-fcol-t pwr--align-fcol-t-t pwr--align-fcol-m-t pwr--align-l pwr--align-t-l pwr--align-m-l pwr--relative lazyload" style="
+        
+    " data-index="1">
+                    
+
+                    <div class="pwr-adc-content pwr-adc-content--title " style="margin-bottom: 10px;">
+        <div class="pwr-adc-content__title pwr-adc-content__title---2-1-1" style="font-size: max(var(--fs-min), calc(14px * var(--adv-fs-factor, 1) ) ); line-height: 1.4285714285714286em;">Company</div></div><div class="pwr-adc-content pwr-adc-content--menu " style="margin-bottom: 10px;"><div class="pwr-adc-content__menu pwr-js-menu">
+            <span id="hs_cos_wrapper_menu_206326419997" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_menu" style="" data-hs-cos-general-type="widget" data-hs-cos-type="menu"><div class="hs-menu-wrapper pwr-a11y-menu no-flyouts hs-menu-flow-vertical" role="navigation" data-sitemap-name="default" id="hs_menu_wrapper_menu_206326419997" data-menu-id="206326419997" ">
+            <ul role="menu">
+                
+                    <li class="hs-menu-item hs-menu-depth-1 " role="none">
+        <a href="https://www.simio.com/blog" role="menuitem"><span class="focus-target">Simio Blog</span></a>
+    </li>
+                    
+                    <li class="hs-menu-item hs-menu-depth-1 " role="none">
+        <a href="https://www.simio.com/simio-webinars/" role="menuitem"><span class="focus-target">Solution Series</span></a>
+    </li>
+                    
+                    <li class="hs-menu-item hs-menu-depth-1 " role="none">
+        <a href="https://www.simio.com/simio-scoop-e-newsletter" role="menuitem"><span class="focus-target">Simio Scoop</span></a>
+    </li>
+                    
+                    <li class="hs-menu-item hs-menu-depth-1 " role="none">
+        <a href="https://www.simio.com/contact" role="menuitem"><span class="focus-target">Contact Simio</span></a>
+    </li>
+                    
+                    <li class="hs-menu-item hs-menu-depth-1 " role="none">
+        <a href="https://www.simio.com/simio-sync/" role="menuitem"><span class="focus-target">Simio Sync</span></a>
+    </li>
+                    </ul>
+        </div></span>
+        </div></div></div></div>								
+	</div>
+	<div class="pwr-adc__col pwr-adc__col--width-3 pwr--align-fcol-t pwr--align-fcol-t-t  pwr--relative lazyload" style="">
+        
+
+        <div class="pwr-adc__content-wrappers "><div class="pwr-adc__content-wrapper pwr-adc__content-wrapper--ix-0-3-1 
+                            pwr--align-fcol-t pwr--align-fcol-t-t pwr--align-fcol-m-t pwr--align-l pwr--align-t-l pwr--align-m-l pwr--relative lazyload" style="
+        
+    " data-index="1">
+                    
+
+                    <div class="pwr-adc-content pwr-adc-content--title " style="margin-bottom: 10px;">
+        <div class="pwr-adc-content__title pwr-adc-content__title---3-1-1" style="font-size: max(var(--fs-min), calc(14px * var(--adv-fs-factor, 1) ) ); line-height: 1.4285714285714286em;">Legal</div></div><div class="pwr-adc-content pwr-adc-content--menu " style="margin-bottom: 10px;"><div class="pwr-adc-content__menu pwr-js-menu">
+            <span id="hs_cos_wrapper_menu_207458807403" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_menu" style="" data-hs-cos-general-type="widget" data-hs-cos-type="menu"><div class="hs-menu-wrapper pwr-a11y-menu no-flyouts hs-menu-flow-vertical" role="navigation" data-sitemap-name="default" id="hs_menu_wrapper_menu_207458807403" data-menu-id="207458807403" ">
+            <ul role="menu">
+                
+                    <li class="hs-menu-item hs-menu-depth-1 " role="none">
+        <a href="https://www.simio.com/terms-of-service/" role="menuitem"><span class="focus-target">Terms of Service</span></a>
+    </li>
+                    
+                    <li class="hs-menu-item hs-menu-depth-1 " role="none">
+        <a href="https://app.drata.com/trust/9cc2bcde-0c38-11ee-865f-029d78a187d9" role="menuitem"><span class="focus-target">Compliance</span></a>
+    </li>
+                    
+                    <li class="hs-menu-item hs-menu-depth-1 " role="none">
+        <a href="https://www.simio.com/privacy-policy" role="menuitem"><span class="focus-target">Privacy Policy</span></a>
+    </li>
+                    
+                    <li class="hs-menu-item hs-menu-depth-1 " role="none">
+        <a href="javascript:;" role="menuitem" tabindex="-1">Google reCAPTCHA</a>
+    </li>
+                    </ul>
+        </div></span>
+        </div></div></div></div>								
+	</div>
+	<div class="pwr-adc__col pwr-adc__col--width-3 pwr--align-fcol-t pwr--align-fcol-t-t  pwr--relative lazyload" style="">
+        
+
+        <div class="pwr-adc__content-wrappers "><div class="pwr-adc__content-wrapper pwr-adc__content-wrapper--ix-0-4-1 
+                            pwr--align-fcol-t pwr--align-fcol-t-t pwr--align-fcol-m-t pwr--align-l pwr--align-t-l pwr--align-m-l pwr--relative lazyload" style="
+        
+    " data-index="1">
+                    
+
+                    <div class="pwr-adc-content pwr-adc-content--title " style="margin-bottom: 10px;">
+        <div class="pwr-adc-content__title pwr-adc-content__title---4-1-1" style="font-size: max(var(--fs-min), calc(14px * var(--adv-fs-factor, 1) ) ); line-height: 1.4285714285714286em;">Get In Touch</div></div><div class="pwr-adc-content pwr-adc-content--icon-text "><div class="pwr-adc-content__icon_text pwr-adc-content__icon-text---4-1-2 " style="gap:20px;align-items: center;">
+            <div class="pwr-adc-content__icon_text-icon-wrapper">
+                <div class="pwr-adc-content__icon-wrapper vanilla pwr--clearfix pwr-adc-content__icon-wrapper--no-bg" style="display: inline-block;line-height:1em;"><span class="pwr-adc-content__icon" style="color: rgba(255, 255, 255,1.0);font-size: calc(20px * var(--adv-fs-factor, 1));"><span id="hs_cos_wrapper_footer_blog_" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_icon" style="" data-hs-cos-general-type="widget" data-hs-cos-type="icon"><svg version="1.0" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 512 512" aria-hidden="true"><g id="Paper Plane9_layer"><path d="M476 3.2L12.5 270.6c-18.1 10.4-15.8 35.6 2.2 43.2L121 358.4l287.3-253.2c5.5-4.9 13.3 2.6 8.6 8.3L176 407v80.5c0 23.6 28.5 32.9 42.5 15.8L282 426l124.6 52.2c14.2 6 30.4-2.9 33-18.2l72-432C515 7.8 493.3-6.8 476 3.2z" /></g></svg></span></span></div>
+            </div>
+            <div class="pwr-adc-content__icon_text-content-wrapper">
+                <div class="pwr-adc-content__title" style="font-size: max(var(--fs-min), calc( 14px * var(--adv-fs-factor, 1) ) ); line-height: 1.4285714285714286em;"></div><div class="pwr-adc-content__text pwr-rich-text"><a style="font-size: 16px; line-height: 26px; color: #fff;" href="mailto:info@simio.com">info@simio.com</a></div></div>
+        </div></div><div class="pwr-adc-content pwr-adc-content--icon-text "><div class="pwr-adc-content__icon_text pwr-adc-content__icon-text---4-1-3 " style="gap:20px;align-items: center;">
+            <div class="pwr-adc-content__icon_text-icon-wrapper">
+                <div class="pwr-adc-content__icon-wrapper vanilla pwr--clearfix pwr-adc-content__icon-wrapper--no-bg" style="display: inline-block;line-height:1em;"><span class="pwr-adc-content__icon" style="color: rgba(255, 255, 255,1.0);font-size: calc(20px * var(--adv-fs-factor, 1));"><span id="hs_cos_wrapper_footer_blog_" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_icon" style="" data-hs-cos-general-type="widget" data-hs-cos-type="icon"><svg version="1.0" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 512 512" aria-hidden="true"><g id="Alternate Phone10_layer"><path d="M497.39 361.8l-112-48a24 24 0 0 0-28 6.9l-49.6 60.6A370.66 370.66 0 0 1 130.6 204.11l60.6-49.6a23.94 23.94 0 0 0 6.9-28l-48-112A24.16 24.16 0 0 0 122.6.61l-104 24A24 24 0 0 0 0 48c0 256.5 207.9 464 464 464a24 24 0 0 0 23.4-18.6l24-104a24.29 24.29 0 0 0-14.01-27.6z" /></g></svg></span></span></div>
+            </div>
+            <div class="pwr-adc-content__icon_text-content-wrapper">
+                <div class="pwr-adc-content__title" style="font-size: max(var(--fs-min), calc( 14px * var(--adv-fs-factor, 1) ) ); line-height: 1.4285714285714286em;"></div><div class="pwr-adc-content__text pwr-rich-text"><a style="font-size: 16px; line-height: 26px; color: #fff;" href="tel:412.528.1576">412.528.1576</a></div></div>
+        </div></div><div class="pwr-adc-content pwr-adc-content--icon-text " style="margin-bottom: 10px;"><div class="pwr-adc-content__icon_text pwr-adc-content__icon-text---4-1-4 " style="gap:20px;">
+            <div class="pwr-adc-content__icon_text-icon-wrapper">
+                <div class="pwr-adc-content__icon-wrapper vanilla pwr--clearfix pwr-adc-content__icon-wrapper--no-bg" style="display: inline-block;line-height:1em;"><span class="pwr-adc-content__icon" style="color: rgba(255, 255, 255,1.0);font-size: calc(20px * var(--adv-fs-factor, 1));"><span id="hs_cos_wrapper_footer_blog_" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_icon" style="" data-hs-cos-general-type="widget" data-hs-cos-type="icon"><svg version="1.0" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 384 512" aria-hidden="true"><g id="Alternate Map Marker11_layer"><path d="M172.268 501.67C26.97 291.031 0 269.413 0 192 0 85.961 85.961 0 192 0s192 85.961 192 192c0 77.413-26.97 99.031-172.268 309.67-9.535 13.774-29.93 13.773-39.464 0zM192 272c44.183 0 80-35.817 80-80s-35.817-80-80-80-80 35.817-80 80 35.817 80 80 80z" /></g></svg></span></span></div>
+            </div>
+            <div class="pwr-adc-content__icon_text-content-wrapper">
+                <div class="pwr-adc-content__title" style="font-size: max(var(--fs-min), calc( 14px * var(--adv-fs-factor, 1) ) ); line-height: 1.4285714285714286em;"></div><div class="pwr-adc-content__text pwr-rich-text"><p style="font-size: 16px; line-height: 26px;"><a style="color: #fff;" href="https://maps.app.goo.gl/mrbV1S6dD7zmYS9g8" target="_blank" rel="noopener">Simio</a><br>504 Beaver Street<br>Sewickley, PA 15143<br>USA</p></div></div>
+        </div></div></div></div>								
+	</div></div>
+            </div><div class="pwr-adc-sub pwr-adc-sub--border-none pwr-adc-sub--content-width   pwr--padding-b-0   pwr--dark pwr--relative lazyload" style="">
+            
+
+            <div class="page-center pwr--relative">
+                <div class="pwr-adc__cols pwr-adc-sub__cols  pwr--align-frow-m    pwr--relative">
+    <div class="pwr-adc__col pwr-adc__col--width-12 pwr--align-l pwr--align-t-l pwr--align-m-l  pwr--relative lazyload" style="">
+        <div class="pwr-adc-content pwr-adc-content--text "><div class="pwr-adc-content__text pwr-rich-text"><p style="text-align: center;">©2026 Simio</p></div></div></div></div>	
+            </div>
+
+        </div></div>
+    </div>
+
+</div></div></div>
+
+    <div class="container-fluid footer-bottom__container">
+<div class="row-fluid-wrapper">
+<div class="row-fluid">
+<div class="span12 widget-span widget-type-cell " style="" data-widget-type="cell" data-x="0" data-w="12">
+
+</div><!--end widget-span -->
+</div>
+</div>
+</div>
+        
+</footer></div></div>
+    
+<!-- HubSpot performance collection script -->
+<script defer src="/hs/hsstatic/content-cwv-embed/static-1.1293/embed.js"></script>
+
+        <script>
+            function isElementUnderViewport(el) {
+                var rect = el.getBoundingClientRect();
+                var windowHeight = (window.innerHeight || document.documentElement.clientHeight);
+                return (rect.top >= windowHeight);
+            }
+            document.addEventListener("DOMContentLoaded", () => {
+                document.querySelectorAll('[tmp-data-aos]').forEach((elem) => {
+                    if (isElementUnderViewport(elem)) {
+                        elem.setAttribute("data-aos", elem.getAttribute("tmp-data-aos"))
+                        elem.setAttribute("data-aos-delay", elem.getAttribute("tmp-data-aos-delay"))
+                        elem.removeAttribute('tmp-data-aos');
+                        elem.removeAttribute('tmp-data-aos-delay');
+                    }
+                });
+                if(typeof AOS !== 'undefined') {
+                    AOS.refreshHard();
+                }
+            });
+        </script>
+    
+<script defer src="https://www.simio.com/hubfs/hub_generated/template_assets/1/205746435224/1791567771928/template_pwr.min.js"></script>
+<script src="https://www.simio.com/hubfs/hub_generated/template_assets/1/206598651731/1791567753698/template_child.min.js"></script>
+<script>
+var hsVars = hsVars || {}; hsVars['language'] = 'en';
+</script>
+
+<script src="/hs/hsstatic/cos-i18n/static-1.53/bundles/project.js"></script>
+<script defer fetchpriority="low" src="https://www.simio.com/hubfs/hub_generated/template_assets/1/205746551124/1791567769732/template_pwr-burger.min.js"></script>
+<script defer fetchpriority="low" src="https://www.simio.com/hubfs/hub_generated/template_assets/1/205746551132/1791567764948/template_scroll-shadow.min.js"></script>
+<script defer fetchpriority="low" src="https://www.simio.com/hubfs/hub_generated/template_assets/1/205746080299/1791567771768/template_pwr-search.min.js"></script>
+
+<!-- Start of HubSpot Analytics Code -->
+<script type="text/javascript">
+var _hsq = _hsq || [];
+_hsq.push(["setContentType", "blog-post"]);
+_hsq.push(["setCanonicalUrl", "https:\/\/www.simio.com\/whitepapers\/resource-calendar-based-vs-simulation-event-based-production-scheduling"]);
+_hsq.push(["setPageId", "207120557900"]);
+_hsq.push(["setContentMetadata", {
+    "contentPageId": 207120557900,
+    "legacyPageId": "207120557900",
+    "contentFolderId": null,
+    "contentGroupId": 206902559401,
+    "abTestId": null,
+    "languageVariantId": 207120557900,
+    "languageCode": "en",
+    
+    
+}]);
+</script>
+
+<script type="text/javascript" id="hs-script-loader" async defer src="/hs/scriptloader/50418038.js"></script>
+<!-- End of HubSpot Analytics Code -->
+
+
+<script type="text/javascript">
+var hsVars = {
+    render_id: "6bab12dc-3b40-45a6-bf13-b03fede662bd",
+    ticks: 1791568416505,
+    page_id: 207120557900,
+    
+    content_group_id: 206902559401,
+    portal_id: 50418038,
+    app_hs_base_url: "https://app.hubspot.com",
+    cp_hs_base_url: "https://cp.hubspot.com",
+    language: "en",
+    analytics_page_type: "blog-post",
+    scp_content_type: "",
+    
+    analytics_page_id: "207120557900",
+    category_id: 3,
+    folder_id: 0,
+    is_hubspot_user: false
+}
+</script>
+
+
+<script defer src="/hs/hsstatic/HubspotToolsMenu/static-1.640/js/index.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  // IMAGES
+  document.querySelectorAll("img").forEach((img, index) => {
+
+    const rect = img.getBoundingClientRect();
+    const isAboveFold = rect.top < window.innerHeight;
+
+    if (isAboveFold || index < 2) {
+      // Keep LCP fast
+      img.removeAttribute("loading");
+      img.setAttribute("fetchpriority", "high");
+    } else if (!img.hasAttribute("loading")) {
+      img.loading = "lazy";
+      img.decoding = "async";
+    }
+
+    // CLS fix
+    if (!img.hasAttribute("width") && !img.hasAttribute("height")) {
+      if (img.naturalWidth && img.naturalHeight) {
+        img.setAttribute("width", img.naturalWidth);
+        img.setAttribute("height", img.naturalHeight);
+      }
+    }
+
+  });
+
+  // VIDEOS
+  document.querySelectorAll("video").forEach((video, index) => {
+    if (index > 0 && !video.hasAttribute("preload")) {
+      video.preload = "none";
+    }
+  });
+
+  // LINKS
+  document.querySelectorAll("a:not([href])").forEach(link => {
+    link.setAttribute("href", "#");
+  });
+
+});
+</script>
+
+<div id="fb-root"></div>
+  <script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v3.0";
+  fjs.parentNode.insertBefore(js, fjs);
+ }(document, 'script', 'facebook-jssdk'));</script> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+ 
+
+
+
+    <a href="#" target="_self" class="pwr-adv-back-to-top pwr-adv-back-to-top--left    after-scroll pwr-adv-back-to-top--visible-on-all-devices pwr-adv-back-to-top--spacing-md pwr-adv-back-to-top--spacing-m-md" data-visible-after="1000" aria-label="Back to top" role="button">
+            <span class="pwr-back-to-top__icon pwr-icon">
+                <svg version="1.1" id="arrow_backtotop" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewbox="0 0 18.2 11.7" xml:space="preserve">
+                    <polygon points="2.2,11.7 0,9.6 9.1,0 18.2,9.6 16,11.7 9.1,4.4 " />
+                </svg>
+            </span>
+        </a>
+     <script>
+        (function () {
+          const delayedScripts = [
+            "https://www.googletagmanager.com/gtag/js?id=GA_ID",
+            "https://connect.facebook.net/en_US/fbevents.js"
+          ];
+
+          function loadScript(src) {
+            const s = document.createElement("script");
+            s.src = src;
+            s.async = true;
+            document.body.appendChild(s);
+          }
+
+          function loadAllScripts() {
+            delayedScripts.forEach(loadScript);
+          }
+
+          let triggered = false;
+          function triggerLoad() {
+            if (triggered) return;
+            triggered = true;
+            loadAllScripts();
+          }
+
+          ["click","scroll","mousemove","touchstart"].forEach(event => {
+            window.addEventListener(event, triggerLoad, { once: true, passive: true });
+          });
+
+          setTimeout(triggerLoad, 3000);
+        })();
+     </script>
+  
+</body></html>

@@ -1,0 +1,79 @@
+{
+  "document_kind": "generation_context_contract_design_not_compilable_types",
+  "goal_fields": [
+    "industry",
+    "product_family",
+    "product_specification_ref",
+    "accepted_quantity_per_day",
+    "accepted_unit",
+    "acceptance_scope",
+    "production_calendar_ref",
+    "observation_window",
+    "site_envelope",
+    "existing_equipment_and_constraints"
+  ],
+  "site_units": "m",
+  "site_binding": {
+    "length": "hall.width_m/X",
+    "width": "hall.depth_m/Y",
+    "height": "hall.height_m/Z"
+  },
+  "parameter_source_values": [
+    "user_provided",
+    "module_declared",
+    "template_declared_example",
+    "unknown"
+  ],
+  "template_profile_fields": [
+    "industry",
+    "product_family",
+    "site_applicability",
+    "process_graph",
+    "nine_category_roles",
+    "required_parameters",
+    "parameter_sources",
+    "layout_modes",
+    "role_bindings"
+  ],
+  "draft_check_scopes": [
+    "references_and_units",
+    "material_process_connectivity",
+    "site_bounds",
+    "footprint_overlap",
+    "height",
+    "declared_clearance_and_static_lanes"
+  ],
+  "result_states": [
+    "no_matching_template",
+    "missing_inputs",
+    "layout_conditions_failed",
+    "actual_simulation_shortfall",
+    "actual_simulation_target_met"
+  ],
+  "state_owner": "desktop_host_single_engine",
+  "goal_result_binding": "forbidden",
+  "actual_result": null,
+  "accepted_quantity_semantics": "Goal Q and actual accepted output A(H) use the selected accepted_unit, observation_window and acceptance_scope; containers convert by declared contents without double counting; no industry-specific unit is required.",
+  "delivery_policy": {
+    "initial_target_met": {
+      "conditions": [
+        "supported_scope_and_complete_inputs",
+        "draft_checks_passed",
+        "actual_run_accepted_quantity_at_least_goal_in_same_unit_scope_window"
+      ],
+      "action": "save_editable_project_and_export_evaluation",
+      "requires_repair": false,
+      "requires_revised_run": false,
+      "requires_comparison": false
+    },
+    "supported_shortfall_or_failed_check": {
+      "action": "finite_authorized_change_then_recheck_and_new_run_comparison_when_run_exists",
+      "limits": "supported_variables_only_no_unbounded_search"
+    },
+    "missing_inputs_scope_or_unrepairable": {
+      "action": "preserve_draft_and_explain_conditions",
+      "target_met": false
+    },
+    "repair_capability_acceptance": "independent_shortfall_case_not_every_successful_task"
+  }
+}

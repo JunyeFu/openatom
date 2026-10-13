@@ -1,0 +1,225 @@
+{
+  "document_kind": "device_timeline_design_not_runtime_result",
+  "id": "assembly-cycle",
+  "clock": "simulation_cycle_progress",
+  "active_state": "working",
+  "progress_domain": [
+    0,
+    1
+  ],
+  "duration_binding": "behavior.duration",
+  "phase_basis": "四阶段及比例为演示假设，不表示已获得设备工艺参数",
+  "repeat": "once_per_actual_work_cycle",
+  "seek_effect": "presentation_only",
+  "clips": [
+    {
+      "id": "align",
+      "label": "定位",
+      "start": 0,
+      "end": 0.2,
+      "source": {
+        "kind": "native_pose",
+        "from": "open",
+        "to": "open"
+      },
+      "transition": "hold"
+    },
+    {
+      "id": "lower",
+      "label": "下压",
+      "start": 0.2,
+      "end": 0.55,
+      "source": {
+        "kind": "native_pose",
+        "from": "open",
+        "to": "pressed"
+      },
+      "transition": "linear"
+    },
+    {
+      "id": "hold",
+      "label": "保持",
+      "start": 0.55,
+      "end": 0.85,
+      "source": {
+        "kind": "native_pose",
+        "from": "pressed",
+        "to": "pressed"
+      },
+      "transition": "hold"
+    },
+    {
+      "id": "return",
+      "label": "回位",
+      "start": 0.85,
+      "end": 1,
+      "source": {
+        "kind": "native_pose",
+        "from": "pressed",
+        "to": "open"
+      },
+      "transition": "linear"
+    }
+  ],
+  "state_views": [
+    {
+      "state": "idle",
+      "pose": "open"
+    },
+    {
+      "state": "waiting",
+      "pose": "open",
+      "scope": "before_cycle"
+    }
+  ],
+  "tags": [
+    {
+      "id": "pcb-stock",
+      "kind": "data",
+      "label": "可用PCB",
+      "value_type": "quantity",
+      "unit": "piece",
+      "binding": {
+        "source": "port.available",
+        "port": "pcb"
+      },
+      "anchor": {
+        "kind": "scene_node",
+        "node": "table",
+        "local_position": [
+          -0.5,
+          0.1,
+          -0.2
+        ]
+      },
+      "visibility": {
+        "states": [
+          "idle",
+          "working",
+          "waiting"
+        ]
+      }
+    },
+    {
+      "id": "progress",
+      "kind": "data",
+      "label": "周期进度",
+      "value_type": "ratio",
+      "binding": {
+        "source": "device.cycle.progress"
+      },
+      "anchor": {
+        "kind": "scene_node",
+        "node": "head",
+        "local_position": [
+          0.1,
+          0,
+          0
+        ]
+      },
+      "visibility": {
+        "states": [
+          "working"
+        ]
+      }
+    },
+    {
+      "id": "wait-reason",
+      "kind": "data",
+      "label": "等待原因",
+      "value_type": "text",
+      "binding": {
+        "source": "device.wait_reason"
+      },
+      "anchor": {
+        "kind": "viewport",
+        "position": [
+          0.05,
+          0.9
+        ]
+      },
+      "visibility": {
+        "states": [
+          "waiting"
+        ]
+      }
+    },
+    {
+      "id": "cycle-setting",
+      "kind": "parameter",
+      "label": "单周期工时（设置值）",
+      "value_type": "duration",
+      "unit": "second",
+      "binding": {
+        "source": "parameter",
+        "parameter": "cycle_seconds"
+      },
+      "action": {
+        "operation": "configure",
+        "parameter": "cycle_seconds"
+      },
+      "anchor": {
+        "kind": "viewport",
+        "position": [
+          0.05,
+          0.1
+        ]
+      },
+      "visibility": {
+        "states": [
+          "idle",
+          "working",
+          "waiting"
+        ]
+      }
+    },
+    {
+      "id": "inspect-fixture",
+      "kind": "action",
+      "label": "查看工序与来料",
+      "action": {
+        "operation": "inspect",
+        "target": "self"
+      },
+      "anchor": {
+        "kind": "scene_node",
+        "node": "fixture",
+        "local_position": [
+          0.22,
+          0.06,
+          0
+        ]
+      },
+      "visibility": {
+        "states": [
+          "idle",
+          "working",
+          "waiting"
+        ]
+      }
+    },
+    {
+      "id": "try-cycle",
+      "kind": "action",
+      "label": "试一个周期（隔离样例）",
+      "action": {
+        "operation": "preview_cycle",
+        "scenario": "人工装配样例"
+      },
+      "anchor": {
+        "kind": "viewport",
+        "position": [
+          0.7,
+          0.9
+        ]
+      },
+      "visibility": {
+        "states": [
+          "idle",
+          "working",
+          "waiting"
+        ]
+      }
+    }
+  ]
+}

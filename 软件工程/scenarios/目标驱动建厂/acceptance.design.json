@@ -1,0 +1,88 @@
+{
+  "document_kind": "planned_agent_generation_acceptance_not_test_result",
+  "requirement_id": "SF-17",
+  "input_example": {
+    "industry": "paper_carton_manufacturing",
+    "product_family": "die_cut_fold_glued_paper_carton",
+    "daily_accepted_quantity": 10000,
+    "site_dimensions": null,
+    "production_calendar": null,
+    "source": "user_capability_example_not_actual_site_or_machine_data"
+  },
+  "template_ref": "modules/templates/carton-factory/manifest.json",
+  "required_steps": [
+    "query_module_library",
+    "apply_commands",
+    "check_factory_draft",
+    "render_view",
+    "run_scenario",
+    "get_run",
+    "export_evaluation",
+    "save_project"
+  ],
+  "cases": [
+    {
+      "id": "GF-01",
+      "condition": "supported_template_and_complete_labeled_inputs",
+      "expectation": "editable_nine_role_factory_with_layout_schedule_actual_run_and_report"
+    },
+    {
+      "id": "GF-02",
+      "condition": "missing_calendar_or_cycle_or_site",
+      "expectation": "draft_and_named_missing_inputs_not_production_target_met"
+    },
+    {
+      "id": "GF-03",
+      "condition": "no_matching_template",
+      "expectation": "explain_missing_scope_preserve_draft_not_fake_factory"
+    },
+    {
+      "id": "GF-04",
+      "condition": "footprint_height_or_clearance_conflict",
+      "expectation": "object_specific_conflict_not_visual_scaling_bypass"
+    },
+    {
+      "id": "GF-05",
+      "condition": "actual_accepted_output_below_target",
+      "expectation": "finite_supported_repair_and_new_run_comparison_or_inability_reason"
+    },
+    {
+      "id": "GF-06",
+      "condition": "human_reopens_generated_project",
+      "expectation": "edit_and_rerun_same_objects_sources_and_bindings"
+    },
+    {
+      "id": "GF-07",
+      "condition": "initial_draft_inputs_complete_checks_pass_and_actual_target_met",
+      "expectation": "direct_editable_project_and_four_format_delivery_one_actual_run_no_required_change_revised_run_or_comparison"
+    }
+  ],
+  "result_formats": [
+    "pdf",
+    "html",
+    "csv",
+    "json"
+  ],
+  "runtime_available": false,
+  "actual_result": null,
+  "conditional_steps": {
+    "initial_target_met": "save_project_and_export_evaluation_without_repair_or_compare_runs",
+    "shortfall_or_failed_check": "finite_supported_authorized_repair_recheck_new_run_compare_when_prior_run_exists_or_named_inability",
+    "missing_scope_or_inputs": "preserve_draft_and_explain_without_target_met"
+  },
+  "generic_unit_examples": [
+    {
+      "product_family": "die_cut_fold_glued_paper_carton",
+      "accepted_unit": "carton",
+      "acceptance_scope": "declared_finished_goods_destination",
+      "count_rule": "bundle converted using declared carton contents counted once"
+    },
+    {
+      "product_family": "purchased_parts_assembly",
+      "accepted_unit": "piece",
+      "acceptance_scope": "declared_qualified_assembly_destination",
+      "count_rule": "assembled product counted once; consumed components not added to accepted output"
+    }
+  ],
+  "generic_unit_examples_scope": "Contract walkthrough examples only, not frozen capacity inputs or executed runtime tests; both use the same goal_fields."
+}

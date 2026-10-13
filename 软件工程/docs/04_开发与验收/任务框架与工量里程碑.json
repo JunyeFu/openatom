@@ -1,0 +1,1555 @@
+{
+  "document_kind": "task_effort_and_deliverable_milestone_framework_not_daily_schedule",
+  "date": "2026-10-13 Asia/Shanghai",
+  "authority": "用户要求S01-01至S02-03整体更新、细化工量/里程碑；补充确认不需要日程、只要任务框架",
+  "scope_review_ids": [
+    "S01-01",
+    "S01-02",
+    "S01-03",
+    "S01-04",
+    "S01-05",
+    "S02-01",
+    "S02-02",
+    "S02-03"
+  ],
+  "task_selection_ref": "docs/00_项目基线/首版任务选择.json",
+  "window_plan_ref": "docs/04_开发与验收/本机并行窗口计划.json",
+  "design_gate_ref": "docs/04_开发与验收/完整设计与执行准入.json",
+  "accountable_owner": "user",
+  "deadline": {
+    "material_preparation_before": "2026-10-30T00:00:00+08:00",
+    "interpretation": "北京时间10月29日结束前，不设各任务具体日期",
+    "official_deadline_basis_ref": "../研究资料/原始资料/赛事/R01_2026-10-13_S01-03复核.json",
+    "official_snapshot_read_date": "2026-10-13",
+    "official_submission_snapshot": "2026-11-01T00:00:00+08:00",
+    "fresh_web_read": "此前同日直接读取页面超时；本次独立复审未重新联网确认规则，沿用已有记录及实际阅读范围",
+    "external_process_not_material_completion": true
+  },
+  "planning_policy": {
+    "daily_schedule_requested": false,
+    "daily_capacity_required": false,
+    "dates_assigned_to_tasks": false,
+    "human_person_count": 1,
+    "parallel_implementation_windows_at_most": 5,
+    "human_review_and_acceptance_are_serial": "用户同一时刻不在两份验收上投入同一小时",
+    "estimate_kind": "unmeasured_task_decomposition_planning_ranges",
+    "estimate_assumption": "AI窗口承担代码/素材生成、调试与局部检查；用户承担关键设计/监督、输入/结果核对、代码审核、接入修正与材料验收；仍需实际闭环校准",
+    "human_hours_and_window_hours_must_not_be_added": true,
+    "no_division_by_five_or_unverified_speedup": true,
+    "upper_end_not_worst_case_limit": true,
+    "historical_estimate": "原166—282一人AI辅助粗估及50—90视觉路线判断仅保留历史；本轮按责任动作重新估计，不将原人时改名AI时、不声称已测提速",
+    "calibration_rule": "每个真实闭环记录本人有效投入、窗口活动和反馈/外部等待，更新该工作包范围；不重复计单包/整体/材料、不按文档数量完成。",
+    "no_development_calendar_does_not_remove_product_schedule": true
+  },
+  "tasks": [
+    {
+      "task_id": "P0-01",
+      "window": "W00",
+      "human_effort_hours": [
+        5,
+        8
+      ],
+      "window_active_hours": [
+        10,
+        16
+      ],
+      "effort_basis": "实际宿主/领域编辑/保存；S07脚手架配置另计，不重复。",
+      "complete_at_milestone": "MS-06",
+      "scope_source": "selected.scope/execution_plan/release_acceptance",
+      "implementation_dependencies": [],
+      "release_dependencies": [],
+      "actual_human_hours": null,
+      "actual_window_hours": null,
+      "estimate_input_refs": [
+        "docs/03_架构与契约/首版类型格式与操作契约.md",
+        "packages/module-kit/category-contracts.design.json",
+        "packages/domain/factory-generation.design.json"
+      ]
+    },
+    {
+      "task_id": "P0-02",
+      "window": "W00",
+      "human_effort_hours": [
+        2,
+        4
+      ],
+      "window_active_hours": [
+        6,
+        10
+      ],
+      "effort_basis": "订单/BOM/物品质量/预留/容器分离与数据核对。",
+      "complete_at_milestone": "MS-06",
+      "scope_source": "selected.scope/execution_plan/release_acceptance",
+      "implementation_dependencies": [
+        "P0-01"
+      ],
+      "release_dependencies": [
+        "P0-01"
+      ],
+      "actual_human_hours": null,
+      "actual_window_hours": null,
+      "estimate_input_refs": [
+        "docs/01_业务需求/订单工艺与物料分配.md",
+        "packages/domain/business-objects.design.json",
+        "scenarios/真实业务设计/business-inputs.design.json"
+      ]
+    },
+    {
+      "task_id": "P0-03",
+      "window": "W00",
+      "human_effort_hours": [
+        2,
+        4
+      ],
+      "window_active_hours": [
+        4,
+        8
+      ],
+      "effort_basis": "专业四对象/版本变更/绑定核对，建设/公用服务不计。",
+      "complete_at_milestone": "MS-06",
+      "scope_source": "selected.scope/execution_plan/release_acceptance",
+      "implementation_dependencies": [
+        "P0-02"
+      ],
+      "release_dependencies": [
+        "P0-02"
+      ],
+      "actual_human_hours": null,
+      "actual_window_hours": null,
+      "estimate_input_refs": [
+        "packages/domain/professional-artifact-binding.design.json",
+        "docs/03_架构与契约/专业成果接入与软件在环.md"
+      ]
+    },
+    {
+      "task_id": "P1-01",
+      "window": "W01",
+      "human_effort_hours": [
+        5,
+        8
+      ],
+      "window_active_hours": [
+        12,
+        20
+      ],
+      "effort_basis": "事件/齐套/容量/互斥及身份，用局部输入验证。",
+      "complete_at_milestone": "MS-06",
+      "scope_source": "selected.scope/execution_plan/release_acceptance",
+      "implementation_dependencies": [
+        "P0-02"
+      ],
+      "release_dependencies": [
+        "P0-02"
+      ],
+      "actual_human_hours": null,
+      "actual_window_hours": null,
+      "estimate_input_refs": [
+        "scenarios/两厂房装配包装/project.design.json",
+        "docs/01_业务需求/订单工艺与物料分配.md"
+      ]
+    },
+    {
+      "task_id": "P1-02",
+      "window": "W01",
+      "human_effort_hours": [
+        3,
+        5
+      ],
+      "window_active_hours": [
+        8,
+        14
+      ],
+      "effort_basis": "分支/未知质量/有限返工/身份与隔离。",
+      "complete_at_milestone": "MS-07",
+      "scope_source": "selected.scope/execution_plan/release_acceptance",
+      "implementation_dependencies": [
+        "P1-01"
+      ],
+      "release_dependencies": [
+        "P1-01"
+      ],
+      "actual_human_hours": null,
+      "actual_window_hours": null,
+      "estimate_input_refs": [
+        "scenarios/并行汇合与返工/project.design.json",
+        "scenarios/并行汇合与返工/cases.design.json"
+      ]
+    },
+    {
+      "task_id": "P1-03",
+      "window": "W01",
+      "human_effort_hours": [
+        4,
+        7
+      ],
+      "window_active_hours": [
+        10,
+        18
+      ],
+      "effort_basis": "到料/班次/阶段资源/暂停有效进度；完整运输留IX。",
+      "complete_at_milestone": "MS-07",
+      "scope_source": "selected.scope/execution_plan/release_acceptance",
+      "implementation_dependencies": [
+        "P1-02"
+      ],
+      "release_dependencies": [
+        "P1-02"
+      ],
+      "actual_human_hours": null,
+      "actual_window_hours": null,
+      "estimate_input_refs": [
+        "scenarios/真实业务设计/business-inputs.design.json",
+        "scenarios/真实业务设计/expected-business.design.json",
+        "docs/03_架构与契约/全厂时间轴与阶段资源设计.md"
+      ]
+    },
+    {
+      "task_id": "P1-04",
+      "window": "W01",
+      "human_effort_hours": [
+        3,
+        5
+      ],
+      "window_active_hours": [
+        8,
+        14
+      ],
+      "effort_basis": "订单换单/预留/客户接受，完整结果消费物流。",
+      "complete_at_milestone": "MS-07",
+      "scope_source": "selected.scope/execution_plan/release_acceptance",
+      "implementation_dependencies": [
+        "P1-03"
+      ],
+      "release_dependencies": [
+        "P1-03",
+        "P0-02",
+        "P2-02"
+      ],
+      "actual_human_hours": null,
+      "actual_window_hours": null,
+      "estimate_input_refs": [
+        "scenarios/真实业务设计/business-inputs.design.json",
+        "scenarios/真实业务设计/expected-business.design.json"
+      ]
+    },
+    {
+      "task_id": "P1-05",
+      "window": "W01",
+      "human_effort_hours": [
+        2,
+        3
+      ],
+      "window_active_hours": [
+        5,
+        10
+      ],
+      "effort_basis": "待判/放行/报废，决定与时间结束分离。",
+      "complete_at_milestone": "MS-07",
+      "scope_source": "selected.scope/execution_plan/release_acceptance",
+      "implementation_dependencies": [
+        "P1-02"
+      ],
+      "release_dependencies": [
+        "P1-02",
+        "P0-02"
+      ],
+      "actual_human_hours": null,
+      "actual_window_hours": null,
+      "estimate_input_refs": [
+        "scenarios/真实业务设计/business-inputs.design.json",
+        "scenarios/真实业务设计/expected-business.design.json",
+        "docs/01_业务需求/换单班次与质量处置.md"
+      ]
+    },
+    {
+      "task_id": "P2-01",
+      "window": "W02",
+      "human_effort_hours": [
+        8,
+        12
+      ],
+      "window_active_hours": [
+        20,
+        36
+      ],
+      "effort_basis": "完整3D/自由相机/两画布/三LOD/点击与编辑，用户Figma监督不可省。",
+      "complete_at_milestone": "MS-07",
+      "scope_source": "selected.scope/execution_plan/release_acceptance",
+      "implementation_dependencies": [
+        "P1-01"
+      ],
+      "release_dependencies": [
+        "P1-01"
+      ],
+      "actual_human_hours": null,
+      "actual_window_hours": null,
+      "estimate_input_refs": [
+        "docs/02_交互设计/完整操作流程与方案交付.md",
+        "docs/03_架构与契约/目标驱动厂房生成.md",
+        "../设计预览/当前交互规格.md"
+      ]
+    },
+    {
+      "task_id": "P2-02",
+      "window": "W01",
+      "human_effort_hours": [
+        3,
+        5
+      ],
+      "window_active_hours": [
+        8,
+        14
+      ],
+      "effort_basis": "发出/在途/接收/返程与画布供应连接。",
+      "complete_at_milestone": "MS-07",
+      "scope_source": "selected.scope/execution_plan/release_acceptance",
+      "implementation_dependencies": [
+        "P1-03"
+      ],
+      "release_dependencies": [
+        "P1-03",
+        "P2-01"
+      ],
+      "actual_human_hours": null,
+      "actual_window_hours": null,
+      "estimate_input_refs": [
+        "scenarios/两厂房装配包装/project.design.json",
+        "scenarios/两厂房装配包装/expected-events.design.json",
+        "docs/01_业务需求/物流与布局业务.md"
+      ]
+    },
+    {
+      "task_id": "P2-03",
+      "window": "W05",
+      "human_effort_hours": [
+        3,
+        5
+      ],
+      "window_active_hours": [
+        8,
+        14
+      ],
+      "effort_basis": "同起点比较与目录/包内资产/重开修改，不强制冷启动续跑。",
+      "complete_at_milestone": "MS-08",
+      "scope_source": "selected.scope/execution_plan/release_acceptance",
+      "implementation_dependencies": [
+        "P2-02"
+      ],
+      "release_dependencies": [
+        "P2-02"
+      ],
+      "actual_human_hours": null,
+      "actual_window_hours": null,
+      "estimate_input_refs": [
+        "scenarios/两厂房装配包装/variants.design.json",
+        "docs/03_架构与契约/工程交接与打开.md",
+        "scenarios/模板与交接/expected-template-handoff.design.json"
+      ]
+    },
+    {
+      "task_id": "P2-04",
+      "window": "W02",
+      "human_effort_hours": [
+        4,
+        6
+      ],
+      "window_active_hours": [
+        12,
+        20
+      ],
+      "effort_basis": "实际事件时间轴/逐件/等待定位与IX-01。",
+      "complete_at_milestone": "MS-08",
+      "scope_source": "selected.scope/execution_plan/release_acceptance",
+      "implementation_dependencies": [
+        "P1-03"
+      ],
+      "release_dependencies": [
+        "P1-03",
+        "P2-02"
+      ],
+      "actual_human_hours": null,
+      "actual_window_hours": null,
+      "estimate_input_refs": [
+        "scenarios/从零搭建控制盒厂房/project.design.json",
+        "scenarios/从零搭建控制盒厂房/expected-timeline.design.json",
+        "docs/03_架构与契约/全厂时间轴与阶段资源设计.md"
+      ]
+    },
+    {
+      "task_id": "P2-05",
+      "window": "W02",
+      "human_effort_hours": [
+        3,
+        5
+      ],
+      "window_active_hours": [
+        8,
+        14
+      ],
+      "effort_basis": "订单/排期/质量/阶段表单，绑定同一输入。",
+      "complete_at_milestone": "MS-08",
+      "scope_source": "selected.scope/execution_plan/release_acceptance",
+      "implementation_dependencies": [
+        "P2-04"
+      ],
+      "release_dependencies": [
+        "P2-04",
+        "P1-04",
+        "P1-05"
+      ],
+      "actual_human_hours": null,
+      "actual_window_hours": null,
+      "estimate_input_refs": [
+        "docs/02_交互设计/业务界面与方案评审.md",
+        "scenarios/真实业务设计/business-inputs.design.json"
+      ]
+    },
+    {
+      "task_id": "P2-06",
+      "window": "W05",
+      "human_effort_hours": [
+        4,
+        7
+      ],
+      "window_active_hours": [
+        12,
+        22
+      ],
+      "effort_basis": "同源四格式/中文排版/预览/结果归属与条件成本。",
+      "complete_at_milestone": "MS-09",
+      "scope_source": "selected.scope/execution_plan/release_acceptance",
+      "implementation_dependencies": [
+        "P2-03"
+      ],
+      "release_dependencies": [
+        "P0-03",
+        "P2-05",
+        "P2-03"
+      ],
+      "actual_human_hours": null,
+      "actual_window_hours": null,
+      "estimate_input_refs": [
+        "packages/reporting/evaluation-report.contract.design.json",
+        "docs/01_业务需求/指标成本与决策口径.md",
+        "docs/03_架构与契约/评估报告与数据导出.md"
+      ]
+    },
+    {
+      "task_id": "P3-01",
+      "window": "W03",
+      "human_effort_hours": [
+        4,
+        7
+      ],
+      "window_active_hours": [
+        10,
+        18
+      ],
+      "effort_basis": "九类定义/参数/检查/明确采用，含组件/公共schema协作。",
+      "complete_at_milestone": "MS-08",
+      "scope_source": "selected.scope/execution_plan/release_acceptance",
+      "implementation_dependencies": [
+        "P0-03",
+        "P2-01"
+      ],
+      "release_dependencies": [
+        "P0-03",
+        "P2-02"
+      ],
+      "actual_human_hours": null,
+      "actual_window_hours": null,
+      "estimate_input_refs": [
+        "packages/module-kit/category-contracts.design.json",
+        "scenarios/九类模块采用/expected-category-adoption.design.json",
+        "scenarios/设备创作与采用/inputs.design.json"
+      ]
+    },
+    {
+      "task_id": "P3-02",
+      "window": "W03",
+      "human_effort_hours": [
+        6,
+        10
+      ],
+      "window_active_hours": [
+        24,
+        42
+      ],
+      "effort_basis": "完整设备模型/媒体/部件/阶段表现、素材许可与观测，不能用纸片或播放代产出。",
+      "complete_at_milestone": "MS-08",
+      "scope_source": "selected.scope/execution_plan/release_acceptance",
+      "implementation_dependencies": [
+        "P3-01",
+        "P1-03"
+      ],
+      "release_dependencies": [
+        "P3-01",
+        "P1-03"
+      ],
+      "actual_human_hours": null,
+      "actual_window_hours": null,
+      "estimate_input_refs": [
+        "docs/02_交互设计/设备时间轴与标签设计.md",
+        "scenarios/设备创作与采用/expected-authoring.design.json"
+      ]
+    },
+    {
+      "task_id": "P3-03",
+      "window": "W03",
+      "human_effort_hours": [
+        4,
+        6
+      ],
+      "window_active_hours": [
+        12,
+        20
+      ],
+      "effort_basis": "图片时间轴/标签/热点/编辑采用，外观回看与生产分开。",
+      "complete_at_milestone": "MS-08",
+      "scope_source": "selected.scope/execution_plan/release_acceptance",
+      "implementation_dependencies": [
+        "P3-01",
+        "P1-03"
+      ],
+      "release_dependencies": [
+        "P3-01",
+        "P1-03"
+      ],
+      "actual_human_hours": null,
+      "actual_window_hours": null,
+      "estimate_input_refs": [
+        "modules/devices/manual-assembly/presentation/timeline.json",
+        "scenarios/设备创作与采用/inputs.design.json",
+        "scenarios/设备创作与采用/expected-authoring.design.json"
+      ]
+    },
+    {
+      "task_id": "P3-04",
+      "window": "W05",
+      "human_effort_hours": [
+        5,
+        8
+      ],
+      "window_active_hours": [
+        16,
+        28
+      ],
+      "effort_basis": "真实外部客户端/同宿主桥、库/草稿/渲染/运行/直交及不足例修正。",
+      "complete_at_milestone": "MS-10",
+      "scope_source": "selected.scope/execution_plan/release_acceptance",
+      "implementation_dependencies": [
+        "P0-01"
+      ],
+      "release_dependencies": [
+        "P3-02",
+        "P3-03",
+        "P2-04",
+        "P4-01",
+        "P2-06"
+      ],
+      "actual_human_hours": null,
+      "actual_window_hours": null,
+      "estimate_input_refs": [
+        "docs/03_架构与契约/通用Agent接入与专业软件连接器.md",
+        "docs/03_架构与契约/目标驱动厂房生成.md",
+        "scenarios/目标驱动建厂/acceptance.design.json"
+      ]
+    },
+    {
+      "task_id": "P4-01",
+      "window": "W03",
+      "human_effort_hours": [
+        3,
+        5
+      ],
+      "window_active_hours": [
+        10,
+        18
+      ],
+      "effort_basis": "三模板/空工程/纸箱制造配置，参数来源与支持角色明确。",
+      "complete_at_milestone": "MS-08",
+      "scope_source": "selected.scope/execution_plan/release_acceptance",
+      "implementation_dependencies": [
+        "P0-03"
+      ],
+      "release_dependencies": [
+        "P3-01",
+        "P1-04",
+        "P1-05"
+      ],
+      "actual_human_hours": null,
+      "actual_window_hours": null,
+      "estimate_input_refs": [
+        "modules/templates/machining-delivery/manifest.json",
+        "modules/templates/purchased-assembly/manifest.json",
+        "modules/templates/parallel-electromechanical/manifest.json",
+        "modules/templates/carton-factory/generation-profile.design.json",
+        "scenarios/模板与交接/expected-template-handoff.design.json"
+      ]
+    },
+    {
+      "task_id": "P4-02",
+      "window": "W04",
+      "human_effort_hours": [
+        10,
+        18
+      ],
+      "window_active_hours": [
+        32,
+        56
+      ],
+      "effort_basis": "三机制/三变化、几何与全过程三态、SVG/材料/认可绑定；本项技术不确定性最大。",
+      "complete_at_milestone": "MS-09",
+      "scope_source": "selected.scope/execution_plan/release_acceptance",
+      "implementation_dependencies": [
+        "P0-03"
+      ],
+      "release_dependencies": [
+        "P0-03",
+        "P3-01",
+        "P2-06"
+      ],
+      "actual_human_hours": null,
+      "actual_window_hours": null,
+      "estimate_input_refs": [
+        "docs/00_项目基线/技术与经济可行性.md",
+        "docs/03_架构与契约/专业成果接入与软件在环.md",
+        "packages/packaging/README.md"
+      ]
+    },
+    {
+      "task_id": "P5-01",
+      "window": "W00",
+      "human_effort_hours": [
+        12,
+        18
+      ],
+      "window_active_hours": [
+        16,
+        26
+      ],
+      "effort_basis": "完整SF/负载/复现/许可/实际介绍PDF/录屏；不含前设计PDF、跨包早期接线或外部审核等待。",
+      "complete_at_milestone": "MS-12",
+      "scope_source": "selected.scope/execution_plan/release_acceptance",
+      "implementation_dependencies": [
+        "P0-01"
+      ],
+      "release_dependencies": [
+        "P4-01",
+        "P3-04",
+        "P2-03",
+        "P2-04",
+        "P2-06",
+        "P4-02"
+      ],
+      "actual_human_hours": null,
+      "actual_window_hours": null,
+      "estimate_input_refs": [
+        "docs/00_项目基线/首版需求与验收.md",
+        "docs/05_开源与参赛/比赛设计要求.md",
+        "community/CONTRIBUTING.md",
+        "community/GOVERNANCE.md"
+      ]
+    }
+  ],
+  "shared_work": [
+    {
+      "id": "E-DESIGN",
+      "name": "剩余18项设计复审/模块建模/选型与Figma监督",
+      "human_effort_hours": [
+        24,
+        40
+      ],
+      "milestones": [
+        "MS-01",
+        "MS-02",
+        "MS-03",
+        "MS-04"
+      ],
+      "separation": "不含已通过十二项文档复审；不重复P任务实现/局部验证。24—40原估量基于当时20项未完成设计，未实测校准，不按本轮过项数机械扣减。",
+      "actual_human_hours": null,
+      "scope_checkpoint_ids": [
+        "S03-03",
+        "S03-04",
+        "S03-05",
+        "S04-01",
+        "S04-02",
+        "S04-03",
+        "S04-04",
+        "S04-05",
+        "S05-01",
+        "S05-02",
+        "S05-03",
+        "S05-04",
+        "S05-05",
+        "S06-01",
+        "S06-02",
+        "S06-03",
+        "S06-04",
+        "S06-05"
+      ]
+    },
+    {
+      "id": "E-ENV",
+      "name": "S07实际构建/测试准备",
+      "human_effort_hours": [
+        4,
+        6
+      ],
+      "milestones": [
+        "MS-05"
+      ],
+      "separation": "只算配置/锁/真实入口；P0实际业务编辑与保存另计",
+      "actual_human_hours": null
+    },
+    {
+      "id": "E-INTEGRATION",
+      "name": "共同接线/跨包IX初次联调及额外修正余量",
+      "human_effort_hours": [
+        8,
+        14
+      ],
+      "milestones": [
+        "MS-06",
+        "MS-07",
+        "MS-08",
+        "MS-09",
+        "MS-10"
+      ],
+      "separation": "只算整体接点/额外修正；单包验证已含于21任务，最终SF/负载另计P5",
+      "actual_human_hours": null
+    },
+    {
+      "id": "E-TOPIC-PDF",
+      "name": "设计冻结后的最终选题PDF与配图核查",
+      "human_effort_hours": [
+        3,
+        5
+      ],
+      "milestones": [
+        "MS-04"
+      ],
+      "separation": "与P5按真实产品生成的比赛介绍PDF分开，不重复",
+      "actual_human_hours": null
+    },
+    {
+      "id": "E-ADMIN",
+      "name": "由用户处理报名主体/材料链接/审核指引",
+      "human_effort_hours": [
+        2,
+        4
+      ],
+      "milestones": [
+        "MS-01",
+        "MS-12"
+      ],
+      "separation": "只算人工准备/核对，不含回复等待或自动外联",
+      "actual_human_hours": null
+    }
+  ],
+  "totals": {
+    "selected_task_human_hours": [
+      95,
+      156
+    ],
+    "shared_human_hours": [
+      41,
+      69
+    ],
+    "remaining_human_hours": [
+      136,
+      225
+    ],
+    "selected_task_window_active_hours": [
+      251,
+      438
+    ],
+    "window_hours_scope": "只含21产品任务；设计/工程准备阶段窗口活动未估，不伪填0",
+    "calendar_duration_or_deadline_guarantee": null,
+    "actual_human_hours": null,
+    "actual_window_hours": null
+  },
+  "window_budget_summary": [
+    {
+      "window": "W00",
+      "primary_task_ids": [
+        "P0-01",
+        "P0-02",
+        "P0-03",
+        "P5-01"
+      ],
+      "task_human_hours": [
+        21,
+        34
+      ],
+      "task_window_hours": [
+        36,
+        60
+      ],
+      "limits": "按主责归集，含协作切片；不是每窗口实际占用或六名员工"
+    },
+    {
+      "window": "W01",
+      "primary_task_ids": [
+        "P1-01",
+        "P1-02",
+        "P1-03",
+        "P1-04",
+        "P1-05",
+        "P2-02"
+      ],
+      "task_human_hours": [
+        20,
+        33
+      ],
+      "task_window_hours": [
+        51,
+        90
+      ],
+      "limits": "按主责归集，含协作切片；不是每窗口实际占用或六名员工"
+    },
+    {
+      "window": "W02",
+      "primary_task_ids": [
+        "P2-01",
+        "P2-04",
+        "P2-05"
+      ],
+      "task_human_hours": [
+        15,
+        23
+      ],
+      "task_window_hours": [
+        40,
+        70
+      ],
+      "limits": "按主责归集，含协作切片；不是每窗口实际占用或六名员工"
+    },
+    {
+      "window": "W03",
+      "primary_task_ids": [
+        "P3-01",
+        "P3-02",
+        "P3-03",
+        "P4-01"
+      ],
+      "task_human_hours": [
+        17,
+        28
+      ],
+      "task_window_hours": [
+        56,
+        98
+      ],
+      "limits": "按主责归集，含协作切片；不是每窗口实际占用或六名员工"
+    },
+    {
+      "window": "W04",
+      "primary_task_ids": [
+        "P4-02"
+      ],
+      "task_human_hours": [
+        10,
+        18
+      ],
+      "task_window_hours": [
+        32,
+        56
+      ],
+      "limits": "按主责归集，含协作切片；不是每窗口实际占用或六名员工"
+    },
+    {
+      "window": "W05",
+      "primary_task_ids": [
+        "P2-03",
+        "P2-06",
+        "P3-04"
+      ],
+      "task_human_hours": [
+        12,
+        20
+      ],
+      "task_window_hours": [
+        36,
+        64
+      ],
+      "limits": "按主责归集，含协作切片；不是每窗口实际占用或六名员工"
+    }
+  ],
+  "milestones": [
+    {
+      "id": "MS-00",
+      "name": "八项基线与任务框架一致",
+      "depends_on": [],
+      "review_ids": [
+        "S01-01",
+        "S01-02",
+        "S01-03",
+        "S01-04",
+        "S01-05",
+        "S02-01",
+        "S02-02",
+        "S02-03"
+      ],
+      "complete_task_ids": [],
+      "exit_criteria": [
+        "八项主线/责任/范围/源证据和JSON一致",
+        "任务框架/工量口径/成果闸门与截止明确"
+      ],
+      "status": "document_baseline_verified",
+      "actual_result": {
+        "evidence_kind": "eight_checkpoint_joint_document_and_static_check",
+        "ref": "docs/04_开发与验收/S01-01至S02-03_联合复核.json",
+        "runtime": false
+      },
+      "planned_start": null,
+      "planned_finish": null,
+      "delivery_owner": "W00",
+      "contributors": [],
+      "acceptance_owner": "user",
+      "required_deliverables": [
+        "八项联合文档复核及当前框架规范/静态结果；不是产品验收"
+      ],
+      "acceptance_source_refs": [
+        "docs/04_开发与验收/S01-01至S02-03_联合复核.json"
+      ],
+      "evidence_rule": "规范引用为出口来源，不代表实际产物；实际结果必须指向本次真实交付/检查。窗口不能代用户完成必要的操作认可。"
+    },
+    {
+      "id": "MS-01",
+      "name": "需求和计划边界收口",
+      "depends_on": [
+        "MS-00"
+      ],
+      "review_ids": [
+        "S02-04",
+        "S02-05",
+        "S03-01",
+        "S03-02",
+        "S03-03",
+        "S03-04",
+        "S03-05"
+      ],
+      "complete_task_ids": [],
+      "exit_criteria": [
+        "UT/SF/21任务/有限输入与需求验收对应",
+        "只做成果框架，不要求每日作息/日期排程"
+      ],
+      "status": "planned",
+      "actual_result": null,
+      "planned_start": null,
+      "planned_finish": null,
+      "delivery_owner": "W00",
+      "contributors": [
+        "W01",
+        "W02",
+        "W03",
+        "W04",
+        "W05"
+      ],
+      "acceptance_owner": "user",
+      "required_deliverables": [
+        "S02-04/05与S03正式复审记录",
+        "需求—21任务—SF/IX对应和未完成项说明"
+      ],
+      "acceptance_source_refs": [
+        "docs/04_开发与验收/软件开发流程与当前成熟度评估.json",
+        "docs/04_开发与验收/完整设计与执行准入.json"
+      ],
+      "evidence_rule": "规范引用为出口来源，不代表实际产物；实际结果必须指向本次真实交付/检查。窗口不能代用户完成必要的操作认可。"
+    },
+    {
+      "id": "MS-02",
+      "name": "受监督Figma与负责人原型走查",
+      "depends_on": [
+        "MS-01"
+      ],
+      "review_ids": [
+        "S04-01",
+        "S04-02",
+        "S04-03",
+        "S04-04",
+        "S04-05"
+      ],
+      "complete_task_ids": [],
+      "exit_criteria": [
+        "用户明确授权Figma设计/批次并审阅",
+        "关键流程真实可点击、用户实际操作/问题修正，不冒充目标用户试用"
+      ],
+      "status": "planned",
+      "actual_result": null,
+      "planned_start": null,
+      "planned_finish": null,
+      "delivery_owner": "W02",
+      "contributors": [
+        "W03",
+        "W04",
+        "W05"
+      ],
+      "acceptance_owner": "user",
+      "required_deliverables": [
+        "用户批准的同一Figma文件/组件及可点击原型",
+        "用户实际关键流程走查与问题修正记录"
+      ],
+      "acceptance_source_refs": [
+        "docs/04_开发与验收/软件开发流程与当前成熟度评估.json",
+        "docs/04_开发与验收/完整设计与执行准入.json"
+      ],
+      "evidence_rule": "规范引用为出口来源，不代表实际产物；实际结果必须指向本次真实交付/检查。窗口不能代用户完成必要的操作认可。"
+    },
+    {
+      "id": "MS-03",
+      "name": "全模块视图/技术路线与架构试做",
+      "depends_on": [
+        "MS-01"
+      ],
+      "review_ids": [
+        "S05-01",
+        "S05-02",
+        "S05-03",
+        "S05-04",
+        "S05-05"
+      ],
+      "complete_task_ids": [],
+      "exit_criteria": [
+        "适用模块视图/技术方案/关键实现/消费者明确",
+        "关键宿主/IPC/表现/专业/报告接点实际试做"
+      ],
+      "status": "planned",
+      "actual_result": null,
+      "planned_start": null,
+      "planned_finish": null,
+      "delivery_owner": "W00",
+      "contributors": [
+        "W01",
+        "W02",
+        "W03",
+        "W04",
+        "W05"
+      ],
+      "acceptance_owner": "user",
+      "required_deliverables": [
+        "全模块视图/技术选型/接口所有权设计",
+        "关键接点实际试做输入、输出与限制"
+      ],
+      "acceptance_source_refs": [
+        "docs/04_开发与验收/软件开发流程与当前成熟度评估.json",
+        "docs/04_开发与验收/完整设计与执行准入.json"
+      ],
+      "evidence_rule": "规范引用为出口来源，不代表实际产物；实际结果必须指向本次真实交付/检查。窗口不能代用户完成必要的操作认可。"
+    },
+    {
+      "id": "MS-04",
+      "name": "完整设计冻结与最终选题PDF",
+      "depends_on": [
+        "MS-02",
+        "MS-03"
+      ],
+      "review_ids": [
+        "S06-01",
+        "S06-02",
+        "S06-03",
+        "S06-04",
+        "S06-05"
+      ],
+      "complete_task_ids": [],
+      "exit_criteria": [
+        "S01—S06全部30项及附加设计证据通过",
+        "完整类型/18操作/算法与五条贯通走查认可",
+        "生成并检查最终选题PDF；仅设计定稿，不当软件运行或正式介绍PDF"
+      ],
+      "status": "planned",
+      "actual_result": null,
+      "planned_start": null,
+      "planned_finish": null,
+      "delivery_owner": "W00",
+      "contributors": [
+        "W01",
+        "W02",
+        "W03",
+        "W04",
+        "W05"
+      ],
+      "acceptance_owner": "user",
+      "required_deliverables": [
+        "30项设计复审及附加设计证据、冻结接口/算法/保存格式",
+        "用户认可的贯通设计走查和最终选题PDF"
+      ],
+      "acceptance_source_refs": [
+        "docs/04_开发与验收/软件开发流程与当前成熟度评估.json",
+        "docs/04_开发与验收/完整设计与执行准入.json"
+      ],
+      "evidence_rule": "规范引用为出口来源，不代表实际产物；实际结果必须指向本次真实交付/检查。窗口不能代用户完成必要的操作认可。"
+    },
+    {
+      "id": "MS-05",
+      "name": "工程准备与可派发任务包",
+      "depends_on": [
+        "MS-04"
+      ],
+      "review_ids": [
+        "S07-01",
+        "S07-02",
+        "S07-03",
+        "S07-04",
+        "S07-05"
+      ],
+      "complete_task_ids": [],
+      "exit_criteria": [
+        "实际构建/启动/测试入口与锁文件",
+        "按冻结设计刷新21包/6提示词；当前切片/文件/真实前置/前端构建授权齐备"
+      ],
+      "status": "planned",
+      "actual_result": null,
+      "planned_start": null,
+      "planned_finish": null,
+      "delivery_owner": "W00",
+      "contributors": [
+        "W01",
+        "W02",
+        "W03",
+        "W04",
+        "W05"
+      ],
+      "acceptance_owner": "user",
+      "required_deliverables": [
+        "实际Windows构建/启动/测试入口与依赖锁",
+        "按冻结设计刷新并明确批准的21任务包/六提示词"
+      ],
+      "acceptance_source_refs": [
+        "docs/04_开发与验收/软件开发流程与当前成熟度评估.json",
+        "docs/04_开发与验收/完整设计与执行准入.json"
+      ],
+      "evidence_rule": "规范引用为出口来源，不代表实际产物；实际结果必须指向本次真实交付/检查。窗口不能代用户完成必要的操作认可。"
+    },
+    {
+      "id": "MS-06",
+      "name": "唯一状态与首个生产闭环",
+      "depends_on": [
+        "MS-05"
+      ],
+      "review_ids": [],
+      "complete_task_ids": [
+        "P0-01",
+        "P0-02",
+        "P0-03",
+        "P1-01"
+      ],
+      "exit_criteria": [
+        "实际Windows工程/保存重开与专业四对象",
+        "单厂齐套消耗/共享资源/身份的真实事件与结果"
+      ],
+      "status": "planned",
+      "actual_result": null,
+      "planned_start": null,
+      "planned_finish": null,
+      "delivery_owner": "W00",
+      "contributors": [
+        "W01"
+      ],
+      "acceptance_owner": "user",
+      "required_deliverables": [
+        "实际基础编辑、保存重开、订单/BOM/专业四对象",
+        "最小生产的真实事件、资源占用、身份与接受量"
+      ],
+      "acceptance_source_refs": [
+        "docs/03_架构与契约/首版类型格式与操作契约.md",
+        "packages/module-kit/category-contracts.design.json",
+        "packages/domain/factory-generation.design.json",
+        "docs/01_业务需求/订单工艺与物料分配.md",
+        "packages/domain/business-objects.design.json",
+        "scenarios/真实业务设计/business-inputs.design.json",
+        "packages/domain/professional-artifact-binding.design.json",
+        "docs/03_架构与契约/专业成果接入与软件在环.md",
+        "scenarios/两厂房装配包装/project.design.json"
+      ],
+      "evidence_rule": "规范引用为出口来源，不代表实际产物；实际结果必须指向本次真实交付/检查。窗口不能代用户完成必要的操作认可。"
+    },
+    {
+      "id": "MS-07",
+      "name": "生产及跨厂运输核心",
+      "depends_on": [
+        "MS-06"
+      ],
+      "review_ids": [],
+      "complete_task_ids": [
+        "P1-02",
+        "P1-03",
+        "P1-04",
+        "P1-05",
+        "P2-01",
+        "P2-02"
+      ],
+      "exit_criteria": [
+        "到料/班次/换单/返工/质量与固定时间运输实际成立",
+        "货物接受与资源返程分开；核心UI/供应连接接入"
+      ],
+      "status": "planned",
+      "actual_result": null,
+      "planned_start": null,
+      "planned_finish": null,
+      "delivery_owner": "W01",
+      "contributors": [
+        "W00",
+        "W02"
+      ],
+      "acceptance_owner": "user",
+      "required_deliverables": [
+        "到料/阶段班次/换单/质量/返工实际输入与结果",
+        "两画布核心、跨厂发出/接受/返程贯通证据"
+      ],
+      "acceptance_source_refs": [
+        "scenarios/并行汇合与返工/project.design.json",
+        "scenarios/并行汇合与返工/cases.design.json",
+        "scenarios/真实业务设计/business-inputs.design.json",
+        "scenarios/真实业务设计/expected-business.design.json",
+        "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+        "docs/01_业务需求/换单班次与质量处置.md",
+        "docs/02_交互设计/完整操作流程与方案交付.md",
+        "docs/03_架构与契约/目标驱动厂房生成.md",
+        "../设计预览/当前交互规格.md",
+        "scenarios/两厂房装配包装/project.design.json",
+        "scenarios/两厂房装配包装/expected-events.design.json",
+        "docs/01_业务需求/物流与布局业务.md"
+      ],
+      "evidence_rule": "规范引用为出口来源，不代表实际产物；实际结果必须指向本次真实交付/检查。窗口不能代用户完成必要的操作认可。"
+    },
+    {
+      "id": "MS-08",
+      "name": "视图创作、模板与接手",
+      "depends_on": [
+        "MS-07"
+      ],
+      "review_ids": [],
+      "complete_task_ids": [
+        "P2-03",
+        "P2-04",
+        "P2-05",
+        "P3-01",
+        "P3-02",
+        "P3-03",
+        "P4-01"
+      ],
+      "exit_criteria": [
+        "时间轴/逐件/业务UI、九类/媒体时间轴/模板实际采用",
+        "同起点比较、另一目录重开修改；完整3D和表现不改产量"
+      ],
+      "status": "planned",
+      "actual_result": null,
+      "planned_start": null,
+      "planned_finish": null,
+      "delivery_owner": "W03",
+      "contributors": [
+        "W00",
+        "W01",
+        "W02",
+        "W05"
+      ],
+      "acceptance_owner": "user",
+      "required_deliverables": [
+        "九类、原生设备/媒体时间轴、三模板/纸箱配置实际创作采用",
+        "逐件/等待/业务视图、同起点比较和可编辑重开"
+      ],
+      "acceptance_source_refs": [
+        "scenarios/两厂房装配包装/variants.design.json",
+        "docs/03_架构与契约/工程交接与打开.md",
+        "scenarios/模板与交接/expected-template-handoff.design.json",
+        "scenarios/从零搭建控制盒厂房/project.design.json",
+        "scenarios/从零搭建控制盒厂房/expected-timeline.design.json",
+        "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+        "docs/02_交互设计/业务界面与方案评审.md",
+        "scenarios/真实业务设计/business-inputs.design.json",
+        "packages/module-kit/category-contracts.design.json",
+        "scenarios/九类模块采用/expected-category-adoption.design.json",
+        "scenarios/设备创作与采用/inputs.design.json",
+        "docs/02_交互设计/设备时间轴与标签设计.md",
+        "scenarios/设备创作与采用/expected-authoring.design.json",
+        "modules/devices/manual-assembly/presentation/timeline.json",
+        "modules/templates/machining-delivery/manifest.json",
+        "modules/templates/purchased-assembly/manifest.json",
+        "modules/templates/parallel-electromechanical/manifest.json",
+        "modules/templates/carton-factory/generation-profile.design.json"
+      ],
+      "evidence_rule": "规范引用为出口来源，不代表实际产物；实际结果必须指向本次真实交付/检查。窗口不能代用户完成必要的操作认可。"
+    },
+    {
+      "id": "MS-09",
+      "name": "同源评估与完整纸包装",
+      "depends_on": [
+        "MS-08"
+      ],
+      "review_ids": [],
+      "complete_task_ids": [
+        "P2-06",
+        "P4-02"
+      ],
+      "exit_criteria": [
+        "先完成四格式基础，再收口专业成果/认可绑定与IX-03",
+        "三机制/三变化/全过程三态和制造层，实际报告读取结果"
+      ],
+      "status": "planned",
+      "actual_result": null,
+      "planned_start": null,
+      "planned_finish": null,
+      "delivery_owner": "W04",
+      "contributors": [
+        "W00",
+        "W01",
+        "W02",
+        "W03",
+        "W05"
+      ],
+      "acceptance_owner": "user",
+      "required_deliverables": [
+        "四格式同源实际输出",
+        "包装三机制/三变化、三态计算/制造SVG及认可绑定的IX-03证据"
+      ],
+      "acceptance_source_refs": [
+        "packages/reporting/evaluation-report.contract.design.json",
+        "docs/01_业务需求/指标成本与决策口径.md",
+        "docs/03_架构与契约/评估报告与数据导出.md",
+        "docs/00_项目基线/技术与经济可行性.md",
+        "docs/03_架构与契约/专业成果接入与软件在环.md",
+        "packages/packaging/README.md"
+      ],
+      "evidence_rule": "规范引用为出口来源，不代表实际产物；实际结果必须指向本次真实交付/检查。窗口不能代用户完成必要的操作认可。"
+    },
+    {
+      "id": "MS-10",
+      "name": "真实外部Agent端到端",
+      "depends_on": [
+        "MS-09"
+      ],
+      "review_ids": [],
+      "complete_task_ids": [
+        "P3-04"
+      ],
+      "exit_criteria": [
+        "同一宿主18操作/九类/模板/渲染/模拟/导出",
+        "GF成功初案直交；另用不足例验有限修正/重跑或说明不可修正"
+      ],
+      "status": "planned",
+      "actual_result": null,
+      "planned_start": null,
+      "planned_finish": null,
+      "delivery_owner": "W05",
+      "contributors": [
+        "W00",
+        "W01",
+        "W02",
+        "W03",
+        "W04"
+      ],
+      "acceptance_owner": "user",
+      "required_deliverables": [
+        "真实外部客户端调用同一宿主的实际结果",
+        "初案达标直交及独立不足反馈/修正分支，人工续改与导出"
+      ],
+      "acceptance_source_refs": [
+        "docs/03_架构与契约/通用Agent接入与专业软件连接器.md",
+        "docs/03_架构与契约/目标驱动厂房生成.md",
+        "scenarios/目标驱动建厂/acceptance.design.json"
+      ],
+      "evidence_rule": "规范引用为出口来源，不代表实际产物；实际结果必须指向本次真实交付/检查。窗口不能代用户完成必要的操作认可。"
+    },
+    {
+      "id": "MS-11",
+      "name": "候选版本完整验证",
+      "depends_on": [
+        "MS-10"
+      ],
+      "review_ids": [],
+      "complete_task_ids": [],
+      "exit_criteria": [
+        "SF-01至17、IX01至03、3厂房60设备3000件真实验证",
+        "许可/依赖/素材清单、另目录/实际接手者复现；未执行不能写PASS"
+      ],
+      "status": "planned",
+      "actual_result": null,
+      "planned_start": null,
+      "planned_finish": null,
+      "delivery_owner": "W00",
+      "contributors": [
+        "W01",
+        "W02",
+        "W03",
+        "W04",
+        "W05"
+      ],
+      "acceptance_owner": "user",
+      "required_deliverables": [
+        "完整17SF/3IX及3厂房60设备3000件真实检查",
+        "实际新环境/第三人接手及九类贡献采用、许可清单；无参与者不关闭对应条件"
+      ],
+      "acceptance_source_refs": [
+        "docs/00_项目基线/首版需求与验收.md",
+        "docs/04_开发与验收/彩排规则与演示验收.md",
+        "community/CONTRIBUTING.md"
+      ],
+      "evidence_rule": "规范引用为出口来源，不代表实际产物；实际结果必须指向本次真实交付/检查。窗口不能代用户完成必要的操作认可。"
+    },
+    {
+      "id": "MS-12",
+      "name": "比赛材料全部备齐",
+      "depends_on": [
+        "MS-11"
+      ],
+      "review_ids": [],
+      "complete_task_ids": [
+        "P5-01"
+      ],
+      "exit_criteria": [
+        "可运行源码仓库/构建说明和版本、产品介绍PDF、真实核心流程视频链接",
+        "工程/评估/专业制造与贡献样例、许可/复现证据齐备",
+        "北京时间2026-10-29结束前完成材料准备；实际报名审核/发送/回执另据实记录",
+        "MAT-01至04分别完成；MAT-05仅据实记录外部手续，不作为本节点材料准备完成的替代或自动办理授权"
+      ],
+      "status": "planned",
+      "actual_result": null,
+      "planned_start": null,
+      "planned_finish": null,
+      "delivery_owner": "W00",
+      "contributors": [
+        "W01",
+        "W02",
+        "W03",
+        "W04",
+        "W05"
+      ],
+      "acceptance_owner": "user",
+      "required_deliverables": [
+        "MAT-01至04与实际候选版本对应的完整材料",
+        "用户核对材料可访问/可重开及未办理手续状态；不宣称已提交"
+      ],
+      "acceptance_source_refs": [
+        "docs/00_项目基线/首版需求与验收.md",
+        "docs/05_开源与参赛/比赛设计要求.md",
+        "community/CONTRIBUTING.md",
+        "community/GOVERNANCE.md"
+      ],
+      "evidence_rule": "规范引用为出口来源，不代表实际产物；实际结果必须指向本次真实交付/检查。窗口不能代用户完成必要的操作认可。"
+    }
+  ],
+  "milestone_policy": {
+    "collection_not_new_task_dependency": "成果里程碑只控制完整接收；任务独立切片仍可按implementation_dependencies早开，不强制等整组收口",
+    "last_gate": "MS-12",
+    "proof_required_before_pass": true,
+    "all_selected_tasks_complete_once": true,
+    "external_review_wait_estimate": null,
+    "unmet_exit_action": "整理主责列出未满足条款及其真实生产者，退回对应任务/设计项修正，已接收局部产物保留。MS或任务不得因此写done；不会按等待天数取消出口或跨窗覆盖公共文件。",
+    "status_rule": "MS-00为八项文档基线；其他MS仍planned直到其前置、全部出口和相应接收成立。S02-04/05文档通过不关闭还含S03五项的MS-01；P工作族不新增启动屏障，完整接收按阶段退出契约。"
+  },
+  "material_checklist": [
+    {
+      "id": "MAT-01",
+      "material": "可运行代码仓库链接与构建/运行/版本说明",
+      "owner": "W00",
+      "support": [
+        "W05"
+      ],
+      "requirement": "CC-05",
+      "acceptance": "目标环境实际运行/完整源码依赖，不是研究仓库/声明接口",
+      "status": "planned",
+      "required_for_material_readiness": true,
+      "readiness_milestone": "MS-12"
+    },
+    {
+      "id": "MAT-02",
+      "material": "按实际产品生成的作品介绍PDF",
+      "owner": "W05",
+      "support": [
+        "W00",
+        "W02",
+        "W03",
+        "W04"
+      ],
+      "requirement": "CC-06",
+      "acceptance": "背景/架构/场景/机制/边界与真实功能一致；设计PDF仅作来源",
+      "status": "planned",
+      "required_for_material_readiness": true,
+      "readiness_milestone": "MS-12"
+    },
+    {
+      "id": "MAT-03",
+      "material": "真实核心功能/使用流程视频链接",
+      "owner": "W02",
+      "support": [
+        "W04",
+        "W05"
+      ],
+      "requirement": "CC-07",
+      "acceptance": "人工/Agent可编辑建厂、实际运行/等待/变更、纸包装/绑定/导出，不用AI预览代录像",
+      "status": "planned",
+      "required_for_material_readiness": true,
+      "readiness_milestone": "MS-12"
+    },
+    {
+      "id": "MAT-04",
+      "material": "工程包/四格式/专业制造/贡献样例及许可复现资料",
+      "owner": "W05",
+      "support": [
+        "W00",
+        "W03",
+        "W04"
+      ],
+      "requirement": "CC-09/CC-12",
+      "acceptance": "实际可重开修改、来源/许可/版本明确，运行结果同源",
+      "status": "planned",
+      "required_for_material_readiness": true,
+      "readiness_milestone": "MS-12"
+    },
+    {
+      "id": "MAT-05",
+      "material": "实际报名审核/邮件附加格式与提交回执",
+      "owner": "user",
+      "support": [],
+      "requirement": "CC-10/CC-11",
+      "acceptance": "用户据实际手续记录；AI窗口不算团队成员、不自动发送",
+      "status": "not_registered",
+      "required_for_material_readiness": false,
+      "readiness_milestone": null
+    }
+  ],
+  "deadline_control": {
+    "material_readiness_milestone": "MS-12",
+    "remaining_work_rule": "按尚未实际验收的任务/材料/关口计算剩余，不以窗口数宣布按期",
+    "if_gap_observed": "保留实际完成与未完成清单，优先在已冻结范围内消解关键链；若需删必做/改期限需用户明确决定，不用设计图或目标数伪填完成",
+    "no_automatic_scope_cut": true,
+    "actual_deadline_feasibility": "not_established",
+    "required_material_ids": [
+      "MAT-01",
+      "MAT-02",
+      "MAT-03",
+      "MAT-04"
+    ],
+    "external_followup_ids": [
+      "MAT-05"
+    ],
+    "material_vs_external_rule": "MS-12核对MAT-01至04及MS-11真实出口。MAT-05报名主体审核、邮件往来、正式发送与回执单列，不以其未办理把已备齐材料说成未准备，也不以材料备齐宣称可参赛、审核通过或已提交。已实际收到的附加格式要求须同步相关MAT-01至04；未收到不能编造。内部准备截止保持10月29日结束前。"
+  },
+  "actual_runtime": null,
+  "independent_review_ref": "docs/04_开发与验收/S02-04_工量与成果里程碑复审.json",
+  "effort_accounting": {
+    "estimate_basis": "各包预算依据首版选择中的scope、execution_plan三步及release_acceptance作人工工程判断；对应实际输入规范列入estimate_input_refs。没有历史工时样本、测得的AI吞吐或统计模型，区间不是推导出的客观生产率。用来分解投入和比较剩余工作，不能证明按期、净价值或节省。",
+    "human_unit": "本人有效小时：设计/监督、输入核对、审阅、联调、材料处理的实际投入。任务包局部验证计本包；跨包接线/额外修正计E-INTEGRATION；最终SF/负载/材料计P5。一次操作只能归一个工作包或共同工作；同时看的两个窗口不能各记一份同一人时。",
+    "window_unit": "窗口有效活动小时：生成、调试及本包验证的活动时长，包含正在执行的工具；排除停工、等待人审核和外部阻塞。同一窗口或协作切片只记一次，跨窗口活动可以重叠；不是token、费用、用户人时或总日历时长。协作切片按受益任务计入，W00实际接入的额外工作只归共同接线。",
+    "range_interpretation": "下端假设规范/前置齐备、选定现成基础库、有限样例一次贯通；上端计可预见的接口、媒体、几何或排版修正。两端都要求完整首版验收，不把下端理解为删功能版；未知返工可超上端。",
+    "scope_drivers": "两画布/三LOD及完整3D、九类各可创作采用、模板所需原生设备、纸包装三机制/三变化及全过程三态、18操作真实Agent和四格式/重开交付均必须覆盖。设备数和具体库版本须随S05/S06落实后重估；目前最主要未定工作在P2-01、P3-02、P4-02、P3-04及最终真实接手。",
+    "observed_estimation_samples": [],
+    "measured_speedup": null
+  },
+  "calibration": {
+    "owner_rule": "任务主责窗口提交本次切片的完成/未完成与估量变更理由；W00归集共同工作，用户核对本人投入并接受新的剩余范围。沿用任务交付记录和框架实际字段，不建立每日排程或另造工时系统。",
+    "steps": [
+      "在首个真实宿主闭环、首个设备表现、首个包装算例及首个Agent闭环后分别校准相应包；只完成设计复审时更新剩余设计范围，不伪填产品实测",
+      "按本次真实交付填actual_human_hours/actual_window_hours；不知道就留null，不把等待当有效工量或未测填0",
+      "局部已完成时根据剩余具体步骤重估，整项验收通过才从未完成任务预算中移除；不按完成文件数或步骤数比例扣小时",
+      "跨包返修先明确归属：本包错误归本包、共同接点额外接线归E-INTEGRATION、最终统一验收归P5；一份工作不能重复计量",
+      "W00重算各任务/共同工作和主责汇总，检查前置及剩余证据；超预算时说明来源，不自动减范围或改材料截止"
+    ],
+    "remaining_budget_rule": "已花工量与剩余预算分开。总剩余为尚未验收任务的最新剩余区间＋尚未关闭共同工作的剩余区间；局部真实量不足则保留未校准状态，不用预算减未知actual得出精确余额。本轮21产品任务仍planned，工量未经实测。",
+    "daily_time_log_required": false,
+    "actual_calibrations": []
+  },
+  "stage_exit_contract_ref": "docs/04_开发与验收/阶段实现计划.json"
+}

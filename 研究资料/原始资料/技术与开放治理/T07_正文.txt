@@ -1,0 +1,138 @@
+GLTFLoader - Three.js Docs
+Loader →
+GLTFLoader
+A loader for the glTF 2.0 format.
+glTF (GL Transmission Format) is an open format specification whenever possible. Be advised that image bitmaps are not
+automatically GC-collected when they are no longer referenced, and they require special handling during
+the disposal process.
+GLTFLoader supports the following glTF 2.0 extensions:
+KHR_draco_mesh_compression
+KHR_lights_punctual
+KHR_materials_anisotropy
+KHR_materials_clearcoat
+KHR_materials_dispersion
+KHR_materials_emissive_strength
+KHR_materials_ior
+KHR_materials_specular
+KHR_materials_transmission
+KHR_materials_iridescence
+KHR_materials_unlit
+KHR_materials_volume
+KHR_mesh_quantization
+KHR_meshopt_compression
+KHR_texture_basisu
+KHR_texture_transform
+EXT_materials_bump
+EXT_meshopt_compression
+EXT_mesh_gpu_instancing
+EXT_texture_avif
+EXT_texture_webp
+The following glTF 2.0 extensions are supported by separately registered plugins:
+KHR_gaussian_splatting
+KHR_materials_variants
+MSFT_texture_dds
+KHR_animation_pointer
+NEEDLE_progressive
+Code Example
+const loader = new GLTFLoader();
+// Optional: Provide a DRACOLoader instance to decode compressed mesh data
+const dracoLoader = new DRACOLoader();
+dracoLoader.setDecoderPath( '/examples/jsm/libs/draco/' );
+loader.setDRACOLoader( dracoLoader );
+const gltf = await loader.loadAsync( 'models/gltf/duck/duck.gltf' );
+scene.add( gltf.scene );
+Import
+GLTFLoader is an addon, and must be imported explicitly, see Installation#Addons.
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+Constructor
+new GLTFLoader( manager : LoadingManager )
+Constructs a new glTF loader.
+manager
+The loading manager.
+Methods
+.load( url : string, onLoad : function, onProgress : onProgressCallback, onError : onErrorCallback )
+Starts loading from the given URL and passes the loaded glTF asset
+to the onLoad() callback.
+url
+The path/URL of the file to be loaded. This can also be a data URI.
+onLoad
+Executed when the loading process has been finished.
+onProgress
+Executed while the loading is in progress.
+onError
+Executed when errors occur.
+Overrides: Loader#load
+.parse( data : string | ArrayBuffer, path : string, onLoad : function, onError : onErrorCallback )
+Parses the given glTF data and returns the resulting group.
+data
+The raw glTF data.
+path
+The URL base path.
+onLoad
+Executed when the loading process has been finished.
+onError
+Executed when errors occur.
+Overrides: Loader#parse
+.parseAsync( data : string | ArrayBuffer, path : string ) : Promise.<GLTFLoader~LoadObject> (async)
+Async version of GLTFLoader#parse.
+data
+The raw glTF data.
+path
+The URL base path.
+Returns: A Promise that resolves with the loaded glTF when the parsing has been finished.
+.register( callback : function ) : GLTFLoader
+Registers a plugin callback. This API is internally used to implement the various
+glTF extensions but can also used by third-party code to add additional logic
+to the loader.
+callback
+The callback function to register.
+Returns: A reference to this loader.
+.setDRACOLoader( dracoLoader : DRACOLoader ) : GLTFLoader
+Sets the given Draco loader to this loader. Required for decoding assets
+compressed with the KHR_draco_mesh_compression extension.
+dracoLoader
+The Draco loader to set.
+Returns: A reference to this loader.
+.setKTX2Loader( ktx2Loader : KTX2Loader ) : GLTFLoader
+Sets the given KTX2 loader to this loader. Required for loading KTX2
+compressed textures.
+ktx2Loader
+The KTX2 loader to set.
+Returns: A reference to this loader.
+.setMeshoptDecoder( meshoptDecoder : Object ) : GLTFLoader
+Sets the given meshopt decoder. Required for decoding assets
+compressed with the EXT_meshopt_compression extension.
+meshoptDecoder
+The meshopt decoder to set.
+Returns: A reference to this loader.
+.unregister( callback : function ) : GLTFLoader
+Unregisters a plugin callback.
+callback
+The callback function to unregister.
+Returns: A reference to this loader.
+Type Definitions
+.LoadObject
+Loader result of GLTFLoader.
+animations
+Array.<AnimationClip>
+An array of animation clips.
+asset
+Object
+Meta data about the loaded asset.
+cameras
+Array.<Camera>
+An array of cameras.
+parser
+GLTFParser
+A reference to the internal parser.
+scene
+Group
+The default scene.
+scenes
+Array.<Group>
+glTF assets might define multiple scenes.
+userData
+Object
+Additional data.
+Source
+examples/jsm/loaders/GLTFLoader.js

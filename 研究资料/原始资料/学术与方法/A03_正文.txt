@@ -1,0 +1,1165 @@
+
+--- PDF第1页 ---
+Model Input Verification of Large Scale Simulations
+Rumyana Neykova and Derek Groena
+aBrunel University London
+Abstract
+Reliable simulations are critical for analyzing and understanding complex systems,
+but their accuracy depends on correct input data. Incorrect inputs such as invalid or
+out-of-range values, missing data, and format inconsistencies can cause simulation
+crashes or unnoticed result distortions, ultimately undermining the validity of the
+conclusions. This paper presents a methodology for verifying the validity of input
+data in simulations, a process we term model input verification (MIV). We imple-
+ment this approach in FabGuard, a toolset that uses established data schema and
+validation tools for the specific needs of simulation modeling. We introduce a formal-
+ism for categorizing MIV patterns and offer a streamlined verification pipeline that
+integrates into existing simulation workflows. FabGuard’s applicability is demon-
+strated across three diverse domains: conflict-driven migration, disaster evacuation,
+and disease spread models. We also explore the use of Large Language Models
+(LLMs) for automating constraint generation and inference. In a case study with
+a migration simulation, LLMs not only correctly inferred 22 out of 23 developer-
+defined constraints, but also identified errors in existing constraints and proposed
+new, valid constraints. Our evaluation demonstrates that MIV is feasible on large
+datasets, with FabGuard efficiently processing 12,000 input files in 140 seconds and
+maintaining consistent performance across varying file sizes.
+KEYWORDS
+simulations, verification, validation, schema inference and generation, input data
+verification
+1. Introduction
+Simulations have become an indispensable tool across various scientific disciplines, offer-
+ing insights into complex systems ranging from epidemiology and environmental science
+to social dynamics and engineering in many different ways [Eps08]. Recent advance-
+ments in computational power and data analytics have enabled researchers to develop
+and apply more realistic and actionable simulation approaches, and deliver benefits in a
+growing number of areas. For instance, in epidemiology, simulations have been pivotal in
+modeling the spread of infectious diseases like COVID-19 [FLNG+20, MAS+22], while
+in environmental science, they have provided insights into ecosystem interactions and
+biodiversity under changing climate conditions [GBD+20, DM11, JJG+23].
+As these models increasingly influence critical decision-making processes, ensuring their
+reliability and reproducibility has become paramount [CDH16]. The importance of re-
+producibility in simulation modeling is supported by the growing emphasis on open-
+source practices in scientific computing in general. The open-source software movement
+arXiv:2409.05768v1  [cs.DC]  9 Sep 2024
+
+--- PDF第2页 ---
+has played a crucial role in promoting software sustainability and reproducibility, par-
+ticularly in scientific simulations [CGH21b, CGH21b]. Free and Open Source Software
+(FOSS) enhances the longevity and adaptability of software projects, ensuring that
+simulation tools remain accessible and maintainable over time [CGH21a]. Initiatives
+such as the Journal of Open Source Software (JOSS) [SNK+18] and the increasing
+number of journals requiring code availability demonstrate the scientific community’s
+recognition of the critical role that software plays in research reproducibility. In the
+context of simulation modeling, open-source practices not only facilitate peer review
+of the underlying code but also enable researchers to verify and build upon existing
+models, fostering cumulative scientific progress [BR18]. However, despite the above-
+mentioned advancements, significant challenges remain. One of the primary barriers to
+reproducible research is that many of the tools required for reproducibility, such as ver-
+sion control, unit testing, and automation, are often seen as being of interest only to
+professional coders [AMMW17]. This perception gap highlights the need for solutions
+that can make these essential practices more accessible and relevant to domain experts
+who may not have extensive software engineering backgrounds.
+While verification, validation and uncertainty quantification has received clear attention
+from researchers in recent years (see e.g. Coveney et al. [CGH21a]), a crucial and often
+overlooked aspect of ensuring simulation reliability and reproducibility is the process
+of validating and verifying simulation model input data. In particular, few generic ap-
+proaches exist that verify that model input data adheres to specified constraints that
+ensure correct simulation execution and that it correctly represents the real-world sce-
+narios being modeled. We call this process Model Input Verification (MIV). This step is
+important in guarding against simulation results being corrupted by human data input
+errors or poorly formatted raw input, as well as aiding in the prevention of cascading
+errors or crashes that can arise from such flawed or misrepresented inputs. The im-
+plications of inadequate input verification in simulation modeling can be severe. For
+instance, in 1999 a mistaken unit type in one of the ground software submodels led to
+the NASA Mars Climate Orbiter having an incorrect trajectory and burning up in the
+Martian atmosphere [ALD+99]. Similarly, in Flee migration simulations it occasionally
+happens that developers retrieve GPS coordinates for locations in their simulation, and
+accidentally insert the coordinates of identically named places that reside in an entirely
+different country.
+Recent years have seen a growing emphasis on testing data and ensuring data quality,
+forming the basis for test-driven data analysis and ’unit tests’ for data [SLS+18a].
+Libraries such as Pandera1, Great Expectations 2, and Cerberus 3 have emerged to
+verify data constraints and validate schemas. These tools have proven valuable in fields
+like data science and business intelligence, where they help maintain data integrity and
+catch errors early in the analysis pipeline [Ban20].
+However, the development of simulation models often occurs in environments quite
+different from traditional software engineering. Typically, these simulations are created
+by domain experts - scientists, researchers, and analysts - who, while highly skilled
+in their fields, may not have extensive programming backgrounds [Mer10]. This gap
+between domain expertise and software engineering practices has long been a challenge
+1https://www.union.ai/pandera
+2https://greatexpectations.io/
+3https://pypi.org/project/Cerberus/
+2
+
+--- PDF第3页 ---
+in ensuring the reliability and verifiability of scientific simulations [BSF+04, RO11].
+Moreover, the tools and approaches for data validation have not been widely translated
+to simulation modeling and are often unavailable to simulation practitioners. Simulation
+inputs require constraints that go beyond simple data validation. For example, in agent-
+based models of population displacement, input verification must ensure not only that
+population values are non-negative but also that the sum of populations across different
+locations matches the total simulated population. Additionally, temporal consistency
+in input data is crucial; in disease spread models, the order and timing of intervention
+measures must align with the simulation timeline.
+To address the aforementioned challenges and improve the reliability of simulation mod-
+els, this paper presents FabGuard4, integrated set of tools and methods for Model Input
+Verification. Our work is guided by several key research questions: How can we effec-
+tively adapt existing data validation tools to the unique needs of simulation modeling?
+What are the types of input verification constrained that a model should support? How
+can we incorporate input verification into existing simulation workflows? To what extent
+can Large Language Models (LLMs) assist in inferring and generating input verification
+rules to help with adoption of MIV tools?
+In addressing these questions, our work offers several novel contributions to the field.
+§ 3.1 Introduces Fabguard, a streamlined verification pipelinethat can be eas-
+ily integrated into CI/CD workflows of simulation models, promoting automated
+input verification.
+§ 3.2 Formalizes model input verification requirementsfor simulation modeling.
+We present a framework categorizing constraint types across various dimensions
+of simulation input data, offering a systematic approach to address verification
+needs.
+§ 4 Demonstrates the practical applicability of FabGuardacross three diverse
+simulation domains: conflict-driven migration, disaster evacuation, and disease
+spread models. This showcases the adaptability of off-the-shelf tools for input
+verification in complex simulation scenarios.
+§ 5 Presents the first study examining the suitability of LLMsfor constraint
+generationandinferenceinthecontextofModelInputVerification,demonstrating
+their potential to lower the learning curve for simulation practitioners.
+§ 6 Evaluates FabGuard’s performanceproviding insights into its scalability and
+efficiency in various scenarios.
+Section 2 discusses related work, and Section 7 concludes with a summary of contribu-
+tions and future directions.
+2. Related Work
+The problem of reproducibility in computational science has been identified as a critical
+issue [CDH16], and there are ongoing efforts to address it [CGH21b]. Automated testing
+is needed to systematically verify computer simulations, a precondition to ensuring
+that the results they produce are sufficiently robust to inform decision-making in the
+real world [CH21]. This section contextualizes the role of input verification within the
+4Upon acceptance, the code will be made available on zenodo
+3
+
+--- PDF第4页 ---
+broader domain of simulation modeling and further explores solutions in the fields of
+data analytics and data workflows, which face similar challenges.
+Verification of simulationsis crucial for ensuring that computational models ac-
+curately represent real-world scenarios and for enhancing reproducibility. Various ap-
+proaches and tools have been developed to enhance this process. Code verification fo-
+cuses on identifying programming errors and verifying numerical algorithms through
+Software Quality Assurance (SQA) procedures, ensuring software reliability and con-
+sistency [BSF+04]. Comprehensive frameworks for Verification, Validation, and Uncer-
+tainty Quantification (VVUQ) further improve predictive capabilities by incorporating
+methodstoestimate andpropagateuncertainties throughmodels[RO11]. Severalframe-
+works and large toolkits have been developed to address these challenges. For example,
+the VECMA toolkit [GAJ+21] offers a suite of tools for verification, validation, sensitiv-
+ity analysis, and uncertainty quantification. Within VECMAtk, EasyVVUQ [WRE+20]
+streamlines VVUQ for computationally expensive simulations and extensive sampling
+spaces. FabSim3 [GAS+23], a Python-based automation toolkit, reduces human effort
+in simulation-based research and provides an auto-validation tool for comparing sim-
+ulation accuracy. The Model Verification Tools (MVT) framework [RPPPP22] offers
+mechanisms for VVUQ assessment of agent-based models, including sensitivity analy-
+sis techniques. Uncertainpy [THE18] facilitates robust simulation modeling by offering
+uncertainty quantification and sensitivity analysis using quasi-Monte Carlo and poly-
+nomial chaos expansions methods. For a comprehensive overview of many works on val-
+idation and verification, especially for uncertainty quantification, readers are directed
+to [CGH21b].
+Beyond these specific tools, there are more general works addressing various aspects of
+simulation verification and validation. Gundersen [Gun21] emphasize the importance
+of transparency and openness as key drivers for reproducibility. [RMV18] address the
+challenge of selecting appropriate V&V methods due to the abundance of available
+techniques, proposing a methodology for choosing the most suitable methods based
+on simulation characteristics. In the realm of high-performance computing, Encinas et
+al. [ENDG+19] present a simulation model of HPC I/O systems using Agent-Based
+Modeling and Simulation (ABMS), providing insights into I/O performance behavior in
+different configurations. Farrell et al. [FPG+11] highlight the importance of automated
+continuous testing in numerical modeling, demonstrating significant improvements in
+code quality and programmer efficiency. [SAMT21] address interoperability challenges
+in Cyber-Physical System (CPS) simulation, presenting an implementation of FMI 2.0
+functions for improving efficiency in simulation-based V&V. These diverse approaches
+collectively contribute to ongoing efforts to improve the reliability, efficiency, and repro-
+ducibility of simulation-based research across various domains.
+Despite these advancements, there remains a notable gap in addressing model input
+verification. Most existing tools and frameworks focus on verifying simulation code,
+quantifying uncertainties, or validating outputs, rather than verifying input data. The
+current paper addresses this crucial aspect of simulation reliability by focusing specifi-
+cally on model input verification, thus complementing existing VVUQ approaches.
+Data validation and verificationhas gained significant attention in data science and
+machine learning communities. Schelter et al. [SLS+18b] introduced the concept of "unit
+tests" for data, providing a framework for describing data constraints. This has spurred
+4
+
+--- PDF第5页 ---
+research into data schema generation, inference, and validation techniques for complex
+machine learning applications [PMBF17, SBK+18, HST17]. Modern machine learning
+platforms now incorporate explicit data validation components, addressing issues such
+as data drift, model performance degradation, and input data quality [Jha19, SNK+18,
+SFGP23, WBRV+23, SKB23, PGG+23].
+The growing emphasis on data quality and schema verification has led to the develop-
+ment of several tools and libraries aimed at streamlining these processes. Great Expec-
+tations [Gre24] has emerged as a popular tool for data validation and documentation,
+allowing users to express their data expectations in a declarative manner and facilitating
+automated testing of data quality. Pandera [Ban20] provides a flexible and expressive
+API for performing data validation on pandas DataFrames, enabling the definition of
+schemas with column-level and dataframe-level validation rules, including complex sta-
+tistical checks. Other tools like Cerberus [Iar24] offer similar functionality, reflecting a
+broader trend towards more robust, automated approaches to data validation across var-
+ious domains. The TDDA Python module5 supports test-driven data analysis through
+various tools, including Reference Testing for managing complex data analysis pipeline
+tests and tools for discovering, validating, and detecting anomalies in data constraints.
+These developments in data validation techniques and tools provide a strong founda-
+tion for addressing similar challenges in the simulation domain. While the focus of these
+works has primarily been on data science and machine learning applications, many of
+these approaches and tools can be adapted or repurposed for simulation input verifica-
+tion. In the context of the extensive literature on VVUQ for simulation models, input
+verification is acknowledged but still not deeply explored. However, as simulations be-
+come more complex and as reproducibility becomes a more pressing concern in scientific
+research, the role of input verification will become ever more prominent.
+3. MIV Overview
+This section provides an overview of Model Input Verification (MIV), its importance in
+simulation modeling, and introduces FabGuard as a comprehensive toolset for imple-
+menting MIV. We begin by explaining the concept and significance of MIV. We then
+present a formalism for categorizing different types of input verification tasks, which
+serves as a framework for understanding and implementing MIV processes. Finally, we
+introduce FabGuard, detailing its architecture and key features.
+Model Input Verification is an important step in the simulation modeling process, en-
+suring that input data adheres to specified constraints and accurately represents the
+real-world scenarios being modeled. In essence, MIV allows users to write tests that
+check whether input files meet specific requirements and satisfy a set of predefined
+constraints. These tests help prevent cascading errors that can arise from flawed or mis-
+represented inputs, enhancing the reliability and reproducibility of simulation results.
+Common MIV tasks include checking data types, value ranges, inter-column relation-
+ships, and cross-file consistency.
+To illustrate the toolchain and the main ideas behind model input verification, we
+use as a running example an agent-based simulation, called Flee [SBG17], designed
+5https://github.com/tdda/tdda
+5
+
+--- PDF第6页 ---
+Figure 1.: Methodology for model input files verification
+for modeling displacement and migration patterns. Flee enables researchers to create
+simulations based on conflict and disaster scenarios, helping to predict how populations
+move in response to various crises. It has been utilized in major research initiatives such
+as the EU-funded HiDALGO and ITFLOWS projects. Within Flee, agents move across
+a location graph defined by two primary input CSV files: locations.csv, which defines
+the nodes of the graph representing various locations such as towns, camps, and conflict
+zones, and routes.csv, which defines the edges of the graph, representing possible paths
+between locations.
+3.1. MIV Workflow
+Fig. 1 depicts the high-level methodology of writing MIV tests. Notably, the first two
+stages - selecting input files and identifying dependencies - are manual processes per-
+formed by the user. These initial steps are important for establishing the context and
+scope of the verification process. FabGuard is designed to support and automate the
+subsequent stages, providing a plugin-based architecture that accommodates various
+input file formats and validation methods.
+Selection of Input Files:In the initial stage the user should select input files to verify.
+The format and content will vary and are simulation-specific. The files are categorized
+into configuration files, which provide necessary settings for running simulations, and
+input files that supply the data required to execute processes. For instance, in the Flee
+simulation tool, the input files might includelocations.csv and routes.csv which
+contain tabular data, while the configuration file issimsettings.yaml and contains
+key-value pairs of simulation parameters.
+Identifying Dependencies: In the next stage, the user must identify dependencies
+essential for parameterizing the inputs. This involves configurations that require specific
+settings, supplementary input files providing context, and external resources such as
+databases or APIs needed for validation. For example, if simsetting.yml sets the
+simulation to start on January 1, 2023, any closure events inclosures.csv with earlier
+dates should be flagged as invalid.
+Generating Specifications:Once the user has identified the input files for verification
+6
+
+--- PDF第7页 ---
+and their potential dependencies, they can begin writing input verification tests. Fab-
+Guard supports two off-the-shelf libraries for schema validation, depending on the type
+and format of the data –Pandera and jsonschema. The former is a library for defining
+schemas and validating pandas DataFrames; which allows users to define column-level
+and dataframe-level validation rules, including data types, value ranges, and custom
+checks. The latter is a lightweight way to test your YAML/JSON files based on how
+they conform to a defined schema. FabGuard provides a thin wrapper over bothPandera
+and jsonschema libraries, enabling integration with simulation tools, LLMs, and pro-
+viding consistent documentation. Users can start writing tests using the library that
+best suits their case.
+However, writing these tests can be a tedious process that requires programming skills,
+potentially hindering the tool’s applicability. To address this, we have explored two
+potential ways to bootstrap this stage:
+(1) Schema Generators: FabGuard supports built-in schema generators - a cus-
+tom yaml schema generator, and a Pandera inference module. These tools can
+automatically infer basic constraints such as data types, minimum and maximum
+values for most files. While not comprehensive, they create useful scaffolding that
+can later be refined by users. For instance, a schema generator might infer that
+the ’population’ column inlocations.csv should contain non-negative integers.
+(2) Large Language Models (LLMs):As reported in Section 5, we have explored
+the use of LLMs for constraint generation and inference. Our findings indicate
+that LLMs can not only create the scaffolding of the main tests but also suggest
+and infer novel constraints. For example, an LLM might suggest that the sum of
+populations across all locations should match the total simulation population, a
+constraint that might not be immediately obvious to users.
+These automated approaches serve as a starting point, providing a basic scaffolding
+which can then be refined and expanded by domain experts. This stage significantly
+lowers the barrier to entry for using FabGuard, making it more accessible to researchers
+who may not have extensive programming experience.
+Refining Specifications:The test should be further refined, and most importantly,
+verified. This stage is important, especially if automated inference tools were used in
+the previous steps. As outlined in Section 5, some constraints, although they can be
+inferred, may require adjustments to accurately reflect the simulation’s requirements.
+Forexample,inFlee,aninferredconstraintmightcorrectlyidentifythatthe’population’
+fieldshouldbenon-negative,butmayneedrefinementtospecifythatconflictzonesmust
+have a non-zero population while other location types can have zero population.
+It’s important to note that the previous stages of automated inference are optional.
+Developers can choose to write all tests from scratch, tailoring them precisely to their
+simulation’s needs. Additionally, custom checks can be written for specific validation
+scenarios not covered by standard tools or inferred constraints. For instance, in Flee, a
+custom check might be needed to ensure that all routes listed in routes.csv correspond
+to actual connections between nodes specified in locations.csv, a relationship that may
+not be captured by automated inference tools.
+Running Tests:FabGuard supports several ways for running the input verification
+7
+
+--- PDF第8页 ---
+Figure 2.: Overview of the MIV formalism
+tests. It is currently integrated with FabSim3 [GAS+23], a Python-based automation
+toolkit for scientific simulation and data processing workflows. This integration allows
+users to run FabGuard tests as part of simulation workflows within FabSim3 or execute
+them independently for focused input verification. Furthermore, FabGuard tests can be
+incorporated into Continuous Integration/Continuous Deployment (CI/CD) pipelines,
+such as GitHub Actions, enabling ongoing automated validation.
+Report Generation: In the final stage, FabGuard generates a report detailing test
+outcomes, including the number of passed and failed tests. Counterexamples for failing
+tests are provided, highlighting where and why certain tests failed and offering insights
+for corrective actions. If locations.csv fails validation due to missing entries, the
+report pinpoints these omissions, as well as the the exact rows and values which do not
+satisfy the constraints.
+3.2. MIV Conceptual Overview
+The MIV workflow described above encompasses a wide range of verification tasks,
+each with its own characteristics and requirements. To systematically address these
+diverse needs, we have developed a formalism that categorizes MIV tasks based on their
+sources, templates, and targets. This formalism not only provides a common language
+for discussing MIV tasks but also helps in identifying patterns and best practices across
+different simulation domains.
+In this formalism, we define MIV as the act of synthesizing data from one or more differ-
+ent Sources to dynamically generate a verificationTemplate, which defines the content
+pattern required to pass verification. This verification Template is in turn applied to an
+input file (theTarget) to perform the actual verification, returning a correct outcome
+if a match is achieved, and an error if not. Now the MIV task can be performed in
+different ways, and we provide a simple formalism in Figure 2 to help understand the
+different patterns that can be created.
+Here, each pattern is described with a dot-delimited code, consisting of three compo-
+8
+
+--- PDF第9页 ---
+nents: the Source (or sources) using an Arabic numeral symbol, the Template Type
+using a capitalized letter symbol and the Target using a Roman numeral symbol. We
+provide two example pattern definitions in Figure 2. For instance, aMIV 1.A.i pattern
+could be a check that all locations in a geographical location file have a population of
+at least 0, while a pattern of typeMIV 4.C.ii might (i) check whether the simulation
+is configured to explicitly model flooding events and then (ii) check whether locations
+in that same geographic file have, for example, an altitude and water holding capacity
+value defined if this is the case.
+Sources that may be used to generate the template may be content from the target file
+itself (1, as in ourMIV 1.A.i example), from other input files (2), external reference
+information such as a lookup table or calendar (3) or simulation configuration files (4, as
+in ourMIV 4.C.ii example). It can be possible that a MIV pattern draws from multiple
+sources, such as the target file (1) and simulation configuration files (4). In this case the
+Arabic numerals can be appended in numerical order, giving the value “14” for the first
+component in this case. MIV can be of different types, because they can be applied in
+different ways. These types include specifications that are statically applied to check a
+file (A, as in ourMIV 1.A.i example), specifications that may be modified depending
+on specific criteria (B), specifications that may or may not be applied depending on
+specific criteria (C, as in ourMIV 4.C.ii example), or (BC) specifications that may
+be modified or not be applied depending on specific criteria. Normally, MIV of type A
+tends to be done either using only the target file as source (1.A.*) or the simulation
+configuration (4.A.*).
+Lastly, MIV patterns may differ in what aspect of the input file they verify, i.e. what
+they target. They may target for instance an individual column in a tabular data file (i,
+as in our MIV 1.A.i example), multiple static columns in a tabular data file (ii, as in
+our MIV 4.C.ii example), a dynamic number or arrangement of columns in a tabular
+data file (iii). There are also MIV patterns that target files as a whole, and may target
+non-tabular model input files (v and higher). This may be done specifically to verify the
+syntax of the input file (vi), the nesting structure (vii, particularly useful for YAML-
+based input files) and the adherence to a predefined schema (viii, useful for both XML
+and YAML files for instance).
+Given the three components and their variations, we are therefore able to define a total
+of at least 72 MIV patterns, and more if we include patterns that rely on multiple Source
+types. However, the range of MIV patterns is not intended to be exhaustive, and there
+are valuable input verification checks that we chose to leave outside of this formalism
+to retain simplicity. Most of these verification checks are checks that operate on 0 or
+multiple files, such as verification checks that operate on network-fed input data, checks
+that verify the number of input files present or checks that verify the non-existence of
+redundant or possible disruptive input files.
+3.3. MIV in the context of SEAVEA
+Our MIV tool can be applied to any application that requires input files in one of
+the supported formats. However, the benefits of the tool are amplified in cases where
+applications, and indeed even input files, are shared between users.
+The SEAVEA project (Software Environment for Actionable VVUQ-enabled Exascale
+9
+
+--- PDF第10页 ---
+Applications, https://www.seavea-project.org), has established tools where this is the
+case. The toolkit itself provides facilities for the verification, validation and uncer-
+tainty quantification of HPC applications, and is an extension of the VECMA toolkit
+[GAJ+21]. For instance, within FabSim3 [GAS+23] there are established plugins that
+contain sample input files for a range of different application domains. There are plu-
+gins available for applications in e.g. migration, Covid-19, the climate, materials and
+fusion domains. Here, our tool allows users to verify the input files present in the shared
+repository, and improve the quality of the input configurations for all other users.
+The SEAVEA toolkit, and in particular FabSim3, also provides facilities to simplify the
+use of the MIV tool. For instance, FabSim3 enables external tools to be used through
+simple one-liner bash commands, automatically locating the relevant configuration files
+for the user’s application using its internal database. In addition, invocations of the
+MIV tool can be directly integrated into existing FabSim3 commands. Through this
+integration, users can choose to apply input file verification automatically for their
+own daily simulation workflows. Although such automated MIV checking introduces a
+performance overhead of several seconds, it ensures that any input files that the user
+requires are verified without additional human effort.
+4. Exemplars
+This section demonstrates the capabilities of the MIV toolchain by going through com-
+mon input verification scenarios. To showcase the general nature of our tool, we present
+three exemplars on: (i) conflict-driven migration, (ii) disaster evacuation and (iii) disease
+spread.
+These exemplars were selected to illustrate a range of input verification challenges com-
+monly encountered in simulation modeling. They progress from basic data type checks
+to more complex multi-file validations and domain-specific constraints. By presenting
+these diverse scenarios, we aim to demonstrate FabGuard’s capability in handling var-
+ious types of input data, file formats, and validation requirements. By presenting real-
+world applications, we demonstrate how the tool integrates into existing simulation
+workflows. These exemplars serve not only as proof of concept but also as guidance for
+potential users, illustrating how FabGuard can be adapted to different domains and
+specific verification needs.
+WechosetofocusonAgent-BasedModels(ABMs)forourexemplarsduetotheirdiverse
+applications across scientific disciplines, complex input requirements, and sensitivity
+to input errors. ABMs typically involve multiple, interconnected input files describing
+agent characteristics, environment properties, and simulation parameters, providing an
+excellent testbed for FabGuard’s capabilities. Moreover, ABMs are often developed by
+researchers from diverse backgrounds, aligning with FabGuard’s goal of making input
+verification more accessible to domain experts. While we concentrate on ABMs, it’s
+important to note that FabGuard is a generic solution applicable to a wide range of
+simulation types and input file formats. The principles and techniques demonstrated
+in these exemplars can be readily adapted to other simulation paradigms, showcasing
+FabGuard’s flexibility and potential to improve input verification across the broader
+landscape of computational modeling and simulation.
+10
+
+--- PDF第11页 ---
+4.1. Exemplar 1: Conflict-driven migration modelling with Flee
+As already mentioned in § 3, Flee [SBG17] is a simulation tool designed for modeling
+displacement and migration patterns. It enables researchers to create simulations based
+on conflict and disaster scenarios, helping to predict how populations move in response
+to various crises.
+Flee models agents that move across a location graph: here, the location graph is defined
+using two input CSV files (locations.csv and routes.csv). Errors in the location graph
+input files not only lead to inaccuracies in the simulation, but can also lead to agents
+getting stuck in certain locations or to Flee to crash altogether. Another important
+input file for Flee version 3 [GSJ+24] is simsetting.yml, which is used to configure the
+set of assumptions used in the simulation. Lastly, there are a range of CSV files that
+define attributes for the spawned agents, as well as for specific locations and routes.
+MIV 1.A.i: Domain-specific constraints on a single column
+•population >= 0
+•location_type∈["conflict_zone", "town", "camp"]
+The code snippet in Listing 1 defines a schema for a pandas DataFrame using
+the pandera class DataFrameModel. It specifies that the DataFrame should have
+a "population" column with floating-point numbers greater than 0, which can
+also be null, and a "location_type" column with string values that must be one
+of "conflict_zone," "town," or "camp." The Check function is used to enforce
+these constraints, with Check.greater_than(0) ensuring the "population" values
+are positive and Check.isin(["conflict_zone," "town," "camp"]) ensuring the
+"location_type" values are within the specified set. This schema validates the
+DataFrame’s structure and data integrity by checking that the columns match the de-
+fined types and conditions.
+1 class L o c a t i o n s S c h e m e ( pa . D a t a F r a m e M o d e l ) :
+2 l o c a t i o n _ t y p e : Series [ pa . String ] = pa . Field (
+3 isin = [ " c o n f l i c t _ z o n e " , " town " ," camp " ])
+4 p o p u l a t i o n : Series [ float ] = pa . Field ( ge =0 , n ul lab le = True , coerce = True )
+Listing 1: Single-column constraints
+We can refine the schema further as to accommodate domain-specific contraints that
+span multiple columns.
+MIV 1.B.ii Multi-column constraint
+Locations that are conflict zones require a population value strictly higher than
+0 (one needs persons to create conflict-driven displacement):
+The provided code snippet in Listing 2 defines a custom validation function for a pandas
+DataFrame using the pandera library. The @pa.dataframe_check() annotation des-
+ignates the function population_gt_0 as a custom DataFrame validation check. This
+function ensures that rows with"location_type" equal to "conflict_zone" do not
+have a "population" value less than or equal to 0. It creates a boolean mask to iden-
+tify these invalid rows and raises aValueError with the indices of any invalid rows
+found. The function then returns a boolean Series indicating which rows are valid. By
+11
+
+--- PDF第12页 ---
+using the @pa.dataframe_check() annotation, this custom check is integrated into a
+pandera schema, allowing it to be used in the validation process to enforce specific data
+constraints.
+1 @pa . d a t a f r a m e _ c h e c k ()
+2 def p o p u l a t i o n _ g t _ 0 ( cls , df : pd . D a t a F r a m e ) -> Series [ bool ]:
+3 # Define c o n d i t i o n s based on ’ l o c a t i o n _ t y p e ’ and ’ p o p u l a t i o n ’ columns
+4 mask = (( df [ " l o c a t i o n _ t y p e " ] == " c o n f l i c t _ z o n e " ) & ( df [ " p o p u l a t i o n " ] <= 0) )
+5
+6 # Filter the D a t a F r a m e to keep only valid rows
+7 if mask . any () : # Check if any rows meet the c o n d i t i o n
+8 # Print the rowa that do not meet the c o n d i t i o n
+9 raise V a l u e E r r o r ( df . index [ mask ])
+10 return ~ mask
+Listing 2: Multi-column constraints
+MIV 2.A.ii Constraints spanning multiple files
+Within Flee, the countries featured in the model are located in locations.csv, but
+any border closures are defined in closures.csv. We must ensure closures link to
+the correct countries (and for instance do not have typos in the country names).
+We can apply the same ideas as above: create a boolean mask that identified the invalid
+rows and raise an errors if such entries are found. One caveat in comparison to the
+previous example is that we need to load the locations.csv file. The final constrints is
+implemented in Listing 3.
+1 @pa . d a t a f r a m e _ c h e c k ()
+2 def c l o s u r e _ t y p e _ c o u n t r y ( cls , df : pd . D a t a F r a m e ) -> Series [ bool ]:
+3 dfl = # Load the content of the " l o c a t i o n s " file
+4 # Get a list of c o u n t r i e s from the " l o c a t i o n s " file
+5 l o c _ c o u n t r i e s = dfl [ " country " ]. tolist ()
+6
+7 # Define a mask to check if the c o n d i t i o n s are met
+8 mask = (( df [ " c l o s u r e _ t y p e " ] == " country " )
+9 & (~ df [ " name1 " ]. isin ( l o c _ c o u n t r i e s )
+10 & (~ df [ " name2 " ]. isin ( l o c _ c o u n t r i e s ) ) ) )
+11
+12 # ... raise an errors or return the valid entries
+Listing 3: Constraints across files
+4.2. Exemplar 2: Disaster-driven evacuation modelling with DFlee
+Dflee [JJG+23] is a variation of Flee which is configured to model disaster-driven pop-
+ulation displacement. The simulation tool currently is used for flood-driven migration,
+but extensions to capture other events (such as storms) are in progress.
+Like Flee, DFlee relies on a location graph, but depending on the context the location
+and route attributed may be radically different. Errors in these input files may result
+in problems similar to Flee, or in a complete lack of spawned agents in the simulations.
+DFlee also relies on a simsetting.yml, and a number of fields in there need to be defined
+correctly for the DFlee to be triggered, while other values need to be lined up in a
+consistent manner to allow DFlee to work in a manner that matches basic logic (e.g.
+that people are more likely to flee from flooded areas than unflooded ones). When used
+12
+
+--- PDF第13页 ---
+for flooding, DFlee also requires a flood_level.csv file, which contains the progression
+of the flooding at each location during the simulation period. Errors within this file
+may cause flooding to occur at the wrong times, in the wrong places, or with the wrong
+intensities.
+MIV 3.A.i Custom-function columns constraints
+Validating that a day column has valid rows for all days in a month
+The code in Listing 4 defines a custom check functioncheck_day_increment using
+the pandera library, annotated with @pa.check("Day") to specify that it applies to
+the "Day" column of a DataFrame. The function validates that the values in the "Day"
+column are incremental integers within a specified range. It sets a minimum value of 0,
+a maximum value determined by reading the configuration file, and a step increment
+of 1. The function returns a boolean Series indicating whether each value in the "Day"
+column meets these conditions: being an increment of 1 from the minimum value, and
+lying within the inclusive range from the minimum to the maximum value. This ensures
+that the "Day" column contains valid, sequential day values.
+1 @pa . check ( " Day " )
+2 def c h e c k _ d a y _ i n c r e m e n t ( cls , series : Series [ int ]) -> Series [ bool ]:
+3 m i n _ v a l u e = 0 # define your min value
+4 m a x _ v a l u e = g e t _ s i m _ p e r i o d _ l e n () # define your max value
+5 step = 1 # define the step i n c r e m e n t
+6
+7 # Check if each value is an i n c r e m e n t of ‘ step ‘ within the range [ min_value
+, m a x _ v a l u e ]
+8 return (( series - m i n _ v a l u e ) % step == 0) & ( series >= m i n _ v a l u e ) & ( series
+<= m a x _ v a l u e )
+Listing 4: Stepside checks
+MIV 4.C.iii Dynamic columns constraints
+When used for flooding, DFlee also requires a flood level.csv file, which contains
+the progression of the flooding at each location during the simulation period.
+Errors within this file may cause flooding to occur at the wrong times, in the
+wrong places, or with the wrong intensities
+Listing 5 demonstrate another pattern which allows for dynamic schema validation
+where the same constraints should be applied to a varied number of columns. In
+the schema defined below, the number of columns in the flood level.csv is unknown,
+but all columns except the first specify the same type of information – the inten-
+sity of the flood for each day for different flooz zones. where the rows are the days,
+and the columns are the flood zones. To realise these constraints, we have defines a
+class method with_dynamic_columns within a FloodLevelScheme class that dynami-
+cally creates schema constraints for a pandas DataFrame. The method reads configu-
+ration values to set maximum permissible values for the "Day" and other flood levels
+columns. It generates fields with these constraints, and specifying value ranges for all
+columns. These constraints are added to a dictionary and used to create a new class,
+ExtendedFloodLevelScheme, which inherits fromFloodLevelScheme and includes the
+dynamically generated attributes.
+13
+
+--- PDF第14页 ---
+1 class F l o o d L e v e l S c h e m e
+2 @ c l a s s m e t h o d
+3 def w i t h _ d y n a m i c _ c o l u m n s ( cls , df : pd . D a t a F r a m e ) :
+4 f l o o d _ z o n e _ m a x _ v a l u e = # read from config
+5 # Create c o n t r a i n t s for the day column : value range of 0 to
+d a y _ m a x _ v a l u e
+6
+7 # Add c o n s t r a i n t s for all but the first columns
+8 for column in df . columns [1:]:
+9 ...
+10 a l l _ o t h e r _ f i e l d s = pa . Field (...
+11 in _r ang e ={ " m i n _ v a l u e " : 0 , " m a x _ v a l u e " : f l o o d _ z o n e _ m a x _ v a l u e })
+12 d y n a m i c _ a t t r s [ column ] = a l l _ o t h e r _ f i e l d s
+13
+14 # Create a new dynamic class with columns as defined in d y n a m i c _ a t t r s
+15 return type ( ’ E x t e n d e d F l o o d L e v e l S c h e m e ’ , ( F lo odL ev elS ch eme ,) ,
+d y n a m i c _ a t t r s )
+Listing 5: Schema with dynamic columns
+4.3. Exemplar 3: Disease spread modelling with FACS
+FACS (Flu And Coronavirus Simulator) [MAS+22] is a computational modeling tool
+designed to simulate the spread of influenza and coronaviruses such as COVID-19 in
+various populations and settings. It allows users to explore the impact of different public
+health interventions, such as social distancing, vaccination, and lockdown measures, on
+the spread of these infectious diseases.
+To configure individual simulations, FACS relies in a wide range of input files. These
+include input files to provide geographical information (buildings.csv), demographic in-
+formation (age-distr.csv and needs.csv), disease information (e.g. disease_covid19.yml
+and mutations.yml) as well as information on interventions (measures.yml) and vacci-
+nation types and strategies (vaccinations.yml). Users commonly edit the measures.yml
+file to assess the efficacy of new intervention scenarios, and this file is relatively complex
+in terms of structure. Erroneous entries in measures.yml can have wide-ranging results.
+For instance, interventions may not trigger at all or they may trigger with the wrong
+intensity.
+MIV 3.A.viii Schema-based summation check
+All demographic files (e.g. demographic_age, demographic_gender, etc) for
+FACS and DFlee contains columns which lists representative fractions of the
+population. Respectively, the sum of all entries in these columns should add up
+to 1 (the number required could be modified for different use cases).
+Listing 6 implements a DemographicScheme class, which inherits from
+pa.DataFrameModel in the pandera library, includes a custom validation method
+all_but_first_column_sum_is_1 marked with the@pa.dataframe_check decorator.
+This method ensures that the sum of the values in all columns, except the first one,
+equals 1. It iterates through each column (excluding the first), calculates the sum of
+its values, and checks if it equals 1. If any column’s sum is not equal to 1, it appends
+the column name and its sum to anerrors list. If there are errors, the function would
+report them; otherwise, it returnsTrue, indicating the DataFrame meets the validation
+14
+
+--- PDF第15页 ---
+criteria.
+1 class D e m o g r a p h i c S c h e m e ( pa . D a t a F r a m e M o d e l ) :
+2 # name : Series [ pa . String ] = pa . Field ( n ull ab le = False , alias = ’#" name " ’)
+3
+4 @pa . d a t a f r a m e _ c h e c k
+5 def a l l _ b u t _ f i r s t _ c o l u m n _ s u m _ i s _ 1 ( cls , df : D a t a F r a m e ) -> bool :
+6 # Iterate over the names of all columns except the first one
+7 errors = []
+8 for c o l u m n _ n a m e in df . columns [1:]:
+9 c o l u m n _ s u m = df [ c o l u m n _ n a m e ]. sum ()
+10 if c o l u m n _ s u m != 1:
+11 errors . append ( f " { c o l u m n _ n a m e } ,{ c o l u m n _ s u m } " )
+12 if len ( errors ) > 0:
+13 # Report the errors
+14 return True
+Listing 6: Schema across Multiple files
+MIV 1.A.vii Nested entries yaml validation
+In addition to having the correct types, yaml entries should be correctly indented
+as to preserve the intended meaning. For example, the partial_closure section in
+the measures.yml allows nested entries, such as for shopping centers, hospitals,
+etc., enabling detailed specifications for various facilities.
+A key insight in our FACS verification journey was that the majority of the FACS
+yaml verification requirements could be met through off-the-shelf schema validation.
+Capitalizing on YAML’s compatibility as a superset of JSON, we utilized a well-known
+Python library designed for JSON schema validation. This schema not only specifies
+the types for each data entry but also outlines the structure, including the hierarchy of
+entries and the allowance for nested entries.
+An excerpt from the jsonschema for the measures.yaml file is given below:
+1
+2 " p a r t i a l _ c l o s u r e " : {
+3 " type " : " object " ,
+4 " p r o p e r t i e s " : {
+5 " leisure " : {" type ": " number " , " minimum ": 0 , " maximum ": 1} ,
+6 " school " : {" type ": " number " , " minimum ": 0 , " maximum ": 1} ,
+7 " sho pp ing " : {" type ": " number " , " minimum ": 0 , " maximum ": 1} ,
+8 " example " : {" type ": " number " , " minimum ": 0 , " maximum ": 1}
+9 } ,
+10 " a d d i t i o n a l P r o p e r t i e s " : false ...
+Listing 7: Json Schema
+This JSON schema implements the requirements for correctly indented YAML entries
+with nested structures in the”partial_closure” section. It defines ”partial_closure”
+as an object with specific properties (e.g., "leisure", "school") as numbers between 0
+and 1. With "additionalProperties" set to false, it strictly limits entries to these pre-
+defined types. This ensures a YAML structure where”partial_closure” is the main
+section, with only the specified facility types indented beneath it, directly translat-
+ing the schema’s hierarchy into proper YAML indentation and preserving the intended
+nested relationship.
+15
+
+--- PDF第16页 ---
+Through these exemplars, we demonstrate how FabGuard can handle a variety of input
+verification scenarios, from simple data type checks to complex multi-file validations
+and domain-specific constraints. This range of examples illustrates the tool’s potential
+to enhance the reliability and reproducibility of simulations across different scientific
+domains.
+5. LLMs for Constraints Inference and Generation
+The adoption of Model Input Verification (MIV) practices faces challenges due to the
+complexity of setting up verification frameworks and the need for domain-specific knowl-
+edge. To address these usability concerns and lower the barrier to entry for MIV, we
+explored the potential of Large Language Models (LLMs) in automating parts of the
+MIV process. LLMs, with their ability to understand and generate human-like text,
+offer a promising approach to inferring constraints from existing data and generating
+new constraints based on natural language descriptions. This section investigates two
+key research questions:
+(1) RQ1: Can LLMs be used for constraints inference?
+(2) RQ2: Can LLMs be used for constraints generation?
+By leveraging LLMs, we aim to make MIV more accessible to simulation practitioners
+who may not have extensive programming backgrounds or in-depth knowledge of data
+validation techniques.
+5.1. RQ1: Constraints Inference
+To address RQ1, we conducted an experiment using To address RQ1, we conducted an
+experiment using Claude 3.5 Sonnet6, a language model developed by Anthropic7 and
+released in 2024. Claude’s ability to understand and generate code makes it suitable
+for our constraint inference experiment. We provided Claude with input files for the
+Flee simulation, along with explanations of the simulations and instructions on using
+Pandera for validation.
+Methodology: Our approach involved several key steps. First, we supplied Claude with
+the contents of key input files, including locations.csv, routes.csv, and closures.csv for
+Flee. We then provided detailed explanations of the simulation, including the purpose
+of each input file. We introduced Claude to Pandera, explaining its use for DataFrame
+validation and providing examples of how to create schemas and custom checks. Fi-
+nally, we asked Claude to infer and generate Pandera schemas and checks based on the
+provided information.
+Findings: Table 1 presents a comparison of key constraints inferred by Claude against
+our manual tests. We categorized the constraints into four types: simple single-column,
+refined single-column, multi-column, and multi-file. Simple single-column constraints,
+whichonlyspecifycolumndatatypes,areomittedfromthetable.Fleecontained12such
+constraintsacrossitsthreeinputfiles.Claudepreciselyinferred10oftheseandenhanced
+6claude.ai
+7https://www.anthropic.com/
+16
+
+--- PDF第17页 ---
+two date-related single-column constraints (represented as integers) by adding a "greater
+than 0" restriction. Refined single-column constraints involve validations beyond simple
+data types, such as ranges or set memberships. Multi-column and multi-file constraints
+involve relationships between multiple columns or files, respectively.
+Our experiment revealed that Claude was capable of inferring a wide range of con-
+straints, including some that were not present in our manual tests. In the analysis of
+Flee’s constraints, 22 out of 23 constraints were correctly inferred, with no wrong in-
+ferences. Specifically, 17 constraints were precisely inferred, while one constraint was
+not inferred at all. Two constraints were corrected from their initial incorrect state,
+namely the longitude range and route checking. Another two constraints were improved
+and made stronger than initially proposed. Lastly, one constraint was inferred but was
+weaker than the actual constraint. This analysis suggests that the inference process
+aligns closely with the constraints generated by an expert (the second author) working
+on the tool, though some adjustments were needed to fully capture all aspects of the
+constraints.
+Table 1.: Comparison of Constraints in Manual Tests vs. LLM-Inferred Tests
+Category Manual Test LLM-Inferred Test Status
+Single-column
+Coordinates within [-180, 180] Latitude [-90, 90], Longitude [-
+180, 180]
+Improved(Corrected)
+Location type in ["con-
+flict_zone", ..., "marker",
+"idpcamp"]
+Location type in ["con-
+flict_zone", "town", ...]
+Partial (missing
+"marker" and
+"idpcamp")
+Route distance > 0 Route distance ≥ 0 Improved(Corrected)
+Forced redirection in [0, 1, 2] Forced redirection in [0, 1, 2] Exact match
+Closure type in ["location",
+"country", "links", "camp", "id-
+pcamp"]
+Closure type in ["country",
+"camp"]
+Partial (missing "lo-
+cation", "links", "id-
+pcamp")
+Multi-column
+Population >0forcamp,town,
+conflict; = 0 for markers;≥ 0
+for forwarding hub
+Population ≥ 0 for all location
+types
+Requires adjust-
+ment (less specific)
+Conflict zones must have a con-
+flict date
+Conflict zones must have a con-
+flict date
+Exact match
+First country in country col-
+umn applies to all conflict
+zones
+– Not inferred
+Location names must be
+unique
+Location names must be
+unique and non-null
+Match (Enhanced)
+Multi-file
+Closure countries (name1,
+name2) must be valid coun-
+tries from locations file
+Implemented cross-file check
+for valid countries in closures
+Exact Match
+Location names must exist in
+routes file (as name1 or name2)
+Suggested cross-file check for
+location names in routes
+Exact Match
+Claude generated several constraints absent from manual tests. For routes.csv, it in-
+troduced checks for distinct route endpoints, unique location names, and prevention of
+duplicate routes. In closure.csv, it validated that end dates should be after the start
+dates and that the non-null value of a column (name2) depends on another column
+(closure type). Claude also developed two multi-file constraints: ensuring camp closures
+reference valid camps from the locations file, and identifying isolated locations. The
+latter was implemented as:
+1 # C o n s t r a i n t : Check for iso la ted l o c a t i o n s ( not c o n n e c t e d by any route )
+17
+
+--- PDF第18页 ---
+2 c o n n e c t e d _ l o c a t i o n s = set ( r o u t e s _ d f [ ’ name1 ’ ]) | set ( r o u t e s _ d f [ ’ name2 ’ ])
+3 i s o l a t e d _ l o c a t i o n s = set ( l o c a t i o n s _ d f [ ’ name ’ ]) - c o n n e c t e d _ l o c a t i o n s
+4 if i s o l a t e d _ l o c a t i o n s :
+5 print ( f " Warning : The f o l l o w i n g l o c a t i o n s are iso la ted ( not c o n n e c t e d by any
+route ) : { i s o l a t e d _ l o c a t i o n s } " )
+This check can reveal potential data errors or geographical inconsistencies in the simu-
+lation. These AI-generated constraints demonstrate Claude’s ability to infer validation
+rules addressing data integrity, consistency, and cross-file relationships in the Flee sys-
+tem, potentially identifying errors overlooked in manual testing.
+Implications: LLMs can effectively infer a wide range of constraints, potentially ac-
+celerating the initial stages of MIV development. They can complement manual tests
+by identifying additional checks that human developers might overlook. However, the
+accuracy of LLM-inferred constraints can be improved by providing more detailed con-
+figuration information, and data.
+5.2. RQ2: Constraints Generation
+For RQ2, we explored Claude’s ability to generate specific constraints when provided
+with clear descriptions of the constraint.
+Methodology: Our approach involved providing Claude with detailed descriptions of
+constraints, using the same format as in the Exemplars section of this paper. We then
+asked Claude to implement these constraints using Pandera, specifying that the imple-
+mentation should include necessary imports and class structures. Finally, we manually
+reviewed the generated code to assess its correctness and completeness in implementing
+the described constraints.
+Findings: Claude demonstrated a high degree of accuracy in generating constraints
+based on descriptions. Out of 13 constraint descriptions provided, Claude successfully
+generated 11 correct implementations. Of the remaining two, both required minor ad-
+justments. Table 2 presents examples of constraint descriptions and Claude’s imple-
+mentations. In both cases, Claude accurately translated the constraint descriptions into
+functional Pandera checks. The generated code not only implements the logical con-
+straints but also follows Pandera’s syntax and best practices. However, we observed that
+for more complex constraints, especially those involving configuration-dependent values
+or specific simulation logic, Claude’s implementations required minor adjustments. For
+example, in constraints involving maximum flood levels in DFlee, Claude initially used
+hard-coded values, which we needed to replace with configuration-dependent variables.
+Implications: LLMs can significantly speed up the initial implementation of MIV con-
+straints,particularlyforcommonvalidationpatternsandclearlydescribedrequirements.
+The accuracy of constraint generation for well-defined rules suggests that LLMs could
+be valuable tools in translating natural language specifications into code.While LLMs
+excel at generating syntactically correct and logically sound constraints, there’s still a
+need for domain expert review, especially for constraints involving simulation-specific
+or configuration-dependent logic.
+18
+
+--- PDF第19页 ---
+Table 2.: Examples of Constraint Descriptions and Generated Implementations
+Constraint Description Generated Implementation
+"Route distances must be positive num-
+bers" 1 di st anc e : Series [ Float ] = pa . Field (
+gt =0)
+"The sum of all entries in demographic
+probability columns should add up to
+1"
+1 @pa . d a t a f r a m e _ c h e c k
+2 def p r o b a b i l i t i e s _ s u m _ t o _ o n e ( cls ,
+df : pd . D a t a F r a m e ) -> bool :
+3 p r o b _ c o l u m n s = [ col for col in
+df . columns if col != ’ c at ego ry ’]
+4 return all ( df [ p r o b _ c o l u m n s ]. sum
+( axis =1) . between (0.99 , 1.01) )
+5.3. On the potential use of LLMs in MIV
+Our experiments with Claude on the Flee case study demonstrate that LLMs have
+significant potential in both inferring and generating constraints for Model Input Verifi-
+cation. They excel at identifying a wide range of constraints and can accurately translate
+natural language descriptions into functional code.
+This capability is especially important in simulation modeling, often developed by do-
+main experts who may lack extensive programming backgrounds. Our preliminary anal-
+ysis shows that LLMs, when provided with the right setup - including appropriate struc-
+ture, classes, and examples - can bridge the gap between domain expertise and software
+engineering practices, at least in the context of input verification. They make the pro-
+cess of writing constraints more accessible and bring the power of formal specification
+to domain experts who may not have deep programming knowledge.
+While LLMs show promise in MIV, their use presents challenges. Our experience re-
+vealed a shift from quick constraint generation to time-consuming validation, empha-
+sizing the need for human expertise. Generating constraints with LLMs was quick,
+taking less than an hour, but validating their accuracy required a several hours of work.
+LLM-generated constraints, though technically correct, often proved overly conserva-
+tive, missing potential valid types not present in sample data. This highlights the im-
+portance of comprehensive datasets and domain expert involvement when using LLMs
+for constraint generation. While LLMs can accelerate initial constraint generation, they
+complement rather than replace human expertise in the MIV process.
+6. Evaluation
+Our evaluation of FabGuard aims to demonstrate its scalability and applicability. We
+conducted two sets of tests: (1) Microbenchmarks with generated input files and tests;
+(2) a real-world simulation using the Flee system and custom test files. Section 6.2
+presents the microbenchmark results, while Section 6.1 shows the results on FLEE.
+19
+
+--- PDF第20页 ---
+(a) Cumulative lines vs. cumulative time
+ (b) Elapsed time histogram
+(c) Total lines per conflict
+ (d) Total lines vs. elapsed time
+Figure 3.: Performance analysis of FabGuard on the Flee dataset
+These tests provide insights into FabGuard’s performance across various scenarios, from
+controlled environments to practical applications.
+Setup. Our evaluation was conducted on an Apple M2 Max with 12-core CPU, 30-core
+GPU and 16-core Neural Engine, 64 GB of RAM, and 1TB of HDD running MacOS
+Ventura 13.5. We used Python 3.12.0. We repeat each benchmark for 5 warmup times
+and 30 execution times and report the average execution time.
+6.1. Use case: Flee
+We evaluate FabGuard’s performance by running our test suite on the entire Flee con-
+flicts dataset. The test suite consists of 4 Pandera files, each containing a specific number
+of constraints. This comprehensive evaluation covered 100 conflicts, encompassing a to-
+tal of 12,000 input files. This dataset allows us to assess FabGuard’s efficiency and
+scalability across a wide range of real-world scenarios.
+The results of our evaluation are summarized in Figures 1-4, each highlighting different
+aspects of FabGuard’s performance. Upon analyzing these results, several key insights
+emerge which we have summarised below.
+Scalability. FabGuard demonstrates good overall scalability, processing approximately
+12,000 lines in about 140 seconds (Figure 3a).
+Consistency. The majority of files are processed within a narrow time range of 0.85
+to 1.05 seconds, with a peak around 0.90 seconds (Figure 3b). This consistency across
+different file sizes indicates a reliable performance baseline for FabGuard.
+20
+
+--- PDF第21页 ---
+Processing Time vs. File Size. Interestingly, there isn’t a strong linear relation-
+ship between file size and processing time for most files (Figure 3d). This suggests that
+FabGuard has a relatively constant overhead for each file, with the actual content veri-
+fication time being comparatively small. Moreoer, the Flee dataset exhibits significant
+variability in file sizes across different folders (Figure 3b). Most folders contain files
+with fewer than 200 lines, but some exceed 300 lines. Despite this variability, FabGuard
+maintains relatively consistent processing times. A few files with longer processing times
+(1.25-1.27 seconds) create a slight right skew in the distribution (Figure 3b), suggesting
+factors beyond line count can affect processing time.
+Efficiency. Based on the overall processing of 12,000 lines in 140 seconds, FabGuard
+achieves an average processing rate of approximately 85.71 lines per second. This rate
+demonstrates FabGuard’s efficiency in handling large datasets. FabGuard ability to
+process a large number of files quickly makes it suitable for real-world applications
+where rapid input verification and makes it a viable part of a CI/CD pipeline.
+6.2. Microbenchmarks
+We designed a series of microbenchmarks aimed at stress-testing our approach under
+various conditions. These microbenchmarks evaluated FabGuard’s behavior across four
+key dimensions: data types (1-10), number of columns (10-100) and rows (100-1000)
+per file, and total number of files processed (1-100). The experiments utilized randomly
+generated tests and files to simulate scenarios FabGuard might encounter in real-world
+applications. Results revealed consistent performance across these input dimensions,
+withnosignificantbottlenecksorscalabilityissues.Whileslightfluctuationsinexecution
+time were observed with changes in data complexity and file structure, these variations
+were minimal, typically within a range of 0.05 to 0.1 seconds (approximately 1-2% of
+total execution time). The most notable finding was a linear correlation between the
+number of files processed and execution time, indicating predictable scaling for large-
+scale simulations.
+7. Conclusion and Future Work
+In this paper, we have introduced Model Input Verification (MIV) as an essential step in
+enhancing the reliability and reproducibility of simulation models. Our primary contri-
+bution is a comprehensive methodology for MIV, implemented in the FabGuard toolset.
+This methodology adapts established data schema and validation tools to address the
+unique challenges of simulation input verification. We formalized MIV patterns, cat-
+egorizing verification tasks based on their sources, template types, and targets. This
+formalism provides a structured approach to identifying and implementing input verifi-
+cation requirements across diverse simulation domains.
+Our work goes beyond theoretical frameworks by demonstrating the practical applica-
+tion of these MIV patterns. We presented numerous examples across three domains:
+conflict-driven migration, disaster evacuation, and disease spread modeling. These case
+studies showcase how FabGuard can handle a variety of validation scenarios, from sim-
+ple data type checks to complex multi-file validations and domain-specific constraints.
+Furthermore, we conducted the first study on using Large Language Models (LLMs) for
+constraint discovery and generation in the context of MIV. Our results show that LLMs
+21
+
+--- PDF第22页 ---
+can accurately infer existing constraints and even identify new, valid constraints, poten-
+tially lowering the barrier to entry for adopting robust MIV practices. This exploration
+of LLMs, combined with our identified requirements for MIV tools, establishes a foun-
+dational framework for the future development of model input verification systems. Our
+evaluation provided empirical evidence of MIV’s feasibility for large-scale simulations,
+with FabGuard efficiently processing 12,000 input files in 140 seconds while maintaining
+consistent performance across varying file sizes and complexities.
+These contributions establish a foundation for more robust and trustworthy simula-
+tion practices. We envision MIV becoming an integral part of the simulation modeling
+workflow, akin to unit testing in software development. Future research will focus on
+expanding FabGuard’s capabilities to cover a broader range of simulation paradigms
+and input formats. We plan to conduct large-scale studies on the use of Large Language
+Models, for automated constraint discovery in complex, domain-specific relationships.
+This research will aim to further lower the barrier for MIV adoption and improve its ef-
+fectiveness across diverse simulation domains. We will work on developing user-friendly
+interfaces to make MIV more accessible to non-technical users, bridging the gap be-
+tween domain expertise and software engineering practices. We will further explore the
+integration of MIV with other stages of the simulation lifecycle, such as output valida-
+tion and uncertainty quantification. This holistic approach could lead to a more robust
+framework for ensuring simulation reliability. Additionally, we will undertake case stud-
+ies across diverse scientific domains to refine and validate MIV methodologies, providing
+empirical evidence of their effectiveness and generalizability.
+This research contributes to establishing input verification as a fundamental component
+of the simulation modeling process, rather than an afterthought. By integrating MIV
+into standard modeling practices, we aim to enhance the reliability of simulations and,
+consequently, the quality of scientific discoveries based on these models. The broader
+adoption of systematic input verification techniques has the potential to improve the
+overall robustness and credibility of simulation-based research across various scientific
+disciplines.
+References
+[ALD+99] A.G.Stephenson, L.S.LaPiana, P.J.Rutledge D.R. Mulville, F.H.Bauer, D.
+Folta, G.A. Dukeman, R. Sackheim, and P. Norvig. Mars climate orbiter
+mishap investigation board phase i report november 10, 1999, 1999.
+[AMMW17] Sarah Alhozaimy, David Mawdsley, Doug Mulholland, and Thor Wikfeldt.
+Towards reproducibility in research software.Software Sustainability In-
+stitute, 2017. Accessed: 2024-08-07.
+[Ban20] NielsBantilan. pandera:StatisticalDataValidationofPandasDataframes.
+In Python in Science, pages 116–124, Austin, Texas, 2020.
+[BR18] Fabien C. Y. Benureau and Nicolas P. Rougier. Re-run, Repeat, Repro-
+duce, Reuse, Replicate: Transforming Code into Scientific Contributions.
+Frontiers in Neuroinformatics, 11:69, January 2018.
+[BSF+04] B.H.Thacker, S.W.Doebling, F.M.Hemez, M.C. Anderson, J.E. Pepin, and
+E.A. Rodriguez. Concepts of Model Verification and Validation, October
+2004.
+[CDH16] Peter V. Coveney, Edward R. Dougherty, and Roger R. Highfield. Big
+22
+
+--- PDF第23页 ---
+data need big theory too.Philosophical Transactions of the Royal Society
+A: Mathematical, Physical and Engineering Sciences, 374(2080):20160153,
+November 2016.
+[CGH21a] Peter V Coveney, Derek Groen, and Alfons G Hoekstra. Reliability and
+reproducibility in computational science: Implementing validation, verifi-
+cation and uncertainty quantification in silico, 2021.
+[CGH21b] Peter V. Coveney, Derek Groen, and Alfons G. Hoekstra. Reliability and
+reproducibility in computational science: implementing validation, verifi-
+cation and uncertainty quantificationin silico. Philosophical Transactions
+of the Royal Society A: Mathematical, Physical and Engineering Sciences,
+379(2197):rsta.2020.0409, 20200409, May 2021.
+[CH21] Peter V. Coveney and Roger R. Highfield. When we can trust
+computers (and when we can’t). Philosophical Transactions of the
+Royal Society A: Mathematical, Physical and Engineering Sciences ,
+379(2197):rsta.2020.0067, 20200067, May 2021.
+[DM11] Joseph O Dada and Pedro Mendes. Multi-scale modelling and simulation
+in systems biology.Integrative Biology, 3(2):86–96, 2011.
+[ENDG+19] Diego Encinas, Marcelo Naiouf, Armando De Giusti, Sandra Mendez, Do-
+lores Rexachs, and Emilio Luque. On the calibration, verification and
+validation of an agent-based model of the hpc input/output system. In
+Proceedings from The Eleventh International Conference on Advances in
+System Simulation (SIMUL 2019), 2019.
+[Eps08] Joshua M Epstein. Why model?Journal of artificial societies and social
+simulation, 11(4):12, 2008.
+[FLNG+20] Neil M Ferguson, Daniel Laydon, Gemma Nedjati-Gilani, Natsuko Imai,
+Kylie Ainslie, Marc Baguelin, Sangeeta Bhatia, Adhiratha Boonyasiri,
+Zulma Cucunubá, Gina Cuomo-Dannenburg, et al.Report 9: Impact of
+non-pharmaceutical interventions (NPIs) to reduce COVID19 mortality
+and healthcare demand,volume16. ImperialCollegeLondonLondon,2020.
+[FPG+11] PEFarrell,MDPiggott,GJGorman,DAHam,CRWilson,andTMBond.
+Automated continuous verification for numerical simulation.Geoscientific
+Model Development, 4(2):435–449, 2011.
+[GAJ+21] Derek Groen, Hamid Arabnejad, Vytautas Jancauskas, WN Edeling,
+Fredrik Jansson, Robin A Richardson, Jalal Lakhlili, L Veen, Bartosz
+Bosak, Piotr Kopta, et al. Vecmatk: a scalable verification, validation and
+uncertainty quantification toolkit for scientific simulations.Philosophical
+Transactions of the Royal Society A, 379(2197):20200221, 2021.
+[GAS+23] Derek Groen, Hamid Arabnejad, Diana Suleimenova, Wouter Edeling,
+Erwan Raffin, Yani Xue, Kevin Bronik, Nicolas Monnier, and Peter V
+Coveney. Fabsim3: An automation toolkit for verified simulations us-
+ing high performance computing. Computer Physics Communications,
+283:108596, 2023.
+[GBD+20] William L Geary, Michael Bode, Tim S Doherty, Elizabeth A Fulton,
+Dale G Nimmo, Ayesha IT Tulloch, Vivitskaia JD Tulloch, and Euan G
+Ritchie. A guide to ecosystem models and their environmental applica-
+tions. Nature Ecology & Evolution, 4(11):1459–1471, 2020.
+[Gre24] Great Expectations Team. Great expectations, 2024.
+[GSJ+24] MaziarGhorbani,DianaSuleimenova,AlirezaJahani,ArindamSaha,Yani
+Xue, Kate Mintram, Anastasia Anagnostou, Auke Tas, William Low, Si-
+mon JE Taylor, et al. Flee 3: Flexible agent-based simulation for forced
+23
+
+--- PDF第24页 ---
+migration. Available at SSRN 4710692, 2024.
+[Gun21] OddErikGundersen. Thefundamentalprinciplesofreproducibility. Philo-
+sophical Transactions of the Royal Society A: Mathematical, Physical and
+Engineering Sciences, 379(2197):20200210, May 2021.
+[HST17] Nick Hynes, D. Sculley, and Michael Terry. The data linter: Lightweight
+automated sanity checking for ml data sets. InNIPS Workshop on ML
+Systems, 2017.
+[Iar24] Nicola Iarocci. Cerberus: Lightweight, extensible data validation library
+for python, 2024.
+[Jha19] Samridhi Jha. Data Infrastructure for Machine Learning. International
+Journal for Research in Applied Science and Engineering Technology,
+7(4):740–742, April 2019.
+[JJG+23] Alireza Jahani, Shenene Jess, Derek Groen, Diana Suleimenova, and Yani
+Xue. Developing an agent-based simulation model to forecast flood-
+induced evacuation and internally displaced persons. In International
+Conference on Computational Science, pages 550–563. Springer, 2023.
+[MAS+22] Imran Mahmood, Hamid Arabnejad, Diana Suleimenova, Isabel Sassoon,
+Alaa Marshan, Alan Serrano-Rico, Panos Louvieris, Anastasia Anagnos-
+tou, Simon JE Taylor, David Bell, et al. Facs: a geospatial agent-based
+simulator for analysing covid-19 spread and public health measures on
+local regions. Journal of Simulation, 16(4):355–373, 2022.
+[Mer10] Zeeya Merali. Computational science: ...Error.Nature, 467(7317):775–777,
+October 2010.
+[PGG+23] Hima Patel, Shanmukha Guttula, Nitin Gupta, Sandeep Hans,
+Ruhi Sharma Mittal, and Lokesh N. A Data-centric AI Framework for
+Automating Exploratory Data Analysis and Data Quality Tasks.Journal
+of Data and Information Quality, 15(4):1–26, December 2023.
+[PMBF17] João Felipe Pimentel, Leonardo Murta, Vanessa Braganholo, and Juliana
+Freire. noworkflow: a tool for collecting, analyzing, and managing prove-
+nance from python scripts.Proc. VLDB Endow., 10(12):1841–1844, aug
+2017.
+[RMV18] Bill Roungas, Sebastiaan A Meijer, and Alexander Verbraeck. A frame-
+work for optimizing simulation model validation & verification.Interna-
+tional Journal on Advances in Systems and Measurements, 11(1):137–152,
+2018.
+[RO11] Christopher J. Roy and William L. Oberkampf. A comprehensive frame-
+workforverification,validation,and uncertaintyquantificationinscientific
+computing. Computer Methods in Applied Mechanics and Engineering,
+200(25-28):2131–2144, June 2011.
+[RPPPP22] Giulia Russo, Giuseppe Alessandro Parasiliti Palumbo, Marzio Pennisi,
+and Francesco Pappalardo. Model verification tools: a computational
+framework for verification assessment of mechanistic agent-based models.
+BMC Bioinformatics, 22(S14):626, May 2022.
+[SAMT21] Stefano Sinisi, Vadim Alimguzhin, Toni Mancini, and Enrico Tronci. Rec-
+onciling interoperability with efficient verification and validation within
+open source simulation environments.Simulation Modelling Practice and
+Theory, 109:102277, 2021.
+[SBG17] Diana Suleimenova, David Bell, and Derek Groen. A generalized simula-
+tion development approach for predicting refugee destinations.Scientific
+reports, 7(1):13377, 2017.
+24
+
+--- PDF第25页 ---
+[SBK+18] Sebastian Schelter, Joos-Hendrik Böse, Johannes Kirschnick, Thoralf
+Klein, and Stephan Seufert. Declarative metadata management: A missing
+piece in end-to-end machine learning. InSysML 2018, 2018.
+[SFGP23] Shreya Shankar, Labib Fawaz, Karl Gyllstrom, and Aditya Parameswaran.
+Automatic and Precise Data Validation for Machine Learning. InPro-
+ceedings of the 32nd ACM International Conference on Information and
+Knowledge Management, pages 2198–2207, Birmingham United Kingdom,
+October 2023. ACM.
+[SKB23] Shafaq Siddiqi, Roman Kern, and Matthias Boehm. SAGA: A Scalable
+Framework for Optimizing Data Cleaning Pipelines for Machine Learning
+Applications. Proceedings of the ACM on Management of Data, 1(3):1–26,
+November 2023.
+[SLS+18a] Sebastian Schelter, Dustin Lange, Philipp Schmidt, Meltem Celikel, Felix
+Biessmann, and Andreas Grafberger. Automating large-scale data quality
+verification. Proc. VLDB Endow., 11(12):1781–1794, aug 2018.
+[SLS+18b] Sebastian Schelter, Dustin Lange, Philipp Schmidt, Meltem Celikel, Felix
+Biessmann, and Andreas Grafberger. Automating large-scale data qual-
+ity verification.Proceedings of the VLDB Endowment, 11(12):1781–1794,
+August 2018.
+[SNK+18] Arfon M. Smith, Kyle E. Niemeyer, Daniel S. Katz, Lorena A. Barba,
+George Githinji, Melissa Gymrek, Kathryn D. Huff, Christopher R.
+Madan, Abigail Cabunoc Mayes, Kevin M. Moerman, Pjotr Prins, Karthik
+Ram, Ariel Rokem, Tracy K. Teal, Roman Valls Guimera, and Jacob T.
+Vanderplas. JournalofOpenSourceSoftware(JOSS):designandfirst-year
+review. PeerJ Computer Science, 4:e147, February 2018.
+[THE18] Simen Tennøe, Geir Halnes, and Gaute T. Einevoll. Uncertainpy: A
+Python Toolbox for Uncertainty Quantification and Sensitivity Analysis
+in Computational Neuroscience.Frontiers in Neuroinformatics, 12:49, Au-
+gust 2018.
+[WBRV+23] Sheng Wong, Scott Barnett, Jessica Rivera-Villicana, Anj Simmons, Hala
+Abdelkader, Jean-Guy Schneider, and Rajesh Vasa. MLGuard: Defend
+Your Machine Learning Model! In Proceedings of the 1st International
+Workshop on Dependability and Trustworthiness of Safety-Critical Systems
+with Machine Learned Components, pages 10–13, San Francisco CA USA,
+December 2023. ACM.
+[WRE+20] David W. Wright, Robin A. Richardson, Wouter Edeling, Jalal Lakhlili,
+Robert C. Sinclair, Vytautas Jancauskas, Diana Suleimenova, Bartosz
+Bosak, Michal Kulczewski, Tomasz Piontek, Piotr Kopta, Irina Chirca,
+Hamid Arabnejad, Onnie O. Luk, Olivier Hoenen, Jan Węglarz, Daan
+Crommelin, Derek Groen, and Peter V. Coveney. Building confidence in
+simulation: Applications of easyvvuq.Advanced Theory and Simulations,
+3(8):1900246, 2020.
+25

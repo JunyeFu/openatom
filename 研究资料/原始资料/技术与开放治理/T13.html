@@ -1,0 +1,497 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="We make licensing easy for humans and machines alike. REUSE solves a fundamental issue that Free Software licensing has at the very source. Adopting our recommendations is as easy as one-two-three!">
+    <meta name="author" content="Free Software Foundation Europe">
+    <meta name="keywords" content="reuse, free software, open source, foss, floss, license, licensing, copyright, git, tool, automate, easy, git">
+
+    <!-- Open Graph meta-data (e.g. Facebook) -->
+    <meta property="og:title" content="REUSE Specification – Version 3.3 | REUSE"/>
+    <meta property="og:url" content="https://reuse.software/spec-3.3/"/>
+    <meta property="og:image" content="https://reuse.software/img/reuse.png"/>
+    <meta property="og:description" content="We make licensing easy for humans and machines alike. REUSE solves a fundamental issue that Free Software licensing has at the very source. Adopting our recommendations is as easy as one-two-three!"/>
+    <meta property="og:locale" content="en"/>
+
+    <!-- Twitter meta-data -->
+    <meta name="twitter:card" content="summary_large_image"/>
+    <meta name="twitter:site" content="@fsfe"/>
+    <meta name="twitter:title" content="REUSE Specification – Version 3.3 | REUSE"/>
+    <meta name="twitter:description" content="We make licensing easy for humans and machines alike. REUSE solves a fundamental issue that Free Software licensing has at the very source. Adopting our recommendations is as easy as one-two-three!"/>
+    <meta name="twitter:image" content="https://reuse.software/img/reuse.png"/>
+    <meta name="twitter:creator" content="@fsfe"/>
+
+    <title>REUSE Specification – Version 3.3 | REUSE</title>
+
+    <link rel="icon" type="image/png" href="/img/favicon.png?v=1e979df73cc8c32a054343bd7c485110">
+    <link href="/css/bootstrap.min.css?v=1e979df73cc8c32a054343bd7c485110" rel="stylesheet">
+    <link href="/css/landing-page.css?v=1e979df73cc8c32a054343bd7c485110" rel="stylesheet">
+    <link href="/css/template.css?v=1e979df73cc8c32a054343bd7c485110" rel="stylesheet">
+    <link href="/css/share.css?v=1e979df73cc8c32a054343bd7c485110" rel="stylesheet">
+    <link href="/css/custom.css?v=1e979df73cc8c32a054343bd7c485110" rel="stylesheet">
+    <link href="/fonts/roboto/roboto.css?v=1e979df73cc8c32a054343bd7c485110" rel="stylesheet">
+
+    <link rel="stylesheet" type="text/css" href="/fonts/fontawesome/css/all.min.css?v=1e979df73cc8c32a054343bd7c485110" />
+
+</head>
+<body id="page-top">
+<div id="wrap">
+
+
+
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <noscript><div class="noscript"><strong>Warning:</strong> Some interactive features will not work with JavaScript disabled.</div></noscript>
+    <div class="container">
+        
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+              <a class="page-scroll navbar-brand" href="/" title="REUSE">
+                <img id="logo" src="/img/reuse-horizontal.png" />
+              </a>
+        </div>
+        
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li class=""><a href="/tutorial/">Get Started</a></li>
+                <li class=""><a href="/faq/">FAQ</a></li>
+                <li class=""><a href="/dev/">Developers</a></li>
+                <li class=""><a href="/spec/">Specification</a></li>
+                <li class=""><a href="/resources/">Resources</a></li>
+                <li class=""><a href="/supporters/">Supporters</a></li>
+                <li class=""><a href="https://api.reuse.software">API</a></li></ul>
+        </div>
+        
+    </div>
+    
+</nav>
+<div class="content-section-b">
+  <div class="container page-spec-3.3">
+
+<div class="content">
+  <div class="clearfix"></div>
+  
+    
+<div class="alert alert-info">
+    
+    All versions of the specification can be found at <a href="https://reuse.software/specifications/">https://reuse.software/specifications/</a>.
+</div>
+
+  
+  <h1>REUSE Specification – Version 3.3</h1>
+  <h2 class="subtitle">2024-11-14</h2>
+   
+
+  <p>This specification defines a standardised method for declaring copyright and
+licensing for software projects. The goal of the specification is to have
+comprehensive, unambiguous, human- and machine-readable copyright and licensing
+information for each individual file in a project. Ideally this information is
+embedded into every file, so that the information is preserved when the file is
+copied and reused by third parties.</p>
+<p>This specification implements <a href="https://tools.ietf.org/html/rfc2119">IETF RFC 2119: Key words for use in RFCs to
+Indicate Requirement Levels</a>.</p>
+<p>For the revision history of this specification, please see <a href="https://github.com/fsfe/reuse-website/blob/main/CHANGELOG.md">the change
+log</a>.</p>
+<h2 id="definitions">Definitions</h2>
+<p>These are the definitions for some of the terms used in this specification:</p>
+<ul>
+<li>REUSE Tool &mdash; helper tool for compliance with this specification; available
+at <a href="https://codeberg.org/fsfe/reuse-tool">https://codeberg.org/fsfe/reuse-tool</a>.</li>
+<li>Project &mdash; any unit of content that can be associated with a distribution of
+software. Typically, a Project is composed of one or more files. Also
+sometimes called a package.</li>
+<li>License File &mdash; a file containing the text of a license, as defined in
+<a href="/spec-3.3/#license-files">License Files</a>.</li>
+<li>Licensing Information &mdash; the information that lists the copyright holders of
+a file or work, and describes under which licenses the file or work is made
+available.</li>
+<li>Copyright Notice &mdash; a line of text that conveys copyright of a copyright
+holder. Its format is defined in the <a href="/spec-3.3/#format-of-copyright-notices">Format of Copyright
+Notices</a> section.</li>
+<li>Covered File &mdash; a file which must contain Licensing Information, as defined
+in <a href="/spec-3.3/#covered-and-ignored-files">Covered and ignored Files</a>.</li>
+<li>Commentable File &mdash; a plain text file that can contain comments.</li>
+<li>Snippet &mdash; a portion of text in a Commentable File to which different
+Licensing Information applies.</li>
+<li>Uncommentable File &mdash; either a plain text file that cannot contain comments
+or a file that is not a plain text file.</li>
+<li>SPDX Specification &mdash; SPDX specification, version 2.3; as available at
+<a href="https://spdx.org/specifications">https://spdx.org/specifications</a>.</li>
+<li>SPDX License Identifier &mdash; SPDX short-form identifier, as defined in SPDX
+Specification. See also <a href="https://spdx.org/ids">https://spdx.org/ids</a> for a short introduction and
+examples.</li>
+<li>SPDX License Expression &mdash; as defined in SPDX Specification, Annex D, at
+<a href="https://spdx.github.io/spdx-spec/v2.3/SPDX-license-expressions/">https://spdx.github.io/spdx-spec/v2.3/SPDX-license-expressions/</a>.</li>
+<li>SPDX License List &mdash; a list of commonly found licenses and exceptions; as
+available on <a href="https://spdx.org/licenses/">https://spdx.org/licenses/</a>.</li>
+<li>DEP5 &mdash; Machine-readable <code>debian/copyright</code> file, Version 1.0; as available
+at <a href="https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/">https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/</a> and
+further defined in <a href="/spec-3.3/#dep5-deprecated">DEP5 (deprecated)</a>. Where the REUSE
+Specification and DEP5 state different things, the REUSE Specification takes
+precedence.</li>
+<li>TOML &mdash; A configuration file format as available at
+<a href="https://toml.io/en/v1.0.0">https://toml.io/en/v1.0.0</a>.</li>
+</ul>
+<h2 id="covered-and-ignored-files">Covered and ignored Files</h2>
+<p>Covered Files are any file which must contain Licensing Information. This is
+equal to all files in a project, with the exception of:</p>
+<ul>
+<li>The License Files stored in the <code>LICENSES/</code> directory.</li>
+<li><code>COPYING</code>, <code>LICENSE</code>, and <code>LICENCE</code>. These MAY also contain a dash or dot
+separator followed by additional metadata, like <code>LICENSE-MIT</code>, <code>COPYING.GPL</code>,
+or <code>LICENCE.md</code>. These files SHOULD be in the root of the Project.</li>
+<li>The files belonging to the Project&rsquo;s version control system (example:
+<code>.git/</code>).</li>
+<li>The files ignored by the version control system (example: files listed in
+<code>.gitignore</code>).</li>
+<li>Submodules of the Project&rsquo;s version control system and Meson subprojects. Each
+submodule and Meson subproject is understood as a separate Project.</li>
+<li><code>REUSE.toml</code> files.</li>
+<li>The files in the <code>.reuse/</code> directory in the root of the Project. This
+directory MUST contain only files relevant for the operation of the REUSE
+Tool.</li>
+<li>Symlinks and files with no data (zero-byte).</li>
+<li>SPDX documents in their various formats as defined in the <a href="https://spdx.github.io/spdx-spec/v2.3/conformance/#44-standard-data-format-requirements">SPDX Specification,
+Clause
+4.4</a>
+(example: <code>sbom.spdx.json</code>).</li>
+</ul>
+<h2 id="license-files">License Files</h2>
+<p>A Project MUST include a License File for every license under which Covered
+Files are licensed.</p>
+<p>Each License File MUST be placed in the <code>LICENSES/</code> directory in the root of the
+Project. The name of the License File MUST be the SPDX License Identifier of the
+license followed by an appropriate file extension (example:
+<code>LICENSES/GPL-3.0-or-later.txt</code>). The License File MUST be in plain text format.</p>
+<p>If a license does not exist in the SPDX License List, its SPDX License
+Identifier MUST be <code>LicenseRef-[idstring]</code> as defined by the SPDX Specification,
+Clause 10 available at
+<a href="https://spdx.github.io/spdx-spec/v2.3/other-licensing-information-detected/">https://spdx.github.io/spdx-spec/v2.3/other-licensing-information-detected/</a>.</p>
+<p>A Project MUST NOT include License Files for licenses under which none of the
+files in the Project are licensed. The <code>LICENSES/</code> directory MUST NOT include
+any other files.</p>
+<p>Everything that applies to licenses in this section also applies to license
+exceptions, with the exception that it is NOT possible to have a license
+exception that does not exist in the SPDX License List.</p>
+<p>For avoidance of doubt, in practice this means that for every license and
+exception that is part of any SPDX License Expression in any Licensing
+Information associated with any Covered File, there MUST exist a License File as
+defined in this section.</p>
+<p>You MAY include <code>COPYING</code> or <code>LICENSE</code> files in your project for compliance with
+other standards, conventions, or tools. These files MAY contain a copy of the
+license text, a summary of your licensing, or anything else. These files are
+ignored by the REUSE Tool.</p>
+<h2 id="licensing-information">Licensing Information</h2>
+<p>Each Covered File MUST have Licensing Information associated with it. You can
+associate Licensing Information with a file in the following ways:</p>
+<ul>
+<li>Comment headers</li>
+<li>REUSE.toml</li>
+<li>DEP5 (deprecated)</li>
+</ul>
+<p>REUSE.toml and DEP5 are mutually exclusive. You MUST NOT use both
+simultaneously.</p>
+<p>Comment headers are the RECOMMENDED method.</p>
+<p>Additionally, you can associate Licensing Information with Snippets inside of
+files.</p>
+<h3 id="comment-headers">Comment headers</h3>
+<p>Wherever possible, you SHOULD attempt to use comment headers to convey a file&rsquo;s
+Licensing Information. Compared to other methods, comment headers are more
+explicit and their associated Licensing Information is more resistant to being
+moved or copied.</p>
+<p>To implement this method, a Commentable File MUST declare the file&rsquo;s Licensing
+Information in a comment header. The Licensing Information SHOULD be as close to
+the top of the top of the file as possible in a comment header. The Commentable
+File SHOULD use UTF-8 encoding.</p>
+<p>For Uncommentable Files, the comment header that declares the file&rsquo;s Licensing
+Information MUST be in an adjacent text file of the same name with the
+additional extension <code>.license</code> (example: <code>cat.jpg.license</code> if the original file
+is <code>cat.jpg</code>). The adjacent file SHOULD use UTF-8 encoding.</p>
+<p><code>.license</code> files MAY be used with Commentable Files, but it is still RECOMMENDED
+that comment headers be put inside Commentable Files.</p>
+<p>The comment header MUST contain one or more Copyright Notices and one or more
+<code>SPDX-License-Identifier</code> tag-value pairs. A tag is followed by a colon,
+followed by a text value, and terminated by a newline.</p>
+<p>The <code>SPDX-License-Identifier</code> tag MUST be followed by a valid SPDX License
+Expression describing the licensing of the file (example:
+<code>SPDX-License-Identifier: GPL-3.0-or-later OR Apache-2.0</code>).</p>
+<p>An example of a comment header:</p>
+<pre tabindex="0"><code># SPDX-FileCopyrightText: 2016, 2018-2019 Jane Doe &lt;jane@example.com&gt;
+# SPDX-FileCopyrightText: 2019 Example Organisation
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+</code></pre><h4 id="in-line-snippet-comments">In-line Snippet comments</h4>
+<p>Sometimes Licensing Information only applies to a certain Snippet instead of the
+whole Commentable File. You SHOULD use SPDX snippets to license these Snippets.
+When implementing SPDX snippets, you MUST use SPDX snippet tags (as defined in
+<a href="https://spdx.github.io/spdx-spec/v2.3/file-tags/#h3-snippet-tags-format">SPDX Specification, Annex
+H</a>).
+This means that Copyright Notices inside of Snippets MUST be prefixed with
+<code>SPDX-SnippetCopyrightText</code>.</p>
+<p>Each SPDX snippet that is opened MUST be closed with <code>SPDX-SnippetEnd</code>.</p>
+<p>Like with comment headers, the SPDX snippet tags SHOULD be commented.</p>
+<p>A Snippet SHOULD contain both a Copyright Notice and an SPDX License Expression.</p>
+<p>Example:</p>
+<pre tabindex="0"><code># SPDX-SnippetBegin
+# SPDX-SnippetCopyrightText: 2022 Jane Doe &lt;jane@example.com&gt;
+# SPDX-License-Identifier: MIT
+
+print(&#34;Hello, world!&#34;)
+
+# SPDX-SnippetEnd
+</code></pre><h4 id="ignore-block">Ignore block</h4>
+<p>If Licensing Information is declared in a file without describing the file&rsquo;s or
+Snippet&rsquo;s actual license or copyright (for example: as part of an output command
+or documentation), these occurrences SHOULD be put between two comments:
+<code>REUSE-IgnoreStart</code> and <code>REUSE-IgnoreEnd</code>. The REUSE Tool then ignores all
+Licensing Information between these comments. This technique MUST NOT be used to
+ignore valid Licensing Information.</p>
+<p>An example for an ignored block:</p>
+<pre tabindex="0"><code># SPDX-FileCopyrightText: 2021 Jane Doe
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+# REUSE-IgnoreStart
+echo &#34;SPDX-FileCopyrightText: $(date +&#39;%Y&#39;) John Doe&#34; &gt; file.txt
+echo &#34;SPDX-License-Identifier: MIT&#34; &gt; file.txt
+# REUSE-IgnoreEnd
+</code></pre><h3 id="reusetoml">REUSE.toml</h3>
+<p>Licensing Information MAY be associated with a file through a <code>REUSE.toml</code> file,
+which MUST be a valid TOML file. The intended use case of this method is large
+directories where including a comment header in each file (or in <code>.license</code>
+companion files) is impossible or undesirable.</p>
+<p>A <code>REUSE.toml</code> file MAY be located in any directory, and can cover files that are
+within its directory or deeper. You MAY have multiple <code>REUSE.toml</code> files in
+different directories.</p>
+<p>Any <code>REUSE.toml</code> file ignored by VCS is not searched for Licensing Information.</p>
+<p>The <code>version</code> key (REQUIRED) MUST have an integer value representing the schema
+version of the file. This specification describes version 1 of <code>REUSE.toml</code>.</p>
+<p>Each <code>[[annotations]]</code> table represents an association of Licensing Information
+to zero or more Covered Files. It has the following keys:</p>
+<ul>
+<li><code>path</code> (REQUIRED), a string or list of strings representing paths. A path MUST
+use forward slashes as path separators. A path SHOULD resolve to one or more
+Covered Files relative to the <code>REUSE.toml</code> file&rsquo;s directory. A path that
+resolves to a non-existent or non-Covered File is ignored. A path MUST point
+to a location in the <code>REUSE.toml</code> file&rsquo;s directory or deeper. A path MAY use
+globbing to match several Covered Files in a single expression. These are the
+globbing and matching rules:
+<ul>
+<li><code>*</code> matches everything except forward slashes (i.e. path separators).</li>
+<li><code>**</code> and <code>**/</code> match everything including forward slashes (i.e. path
+separators).</li>
+<li>In order to escape an asterisk and include it verbatim, prefix it with <code>\\</code>.
+You cannot prefix it with <code>\</code> because that is invalid TOML. In order to
+include a backslash verbatim, use <code>\\\\</code>. <code>\\</code> followed by any other
+character is functionally equal to just typing that character.</li>
+</ul>
+</li>
+<li><code>precedence</code> (OPTIONAL), a literal string. It determines the order of
+precedence for Licensing Information between the <code>REUSE.toml</code> file and Covered
+Files in the table, and between multiple <code>REUSE.toml</code> files if they both
+contain Licensing Information for the same Covered File. Available values are:
+<ul>
+<li><code>closest</code>, the default value when <code>precedence</code> is not defined. This is an
+instruction to associate the Licensing Information inside of the Covered
+Files (or its adjacent <code>.license</code> file), if available. If no such Licensing
+Information is found, then the Licensing Information inside the table of the
+closest <code>REUSE.toml</code> that covers the File is associated. This algorithm is
+applied separately for copyright and for licensing. If a table for the same
+File in a closer <code>REUSE.toml</code> file has the <code>override</code> precedence, then that
+precedence is applied, and <code>closest</code> is ignored. This is effectively a
+fallback.</li>
+<li><code>aggregate</code>. This is an instruction to always associate the Licensing
+Information defined in the table with the table&rsquo;s Covered Files.
+Subsequently, the <code>closest</code> logic is also applied.</li>
+<li><code>override</code>. This is an instruction to associate the Licensing Information
+defined in the table with the table&rsquo;s Covered Files, and to ignore any other
+Licensing Information that is closer to the Files. The table in the
+<code>REUSE.toml</code> that is the closest to the root of the Project is
+authoritative.</li>
+</ul>
+</li>
+<li><code>SPDX-FileCopyrightText</code> (OPTIONAL), a string or list of strings. Each string
+MUST be a Copyright Notice to be associated with the table&rsquo;s Covered Files.
+The prefix of the Copyright Notice MAY be omitted.</li>
+<li><code>SPDX-License-Identifier</code> (OPTIONAL), a string or list of strings. Each string
+MUST be a valid SPDX License Expression describing the licensing of the
+table&rsquo;s Covered Files.</li>
+</ul>
+<p>You MAY include other keys and tables to convey additional information. Their
+semantics are not defined by this specification. If you wish to include other
+keys, you are RECOMMENDED to use existing SPDX tags. For example, you could use
+<code>SPDX-FileComment</code> in an <code>[[annotations]]</code> table to add context to what you&rsquo;re
+doing, or <code>SPDX-FileContributor</code> to credit additional contributors.</p>
+<p>Although the keys to associate Licensing Information with the Covered File are
+OPTIONAL, the complete Licensing Information MUST still be associated with the
+File in some fashion.</p>
+<p>If a Covered File is covered by multiple <code>[[annotations]]</code> tables in the same
+<code>REUSE.toml</code> file, then exclusively the last matching table in the file is used
+for that Covered File.</p>
+<p>An example of a <code>REUSE.toml</code> file:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-toml" data-lang="toml"><span style="display:flex;"><span>version = <span style="color:#666">1</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>[[annotations]]
+</span></span><span style="display:flex;"><span>path = [<span style="color:#b44">&#34;po/*.po&#34;</span>, <span style="color:#b44">&#34;po/*.pot&#34;</span>]
+</span></span><span style="display:flex;"><span>precedence = <span style="color:#b44">&#34;aggregate&#34;</span>
+</span></span><span style="display:flex;"><span>SPDX-FileCopyrightText = <span style="color:#b44">&#34;2019 Translation Company&#34;</span>
+</span></span><span style="display:flex;"><span>SPDX-License-Identifier = <span style="color:#b44">&#34;GPL-3.0-or-later&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>[[annotations]]
+</span></span><span style="display:flex;"><span>path = <span style="color:#b44">&#34;tests/resources/**&#34;</span>
+</span></span><span style="display:flex;"><span>precedence = <span style="color:#b44">&#34;override&#34;</span>
+</span></span><span style="display:flex;"><span>SPDX-FileCopyrightText = <span style="color:#b44">&#34;2019 Jane Doe&#34;</span>
+</span></span><span style="display:flex;"><span>SPDX-License-Identifier = <span style="color:#b44">&#34;CC0-1.0&#34;</span>
+</span></span></code></pre></div><p>A JSON schema of version 1 of <code>REUSE.toml</code> is provided at
+<a href="https://reuse.software/reuse-toml-v1.schema.json">https://reuse.software/reuse-toml-v1.schema.json</a> for your convenience.</p>
+<h3 id="dep5-deprecated">DEP5 (deprecated)</h3>
+<p>Licensing Information MAY be associated with a file through a DEP5 file, but you
+SHOULD create a <code>REUSE.toml</code> file instead. The DEP5 file is deprecated, meaning
+that it is expected to disappear from a future iteration of this specification.</p>
+<p>The DEP5 file MUST be named <code>dep5</code> and stored in the <code>.reuse/</code> directory in the
+root of the Project (i.e. <code>.reuse/dep5</code>).</p>
+<p>The <code>Files</code> tag MUST be followed by one or more paths to which the paragraph&rsquo;s
+Licensing Information is applied.</p>
+<p>The <code>License</code> tag MUST be followed by a valid SPDX License Expression describing
+the licensing of the associated files.</p>
+<p>The <code>Copyright</code> tag MUST be followed by one or more Copyright Notices. The
+prefixes of the Copyright Notices MAY be omitted.</p>
+<p>An example of a DEP5 file:</p>
+<pre tabindex="0"><code>Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+
+Files: po/*.po po/*.pot
+Copyright: 2019 Translation Company
+License: GPL-3.0-or-later
+
+Files: tests/resources/*
+Copyright: 2019 Jane Doe
+License: CC0-1.0
+</code></pre><h2 id="order-of-precedence">Order of precedence</h2>
+<p>If a Commentable File contains Licensing Information but also has an adjacent
+<code>.license</code> file, then the Licensing Information defined in the <code>.license</code> file
+takes precedence, and the Commentable File&rsquo;s contents are ignored. For all
+intents and purposes, this counts as the <code>.license</code> file&rsquo;s Licensing Information
+being inside the Commentable File.</p>
+<p>Licensing Information defined in <code>.reuse/dep5</code> is aggregated with the Licensing
+Information found in the Covered Files. For clarity, this means that if the SPDX
+License Expressions in a file&rsquo;s comment header and in the section for that file
+in <code>.reuse/dep5</code> do not agree with each other, then both SPDX License
+Expressions will apply to the file.</p>
+<p>The order of precedence for <code>REUSE.toml</code> files is described in the respective
+section, and is managed using the <code>precedence</code> key.</p>
+<h2 id="format-of-copyright-notices">Format of Copyright Notices</h2>
+<p>A Copyright Notice MUST start with a tag, word or symbol (collectively:
+prefixes) from the following list:</p>
+<ul>
+<li><code>SPDX-FileCopyrightText</code> (or <code>SPDX-SnippetCopyrightText</code> in Snippets)</li>
+<li>Copyright</li>
+<li>©</li>
+</ul>
+<p>It is RECOMMENDED to use the <code>SPDX-FileCopyrightText</code> tag. You MAY add &lsquo;(C)&rsquo;,
+&lsquo;(c)&rsquo; or &lsquo;©&rsquo; after the prefix.</p>
+<p>In Commentable Files, a Copyright Notice is terminated by a newline.</p>
+<p>The Copyright Notice MUST contain the name of the copyright holder. The
+copyright notice SHOULD contain the year of publication and the contact address
+of the copyright holder. The order of these items SHOULD be: year, name, contact
+address.</p>
+<p>The year of publication MAY be a single year, multiple years, or a span of
+years.</p>
+<p>The copyright holder SHOULD be an individual, list of individuals, group, legal
+entity, or any other descriptor by which one can easily identify the copyright
+holder(s).</p>
+<p>Any contact address SHOULD be in between angle brackets.</p>
+<p>You MAY add any further information to the Copyright Notice.</p>
+<p>Examples of valid Copyright Notices:</p>
+<pre tabindex="0"><code>SPDX-FileCopyrightText: 2019 Jane Doe &lt;jane@example.com&gt;
+SPDX-FileCopyrightText: © 2019 John Doe &lt;john@example.com&gt;
+SPDX-FileCopyrightText: Contributors to Example Project &lt;https://project.example.com&gt;
+SPDX-FileCopyrightText: 2023 Alice Hack and (other) contributors to Project X &lt;https://git.example.com/alicehack/projectx/CONTRIBUTORS.md&gt;
+SPDX-SnippetCopyrightText: (C) Example Cooperative &lt;info@coop.example.com&gt;
+© Example Corporation &lt;https://corp.example.com&gt;
+Copyright 2016, 2018-2019 Joe Anybody
+Copyright (c) Alice, some rights reserved
+</code></pre>
+</div>
+
+  </div> 
+</div> 
+</div> 
+
+<footer>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          
+<div class="social">
+  <ul class="social-links"><li><a href="https://git.fsfe.org/reuse" title="Git" target="_blank"><i class="fab fa-git"></i></a></li>
+    <li><a href="https://github.com/search?q=topic%3Areuse&#43;org%3Afsfe&amp;type=Repositories" title="Github" target="_blank"><i class="fab fa-github"></i></a></li>
+    <li><a href="https://lists.fsfe.org/postorius/lists/reuse.lists.fsfe.org/" title="Email" target="_blank"><i class="fa fa-envelope"></i></a></li>
+    <li><a href="https://mastodon.social/@fsfe" title="Mastodon" rel="me" target="_blank"><i class="fab fa-mastodon"></i></a></li>
+    <li><a href="https://twitter.com/fsfe" title="Twitter" target="_blank"><i class="fab fa-twitter"></i></a></li>
+    
+  </ul>
+</div>
+
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          
+
+
+
+
+<div class="orgs">
+  <p class="text-muted">Selected supporters and adopters:</p>
+  <ul>
+    
+    <li class="org">
+      <img src="/img/organisations/gray/kde.png" title="KDE" >
+    </li>
+    
+    <li class="org">
+      <img src="/img/organisations/gray/linux.png" title="Linux Kernel" >
+    </li>
+    
+    <li class="org">
+      <img src="/img/organisations/gray/ngi0.png" title="Next Generation Internet Zero" width="150px" height="auto">
+    </li>
+    
+    <li class="org">
+      <img src="/img/organisations/gray/siemens.png" title="Siemens" width="200px" height="auto">
+    </li>
+    
+  </ul>
+</div>
+
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <p class="copyright text-muted small">Copyright &copy; 2026 <a href="https://fsfe.org/">Free Software Foundation Europe e.V.</a> – <a href="https://fsfe.org/about/legal/imprint.en.html">Imprint & Privacy</a>, <a href="https://fsfe.org/about/transparency-commitment.html">Transparency Committment</a></p>
+          <p class="text-muted small">Unless stated otherwise, the content of the website is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 License</a>.</p>
+        </div>
+      </div>
+    </div>
+</footer>
+<a class="page-scroll" href="#page-top" title="Scroll to top">
+  <div id="scroll-to-top">
+    <i class="fa fa-chevron-up" aria-hidden="true"></i>
+  </div>
+</a>
+
+<script src="/js/jquery.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/anchorforid.js"></script>
+
+</body>
+</html>
+

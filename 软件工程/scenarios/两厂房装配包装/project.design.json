@@ -1,0 +1,330 @@
+{
+  "document_kind": "factory_project_design_not_runtime_input",
+  "schema_revision": "draft-1",
+  "id": "assembly-package-two-halls",
+  "title": "采购件装配、跨厂交接与单件包装",
+  "scope": "两厂房离散制造声明样例；不代表工业现场模型",
+  "time": {
+    "unit": "second",
+    "origin": "演示日08:00:00",
+    "observation_end": 240
+  },
+  "assumptions": [
+    "全部工时、搬运时间和容量为自建演示输入",
+    "没有未声明的后续来料",
+    "两厂房示意位置不用于推导实际距离",
+    "本例没有故障、废品、加班或连续流物理",
+    "库位容量按单物品件数声明，不能外推实体仓储面积"
+  ],
+  "item_types": [
+    {
+      "id": "shell",
+      "title": "壳体",
+      "unit": "piece"
+    },
+    {
+      "id": "pcb",
+      "title": "PCB",
+      "unit": "piece"
+    },
+    {
+      "id": "assembly",
+      "title": "装配体",
+      "unit": "piece"
+    },
+    {
+      "id": "carton",
+      "title": "空纸盒",
+      "unit": "piece"
+    },
+    {
+      "id": "package",
+      "title": "成品包装",
+      "unit": "piece"
+    }
+  ],
+  "module_refs": [
+    {
+      "id": "community.manual-assembly",
+      "version": "0.1.0",
+      "manifest": "../../modules/devices/manual-assembly/manifest.json"
+    },
+    {
+      "id": "community.carton-pack",
+      "version": "0.1.0",
+      "manifest": "../../modules/devices/carton-pack/manifest.json"
+    },
+    {
+      "id": "community.batch-transport",
+      "version": "0.1.0",
+      "manifest": "../../modules/transport/batch-transport/manifest.json"
+    }
+  ],
+  "halls": [
+    {
+      "id": "H-A",
+      "title": "装配厂房",
+      "layout": {
+        "position": [
+          0,
+          0
+        ],
+        "unit": "meter"
+      },
+      "ports": [
+        {
+          "id": "assembled-out",
+          "direction": "out",
+          "item": "assembly",
+          "unit": "piece",
+          "location": "assemblies-A"
+        }
+      ]
+    },
+    {
+      "id": "H-B",
+      "title": "包装厂房",
+      "layout": {
+        "position": [
+          12,
+          0
+        ],
+        "unit": "meter"
+      },
+      "ports": [
+        {
+          "id": "assembled-in",
+          "direction": "in",
+          "item": "assembly",
+          "unit": "piece",
+          "location": "assemblies-B"
+        }
+      ]
+    }
+  ],
+  "lines": [
+    {
+      "id": "L-A",
+      "hall": "H-A",
+      "title": "采购件装配线",
+      "members": [
+        "ASM-01"
+      ],
+      "layout": {
+        "position": [
+          2,
+          2
+        ],
+        "rotation_degrees": 0
+      }
+    },
+    {
+      "id": "L-B",
+      "hall": "H-B",
+      "title": "单件装盒线",
+      "members": [
+        "PACK-01"
+      ],
+      "layout": {
+        "position": [
+          2,
+          2
+        ],
+        "rotation_degrees": 0
+      }
+    }
+  ],
+  "stock_locations": [
+    {
+      "id": "shells-A",
+      "hall": "H-A",
+      "title": "壳体来料",
+      "item": "shell",
+      "capacity": 2,
+      "unit": "piece",
+      "view_role": "inbound_marker"
+    },
+    {
+      "id": "pcbs-A",
+      "hall": "H-A",
+      "title": "PCB来料",
+      "item": "pcb",
+      "capacity": 2,
+      "unit": "piece",
+      "view_role": "inbound_marker"
+    },
+    {
+      "id": "assemblies-A",
+      "hall": "H-A",
+      "title": "待发装配体",
+      "item": "assembly",
+      "capacity": 1,
+      "unit": "piece",
+      "view_role": "line_queue"
+    },
+    {
+      "id": "assemblies-B",
+      "hall": "H-B",
+      "title": "已接收装配体",
+      "item": "assembly",
+      "capacity": 1,
+      "unit": "piece",
+      "view_role": "line_queue"
+    },
+    {
+      "id": "cartons-B",
+      "hall": "H-B",
+      "title": "空盒来料",
+      "item": "carton",
+      "capacity": 2,
+      "unit": "piece",
+      "view_role": "inbound_marker"
+    },
+    {
+      "id": "packages-B",
+      "hall": "H-B",
+      "title": "成品位置",
+      "item": "package",
+      "capacity": 2,
+      "unit": "piece",
+      "view_role": "finished_marker"
+    }
+  ],
+  "devices": [
+    {
+      "id": "ASM-01",
+      "hall": "H-A",
+      "line": "L-A",
+      "module": "community.manual-assembly",
+      "module_version": "0.1.0",
+      "local_position": [
+        0,
+        0
+      ],
+      "resource_bindings": {
+        "assembler": "worker-assembly"
+      },
+      "port_locations": {
+        "shell": "shells-A",
+        "pcb": "pcbs-A",
+        "assembled": "assemblies-A"
+      }
+    },
+    {
+      "id": "PACK-01",
+      "hall": "H-B",
+      "line": "L-B",
+      "module": "community.carton-pack",
+      "module_version": "0.1.0",
+      "local_position": [
+        0,
+        0
+      ],
+      "resource_bindings": {
+        "packer": "worker-packing"
+      },
+      "port_locations": {
+        "product": "assemblies-B",
+        "carton": "cartons-B",
+        "packed": "packages-B"
+      }
+    }
+  ],
+  "resources": [
+    {
+      "id": "worker-assembly",
+      "kind": "person",
+      "role": "assembler",
+      "home_hall": "H-A",
+      "quantity": 1,
+      "available_from": 0
+    },
+    {
+      "id": "worker-packing",
+      "kind": "person",
+      "role": "packer",
+      "home_hall": "H-B",
+      "quantity": 1,
+      "available_from": 0
+    },
+    {
+      "id": "worker-transport",
+      "kind": "person",
+      "role": "carrier",
+      "home_hall": "H-A",
+      "quantity": 1,
+      "available_from": 0,
+      "description": "示意运输人员；搬运条件已含在时长假设中"
+    }
+  ],
+  "supply_relations": [
+    {
+      "id": "SUP-AB",
+      "from": {
+        "hall": "H-A",
+        "port": "assembled-out"
+      },
+      "to": {
+        "hall": "H-B",
+        "port": "assembled-in"
+      },
+      "item": "assembly",
+      "unit": "piece",
+      "daily_target": 2,
+      "dispatch_windows": [
+        {
+          "start": 0,
+          "end": 240
+        }
+      ],
+      "batch_quantity": 1,
+      "module": "community.batch-transport",
+      "module_version": "0.1.0",
+      "resource_bindings": {
+        "carrier": "worker-transport"
+      },
+      "fulfilment_counter": "received_cargo_quantity",
+      "target_basis": "演示日目标；观察窗截至四分钟，不等于整天实测"
+    }
+  ],
+  "initial_items": [
+    {
+      "id": "shell-001",
+      "type": "shell",
+      "location": "shells-A"
+    },
+    {
+      "id": "shell-002",
+      "type": "shell",
+      "location": "shells-A"
+    },
+    {
+      "id": "pcb-001",
+      "type": "pcb",
+      "location": "pcbs-A"
+    },
+    {
+      "id": "carton-001",
+      "type": "carton",
+      "location": "cartons-B"
+    },
+    {
+      "id": "carton-002",
+      "type": "carton",
+      "location": "cartons-B"
+    }
+  ],
+  "orders": [
+    {
+      "id": "ORDER-01",
+      "product": "package",
+      "quantity": 2,
+      "unit": "piece",
+      "destination": "packages-B",
+      "due_at": 240,
+      "basis": "自行设计的四分钟观察订单"
+    }
+  ],
+  "initial_variant": "A",
+  "actual_run_result": null
+}

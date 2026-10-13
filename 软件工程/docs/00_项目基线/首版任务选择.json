@@ -1,0 +1,1621 @@
+{
+  "document_kind": "first_release_selection_not_task_completion",
+  "scope_baseline": "docs/00_项目基线/首版交付基线.md",
+  "requirements": "docs/00_项目基线/首版需求与验收.md",
+  "selected": [
+    {
+      "id": "P0-01",
+      "disposition": "required",
+      "scope": "Windows/Tauri基础构建入口、共同工程/九类定义及版本引用、目标/场地/单位和目录保存重开；不复制库存/时钟",
+      "release_dependencies": [],
+      "status": "planned",
+      "implementation_owner": "user_with_ai_windows",
+      "acceptance_owner": "user",
+      "actual_result": null,
+      "requirement_ids": [
+        "SF-01",
+        "SF-04",
+        "SF-14",
+        "SF-17"
+      ],
+      "release_acceptance": "保存重开后对象、数量和连接一致；并行支线与合流能表达；库位、物品当前归属、模块实例与方案分开；两厂房声明引用完整；物品/信号/专业成果分别表达类型、单位、端点和接受范围，草稿扩展不改变原无阶段样例；目标/合格接受单位、场地包络、行业生成配置、来源明确的参数与九类角色绑定可保存；长宽高映射既有坐标与m单位。；实际Windows基础应用能启动，前端经共同Rust入口编辑最小工程并目录保存重开；构建/启动方法是可执行入口，不以README或本机Rust编译替代。",
+      "release_paths": [
+        "packages/domain",
+        "modules",
+        "scenarios",
+        "apps/planner",
+        "packages/commands",
+        "tools"
+      ],
+      "implementation_dependencies": [],
+      "execution_plan": {
+        "input_refs": [
+          "docs/03_架构与契约/首版类型格式与操作契约.md",
+          "packages/module-kit/category-contracts.design.json",
+          "packages/domain/factory-generation.design.json"
+        ],
+        "inputs": [
+          "已冻结Windows技术栈；共同ID/版本、九类、单位/目标/场地语义"
+        ],
+        "outputs": [
+          "Windows实际基础构建/启动入口与依赖清单",
+          "共同工程类型/边界序列化及目录保存重开",
+          "Tauri与Rust Commands最小编辑入口"
+        ],
+        "steps": [
+          "落实该步所需共同字段/schema与命令边界，生成同源前端类型",
+          "建立实际工程/构建入口并接通最小创建/读取/编辑",
+          "保存最小设计工程、在另一目录重开并修改"
+        ],
+        "verification_method": "实际Windows启动与断网普通编辑；对象/连接/单位重开一致；构建和重开用实际命令记录，不能只跑无依赖Rust烟测",
+        "actual_result": null
+      },
+      "dependency_reasons": {},
+      "accountable_owner": "user",
+      "planned_window_id": "W00",
+      "parallel_plan_ref": "docs/04_开发与验收/本机并行窗口计划.json",
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P0-01.md",
+      "coding_protocol_ref": "docs/04_开发与验收/编码任务包与AI实现审查.md",
+      "effort_estimate_ref": "docs/04_开发与验收/任务框架与工量里程碑.json#P0-01",
+      "deliverable_milestone_id": "MS-06",
+      "phase_exit_ref": "docs/04_开发与验收/阶段实现计划.json#P0"
+    },
+    {
+      "id": "P0-02",
+      "disposition": "required",
+      "scope": "产品版本、订单/BOM/路线、物品/批次/容器关系、唯一归属、预留/质量及方案输入；需求与库存分开",
+      "release_dependencies": [
+        "P0-01"
+      ],
+      "status": "planned",
+      "implementation_owner": "user_with_ai_windows",
+      "acceptance_owner": "user",
+      "actual_result": null,
+      "requirement_ids": [
+        "SF-05",
+        "SF-06",
+        "SF-07",
+        "SF-08",
+        "SF-09"
+      ],
+      "release_acceptance": "产品/BOM/路线版本、订单目的/交期/分配明确；位置、生命周期、质量和预留独立；取消未开工需求不删除在制；旧无订单样例继续目标需求模式",
+      "release_paths": [
+        "packages/domain",
+        "scenarios"
+      ],
+      "implementation_dependencies": [
+        "P0-01"
+      ],
+      "execution_plan": {
+        "input_refs": [
+          "docs/01_业务需求/订单工艺与物料分配.md",
+          "packages/domain/business-objects.design.json",
+          "scenarios/真实业务设计/business-inputs.design.json"
+        ],
+        "inputs": [
+          "共同类型/序列化；产品/订单/BOM/路线及初始供应输入"
+        ],
+        "outputs": [
+          "版本化产品/订单与需求分配数据",
+          "位置/质量/预留/容器组成各自独立的物品状态",
+          "不可重复领用的方案输入与取消规则"
+        ],
+        "steps": [
+          "实现产品/订单/路线输入与引用",
+          "分离初始库存、未来到料、需求、预留及物品持有关系",
+          "核对取消未开工需求和保留在制/旧版本"
+        ],
+        "verification_method": "以真实业务输入构造/保存/重开数据；重复分配被拒绝，取消不删除在制，未到料不成为当前库存",
+        "actual_result": null
+      },
+      "dependency_reasons": {
+        "P0-01": "消费Windows实际基础构建/启动入口与依赖清单；共同工程类型/边界序列化及目录保存重开，用于本任务的版本化产品/订单与需求分配数据"
+      },
+      "accountable_owner": "user",
+      "planned_window_id": "W00",
+      "parallel_plan_ref": "docs/04_开发与验收/本机并行窗口计划.json",
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P0-02.md",
+      "coding_protocol_ref": "docs/04_开发与验收/编码任务包与AI实现审查.md",
+      "effort_estimate_ref": "docs/04_开发与验收/任务框架与工量里程碑.json#P0-02",
+      "deliverable_milestone_id": "MS-06",
+      "phase_exit_ref": "docs/04_开发与验收/阶段实现计划.json#P0"
+    },
+    {
+      "id": "P0-03",
+      "disposition": "partial",
+      "scope": "仅专业成果artifact、人工认可acceptance、消费者binding、执行result及产品版本影响；建设/投用/公用服务字段与执行后置",
+      "release_dependencies": [
+        "P0-02"
+      ],
+      "status": "planned",
+      "implementation_owner": "user_with_ai_windows",
+      "acceptance_owner": "user",
+      "actual_result": null,
+      "requirement_ids": [
+        "SF-12",
+        "SF-13"
+      ],
+      "release_acceptance": "artifact/认可/消费者绑定/实际执行结果分别表达；保存所用产品/成果版本及认可用途；产品改版后受影响绑定待复核，旧r1成果仍可用于原范围；未知/失败结果不当通过；不要求实现建设日历、投用包或公用服务类型/求解。",
+      "release_paths": [
+        "packages/domain",
+        "scenarios"
+      ],
+      "implementation_dependencies": [
+        "P0-02"
+      ],
+      "execution_plan": {
+        "input_refs": [
+          "packages/domain/professional-artifact-binding.design.json",
+          "docs/03_架构与契约/专业成果接入与软件在环.md"
+        ],
+        "inputs": [
+          "产品版本与共同引用；成果、用途、认可和消费者定义"
+        ],
+        "outputs": [
+          "artifact/acceptance/binding/result四对象与引用",
+          "产品/成果变化的受影响绑定判定",
+          "独立保存的专业输入与结果归属"
+        ],
+        "steps": [
+          "定义四对象和版本/认可用途",
+          "落实绑定与变更影响，保存未判定/失败",
+          "以旧r1/新r2有限例核对认可与绑定分开"
+        ],
+        "verification_method": "未实际计算不生成通过结果；r2只使受影响绑定待复核，r1用途保留；首版不要求建设/投用/服务求解",
+        "actual_result": null
+      },
+      "dependency_reasons": {
+        "P0-02": "消费版本化产品/订单与需求分配数据；位置/质量/预留/容器组成各自独立的物品状态，用于本任务的artifact/acceptance/binding/result四对象与引用"
+      },
+      "accountable_owner": "user",
+      "planned_window_id": "W00",
+      "parallel_plan_ref": "docs/04_开发与验收/本机并行窗口计划.json",
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P0-03.md",
+      "coding_protocol_ref": "docs/04_开发与验收/编码任务包与AI实现审查.md",
+      "effort_estimate_ref": "docs/04_开发与验收/任务框架与工量里程碑.json#P0-03",
+      "deliverable_milestone_id": "MS-06",
+      "phase_exit_ref": "docs/04_开发与验收/阶段实现计划.json#P0"
+    },
+    {
+      "id": "P1-01",
+      "disposition": "required",
+      "scope": "自主Rust离散引擎的静态规则加工/装配、齐套用料、库存/容量和人工占用；不实现CNC/贴装物理",
+      "release_dependencies": [
+        "P0-02"
+      ],
+      "status": "planned",
+      "implementation_owner": "user_with_ai_windows",
+      "acceptance_owner": "user",
+      "actual_result": null,
+      "requirement_ids": [
+        "SF-05",
+        "SF-06",
+        "SF-08"
+      ],
+      "release_acceptance": "缺PCB等待；齐套后仅生成一件装配体；同一人不被并发占用；装盒保留内容关系且不重复领用；库位现有量与预留/在制分开",
+      "release_paths": [
+        "packages/simulation",
+        "modules/operations",
+        "modules/tasks",
+        "tests"
+      ],
+      "implementation_dependencies": [
+        "P0-02"
+      ],
+      "execution_plan": {
+        "input_refs": [
+          "scenarios/两厂房装配包装/project.design.json",
+          "docs/01_业务需求/订单工艺与物料分配.md"
+        ],
+        "inputs": [
+          "完整物品/BOM/初始库存与资源定义；固定工时规则"
+        ],
+        "outputs": [
+          "唯一Engine、稳定事件顺序及RunResult基础",
+          "齐套消耗/转换、资源互斥和输出待移交",
+          "保留组成身份的装配与包装"
+        ],
+        "steps": [
+          "实现自主事件推进与物品/资源状态转换",
+          "用单厂房固定时间工序验证齐套/互斥/容量",
+          "记录完整事件、持有与接受量，不依赖DOM或动画"
+        ],
+        "verification_method": "从两厂房输入抽取明确单厂局部（运输边界不启用）；缺PCB等待、齐套消耗一次、共享人员互斥、箱内身份保留；完整跨厂125/205秒在P2-02验收",
+        "actual_result": null
+      },
+      "dependency_reasons": {
+        "P0-02": "消费版本化产品/订单与需求分配数据；位置/质量/预留/容器组成各自独立的物品状态，用于本任务的唯一Engine、稳定事件顺序及RunResult基础"
+      },
+      "accountable_owner": "user",
+      "planned_window_id": "W01",
+      "parallel_plan_ref": "docs/04_开发与验收/本机并行窗口计划.json",
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P1-01.md",
+      "coding_protocol_ref": "docs/04_开发与验收/编码任务包与AI实现审查.md",
+      "effort_estimate_ref": "docs/04_开发与验收/任务框架与工量里程碑.json#P1-01",
+      "deliverable_milestone_id": "MS-06",
+      "phase_exit_ref": "docs/04_开发与验收/阶段实现计划.json#P1"
+    },
+    {
+      "id": "P1-02",
+      "disposition": "required",
+      "scope": "串并联汇合、配比齐套、检查单出口、保持身份的有限返工和重新检验；检查结果有声明输入来源",
+      "release_dependencies": [
+        "P1-01"
+      ],
+      "status": "planned",
+      "implementation_owner": "user_with_ai_windows",
+      "acceptance_owner": "user",
+      "actual_result": null,
+      "requirement_ids": [
+        "SF-05",
+        "SF-06",
+        "SF-08"
+      ],
+      "release_acceptance": "总装须齐套；同一物品只走一个检验出口；返工保留ID且不自动合格；达上限隔离；未知结果待判；核对设计样例145/175秒与三组最终归属",
+      "release_paths": [
+        "packages/domain",
+        "packages/simulation",
+        "modules/devices",
+        "scenarios"
+      ],
+      "implementation_dependencies": [
+        "P1-01"
+      ],
+      "execution_plan": {
+        "input_refs": [
+          "scenarios/并行汇合与返工/project.design.json",
+          "scenarios/并行汇合与返工/cases.design.json"
+        ],
+        "inputs": [
+          "固定转换/齐套引擎；三组明确预设质量输入"
+        ],
+        "outputs": [
+          "并行汇合与单出口检验规则",
+          "保留身份及尝试计数的有限返工",
+          "待判/隔离与资源/物品事件"
+        ],
+        "steps": [
+          "实现并行准备到齐套汇合",
+          "加入PASS/FAIL/UNKNOWN及有限返工回流",
+          "核对分支、计数、资源及最终归属"
+        ],
+        "verification_method": "三组并行案例实际运行；145/175秒等手算只作对照，UNKNOWN不放行、返工不换ID、隔离不自动报废",
+        "actual_result": null
+      },
+      "dependency_reasons": {
+        "P1-01": "消费唯一Engine、稳定事件顺序及RunResult基础；齐套消耗/转换、资源互斥和输出待移交，用于本任务的并行汇合与单出口检验规则"
+      },
+      "accountable_owner": "user",
+      "planned_window_id": "W01",
+      "parallel_plan_ref": "docs/04_开发与验收/本机并行窗口计划.json",
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P1-02.md",
+      "coding_protocol_ref": "docs/04_开发与验收/编码任务包与AI实现审查.md",
+      "effort_estimate_ref": "docs/04_开发与验收/任务框架与工量里程碑.json#P1-02",
+      "deliverable_milestone_id": "MS-07",
+      "phase_exit_ref": "docs/04_开发与验收/阶段实现计划.json#P1"
+    },
+    {
+      "id": "P1-03",
+      "disposition": "required",
+      "scope": "到料事件、人员班次与分阶段占用、机器持有/输出等待、阶段进度；不引入维修/公用服务求解",
+      "release_dependencies": [
+        "P1-02"
+      ],
+      "status": "planned",
+      "implementation_owner": "user_with_ai_windows",
+      "acceptance_owner": "user",
+      "actual_result": null,
+      "requirement_ids": [
+        "SF-05",
+        "SF-08",
+        "SF-10"
+      ],
+      "release_acceptance": "独立到料/班次/阶段/容量样例实际核对：未来物料不提前入库；load/auto/unload按阶段占用，W-C仅上下料；下料资源忙或输出容量不足时保留机器与物品；无phase样例保留全作业占用；不连续人员日历0—20/40—60秒按5/30/5阶段在45秒完成，人员只占10秒；未配置中断策略保留待补。完整440/570秒及小车370—420等待/425返程由IX-01在P2-04联合P2-02验收，原要求不删除、不把局部通过当整厂通过。",
+      "release_paths": [
+        "packages/domain",
+        "packages/simulation",
+        "modules/operations",
+        "scenarios"
+      ],
+      "implementation_dependencies": [
+        "P1-02"
+      ],
+      "execution_plan": {
+        "input_refs": [
+          "scenarios/真实业务设计/business-inputs.design.json",
+          "scenarios/真实业务设计/expected-business.design.json",
+          "docs/03_架构与契约/全厂时间轴与阶段资源设计.md"
+        ],
+        "inputs": [
+          "共同Engine、物品/资源状态；到料与阶段日历"
+        ],
+        "outputs": [
+          "到料事件与分阶段占用",
+          "机器持有/有效进度/输出受阻等待",
+          "向物流消费者提供共同资源/日历机制"
+        ],
+        "steps": [
+          "实现未来到料事件，不提前入库存",
+          "实现load/auto/unload与不可抢占班次条件",
+          "以无运输局部检查日历和输出等待；与物流在IX-01合流"
+        ],
+        "verification_method": "实际单件5/30/5例在45秒完成、人员仅占10秒；独立到料/容量输入核对未来库存和持有。440/570秒及小车370—420等待/425返程转归IX-01，不要求本步先实现P2-02",
+        "actual_result": null
+      },
+      "dependency_reasons": {
+        "P1-02": "消费并行汇合与单出口检验规则；保留身份及尝试计数的有限返工，用于本任务的到料事件与分阶段占用"
+      },
+      "accountable_owner": "user",
+      "planned_window_id": "W01",
+      "parallel_plan_ref": "docs/04_开发与验收/本机并行窗口计划.json",
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P1-03.md",
+      "coding_protocol_ref": "docs/04_开发与验收/编码任务包与AI实现审查.md",
+      "effort_estimate_ref": "docs/04_开发与验收/任务框架与工量里程碑.json#P1-03",
+      "deliverable_milestone_id": "MS-07",
+      "phase_exit_ref": "docs/04_开发与验收/阶段实现计划.json#P1"
+    },
+    {
+      "id": "P1-04",
+      "disposition": "required",
+      "scope": "多订单用料/接受分配、释放/交期/优先序、工艺家族及序列相关换单；不做无界最优排程",
+      "release_dependencies": [
+        "P1-03",
+        "P0-02",
+        "P2-02"
+      ],
+      "status": "planned",
+      "implementation_owner": "user_with_ai_windows",
+      "acceptance_owner": "user",
+      "actual_result": null,
+      "requirement_ids": [
+        "SF-05",
+        "SF-09"
+      ],
+      "release_acceptance": "当前工序齐套才领用，共料不得双分配；A先B后/反序实际重现家族准备与两趟车；等待来料不制造库存；首件门槛按声明作用于后续；固定案例两方案接受終点205秒但各单迟延5/45秒",
+      "release_paths": [
+        "packages/simulation",
+        "modules/operations",
+        "modules/tasks",
+        "scenarios"
+      ],
+      "implementation_dependencies": [
+        "P1-03"
+      ],
+      "execution_plan": {
+        "input_refs": [
+          "scenarios/真实业务设计/business-inputs.design.json",
+          "scenarios/真实业务设计/expected-business.design.json"
+        ],
+        "inputs": [
+          "订单/BOM/资源日历；家族/优先序与序列相关准备；物流接受接口"
+        ],
+        "outputs": [
+          "订单分配/领料及换单事件",
+          "每订单指定目的接受与准时性",
+          "可用于方案比较的A/B输入与运行"
+        ],
+        "steps": [
+          "实现释放/优先序、齐套领料与家族准备",
+          "先检查无运输局部领料/换单",
+          "接P2-02发运/客户接受后核对IX-02"
+        ],
+        "verification_method": "实际A先B后与反序：完整接受终点205秒，单单迟延5/45秒、W-A135/160秒；未完成C=null，不因总终点相同称最优",
+        "actual_result": null
+      },
+      "dependency_reasons": {
+        "P1-03": "消费到料事件与分阶段占用；机器持有/有效进度/输出受阻等待，用于本任务的订单分配/领料及换单事件",
+        "P0-02": "消费版本化产品/订单与需求分配数据；位置/质量/预留/容器组成各自独立的物品状态，用于本任务的订单分配/领料及换单事件",
+        "P2-02": "消费固定时间批次运输事件/持有状态；供货目标/发出/在途/接受/返程分离，用于本任务的订单分配/领料及换单事件"
+      },
+      "accountable_owner": "user",
+      "planned_window_id": "W01",
+      "parallel_plan_ref": "docs/04_开发与验收/本机并行窗口计划.json",
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P1-04.md",
+      "coding_protocol_ref": "docs/04_开发与验收/编码任务包与AI实现审查.md",
+      "effort_estimate_ref": "docs/04_开发与验收/任务框架与工量里程碑.json#P1-04",
+      "deliverable_milestone_id": "MS-07",
+      "phase_exit_ref": "docs/04_开发与验收/阶段实现计划.json#P1"
+    },
+    {
+      "id": "P1-05",
+      "disposition": "required",
+      "scope": "待判/隔离移交、有效质量决定与放行、显式报废及保留物品身份；不把时间结束当认可",
+      "release_dependencies": [
+        "P1-02",
+        "P0-02"
+      ],
+      "status": "planned",
+      "implementation_owner": "user_with_ai_windows",
+      "acceptance_owner": "user",
+      "actual_result": null,
+      "requirement_ids": [
+        "SF-06",
+        "SF-08"
+      ],
+      "release_acceptance": "hold_station与pending_store分别运行；库位满时不能提前释放；UNKNOWN不合格不报废；复检失败隔离，显式报废不退零件；例80秒待判/复检独立，最终2成品1报废订单缺1；原hold例保持",
+      "release_paths": [
+        "packages/simulation",
+        "modules/devices",
+        "scenarios"
+      ],
+      "implementation_dependencies": [
+        "P1-02"
+      ],
+      "execution_plan": {
+        "input_refs": [
+          "scenarios/真实业务设计/business-inputs.design.json",
+          "scenarios/真实业务设计/expected-business.design.json",
+          "docs/01_业务需求/换单班次与质量处置.md"
+        ],
+        "inputs": [
+          "检验/返工和独立物品状态；待判容量及明确放行/报废决定"
+        ],
+        "outputs": [
+          "hold/pending_store两种移交",
+          "显式放行/复检/报废与保持身份",
+          "缺件和订单未交结果"
+        ],
+        "steps": [
+          "加入受容量约束的待判移交",
+          "按预设决定放行或显式报废，不自动认可",
+          "核对无运输质量局部完整事件"
+        ],
+        "verification_method": "80秒待判与复检分别可见；最终2成品1报废、缺1，物品不重复计数且报废不退零件",
+        "actual_result": null
+      },
+      "dependency_reasons": {
+        "P1-02": "消费并行汇合与单出口检验规则；保留身份及尝试计数的有限返工，用于本任务的hold/pending_store两种移交",
+        "P0-02": "消费版本化产品/订单与需求分配数据；位置/质量/预留/容器组成各自独立的物品状态，用于本任务的hold/pending_store两种移交"
+      },
+      "accountable_owner": "user",
+      "planned_window_id": "W01",
+      "parallel_plan_ref": "docs/04_开发与验收/本机并行窗口计划.json",
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P1-05.md",
+      "coding_protocol_ref": "docs/04_开发与验收/编码任务包与AI实现审查.md",
+      "effort_estimate_ref": "docs/04_开发与验收/任务框架与工量里程碑.json#P1-05",
+      "deliverable_milestone_id": "MS-07",
+      "phase_exit_ref": "docs/04_开发与验收/阶段实现计划.json#P1"
+    },
+    {
+      "id": "P2-01",
+      "disposition": "required",
+      "scope": "流水线/多厂房两画布、三档LOD、单击详情、自由布置与编组连接、真实3D及静态场地检查展示",
+      "release_dependencies": [
+        "P1-01"
+      ],
+      "status": "planned",
+      "implementation_owner": "user_with_ai_windows",
+      "acceptance_owner": "user",
+      "actual_result": null,
+      "requirement_ids": [
+        "SF-03",
+        "SF-08",
+        "SF-17"
+      ],
+      "release_acceptance": "点击开详情；缩放三档且不改运行状态；整线移动保留内部布局；布局变换用于显示/路径/包络，不只是镜头变化；用户可新增/配置/连接设备形成串并联产线，连接有物品/端口含义；当前固定时间运输不按画布距离推算；目标生成草案检查场地边界、设备占地/高度/模板声明间距与静态通道，工艺/物料端口可达且类型/单位相容；缺参数未判定，冲突定位；不缩小显示代替尺寸检查，不当动态交通或机电布线验证。",
+      "release_paths": [
+        "apps/planner",
+        "packages/presentation"
+      ],
+      "implementation_dependencies": [
+        "P1-01"
+      ],
+      "execution_plan": {
+        "input_refs": [
+          "docs/02_交互设计/完整操作流程与方案交付.md",
+          "docs/03_架构与契约/目标驱动厂房生成.md",
+          "../设计预览/当前交互规格.md"
+        ],
+        "inputs": [
+          "共同工程、Commands和基础运行状态；设备/场地尺寸与端口"
+        ],
+        "outputs": [
+          "两画布/三LOD的真实3D编辑视图",
+          "对象/线组编辑及静态布局/端口检查",
+          "与业务ID/修订对应的真实渲染"
+        ],
+        "steps": [
+          "落实流水线/多厂房画布、点击详情与编组移动；完整原生3D可环绕/平移/缩放并恢复默认斜视，不把相机缩放当设备页入口",
+          "通过共同命令编辑对象/连接并检查场地",
+          "从实际结果绘制状态，保证缩放不改库存"
+        ],
+        "verification_method": "用最小串并联工程实际编辑、移动/连接、切画布与LOD；按当前交互规格检查原生模型不同角度和默认视图复位；高度/占地/间距冲突定位，缺参数未判定；渲染读取同一修订，独立3D试样不代产品验收",
+        "actual_result": null
+      },
+      "dependency_reasons": {
+        "P1-01": "消费唯一Engine、稳定事件顺序及RunResult基础；齐套消耗/转换、资源互斥和输出待移交，用于本任务的两画布/三LOD的真实3D编辑视图"
+      },
+      "accountable_owner": "user",
+      "planned_window_id": "W02",
+      "parallel_plan_ref": "docs/04_开发与验收/本机并行窗口计划.json",
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P2-01.md",
+      "coding_protocol_ref": "docs/04_开发与验收/编码任务包与AI实现审查.md",
+      "effort_estimate_ref": "docs/04_开发与验收/任务框架与工量里程碑.json#P2-01",
+      "deliverable_milestone_id": "MS-07",
+      "phase_exit_ref": "docs/04_开发与验收/阶段实现计划.json#P2"
+    },
+    {
+      "id": "P2-02",
+      "disposition": "required",
+      "scope": "厂际供货、固定时间批次运输、来源预留/发出/在途/目的接受和资源返程；复杂路径/交通后置",
+      "release_dependencies": [
+        "P1-03",
+        "P2-01"
+      ],
+      "status": "planned",
+      "implementation_owner": "user_with_ai_windows",
+      "acceptance_owner": "user",
+      "actual_result": null,
+      "requirement_ids": [
+        "SF-07",
+        "SF-08"
+      ],
+      "release_acceptance": "日目标200库存150时不能发出200；在途不提前成为接收库存；接收110秒可用于下游、运输资源140秒返程才可接下一批；同一货物ID贯穿交接",
+      "release_paths": [
+        "packages/simulation",
+        "modules/transport",
+        "apps/planner"
+      ],
+      "implementation_dependencies": [
+        "P1-03"
+      ],
+      "execution_plan": {
+        "input_refs": [
+          "scenarios/两厂房装配包装/project.design.json",
+          "scenarios/两厂房装配包装/expected-events.design.json",
+          "docs/01_业务需求/物流与布局业务.md"
+        ],
+        "inputs": [
+          "物品/预留、共同日历/占用及目的容量；两画布输入"
+        ],
+        "outputs": [
+          "固定时间批次运输事件/持有状态",
+          "供货目标/发出/在途/接受/返程分离",
+          "画布上的跨厂供应配置与运行显示"
+        ],
+        "steps": [
+          "在simulation实现预留/发出/在途/接受/返程，无DOM依赖",
+          "实际两厂房A/B核对货物身份、容量及资源",
+          "接入P2-01画布显示/编辑，提供IX-01/02物流消费者"
+        ],
+        "verification_method": "150库存不发200；两厂房125/205秒完整事件核对，110秒接受与140秒返程分开；接收受阻不丢货、不提前释放车辆",
+        "actual_result": null
+      },
+      "dependency_reasons": {
+        "P1-03": "消费到料事件与分阶段占用；机器持有/有效进度/输出受阻等待，用于本任务的固定时间批次运输事件/持有状态",
+        "P2-01": "消费两画布/三LOD的真实3D编辑视图；对象/线组编辑及静态布局/端口检查，用于本任务的固定时间批次运输事件/持有状态"
+      },
+      "accountable_owner": "user",
+      "planned_window_id": "W01",
+      "parallel_plan_ref": "docs/04_开发与验收/本机并行窗口计划.json",
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P2-02.md",
+      "coding_protocol_ref": "docs/04_开发与验收/编码任务包与AI实现审查.md",
+      "effort_estimate_ref": "docs/04_开发与验收/任务框架与工量里程碑.json#P2-02",
+      "deliverable_milestone_id": "MS-07",
+      "phase_exit_ref": "docs/04_开发与验收/阶段实现计划.json#P2"
+    },
+    {
+      "id": "P2-03",
+      "disposition": "required",
+      "scope": "同起点方案比较、目录保存及ZIP单文件工程包、允许依赖/相对引用、另一目录重开修改；无完整快照不承诺冷启动续跑",
+      "release_dependencies": [
+        "P2-02"
+      ],
+      "status": "planned",
+      "implementation_owner": "user_with_ai_windows",
+      "acceptance_owner": "user",
+      "actual_result": null,
+      "requirement_ids": [
+        "SF-01",
+        "SF-09",
+        "SF-14"
+      ],
+      "release_acceptance": "先列共同条件和变更再比较实际结果；点等待/物品能定位画布；导出工程、模块和说明后可重开；未运行设计包不填实际产量；方案比较不新增常态画布；包内所用版本不被本机最新版替代；缺表现可明确替换、缺行为/专业状态不能伪造完整结果；普通比较/接手从共同初始起点重跑；只有明确支持且具完整可恢复快照时才验续跑不重放过去事件或已接受基数，无完整快照不成为首版交付阻塞",
+      "release_paths": [
+        "apps/planner",
+        "packages/domain",
+        "scenarios",
+        "docs",
+        "packages/reporting"
+      ],
+      "implementation_dependencies": [
+        "P2-02"
+      ],
+      "execution_plan": {
+        "input_refs": [
+          "scenarios/两厂房装配包装/variants.design.json",
+          "docs/03_架构与契约/工程交接与打开.md",
+          "scenarios/模板与交接/expected-template-handoff.design.json"
+        ],
+        "inputs": [
+          "同起点场景/实际RunResult；所用定义版本/允许资产与相对路径"
+        ],
+        "outputs": [
+          "同口径比较与输入差异",
+          "目录工程/ZIP交付包及缺项读取",
+          "可修改接手工程，旧结果归旧输入"
+        ],
+        "steps": [
+          "实现同起点新方案与比较，不覆盖旧RunId",
+          "封装工程/依赖/结果，实际另一目录重开修改",
+          "验证设计包、结果包与可恢复快照的能力区别"
+        ],
+        "verification_method": "实际A/B比较/重开/改供料再跑；缺行为不伪造结果。完整快照续跑仅当软件明确支持且数据完整时检查；首版无此能力可从初始重跑，不能因无快照阻止工程交付",
+        "actual_result": null
+      },
+      "dependency_reasons": {
+        "P2-02": "消费固定时间批次运输事件/持有状态；供货目标/发出/在途/接受/返程分离，用于本任务的同口径比较与输入差异"
+      },
+      "accountable_owner": "user",
+      "planned_window_id": "W05",
+      "parallel_plan_ref": "docs/04_开发与验收/本机并行窗口计划.json",
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P2-03.md",
+      "coding_protocol_ref": "docs/04_开发与验收/编码任务包与AI实现审查.md",
+      "effort_estimate_ref": "docs/04_开发与验收/任务框架与工量里程碑.json#P2-03",
+      "deliverable_milestone_id": "MS-08",
+      "phase_exit_ref": "docs/04_开发与验收/阶段实现计划.json#P2"
+    },
+    {
+      "id": "P2-04",
+      "disposition": "required",
+      "scope": "共同生产时间轴、计划输入与只读结果、物品跟随及当前等待/资源条件定位；拖动显示不重放生产",
+      "release_dependencies": [
+        "P1-03",
+        "P2-02"
+      ],
+      "status": "planned",
+      "implementation_owner": "user_with_ai_windows",
+      "acceptance_owner": "user",
+      "actual_result": null,
+      "requirement_ids": [
+        "SF-05",
+        "SF-08",
+        "SF-09",
+        "SF-17"
+      ],
+      "release_acceptance": "作业/资源/来料/物流轨道共用事件时钟；选时和等待定位两画布；折叠与回看不增产；计划/手算/实际分开，未运行实际为空；时间面板不新增常态画布；计划输入与只读结果轨分层，释放时点不充当实际开工，回看/移动显示不改变产量；IX-01在P1-03阶段/到料及P2-02物流完成后，实际核对从零建厂基线440秒/延迟570秒、370—420等待接收/425返程及全部事件、物品持有与资源区间。",
+      "release_paths": [
+        "apps/planner",
+        "packages/domain",
+        "packages/presentation",
+        "packages/simulation"
+      ],
+      "implementation_dependencies": [
+        "P1-03"
+      ],
+      "execution_plan": {
+        "input_refs": [
+          "scenarios/从零搭建控制盒厂房/project.design.json",
+          "scenarios/从零搭建控制盒厂房/expected-timeline.design.json",
+          "docs/03_架构与契约/全厂时间轴与阶段资源设计.md"
+        ],
+        "inputs": [
+          "实际阶段/来料/物流事件与画布对象；计划输入和运行结果"
+        ],
+        "outputs": [
+          "共同时间轴/物品跟随与当前阻断定位",
+          "计划轨与只读实际轨",
+          "IX-01完整事件与画面联合证据"
+        ],
+        "steps": [
+          "绘制同一时钟的作业、来料、占用、物流与物品",
+          "回看/定位只读，不重放生产",
+          "接齐P1-03/P2-02后验IX-01的两RunId和资源/库存"
+        ],
+        "verification_method": "完整基线440秒、到料延迟570秒，370—420秒待接收/425秒车辆可再用等全部保留；检验完整事件/数量/归属而非只终点，LOD/回看不改结果",
+        "actual_result": null
+      },
+      "dependency_reasons": {
+        "P1-03": "消费到料事件与分阶段占用；机器持有/有效进度/输出受阻等待，用于本任务的共同时间轴/物品跟随与当前阻断定位",
+        "P2-02": "消费固定时间批次运输事件/持有状态；供货目标/发出/在途/接受/返程分离，用于本任务的共同时间轴/物品跟随与当前阻断定位"
+      },
+      "accountable_owner": "user",
+      "planned_window_id": "W02",
+      "parallel_plan_ref": "docs/04_开发与验收/本机并行窗口计划.json",
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P2-04.md",
+      "coding_protocol_ref": "docs/04_开发与验收/编码任务包与AI实现审查.md",
+      "effort_estimate_ref": "docs/04_开发与验收/任务框架与工量里程碑.json#P2-04",
+      "deliverable_milestone_id": "MS-08",
+      "phase_exit_ref": "docs/04_开发与验收/阶段实现计划.json#P2"
+    },
+    {
+      "id": "P2-05",
+      "disposition": "required",
+      "scope": "产品/订单/BOM/路线、质量、到料、班次/换单与排期编辑面板，和时间轴改同一输入",
+      "release_dependencies": [
+        "P2-04",
+        "P1-04",
+        "P1-05"
+      ],
+      "status": "planned",
+      "implementation_owner": "user_with_ai_windows",
+      "acceptance_owner": "user",
+      "actual_result": null,
+      "requirement_ids": [
+        "SF-05",
+        "SF-06",
+        "SF-09"
+      ],
+      "release_acceptance": "两画布不变；订单/工艺/到料/质量以面板与详情配置；来源和待补字段可见，成本缺项不阻止时间彩排；点原因定位作业/批次/资源；全厂回看与输入变更分开；时间轴编辑释放/交期/优先序、到料、班次和阶段耗时，与订单/设备面板读写同一方案；修改后从同起点重跑而不篡改旧结果",
+      "release_paths": [
+        "apps/planner",
+        "packages/presentation",
+        "packages/domain"
+      ],
+      "implementation_dependencies": [
+        "P2-04"
+      ],
+      "execution_plan": {
+        "input_refs": [
+          "docs/02_交互设计/业务界面与方案评审.md",
+          "scenarios/真实业务设计/business-inputs.design.json"
+        ],
+        "inputs": [
+          "订单/产品/质量、来料/阶段日历与实际结果；共享编辑命令"
+        ],
+        "outputs": [
+          "业务面板和时间轴共用的输入编辑",
+          "明确的缺项/成本与当前等待定位",
+          "保留旧结果的新方案输入"
+        ],
+        "steps": [
+          "接入已有业务字段，不另造状态",
+          "提供订单/来料/质量/换单表单与时间轴编辑",
+          "与P1-04/05实际运行核对变更和旧结果"
+        ],
+        "verification_method": "两画布不变；面板与时间轴改同一释放/交期/来料/阶段输入，从同起点重跑；成本缺项不阻止时间彩排",
+        "actual_result": null
+      },
+      "dependency_reasons": {
+        "P2-04": "消费共同时间轴/物品跟随与当前阻断定位；计划轨与只读实际轨，用于本任务的业务面板和时间轴共用的输入编辑",
+        "P1-04": "消费订单分配/领料及换单事件；每订单指定目的接受与准时性，用于本任务的业务面板和时间轴共用的输入编辑",
+        "P1-05": "消费hold/pending_store两种移交；显式放行/复检/报废与保持身份，用于本任务的业务面板和时间轴共用的输入编辑"
+      },
+      "accountable_owner": "user",
+      "planned_window_id": "W02",
+      "parallel_plan_ref": "docs/04_开发与验收/本机并行窗口计划.json",
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P2-05.md",
+      "coding_protocol_ref": "docs/04_开发与验收/编码任务包与AI实现审查.md",
+      "effort_estimate_ref": "docs/04_开发与验收/任务框架与工量里程碑.json#P2-05",
+      "deliverable_milestone_id": "MS-08",
+      "phase_exit_ref": "docs/04_开发与验收/阶段实现计划.json#P2"
+    },
+    {
+      "id": "P2-06",
+      "disposition": "required",
+      "scope": "指定接受量/时间/资源与条件成本评审，同一EvaluationReport的PDF/HTML/CSV/JSON导出；未知金额/结果不补零",
+      "release_dependencies": [
+        "P0-03",
+        "P2-05",
+        "P2-03"
+      ],
+      "status": "planned",
+      "implementation_owner": "user_with_ai_windows",
+      "acceptance_owner": "user",
+      "actual_result": null,
+      "requirement_ids": [
+        "SF-09",
+        "SF-16",
+        "SF-17"
+      ],
+      "release_acceptance": "按目的接受评价完整/部分需求；窗口内未完整C=null而非迟延0；人员/机器区间不双计，班次计价不与占用计价相加；未知成本null；取消/缺件/待判可解释，工程包可重开修改；同一实际运行/比较生成PDF、离线HTML、CSV分表及JSON，单位/时间/接受口径一致；无运行仅导出设计说明；生成报告包含目标与实际接受量、模板来源/版本、场地/班次、采用参数/缺项、布局检查、初案RunId与停止原因；初案达标允许无修正RunId/比较，发生修正才附新旧RunId、变化原因与比较；生产表现与实测软件性能分开。",
+      "release_paths": [
+        "apps/planner",
+        "packages/domain",
+        "scenarios",
+        "docs",
+        "packages/reporting"
+      ],
+      "implementation_dependencies": [
+        "P2-03"
+      ],
+      "execution_plan": {
+        "input_refs": [
+          "packages/reporting/evaluation-report.contract.design.json",
+          "docs/01_业务需求/指标成本与决策口径.md",
+          "docs/03_架构与契约/评估报告与数据导出.md"
+        ],
+        "inputs": [
+          "实际RunResult/比较、来源/模板/目标与单位窗；专业成果类型及已知费率"
+        ],
+        "outputs": [
+          "EvaluationReport及接受/资源/条件成本口径",
+          "PDF/HTML/CSV/JSON四种同源输出",
+          "缺项/未运行设计说明及可空修正引用"
+        ],
+        "steps": [
+          "实现接受、区间占用和条件成本，不重复计量",
+          "构造一份报告对象后输出四格式",
+          "检验中文/跨页/离线HTML及单RunId直交；接专业成果在IX-03"
+        ],
+        "verification_method": "同源数值/单位/范围一致；C和未知成本保持null，单RunId达标不要求修正；无实际运行只设计说明，专业图/结果不伪造",
+        "actual_result": null
+      },
+      "dependency_reasons": {
+        "P0-03": "消费artifact/acceptance/binding/result四对象与引用；产品/成果变化的受影响绑定判定，用于本任务的EvaluationReport及接受/资源/条件成本口径",
+        "P2-05": "消费业务面板和时间轴共用的输入编辑；明确的缺项/成本与当前等待定位，用于本任务的EvaluationReport及接受/资源/条件成本口径",
+        "P2-03": "消费同口径比较与输入差异；目录工程/ZIP交付包及缺项读取，用于本任务的EvaluationReport及接受/资源/条件成本口径"
+      },
+      "accountable_owner": "user",
+      "planned_window_id": "W05",
+      "parallel_plan_ref": "docs/04_开发与验收/本机并行窗口计划.json",
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P2-06.md",
+      "coding_protocol_ref": "docs/04_开发与验收/编码任务包与AI实现审查.md",
+      "effort_estimate_ref": "docs/04_开发与验收/任务框架与工量里程碑.json#P2-06",
+      "deliverable_milestone_id": "MS-09",
+      "phase_exit_ref": "docs/04_开发与验收/阶段实现计划.json#P2"
+    },
+    {
+      "id": "P3-01",
+      "disposition": "required",
+      "scope": "九类定义新建/修改/导入、分类表单/样例检查、按版本明确采用及贡献导出；声明包不执行任意脚本",
+      "release_dependencies": [
+        "P0-03",
+        "P2-02"
+      ],
+      "status": "planned",
+      "implementation_owner": "user_with_ai_windows",
+      "acceptance_owner": "user",
+      "actual_result": null,
+      "requirement_ids": [
+        "SF-04",
+        "SF-10",
+        "SF-11",
+        "SF-15"
+      ],
+      "release_acceptance": "非编程用户建立插图加规则设备并重开可编辑；定义不带正式库存，实例映射真实库位/物品/资源；选实例升级前显示端口/参数/素材变化，取消保持原实例，库中修改不改变旧方案；受限素材不附公开导出包；九类按各自载荷进入消费者，定义不带库存/当前占用/实际结果，设备内联与独立规则只选一处，素材锚点明确映射，专业计划能力不列为实际可调用；九类分别支持新建/修改定义、适用样例检查、明确采用和导出贡献，不只给设备编辑器入口；按行业/产品族/场地适用条件查询已安装或明确导入的模板与九类定义，返回来源/版本/适用条件/可调用能力，未适配不冒充成功。",
+      "release_paths": [
+        "packages/module-kit",
+        "apps/planner",
+        "community/templates"
+      ],
+      "implementation_dependencies": [
+        "P0-03",
+        "P2-01"
+      ],
+      "execution_plan": {
+        "input_refs": [
+          "packages/module-kit/category-contracts.design.json",
+          "scenarios/九类模块采用/expected-category-adoption.design.json",
+          "scenarios/设备创作与采用/inputs.design.json"
+        ],
+        "inputs": [
+          "九类类型/专业引用与共同画布；库清单/版本、明示供应与允许资产"
+        ],
+        "outputs": [
+          "九类定义/类别表单/导入/库查询",
+          "明确实例采用与版本差异/撤销",
+          "可重开模块/贡献包及各类样例"
+        ],
+        "steps": [
+          "实现分类解析和自己的编辑/样例入口",
+          "明确映射实例角色/资源/端口，不带库存/结果",
+          "真实采用到已有消费者，验证升级取消和贡献导出"
+        ],
+        "verification_method": "九类逐类新建/修改/导入/采用/重开；运输样例接P2-02，专业定义只列实际能力；不执行上传任意脚本、不自动发布",
+        "actual_result": null
+      },
+      "dependency_reasons": {
+        "P0-03": "消费artifact/acceptance/binding/result四对象与引用；产品/成果变化的受影响绑定判定，用于本任务的九类定义/类别表单/导入/库查询",
+        "P2-02": "消费固定时间批次运输事件/持有状态；供货目标/发出/在途/接受/返程分离，用于本任务的九类定义/类别表单/导入/库查询"
+      },
+      "accountable_owner": "user",
+      "planned_window_id": "W03",
+      "parallel_plan_ref": "docs/04_开发与验收/本机并行窗口计划.json",
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P3-01.md",
+      "coding_protocol_ref": "docs/04_开发与验收/编码任务包与AI实现审查.md",
+      "effort_estimate_ref": "docs/04_开发与验收/任务框架与工量里程碑.json#P3-01",
+      "deliverable_milestone_id": "MS-08",
+      "phase_exit_ref": "docs/04_开发与验收/阶段实现计划.json#P3"
+    },
+    {
+      "id": "P3-02",
+      "disposition": "required",
+      "scope": "GIF/GLB等受控媒体及三维表现绑定真实状态/阶段，原生简模与代表性动画；表现不决定工时/库存",
+      "release_dependencies": [
+        "P3-01",
+        "P1-03"
+      ],
+      "status": "planned",
+      "implementation_owner": "user_with_ai_windows",
+      "acceptance_owner": "user",
+      "actual_result": null,
+      "requirement_ids": [
+        "SF-03",
+        "SF-10"
+      ],
+      "release_acceptance": "三种素材复用同一行为；暂停与进度读取仿真时钟；多阶段表现读取真实阶段进度，阶段边界/中断/输出待接收不切回空闲；不支持的动作明确显示",
+      "release_paths": [
+        "packages/presentation",
+        "modules/media"
+      ],
+      "implementation_dependencies": [
+        "P3-01",
+        "P1-03"
+      ],
+      "execution_plan": {
+        "input_refs": [
+          "docs/02_交互设计/设备时间轴与标签设计.md",
+          "scenarios/设备创作与采用/expected-authoring.design.json"
+        ],
+        "inputs": [
+          "已采用设备/媒体定义；实际阶段/进度/持有状态"
+        ],
+        "outputs": [
+          "GIF/GLB等媒体加载与安全可用范围",
+          "随仿真状态的表现绑定",
+          "与图片相同的业务结果"
+        ],
+        "steps": [
+          "接入许可明确素材和对应锚点",
+          "按真实阶段/暂停/输出等待播放",
+          "用同一行为分别换素材并比较事件"
+        ],
+        "verification_method": "换图片/GIF/GLB不改数量/时间/资源；暂停/阶段等待保持真实状态，不支持动作明示而非伪造执行",
+        "actual_result": null
+      },
+      "dependency_reasons": {
+        "P3-01": "消费九类定义/类别表单/导入/库查询；明确实例采用与版本差异/撤销，用于本任务的GIF/GLB等媒体加载与安全可用范围",
+        "P1-03": "消费到料事件与分阶段占用；机器持有/有效进度/输出受阻等待，用于本任务的GIF/GLB等媒体加载与安全可用范围"
+      },
+      "accountable_owner": "user",
+      "planned_window_id": "W03",
+      "parallel_plan_ref": "docs/04_开发与验收/本机并行窗口计划.json",
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P3-02.md",
+      "coding_protocol_ref": "docs/04_开发与验收/编码任务包与AI实现审查.md",
+      "effort_estimate_ref": "docs/04_开发与验收/任务框架与工量里程碑.json#P3-02",
+      "deliverable_milestone_id": "MS-08",
+      "phase_exit_ref": "docs/04_开发与验收/阶段实现计划.json#P3"
+    },
+    {
+      "id": "P3-03",
+      "disposition": "required",
+      "scope": "图片时间轴/标签/操作热点编辑、保存采用、真实阶段读数及观看循环；不增产",
+      "release_dependencies": [
+        "P3-01",
+        "P1-03"
+      ],
+      "status": "planned",
+      "implementation_owner": "user_with_ai_windows",
+      "acceptance_owner": "user",
+      "actual_result": null,
+      "requirement_ids": [
+        "SF-04",
+        "SF-10",
+        "SF-11"
+      ],
+      "release_acceptance": "图片可插入排序、调区间和过渡并保存重开；标签绑定真实字段或已声明操作；回看和观看循环不增产；连续生产完成1件后缺PCB等待；改工时同步阶段秒数；多阶段表现读取真实阶段进度，阶段边界/中断/输出待接收不切回空闲；不支持的动作明确显示；指定端口工序做完量和已移交量独立显示，读数不再次生成库存",
+      "release_paths": [
+        "apps/planner",
+        "packages/domain",
+        "packages/module-kit",
+        "packages/presentation",
+        "packages/simulation",
+        "modules/devices/manual-assembly"
+      ],
+      "implementation_dependencies": [
+        "P3-01",
+        "P1-03"
+      ],
+      "execution_plan": {
+        "input_refs": [
+          "modules/devices/manual-assembly/presentation/timeline.json",
+          "scenarios/设备创作与采用/inputs.design.json",
+          "scenarios/设备创作与采用/expected-authoring.design.json"
+        ],
+        "inputs": [
+          "四张自有图、采用实例、阶段和明确操作/字段类型"
+        ],
+        "outputs": [
+          "可编辑图片时间轴/过渡/类型化标签",
+          "观看循环与生产循环分别控制",
+          "可保存/采用并续改的时间轴定义"
+        ],
+        "steps": [
+          "实现图片插入/排序/区间/过渡编辑",
+          "绑定实际字段与已实现操作，不允许直接写库存",
+          "实际循环/缺料/阶段变化与重开"
+        ],
+        "verification_method": "壳体2/PCB1例完成1件后等待；观看循环不增产，完成与已移交独立；改工时与阶段输入一致，实际操作有结果",
+        "actual_result": null
+      },
+      "dependency_reasons": {
+        "P3-01": "消费九类定义/类别表单/导入/库查询；明确实例采用与版本差异/撤销，用于本任务的可编辑图片时间轴/过渡/类型化标签",
+        "P1-03": "消费到料事件与分阶段占用；机器持有/有效进度/输出受阻等待，用于本任务的可编辑图片时间轴/过渡/类型化标签"
+      },
+      "accountable_owner": "user",
+      "planned_window_id": "W03",
+      "parallel_plan_ref": "docs/04_开发与验收/本机并行窗口计划.json",
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P3-03.md",
+      "coding_protocol_ref": "docs/04_开发与验收/编码任务包与AI实现审查.md",
+      "effort_estimate_ref": "docs/04_开发与验收/任务框架与工量里程碑.json#P3-03",
+      "deliverable_milestone_id": "MS-08",
+      "phase_exit_ref": "docs/04_开发与验收/阶段实现计划.json#P3"
+    },
+    {
+      "id": "P3-04",
+      "disposition": "required",
+      "scope": "外部Agent真实MCP stdio桥/共享Commands、九类与原生设备创作、目标建厂/检查/渲染/模拟/交付；初案达标直交、不足才有限修正/比较或说明，外部专业连接器后置",
+      "release_dependencies": [
+        "P3-02",
+        "P3-03",
+        "P2-04",
+        "P4-01",
+        "P2-06"
+      ],
+      "status": "planned",
+      "implementation_owner": "user_with_ai_windows",
+      "acceptance_owner": "user",
+      "actual_result": null,
+      "requirement_ids": [
+        "SF-04",
+        "SF-10",
+        "SF-11",
+        "SF-14",
+        "SF-16",
+        "SF-17"
+      ],
+      "release_acceptance": "Agent通过同一草稿命令生成部件、端口、时间轴与标签；取得实际渲染反馈后修改；包可人工重开编辑并插入产线；外观预览与隔离周期验证分别报告；生成和采用分别完成，明确受影响实例，运行内编辑进入下一方案而不改当前物品/规则；能力发现覆盖九类编辑/采用、排期、运行/比较与评估导出，人工可继续编辑生成结果；不自动发布社区；用户一句话提出产品、日产目标及场地长宽高，Agent调用skills查询库和模板、分析来源明确的输入、填充九类对象/实例/连接/排期，取得同一修订的静态布局检查和真实3D后实际模拟；初案输入齐全、检查通过且实际达标时直接保存交付，不要求改动/修正RunId/比较；另以不足案例验收支持变量内有限修正重跑/比较或具体不能修正说明；导出PDF/HTML/CSV/JSON和可编辑工程；模板缺失、班次/关键工时不足、尺寸冲突或产能不足保持明确状态；目标不写入结果。",
+      "release_paths": [
+        "apps/planner",
+        "packages/module-kit",
+        "packages/presentation",
+        "modules/devices/manual-assembly",
+        "community/templates",
+        "apps/mcp-bridge",
+        "packages/commands",
+        "integrations/agent"
+      ],
+      "implementation_dependencies": [
+        "P0-01"
+      ],
+      "execution_plan": {
+        "input_refs": [
+          "docs/03_架构与契约/通用Agent接入与专业软件连接器.md",
+          "docs/03_架构与契约/目标驱动厂房生成.md",
+          "scenarios/目标驱动建厂/acceptance.design.json"
+        ],
+        "inputs": [
+          "同一宿主Commands/工程修订；真实媒体/九类/模板与运行/报告能力；获授权外部客户端"
+        ],
+        "outputs": [
+          "实际MCP stdio/宿主IPC与能力发现",
+          "可编辑原生设备及真实渲染反馈",
+          "GF-01至07建厂/检查/运行/直交或有限不足反馈"
+        ],
+        "steps": [
+          "可先做最小桥与共同草稿读写，禁止另建Engine",
+          "接入实际九类/媒体/模板、时间轴/检查/渲染",
+          "待P2-06报告可用后完整GF成功直交与独立不足例、人工接手"
+        ],
+        "verification_method": "真实客户端调用同一工程，RevisionConflict不覆盖；初案真实达标单RunId四格式直交，另跑不足修正/说明；目标不写结果、图不冒充运行",
+        "actual_result": null
+      },
+      "dependency_reasons": {
+        "P3-02": "消费GIF/GLB等媒体加载与安全可用范围；随仿真状态的表现绑定，用于本任务的实际MCP stdio/宿主IPC与能力发现",
+        "P3-03": "消费可编辑图片时间轴/过渡/类型化标签；观看循环与生产循环分别控制，用于本任务的实际MCP stdio/宿主IPC与能力发现",
+        "P2-04": "消费共同时间轴/物品跟随与当前阻断定位；计划轨与只读实际轨，用于本任务的实际MCP stdio/宿主IPC与能力发现",
+        "P4-01": "消费可独立打开修改的三模板/纸箱配置；所需声明工序/设备/资源及九类角色覆盖，用于本任务的实际MCP stdio/宿主IPC与能力发现",
+        "P2-06": "消费EvaluationReport及接受/资源/条件成本口径；PDF/HTML/CSV/JSON四种同源输出，用于本任务的实际MCP stdio/宿主IPC与能力发现"
+      },
+      "accountable_owner": "user",
+      "planned_window_id": "W05",
+      "parallel_plan_ref": "docs/04_开发与验收/本机并行窗口计划.json",
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P3-04.md",
+      "coding_protocol_ref": "docs/04_开发与验收/编码任务包与AI实现审查.md",
+      "effort_estimate_ref": "docs/04_开发与验收/任务框架与工量里程碑.json#P3-04",
+      "deliverable_milestone_id": "MS-10",
+      "phase_exit_ref": "docs/04_开发与验收/阶段实现计划.json#P3"
+    },
+    {
+      "id": "P4-01",
+      "disposition": "required",
+      "scope": "三通用离散模板/空工程、所需行为/设备库及纸箱制造目标场地配置；加工/电子仅声明过程，纸箱为行业例，不限平台行业",
+      "release_dependencies": [
+        "P3-01",
+        "P1-04",
+        "P1-05"
+      ],
+      "status": "planned",
+      "implementation_owner": "user_with_ai_windows",
+      "acceptance_owner": "user",
+      "actual_result": null,
+      "requirement_ids": [
+        "SF-02",
+        "SF-04",
+        "SF-17"
+      ],
+      "release_acceptance": "三类模板及纸箱生成配置可独立打开/修改，所需工序、设备、人员、物料/库位与端口样例有明确输入输出；三模板的加工/电子路线以声明过程实际消费库存和资源，不冒充专业计算；每类九类资产至少有可创作/采用样例；模板生成新对象ID，不复制在制/订单，物料种子单独明确采用；产品/参数来源与布局/场地角色可查，纸箱制造和给成品装箱区分。旧全产品12种对象未形成冻结枚举，不作为额外首版专业内核或任意数量门槛。",
+      "release_paths": [
+        "modules",
+        "scenarios"
+      ],
+      "implementation_dependencies": [
+        "P0-03"
+      ],
+      "execution_plan": {
+        "input_refs": [
+          "modules/templates/machining-delivery/manifest.json",
+          "modules/templates/purchased-assembly/manifest.json",
+          "modules/templates/parallel-electromechanical/manifest.json",
+          "modules/templates/carton-factory/generation-profile.design.json",
+          "scenarios/模板与交接/expected-template-handoff.design.json"
+        ],
+        "inputs": [
+          "共同格式/角色类型；三类模板与纸箱配置、参数来源和静态素材"
+        ],
+        "outputs": [
+          "可独立打开修改的三模板/纸箱配置",
+          "所需声明工序/设备/资源及九类角色覆盖",
+          "新ID实例化、明确种子供应和缺专业能力"
+        ],
+        "steps": [
+          "先整理模板输入/版本/必要参数和来源",
+          "接P3-01库/采用，不依赖GIF或图片时间轴编辑",
+          "待P1-04/05能力完成后实际运行与重开/改动"
+        ],
+        "verification_method": "同源引擎消费真实物品/资源；纸箱制造与装入现成箱区分；复制不带库存/订单；专业未实现明示；无冻结12对象数量门槛",
+        "actual_result": null
+      },
+      "dependency_reasons": {
+        "P3-01": "消费九类定义/类别表单/导入/库查询；明确实例采用与版本差异/撤销，用于本任务的可独立打开修改的三模板/纸箱配置",
+        "P1-04": "消费订单分配/领料及换单事件；每订单指定目的接受与准时性，用于本任务的可独立打开修改的三模板/纸箱配置",
+        "P1-05": "消费hold/pending_store两种移交；显式放行/复检/报废与保持身份，用于本任务的可独立打开修改的三模板/纸箱配置"
+      },
+      "accountable_owner": "user",
+      "planned_window_id": "W03",
+      "parallel_plan_ref": "docs/04_开发与验收/本机并行窗口计划.json",
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P4-01.md",
+      "coding_protocol_ref": "docs/04_开发与验收/编码任务包与AI实现审查.md",
+      "effort_estimate_ref": "docs/04_开发与验收/任务框架与工量里程碑.json#P4-01",
+      "deliverable_milestone_id": "MS-08",
+      "phase_exit_ref": "docs/04_开发与验收/阶段实现计划.json#P4"
+    },
+    {
+      "id": "P4-02",
+      "disposition": "required",
+      "scope": "纸包装三机制/三变化、结构与条件求解、成型/开合/固定姿态直线取物三态判定、刀折胶SVG/材料数量/可编辑成果及认可绑定",
+      "release_dependencies": [
+        "P0-03",
+        "P3-01",
+        "P2-06"
+      ],
+      "status": "planned",
+      "implementation_owner": "user_with_ai_windows",
+      "acceptance_owner": "user",
+      "actual_result": null,
+      "requirement_ids": [
+        "SF-12",
+        "SF-13"
+      ],
+      "release_acceptance": "三机制（受限折叠容器、外盒/内衬多件、罩/滑套）与三变化（产品功能、认可材料、构件关系/重复订单）均实际可修改；结构/尺寸/过程按输入计算成型、开合、固定姿态直线取物，Pass/Fail/Undetermined及搜索预算界限明确；导出刀/折/胶SVG、材料/数量和可编辑结构；人工认可后绑定包装工位，产品变化使受影响绑定待复核；专业工具不直接增加库存，几何不代防护/强度或现场折叠工时。",
+      "release_paths": [
+        "modules/professional",
+        "packages/module-kit",
+        "packages/domain",
+        "apps/planner",
+        "scenarios",
+        "packages/packaging"
+      ],
+      "implementation_dependencies": [
+        "P0-03"
+      ],
+      "execution_plan": {
+        "input_refs": [
+          "docs/00_项目基线/技术与经济可行性.md",
+          "docs/03_架构与契约/专业成果接入与软件在环.md",
+          "packages/packaging/README.md"
+        ],
+        "inputs": [
+          "版本化产品/材料/结构/过程与明确预算；专业四对象；基础几何候选/许可"
+        ],
+        "outputs": [
+          "独立可实际测试的纸包装计算与三态结果",
+          "刀/折/胶SVG、材料数量和可编辑结构",
+          "认可/绑定/变更复核及IX-03工厂消费"
+        ],
+        "steps": [
+          "P0-03产物可用后先做独立几何/结构核心和已知三态输入，不等媒体/报告整合",
+          "实现三机制/三变化及全过程预算/区间与制造层",
+          "接P3-01专业采用、P2-06显示导出和包装消费者，验IX-03"
+        ],
+        "verification_method": "三机制/三变化实际算例；干涉FAIL、预算不足Undetermined，不能只看终态；认可后影响包装、改版待复核；几何不推断防护/工时/库存",
+        "actual_result": null
+      },
+      "dependency_reasons": {
+        "P0-03": "消费artifact/acceptance/binding/result四对象与引用；产品/成果变化的受影响绑定判定，用于本任务的独立可实际测试的纸包装计算与三态结果",
+        "P3-01": "消费九类定义/类别表单/导入/库查询；明确实例采用与版本差异/撤销，用于本任务的独立可实际测试的纸包装计算与三态结果",
+        "P2-06": "消费EvaluationReport及接受/资源/条件成本口径；PDF/HTML/CSV/JSON四种同源输出，用于本任务的独立可实际测试的纸包装计算与三态结果"
+      },
+      "accountable_owner": "user",
+      "planned_window_id": "W04",
+      "parallel_plan_ref": "docs/04_开发与验收/本机并行窗口计划.json",
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P4-02.md",
+      "coding_protocol_ref": "docs/04_开发与验收/编码任务包与AI实现审查.md",
+      "effort_estimate_ref": "docs/04_开发与验收/任务框架与工量里程碑.json#P4-02",
+      "deliverable_milestone_id": "MS-09",
+      "phase_exit_ref": "docs/04_开发与验收/阶段实现计划.json#P4"
+    },
+    {
+      "id": "P5-01",
+      "disposition": "required",
+      "scope": "SF-01至17真实验收、基准负载、实际复现/接手及九类贡献采用、许可和可运行仓库/作品介绍PDF/真实视频准备；报名审核/发送/回执独立据实记录",
+      "release_dependencies": [
+        "P4-01",
+        "P3-04",
+        "P2-03",
+        "P2-04",
+        "P2-06",
+        "P4-02"
+      ],
+      "status": "planned",
+      "implementation_owner": "user_with_ai_windows",
+      "acceptance_owner": "user",
+      "actual_result": null,
+      "requirement_ids": [
+        "SF-01",
+        "SF-02",
+        "SF-03",
+        "SF-04",
+        "SF-05",
+        "SF-06",
+        "SF-07",
+        "SF-08",
+        "SF-09",
+        "SF-10",
+        "SF-11",
+        "SF-12",
+        "SF-13",
+        "SF-14",
+        "SF-15",
+        "SF-16",
+        "SF-17"
+      ],
+      "release_acceptance": "实际新环境复现、第三人模块贡献演练、素材许可清单、软件录屏；提案/文件可编辑/实际运行/发布状态分开，失去维护保留所用旧版；第三人实际接手而非只读JSON，作者与许可按真实信息填写；贡献者按九类入口选择样例，不能用固定设备模板冒充所有类别；SF-01至SF-17实际验收；九类各一例贡献采用，四格式同源且在另一目录可读；不以文件骨架当完成；真实外部Agent完成SF-17目标生成、模拟反馈和人工接手，初案达标直接交付分支可核对，另以不足案例核对有限修正/比较或不能修正说明；通用目标按accepted_unit、指定接受位置/阶段及观察窗核对；纸箱用例为合格箱，其他产品按自身认可单位；缺输入无产能达标结论；课程竞赛准备/赛道一适配依S01-03；完整可运行仓库、含背景/架构/场景/创新的作品介绍PDF、真实核心功能/流程视频三项分别检查且与实际版本一致，产品评估与研究报告不得替代；报名主体/成员/负责人、审核确认和正式发送/回执据实际记录，未办理留空，内部准备期限不放宽到官方截止。；本版软件与材料准备验收不要求自动办理报名/审核或正式发送，手续状态必须据实；完整SF验收不以关键技术试做或设计通过替代。；最终显式核对IX-01/IX-02/IX-03的完整贯通证据，局部任务或手算通过不能代替。",
+      "release_paths": [
+        "community",
+        ".github",
+        "docs",
+        "tools",
+        "packages/reporting"
+      ],
+      "implementation_dependencies": [
+        "P0-01"
+      ],
+      "execution_plan": {
+        "input_refs": [
+          "docs/00_项目基线/首版需求与验收.md",
+          "docs/05_开源与参赛/比赛设计要求.md",
+          "community/CONTRIBUTING.md",
+          "community/GOVERNANCE.md"
+        ],
+        "inputs": [
+          "冻结需求和任务真实结果；许可/实际环境、另一接手者与提交物指南"
+        ],
+        "outputs": [
+          "实际SF-01至17和负载/重开/接手证据",
+          "九类贡献采用及代码/资产许可说明",
+          "可运行源代码/软件、作品介绍PDF及真实流程视频"
+        ],
+        "steps": [
+          "文档/许可盘点可随开发准备，不把待填当证据",
+          "所有首版前置完成后做完整功能/负载/新环境与第三人复现",
+          "制作与实际版本一致的三组交付；手续据授权和真实记录另办"
+        ],
+        "verification_method": "最终依赖闭包覆盖全部21任务；无后置阻塞、无以试做或研究PDF代软件；软件准备验收不假装报名审核/发送成功",
+        "actual_result": null
+      },
+      "dependency_reasons": {
+        "P4-01": "消费可独立打开修改的三模板/纸箱配置；所需声明工序/设备/资源及九类角色覆盖，用于本任务的实际SF-01至17和负载/重开/接手证据",
+        "P3-04": "消费实际MCP stdio/宿主IPC与能力发现；可编辑原生设备及真实渲染反馈，用于本任务的实际SF-01至17和负载/重开/接手证据",
+        "P2-03": "消费同口径比较与输入差异；目录工程/ZIP交付包及缺项读取，用于本任务的实际SF-01至17和负载/重开/接手证据",
+        "P2-04": "消费共同时间轴/物品跟随与当前阻断定位；计划轨与只读实际轨，用于本任务的实际SF-01至17和负载/重开/接手证据",
+        "P2-06": "消费EvaluationReport及接受/资源/条件成本口径；PDF/HTML/CSV/JSON四种同源输出，用于本任务的实际SF-01至17和负载/重开/接手证据",
+        "P4-02": "消费独立可实际测试的纸包装计算与三态结果；刀/折/胶SVG、材料数量和可编辑结构，用于本任务的实际SF-01至17和负载/重开/接手证据"
+      },
+      "accountable_owner": "user",
+      "planned_window_id": "W00",
+      "parallel_plan_ref": "docs/04_开发与验收/本机并行窗口计划.json",
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P5-01.md",
+      "coding_protocol_ref": "docs/04_开发与验收/编码任务包与AI实现审查.md",
+      "effort_estimate_ref": "docs/04_开发与验收/任务框架与工量里程碑.json#P5-01",
+      "deliverable_milestone_id": "MS-12",
+      "phase_exit_ref": "docs/04_开发与验收/阶段实现计划.json#P5"
+    }
+  ],
+  "deferred": [
+    "P1-06",
+    "P1-07",
+    "P1-08",
+    "P2-07",
+    "P2-08",
+    "P2-09",
+    "P4-03"
+  ],
+  "partial_scope": [
+    "P0-03"
+  ],
+  "original_backlog": "docs/04_开发与验收/tasks.json",
+  "dependency_rule": "implementation_dependencies gate the core start once actual necessary producer outputs exist; release_dependencies gate complete task acceptance, not all preparatory work. Both are release-only. tasks.depends_on/acceptance remain full-product. Shared scenarios are completed at their integration owner; no deferred prerequisite or cloned engine.",
+  "release_gate": "actual_SF01_to_SF17_and_submission_materials",
+  "actual_result": null,
+  "scope_freeze": {
+    "checkpoint": "S02-01",
+    "date": "2026-10-13 Asia/Shanghai",
+    "status": "scope_frozen_not_implemented",
+    "confirmed_choices_ref": "docs/00_项目基线/首版确认选择.json",
+    "current_mainline_ref": "docs/00_项目基线/项目主线.json",
+    "joint_corrections_ref": "docs/04_开发与验收/S01-01至04_联合验收.json",
+    "included_requirement_ids": [
+      "SF-01",
+      "SF-02",
+      "SF-03",
+      "SF-04",
+      "SF-05",
+      "SF-06",
+      "SF-07",
+      "SF-08",
+      "SF-09",
+      "SF-10",
+      "SF-11",
+      "SF-12",
+      "SF-13",
+      "SF-14",
+      "SF-15",
+      "SF-16",
+      "SF-17"
+    ],
+    "nine_category_ids": [
+      "items",
+      "devices",
+      "resources",
+      "tasks",
+      "operations",
+      "transport",
+      "templates",
+      "professional",
+      "media"
+    ],
+    "general_template_refs": [
+      "modules/templates/machining-delivery/manifest.json",
+      "modules/templates/purchased-assembly/manifest.json",
+      "modules/templates/parallel-electromechanical/manifest.json"
+    ],
+    "industry_generation_profile_ref": "modules/templates/carton-factory/generation-profile.design.json",
+    "professional_scope_requirement_ids": [
+      "SF-12",
+      "SF-13"
+    ],
+    "delivery_policy_source_ref": "docs/00_项目基线/项目主线.json",
+    "ordinary_work_offline": true,
+    "external_agent_model_connection_by_client": true,
+    "external_registration_and_submission_separate": true,
+    "partial_result_rule": "selected.status_and_actual_result_cover_selected_scope_only;do_not_mark_full_backlog_partial_task_complete",
+    "change_rule": "implementation_details_and_in_scope_fixes_do_not_change_scope;material_scope_changes_require_explicit_user_decision_and_consumer_updates",
+    "actual_result": null
+  },
+  "deferred_scopes": {
+    "P1-06": "建设日历、投用条件/投用前置及建设到生产求解；不阻止本版专业成果绑定",
+    "P1-07": "电热冷气水容量/公用服务过程、中断及工况求解；人员班次/阶段占用仍本版必做",
+    "P1-08": "故障停机、维修排他使用、备件/在制恢复及维修日历",
+    "P2-07": "建设投用/公用服务专用业务面板",
+    "P2-08": "认可路径、空驶交通、共享通道/冲突区/候车与动态交通求解；固定时间批次运输仍本版必做",
+    "P2-09": "复杂路径/交通/维修专用编辑及覆盖层",
+    "P4-03": "实际外部控制程序/专业软件SIL及Unity/Blender/FreeCAD连接器；本平台MCP桥仍本版必做"
+  },
+  "other_deferred_features": [
+    "remaining_40_professional_kernels",
+    "unbounded_global_layout_or_schedule_optimization",
+    "free_factory_roaming",
+    "cloud_multiplayer_or_online_marketplace",
+    "physical_machine_connection",
+    "dxf_or_complex_optimal_nesting"
+  ],
+  "decomposition_review": {
+    "checkpoint": "S02-02",
+    "date": "2026-10-13 Asia/Shanghai",
+    "spec_ref": "docs/04_开发与验收/任务拆解与依赖.md",
+    "state": "document_specification_not_runtime",
+    "task_count": 21,
+    "work_step_count_is_not_product_task_count": true,
+    "dependency_changes": [
+      {
+        "task": "P1-01",
+        "before": [
+          "P0-01"
+        ],
+        "after": [
+          "P0-02"
+        ]
+      },
+      {
+        "task": "P2-02",
+        "before": [
+          "P2-01"
+        ],
+        "after": [
+          "P1-03",
+          "P2-01"
+        ]
+      },
+      {
+        "task": "P1-04",
+        "before": [
+          "P1-03",
+          "P0-02"
+        ],
+        "after": [
+          "P1-03",
+          "P0-02",
+          "P2-02"
+        ]
+      },
+      {
+        "task": "P3-01",
+        "before": [
+          "P2-02"
+        ],
+        "after": [
+          "P0-03",
+          "P2-02"
+        ]
+      },
+      {
+        "task": "P2-06",
+        "before": [
+          "P2-05",
+          "P2-03"
+        ],
+        "after": [
+          "P0-03",
+          "P2-05",
+          "P2-03"
+        ]
+      },
+      {
+        "task": "P4-01",
+        "before": [
+          "P3-02",
+          "P3-03",
+          "P1-02"
+        ],
+        "after": [
+          "P3-01",
+          "P1-04",
+          "P1-05"
+        ]
+      },
+      {
+        "task": "P3-04",
+        "before": [
+          "P3-03",
+          "P2-04",
+          "P4-01"
+        ],
+        "after": [
+          "P3-02",
+          "P3-03",
+          "P2-04",
+          "P4-01",
+          "P2-06"
+        ]
+      },
+      {
+        "task": "P4-02",
+        "before": [
+          "P0-03",
+          "P2-06"
+        ],
+        "after": [
+          "P0-03",
+          "P3-01",
+          "P2-06"
+        ]
+      }
+    ],
+    "actual_result": null
+  },
+  "shared_scenario_checks": [
+    {
+      "id": "IX-01",
+      "owner": "P2-04",
+      "producer_tasks": [
+        "P1-03",
+        "P2-02",
+        "P1-02"
+      ],
+      "input_refs": [
+        "scenarios/从零搭建控制盒厂房/project.design.json",
+        "scenarios/从零搭建控制盒厂房/expected-timeline.design.json"
+      ],
+      "required_observations": "完整实际基线440秒/到料延迟570秒、370—420秒小车等待/425返程；全部物品/资源/数量/事件核对；P1-03本地只验阶段/到料不先运行未完成物流",
+      "release_gate": "P5-01",
+      "actual_result": null
+    },
+    {
+      "id": "IX-02",
+      "owner": "P1-04",
+      "producer_tasks": [
+        "P1-03",
+        "P2-02"
+      ],
+      "input_refs": [
+        "scenarios/真实业务设计/business-inputs.design.json",
+        "scenarios/真实业务设计/expected-business.design.json"
+      ],
+      "required_observations": "订单与换单接物流后完整205秒/迟延5或45秒、W-A135或160秒，接收与返程分开；不能用无运输局部替代客户接受",
+      "release_gate": "P5-01",
+      "actual_result": null
+    },
+    {
+      "id": "IX-03",
+      "owner": "P4-02",
+      "producer_tasks": [
+        "P0-03",
+        "P3-01",
+        "P2-06"
+      ],
+      "input_refs": [
+        "docs/03_架构与契约/专业成果接入与软件在环.md",
+        "docs/00_项目基线/首版需求与验收.md"
+      ],
+      "required_observations": "专业计算→人工用途认可→工位绑定→改版待复核/新跑→专业制造层与四格式；三机制/三变化和全过程三态不削减，专业不增库存",
+      "release_gate": "P5-01",
+      "actual_result": null
+    }
+  ],
+  "logical_completion_waves": [
+    [
+      "P0-01"
+    ],
+    [
+      "P0-02"
+    ],
+    [
+      "P0-03",
+      "P1-01"
+    ],
+    [
+      "P1-02",
+      "P2-01"
+    ],
+    [
+      "P1-03",
+      "P1-05"
+    ],
+    [
+      "P2-02"
+    ],
+    [
+      "P1-04",
+      "P2-03",
+      "P2-04",
+      "P3-01"
+    ],
+    [
+      "P2-05",
+      "P3-02",
+      "P3-03",
+      "P4-01"
+    ],
+    [
+      "P2-06"
+    ],
+    [
+      "P3-04",
+      "P4-02"
+    ],
+    [
+      "P5-01"
+    ]
+  ],
+  "parallel_window_plan_ref": "docs/04_开发与验收/本机并行窗口计划.json",
+  "responsibility_rule": "用户本人负责全项目；AI窗口为工具工作流；selected.planned_window_id仅计划归属，完整done仍受release_dependencies与真实验收约束。",
+  "coding_protocol_ref": "docs/04_开发与验收/编码任务包与AI实现审查.md",
+  "coding_package_index_ref": "docs/04_开发与验收/编码任务包/任务包索引.json",
+  "effort_framework_ref": "docs/04_开发与验收/任务框架与工量里程碑.json",
+  "joint_baseline_review_ref": "docs/04_开发与验收/S01-01至S02-03_联合复核.json",
+  "effort_framework_review_ref": "docs/04_开发与验收/S02-04_工量与成果里程碑复审.json",
+  "stage_plan_ref": "docs/04_开发与验收/阶段实现计划.json",
+  "stage_exit_review_ref": "docs/04_开发与验收/S02-05_阶段闭环与退出条件复审.json"
+}

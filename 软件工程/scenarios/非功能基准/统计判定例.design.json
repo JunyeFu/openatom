@@ -1,0 +1,92 @@
+{
+  "document_kind": "synthetic_statistics_and_load_reasoning_not_performance_samples",
+  "cases": [
+    {
+      "id": "STAT-01",
+      "kind": "nearest_rank_p95",
+      "compressed_samples_ms": [
+        {
+          "value": 200,
+          "count": 95
+        },
+        {
+          "value": 600,
+          "count": 5
+        }
+      ],
+      "expected_n": 100,
+      "expected_p95_ms": 200,
+      "limit_ms": 200,
+      "expected_verdict": "pass_for_synthetic_math_only"
+    },
+    {
+      "id": "STAT-02",
+      "kind": "nearest_rank_p95",
+      "compressed_samples_ms": [
+        {
+          "value": 200,
+          "count": 94
+        },
+        {
+          "value": 600,
+          "count": 6
+        }
+      ],
+      "expected_n": 100,
+      "expected_p95_ms": 600,
+      "limit_ms": 200,
+      "expected_verdict": "fail_for_synthetic_math_only"
+    },
+    {
+      "id": "STAT-03",
+      "kind": "fps_median",
+      "frame_intervals_ms": [
+        20,
+        25,
+        40,
+        50
+      ],
+      "expected_median_instantaneous_fps": 32.5,
+      "limit_fps": 30,
+      "expected_verdict": "pass_for_synthetic_math_only",
+      "max_frame_interval_ms": 50,
+      "does_not_prove_all_frames_30fps": true
+    },
+    {
+      "id": "STAT-04",
+      "kind": "insufficient_samples",
+      "n": 99,
+      "required_n": 100,
+      "expected_verdict": "not_evaluable"
+    },
+    {
+      "id": "STAT-05",
+      "kind": "all_individual_save_times",
+      "samples_ms": [
+        100,
+        200,
+        300,
+        400,
+        3100
+      ],
+      "limit_ms": 3000,
+      "expected_verdict": "fail_for_synthetic_math_only",
+      "reason": "存取按每次≤3秒，不用快样本平均掩盖3100ms"
+    },
+    {
+      "id": "LOAD-01",
+      "kind": "deterministic_serial_lines",
+      "line_count": 6,
+      "stations_per_line": 10,
+      "items_per_line": 500,
+      "processing_sim_s": 2,
+      "expected_first_accept_s": 20,
+      "expected_last_accept_s": 1018,
+      "accepted_at_600_s": 1746,
+      "accepted_at_1200_s": 3000,
+      "expected_verdict": "passed_finite_design_math_only"
+    }
+  ],
+  "actual_product_samples": [],
+  "actual_runtime": null
+}

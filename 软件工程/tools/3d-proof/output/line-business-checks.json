@@ -1,0 +1,1801 @@
+{
+  "scope": "executed_headless_L03_business_checks",
+  "checks": [
+    {
+      "id": "baseline_six_packages_identity_recipe_and_independent_expected_times",
+      "passed": true
+    },
+    {
+      "id": "frame_step_size_does_not_change_business_events",
+      "passed": true
+    },
+    {
+      "id": "missing_pcb_waits_then_manual_supply_completes_same_order",
+      "passed": true
+    },
+    {
+      "id": "missing_quality_holds_inspector_and_same_item_then_recovers",
+      "passed": true
+    },
+    {
+      "id": "second_failed_inspection_quarantines_same_identity_without_extra_rework",
+      "passed": true
+    },
+    {
+      "id": "output_blocked_keeps_sealed_package_and_does_not_consume_tape_twice",
+      "passed": true
+    },
+    {
+      "id": "thirteenth_package_waits_at_full_twelve_slot_carrier",
+      "passed": true
+    },
+    {
+      "id": "robot_grip_delivery_return_and_destination_capacity_are_distinct",
+      "passed": true
+    }
+  ],
+  "baseline": {
+    "scope": "L03_executed_local_business_simulation_not_Rust_product_acceptance",
+    "input_variant": "baseline",
+    "snapshot": {
+      "now_ms": 350000,
+      "variant": "baseline",
+      "order": {
+        "id": "ORDER-001",
+        "quantity": 6,
+        "accepted_unit": "sealed_package_at_PAL01",
+        "accepted": 6,
+        "unmet": 0
+      },
+      "stock": {
+        "shell": 0,
+        "pcb": 0,
+        "fastener": 0,
+        "carton": 0,
+        "tape_meter": 0,
+        "tape_reserved_meter": 0
+      },
+      "devices": {
+        "ASM01": {
+          "id": "ASM01",
+          "state": "idle",
+          "waiting_reason": "订单装配任务已释放完",
+          "phase_id": null,
+          "effective_progress": 0,
+          "phase_progress": 0,
+          "item_id": null,
+          "work_ms": 240000,
+          "operation": "assemble"
+        },
+        "R01": {
+          "id": "R01",
+          "state": "idle",
+          "waiting_reason": "无待处理物品",
+          "phase_id": null,
+          "effective_progress": 0,
+          "phase_progress": 0,
+          "item_id": null,
+          "work_ms": 72000,
+          "operation": "robot"
+        },
+        "CV01": {
+          "id": "CV01",
+          "state": "idle",
+          "waiting_reason": "无待处理物品",
+          "phase_id": null,
+          "effective_progress": 0,
+          "phase_progress": 0,
+          "item_id": null,
+          "work_ms": 24000,
+          "operation": "conveyor"
+        },
+        "V01": {
+          "id": "V01",
+          "state": "idle",
+          "waiting_reason": "无待处理物品",
+          "phase_id": null,
+          "effective_progress": 0,
+          "phase_progress": 0,
+          "item_id": null,
+          "work_ms": 70000,
+          "operation": "inspect"
+        },
+        "RW01": {
+          "id": "RW01",
+          "state": "idle",
+          "waiting_reason": "无待处理物品",
+          "phase_id": null,
+          "effective_progress": 0,
+          "phase_progress": 0,
+          "item_id": null,
+          "work_ms": 20000,
+          "operation": "rework"
+        },
+        "CV02": {
+          "id": "CV02",
+          "state": "idle",
+          "waiting_reason": "无待处理物品",
+          "phase_id": null,
+          "effective_progress": 0,
+          "phase_progress": 0,
+          "item_id": null,
+          "work_ms": 24000,
+          "operation": "conveyor"
+        },
+        "PK01": {
+          "id": "PK01",
+          "state": "idle",
+          "waiting_reason": "无待处理物品",
+          "phase_id": null,
+          "effective_progress": 0,
+          "phase_progress": 0,
+          "item_id": null,
+          "work_ms": 90000,
+          "operation": "pack"
+        },
+        "CASE01": {
+          "id": "CASE01",
+          "state": "idle",
+          "waiting_reason": "无待处理物品",
+          "phase_id": null,
+          "effective_progress": 0,
+          "phase_progress": 0,
+          "item_id": null,
+          "work_ms": 48000,
+          "operation": "seal"
+        }
+      },
+      "resources": {
+        "assembler": null,
+        "inspector": null,
+        "repairer": null,
+        "packer": null
+      },
+      "queues": {
+        "asm": [],
+        "robot": [],
+        "inspect": [],
+        "passed": [],
+        "rework": [],
+        "reinspect": [],
+        "pack": [],
+        "seal": [],
+        "quarantine": []
+      },
+      "items": {
+        "A-001": {
+          "id": "A-001",
+          "type": "assembly",
+          "holder": "PK-001",
+          "completed_reworks": 0,
+          "quality": "pass",
+          "components": [
+            "SHELL-1",
+            "PCB-1",
+            "BOLT-1-1",
+            "BOLT-1-2",
+            "BOLT-1-3",
+            "BOLT-1-4"
+          ],
+          "order_id": "ORDER-001"
+        },
+        "A-002": {
+          "id": "A-002",
+          "type": "assembly",
+          "holder": "PK-002",
+          "completed_reworks": 0,
+          "quality": "pass",
+          "components": [
+            "SHELL-2",
+            "PCB-2",
+            "BOLT-2-1",
+            "BOLT-2-2",
+            "BOLT-2-3",
+            "BOLT-2-4"
+          ],
+          "order_id": "ORDER-001"
+        },
+        "PK-001": {
+          "id": "PK-001",
+          "type": "package",
+          "holder": "PAL01",
+          "closure": "sealed",
+          "contents": [
+            "A-001"
+          ],
+          "carton_id": "CARTON-1",
+          "order_id": "ORDER-001"
+        },
+        "PK-002": {
+          "id": "PK-002",
+          "type": "package",
+          "holder": "PAL01",
+          "closure": "sealed",
+          "contents": [
+            "A-002"
+          ],
+          "carton_id": "CARTON-2",
+          "order_id": "ORDER-001"
+        },
+        "A-003": {
+          "id": "A-003",
+          "type": "assembly",
+          "holder": "PK-003",
+          "completed_reworks": 1,
+          "quality": "pass",
+          "components": [
+            "SHELL-3",
+            "PCB-3",
+            "BOLT-3-1",
+            "BOLT-3-2",
+            "BOLT-3-3",
+            "BOLT-3-4"
+          ],
+          "order_id": "ORDER-001"
+        },
+        "A-004": {
+          "id": "A-004",
+          "type": "assembly",
+          "holder": "PK-004",
+          "completed_reworks": 0,
+          "quality": "pass",
+          "components": [
+            "SHELL-4",
+            "PCB-4",
+            "BOLT-4-1",
+            "BOLT-4-2",
+            "BOLT-4-3",
+            "BOLT-4-4"
+          ],
+          "order_id": "ORDER-001"
+        },
+        "PK-003": {
+          "id": "PK-003",
+          "type": "package",
+          "holder": "PAL01",
+          "closure": "sealed",
+          "contents": [
+            "A-003"
+          ],
+          "carton_id": "CARTON-3",
+          "order_id": "ORDER-001"
+        },
+        "A-005": {
+          "id": "A-005",
+          "type": "assembly",
+          "holder": "PK-005",
+          "completed_reworks": 0,
+          "quality": "pass",
+          "components": [
+            "SHELL-5",
+            "PCB-5",
+            "BOLT-5-1",
+            "BOLT-5-2",
+            "BOLT-5-3",
+            "BOLT-5-4"
+          ],
+          "order_id": "ORDER-001"
+        },
+        "PK-004": {
+          "id": "PK-004",
+          "type": "package",
+          "holder": "PAL01",
+          "closure": "sealed",
+          "contents": [
+            "A-004"
+          ],
+          "carton_id": "CARTON-4",
+          "order_id": "ORDER-001"
+        },
+        "A-006": {
+          "id": "A-006",
+          "type": "assembly",
+          "holder": "PK-006",
+          "completed_reworks": 0,
+          "quality": "pass",
+          "components": [
+            "SHELL-6",
+            "PCB-6",
+            "BOLT-6-1",
+            "BOLT-6-2",
+            "BOLT-6-3",
+            "BOLT-6-4"
+          ],
+          "order_id": "ORDER-001"
+        },
+        "PK-005": {
+          "id": "PK-005",
+          "type": "package",
+          "holder": "PAL01",
+          "closure": "sealed",
+          "contents": [
+            "A-005"
+          ],
+          "carton_id": "CARTON-5",
+          "order_id": "ORDER-001"
+        },
+        "PK-006": {
+          "id": "PK-006",
+          "type": "package",
+          "holder": "PAL01",
+          "closure": "sealed",
+          "contents": [
+            "A-006"
+          ],
+          "carton_id": "CARTON-6",
+          "order_id": "ORDER-001"
+        }
+      },
+      "pallet": [
+        "PK-001",
+        "PK-002",
+        "PK-003",
+        "PK-004",
+        "PK-005",
+        "PK-006"
+      ],
+      "quarantined": [],
+      "pending_arrivals": []
+    },
+    "events": [
+      {
+        "at_ms": 0,
+        "type": "run_created",
+        "device_id": null,
+        "item_id": null,
+        "detail": "订单6套；baseline"
+      },
+      {
+        "at_ms": 0,
+        "type": "job_started",
+        "device_id": "ASM01",
+        "item_id": null,
+        "detail": "assemble"
+      },
+      {
+        "at_ms": 0,
+        "type": "material_committed",
+        "device_id": "ASM01",
+        "item_id": null,
+        "detail": "第1套齐套领用；原料库存已扣"
+      },
+      {
+        "at_ms": 40000,
+        "type": "assembly_created",
+        "device_id": "ASM01",
+        "item_id": "A-001",
+        "detail": "壳体1＋PCB1＋螺钉4；原料仅领用一次"
+      },
+      {
+        "at_ms": 40000,
+        "type": "handoff",
+        "device_id": "ASM01",
+        "item_id": "A-001",
+        "detail": "移交至Q-asm"
+      },
+      {
+        "at_ms": 40000,
+        "type": "job_completed",
+        "device_id": "ASM01",
+        "item_id": "A-001",
+        "detail": "assemble"
+      },
+      {
+        "at_ms": 40000,
+        "type": "job_started",
+        "device_id": "ASM01",
+        "item_id": null,
+        "detail": "assemble"
+      },
+      {
+        "at_ms": 40000,
+        "type": "material_committed",
+        "device_id": "ASM01",
+        "item_id": null,
+        "detail": "第2套齐套领用；原料库存已扣"
+      },
+      {
+        "at_ms": 40000,
+        "type": "job_started",
+        "device_id": "R01",
+        "item_id": "A-001",
+        "detail": "robot"
+      },
+      {
+        "at_ms": 42000,
+        "type": "phase_started",
+        "device_id": "R01",
+        "item_id": "A-001",
+        "detail": "grip"
+      },
+      {
+        "at_ms": 43000,
+        "type": "cargo_picked",
+        "device_id": "R01",
+        "item_id": "A-001",
+        "detail": "同一物品从来源转到夹爪持有"
+      },
+      {
+        "at_ms": 43000,
+        "type": "phase_started",
+        "device_id": "R01",
+        "item_id": "A-001",
+        "detail": "loaded_move"
+      },
+      {
+        "at_ms": 48000,
+        "type": "phase_started",
+        "device_id": "R01",
+        "item_id": "A-001",
+        "detail": "release"
+      },
+      {
+        "at_ms": 49000,
+        "type": "handoff",
+        "device_id": "R01",
+        "item_id": "A-001",
+        "detail": "移交至Q-robot"
+      },
+      {
+        "at_ms": 49000,
+        "type": "phase_started",
+        "device_id": "R01",
+        "item_id": "A-001",
+        "detail": "return"
+      },
+      {
+        "at_ms": 49000,
+        "type": "job_started",
+        "device_id": "CV01",
+        "item_id": "A-001",
+        "detail": "conveyor"
+      },
+      {
+        "at_ms": 52000,
+        "type": "job_completed",
+        "device_id": "R01",
+        "item_id": "A-001",
+        "detail": "robot"
+      },
+      {
+        "at_ms": 53000,
+        "type": "handoff",
+        "device_id": "CV01",
+        "item_id": "A-001",
+        "detail": "移交至Q-inspect"
+      },
+      {
+        "at_ms": 53000,
+        "type": "job_completed",
+        "device_id": "CV01",
+        "item_id": "A-001",
+        "detail": "conveyor"
+      },
+      {
+        "at_ms": 53000,
+        "type": "job_started",
+        "device_id": "V01",
+        "item_id": "A-001",
+        "detail": "inspect"
+      },
+      {
+        "at_ms": 63000,
+        "type": "quality_decided",
+        "device_id": "V01",
+        "item_id": "A-001",
+        "detail": "pass，去向passed，已返工0次"
+      },
+      {
+        "at_ms": 63000,
+        "type": "handoff",
+        "device_id": "V01",
+        "item_id": "A-001",
+        "detail": "移交至Q-passed"
+      },
+      {
+        "at_ms": 63000,
+        "type": "job_completed",
+        "device_id": "V01",
+        "item_id": "A-001",
+        "detail": "inspect"
+      },
+      {
+        "at_ms": 63000,
+        "type": "job_started",
+        "device_id": "CV02",
+        "item_id": "A-001",
+        "detail": "conveyor"
+      },
+      {
+        "at_ms": 67000,
+        "type": "handoff",
+        "device_id": "CV02",
+        "item_id": "A-001",
+        "detail": "移交至Q-pack"
+      },
+      {
+        "at_ms": 67000,
+        "type": "job_completed",
+        "device_id": "CV02",
+        "item_id": "A-001",
+        "detail": "conveyor"
+      },
+      {
+        "at_ms": 67000,
+        "type": "job_started",
+        "device_id": "PK01",
+        "item_id": "A-001",
+        "detail": "pack"
+      },
+      {
+        "at_ms": 80000,
+        "type": "assembly_created",
+        "device_id": "ASM01",
+        "item_id": "A-002",
+        "detail": "壳体1＋PCB1＋螺钉4；原料仅领用一次"
+      },
+      {
+        "at_ms": 80000,
+        "type": "handoff",
+        "device_id": "ASM01",
+        "item_id": "A-002",
+        "detail": "移交至Q-asm"
+      },
+      {
+        "at_ms": 80000,
+        "type": "job_completed",
+        "device_id": "ASM01",
+        "item_id": "A-002",
+        "detail": "assemble"
+      },
+      {
+        "at_ms": 80000,
+        "type": "job_started",
+        "device_id": "R01",
+        "item_id": "A-002",
+        "detail": "robot"
+      },
+      {
+        "at_ms": 82000,
+        "type": "phase_started",
+        "device_id": "R01",
+        "item_id": "A-002",
+        "detail": "grip"
+      },
+      {
+        "at_ms": 82000,
+        "type": "package_created",
+        "device_id": "PK01",
+        "item_id": "PK-001",
+        "detail": "新包件包含原物品A-001"
+      },
+      {
+        "at_ms": 82000,
+        "type": "handoff",
+        "device_id": "PK01",
+        "item_id": "PK-001",
+        "detail": "移交至Q-seal"
+      },
+      {
+        "at_ms": 82000,
+        "type": "job_completed",
+        "device_id": "PK01",
+        "item_id": "PK-001",
+        "detail": "pack"
+      },
+      {
+        "at_ms": 82000,
+        "type": "job_started",
+        "device_id": "CASE01",
+        "item_id": "PK-001",
+        "detail": "seal"
+      },
+      {
+        "at_ms": 83000,
+        "type": "cargo_picked",
+        "device_id": "R01",
+        "item_id": "A-002",
+        "detail": "同一物品从来源转到夹爪持有"
+      },
+      {
+        "at_ms": 83000,
+        "type": "phase_started",
+        "device_id": "R01",
+        "item_id": "A-002",
+        "detail": "loaded_move"
+      },
+      {
+        "at_ms": 84000,
+        "type": "phase_started",
+        "device_id": "CASE01",
+        "item_id": "PK-001",
+        "detail": "seal"
+      },
+      {
+        "at_ms": 88000,
+        "type": "phase_started",
+        "device_id": "R01",
+        "item_id": "A-002",
+        "detail": "release"
+      },
+      {
+        "at_ms": 88000,
+        "type": "package_sealed",
+        "device_id": "CASE01",
+        "item_id": "PK-001",
+        "detail": "扣胶带0.6m一次，包件及内容物ID不变"
+      },
+      {
+        "at_ms": 88000,
+        "type": "phase_started",
+        "device_id": "CASE01",
+        "item_id": "PK-001",
+        "detail": "outfeed"
+      },
+      {
+        "at_ms": 89000,
+        "type": "handoff",
+        "device_id": "R01",
+        "item_id": "A-002",
+        "detail": "移交至Q-robot"
+      },
+      {
+        "at_ms": 89000,
+        "type": "phase_started",
+        "device_id": "R01",
+        "item_id": "A-002",
+        "detail": "return"
+      },
+      {
+        "at_ms": 89000,
+        "type": "job_started",
+        "device_id": "CV01",
+        "item_id": "A-002",
+        "detail": "conveyor"
+      },
+      {
+        "at_ms": 90000,
+        "type": "order_accepted",
+        "device_id": "CASE01",
+        "item_id": "PK-001",
+        "detail": "PAL01接受1/6套"
+      },
+      {
+        "at_ms": 90000,
+        "type": "job_completed",
+        "device_id": "CASE01",
+        "item_id": "PK-001",
+        "detail": "seal"
+      },
+      {
+        "at_ms": 92000,
+        "type": "job_completed",
+        "device_id": "R01",
+        "item_id": "A-002",
+        "detail": "robot"
+      },
+      {
+        "at_ms": 93000,
+        "type": "handoff",
+        "device_id": "CV01",
+        "item_id": "A-002",
+        "detail": "移交至Q-inspect"
+      },
+      {
+        "at_ms": 93000,
+        "type": "job_completed",
+        "device_id": "CV01",
+        "item_id": "A-002",
+        "detail": "conveyor"
+      },
+      {
+        "at_ms": 93000,
+        "type": "job_started",
+        "device_id": "V01",
+        "item_id": "A-002",
+        "detail": "inspect"
+      },
+      {
+        "at_ms": 103000,
+        "type": "quality_decided",
+        "device_id": "V01",
+        "item_id": "A-002",
+        "detail": "pass，去向passed，已返工0次"
+      },
+      {
+        "at_ms": 103000,
+        "type": "handoff",
+        "device_id": "V01",
+        "item_id": "A-002",
+        "detail": "移交至Q-passed"
+      },
+      {
+        "at_ms": 103000,
+        "type": "job_completed",
+        "device_id": "V01",
+        "item_id": "A-002",
+        "detail": "inspect"
+      },
+      {
+        "at_ms": 103000,
+        "type": "job_started",
+        "device_id": "CV02",
+        "item_id": "A-002",
+        "detail": "conveyor"
+      },
+      {
+        "at_ms": 107000,
+        "type": "handoff",
+        "device_id": "CV02",
+        "item_id": "A-002",
+        "detail": "移交至Q-pack"
+      },
+      {
+        "at_ms": 107000,
+        "type": "job_completed",
+        "device_id": "CV02",
+        "item_id": "A-002",
+        "detail": "conveyor"
+      },
+      {
+        "at_ms": 107000,
+        "type": "job_started",
+        "device_id": "PK01",
+        "item_id": "A-002",
+        "detail": "pack"
+      },
+      {
+        "at_ms": 120000,
+        "type": "arrival",
+        "device_id": null,
+        "item_id": null,
+        "detail": "pcb到料4"
+      },
+      {
+        "at_ms": 120000,
+        "type": "job_started",
+        "device_id": "ASM01",
+        "item_id": null,
+        "detail": "assemble"
+      },
+      {
+        "at_ms": 120000,
+        "type": "material_committed",
+        "device_id": "ASM01",
+        "item_id": null,
+        "detail": "第3套齐套领用；原料库存已扣"
+      },
+      {
+        "at_ms": 122000,
+        "type": "package_created",
+        "device_id": "PK01",
+        "item_id": "PK-002",
+        "detail": "新包件包含原物品A-002"
+      },
+      {
+        "at_ms": 122000,
+        "type": "handoff",
+        "device_id": "PK01",
+        "item_id": "PK-002",
+        "detail": "移交至Q-seal"
+      },
+      {
+        "at_ms": 122000,
+        "type": "job_completed",
+        "device_id": "PK01",
+        "item_id": "PK-002",
+        "detail": "pack"
+      },
+      {
+        "at_ms": 122000,
+        "type": "job_started",
+        "device_id": "CASE01",
+        "item_id": "PK-002",
+        "detail": "seal"
+      },
+      {
+        "at_ms": 124000,
+        "type": "phase_started",
+        "device_id": "CASE01",
+        "item_id": "PK-002",
+        "detail": "seal"
+      },
+      {
+        "at_ms": 128000,
+        "type": "package_sealed",
+        "device_id": "CASE01",
+        "item_id": "PK-002",
+        "detail": "扣胶带0.6m一次，包件及内容物ID不变"
+      },
+      {
+        "at_ms": 128000,
+        "type": "phase_started",
+        "device_id": "CASE01",
+        "item_id": "PK-002",
+        "detail": "outfeed"
+      },
+      {
+        "at_ms": 130000,
+        "type": "order_accepted",
+        "device_id": "CASE01",
+        "item_id": "PK-002",
+        "detail": "PAL01接受2/6套"
+      },
+      {
+        "at_ms": 130000,
+        "type": "job_completed",
+        "device_id": "CASE01",
+        "item_id": "PK-002",
+        "detail": "seal"
+      },
+      {
+        "at_ms": 160000,
+        "type": "assembly_created",
+        "device_id": "ASM01",
+        "item_id": "A-003",
+        "detail": "壳体1＋PCB1＋螺钉4；原料仅领用一次"
+      },
+      {
+        "at_ms": 160000,
+        "type": "handoff",
+        "device_id": "ASM01",
+        "item_id": "A-003",
+        "detail": "移交至Q-asm"
+      },
+      {
+        "at_ms": 160000,
+        "type": "job_completed",
+        "device_id": "ASM01",
+        "item_id": "A-003",
+        "detail": "assemble"
+      },
+      {
+        "at_ms": 160000,
+        "type": "job_started",
+        "device_id": "ASM01",
+        "item_id": null,
+        "detail": "assemble"
+      },
+      {
+        "at_ms": 160000,
+        "type": "material_committed",
+        "device_id": "ASM01",
+        "item_id": null,
+        "detail": "第4套齐套领用；原料库存已扣"
+      },
+      {
+        "at_ms": 160000,
+        "type": "job_started",
+        "device_id": "R01",
+        "item_id": "A-003",
+        "detail": "robot"
+      },
+      {
+        "at_ms": 162000,
+        "type": "phase_started",
+        "device_id": "R01",
+        "item_id": "A-003",
+        "detail": "grip"
+      },
+      {
+        "at_ms": 163000,
+        "type": "cargo_picked",
+        "device_id": "R01",
+        "item_id": "A-003",
+        "detail": "同一物品从来源转到夹爪持有"
+      },
+      {
+        "at_ms": 163000,
+        "type": "phase_started",
+        "device_id": "R01",
+        "item_id": "A-003",
+        "detail": "loaded_move"
+      },
+      {
+        "at_ms": 168000,
+        "type": "phase_started",
+        "device_id": "R01",
+        "item_id": "A-003",
+        "detail": "release"
+      },
+      {
+        "at_ms": 169000,
+        "type": "handoff",
+        "device_id": "R01",
+        "item_id": "A-003",
+        "detail": "移交至Q-robot"
+      },
+      {
+        "at_ms": 169000,
+        "type": "phase_started",
+        "device_id": "R01",
+        "item_id": "A-003",
+        "detail": "return"
+      },
+      {
+        "at_ms": 169000,
+        "type": "job_started",
+        "device_id": "CV01",
+        "item_id": "A-003",
+        "detail": "conveyor"
+      },
+      {
+        "at_ms": 172000,
+        "type": "job_completed",
+        "device_id": "R01",
+        "item_id": "A-003",
+        "detail": "robot"
+      },
+      {
+        "at_ms": 173000,
+        "type": "handoff",
+        "device_id": "CV01",
+        "item_id": "A-003",
+        "detail": "移交至Q-inspect"
+      },
+      {
+        "at_ms": 173000,
+        "type": "job_completed",
+        "device_id": "CV01",
+        "item_id": "A-003",
+        "detail": "conveyor"
+      },
+      {
+        "at_ms": 173000,
+        "type": "job_started",
+        "device_id": "V01",
+        "item_id": "A-003",
+        "detail": "inspect"
+      },
+      {
+        "at_ms": 183000,
+        "type": "quality_decided",
+        "device_id": "V01",
+        "item_id": "A-003",
+        "detail": "fail，去向rework，已返工0次"
+      },
+      {
+        "at_ms": 183000,
+        "type": "handoff",
+        "device_id": "V01",
+        "item_id": "A-003",
+        "detail": "移交至Q-rework"
+      },
+      {
+        "at_ms": 183000,
+        "type": "job_completed",
+        "device_id": "V01",
+        "item_id": "A-003",
+        "detail": "inspect"
+      },
+      {
+        "at_ms": 183000,
+        "type": "job_started",
+        "device_id": "RW01",
+        "item_id": "A-003",
+        "detail": "rework"
+      },
+      {
+        "at_ms": 200000,
+        "type": "assembly_created",
+        "device_id": "ASM01",
+        "item_id": "A-004",
+        "detail": "壳体1＋PCB1＋螺钉4；原料仅领用一次"
+      },
+      {
+        "at_ms": 200000,
+        "type": "handoff",
+        "device_id": "ASM01",
+        "item_id": "A-004",
+        "detail": "移交至Q-asm"
+      },
+      {
+        "at_ms": 200000,
+        "type": "job_completed",
+        "device_id": "ASM01",
+        "item_id": "A-004",
+        "detail": "assemble"
+      },
+      {
+        "at_ms": 200000,
+        "type": "job_started",
+        "device_id": "ASM01",
+        "item_id": null,
+        "detail": "assemble"
+      },
+      {
+        "at_ms": 200000,
+        "type": "material_committed",
+        "device_id": "ASM01",
+        "item_id": null,
+        "detail": "第5套齐套领用；原料库存已扣"
+      },
+      {
+        "at_ms": 200000,
+        "type": "job_started",
+        "device_id": "R01",
+        "item_id": "A-004",
+        "detail": "robot"
+      },
+      {
+        "at_ms": 202000,
+        "type": "phase_started",
+        "device_id": "R01",
+        "item_id": "A-004",
+        "detail": "grip"
+      },
+      {
+        "at_ms": 203000,
+        "type": "cargo_picked",
+        "device_id": "R01",
+        "item_id": "A-004",
+        "detail": "同一物品从来源转到夹爪持有"
+      },
+      {
+        "at_ms": 203000,
+        "type": "phase_started",
+        "device_id": "R01",
+        "item_id": "A-004",
+        "detail": "loaded_move"
+      },
+      {
+        "at_ms": 203000,
+        "type": "rework_completed",
+        "device_id": "RW01",
+        "item_id": "A-003",
+        "detail": "身份不变；必须重新检验"
+      },
+      {
+        "at_ms": 203000,
+        "type": "handoff",
+        "device_id": "RW01",
+        "item_id": "A-003",
+        "detail": "移交至Q-reinspect"
+      },
+      {
+        "at_ms": 203000,
+        "type": "job_completed",
+        "device_id": "RW01",
+        "item_id": "A-003",
+        "detail": "rework"
+      },
+      {
+        "at_ms": 203000,
+        "type": "job_started",
+        "device_id": "V01",
+        "item_id": "A-003",
+        "detail": "inspect"
+      },
+      {
+        "at_ms": 208000,
+        "type": "phase_started",
+        "device_id": "R01",
+        "item_id": "A-004",
+        "detail": "release"
+      },
+      {
+        "at_ms": 209000,
+        "type": "handoff",
+        "device_id": "R01",
+        "item_id": "A-004",
+        "detail": "移交至Q-robot"
+      },
+      {
+        "at_ms": 209000,
+        "type": "phase_started",
+        "device_id": "R01",
+        "item_id": "A-004",
+        "detail": "return"
+      },
+      {
+        "at_ms": 209000,
+        "type": "job_started",
+        "device_id": "CV01",
+        "item_id": "A-004",
+        "detail": "conveyor"
+      },
+      {
+        "at_ms": 212000,
+        "type": "job_completed",
+        "device_id": "R01",
+        "item_id": "A-004",
+        "detail": "robot"
+      },
+      {
+        "at_ms": 213000,
+        "type": "handoff",
+        "device_id": "CV01",
+        "item_id": "A-004",
+        "detail": "移交至Q-inspect"
+      },
+      {
+        "at_ms": 213000,
+        "type": "job_completed",
+        "device_id": "CV01",
+        "item_id": "A-004",
+        "detail": "conveyor"
+      },
+      {
+        "at_ms": 213000,
+        "type": "quality_decided",
+        "device_id": "V01",
+        "item_id": "A-003",
+        "detail": "pass，去向passed，已返工1次"
+      },
+      {
+        "at_ms": 213000,
+        "type": "handoff",
+        "device_id": "V01",
+        "item_id": "A-003",
+        "detail": "移交至Q-passed"
+      },
+      {
+        "at_ms": 213000,
+        "type": "job_completed",
+        "device_id": "V01",
+        "item_id": "A-003",
+        "detail": "inspect"
+      },
+      {
+        "at_ms": 213000,
+        "type": "job_started",
+        "device_id": "V01",
+        "item_id": "A-004",
+        "detail": "inspect"
+      },
+      {
+        "at_ms": 213000,
+        "type": "job_started",
+        "device_id": "CV02",
+        "item_id": "A-003",
+        "detail": "conveyor"
+      },
+      {
+        "at_ms": 217000,
+        "type": "handoff",
+        "device_id": "CV02",
+        "item_id": "A-003",
+        "detail": "移交至Q-pack"
+      },
+      {
+        "at_ms": 217000,
+        "type": "job_completed",
+        "device_id": "CV02",
+        "item_id": "A-003",
+        "detail": "conveyor"
+      },
+      {
+        "at_ms": 217000,
+        "type": "job_started",
+        "device_id": "PK01",
+        "item_id": "A-003",
+        "detail": "pack"
+      },
+      {
+        "at_ms": 223000,
+        "type": "quality_decided",
+        "device_id": "V01",
+        "item_id": "A-004",
+        "detail": "pass，去向passed，已返工0次"
+      },
+      {
+        "at_ms": 223000,
+        "type": "handoff",
+        "device_id": "V01",
+        "item_id": "A-004",
+        "detail": "移交至Q-passed"
+      },
+      {
+        "at_ms": 223000,
+        "type": "job_completed",
+        "device_id": "V01",
+        "item_id": "A-004",
+        "detail": "inspect"
+      },
+      {
+        "at_ms": 223000,
+        "type": "job_started",
+        "device_id": "CV02",
+        "item_id": "A-004",
+        "detail": "conveyor"
+      },
+      {
+        "at_ms": 227000,
+        "type": "handoff",
+        "device_id": "CV02",
+        "item_id": "A-004",
+        "detail": "移交至Q-pack"
+      },
+      {
+        "at_ms": 227000,
+        "type": "job_completed",
+        "device_id": "CV02",
+        "item_id": "A-004",
+        "detail": "conveyor"
+      },
+      {
+        "at_ms": 232000,
+        "type": "package_created",
+        "device_id": "PK01",
+        "item_id": "PK-003",
+        "detail": "新包件包含原物品A-003"
+      },
+      {
+        "at_ms": 232000,
+        "type": "handoff",
+        "device_id": "PK01",
+        "item_id": "PK-003",
+        "detail": "移交至Q-seal"
+      },
+      {
+        "at_ms": 232000,
+        "type": "job_completed",
+        "device_id": "PK01",
+        "item_id": "PK-003",
+        "detail": "pack"
+      },
+      {
+        "at_ms": 232000,
+        "type": "job_started",
+        "device_id": "PK01",
+        "item_id": "A-004",
+        "detail": "pack"
+      },
+      {
+        "at_ms": 232000,
+        "type": "job_started",
+        "device_id": "CASE01",
+        "item_id": "PK-003",
+        "detail": "seal"
+      },
+      {
+        "at_ms": 234000,
+        "type": "phase_started",
+        "device_id": "CASE01",
+        "item_id": "PK-003",
+        "detail": "seal"
+      },
+      {
+        "at_ms": 238000,
+        "type": "package_sealed",
+        "device_id": "CASE01",
+        "item_id": "PK-003",
+        "detail": "扣胶带0.6m一次，包件及内容物ID不变"
+      },
+      {
+        "at_ms": 238000,
+        "type": "phase_started",
+        "device_id": "CASE01",
+        "item_id": "PK-003",
+        "detail": "outfeed"
+      },
+      {
+        "at_ms": 240000,
+        "type": "assembly_created",
+        "device_id": "ASM01",
+        "item_id": "A-005",
+        "detail": "壳体1＋PCB1＋螺钉4；原料仅领用一次"
+      },
+      {
+        "at_ms": 240000,
+        "type": "handoff",
+        "device_id": "ASM01",
+        "item_id": "A-005",
+        "detail": "移交至Q-asm"
+      },
+      {
+        "at_ms": 240000,
+        "type": "job_completed",
+        "device_id": "ASM01",
+        "item_id": "A-005",
+        "detail": "assemble"
+      },
+      {
+        "at_ms": 240000,
+        "type": "order_accepted",
+        "device_id": "CASE01",
+        "item_id": "PK-003",
+        "detail": "PAL01接受3/6套"
+      },
+      {
+        "at_ms": 240000,
+        "type": "job_completed",
+        "device_id": "CASE01",
+        "item_id": "PK-003",
+        "detail": "seal"
+      },
+      {
+        "at_ms": 240000,
+        "type": "job_started",
+        "device_id": "ASM01",
+        "item_id": null,
+        "detail": "assemble"
+      },
+      {
+        "at_ms": 240000,
+        "type": "material_committed",
+        "device_id": "ASM01",
+        "item_id": null,
+        "detail": "第6套齐套领用；原料库存已扣"
+      },
+      {
+        "at_ms": 240000,
+        "type": "job_started",
+        "device_id": "R01",
+        "item_id": "A-005",
+        "detail": "robot"
+      },
+      {
+        "at_ms": 242000,
+        "type": "phase_started",
+        "device_id": "R01",
+        "item_id": "A-005",
+        "detail": "grip"
+      },
+      {
+        "at_ms": 243000,
+        "type": "cargo_picked",
+        "device_id": "R01",
+        "item_id": "A-005",
+        "detail": "同一物品从来源转到夹爪持有"
+      },
+      {
+        "at_ms": 243000,
+        "type": "phase_started",
+        "device_id": "R01",
+        "item_id": "A-005",
+        "detail": "loaded_move"
+      },
+      {
+        "at_ms": 247000,
+        "type": "package_created",
+        "device_id": "PK01",
+        "item_id": "PK-004",
+        "detail": "新包件包含原物品A-004"
+      },
+      {
+        "at_ms": 247000,
+        "type": "handoff",
+        "device_id": "PK01",
+        "item_id": "PK-004",
+        "detail": "移交至Q-seal"
+      },
+      {
+        "at_ms": 247000,
+        "type": "job_completed",
+        "device_id": "PK01",
+        "item_id": "PK-004",
+        "detail": "pack"
+      },
+      {
+        "at_ms": 247000,
+        "type": "job_started",
+        "device_id": "CASE01",
+        "item_id": "PK-004",
+        "detail": "seal"
+      },
+      {
+        "at_ms": 248000,
+        "type": "phase_started",
+        "device_id": "R01",
+        "item_id": "A-005",
+        "detail": "release"
+      },
+      {
+        "at_ms": 249000,
+        "type": "handoff",
+        "device_id": "R01",
+        "item_id": "A-005",
+        "detail": "移交至Q-robot"
+      },
+      {
+        "at_ms": 249000,
+        "type": "phase_started",
+        "device_id": "R01",
+        "item_id": "A-005",
+        "detail": "return"
+      },
+      {
+        "at_ms": 249000,
+        "type": "phase_started",
+        "device_id": "CASE01",
+        "item_id": "PK-004",
+        "detail": "seal"
+      },
+      {
+        "at_ms": 249000,
+        "type": "job_started",
+        "device_id": "CV01",
+        "item_id": "A-005",
+        "detail": "conveyor"
+      },
+      {
+        "at_ms": 252000,
+        "type": "job_completed",
+        "device_id": "R01",
+        "item_id": "A-005",
+        "detail": "robot"
+      },
+      {
+        "at_ms": 253000,
+        "type": "handoff",
+        "device_id": "CV01",
+        "item_id": "A-005",
+        "detail": "移交至Q-inspect"
+      },
+      {
+        "at_ms": 253000,
+        "type": "job_completed",
+        "device_id": "CV01",
+        "item_id": "A-005",
+        "detail": "conveyor"
+      },
+      {
+        "at_ms": 253000,
+        "type": "package_sealed",
+        "device_id": "CASE01",
+        "item_id": "PK-004",
+        "detail": "扣胶带0.6m一次，包件及内容物ID不变"
+      },
+      {
+        "at_ms": 253000,
+        "type": "phase_started",
+        "device_id": "CASE01",
+        "item_id": "PK-004",
+        "detail": "outfeed"
+      },
+      {
+        "at_ms": 253000,
+        "type": "job_started",
+        "device_id": "V01",
+        "item_id": "A-005",
+        "detail": "inspect"
+      },
+      {
+        "at_ms": 255000,
+        "type": "order_accepted",
+        "device_id": "CASE01",
+        "item_id": "PK-004",
+        "detail": "PAL01接受4/6套"
+      },
+      {
+        "at_ms": 255000,
+        "type": "job_completed",
+        "device_id": "CASE01",
+        "item_id": "PK-004",
+        "detail": "seal"
+      },
+      {
+        "at_ms": 263000,
+        "type": "quality_decided",
+        "device_id": "V01",
+        "item_id": "A-005",
+        "detail": "pass，去向passed，已返工0次"
+      },
+      {
+        "at_ms": 263000,
+        "type": "handoff",
+        "device_id": "V01",
+        "item_id": "A-005",
+        "detail": "移交至Q-passed"
+      },
+      {
+        "at_ms": 263000,
+        "type": "job_completed",
+        "device_id": "V01",
+        "item_id": "A-005",
+        "detail": "inspect"
+      },
+      {
+        "at_ms": 263000,
+        "type": "job_started",
+        "device_id": "CV02",
+        "item_id": "A-005",
+        "detail": "conveyor"
+      },
+      {
+        "at_ms": 267000,
+        "type": "handoff",
+        "device_id": "CV02",
+        "item_id": "A-005",
+        "detail": "移交至Q-pack"
+      },
+      {
+        "at_ms": 267000,
+        "type": "job_completed",
+        "device_id": "CV02",
+        "item_id": "A-005",
+        "detail": "conveyor"
+      },
+      {
+        "at_ms": 267000,
+        "type": "job_started",
+        "device_id": "PK01",
+        "item_id": "A-005",
+        "detail": "pack"
+      },
+      {
+        "at_ms": 280000,
+        "type": "assembly_created",
+        "device_id": "ASM01",
+        "item_id": "A-006",
+        "detail": "壳体1＋PCB1＋螺钉4；原料仅领用一次"
+      },
+      {
+        "at_ms": 280000,
+        "type": "handoff",
+        "device_id": "ASM01",
+        "item_id": "A-006",
+        "detail": "移交至Q-asm"
+      },
+      {
+        "at_ms": 280000,
+        "type": "job_completed",
+        "device_id": "ASM01",
+        "item_id": "A-006",
+        "detail": "assemble"
+      },
+      {
+        "at_ms": 280000,
+        "type": "job_started",
+        "device_id": "R01",
+        "item_id": "A-006",
+        "detail": "robot"
+      },
+      {
+        "at_ms": 282000,
+        "type": "phase_started",
+        "device_id": "R01",
+        "item_id": "A-006",
+        "detail": "grip"
+      },
+      {
+        "at_ms": 282000,
+        "type": "package_created",
+        "device_id": "PK01",
+        "item_id": "PK-005",
+        "detail": "新包件包含原物品A-005"
+      },
+      {
+        "at_ms": 282000,
+        "type": "handoff",
+        "device_id": "PK01",
+        "item_id": "PK-005",
+        "detail": "移交至Q-seal"
+      },
+      {
+        "at_ms": 282000,
+        "type": "job_completed",
+        "device_id": "PK01",
+        "item_id": "PK-005",
+        "detail": "pack"
+      },
+      {
+        "at_ms": 282000,
+        "type": "job_started",
+        "device_id": "CASE01",
+        "item_id": "PK-005",
+        "detail": "seal"
+      },
+      {
+        "at_ms": 283000,
+        "type": "cargo_picked",
+        "device_id": "R01",
+        "item_id": "A-006",
+        "detail": "同一物品从来源转到夹爪持有"
+      },
+      {
+        "at_ms": 283000,
+        "type": "phase_started",
+        "device_id": "R01",
+        "item_id": "A-006",
+        "detail": "loaded_move"
+      },
+      {
+        "at_ms": 284000,
+        "type": "phase_started",
+        "device_id": "CASE01",
+        "item_id": "PK-005",
+        "detail": "seal"
+      },
+      {
+        "at_ms": 288000,
+        "type": "phase_started",
+        "device_id": "R01",
+        "item_id": "A-006",
+        "detail": "release"
+      },
+      {
+        "at_ms": 288000,
+        "type": "package_sealed",
+        "device_id": "CASE01",
+        "item_id": "PK-005",
+        "detail": "扣胶带0.6m一次，包件及内容物ID不变"
+      },
+      {
+        "at_ms": 288000,
+        "type": "phase_started",
+        "device_id": "CASE01",
+        "item_id": "PK-005",
+        "detail": "outfeed"
+      },
+      {
+        "at_ms": 289000,
+        "type": "handoff",
+        "device_id": "R01",
+        "item_id": "A-006",
+        "detail": "移交至Q-robot"
+      },
+      {
+        "at_ms": 289000,
+        "type": "phase_started",
+        "device_id": "R01",
+        "item_id": "A-006",
+        "detail": "return"
+      },
+      {
+        "at_ms": 289000,
+        "type": "job_started",
+        "device_id": "CV01",
+        "item_id": "A-006",
+        "detail": "conveyor"
+      },
+      {
+        "at_ms": 290000,
+        "type": "order_accepted",
+        "device_id": "CASE01",
+        "item_id": "PK-005",
+        "detail": "PAL01接受5/6套"
+      },
+      {
+        "at_ms": 290000,
+        "type": "job_completed",
+        "device_id": "CASE01",
+        "item_id": "PK-005",
+        "detail": "seal"
+      },
+      {
+        "at_ms": 292000,
+        "type": "job_completed",
+        "device_id": "R01",
+        "item_id": "A-006",
+        "detail": "robot"
+      },
+      {
+        "at_ms": 293000,
+        "type": "handoff",
+        "device_id": "CV01",
+        "item_id": "A-006",
+        "detail": "移交至Q-inspect"
+      },
+      {
+        "at_ms": 293000,
+        "type": "job_completed",
+        "device_id": "CV01",
+        "item_id": "A-006",
+        "detail": "conveyor"
+      },
+      {
+        "at_ms": 293000,
+        "type": "job_started",
+        "device_id": "V01",
+        "item_id": "A-006",
+        "detail": "inspect"
+      },
+      {
+        "at_ms": 303000,
+        "type": "quality_decided",
+        "device_id": "V01",
+        "item_id": "A-006",
+        "detail": "pass，去向passed，已返工0次"
+      },
+      {
+        "at_ms": 303000,
+        "type": "handoff",
+        "device_id": "V01",
+        "item_id": "A-006",
+        "detail": "移交至Q-passed"
+      },
+      {
+        "at_ms": 303000,
+        "type": "job_completed",
+        "device_id": "V01",
+        "item_id": "A-006",
+        "detail": "inspect"
+      },
+      {
+        "at_ms": 303000,
+        "type": "job_started",
+        "device_id": "CV02",
+        "item_id": "A-006",
+        "detail": "conveyor"
+      },
+      {
+        "at_ms": 307000,
+        "type": "handoff",
+        "device_id": "CV02",
+        "item_id": "A-006",
+        "detail": "移交至Q-pack"
+      },
+      {
+        "at_ms": 307000,
+        "type": "job_completed",
+        "device_id": "CV02",
+        "item_id": "A-006",
+        "detail": "conveyor"
+      },
+      {
+        "at_ms": 307000,
+        "type": "job_started",
+        "device_id": "PK01",
+        "item_id": "A-006",
+        "detail": "pack"
+      },
+      {
+        "at_ms": 322000,
+        "type": "package_created",
+        "device_id": "PK01",
+        "item_id": "PK-006",
+        "detail": "新包件包含原物品A-006"
+      },
+      {
+        "at_ms": 322000,
+        "type": "handoff",
+        "device_id": "PK01",
+        "item_id": "PK-006",
+        "detail": "移交至Q-seal"
+      },
+      {
+        "at_ms": 322000,
+        "type": "job_completed",
+        "device_id": "PK01",
+        "item_id": "PK-006",
+        "detail": "pack"
+      },
+      {
+        "at_ms": 322000,
+        "type": "job_started",
+        "device_id": "CASE01",
+        "item_id": "PK-006",
+        "detail": "seal"
+      },
+      {
+        "at_ms": 324000,
+        "type": "phase_started",
+        "device_id": "CASE01",
+        "item_id": "PK-006",
+        "detail": "seal"
+      },
+      {
+        "at_ms": 328000,
+        "type": "package_sealed",
+        "device_id": "CASE01",
+        "item_id": "PK-006",
+        "detail": "扣胶带0.6m一次，包件及内容物ID不变"
+      },
+      {
+        "at_ms": 328000,
+        "type": "phase_started",
+        "device_id": "CASE01",
+        "item_id": "PK-006",
+        "detail": "outfeed"
+      },
+      {
+        "at_ms": 330000,
+        "type": "order_accepted",
+        "device_id": "CASE01",
+        "item_id": "PK-006",
+        "detail": "PAL01接受6/6套"
+      },
+      {
+        "at_ms": 330000,
+        "type": "job_completed",
+        "device_id": "CASE01",
+        "item_id": "PK-006",
+        "detail": "seal"
+      }
+    ],
+    "last_acceptance_ms": 330000
+  },
+  "product_acceptance": "not_claimed"
+}

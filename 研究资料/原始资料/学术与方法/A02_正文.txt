@@ -1,0 +1,570 @@
+
+--- PDF第1页 ---
+Page 1 of 18 
+ 
+Citation details: Malik, A.A. ‘Framework to model virtual factories: a digital twin view’. pre-print, arXiv. [eess.SY] 
+(2021) 
+Framework to model virtual factories: a 
+digital twin view 
+ 
+Ali Ahmad Malik 
+Siemens Gamesa Renewable Energy, 7330 Brande, Denmark 
+Email: ali.malik@siemensgamesa.com 
+Mobile: +45 7158 22 21 
+ 
+Pre-print 
+ 
+ 
+Highlights:  
+ 
+ Digital twin has emerged as the next wave in the simulation technology to answer the growing complexities of 
+manufacturing systems.  
+ The exactitude of the virtual models defines the accuracy of predicted behavior obtained from the 
+experimentation on the digital twin. 
+ The lack of frameworks often makes it difficult to achieve a model with accuracy, short lead time and with ability 
+to be reconfigured. 
+ A VMDT framework for simulation modelling of a manufacturing system is presented. 
+ 
+
+
+--- PDF第2页 ---
+Page 2 of 18 
+ 
+Citation details: Malik, A.A. ‘Framework to model virtual factories: a digital twin view’. pre-print, arXiv. [eess.SY] 
+(2021) 
+Framework to model virtual factories: a digital twin view 
+ 
+Ali Ahmad Malik 
+Siemens Gamesa Renewable Energy, 7330 Brande, Denmark 
+Email: ali.malik@siemensgamesa.com 
+Mobile: +45 7158 22 21 
+ 
+Abstract: 
+Digital twin has emerged as a technology to predict the ‘undesirables’ and ensure desired performance 
+of complex systems. Although digital twins have got attention in the manufacturing research spectrum, 
+yet their industrial application has been limited. Virtual simulations are considered an integral part of a 
+digital twin, but a challenge is the lack of structured approaches of creating simulation models that can 
+be extended as a digital twin. At the same time, the virtual  models need to be accurate and flexible 
+enough to be updated along the life cycle of the factory as desired in a digital twin. This paper presents 
+a framework for virtual  modeling of factories that can be extended as a digital twin. Case of a 
+manufacturing company is presented to model and simulate a manufacturing system in a structured yet 
+flexible way. 
+Keywords: Simulation; Digital twin; Manufacturing; Industry 4.0; Virtual. 
+ 
+1. Introduction 
+A digital twin is a data connected 3 D (three dimensional)  visualization of elements and dynamics of a 
+physical system (Malik & Brem 2020) . The vision of a digital twin (DT) is the integration of a virtual 
+representation of a physical system with real -world data feedback to mitigate the complexities of 
+predicting the performance of the system –  and is useful in current and subsequent  lifecycle phases of 
+the system that it refers to  (Qi et al. 2019)  (Bilberg & Malik 2019) . The advantages of having such a 
+virtual twin of a physical system is to act as a forward-run to predict the future, identify any undesirables 
+and suggest appropriate measures to avoid the undesirables (Grieves & Vickers 2017) . It starts at the 
+concept development phase of a system and continues to support decision making throughout  
+development, operation, and maintenance. The concept of DT, besides other knowledge  domains, has 
+been widely researched for manufacturing applications (Schleich et al. 2017) (Haag & Anderl 2018) (Qi 
+et al. 2019). 
+For digital twins of manufacturing systems, simulation capability is defined as an important, if not 
+integral, aspect of a digital twin (Hehenberger & Bradley 2016) (Morandotti & Pelosi 2018) (Kuts et al. 
+2019). The eight dimension model of a digital twin described by (Stark et al. 2019) places the simulation 
+capability at fifth dimension of achieving a system’s digital twin.  
+The art of digitally modelling, analysing,  and validating a manufacturing system has evolved from 
+standalone 2D drawing to data intelligent digital twins. There are several types and forms of virtual 
+simulation models (Mourtzis et al. 2014) that can be used to develop a digital twin  of a product and its 
+production system (see Figure 1).  
+
+--- PDF第3页 ---
+Page 3 of 18 
+ 
+Citation details: Malik, A.A. ‘Framework to model virtual factories: a digital twin view’. pre-print, arXiv. [eess.SY] 
+(2021) 
+ 
+Figure 1. A comprehensive view of a digital twins. 
+ 
+The exactitude of the virtual models defines the accuracy of predicted  behavior obtained from the 
+experimentation on the digital twin. Furthermore, the efforts required to build these models need to be 
+reduced and be more reconfigurable (parametric modeling).  
+The PLM packages offered by major companies such as Siemens, PTC, Dassault Systems, SAP and Oracle 
+offer solutions for factory planning, design, and deployment (Tolio et al. 2013) . But the lack of  
+frameworks often makes it difficult to achieve a model with accuracy, short lead time and with ability to 
+be reconfigured. This can also be described as value to cost ratio of building a digital twin which becomes 
+difficult to justify if these attributes are not available. 
+This paper discusses the simulation domain of a digital twin for a manufacturing system. This paper 
+presents a generic framework to model a production system integrating diff erent forms of simulations 
+at various levels of details that can subsequently be integrated with a digital twin.   
+The presented study and the DT simulation framework can be useful in situations: 
+• When evaluating a new design / strategy with or without owning the physical system 
+• When developing a virtual simulation of an already operational / legacy manufacturing system 
+• To investigate behaviour of a sub-system (e.g. machine, segment etc.) of a larger system (factory) 
+with or without investigating its relationship with the rest of the system components 
+ 
+
+
+--- PDF第4页 ---
+Page 4 of 18 
+ 
+Citation details: Malik, A.A. ‘Framework to model virtual factories: a digital twin view’. pre-print, arXiv. [eess.SY] 
+(2021) 
+2. Background literature 
+2.1. Description of an adaptable manufacturing system 
+Manufacturing, as a technological process, is the application of physical and/or chemical processes to 
+transform the properties, geometry or shape of a given starting material (Wiendahl et al. 2007) (Groover 
+2007). Quite often, it also involves a sequential integration or joining of components to achieve 
+assembled products (Nof et al. 2012). An organized collection of equipment, people, and procedures to 
+achieve these manufacturing operations is referred to as a manufacturing system (Groover 2007). While 
+the responsiveness of a manufacturing system can be described by its ability to adapt to product 
+variations and its capacity to adjust to fluctuations in demand (Koren & Shpitalni 2010).  
+ 
+Figure 2. Levels of a factory (Wiendahl et al. 2007). 
+ 
+To simplify the study of a manufacturing system  it may be classified into segments or levels . A 
+classification of a manufacturing system was presented by (Wiendahl et al. 2015)  as factory levels. The 
+smallest level is a workstation while a cell comprises several workstations. The higher level refer s to a 
+factory (see Figure 2). Each level may have its own structure, composition, complexity, and relationship 
+with upstream and downstream activities. The level of automation would also be different in each level.  
+These levels have been discussed by (Wiendahl et al. 2007).  
+ 
+2.2. Simulations in manufacturing design and planning  
+Modern manufacturing systems present a mutual causality between complexity and desire for their 
+predictability. In other words, the complexity of manufacturing systems is growing, and it is becoming 
+difficult to predict a system’s performance (Malik & Brem 2020). However, the need of predictability is 
+becoming increasingly important to adapt the system to market variations.  
+
+
+--- PDF第5页 ---
+Page 5 of 18 
+ 
+Citation details: Malik, A.A. ‘Framework to model virtual factories: a digital twin view’. pre-print, arXiv. [eess.SY] 
+(2021) 
+A way to study the behavior of complex systems is through quantitative modeling. Quantitative models 
+are often in the form of mathematical models (Banks & Carson II 1986) . However, when mathematical 
+models are used to study real-world systems, many times the increased complexity makes it difficult to 
+achieve an analytical solution. In such situations, simulation modeling can be helpful  (Figure 3). 
+Simulation software translates mathematical equation s into less abstract  symbols (Misselhorn 2015), 
+with a higher intuition and less mathematical represen tation yet rigorously based on  mathematical 
+models (Misselhorn 2015) . Simulation model s (as computer supported calculations) project past or 
+future outcomes of the  process, system or event. To conclude, computer simulation models are based 
+on mathematics and are therefore mathematical models, yet, simulations are mor e suited to situations 
+where analytical solution is difficult to achieve due to increased complexity. 
+ 
+Figure 3. Different forms of simulation in production systems; adapted from (Wiendahl et al. 2015). 
+ 
+Simulations, in a broader context, can be developed with physical objects, virtual objects or a  
+combination of both, but a computer simulation is using of a computer software for building and coding 
+an operating and quantifiable model of real-world process, system, or events (Law et al. 2000) (Davis et 
+al. 2007), whose variables can be manipulated (Berends & Romme 1999)  and the resulting output is 
+available immediately. 
+Once a simulation model is developed , the time of a simulation can be fast forwarded or reversed to 
+observe the effect of manipulation of variables to reach a specific instance of  time and seeing the 
+artificial past or future (similar to time -machine concept). The accuracy of a  model comparing to the 
+real world is important to achieve reliable results. Although this paper is focused on computer based 
+digital simulations, yet the combination of both the physical and virtual simulations are also discussed. 
+ 
+
+
+--- PDF第6页 ---
+Page 6 of 18 
+ 
+Citation details: Malik, A.A. ‘Framework to model virtual factories: a digital twin view’. pre-print, arXiv. [eess.SY] 
+(2021) 
+2.3. From simulation to digital twin 
+CAD models generated during development of a new production system contain maximum details of the 
+desired performance of the system (Bilberg & Malik 2019) . Efforts have been made to extend these 
+models to various types of simulations  thus extracting as much information as possible before making 
+any investment. Further more, the increasing need of customization requires that manufacturing 
+systems are continuously evolving and rapidly reconfigured  (Masood & Sonntag 2020) . Hence the 
+changeover times are getting short while it is important that the reconfiguration strategies are validated 
+before implementation into the real world (Thomas et al. 2016) (Leng et al. 2020).  
+ 
+Figure 4. The evolution of simulation technology, adapted from (Hehenberger & Bradley 2016). 
+ 
+Hardware in the loop simulations (Harrison III & Proctor 2015) can speed up the changeovers (Malik et 
+al. 2020). Furthermore, the recent years have seen considerable development  (see Figure 4)  in using 
+simulation models along the lifecycle of a system and are referred to as a  digital twin (Malik & Brem 
+2020) with seamless data connectivity between the real system and the simulation model  (see Figure 
+5). Thus, the real feedback from the real system acts as input data for the simulation and enables a more 
+realistic and faster performance optimization (Qi et al. 2019). 
+ 
+ 
+
+
+--- PDF第7页 ---
+Page 7 of 18 
+ 
+Citation details: Malik, A.A. ‘Framework to model virtual factories: a digital twin view’. pre-print, arXiv. [eess.SY] 
+(2021) 
+ 
+Figure 5. Digital twins in system design (Malik & Brem 2020). 
+ 
+3. VMDT framework for modeling of a production system  
+The simulation modelling of a manufacturing system  is affected by complexity, detail level and the size 
+of the considered area. It is also influenced by the problem for which the digital twin needs to be created 
+as it  will define the required details of the simulation model. A generic framework for simulation 
+modelling of a manufacturing system is shown in Fig ure 6. The model illustrates the flow of a detailed 
+simulation analysis as well as its integration with the hardware to build HiL (hardware in the loop) 
+systems or a digital twin.  
+ 
+Figure 6. VMDT framework for virtual modeling for a digital twin.  
+
+
+--- PDF第8页 ---
+Page 8 of 18 
+ 
+Citation details: Malik, A.A. ‘Framework to model virtual factories: a digital twin view’. pre-print, arXiv. [eess.SY] 
+(2021) 
+3.1. Virtual modeling 
+The modeling is done in three steps i.e. static modeling, defining dynamic relationships, defining 
+properties and attributes. 
+ 
+3.1.1. Static modeling  
+Static modeling is primarily the creation of static visualization of the system under observation. It starts 
+by creating CAD objects and placing them in an approximate order thus representing the manufacturing 
+system (Figure 7) . These models can be built in Computer Aided Designing (CAD) software such as 
+CATIA, NX, Creo, SolidWorks etc. Over the years, different  CAD formats have been introduced to enable 
+data exchange from one CAD system to another. Most common 3D data exchange formats are STEP, and 
+IGES. It is becoming increasingly important that 3D data of machines and resources is made available by 
+the OEMs.  
+ 
+Figure7. Static modeling of production systems.  
+ 
+ It can be time consuming  and has a prerequisite that correct level of details is  identified to avoid 
+wasteful efforts in creating details that are not required. It is also important that depending upon the 
+complexity of the system, correct data format is used. For example,  STEP and IGES are often heavy CAD 
+formats while JT is lighter. Surface models can be helpful if study of the physical forces is not required.  
+It is time consuming to build high fidelity virtual models of a complex production system. Jain (Jain et al. 
+2015) proposed that joint efforts are needed to simplify this step. Most manufacturers of factory 
+
+
+--- PDF第9页 ---
+Page 9 of 18 
+ 
+Citation details: Malik, A.A. ‘Framework to model virtual factories: a digital twin view’. pre-print, arXiv. [eess.SY] 
+(2021) 
+equipment are now offering CAD 3D data of their products at various detail levels in standardized CAD 
+data exchange formats (e.g. STEP, OBJ, JT etc.). The most common data format is STEP which is usable in 
+most modeling software.  
+Another development is the availability and integration of standard libraries (Fig. 6) in the modelling 
+software. Factory design packages are now being offered by various venders with built in or cloud-
+based libraries of standard production resources. These resources, once used in the virtual model, can 
+be exported to simulation software. 
+As being said, a production system can have various levels  of details starting from a workstation to 
+production floor, and site. Resources are combined together in desired quantity and order to achieve the 
+desired production. For virtual experimentation, it is a first step to have computer-based models of these 
+resources. The CAD models of the components and assemblies are then combined together and placed 
+at appropriate locations in the virtual environment thus creating a system.  The placement of the 
+resources or the layout can be optimized using features offered by CAD tools.  
+ 
+3.1.2. Defining properties and attributes 
+ 
+Figure 8. Defining properties of production resources in virtual modeling.  
+ 
+
+
+--- PDF第10页 ---
+Page 10 of 18 
+ 
+Citation details: Malik, A.A. ‘Framework to model virtual factories: a digital twin view’. pre-print, arXiv. [eess.SY] 
+(2021) 
+After static CAD models of production resources have been created the models can be imported into a 
+simulation environment where kinema tic simulation s (often time -based continuous simulation) or 
+material flow simulation (discrete event simulation) can be performed.  Each resource is placed at 
+appropriate locations  defining an initial layout and the next step is to define relevant propertie s, 
+attributes and physical characteristics for each  active production resource. The workspace may also 
+include passive resources that do not affect the production output and maybe ignored for simulation.  
+The Figure 8 shows an example of a simulation model of a production space that includes a human 
+operator, a mobile robot, a machining center, and some passive resources. The properties of each of the 
+active resource are also shown in the figure.  
+ 
+3.1.3. Dynamic relationships 
+The next step is to define the dynamic behavior of the virtual production resources. It includes defining 
+relationships between entities of a static CAD model. In case of a machine it may include the relationship 
+and constraints between different components. Human resources (Figure 9) required in the production 
+system can also be added. Material flow constraints are added (Figure 10).  
+ 
+Figure 9. Digital human modeling. 
+3.2. Simulation runs 
+A real world doesn’t work with uninterrupted ideal situations. Therefore, variables need to be 
+introduced for realistic analysis. (Heilala & Voho 2001)  described DES the best method to evaluate 
+variability of reconfigurable assembly cells (Figure 11). The model developed in previous chapter with 
+continuous simulation is imported into a DES software. The software that can be used in such study are 
+Visual Components, Tecnomatix Plant Simulation, Simio, FlexSim, AnyLogic, ProModel etc. 
+
+
+--- PDF第11页 ---
+Page 11 of 18 
+ 
+Citation details: Malik, A.A. ‘Framework to model virtual factories: a digital twin view’. pre-print, arXiv. [eess.SY] 
+(2021) 
+Figure 10. Continuous simulations in design of production systems. 
+ 
+Continuous simulation helps to calculate accurate estimations for the cycle times f or each activity 
+depending upon e.g. robot trajectories, human posture,  and time to transfer a product from one station 
+to another. It not only generates a realistic simulation of the process but also calculates average cycle 
+times, robot cycle times given optimized robot trajectories, human collisions with the robots and safety 
+analysis for implemented safety shielding. 
+ 
+Figure 11. Discrete event simulations in planning and optimizing production scenarios.  
+This type of modelling can be performed in commercial platforms such as Tecnomatix Process Simulate, 
+DELMIA, Visual Components etc.  The mod ular approach (Guo et al. 2019)  is utilized for simulation 
+
+
+--- PDF第12页 ---
+Page 12 of 18 
+ 
+Citation details: Malik, A.A. ‘Framework to model virtual factories: a digital twin view’. pre-print, arXiv. [eess.SY] 
+(2021) 
+modelling in this phase as well and classes (objects) are created with given parameters for the 
+equipment.  
+ 
+4. Commercial aspects of simulation modeling 
+The need and importance of simulation modeling is well acknowledged. But the industrial application 
+particularly for S MEs is quite limited. The challenges that are often regarded a  hindrance in industrial 
+usability of simulations are lack of knowledge, lack of skilled people, cost of software, and retention of 
+trained personnel. Some of the challenges such as long time spent on building the simulation models 
+maybe reduced by defining the right type of simulation study and breaking it down to different levels. A 
+theoretical model (Figure 12) in this regard is presented in the figure which acts as a stage gate model. 
+The objectives of defining a simulation study can be decomposed into several phases and each can be 
+approached depending upon the need.   
+ 
+Figure 12. Using simulations in manufacturing industry.  
+ 
+5. User interaction with the virtual models 
+Humans or users can interact with the virtual models using virtual screen displays. The integration of 
+physical and virtual objects can be enabled to have fluid interaction of the naive users with the 
+simulation (Figure 13) . A growing interest is there to interact with the virtual models in immersive 
+environments. The immersive environments let the user to interact with the equipment by virtual ly 
+entering the scene  (Figure 14) . More intuition increases productivity and effectiveness of simulation 
+modeling. For example, enabling the use of vocal commands in addition to mouse and keyboard 
+interaction between software and user results in increased product ivity (Feeman et al. 2018) . 
+Augmented reality is another way to i nteract and evaluate  the virtual models. AR holograms (Fig. 10) 
+are embedded with the real world to visualize the results. A possible result is to see the placement of a 
+virtual machine in a room.  
+ 
+
+
+--- PDF第13页 ---
+Page 13 of 18 
+ 
+Citation details: Malik, A.A. ‘Framework to model virtual factories: a digital twin view’. pre-print, arXiv. [eess.SY] 
+(2021) 
+ 
+Figure 13. Fluid interaction between the end users and the simulation.  
+ 
+ 
+Figure 14. Immersive environment to interact with the simulation objects.  
+ 
+
+
+--- PDF第14页 ---
+Page 14 of 18 
+ 
+Citation details: Malik, A.A. ‘Framework to model virtual factories: a digital twin view’. pre-print, arXiv. [eess.SY] 
+(2021) 
+6. Interfacing simulation with physical system 
+The integration of simulation model with the physical counterparts can have multiple advantages  
+(Figure 15). An example of it is industrial robotic. A great deal in robotic applications is associated with 
+the need of expertise and effort to program the robots (Rossano et al. 2013) . Even in case of cobots –  
+with an easier programming inte rface - the programming is still a time consuming and tedious task for 
+industrial applications. With the use of a DT, the robot program is intuitively generated in a simulation 
+environment (Figure 16). Once the desired operation is tested virtually with defined robot trajectories 
+and transition logics the robot program is transferred to the connected cobot that starts working as the 
+robot in the digital twin (offline). An online connection between physical and virtual robot can 
+dynamically transmit any movement made in physical space to the robot in the virtual space and vice 
+versa (Fig. 11). Thus, avoiding any need to have any additional programing. Since the simulation has 
+robot paths in a robot understandable language, the robot program can be transferred back to the  
+simulation to make simulation run according to the physical robot. 
+ 
+Figure 15. Interfacing the sensor data with a simulation to build a real-time digital twin.  
+ 
+
+
+--- PDF第15页 ---
+Page 15 of 18 
+ 
+Citation details: Malik, A.A. ‘Framework to model virtual factories: a digital twin view’. pre-print, arXiv. [eess.SY] 
+(2021) 
+ 
+ 
+Figure 16. Interfacing robot feedback with its digital twin.  
+ 
+7. Discussion and conclusion 
+With growing demand of customization, challenges of globalization, and the penetration of information 
+and communication technologies,  the future factories are exp ected to be adaptable, responsive, and 
+connected. Th is vision is often referred to as Industry 4.0 or the fourth industrial revolution. The 
+infusion of enabling technologies the future manufacturing systems are seen as complex biomechatronic 
+systems.  
+Digital twin has emerged as the next wave in the simulation technology (Hehenberger & Bradley 2016) 
+to answer the growing complexities of manufacturing systems. Although the predictions of a system’s 
+performance can also be developed using mathematical computational models or simulations 
+(Narayanan et al. 1998). But a digital twin, as a data connected digital shadow of a physical system, can 
+help deal with complexity that grows along the lifecycle of a production system. Modeling and enabling 
+a DT is useful if the system that it refers to is: 
+• of complex nature 
+• continuously evolving  
+• difficult to predict with conventional simulations  
+Digital twin is the concept to build a virtual model as a 4 -dimensional model of a physical system. In 
+factory operations, the increasing integration of internet, PLCs and computers is making the systems 
+
+
+--- PDF第16页 ---
+Page 16 of 18 
+ 
+Citation details: Malik, A.A. ‘Framework to model virtual factories: a digital twin view’. pre-print, arXiv. [eess.SY] 
+(2021) 
+complex and the frequent changes require that the system is predictable. DT aims to solve the question 
+by building a virtual model often with a 3D representation and with a 4th dimension of time or duration.   
+A successful implementation of a digital twin of a factory can integrate the whole lifecycle of the product 
+in a virtual or digital world. 
+The economic justification of building a digital twin is easier said than done. However, the information 
+obtained from a digital twin model is a replacement for wasted physical resources i.e. time, energy and 
+material (Grieves & Vickers 2017). Therefore, if the cost of information is less than wasting the resources 
+then information must be traded off.  
+Simulation-based digital prototyping is a well -grounded method in research and practice to support 
+decision making in design and reconfiguration of manufacturing activities (Flores -Garcia et al. 2015), 
+yet the reduction of development time through the use of CAD tools in manufacturing systems' 
+development has not been parallel to the advancement in product development (ElMaraghy 2005) . 
+Digital simulations make it possible to make insights into complex manufacturing systems  to form and 
+validate optimizations before translating them into the real  world (Mourtzis 2019)  (Uhlemann et al. 
+2017). Reduction in development time and cost is the primary motive to make virtual experimentation 
+and validation (Azab et al. 2012). As the need for changeability and flexibility is increasing, the need for 
+virtual experimentation is also gaining more attention (Sølund 2017). 
+Robotics simulations are used to plan, predict, and safely test what if scenarios when planning a robot 
+based system (Schluse & Rossmann 2016). Similarly, the digital human modeling, through integrating 
+a computer-rendered avatar, can examine ergonomic viability of human actions (Chaffin 2008) 
+(Poirson & Delangle 2013) (Schuh et al. 2015). 
+ 
+8. References 
+ Azab, A., AlGeddawy, T. & others, 2012. Simulation Methods for Changeable Manufacturing. Procedia 
+CIRP, 3, pp.179–184. 
+ 
+Banks, J. & Carson II, J.S., 1986. Introduction to discrete-event simulation. In Proceedings of the 18th 
+conference on Winter simulation. pp. 17–23. 
+ 
+Berends, P. & Romme, G., 1999. Simulation as a research tool in management studies. European 
+Management Journal, 17(6), pp.576–583. 
+ 
+Bilberg, A. & Malik, A.A., 2019. Digital twin driven human-robot collaborative assembly. CIRP Annals - 
+Manufacturing Technology, 68(1), pp.499–502. 
+ 
+Chaffin, D.B., 2008. Digital human modeling for workspace design. Reviews of Human Factors and 
+Ergonomics, 4(1), pp.41–74. 
+ 
+Davis, J.P., Eisenhardt, K.M. & Bingham, C.B., 2007. Developing theory through simulation methods. 
+Academy of Management Review, 32(2), pp.480–499. 
+ 
+ElMaraghy, H.A., 2005. Flexible and reconfigurable manufacturing systems paradigms. International 
+journal of flexible manufacturing systems, 17(4), pp.261–276. 
+ 
+
+--- PDF第17页 ---
+Page 17 of 18 
+ 
+Citation details: Malik, A.A. ‘Framework to model virtual factories: a digital twin view’. pre-print, arXiv. [eess.SY] 
+(2021) 
+Feeman, S.M., Wright, L.B. & Salmon, J.L., 2018. Exploration and evaluation of CAD modeling in virtual 
+reality. Computer-Aided Design and Applications, 15(6), pp.892–904. 
+ 
+Grieves, M. & Vickers, J., 2017. Digital twin: Mitigating unpredictable, undesirable emergent behavior 
+in complex systems. In Transdisciplinary Perspectives on Complex Systems. Springer, pp. 85–113. 
+ 
+Groover, M.P., 2007. Automation, production systems, and computer-integrated manufacturing, Prentice 
+Hall Press. 
+ 
+Guo, J. et al., 2019. Modular based flexible digital twin for factory design. Journal of Ambient Intelligence 
+and Humanized Computing, 10(3), pp.1189–1200. 
+ 
+Harrison III, W.S. & Proctor, F., 2015. Virtual fusion: state of the art in component 
+simulation/emulation for manufacturing. Procedia Manufacturing, 1, pp.110–121. 
+ 
+Hehenberger, P. & Bradley, D., 2016. Mechatronic Futures: Challenges and Solutions for Mechatronic 
+Systems and their Designers, Springer. 
+ 
+Heilala, J. & Voho, P., 2001. Modular reconfigurable flexible final assembly systems. Assembly 
+Automation, 21(1), pp.20–30. 
+ 
+Haag, S. & Anderl, R., 2018. Digital twin-Proof of concept. Manufacturing Letters. 
+ 
+Jain, S. et al., 2015. Towards a virtual factory prototype. In Proceedings of the 2015 Winter Simulation 
+Conference. pp. 2207–2218. 
+ 
+Koren, Y. & Shpitalni, M., 2010. Design of reconfigurable manufacturing systems. Journal of 
+manufacturing systems, 29(4), pp.130–141. 
+ 
+Kuts, V. et al., 2019. Digital twin based synchronised control and simulation of the industrial robotic 
+cell using virtual reality. Journal of Machine Engineering, 19. 
+ 
+Law, A.M., Kelton, W.D. & Kelton, W.D., 2000. Simulation modeling and analysis, McGraw-Hill New York. 
+ 
+Leng, J. et al., 2020. Digital twin-driven rapid reconfiguration of the automated manufacturing system 
+via an open architecture model. Robotics and Computer-Integrated Manufacturing, 63, p.101895. 
+ 
+Malik, A.A. & Brem, A., 2020. Digital twins for collaborative robots: A case study in human-robot 
+interaction. Robotics and Computer-Integrated Manufacturing, 68, p.102092. 
+ 
+Malik, A.A., Masood, T. & Kousar, R., 2020. Repurposing factories with robotics in the face of COVID-19. 
+Science Robotics, 5(eabc2782). 
+ 
+Masood, T. & Sonntag, P., 2020. Industry 4.0: Adoption challenges and benefits for SMEs. Computers in 
+Industry, 121, p.103261. 
+ 
+Misselhorn, C., 2015. Collective Agency and Cooperation in Natural and Artificial Systems: Explanation, 
+Implementation and Simulation, Springer. 
+ 
+Morandotti, D. & Pelosi, A., 2018. Toward Digital Twin and Simulation-Driven New Product 
+Development. R&Designing Innovation: Transformational Challenges for Organizations and Society. 
+ 
+
+--- PDF第18页 ---
+Page 18 of 18 
+ 
+Citation details: Malik, A.A. ‘Framework to model virtual factories: a digital twin view’. pre-print, arXiv. [eess.SY] 
+(2021) 
+Mourtzis, D., 2019. Simulation in the design and operation of manufacturing systems: state of the art 
+and new trends. International Journal of Production Research, pp.1–23. 
+ 
+Mourtzis, D., Doukas, M. & Bernidaki, D., 2014. Simulation in Manufacturing: Review and Challenges. 
+Procedia CIRP, 25, pp.213–229. 
+ 
+Narayanan, S. et al., 1998. Research in object-oriented manufacturing simulations: an assessment of 
+the state of the art. IIE transactions, 30(9), pp.795–810. 
+ 
+Nof, S.Y., Wilhelm, W.E. & Warnecke, H., 2012. Industrial assembly, Springer Science & Business Media. 
+ 
+Poirson, E. & Delangle, M., 2013. Comparative analysis of human modeling tools. In International 
+Digital Human Modeling Symposium. 
+ 
+Qi, Q. et al., 2019. Enabling technologies and tools for digital twin. Journal of Manufacturing Systems. 
+ 
+Rossano, G.F. et al., 2013. Easy robot path programming concepts: An industrial perspective on path 
+creation. In Robotics (ISR), 2013 44th International Symposium on. pp. 1–6. 
+ 
+Schleich, B. et al., 2017. Shaping the digital twin for design and production engineering. CIRP Annals, 
+66(1), pp.141–144. 
+ 
+Schluse, M. & Rossmann, J., 2016. From simulation to experimentable digital twins: Simulation-based 
+development and operation of complex technical systems. In Systems Engineering (ISSE), 2016 IEEE 
+International Symposium on. pp. 1–6. 
+ 
+Schuh, G. et al., 2015. Promoting work-based learning through industry 4.0. Procedia CIRP, 32, pp.82–
+87. 
+ 
+Stark, R., Fresemann, C. & Lindow, K., 2019. Development and operation of Digital Twins for technical 
+systems and services. CIRP Annals, 68(1), pp.129–132. 
+ 
+Sølund, T., 2017. Towards Plug-n-Play robot guidance: Advanced 3D estimation and pose estimation in 
+Robotic applications. 
+ 
+Thomas, C. et al., 2016. Intuitive work assistance by reciprocal human-robot interaction in the subject 
+area of direct human-robot collaboration. Procedia CIRP, 44, pp.275–280. 
+ 
+Tolio, T. et al., 2013. Virtual factory: An integrated framework for manufacturing systems design and 
+analysis. Procedia CIRP, 7, pp.25–30. 
+ 
+Uhlemann, T.H.-J. et al., 2017. The Digital Twin: Demonstrating the potential of real time data 
+acquisition in production systems. Procedia Manufacturing, 9, pp.113–120. 
+ 
+Wiendahl, H.-P. et al., 2007. Changeable Manufacturing - Classification, Design and Operation. CIRP 
+Annals - Manufacturing Technology, 56(2), pp.783 – 809. 
+ 
+Wiendahl, H.-P., Reichardt, J. & Nyhuis, P., 2015. Handbook Factory Planning and Design, Springer. 
+ 
+  

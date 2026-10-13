@@ -1,0 +1,173 @@
+{
+  "document_kind": "readiness_and_service_design_not_runtime_input",
+  "schema_revision": "draft-1",
+  "actual_result": null,
+  "cases": {
+    "commissioning": {
+      "project_day_ms": 86400000,
+      "production_origin_project_ms": 374400000,
+      "observation_windows_ms": [
+        86400000,
+        259200000
+      ],
+      "construction": {
+        "mechanical_end_day": 3,
+        "cabinet_base_end_day": 2,
+        "cabinet_late_end_day": 5,
+        "wiring_calendar_duration_day": 1,
+        "trial_calendar_duration_day": 0.5,
+        "decision_source": "self-built planned simulation acceptance",
+        "crew_work_hours": null
+      },
+      "production": {
+        "demand": 2,
+        "initial_stock": {
+          "shell": 2,
+          "pcb": 2,
+          "fastener": 8,
+          "carton": 2
+        },
+        "initial_products": 0,
+        "shifts_project_ms": [
+          [
+            374400000,
+            403200000
+          ],
+          [
+            460800000,
+            489600000
+          ],
+          [
+            547200000,
+            576000000
+          ],
+          [
+            633600000,
+            662400000
+          ]
+        ],
+        "assembly_ms": 1800000,
+        "inspection_ms": 300000,
+        "packing_ms": 300000,
+        "worker_a": "assembly",
+        "worker_b": "inspection_and_packing",
+        "inspection": "preset_PASS",
+        "transfer_ms": 0,
+        "receiving_capacity": 2,
+        "deadline_relative_ms": 28800000
+      }
+    },
+    "utility": {
+      "machines": [
+        "M1",
+        "M2"
+      ],
+      "initial_raw_each": 1,
+      "expected_product_each": 1,
+      "resource_calendar_ms": [
+        [
+          0,
+          120000
+        ]
+      ],
+      "duration_ms": 30000,
+      "active_power_kw_each": 6,
+      "active_air_lps_each": 2,
+      "background_power_kw": 0,
+      "background_air_lps": 0,
+      "reference_conditions": {
+        "air_basis": "free_air",
+        "temperature_c": 20,
+        "absolute_pressure_kpa": 101.325
+      },
+      "quality_basis": "self-declared nominal attributes; no pressure or power-network solver",
+      "capacity_variants": [
+        {
+          "id": "utility_base",
+          "power_kw": 10,
+          "air_lps": 3
+        },
+        {
+          "id": "utility_power_only",
+          "power_kw": 14,
+          "air_lps": 3
+        },
+        {
+          "id": "utility_air_only",
+          "power_kw": 10,
+          "air_lps": 5
+        },
+        {
+          "id": "utility_both",
+          "power_kw": 14,
+          "air_lps": 5
+        }
+      ],
+      "outage": {
+        "id": "utility_outage_pause_resume",
+        "power_kw": 10,
+        "air_lps": 3,
+        "power_capacity_zero_ms": [
+          40000,
+          70000
+        ],
+        "interruption_policy": "pause_resume",
+        "hold_resources": [
+          "M2"
+        ],
+        "release_phase_services": true
+      }
+    },
+    "professional": {
+      "dimension_unit": "mm",
+      "allowed_pose": "fixed_axis_aligned",
+      "product_revisions": {
+        "r1": [
+          100,
+          60,
+          30
+        ],
+        "r2": [
+          108,
+          60,
+          30
+        ]
+      },
+      "package_usable_inner": {
+        "old": [
+          104,
+          64,
+          34
+        ],
+        "new": [
+          112,
+          64,
+          34
+        ]
+      },
+      "per_side_clearance_mm": 2,
+      "requested_scope": "nominal_envelope_check_only",
+      "excluded_results": [
+        "folding_process",
+        "strength",
+        "manufacturing_layers",
+        "real_machine_execution"
+      ],
+      "producer_result": null,
+      "nc_subset_proposal": [
+        "G0",
+        "G1",
+        "G21",
+        "G90"
+      ],
+      "binding_cases": [
+        "old_order_r1",
+        "new_order_old_binding",
+        "new_order_rechecked_envelope",
+        "calculated_nc_requested_but_absent",
+        "unsupported_nc_dialect",
+        "air_reference_conditions_mismatch"
+      ]
+    }
+  }
+}

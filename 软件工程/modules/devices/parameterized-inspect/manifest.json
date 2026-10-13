@@ -1,0 +1,132 @@
+{
+  "document_kind": "design_example_not_runtime_plugin",
+  "id": "community.parameterized-inspect",
+  "version": "0.1.0",
+  "category": "devices",
+  "title": "指定物品的检验与处置",
+  "placement": "fixed_during_simulation",
+  "parameters": [
+    {
+      "id": "product_item",
+      "type": "item_type",
+      "binding": "configuration.product_item"
+    },
+    {
+      "id": "cycle_seconds",
+      "type": "duration",
+      "unit": "second",
+      "binding": "behavior.duration.value"
+    },
+    {
+      "id": "max_reworks",
+      "type": "number",
+      "integer": true,
+      "minimum": 0,
+      "binding": "behavior.max_reworks"
+    }
+  ],
+  "ports": [
+    {
+      "id": "input",
+      "kind": "material",
+      "direction": "in",
+      "unit": "piece",
+      "item_parameter": "product_item"
+    },
+    {
+      "id": "passed",
+      "kind": "material",
+      "direction": "out",
+      "unit": "piece",
+      "item_parameter": "product_item"
+    },
+    {
+      "id": "rework",
+      "kind": "material",
+      "direction": "out",
+      "unit": "piece",
+      "item_parameter": "product_item"
+    },
+    {
+      "id": "quarantine",
+      "kind": "material",
+      "direction": "out",
+      "unit": "piece",
+      "item_parameter": "product_item"
+    }
+  ],
+  "behavior": {
+    "builtin": "inspect_and_route",
+    "concurrency": 1,
+    "duration": {
+      "value": 10,
+      "unit": "second",
+      "basis": "演示假设"
+    },
+    "resources": [
+      {
+        "role": "inspector",
+        "quantity": 1
+      }
+    ],
+    "identity_policy": "preserve_item",
+    "result_source": "scenario.quality_inputs",
+    "max_reworks": 1,
+    "routes": [
+      {
+        "when": "pass",
+        "port": "passed"
+      },
+      {
+        "when": "fail_and_completed_reworks_below_limit",
+        "port": "rework"
+      },
+      {
+        "when": "fail_and_completed_reworks_at_limit",
+        "port": "quarantine"
+      },
+      {
+        "when": "unknown_or_missing",
+        "action": "hold_item_and_resources"
+      }
+    ],
+    "queue_policy": "arrival_time_then_stable_id",
+    "full_destination": "hold_result_until_space",
+    "repeat_mode": "continuous_when_ready",
+    "inputs": [
+      {
+        "port": "input",
+        "quantity": 1
+      }
+    ]
+  },
+  "presentation": {
+    "media": {
+      "kind": "native_scene",
+      "path": "presentation/native-scene.json"
+    },
+    "states": [
+      "idle",
+      "working",
+      "waiting"
+    ],
+    "lod": {
+      "detailed": "media_and_ports",
+      "simplified": "icon_and_state",
+      "region": "parent_aggregate"
+    }
+  },
+  "operations": [
+    "configure",
+    "inspect",
+    "preview_cycle"
+  ],
+  "contribution": {
+    "author": "待填写",
+    "license": "待声明",
+    "assets": [],
+    "status": "design",
+    "source_basis": "本项目已有声明规则和自建原生几何，未发布运行模块"
+  },
+  "definition_state": "design"
+}

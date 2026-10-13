@@ -1,0 +1,426 @@
+{
+  "document_kind": "factory_project_design_not_runtime_input",
+  "schema_revision": "draft-1",
+  "id": "parallel-merge-rework",
+  "title": "并行准备、齐套总装、检验与有限返工",
+  "assumptions": [
+    "工时、容量和检验结果均为演示声明",
+    "加工/准备采用固定工时转换，不是物理过程仿真",
+    "检验读取预设结果，不表示模型准确率",
+    "仅已放行物品进入包装；返工保留物品身份"
+  ],
+  "time": {
+    "unit": "second",
+    "observation_end": 180
+  },
+  "item_types": [
+    {
+      "id": "raw_shell",
+      "unit": "piece"
+    },
+    {
+      "id": "raw_pcb",
+      "unit": "piece"
+    },
+    {
+      "id": "shell",
+      "unit": "piece"
+    },
+    {
+      "id": "pcb",
+      "unit": "piece"
+    },
+    {
+      "id": "assembly",
+      "unit": "piece"
+    },
+    {
+      "id": "carton",
+      "unit": "piece"
+    },
+    {
+      "id": "package",
+      "unit": "piece"
+    }
+  ],
+  "module_refs": [
+    {
+      "id": "community.fixed-transform",
+      "version": "0.1.0",
+      "manifest": "../../modules/devices/fixed-transform/manifest.json"
+    },
+    {
+      "id": "community.manual-assembly",
+      "version": "0.1.0",
+      "manifest": "../../modules/devices/manual-assembly/manifest.json"
+    },
+    {
+      "id": "community.inspect-route",
+      "version": "0.1.0",
+      "manifest": "../../modules/devices/inspect-route/manifest.json"
+    },
+    {
+      "id": "community.identity-rework",
+      "version": "0.1.0",
+      "manifest": "../../modules/devices/identity-rework/manifest.json"
+    },
+    {
+      "id": "community.carton-pack",
+      "version": "0.1.0",
+      "manifest": "../../modules/devices/carton-pack/manifest.json"
+    }
+  ],
+  "halls": [
+    {
+      "id": "H-1",
+      "title": "并行总装与检验厂房"
+    }
+  ],
+  "lines": [
+    {
+      "id": "L-M",
+      "hall": "H-1",
+      "title": "壳体支线",
+      "members": [
+        "M-01"
+      ],
+      "layout": {
+        "position": [
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "L-P",
+      "hall": "H-1",
+      "title": "PCB准备支线",
+      "members": [
+        "P-01"
+      ],
+      "layout": {
+        "position": [
+          0,
+          4
+        ]
+      }
+    },
+    {
+      "id": "L-A",
+      "hall": "H-1",
+      "title": "总装检验包装",
+      "members": [
+        "ASM-01",
+        "QC-01",
+        "PACK-01"
+      ],
+      "layout": {
+        "position": [
+          5,
+          2
+        ]
+      }
+    },
+    {
+      "id": "L-R",
+      "hall": "H-1",
+      "title": "返工回路",
+      "members": [
+        "RW-01"
+      ],
+      "layout": {
+        "position": [
+          8,
+          5
+        ]
+      }
+    }
+  ],
+  "stock_locations": [
+    {
+      "id": "raw-M",
+      "hall": "H-1",
+      "item": "raw_shell",
+      "capacity": 2,
+      "unit": "piece",
+      "quality_policy": "normal"
+    },
+    {
+      "id": "raw-P",
+      "hall": "H-1",
+      "item": "raw_pcb",
+      "capacity": 2,
+      "unit": "piece",
+      "quality_policy": "normal"
+    },
+    {
+      "id": "shell-ready",
+      "hall": "H-1",
+      "item": "shell",
+      "capacity": 2,
+      "unit": "piece",
+      "quality_policy": "normal"
+    },
+    {
+      "id": "pcb-ready",
+      "hall": "H-1",
+      "item": "pcb",
+      "capacity": 2,
+      "unit": "piece",
+      "quality_policy": "normal"
+    },
+    {
+      "id": "inspect-in",
+      "hall": "H-1",
+      "item": "assembly",
+      "capacity": 2,
+      "unit": "piece",
+      "quality_policy": "normal"
+    },
+    {
+      "id": "rework-in",
+      "hall": "H-1",
+      "item": "assembly",
+      "capacity": 1,
+      "unit": "piece",
+      "quality_policy": "normal"
+    },
+    {
+      "id": "passed-in",
+      "hall": "H-1",
+      "item": "assembly",
+      "capacity": 2,
+      "unit": "piece",
+      "quality_policy": "normal"
+    },
+    {
+      "id": "quarantine",
+      "hall": "H-1",
+      "item": "assembly",
+      "capacity": 2,
+      "unit": "piece",
+      "quality_policy": "quarantine_not_allocatable"
+    },
+    {
+      "id": "cartons",
+      "hall": "H-1",
+      "item": "carton",
+      "capacity": 2,
+      "unit": "piece",
+      "quality_policy": "normal"
+    },
+    {
+      "id": "finished",
+      "hall": "H-1",
+      "item": "package",
+      "capacity": 2,
+      "unit": "piece",
+      "quality_policy": "normal"
+    }
+  ],
+  "devices": [
+    {
+      "id": "M-01",
+      "hall": "H-1",
+      "line": "L-M",
+      "module": "community.fixed-transform",
+      "module_version": "0.1.0",
+      "local_position": [
+        0,
+        0
+      ],
+      "port_locations": {
+        "input": "raw-M",
+        "output": "shell-ready"
+      },
+      "resource_bindings": {},
+      "parameter_values": {
+        "input_item": "raw_shell",
+        "output_item": "shell",
+        "cycle_seconds": 30
+      }
+    },
+    {
+      "id": "P-01",
+      "hall": "H-1",
+      "line": "L-P",
+      "module": "community.fixed-transform",
+      "module_version": "0.1.0",
+      "local_position": [
+        0,
+        0
+      ],
+      "port_locations": {
+        "input": "raw-P",
+        "output": "pcb-ready"
+      },
+      "resource_bindings": {},
+      "parameter_values": {
+        "input_item": "raw_pcb",
+        "output_item": "pcb",
+        "cycle_seconds": 20
+      }
+    },
+    {
+      "id": "ASM-01",
+      "hall": "H-1",
+      "line": "L-A",
+      "module": "community.manual-assembly",
+      "module_version": "0.1.0",
+      "local_position": [
+        0,
+        0
+      ],
+      "port_locations": {
+        "shell": "shell-ready",
+        "pcb": "pcb-ready",
+        "assembled": "inspect-in"
+      },
+      "resource_bindings": {
+        "assembler": "W-A"
+      },
+      "parameter_values": {}
+    },
+    {
+      "id": "QC-01",
+      "hall": "H-1",
+      "line": "L-A",
+      "module": "community.inspect-route",
+      "module_version": "0.1.0",
+      "local_position": [
+        3,
+        0
+      ],
+      "port_locations": {
+        "input": "inspect-in",
+        "passed": "passed-in",
+        "rework": "rework-in",
+        "quarantine": "quarantine"
+      },
+      "resource_bindings": {
+        "inspector": "W-Q"
+      },
+      "parameter_values": {}
+    },
+    {
+      "id": "PACK-01",
+      "hall": "H-1",
+      "line": "L-A",
+      "module": "community.carton-pack",
+      "module_version": "0.1.0",
+      "local_position": [
+        6,
+        0
+      ],
+      "port_locations": {
+        "product": "passed-in",
+        "carton": "cartons",
+        "packed": "finished"
+      },
+      "resource_bindings": {
+        "packer": "W-P"
+      },
+      "parameter_values": {}
+    },
+    {
+      "id": "RW-01",
+      "hall": "H-1",
+      "line": "L-R",
+      "module": "community.identity-rework",
+      "module_version": "0.1.0",
+      "local_position": [
+        0,
+        0
+      ],
+      "port_locations": {
+        "input": "rework-in",
+        "output": "inspect-in"
+      },
+      "resource_bindings": {
+        "repairer": "W-R"
+      },
+      "parameter_values": {}
+    }
+  ],
+  "resources": [
+    {
+      "id": "W-A",
+      "kind": "person",
+      "role": "assembler",
+      "quantity": 1,
+      "home_hall": "H-1",
+      "available_from": 0
+    },
+    {
+      "id": "W-Q",
+      "kind": "person",
+      "role": "inspector",
+      "quantity": 1,
+      "home_hall": "H-1",
+      "available_from": 0
+    },
+    {
+      "id": "W-P",
+      "kind": "person",
+      "role": "packer",
+      "quantity": 1,
+      "home_hall": "H-1",
+      "available_from": 0
+    },
+    {
+      "id": "W-R",
+      "kind": "person",
+      "role": "repairer",
+      "quantity": 1,
+      "home_hall": "H-1",
+      "available_from": 0
+    }
+  ],
+  "initial_items": [
+    {
+      "id": "raw_shell-001",
+      "type": "raw_shell",
+      "location": "raw-M"
+    },
+    {
+      "id": "raw_shell-002",
+      "type": "raw_shell",
+      "location": "raw-M"
+    },
+    {
+      "id": "raw_pcb-001",
+      "type": "raw_pcb",
+      "location": "raw-P"
+    },
+    {
+      "id": "raw_pcb-002",
+      "type": "raw_pcb",
+      "location": "raw-P"
+    },
+    {
+      "id": "carton-001",
+      "type": "carton",
+      "location": "cartons"
+    },
+    {
+      "id": "carton-002",
+      "type": "carton",
+      "location": "cartons"
+    }
+  ],
+  "queue_policy": "arrival_time_then_stable_id",
+  "orders": [
+    {
+      "id": "ORDER-01",
+      "product": "package",
+      "quantity": 2,
+      "unit": "piece",
+      "destination": "finished",
+      "due_at": 180
+    }
+  ],
+  "quality_result_matching": "按装配体的原始壳体祖先ID选择记录，再按检验次数读取结果；数组耗尽或null为unknown",
+  "actual_run_result": null,
+  "quality_cases": "cases.design.json",
+  "initial_case": "A"
+}

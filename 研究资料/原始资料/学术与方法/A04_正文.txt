@@ -1,0 +1,1174 @@
+
+--- PDF第1页 ---
+Semantic Capability Model for the Simulation of Manufacturing
+Processes
+Jonathan Reif1
+ a, Tom Jeleniewski1
+ b, Aljosha K¨ocher1
+ c, Tim Frerich2
+ d, Felix Gehlhoff1
+ e and
+Alexander Fay3
+ f
+1Institute of Automation Technology, Helmut Schmidt University, Holstenhofweg 85, Hamburg, Germany
+2CTC GmbH (An Airbus Company), Airbusstraße 1, Stade, Germany
+3Chair of Automation, Ruhr University Bochum, Universit¨atsstraße 150, Bochum, Germany
+{jonathan.reif, tom.jeleniewski, aljosha.koecher, felix.gehlhoff}@hsu-hh.de, tim.frerich@airbus.com, alexander.fay@rub.de
+Keywords: Simulation, Simulation Sequence, Capabilities, Ontologies, Semantic Information Model, Industry 4.0
+Abstract: Simulations offer opportunities in the examination of manufacturing processes. They represent various aspects
+of the production process and the associated production systems. However, often a single simulation does
+not suffice to provide a comprehensive understanding of specific process settings. Instead, a combination
+of different simulations is necessary when the outputs of one simulation serve as the input parameters for
+another, resulting in a sequence of simulations. Manual planning of simulation sequences is a demanding
+task that requires careful evaluation of factors like time, cost, and result quality to choose the best simulation
+scenario for a given inquiry.
+In this paper, an information model is introduced, which represents simulations, their capabilities to generate
+certain knowledge, and their respective quality criteria. The information model is designed to provide the
+foundation for automatically generating simulation sequences. The model is implemented as an extendable and
+adaptable ontology. It utilizes Ontology Design Patterns based on established industrial standards to enhance
+interoperability and reusability. To demonstrate the practicality of this information model, an application
+example is provided. This example serves to illustrate the model’s capacity in a real-world context, thereby
+validating its utility and potential for future applications.
+1 INTRODUCTION
+In the design phase of production processes, espe-
+cially those marked by high complexity or substan-
+tial unit costs, testing various process parameter con-
+figurations with physical prototypes is both time-
+consuming and costly [Naresh et al., 2020]. This is-
+sue is not limited to manufacturing companies creat-
+ing entirely new production systems but also affects
+those aiming to improve aspects like material proper-
+ties, energy efficiency, or emission levels. As a result,
+manufacturing companies are constantly redesigning
+processes.
+Simulations emerge as a powerful tool in this con-
+a
+ https://orcid.org/0009-0001-2079-8967
+b
+ https://orcid.org/0009-0007-0360-4108
+c
+ https://orcid.org/0000-0002-7228-8387
+d
+ https://orcid.org/0000-0001-9097-712X
+e
+ https://orcid.org/0000-0002-8383-5323
+f
+ https://orcid.org/0000-0002-1922-654X
+text as they offer the possibility to generate process
+information virtually and enable cost-effective testing
+of different process parameter configurations within
+reasonable time frames [Mourtzis, 2020].
+However, the utility of a single simulation is often
+limited. It may not suffice to generate necessary pro-
+cess information. Instead, one simulation often relies
+on specific input parameters derived from preceding
+simulations. This interdependent connection between
+simulations necessitates an execution of simulation
+sequences. In this context, the term parameter specif-
+ically refers to input and output parameters used in
+a simulation corresponding to process parameters of
+a corresponding manufacturing process. It does not
+refer to parameters that are specific to the simulation
+itself, such as step size.
+In practice, these sequences are manually created
+by experts. One of the primary considerations here is
+to ensure the general suitability of simulations to an-
+swer specific questions. Another aspect relates to the
+quality of results and how suitable simulations can be
+arXiv:2408.08048v2  [cs.SE]  25 Nov 2024
+
+--- PDF第2页 ---
+Simulation Complexity
+Object of
+Consideration
+Simulation Simulation sequence
+Figure 1: Schematic illustration of available simulations
+effectively combined for this purpose. Often simula-
+tions representing the same object of consideration,
+e.g., the same process step, are available in differ-
+ent complexities, i.e., different levels of abstraction,
+necessitating a selection with regard to time and re-
+source constraints. Figure 1 illustrates this relation-
+ship. In this figure, various simulations (depicted as
+gray boxes) with increasing complexity along the X-
+direction are assigned to different objects of consid-
+eration along the Y-direction. Note, that the simula-
+tions objects of consideration can be process steps,
+but there can also be different simulations for certain
+objects of consideration within a process step, e.g.,
+different process parameters, like pressure or tem-
+perature. These individual simulations are intercon-
+nected through the previously described input-output
+relationships and can be combined to generate pro-
+cess information. This is exemplified by the colored
+lines. The figure is merely an excerpt. In practice, a
+greater number of simulations with varying levels of
+complexity, as well as more process steps, are avail-
+able. This increases the complexity of selecting and
+generating simulation sequences.
+A general assumption is that the largest part of a
+system should be simulated at the lowest complexity
+and only specific parts of interest should be simulated
+at a higher level of detail if necessary [Puntel-Schmidt
+and Fay, 2015]. Due to these considerations, a manual
+creation of simulation sequences becomes a complex,
+time-consuming, and error-prone activity. It requires
+a deep understanding of simulations, their parameters,
+and the overall production process.
+In order to automatically derive a sequence of sim-
+ulations, a machine-interpretable model is required.
+This model must describe simulations, their function-
+alities and relevant quality criteria, like simulation
+time, result quality, etc. Describing the functionali-
+ties of simulations corresponds to modeling capabil-
+ities of flexible manufacturing resources. A capa-
+bility is defined as ”an implementation-independent
+specification of a function in industrial production to
+achieve an effect in the physical or virtual world”
+[K¨ocher et al., 2023]. Simulations can be considered
+to achieve an effect in the virtual world, therefore the
+following question arises:
+How should a machine-interpretable model for plan-
+ning simulation sequences be structured, building on
+preliminary work from the capability context and rel-
+evant standards for simulations?
+For this purpose, first specific requirements for
+such a model are deducted building on [Reif et al.,
+2023] in Section 2, before drawing a comparison to
+related research in this field in Section 3. Based on
+this, the created information model is described and
+explained in detail in Section 4, pointing out its dif-
+ferent components. Afterwards Section 5 describes an
+application example from industrial practice to show
+the practical potential of the created semantic model.
+The paper concludes with a summary and an outlook
+for potential future research.
+2 REQUIREMENTS
+As pointed out in [Reif et al., 2023] there are several
+requirements for an approach to automating the gen-
+eration of simulation sequences:
+• A formal description of simulations and their pa-
+rameters in a machine readable format to enable
+an automated selection of suitable simulations
+based on required process information.
+• The consideration of quality criteria to ensure that
+objectives align with the capabilities of selected
+simulations.
+• The consideration of parameter influences on
+quality criteria to ensure a useful selection of sim-
+ulations.
+From this emerges the necessity for a semantic model
+that describes simulations and their relevant proper-
+ties, to facilitate the automated creation of simulation
+sequences [Reif et al., 2023]. The requirements for
+this semantic model are explained in the following.
+They can all be derived from the goal to select a sim-
+ulation, respectively a sequence of simulations, that
+can supply a user with the right process information
+in a demanded quality with minimal effort.
+R1: Description of simulations and their capabili-
+ties in a machine readable format.
+The first requirement that the model needs to meet
+is the formal representation of simulations and their
+properties in a machine readable format. This format
+is crucial as it facilitates an automatic identification
+and arrangement of appropriate simulations and
+simulation sequences based on required process
+
+--- PDF第3页 ---
+information. For this automation, simulations must
+be characterized by their input and output parameters
+as well as their capabilities, i.e., their ability to
+produce specific process information. The potential
+to produce a designated output from a given input is
+referred to as a capability. Consequently, this allows
+for the pinpointing and selection of a fitting simula-
+tion, or a sequence of simulations, to produce desired
+process information through capability matchmaking,
+which describes the process of matching product
+requirements against resource capabilities [J¨arvenp¨a¨a
+et al., 2017].
+R2: Description of selection criteria for simula-
+tions
+The second requirement involves detailing the
+criteria for selecting simulations. This is essential
+for choosing suitable simulations and planning se-
+quences. The aim is to not only choose simulations
+that provide required process information for a spe-
+cific inquiry but also to ensure that this information
+meets quality criteria and is obtained with minimal
+resource effort.
+Thus, the criteria to be described include quality
+criteria to guarantee that simulations deliver informa-
+tion at the desired level of quality. This also includes
+other selection criteria like, e.g., simulation time, in-
+cluding run time and lead time. Additionally, it is
+necessary to consider the influence of specific input
+parameters on selection criteria, such as the quality
+of the simulation output. This involves documenting
+how input parameters affect the output to determine
+their influence on quality criteria.
+If an input parameter has a minor impact on the
+overall result, less stringent quality requirements may
+be applied to it, and lower fidelity models may be ap-
+plied to represent it. Conversely, parameters that sig-
+nificantly affect the outcome should meet higher qual-
+ity standards as the simulation results can only be as
+good as its input parameters. [Reiter et al., 2012]
+By adhering to this principle, the process of
+generating process information can be optimized,
+essentially, the resource effort can be minimized,
+since inputs that have less impact on quality criteria
+can be generated using simulations that are less
+resource-intensive in a sequence of simulations.
+R3: Interoperability and reusability of the infor-
+mation model
+The third requirement is the interoperability and
+reusability of the information model. Models of-
+ten lack the adaptability and extensibility needed for
+reusing them in different use cases. For this reason, it
+is advisable to implement the information model in a
+format that offers the possibility to extend and adapt
+it [V ogel-Heuser et al., 2015]. Furthermore, models
+created for specific scenarios often face challenges
+when applied to different situations due to varying
+definitions and naming conventions, making it recom-
+mendable to adhere to common semantics used in a
+domain [Hildebrandt et al., 2020].
+Additionally, to enhance acceptance in the indus-
+try, it is advantageous to utilize established industrial
+standards. Consequently, the model should be uni-
+versally applicable to the considered domain and use
+terms that are widely accepted. This is achievable by
+conforming to industry guidelines and standards that
+are based on expert knowledge.
+Another advantage of adhering to established
+standards is that in this way it is ensured that sim-
+ulations of manufacturing processes are described in
+a consistent manner. This consistency allows simu-
+lations to be linked with real-world processes using
+the same input and output parameters, described with
+common semantics. This linkage not only enables a
+use of simulated process information as input for sim-
+ulations but also allows for the integration of informa-
+tion from real processes, e.g. historical process data,
+or expert knowledge, like commonly used parameter
+values, particularly when this information meets the
+set quality criteria.
+3 RELATED WORK
+In this section, which is divided into the three sub-
+sections Description of Simulations and their Capa-
+bilities, Quality Criteria for Simulation Assessment
+and Description of Simulation Parameter Influences,
+different approaches relevant to the work presented
+are described and compared to the requirements men-
+tioned in the previous section.
+3.1 Description of Simulations and their
+Capabilities
+[Grolinger et al., 2012] focus on utilizing ontologies,
+defined by [Studer et al., 1998] as ”formal, explicit
+specification of a shared conceptualization”, for rep-
+resenting simulation models across various domains.
+Ontologies are used to provide a common understand-
+ing and facilitate operations such as querying, com-
+parison, and inference on simulation models. The
+main challenges addressed include the difficulty of
+extracting specific information from simulation mod-
+els due to their proprietary formats and terminologies,
+and the complexity involved in comparing and shar-
+ing models across different simulation engines. The
+
+--- PDF第4页 ---
+proposed solution is an ontology-based representation
+system that maps domain-specific simulation models
+to instances within a structured ontology. However,
+this method does not take into account a selection or
+planning of simulations or sequences of simulations,
+nor does it contemplate any form of simulation eval-
+uation. Furthermore, it does not comply with estab-
+lished standards or common semantics.
+[ˇSindel´aˇr and Nov´ak, 2016] present the develop-
+ment of an ontology specifically tailored for the field
+of modeling and simulation. The goal is to provide a
+centralized, structured knowledge base that can sup-
+port the interconnection, interoperability, integration,
+and reuse of simulation artifacts through Semantic
+Web Technologies. Probable applications described
+include improved model discovery and sharing, en-
+hanced capability for semantic searches, and the fa-
+cilitation of knowledge transfer and reuse across dif-
+ferent simulation studies and platforms. However, the
+authors do not deal with the topics of simulation se-
+lection or planning. Furthermore the presented ontol-
+ogy does not rely on industrial standards applicable
+for the domain.
+[Listl et al., 2023] present a framework for man-
+aging discrete-event simulation models through the
+use of knowledge graphs. This approach addresses
+the challenges associated with managing large and
+heterogeneous data sets in the context of production
+system simulations. The framework facilitates the
+integration of multiple data sources, supports model
+reuse, and enables various applications to leverage the
+structured representation of simulation models and
+their data. By adhering to the industrial standard ISA-
+95, the knowledge graph ensures that the data repre-
+sented within the simulation models are in alignment
+with widely recognized manufacturing standards. By
+incorporating the industrial standard VDI 3633 [VDI
+3633:1, 2014] for simulation of logistics, material
+flow and production systems, the framework ensures
+that its approach to simulation management aligns
+with established best practices in the field. In spite of
+that, the approach mainly focuses on managing and
+integrating simulation models using structured data
+representations, with a significant emphasis on data
+management, reuse, and interoperability, without pur-
+suing planning approaches.
+Overall, various methods exist for integrating sim-
+ulations into information models. However, most of
+these methods tend to not utilize industrial standards.
+Some of these approaches address the selection of
+simulations, though, the detailed planning of simula-
+tion sequences, particularly considering selection cri-
+teria and the influence of parameters, is not consid-
+ered.
+In [K¨ocher et al., 2023] a technology-independent
+model aimed at enhancing adaptability and flexibil-
+ity in manufacturing is presented. This so called
+Capability-Skill-Service (CSS) model aims at describ-
+ing, organizing, and executing manufacturing func-
+tions in a way that supports adaptability, reusability,
+and efficient management of production resources.
+The capability aspect of this CSS model is a central
+element that bridges the gap between abstract require-
+ments of a production process and concrete function-
+alities provided by physical or virtual resources. Ca-
+pabilities are abstract descriptions of functions that
+are required by processes and provided by resources.
+According to the CSS model, purely virtual function-
+alities may also be described as capabilities. How-
+ever, the focus has so far been on manufacturing pro-
+cesses and the description of simulations using the
+CSS model has not been considered yet.
+3.2 Quality Criteria for Simulation
+Assessment
+The industrial standard ISO/IEC 25010 [ISO/IEC
+25010:2011, 2011] introduces a Product Quality
+Model specifically designed for software, organiz-
+ing software quality attributes into eight major cate-
+gories, such as Functional Suitability , Performance
+Efficiency, and Compatibility, among others. Each
+category is further detailed through various sub-
+characteristics. Additionally, other researchers have
+proposed comparable metrics for evaluating mod-
+els and choosing simulation software, including at-
+tributes like Correctness, Efficiency, and Functional-
+ity [Mohagheghi and Dehlen, 2009, Fumagalli et al.,
+2019]. [Barth et al., 2023] furthermore address the
+critical need for a systematic evaluation of the quality
+of simulation models, particularly in the context of
+digital twins and model-based systems engineering.
+As simulation models become integral to system de-
+velopment and delivery, the necessity for clear quality
+requirements, akin to those for physical components,
+becomes paramount. Yet, such standards for simula-
+tion models are often undefined due to their novelty
+and the absence of universally accepted quality crite-
+ria.
+[Barth et al., 2023] introduce a metric for objec-
+tively assessing simulation model quality, recognizing
+the challenge posed by the intrinsic novelty of simu-
+lations as deliverables and the existing gap in defined
+quality criteria. It emphasizes that while simulation
+models are assumed to possess high quality, explicit
+requirements or specifications are rarely articulated.
+Building on that [Barth et al., 2023] continue to ex-
+plore the systematic evaluation of simulation model
+
+--- PDF第5页 ---
+quality, focusing on expanding and clustering qual-
+ity criteria. The presented approach utilizes ISO/IEC
+25010 and thus adapts and extends quality criteria
+from software quality domains to suit the unique as-
+pects of simulation models, proposing a hierarchy of
+attributes that reflect various technical requirements
+and stakeholder perspectives.
+3.3 Description of Simulation
+Parameter Influences
+[Saltelli et al., 2008] offer a comprehensive introduc-
+tion to sensitivity analysis (SA). The authors provide
+a systematic approach to SA, which is a method cru-
+cial for understanding how various inputs influence
+the outputs of models. The authors point out how SA
+can be used to gain understanding about influences of
+specific parameters on a simulation. It allows mod-
+elers to understand which parameters have the most
+influence on the outcome of a simulation. This knowl-
+edge is vital for focusing attention on the most criti-
+cal parameters, thus optimizing the design and execu-
+tion of further experiments or simulations. SA thus
+is a pivotal method that bridges theoretical modeling
+and practical application in simulations, enabling re-
+searchers and practitioners to discern how variations
+in input parameters influence simulation outcomes.
+[Saltelli et al., 2008]
+[Jeleniewski et al., 2023] present a semantic
+model developed to articulate the interdependencies
+between process parameters in manufacturing set-
+tings. This so called Parameter Interdependency
+(ParX) ontology incorporates Ontology Design Pat-
+terns (ODPs) derived from industrial standards, al-
+lowing for a structured and machine-readable rep-
+resentation of process knowledge that can be ex-
+tended and reused. The semantic model facilitates
+process redesign by enabling calculations and predic-
+tions of process outputs from specific inputs. The
+model incorporates the OpenMath (OM) standard to
+express and manage interdependencies between pro-
+cess parameters within the semantic model. OM is
+a standard for representing mathematical content, en-
+abling an exchange of mathematical expressions in a
+machine-readable format. An OM Resource Descrip-
+tion Framework (RDF) representation is presented
+in [Wenzel, 2021]. This standard is pivotal for the
+model’s ability to detail the quantitative interdepen-
+dencies and calculations associated with manufactur-
+ing processes as it is utilized to connect mathematical
+functions to specific process steps. [Jeleniewski et al.,
+2023]
+4 SIMULATION ONTOLOGY
+This section outlines the Simulation Support (SiS)
+information model, an ontology designed to de-
+scribe simulations including their capabilities and
+their properties relevant for the automated planning of
+simulation sequences as described in Section 1. The
+model was designed according to the requirements
+outlined in Section 2.
+The information model is implemented as an on-
+tology. This takes R1 into account, as an ontology
+is suited to describe simulations and their parame-
+ters in a machine readable, extensible and reusable
+format. To create this model, the methodical ap-
+proach from [Hildebrandt et al., 2020] was followed.
+This approach provides a structured method for build-
+ing ontologies specifically tailored for manufacturing
+companies. In this method, domain experts play a
+crucial role by formulating competency questions and
+corresponding answers. Competency questions hence
+serve as requirements that an ontology must address.
+This ensures that the developed ontology considers
+the requirements for the automated generation of sim-
+ulation sequences. However, it still needs to be val-
+idated afterward. In addition, ODPs are leveraged
+to enhance generalizability, standardization, and re-
+duce modeling effort. Unlike starting from scratch,
+the approach of [Hildebrandt et al., 2020] allows for
+high reusability of existing models, which takes into
+account R3. According to [Gangemi and Presutti,
+2009], an ODP is a solution for recurring ontology
+design challenges. ODPs are maintained separately
+and integrated into an alignment ontology. This inte-
+gration enables the incorporation of additional stan-
+dards and ODPs in future developments, ensuring ex-
+pandability. ODPs relevant for the concept presented
+were identified and aligned. The ODPs used and their
+alignment are shown in Figure 2.
+As can be seen from the prefixes used in Fig-
+ure 2 the ODPs used for the SiS ontology include the
+CSS model [K¨ocher et al., 2023], the DIN EN 61360
+(Property Descriptions of Technical Systems ) [DIN
+EN 61360-1, 2018] and the VDI 3633 ( Simulation
+of systems in materials handling, logistics and pro-
+duction) [VDI 3633:1, 2014] as well as the ParX on-
+tology [Jeleniewski et al., 2023], which uses the OM
+standard.
+
+--- PDF第6页 ---
+VDI3633:Simulation
+CSS:Capability
+VDI3633:hasProcessQuantity
+VDI3633:hasResultsData
+CSS:executes
+ParX:hasApplication CSS:Process
+SiS:QualityCriteria
+DINEN61360:hasDataElement VDI3633:Data
+DINEN61360:hasDataElement
+CSS:Resource
+OM:arguments
+OM:operator
+ParX:Interdependency
+OM:ObjectList
+OM:Operator
+OM:Object
+ParX:isDataFor
+DINEN61360:DataElement
+SiS:hasInlfuenceOn SiS:isInfluenceFor
+SiS:SensitivityIndexSiS:InfluenceScoreSiS:Interdependencyowl:equivalentClassParX:Interdependency
+SiS:hasQualityCriteria
+CSS:requiresCapability
+SiS:Influence
+SiS:hasInfluence
+CSS:providesCapability
+Figure 2: Alignment of the different components of the proposed semantic model for the description of simulations
+The information model, which is available on
+GitHub 1 can be divided into three segments:
+• The description of simulations and their capabili-
+ties (R1, R3)
+• The description of quality criteria (R2)
+• The description of parameter influences (R2)
+In the following, these components of the overall
+model, as well as the industrial standards used in the
+information model, are described.
+The first segment focuses on the description of
+simulations and their capabilities. According to
+[K¨ocher et al., 2023], a CSS:Process is defined by
+its ability to convert inputs into outputs, correspond-
+ing to the fundamental process of transforming input
+parameters into simulation results. A CSS:Resource
+is used for the execution of a CSS:Process it is con-
+nected to via the property CSS:executes.
+In the presented approach, a simulation is catego-
+rized as a subclass of a CSS:Resource. It is repre-
+sented by the class VDI3633:Simulation (1).
+VDI3633:Simulation⊆CSS:Resource (1)
+In the SiS ontology, a CSS:Process is utilized
+to describe the process of generating information by
+simulation, which is the output derived from specific
+input parameters. As defined in the CSS model, capa-
+bilities are the abstract description of aCSS:Process,
+1https://github.com/JonathanReif/SiS
+i.e. the process of simulating information by a specific
+VDI3633:Simulation
+According to the CSS ontology, a resource
+may provide capabilities using the object property
+CSS:providesCapability and processes may re-
+quire capabilities using CSS:requiresCapability.
+It follows from (1) that a simulation may provide a
+(simulation) capability, which is required by a pro-
+cess. Each process, i.e. each description of a sim-
+ulation process, is further characterized using prop-
+erties and classes to model input and output pa-
+rameters according to VDI 3633. Input parame-
+ters are linked by VDI3633:hasProcessQuantity,
+output parameters by VDI3633:hasResultsData
+as VDI 3633 makes this differentiation. Hence,
+VDI3633:hasProcessQuantity has a domain and
+range defined as shown in (2) and (3), respectively.
+∃VDI3633:hasProcessQuantity.⊤ ⊆CSS:Process (2)
+⊤ ⊆ ∀VDI3633:hasProcessQuantity.VDI3633:Data(3)
+Domain and range of VDI3633:hasResultsData are
+defined analogously.
+Both input and output parameters are mod-
+eled as VDI3633:Data, which is linked to a
+DINEN61360:DataElement by the object property
+DINEN61360:hasDataElement.
+The DIN EN 61360 [DIN EN 61360-1, 2018]
+standard is utilized to provide a detailed de-
+scription of data elements along with their asso-
+ciated types and instances. The DataElement
+
+--- PDF第7页 ---
+class is employed to characterize the properties
+of any data element. Each data element pos-
+sesses a DINEN61360:TypeDescription and a
+DINEN61360:InstanceDescription.
+The ontology’s second segment focuses on out-
+lining quality criteria. R2 formulates the necessity
+to consider selection criteria to ensure that objec-
+tives align with capabilities of selected simulations.
+Selection criteria in this context means on the one
+hand quality criteria that describe certain quality as-
+pects of a respective simulation and on the other hand
+parameter influences. This means the influence of
+input parameters on output parameters of a simula-
+tion, respectively on different selection criteria. A
+consideration of both aspects is necessary to ensure
+that selected simulations can produce information un-
+der consideration of quality criteria relevant for a use
+case.
+To set quality criteria in relation to a simulation,
+the object property SiS:hasQualityCriteria with
+the domain VDI3633:Simulation (4) and the range
+SiS:QualityCriteria (5) is introduced, as can be
+seen in Figure 2, to make it possible to assign qual-
+ity criteria to the respective simulation. The quality
+criteria can express different quality attributes.
+∃SiS:hasQualityCriteria.⊤ ⊆VDI3633:Simulation(4)
+⊤ ⊆ ∀SiS:hasQualityCriteria.SiS:QualityCriteria(5)
+As SiS:QualityCriteria is a subclass
+of DINEN61360:DataElement, these differ-
+ent attributes can be further described by
+a DINEN61360:TypeDescription elaborat-
+ing on the SiS:QualityCriteria and by a
+DINEN61360:InstanceDescription specifying a
+value for the respective SiS:QualityCriteria.
+In this way the model allows to resemble differ-
+ent quality criteria depending on what is deemed im-
+portant for the use case considered. For example
+the quality criteria for simulation models described
+by [Barth et al., 2023] could be used here to describe
+the quality of simulation models.
+The third segment of the ontology resembles the
+description of parameter influences. Influences rep-
+resent the impact of an input parameter of a sim-
+ulation process on the quality criteria associated
+with this simulation process. For this description
+the object property SiS:hasInfluence with the do-
+main VDI3633:Data and the range SiS:Influence
+is introduced. Additionally, the object properties
+SiS:hasInfluenceOn and SiS:isInfluenceFor
+are defined with the domain SiS:Influence and the
+range DINEN61360:DataElement or CSS:Process,
+respectively. This allows for a specification of quality
+criteria, respectively the simulation process that is af-
+fected by SiS:Influence. An influence is expressed
+by the different subclasses of SiS:Influence shown
+in Figure 2, see (6).
+SiS:SensitivityIndex,
+SiS:InfluenceScore,
+SiS:Interdependency⊆SiS:Influence
+(6)
+Several possibilities for the description of influences
+of input parameters on output parameters were iden-
+tified.
+The first possibility is the description of influ-
+ences by mathematical expressions, mirroring the
+impact of input parameters on output parameters. For
+instance consider a composite production process,
+in which the glass transition temperature of resin
+is an important parameter. The influence of the
+glas transition temperature may differ depending
+on whether the process temperature is in a holding
+phase or a heating phase. This variable influence can
+be depicted using a mathematical function. Those
+functions typically result from expert knowledge.
+For a description of such influences the concept
+described by [Jeleniewski et al., 2023] was im-
+plemented in the information model. This was
+realized by using the ParX ontology, which is an
+approach for a semantic model representing process
+parameters and their interdependencies [Jeleniewski
+et al., 2023]. It is aligned with the SiS ontology
+through the property ParX:hasApplication
+with the domain CSS:Process and the
+range ParX:Interdependency. The class
+ParX:Interdependency is equivalent to the
+class SiS:Interdependency.
+The second possibility provided to express param-
+eter influences is the option to express the influence
+not as a mathematical expression but as a single
+index. These indices can on the one hand be assessed
+by the analysis of the simulation model, e.g. by a
+sensitivity analysis, which is a common method to
+determine the influence of input parameters on output
+parameters of a simulation [Saltelli et al., 2008]. The
+sensitivity index that is the result of this analysis then
+can be expressed by the SiS:SensitiviyIndex.
+As SiS:SensitivityIndex is a subclass
+of DINEN61360:DataElement it has a
+DINEN61360:TypeDescription as well as a
+DINEN61360:InstanceDescription. The for-
+mer is used to give further information on the
+SiS:SensitivityIndex the latter to express the
+influence as a value in the value range 0 ≤ In ≤ 1
+with n ∈ N. Note, that the indices only describe
+a fractional contribution of one parameter on a
+specific quality criteria of an output o which has the
+implication, that the sum of all parameter indices in
+the set N for a CSS:Process is 1 as described in (7).
+
+--- PDF第8页 ---
+N
+∑
+n=1
+In,o = 1 ∀o ∈ O (7)
+If an automated analysis of a simulation is not fea-
+sible, e.g., due to the complexity of the simulation,
+there is the option to have the influence value evalu-
+ated by a domain expert, which can then be expressed
+as a SiS:InfluenceScore, in the same way and in
+the same value range as the sensitivity index.
+Either way, through this description it is possible
+to assess whether an input parameter has a great influ-
+ence on the output of a simulation and thus whether it
+has to be available in a certain quality or if it can be
+neglected.
+5 APPLICATION EXAMPLE
+The model presented in this paper was developed in
+collaboration with an industry partner specializing in
+aerospace components and is evaluated within this do-
+main. The primary focus in the considered use case is
+on modeling process knowledge of theResin Transfer
+Molding (RTM) process for aircraft components dur-
+ing the initial design phase. In the course of this, the
+possibilities of process information generation, i.e.
+the respective simulations, are also to be described,
+mapped and made usable.
+In this section, the application of the presented in-
+formation model through an exemplary use case is
+described. The RTM process, which is employed to
+manufacture fiber-reinforced plastics, consists of in-
+jecting resin under pressure into a mold that holds
+a fiber preform, and then proceeding with a curing
+phase. The process step exemplified in the presented
+example is the infusion of resin into a mold.
+The application example follows the method pre-
+sented in [Reif et al., 2023] and demonstrates that the
+information model introduced in Section 4 can serve
+as the foundation for this method.
+The method starts with identifying suitable sim-
+ulations for the generation of a required process in-
+formation. In this application example, a user wants
+to simulate the local fill time in the process, i.e., the
+time until resin arrives at every point of the part.
+The information model provides the possibility for
+a user to evaluate which simulations are capable of
+generating the desired information from the provided
+inputs. First, the process for which the parameter
+ex:LocalFillTime is an output must be identified.
+Next, the capability required by the process needs to
+be determined. Finally, this required capability can be
+matched to the simulations that provide it.
+ex:SimulatingThermosetInfiltration1CSS:Process
+ex:InfiltrationSimulationDLVDI3633:Simulation
+ex:InfiltrationSimulationTPDLVDI3633:Simulation
+ex:SimulatingInfiltration1CSS:Capability
+ex:GeometryVDI3633:Data
+ex:TextilePermeabilityVDI3633:Data
+ex:ResinViscosityVDI3633:Data
+ex:LocalFillTimeVDI3633:Data
+ex:DryFiberFormingCSS:Process ex:SimulatingDraping1CSS:Capability
+ex:KinematicDrapingVDI3633:Simulationex:ShellFEModelVDI3633:Data
+CSS:requiresCapabilityCSS:providesCapability
+VDI3633:hasProcessQuantity
+VDI3633:hasProcessQuantity
+VDI3633:hasProcessQuantity
+VDI3633:hasResultsData
+VDI3633:hasResultsData
+CSS:requiresCapability
+CSS:providesCapability
+CSS:providesCapability
+VDI3633:hasProcessQuantity
+Figure 3: Exemplary graph excerpt resembling the capabil-
+ity of the simulation
+This can be achieved via the SPARQL Proto-
+col and RDF Query Language (SPARQL) query dis-
+played in Listing 1. In this way this selection, nor-
+mally done manually, can be supported in an auto-
+mated fashion.
+Listing 1: A SPARQL query to identify simulations able to
+generate a specific output
+SELECT ? pr ? cap ? sim WHERE {
+? pr VDI3633 : hasResultsData ex :
+LocalFillTime .
+? pr CSS : requiresCapability ? cap .
+? cap a CSS : Capability .
+? sim CSS : providesCapability ? cap .
+? sim a VDI3633 : Simulation .}
+In the use case considered, two available simula-
+tions to simulate the parameter ex:LocalFillTime
+can be identified. These two simulations provided in
+the information model can be seen in Figure 3, an in-
+filtration simulation based on Darcy’s law, which de-
+scribes the flow of a fluid through a porous medium
+and an infiltration simulation based on two phase
+Darcy’s law, which describes immiscible two-phase
+flow in porous media.
+As can be seen in Figure 3, the simulations
+are expressed as VDI3633:Simulation. As both
+simulations for the thermoset infiltration can
+
+--- PDF第9页 ---
+generate the same output from the same input
+parameters they are both connected to the same
+capability ex:SimulatingInfiltration1 via the
+property CSS:providesCapability. The sim-
+ulation process generating ex:LocalFillTime
+out of the respective inputs is expressed as
+ex:SimulatingThermosetInfiltration1.
+As the respective object properties ex-
+press whether VDI3633:Data is an input
+or an output of the process the instances
+ex:Geometry, ex:TextilePermeability
+and ex:ResinViscosity are connected to
+ex:SimulatingThermosetInfiltration1
+via VDI3633:hasProcessQuantity and
+ex:LocalFilltime is connected via
+VDI3633:hasResultsData.
+The next step is the selection of a suitable simula-
+tion based on use case specific quality criteria. This
+quality criteria can be queried via SPARQL as well
+as can be seen in Listing 2. In Listing 2 only the
+quality criteria for ex:InfiltrationSimulationDL
+is queried, the quality criteria for other simulations
+can be queried accordingly.
+Listing 2: A SPARQL query to get quality criteria of a sim-
+ulation
+SELECT ? qual ? id ? val
+WHERE { ex : InfiltrationSimulationDL a
+VDI3633 : Simulation .
+? sim SiS : hasQualityCriteria ? qual .
+? qual DINEN61360 :
+has_Instance_Description ? id .
+? id DINEN61360 : value ? val .}
+For the selection of a simulation the quality
+criteria are significant. The quality criteria relevant
+to this use case include lead time for preparing the
+simulation, simulation time, technological maturity
+of the simulation, and the result’s accuracy. For
+simplification purposes the exemplary graph in Fig-
+ure 4 only shows the quality criteria result accuracy.
+It is expressed as ex:ResultAccuracyInfSimDL
+for the simulation InfiltrationSimulationDL
+and as ex:ResultAccuracyInfSimTPDL for the
+simulation InfiltrationSimulationTPDL as both
+simulations have a different accuracy. Accuracy
+in this case means the consideration of phenomena
+such as pore formation, which can be simulated
+with ex:InfiltrationSimulationTPDL. Further-
+more, both instances of SiS:QualityCriteria
+have a DINEN61360:InstanceDescription,
+which makes it possible to express a value for
+the accuracy. As can be seen in Figure 4, the
+returned value for the quality criterion ”Result
+Accuracy” for ex:InfiltrationSimulationDL
+would be 0 .7 in this example. The value for
+ex:InfiltrationSimulationDLVDI3633:Simulationex:ResultAccuracyInfSimDLSiS:QualityCriteria
+ex:ResultAccuracyInfSimDLIDDINEN61360:InstanceDescription
+ex:ResultAccuracyDINEN61360:TypeDescription0.7
+ex:ResultAccuracyInfSimTPDLSiS:QualityCriteria
+ex:ResultAccuracyInfSimTPDLIDDINEN61360:InstanceDescription
+0.8
+ex:InfiltrationSimulationTPDLVDI3633:Simulation
+SiS:hasQualityCriteria
+DINEN61360:hasInstanceDescription
+DINEN61360:hasTypeDescription
+DINEN61360:value
+DINEN61360:hasTypeDescription
+DINEN61360:hasInstanceDescription
+SiS:hasQualityCriteriaDINEN61360:value
+Figure 4: Exemplary graph excerpt resembling the quality
+criteria of the simulation
+ex:InfiltrationSimulationTPDL would be 0 .8,
+indicating a higher result accuracy for the latter.
+This helps users to make an informed deci-
+sion when choosing the appropriate simulation for
+their needs. For this example the user chooses the
+ex:InfiltrationSimulationDL because a higher
+result accuracy is not needed for this use case. If
+the consideration of pore formation is relevant a
+higher result accuracy should be chosen and the sim-
+ulation ex:InfiltrationSimulationTPDL would
+be better suited, which is information, that can
+be provided in the DINEN61360:TypeDescription
+of the quality criteria es:ResultAccuracy. The
+trade-off here is the additional simulation time
+this simulation requires, which is also modeled as
+SiS:QualityCriteria but is omitted, for clarity
+reasons, in Figure 4.
+The next step in the method is the identification of
+necessary inputs for the simulation process. This can
+be done via the SPARQL query displayed in Listing 3
+Listing 3: A SPARQL query to get inputs of a simulation
+SELECT ? cap ? pr ? pq WHERE {
+ex : InfiltrationSimulationDL CSS :
+providesCapability ? cap .
+? pr CSS : requiresCapability ? cap .
+? pr VDI3633 : hasProcessQuantity ? pq .}
+In the presented example, the simulation uses the
+geometry of the textile (i.e., the composite material)
+discretized by a polygon mesh, the textile permeabil-
+ity, and the resin viscosity as inputs as can be seen in
+Figure 3.
+The next step in the method is to determine if
+the identified input parameters are known to the user
+or if they must be generated via simulation. For
+this example the user knows the necessary input pa-
+
+--- PDF第10页 ---
+rameters except for the textile permeability, which
+the user has to simulate then. In this way the cy-
+cle starts again and the user has to identify a suit-
+able simulation again as shown in Listing 1. The
+permeability of the fiber is dictated by the draping
+of said fiber. Therefore a draping simulation can
+be used to determine the permeability as opposed to
+measuring it experimentally. The model takes this
+into account by representing the required input pa-
+rameter ex:TextilePermeability of the simulation
+process ex:SimulatingThermosetInfiltration1
+as the output parameter of the simulation process
+ex:DryFiberForming which requires the capabil-
+ity ex:SimulatingDraping1 offered by the simu-
+lation ex:KinematicDraping. This simulation in
+turn requires a Shell-FE-Model as an input. In this
+way it is possible to express sequences of simula-
+tions resulting from this relation between input and
+output parameters of connected simulations. The
+output ex:LocalFillTime of the simulation pro-
+cess ex:SimulatingThermosetInfiltration1 can
+in turn be used as further input for succeeding simu-
+lations like, e.g., a distortion prediction with a ther-
+mochemical simulation, which is not pictured in Fig-
+ure 3 for clarity reasons. The user applies the pre-
+sented method again taking into account the quality
+criteria important for him. Another relevant aspect in
+this context is the influence that an input parameter
+has on the important quality criteria. If the influence
+is high there should be more consideration in choos-
+ing the right simulation to generate required input pa-
+rameters than if the influence is low. The influence of
+the input parameters for a specific simulation can be
+queried as shown in Listing 4.
+Listing 4: A query formulated in SPARQL to identify pa-
+rameter influences
+SELECT ? cap ? pr ? inf ? inp ? id ? val
+WHERE {
+ex : InfiltrationSimulationDL CSS :
+providesCapability ? cap .
+? pr CSS : requiresCapability ? cap .
+? inf SiS : isInfluenceFor ? pr .
+? inp SiS : hasInfluence ? inf .
+? inf DINEN61360 :
+has_Instance_Description ? id .
+? id DINEN61360 : value ? val .}
+In this application example, the influence of the
+input parameters on the output parameters was as-
+sessed by a domain expert. It was determined that
+textile permeability and quality of the geometry dis-
+cretized by a polygon mesh have a high influence
+on the simulation output and therefore get a score
+of 0 .4 each, while resin viscosity has a medium in-
+fluence and therefore gets a score of 0 .2. In Fig-
+ure 5 only the influence of textile permeability for
+ex:TextilePermeabilityVDI3633:Data
+ex:InfluenceScoreTePeSiS:InfluenceScore
+ex:SimulatingThermosetInfiltration1CSS:Process
+ex:InfluenceScoreTePeIDDINEN61360:InstanceDescriptionex:InfluenceScoreDINEN61360:TypeDescription
+0.4
+SiS:hasInfluenceSiS:isInfluenceFor
+DINEN61360:hasInstanceDescriptionDINEN61360:hasTypeDescription
+DINEN61360:value
+Figure 5: Exemplary graph excerpt resembling the parame-
+ter influences of the simulation
+SimulatingThermosetInfiltration1 is pictured
+for simplification purposes. Other influences are
+modeled accordingly.
+The result of this method is a simulation se-
+quence in which certain simulations have to be ex-
+ecuted before others to deliver necessary input pa-
+rameters for the former. In this example, the simula-
+tion ex:KinematicDraping must be executed before
+the simulation ex:InfiltrationSimulationDL or
+ex:InfiltrationSimulationTPDL, as shown in
+Figure 3.
+The information model presented allows repre-
+senting the connection between different simulations
+by modeling both input and output parameters of
+those simulations as VDI3633:Data, facilitating the
+description of simulation sequences. Describing qual-
+ity criteria as shown in Figure 4 not only acknowl-
+edges the overall ability of simulations to produce
+specific knowledge, but also allows for the consider-
+ation of these quality criteria when determining the
+most suitable simulation for a particular scenario.
+The structured description of quality criteria sup-
+ports the consideration of such criteria in simulation
+selection and planning, a complex process done by
+experts. By describing it in a machine readable format
+this consideration can be supported in an automated
+fashion as well. Another aspect the model supports
+is the evaluation and comparison of different planned
+simulation sequences based on relevant quality crite-
+ria.
+Evaluating and describing the impact of specific
+parameters allows for the planning of efficient simu-
+lation sequences true to the motto as precise as nec-
+essary but as imprecise as possible . In this example
+result accuracy is of high importance. For this reason
+it can be derived thatTextilePermeability, having
+a high influence, should be taken into particular con-
+sideration, which in turn sets quality requirements for
+the simulation ex:KinematicDraping that generates
+this input parameter.
+The application of the SiS ontology to the exam-
+
+--- PDF第11页 ---
+ple described in this section was carried out in collab-
+oration with a simulation expert from the manufac-
+turing domain. This collaboration confirmed the as-
+sumption that the ontology is suitable for describing
+simulations for manufacturing processes, considering
+important aspects for selection and planning. Conse-
+quently, the ontology supports the selection and plan-
+ning of simulations by structuring necessary informa-
+tion and making it accessible to users.
+The modeled example including the mentioned in-
+stances not pictured in the exemplary graph excerpts
+can be found on GitHub1.
+6 CONCLUSION AND FUTURE
+WORK
+In conclusion, this paper has presented a novel infor-
+mation model designed to address the challenges in-
+herent in the planning of simulation sequences, ac-
+cording to the question raised at the beginning. The
+model represents simulations, their ability to generate
+specific knowledge, and their respective quality cri-
+teria, thereby facilitating the generation of simulation
+sequences. The development of the model was guided
+by specific requirements and has proven practical in
+an application example. This underscores the model’s
+utility in providing necessary information to support
+users in simulation selection and planning. However,
+instantiating the information model requires expertise
+in both the semantic web domain and the simulation
+domain, as well as a solid understanding of the pro-
+posed information model. Furthermore, the model on
+its own only offers limited added value to a user, as
+it is intended to serve as a foundation for further de-
+velopments and applications that build upon it. In
+this way the information model presented in this pa-
+per paves the way for further research into automated
+support for simulation sequence creation, with the ul-
+timate goal of reducing the effort required to generate
+necessary process information.
+In terms of future work, there are several potential
+extensions and developments building on the work
+presented in this paper. The first aspect is the integra-
+tion of the presented information model into a system
+that provides an intuitive user interface. This allows
+users to interact with the information model in a way
+that is significantly useful to them, as the formula-
+tion of SPARQL queries is not feasible for most users.
+In this context, the question of how the information
+model can be automatically instantiated for existing
+simulations and during simulation creation could be
+examined more closely. The second important area
+of development is the creation of a planning logic for
+automated selection of simulations and planning of
+simulation sequences, as users would benefit signif-
+icantly from a higher degree of automation in simu-
+lation planning. In this scenario, it could be benefi-
+cial to examine the evaluation of quality criteria for
+specific use cases more closely, as well as the uncer-
+tainties that are inherently associated with the assess-
+ment of this quality criteria. Developing a prototype
+for the automated generation of simulation sequences
+is a practical step towards implementing this plan-
+ning logic. As a possible extension to the informa-
+tion model it could be beneficial to incorporate a skill
+component, meaning the executable implementation
+of the abstract functions in addition to the capabili-
+ties describing these functions. [K ¨ocher et al., 2023]
+This would allow for a representation of how to exe-
+cute simulations. In this context, it would be valuable
+to assess the feasibility of automating the execution
+of simulations, which would involve evaluating the
+extent to which simulation parameterization and ex-
+ecution can be automated, identifying limitations or
+challenges that may arise.
+ACKNOWLEDGEMENTS
+This contribution originates from the LaiLa project,
+funded by dtec.bw – Digitalization and Technology
+Research Center of the Bundeswehr which we grate-
+fully acknowledge. dtec.bw is funded by the Euro-
+pean Union – NextGenerationEU
+REFERENCES
+Barth, M., Ristic, M., and J ¨akel, J. (2023). A role-based
+Metric to determine the Quality of Simulation Mod-
+els. In 2023 IEEE 28th International Conference
+on Emerging Technologies and Factory Automation
+(ETFA), volume 2023. IEEE.
+DIN EN 61360-1 (07.2018). Standard data element types
+with associated classification scheme - Part 1: Defini-
+tions - Principles and methods (IEC 61360-1:2017).
+Fumagalli, L., Polenghi, A., Negri, E., and Roda, I. (2019).
+Framework for simulation software selection. Journal
+of Simulation, 13(4):286–303.
+Gangemi, A. and Presutti, V . (2009). Ontology Design Pat-
+terns. In Staab, S. and Studer, R., editors, Handbook
+on Ontologies, pages 221–243. Springer Berlin Hei-
+delberg, Berlin, Heidelberg.
+Grolinger, K., Capretz, M. A. M., Marti, J. R., and Sri-
+vastava, K. D. (2012). Ontology-based Representa-
+tion of Simulation Models. In Proceedings of the 24th
+International Conference on Software Engineering &
+Knowledge Engineering (SEKE’2012) , pages 432–
+437. Knowledge Systems Institute Graduate School.
+
+--- PDF第12页 ---
+Hildebrandt, C., K ¨ocher, A., Kustner, C., Lopez-Enriquez,
+C.-M., Muller, A. W., Caesar, B., Gundlach, C. S.,
+and Fay, A. (2020). Ontology Building for Cyber–
+Physical Systems: Application in the Manufacturing
+Domain. IEEE Transactions on Automation Science
+and Engineering, 17(3):1266–1282.
+ISO/IEC 25010:2011 (2011). Systems and software egni-
+neering - Systems and software Quality Requirements
+and Evaluation (SquaRE) - System and software qual-
+ity models.
+J¨arvenp¨a¨a, E., Siltala, N., Hylli, O., and Lanz, M. (2017).
+Capability Matchmaking Procedure to Support Rapid
+Configuration and Re-configuration of Production
+Systems. Procedia Manufacturing, 11:1053–1060.
+Jeleniewski, T., Nabizada, H., Reif, J., K¨ocher, A., and Fay,
+A. (2023). A Semantic Model to Express Process Pa-
+rameters and their Interdependencies in Manufactur-
+ing. In 2023 IEEE 32nd International Symposium on
+Industrial Electronics (ISIE), pages 1–6. IEEE.
+K¨ocher, A., Belyaev, A., Hermann, J., Bock, J., Meixner,
+K., V olkmann, M., Winter, M., Zimmermann, P.,
+Grimm, S., and Diedrich, C. (2023). A reference
+model for common understanding of capabilities and
+skills in manufacturing. at - Automatisierungstechnik,
+71(2):94–104.
+Listl, F. G., Fischer, J., and Weyrich, M. (2023). An Archi-
+tecture for Knowledge Graph based Simulation Sup-
+port. In 2023 IEEE 28th International Conference
+on Emerging Technologies and Factory Automation
+(ETFA), pages 1–8. IEEE.
+Mohagheghi, P. and Dehlen, V . (2009).Existing model met-
+rics and relations to model quality. IEEE, Piscataway,
+NJ.
+Mourtzis, D. (2020). Simulation in the design and operation
+of manufacturing systems: state of the art and new
+trends. International Journal of Production Research,
+58(7):1927–1949.
+Naresh, K., Khan, K. A., Umer, R., and Cantwell, W. J.
+(2020). The use of X-ray computed tomography for
+design and process modeling of aerospace compos-
+ites: A review. Materials & Design, 190:108553.
+Puntel-Schmidt, P. and Fay, A. (2015). Levels of Detail and
+Appropriate Model Types for Virtual Commissioning
+in Manufacturing Engineering. IFAC-PapersOnLine,
+48(1):922–927.
+Reif, J., Jeleniewski, T., and Fay, A. (2023). An Approach
+to Automating the Generation of Process Simulation
+Sequences. In 2023 IEEE 28th International Confer-
+ence on Emerging Technologies and Factory Automa-
+tion (ETFA), pages 1–4. IEEE.
+Reiter, M., Breitenbucher, U., Kopp, O., and Karastoy-
+anova, D. (2012). Quality of data driven simulation
+workflows. In 2012 IEEE 8th International Confer-
+ence on E-Science, pages 1–8. IEEE.
+Saltelli, A., Ratto, M., Andres, T., Campolongo, F., Cari-
+boni, J., Gatelli, D., Saisana, M., and Tarantola, S.
+(2008). Global sensitivity analysis: The primer . Wi-
+ley, Chichester, West Sussex.
+ˇSindel´aˇr, R. and Nov´ak, P., editors (2016). Ontology-Based
+Simulation Design and Integration. Springer Interna-
+tional Publishing and Imprint: Springer, Cham, 1st ed.
+2016 edition.
+Studer, R., Benjamins, V ., and Fensel, D. (1998). Knowl-
+edge engineering: Principles and methods. Data &
+Knowledge Engineering, 25(1-2):161–197.
+VDI 3633:1 (12.2014). Simulation of systems in materials
+handling, logistics and production Fundamentals.
+V ogel-Heuser, B., Fay, A., Schaefer, I., and Tichy, M.
+(2015). Evolution of software in automated pro-
+duction systems: Challenges and research directions.
+Journal of Systems and Software, 110:54–84.
+Wenzel, K. (2021). OpenMath-RDF: RDF encodings for
+OpenMath objects and Content Dictionaries. In 31st
+OpenMath Workshop.

@@ -1,0 +1,221 @@
+{
+  "document_kind": "category_contract_design_not_registered_loader",
+  "revision": "draft-1",
+  "common_fields": [
+    "id",
+    "version",
+    "category",
+    "title",
+    "definition_state",
+    "contribution"
+  ],
+  "definition_state_values": [
+    "design",
+    "editable_example",
+    "runtime_candidate",
+    "released",
+    "unmaintained"
+  ],
+  "runtime_state_owner": "project_instances_and_results_not_definitions",
+  "categories": [
+    {
+      "id": "items",
+      "title": "物品",
+      "payload_fields": [
+        "item_definition"
+      ],
+      "instantiate_as": "item_type",
+      "consumer": "domain/planner",
+      "invariant": "specification_not_stock",
+      "example_manifest": "items/shell-spec/manifest.json",
+      "authoring_actions": [
+        "create_draft",
+        "edit_category_payload",
+        "inspect_sample",
+        "adopt_explicit_version",
+        "export_contribution_package"
+      ],
+      "agent_edit_operation": "apply_commands"
+    },
+    {
+      "id": "devices",
+      "title": "固定设备",
+      "payload_fields": [
+        "parameters",
+        "ports",
+        "presentation"
+      ],
+      "instantiate_as": "device_instance",
+      "consumer": "module-kit/simulation/presentation",
+      "invariant": "one_selected_behavior_source",
+      "example_manifest": "devices/control-box-assembly/manifest.json",
+      "behavior_sources": [
+        "inline_behavior",
+        "operation_ref"
+      ],
+      "behavior_source_selection": "exactly_one_explicit_source",
+      "authoring_actions": [
+        "create_draft",
+        "edit_category_payload",
+        "inspect_sample",
+        "adopt_explicit_version",
+        "export_contribution_package"
+      ],
+      "agent_edit_operation": "apply_commands"
+    },
+    {
+      "id": "resources",
+      "title": "资源",
+      "payload_fields": [
+        "resource_definition"
+      ],
+      "instantiate_as": "resource_instance",
+      "consumer": "domain/simulation",
+      "invariant": "capacity_not_current_occupation",
+      "example_manifest": "resources/operator-role/manifest.json",
+      "authoring_actions": [
+        "create_draft",
+        "edit_category_payload",
+        "inspect_sample",
+        "adopt_explicit_version",
+        "export_contribution_package"
+      ],
+      "agent_edit_operation": "apply_commands"
+    },
+    {
+      "id": "tasks",
+      "title": "任务（人工、准备与维护）",
+      "payload_fields": [
+        "task_definition"
+      ],
+      "instantiate_as": "task_instance",
+      "consumer": "simulation/planner",
+      "invariant": "work_or_readiness_not_material_output",
+      "example_manifest": "tasks/board-preparation/manifest.json",
+      "authoring_actions": [
+        "create_draft",
+        "edit_category_payload",
+        "inspect_sample",
+        "adopt_explicit_version",
+        "export_contribution_package"
+      ],
+      "agent_edit_operation": "apply_commands"
+    },
+    {
+      "id": "operations",
+      "title": "工艺规则",
+      "payload_fields": [
+        "operation_definition"
+      ],
+      "instantiate_as": "operation_binding",
+      "consumer": "simulation",
+      "invariant": "only_factory_commits_material",
+      "example_manifest": "operations/control-box-rule/manifest.json",
+      "authoring_actions": [
+        "create_draft",
+        "edit_category_payload",
+        "inspect_sample",
+        "adopt_explicit_version",
+        "export_contribution_package"
+      ],
+      "agent_edit_operation": "apply_commands"
+    },
+    {
+      "id": "transport",
+      "title": "物流与供应",
+      "payload_fields": [
+        "parameters",
+        "ports",
+        "behavior"
+      ],
+      "instantiate_as": "transport_binding",
+      "consumer": "simulation/planner",
+      "invariant": "one_vehicle_and_one_cargo_holder",
+      "example_manifest": "transport/batch-transport/manifest.json",
+      "authoring_actions": [
+        "create_draft",
+        "edit_category_payload",
+        "inspect_sample",
+        "adopt_explicit_version",
+        "export_contribution_package"
+      ],
+      "agent_edit_operation": "apply_commands"
+    },
+    {
+      "id": "templates",
+      "title": "厂房与组合",
+      "payload_fields": [
+        "project"
+      ],
+      "instantiate_as": "project_object_group",
+      "consumer": "planner/module-kit",
+      "invariant": "new_ids_without_runtime_stock_copy",
+      "example_manifest": "templates/parallel-electromechanical/manifest.json",
+      "authoring_actions": [
+        "create_draft",
+        "edit_category_payload",
+        "inspect_sample",
+        "adopt_explicit_version",
+        "export_contribution_package"
+      ],
+      "agent_edit_operation": "apply_commands",
+      "business_scope": [
+        "line_group",
+        "region_group",
+        "hall",
+        "base_group",
+        "composable_project_template"
+      ],
+      "optional_payload_fields": [
+        "generation_profile"
+      ],
+      "generation_profile_scope": "industry/product/site applicability, sourced parameters, nine-category roles and goal bindings; optional for existing static templates"
+    },
+    {
+      "id": "professional",
+      "title": "专业计算",
+      "payload_fields": [
+        "professional_contract"
+      ],
+      "instantiate_as": "producer_binding",
+      "consumer": "professional_tool_and_factory_consumer",
+      "invariant": "artifact_not_automatic_stock_or_acceptance",
+      "example_manifest": "professional/machining-producer/manifest.json",
+      "authoring_actions": [
+        "create_draft",
+        "edit_category_payload",
+        "inspect_sample",
+        "adopt_explicit_version",
+        "export_contribution_package"
+      ],
+      "agent_edit_operation": "apply_commands"
+    },
+    {
+      "id": "media",
+      "title": "表现素材",
+      "payload_fields": [
+        "presentation"
+      ],
+      "instantiate_as": "presentation_binding",
+      "consumer": "presentation",
+      "invariant": "visual_only",
+      "example_manifest": "media/editable-bench/manifest.json",
+      "authoring_actions": [
+        "create_draft",
+        "edit_category_payload",
+        "inspect_sample",
+        "adopt_explicit_version",
+        "export_contribution_package"
+      ],
+      "agent_edit_operation": "apply_commands"
+    }
+  ],
+  "implementation_tasks": [
+    "P0-01",
+    "P3-01",
+    "P4-01",
+    "P5-01"
+  ],
+  "actual_result": null,
+  "authoring_status": "planned_for_all_nine_categories_not_runtime"
+}

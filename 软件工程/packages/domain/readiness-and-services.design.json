@@ -1,0 +1,82 @@
+{
+  "document_kind": "infrastructure_constraints_draft_not_runtime_schema",
+  "schema_revision": "draft-1",
+  "calendar_reference": {
+    "fields": [
+      "project_origin",
+      "timezone",
+      "production_origin_project_ms",
+      "observation_end_ms"
+    ],
+    "meaning": "one calendar reference; displays use different units, not independent clocks"
+  },
+  "readiness_package": {
+    "fields": [
+      "id",
+      "target_ref",
+      "required_artifact_bindings",
+      "construction_task_refs",
+      "required_service_bindings",
+      "readiness_conditions",
+      "planned_release_project_ms",
+      "release_decision_ref"
+    ],
+    "states": [
+      "draft",
+      "awaiting_conditions",
+      "awaiting_acceptance",
+      "available_in_accepted_scope"
+    ],
+    "decision_scope": "simulation/declared or actual evidence must be explicit"
+  },
+  "construction_task": {
+    "fields": [
+      "id",
+      "target_ref",
+      "predecessors",
+      "planned_start_project_ms",
+      "planned_finish_project_ms",
+      "progress_source",
+      "completion_decision"
+    ],
+    "crew_work_hours": "explicit data or null; calendar duration is not paid labor"
+  },
+  "service_source": {
+    "fields": [
+      "id",
+      "quantity_kind",
+      "unit",
+      "reference_conditions",
+      "capacity_profile",
+      "background_profile",
+      "parent_source_ref",
+      "declared_properties",
+      "scope"
+    ],
+    "supported_first_scope": "declared shared capacity and compatibility; not pressure/power-flow physics"
+  },
+  "service_binding": {
+    "fields": [
+      "source_ref",
+      "connection_ref",
+      "device_ref",
+      "phase_ref",
+      "incremental_demand",
+      "unit",
+      "reference_conditions",
+      "required_properties",
+      "interruption_policy"
+    ],
+    "ownership": "simulation acquires all phase requirements atomically; resources category"
+  },
+  "service_event": {
+    "fields": [
+      "at_ms",
+      "source_ref",
+      "new_capacity",
+      "new_availability"
+    ],
+    "event_order": "close previous progress/completions, apply availability and capacity, acquire new stages"
+  },
+  "current_result": null
+}

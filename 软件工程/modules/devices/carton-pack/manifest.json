@@ -1,0 +1,107 @@
+{
+  "document_kind": "design_example_not_runtime_plugin",
+  "id": "community.carton-pack",
+  "version": "0.1.0",
+  "category": "devices",
+  "title": "单件装盒工位",
+  "placement": "fixed_during_simulation",
+  "parameters": [
+    {
+      "id": "cycle_seconds",
+      "label": "单次装盒工时",
+      "type": "duration",
+      "unit": "second",
+      "binding": "behavior.duration.value"
+    }
+  ],
+  "ports": [
+    {
+      "id": "product",
+      "kind": "material",
+      "direction": "in",
+      "item": "assembly",
+      "unit": "piece"
+    },
+    {
+      "id": "carton",
+      "kind": "material",
+      "direction": "in",
+      "item": "carton",
+      "unit": "piece"
+    },
+    {
+      "id": "packed",
+      "kind": "material",
+      "direction": "out",
+      "item": "package",
+      "unit": "piece"
+    }
+  ],
+  "behavior": {
+    "builtin": "pack",
+    "repeat_mode": "continuous_when_ready",
+    "inputs": [
+      {
+        "port": "product",
+        "quantity": 1
+      },
+      {
+        "port": "carton",
+        "quantity": 1
+      }
+    ],
+    "outputs": [
+      {
+        "port": "packed",
+        "quantity": 1
+      }
+    ],
+    "duration": {
+      "value": 15,
+      "unit": "second",
+      "basis": "自建演示假设，非实际包装工时"
+    },
+    "resources": [
+      {
+        "role": "packer",
+        "quantity": 1
+      }
+    ],
+    "identity_policy": {
+      "contents_from": "product",
+      "container_material_from": "carton",
+      "result": "new_package_with_existing_content_ids"
+    },
+    "start": "inputs_ready_and_packer_available",
+    "finish": "duration_elapsed_and_output_has_space"
+  },
+  "presentation": {
+    "media": {
+      "kind": "image",
+      "path": null
+    },
+    "states": [
+      "idle",
+      "working",
+      "waiting"
+    ],
+    "lod": {
+      "detailed": "media_and_ports",
+      "simplified": "icon_and_state",
+      "region": "parent_aggregate"
+    }
+  },
+  "operations": [
+    "configure",
+    "inspect",
+    "preview_cycle"
+  ],
+  "contribution": {
+    "author": "待填写",
+    "license": "待声明",
+    "assets": [],
+    "example": "两厂房装配包装",
+    "status": "design"
+  },
+  "definition_state": "design"
+}

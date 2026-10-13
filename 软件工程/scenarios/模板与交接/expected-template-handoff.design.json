@@ -1,0 +1,779 @@
+{
+  "document_kind": "finite_design_checks_not_product_acceptance",
+  "templates": [
+    {
+      "template": "machining-delivery",
+      "device_count": 3,
+      "mode": "declared_process",
+      "nominal_inputs_checked": true,
+      "actual_result": null
+    },
+    {
+      "template": "purchased-assembly",
+      "device_count": 3,
+      "mode": "declared_process",
+      "nominal_inputs_checked": true,
+      "actual_result": null
+    },
+    {
+      "template": "parallel-electromechanical",
+      "device_count": 6,
+      "mode": "declared_process",
+      "nominal_inputs_checked": true,
+      "actual_result": null
+    }
+  ],
+  "cases": [
+    {
+      "id": "machining_delivery",
+      "manual_expected": {
+        "jobs": [
+          {
+            "kind": "load",
+            "item": 0,
+            "start_ms": 0,
+            "end_ms": 10000,
+            "resources": [
+              "CNC01",
+              "W-C"
+            ]
+          },
+          {
+            "kind": "auto",
+            "item": 0,
+            "start_ms": 10000,
+            "end_ms": 55000,
+            "resources": [
+              "CNC01"
+            ]
+          },
+          {
+            "kind": "unload",
+            "item": 0,
+            "start_ms": 55000,
+            "end_ms": 60000,
+            "resources": [
+              "CNC01",
+              "W-C"
+            ]
+          },
+          {
+            "kind": "load",
+            "item": 1,
+            "start_ms": 60000,
+            "end_ms": 70000,
+            "resources": [
+              "CNC01",
+              "W-C"
+            ]
+          },
+          {
+            "kind": "auto",
+            "item": 1,
+            "start_ms": 70000,
+            "end_ms": 115000,
+            "resources": [
+              "CNC01"
+            ]
+          },
+          {
+            "kind": "unload",
+            "item": 1,
+            "start_ms": 115000,
+            "end_ms": 120000,
+            "resources": [
+              "CNC01",
+              "W-C"
+            ]
+          },
+          {
+            "kind": "inspection",
+            "item": 0,
+            "start_ms": 60000,
+            "end_ms": 70000,
+            "resources": [
+              "Inspection01",
+              "W-B"
+            ]
+          },
+          {
+            "kind": "packing",
+            "item": 0,
+            "start_ms": 70000,
+            "end_ms": 90000,
+            "resources": [
+              "Packing01",
+              "W-B"
+            ]
+          },
+          {
+            "kind": "inspection",
+            "item": 1,
+            "start_ms": 120000,
+            "end_ms": 130000,
+            "resources": [
+              "Inspection01",
+              "W-B"
+            ]
+          },
+          {
+            "kind": "packing",
+            "item": 1,
+            "start_ms": 130000,
+            "end_ms": 150000,
+            "resources": [
+              "Packing01",
+              "W-B"
+            ]
+          }
+        ],
+        "accepted_at_ms": [
+          90000,
+          150000
+        ],
+        "accepted_count": 2,
+        "acceptance_scope": "declared_factory_store",
+        "quality_source": "preset_or_declared_not_actual",
+        "initial_stock": {
+          "blank": 2,
+          "carton": 2
+        }
+      },
+      "actual_result": null
+    },
+    {
+      "id": "purchased_assembly",
+      "manual_expected": {
+        "jobs": [
+          {
+            "kind": "assembly",
+            "item": 0,
+            "start_ms": 0,
+            "end_ms": 40000,
+            "resources": [
+              "Assembly01",
+              "W-A"
+            ]
+          },
+          {
+            "kind": "inspection",
+            "item": 0,
+            "start_ms": 40000,
+            "end_ms": 50000,
+            "resources": [
+              "Inspection01",
+              "W-B"
+            ]
+          },
+          {
+            "kind": "packing",
+            "item": 0,
+            "start_ms": 50000,
+            "end_ms": 70000,
+            "resources": [
+              "Packing01",
+              "W-B"
+            ]
+          },
+          {
+            "kind": "assembly",
+            "item": 1,
+            "start_ms": 40000,
+            "end_ms": 80000,
+            "resources": [
+              "Assembly01",
+              "W-A"
+            ]
+          },
+          {
+            "kind": "inspection",
+            "item": 1,
+            "start_ms": 80000,
+            "end_ms": 90000,
+            "resources": [
+              "Inspection01",
+              "W-B"
+            ]
+          },
+          {
+            "kind": "packing",
+            "item": 1,
+            "start_ms": 90000,
+            "end_ms": 110000,
+            "resources": [
+              "Packing01",
+              "W-B"
+            ]
+          }
+        ],
+        "accepted_at_ms": [
+          70000,
+          110000
+        ],
+        "accepted_count": 2,
+        "acceptance_scope": "declared_factory_store",
+        "quality_source": "preset_or_declared_not_actual",
+        "initial_stock": {
+          "shell": 2,
+          "pcb": 2,
+          "fastener": 8,
+          "carton": 2
+        }
+      },
+      "actual_result": null
+    },
+    {
+      "id": "parallel_manufacturing",
+      "manual_expected": {
+        "jobs": [
+          {
+            "kind": "load",
+            "item": 0,
+            "start_ms": 0,
+            "end_ms": 10000,
+            "resources": [
+              "CNC01",
+              "W-C"
+            ]
+          },
+          {
+            "kind": "auto",
+            "item": 0,
+            "start_ms": 10000,
+            "end_ms": 55000,
+            "resources": [
+              "CNC01"
+            ]
+          },
+          {
+            "kind": "unload",
+            "item": 0,
+            "start_ms": 55000,
+            "end_ms": 60000,
+            "resources": [
+              "CNC01",
+              "W-C"
+            ]
+          },
+          {
+            "kind": "load",
+            "item": 1,
+            "start_ms": 60000,
+            "end_ms": 70000,
+            "resources": [
+              "CNC01",
+              "W-C"
+            ]
+          },
+          {
+            "kind": "auto",
+            "item": 1,
+            "start_ms": 70000,
+            "end_ms": 115000,
+            "resources": [
+              "CNC01"
+            ]
+          },
+          {
+            "kind": "unload",
+            "item": 1,
+            "start_ms": 115000,
+            "end_ms": 120000,
+            "resources": [
+              "CNC01",
+              "W-C"
+            ]
+          },
+          {
+            "kind": "setup",
+            "item": null,
+            "start_ms": 0,
+            "end_ms": 30000,
+            "resources": [
+              "Board01",
+              "W-E"
+            ]
+          },
+          {
+            "kind": "board_load",
+            "item": 0,
+            "start_ms": 30000,
+            "end_ms": 35000,
+            "resources": [
+              "Board01",
+              "W-E"
+            ]
+          },
+          {
+            "kind": "board_place",
+            "item": 0,
+            "start_ms": 35000,
+            "end_ms": 55000,
+            "resources": [
+              "Board01"
+            ]
+          },
+          {
+            "kind": "board_unload",
+            "item": 0,
+            "start_ms": 55000,
+            "end_ms": 60000,
+            "resources": [
+              "Board01",
+              "W-E"
+            ]
+          },
+          {
+            "kind": "board_finish",
+            "item": 0,
+            "start_ms": 60000,
+            "end_ms": 90000,
+            "resources": [
+              "BoardFinish01"
+            ]
+          },
+          {
+            "kind": "board_load",
+            "item": 1,
+            "start_ms": 60000,
+            "end_ms": 65000,
+            "resources": [
+              "Board01",
+              "W-E"
+            ]
+          },
+          {
+            "kind": "board_place",
+            "item": 1,
+            "start_ms": 65000,
+            "end_ms": 85000,
+            "resources": [
+              "Board01"
+            ]
+          },
+          {
+            "kind": "board_unload",
+            "item": 1,
+            "start_ms": 85000,
+            "end_ms": 90000,
+            "resources": [
+              "Board01",
+              "W-E"
+            ]
+          },
+          {
+            "kind": "board_finish",
+            "item": 1,
+            "start_ms": 90000,
+            "end_ms": 120000,
+            "resources": [
+              "BoardFinish01"
+            ]
+          },
+          {
+            "kind": "assembly",
+            "item": 0,
+            "start_ms": 90000,
+            "end_ms": 130000,
+            "resources": [
+              "Assembly01",
+              "W-A"
+            ]
+          },
+          {
+            "kind": "inspection",
+            "item": 0,
+            "start_ms": 130000,
+            "end_ms": 140000,
+            "resources": [
+              "Inspection01",
+              "W-B"
+            ]
+          },
+          {
+            "kind": "packing",
+            "item": 0,
+            "start_ms": 140000,
+            "end_ms": 160000,
+            "resources": [
+              "Packing01",
+              "W-B"
+            ]
+          },
+          {
+            "kind": "assembly",
+            "item": 1,
+            "start_ms": 130000,
+            "end_ms": 170000,
+            "resources": [
+              "Assembly01",
+              "W-A"
+            ]
+          },
+          {
+            "kind": "inspection",
+            "item": 1,
+            "start_ms": 170000,
+            "end_ms": 180000,
+            "resources": [
+              "Inspection01",
+              "W-B"
+            ]
+          },
+          {
+            "kind": "packing",
+            "item": 1,
+            "start_ms": 180000,
+            "end_ms": 200000,
+            "resources": [
+              "Packing01",
+              "W-B"
+            ]
+          }
+        ],
+        "accepted_at_ms": [
+          160000,
+          200000
+        ],
+        "accepted_count": 2,
+        "acceptance_scope": "declared_factory_store",
+        "quality_source": "preset_or_declared_not_actual",
+        "initial_stock": {
+          "blank": 2,
+          "bare_pcb": 2,
+          "component": 16,
+          "fastener": 8,
+          "carton": 2
+        }
+      },
+      "actual_result": null
+    },
+    {
+      "id": "parallel_board_preparation_90s",
+      "manual_expected": {
+        "jobs": [
+          {
+            "kind": "load",
+            "item": 0,
+            "start_ms": 0,
+            "end_ms": 10000,
+            "resources": [
+              "CNC01",
+              "W-C"
+            ]
+          },
+          {
+            "kind": "auto",
+            "item": 0,
+            "start_ms": 10000,
+            "end_ms": 55000,
+            "resources": [
+              "CNC01"
+            ]
+          },
+          {
+            "kind": "unload",
+            "item": 0,
+            "start_ms": 55000,
+            "end_ms": 60000,
+            "resources": [
+              "CNC01",
+              "W-C"
+            ]
+          },
+          {
+            "kind": "load",
+            "item": 1,
+            "start_ms": 60000,
+            "end_ms": 70000,
+            "resources": [
+              "CNC01",
+              "W-C"
+            ]
+          },
+          {
+            "kind": "auto",
+            "item": 1,
+            "start_ms": 70000,
+            "end_ms": 115000,
+            "resources": [
+              "CNC01"
+            ]
+          },
+          {
+            "kind": "unload",
+            "item": 1,
+            "start_ms": 115000,
+            "end_ms": 120000,
+            "resources": [
+              "CNC01",
+              "W-C"
+            ]
+          },
+          {
+            "kind": "setup",
+            "item": null,
+            "start_ms": 0,
+            "end_ms": 90000,
+            "resources": [
+              "Board01",
+              "W-E"
+            ]
+          },
+          {
+            "kind": "board_load",
+            "item": 0,
+            "start_ms": 90000,
+            "end_ms": 95000,
+            "resources": [
+              "Board01",
+              "W-E"
+            ]
+          },
+          {
+            "kind": "board_place",
+            "item": 0,
+            "start_ms": 95000,
+            "end_ms": 115000,
+            "resources": [
+              "Board01"
+            ]
+          },
+          {
+            "kind": "board_unload",
+            "item": 0,
+            "start_ms": 115000,
+            "end_ms": 120000,
+            "resources": [
+              "Board01",
+              "W-E"
+            ]
+          },
+          {
+            "kind": "board_finish",
+            "item": 0,
+            "start_ms": 120000,
+            "end_ms": 150000,
+            "resources": [
+              "BoardFinish01"
+            ]
+          },
+          {
+            "kind": "board_load",
+            "item": 1,
+            "start_ms": 120000,
+            "end_ms": 125000,
+            "resources": [
+              "Board01",
+              "W-E"
+            ]
+          },
+          {
+            "kind": "board_place",
+            "item": 1,
+            "start_ms": 125000,
+            "end_ms": 145000,
+            "resources": [
+              "Board01"
+            ]
+          },
+          {
+            "kind": "board_unload",
+            "item": 1,
+            "start_ms": 145000,
+            "end_ms": 150000,
+            "resources": [
+              "Board01",
+              "W-E"
+            ]
+          },
+          {
+            "kind": "board_finish",
+            "item": 1,
+            "start_ms": 150000,
+            "end_ms": 180000,
+            "resources": [
+              "BoardFinish01"
+            ]
+          },
+          {
+            "kind": "assembly",
+            "item": 0,
+            "start_ms": 150000,
+            "end_ms": 190000,
+            "resources": [
+              "Assembly01",
+              "W-A"
+            ]
+          },
+          {
+            "kind": "inspection",
+            "item": 0,
+            "start_ms": 190000,
+            "end_ms": 200000,
+            "resources": [
+              "Inspection01",
+              "W-B"
+            ]
+          },
+          {
+            "kind": "packing",
+            "item": 0,
+            "start_ms": 200000,
+            "end_ms": 220000,
+            "resources": [
+              "Packing01",
+              "W-B"
+            ]
+          },
+          {
+            "kind": "assembly",
+            "item": 1,
+            "start_ms": 190000,
+            "end_ms": 230000,
+            "resources": [
+              "Assembly01",
+              "W-A"
+            ]
+          },
+          {
+            "kind": "inspection",
+            "item": 1,
+            "start_ms": 230000,
+            "end_ms": 240000,
+            "resources": [
+              "Inspection01",
+              "W-B"
+            ]
+          },
+          {
+            "kind": "packing",
+            "item": 1,
+            "start_ms": 240000,
+            "end_ms": 260000,
+            "resources": [
+              "Packing01",
+              "W-B"
+            ]
+          }
+        ],
+        "accepted_at_ms": [
+          220000,
+          260000
+        ],
+        "accepted_count": 2,
+        "acceptance_scope": "declared_factory_store",
+        "quality_source": "preset_or_declared_not_actual",
+        "initial_stock": {
+          "blank": 2,
+          "bare_pcb": 2,
+          "component": 16,
+          "fastener": 8,
+          "carton": 2
+        }
+      },
+      "actual_result": null
+    },
+    {
+      "id": "insert_template_into_existing_project",
+      "manual_expected": {
+        "initial_stock_added": 0,
+        "demand_added": 0,
+        "cloned_object_ids": [
+          "copy1.CNC01",
+          "copy2.CNC01"
+        ],
+        "module_definition_identity_shared": true,
+        "basis": "explicit_template_import_policy_not_actual_editor_test"
+      },
+      "actual_result": null
+    },
+    {
+      "id": "missing_visual_asset",
+      "manual_expected": {
+        "choice": "explicit_native_or_icon_replacement",
+        "behavior_changed": false,
+        "stock_changed": false,
+        "missing_asset_disclosed": true
+      },
+      "actual_result": null
+    },
+    {
+      "id": "missing_behavior_definition",
+      "manual_expected": {
+        "affected_operation": "not_executable",
+        "whole_factory_result": "incomplete",
+        "unknown_operation_is_zero_time": false
+      },
+      "actual_result": null
+    },
+    {
+      "id": "missing_requested_professional_result",
+      "manual_expected": {
+        "selected_mode": "calculated_nominal",
+        "state": "awaiting_actual_supported_provider",
+        "automatic_declared_downgrade": false
+      },
+      "actual_result": null
+    },
+    {
+      "id": "declared_snapshot_continuation",
+      "manual_expected": {
+        "snapshot": {
+          "time_ms": 60000,
+          "origin": "same_project_origin",
+          "items": [
+            {
+              "id": "item-job",
+              "holder": "job1"
+            },
+            {
+              "id": "item-transit",
+              "holder": "vehicle1"
+            }
+          ],
+          "job": {
+            "id": "job1",
+            "definition_version": "0.1.0",
+            "effective_done_ms": 20000,
+            "effective_total_ms": 40000
+          },
+          "transport": {
+            "item": "item-transit",
+            "accept_at_ms": 75000
+          },
+          "future_arrival": {
+            "id": "new-input",
+            "at_ms": 90000
+          },
+          "accepted_base": 2,
+          "demand_total": 4,
+          "actual_result": null
+        },
+        "job_finish_at_ms": 80000,
+        "transport_accept_at_ms": 75000,
+        "future_arrival_kept_at_ms": 90000,
+        "past_events_replayed": false,
+        "accepted_increment": 2,
+        "accepted_cumulative": 4,
+        "remaining_demand_after": 0,
+        "source_stock_recreated": false,
+        "active_job_definition_preserved": "0.1.0",
+        "future_job_definition": "0.2.0",
+        "future_job_duration_ms": 30000,
+        "actual_resume_result": null
+      },
+      "actual_result": null
+    },
+    {
+      "id": "non_resumable_professional_state",
+      "manual_expected": {
+        "can_read": true,
+        "can_resume": false,
+        "permitted_next": "from_start_or_actual_supported_state",
+        "restarting_half_job_silently": false
+      },
+      "actual_result": null
+    }
+  ]
+}

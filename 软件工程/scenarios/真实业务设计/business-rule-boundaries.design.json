@@ -1,0 +1,70 @@
+{
+  "document_kind": "finite_business_rule_inputs_and_frozen_expectations_not_runtime",
+  "contract_ref": "../../packages/domain/business-objects.design.json",
+  "actual_result": null,
+  "cases": [
+    {
+      "id": "B01",
+      "meaning": "质量限制与预留重叠只排除一次；本任务可取得自身合格预留，失败取得不改变状态",
+      "items": [
+        {"id": "a", "lifecycle": "available", "quality": "released", "inspection_required": true, "reserved_for": "T"},
+        {"id": "b", "lifecycle": "available", "quality": "pending", "inspection_required": true, "reserved_for": "T"},
+        {"id": "c", "lifecycle": "available", "quality": "released", "inspection_required": true, "reserved_for": null},
+        {"id": "d", "lifecycle": "available", "quality": "pending", "inspection_required": true, "reserved_for": null},
+        {"id": "e", "lifecycle": "available", "quality": "unchecked", "inspection_required": false, "reserved_for": null}
+      ],
+      "request": {"task": "T", "quantity": 3, "resource_available": false},
+      "expected": {"on_hand": 5, "free_ids": ["c", "e"], "eligible_for_T": ["a", "c", "e"], "newly_acquired": []}
+    },
+    {
+      "id": "B02",
+      "meaning": "目的物理接收不等于订单接受，订单部分接受不等于运输部分装载",
+      "demand": 4,
+      "received_and_released": [2, 4],
+      "transport_allow_partial_load": true,
+      "expected": {"allow_partial_true": [2, 4], "allow_partial_false": [0, 4]}
+    },
+    {
+      "id": "B03",
+      "meaning": "业务取消释放本需求未投入预留，不删除已投入物品或其他订单预留",
+      "cancel_demand": "A",
+      "allocations": [
+        {"item": "a", "demand": "A", "mode": "hard_reserved", "holder": "store"},
+        {"item": "b", "demand": "B", "mode": "hard_reserved", "holder": "store"},
+        {"item": "c", "demand": "A", "mode": "committed", "holder": "job"}
+      ],
+      "expected": {"released_items": ["a"], "preserved_items": ["b", "c"], "preserved_committed_holder": "job"}
+    },
+    {
+      "id": "B04",
+      "meaning": "待判移交须有接收容量，释放工位不改变质量",
+      "item": "p",
+      "quality": "pending",
+      "station_resources": ["Inspector"],
+      "receiving_free_capacity_sequence": [0, 1],
+      "expected": [
+        {"holder": "inspection_job", "held_resources": ["Inspector"], "quality": "pending"},
+        {"holder": "pending_store", "held_resources": [], "quality": "pending"}
+      ]
+    },
+    {
+      "id": "B05",
+      "meaning": "整数优先级方向、无交期及稳定ID并列的确定处理",
+      "jobs": [
+        {"id": "a", "priority": 1, "due": 20, "ready": 10},
+        {"id": "b", "priority": 1, "due": 10, "ready": 10},
+        {"id": "c", "priority": 1, "due": null, "ready": 1},
+        {"id": "d", "priority": 2, "due": 5, "ready": 9},
+        {"id": "e", "priority": 1, "due": 10, "ready": 10}
+      ],
+      "expected": ["d", "b", "e", "a", "c"]
+    },
+    {
+      "id": "B06",
+      "meaning": "接收阻塞期间不提交产出，空间释放后同一结果只移交一次",
+      "output_item": "out-1",
+      "receiving_free_capacity_sequence": [0, 0, 1, 1],
+      "expected": {"holders": ["job", "job", "store", "store"], "commit_count": 1, "accepted_quantity": 1}
+    }
+  ]
+}

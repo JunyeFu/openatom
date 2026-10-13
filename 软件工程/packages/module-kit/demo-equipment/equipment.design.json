@@ -1,0 +1,123 @@
+{
+  "document_kind": "demo_equipment_requirements_and_media_bindings_not_runtime",
+  "revision": "draft-1",
+  "definition_seed": "definitions.design.json",
+  "review_owner": "S05-03",
+  "related_checkpoints": ["S03-02", "S03-03", "S04-02", "S06-02", "S06-05"],
+  "planned_window": "W03",
+  "implementation_tasks": ["P3-01", "P3-02", "P4-01"],
+  "registration_status": "local_design_seed_not_added_to_modules_catalog",
+  "presentation_contract": {
+    "state_source": "same_factory_engine_snapshot_as_line_view",
+    "fields_required": ["instance_id", "definition_ref", "state", "phase_id", "effective_progress", "waiting_reason", "holder_item_ids", "port_bindings", "resource_bindings"],
+    "progress_unit": "ratio_0_to_1; waiting_and_pause_do_not_advance_effective_progress",
+    "device_states": {
+      "idle": "ready_pose_and_no_fabricated_material",
+      "working": "pose_from_effective_progress_and_existing_item_ids",
+      "waiting_inputs": "prestart_pose_and_exact_missing_input_or_resource",
+      "waiting_output": "hold_finished_pose_and_same_item_until_destination_accepts",
+      "paused": "hold_current_pose_without_material_commit"
+    },
+    "stock_and_clock_owner": "factory_engine; presentation_has_no_production_counter_or_clock",
+    "node_selector": "exact_original_GLTF_node_name_and_expected_count; static_batch_names_are_not_editable_node_ids",
+    "coordinates": {"media_unit": "meter", "media_up": "Y", "domain_xyz_to_media_xyz": ["x", "z", "-y"]},
+    "layout_rule": "asset_bounds_do_not_automatically_change_adopted_layout_footprint_or_motion_envelope",
+    "item_geometry_rule": "物品ID/type/version/spec来源于工程；各工位必须采用同一物品规格/外观。装配台、封箱机、托盘中固定示例几何的尺寸不能成为三份隐含规格；接入前替换为所采用物品资产",
+    "binding_readiness": "业务端口角色已列明；具体部件锚点坐标、示教姿态、参数支持范围和正式快照类型仍待S04/S06，不能标为可运行采用包",
+    "quality_target": "详细档对齐既有AI设备与产线预览，完整背面/底部，自由旋转；简化与区域档沿用同一业务状态",
+    "packaging_rule": "当前资产为工作区试样引用；贡献包须在许可确认后把文件收入包内并改为包内路径"
+  },
+  "media_definitions": [
+    {
+      "id": "superfactory.demo-media.assembly", "version": "0.1.0", "category": "media", "title": "定位紧固台完整3D外观", "definition_state": "design",
+      "contribution": {"author": "本项目自建参数化几何", "license": "待项目许可确认", "status": "design"},
+      "presentation": {"kind": "glb", "asset_locator": {"scope": "workspace_prototype", "path": "tools/3d-proof/output/assembly.glb"}, "unit": "meter", "production_effect": "none", "binding_owner": "device_instance"},
+      "required_nodes": [{"name": "ASM01-positioning-fastening", "count": 1}, {"name": "control-box-product", "count": 1}, {"name": "z-slide-and-driver", "count": 1}],
+      "verified_motion_contract": [{"node": "z-slide-and-driver", "extras": {"motion": "phase_z", "travel": 0.083}}],
+      "sample_geometry": ["control-box-product"],
+      "required_actions": ["上料与定位", "四个紧固点按有效进度顺序表现", "主轴回位", "完工待移交时保留工件"],
+      "implemented_visual_actions": ["主轴Z向83mm行程"],
+      "remaining_visual_requirements": ["工件由真实物品ID实例化，空机隐藏示例工件", "四点定位与紧固动作", "输入输出锚点与状态标签", "按AI参考继续精修结构与材质"]
+    },
+    {
+      "id": "superfactory.demo-media.robot", "version": "0.1.0", "category": "media", "title": "夹爪搬运机器人完整3D外观", "definition_state": "design",
+      "contribution": {"author": "本项目自建参数化几何", "license": "待项目许可确认", "status": "design"},
+      "presentation": {"kind": "glb", "asset_locator": {"scope": "workspace_prototype", "path": "tools/3d-proof/output/robot.glb"}, "unit": "meter", "production_effect": "none", "binding_owner": "device_instance"},
+      "required_nodes": [{"name": "R01-six-axis-handling", "count": 1}, {"name": "gripper-left-slide", "count": 1}, {"name": "gripper-right-slide", "count": 1}],
+      "verified_motion_contract": [{"node": "gripper-left-slide", "extras": {"motion": "gripper", "side": -1}}, {"node": "gripper-right-slide", "extras": {"motion": "gripper", "side": 1}}],
+      "sample_geometry": [],
+      "required_actions": ["到取料位", "闭爪后同一物品随夹爪", "带料移动到放料位", "目的可接受后开爪", "空载回位"],
+      "implemented_visual_actions": ["左右夹爪各22mm开合位移"],
+      "remaining_visual_requirements": ["六个独立关节及父子层级、轴向和示意限位", "示教取放姿态及关节插值；不要求工业逆解/碰撞规划", "真实货物挂接与持有者交接", "动作范围单独配置，不能从静态包围盒推算", "按AI参考精修关节壳体与线缆"]
+    },
+    {
+      "id": "superfactory.demo-media.conveyor", "version": "0.1.0", "category": "media", "title": "直线带式输送机完整3D外观", "definition_state": "design",
+      "contribution": {"author": "本项目自建参数化几何", "license": "待项目许可确认", "status": "design"},
+      "presentation": {"kind": "glb", "asset_locator": {"scope": "workspace_prototype", "path": "tools/3d-proof/output/conveyor.glb"}, "unit": "meter", "production_effect": "none", "binding_owner": "device_instance"},
+      "required_nodes": [{"name": "CV01-belt-conveyor", "count": 1}, {"name": "belt-top", "count": 1}, {"name": "end-roller", "count": 2}],
+      "verified_motion_contract": [], "sample_geometry": [],
+      "required_actions": ["真实物品沿输入到输出路径移动", "工作时输送带/滚筒表现", "满出口停止并保留同一物品"],
+      "implemented_visual_actions": [],
+      "remaining_visual_requirements": ["物品路径和端口锚点", "独立滚筒或纹理位移绑定", "等待与物品位置标签", "按AI参考精修驱动结构"]
+    },
+    {
+      "id": "superfactory.demo-media.inspection", "version": "0.1.0", "category": "media", "title": "控制盒相机检查台完整3D外观", "definition_state": "design",
+      "contribution": {"author": "本项目自建参数化几何", "license": "待项目许可确认", "status": "design"},
+      "presentation": {"kind": "glb", "asset_locator": {"scope": "workspace_prototype", "path": "tools/3d-proof/output/inspection.glb"}, "unit": "meter", "production_effect": "none", "binding_owner": "device_instance"},
+      "required_nodes": [{"name": "V01-camera-inspection", "count": 1}, {"name": "industrial-camera", "count": 1}, {"name": "ring-light", "count": 1}],
+      "verified_motion_contract": [], "sample_geometry": [],
+      "required_actions": ["进件定位", "检查时灯环提示", "按有效质量输入显示放行/返工/隔离", "未知结果保持物品与检查人员占用"],
+      "implemented_visual_actions": [],
+      "remaining_visual_requirements": ["四端口锚点及实际去向提示", "灯环与质量结果标签绑定", "输送与等待表现", "画面不得暗示已有视觉识别算法或实体分拣机构"]
+    },
+    {
+      "id": "superfactory.demo-media.sealer", "version": "0.1.0", "category": "media", "title": "胶带封箱机完整3D外观", "definition_state": "design",
+      "contribution": {"author": "本项目自建参数化几何", "license": "待项目许可确认", "status": "design"},
+      "presentation": {"kind": "glb", "asset_locator": {"scope": "workspace_prototype", "path": "tools/3d-proof/output/sealer.glb"}, "unit": "meter", "production_effect": "none", "binding_owner": "device_instance"},
+      "required_nodes": [{"name": "CASE01-carton-sealer", "count": 1}, {"name": "carton", "count": 1}, {"name": "carton-tape", "count": 1}, {"name": "tape-reel", "count": 1}],
+      "verified_motion_contract": [], "sample_geometry": ["carton", "carton-tape"],
+      "required_actions": ["同一已装箱包件进入", "工作时侧带与压带轮表现", "封箱完成显示胶带", "出口阻塞保留封好的同一包件"],
+      "implemented_visual_actions": [],
+      "remaining_visual_requirements": ["隐藏固定示例纸箱并绑定真实包件ID", "包件平移与胶带状态显隐", "独立传动部件或纹理位移", "胶带端口/剩余用量标签", "不使用此动画替代纸包装专业计算"]
+    },
+    {
+      "id": "superfactory.demo-media.pallet", "version": "0.1.0", "category": "media", "title": "托盘与十二箱示例堆放外观", "definition_state": "design",
+      "contribution": {"author": "本项目自建参数化几何", "license": "待项目许可确认", "status": "design"},
+      "presentation": {"kind": "glb", "asset_locator": {"scope": "workspace_prototype", "path": "tools/3d-proof/output/pallet.glb"}, "unit": "meter", "production_effect": "none", "binding_owner": "resource_instance"},
+      "required_nodes": [{"name": "PAL01-finished-cartons", "count": 1}, {"name": "pallet-deck", "count": 6}, {"name": "finished-carton", "count": 12}, {"name": "tape-strip", "count": 12}],
+      "verified_motion_contract": [], "sample_geometry": ["finished-carton", "tape-strip"],
+      "required_actions": ["按已绑定包件ID显示0至12箱", "装卸只随实际载具内容变化", "满载提示"],
+      "implemented_visual_actions": [],
+      "remaining_visual_requirements": ["默认空托盘，示例十二箱不能成为初始库存", "槽位到包件ID绑定与显隐", "数量与当前持有者标签"]
+    }
+  ],
+  "equipment": [
+    {"preview_kind": "assembly", "preview_id": "ASM01", "display_name": "四螺钉控制盒装配台", "definition_ref": {"id": "community.control-box-assembly", "version": "0.1.0"}, "media_ref": {"id": "superfactory.demo-media.assembly", "version": "0.1.0"}, "port_roles": ["shell", "pcb", "fastener", "assembled"], "resource_roles": ["assembler"], "visual_progress_segments": [{"id": "load_and_locate", "start": 0, "end": 0.2}, {"id": "fasten_four_points", "start": 0.2, "end": 0.8}, {"id": "return_and_ready", "start": 0.8, "end": 1}], "segment_semantics": "仅为40秒既有working阶段的表现区间，不新增库存提交或阶段资源规则"},
+    {"preview_kind": "robot", "preview_id": "R01", "display_name": "单件控制盒夹爪搬运机器人", "definition_ref": {"id": "superfactory.demo.robot-transfer", "version": "0.1.0"}, "media_ref": {"id": "superfactory.demo-media.robot", "version": "0.1.0"}, "port_roles": ["pickup", "place"], "resource_roles": []},
+    {"preview_kind": "conveyor", "preview_id": "CV01", "display_name": "单件控制盒直线输送机", "definition_ref": {"id": "superfactory.demo.belt-transfer", "version": "0.1.0"}, "media_ref": {"id": "superfactory.demo-media.conveyor", "version": "0.1.0"}, "port_roles": ["input", "output"], "resource_roles": []},
+    {"preview_kind": "inspection", "preview_id": "V01", "display_name": "控制盒检验与返工分流台", "definition_ref": {"id": "community.inspect-route", "version": "0.1.0"}, "media_ref": {"id": "superfactory.demo-media.inspection", "version": "0.1.0"}, "port_roles": ["input", "passed", "rework", "quarantine"], "resource_roles": ["inspector"], "visual_progress_segments": [{"id": "locate", "start": 0, "end": 0.2}, {"id": "inspect", "start": 0.2, "end": 0.8}, {"id": "show_route", "start": 0.8, "end": 1}], "segment_semantics": "仅为10秒既有working阶段的表现区间；质量未知或出口满仍按原规则等待"},
+    {"preview_kind": "sealer", "preview_id": "CASE01", "display_name": "已装箱控制盒胶带封箱机", "definition_ref": {"id": "superfactory.demo.carton-sealer", "version": "0.1.0"}, "media_ref": {"id": "superfactory.demo-media.sealer", "version": "0.1.0"}, "port_roles": ["loaded", "tape", "sealed"], "resource_roles": []},
+    {"preview_kind": "pallet", "preview_id": "PAL01", "display_name": "十二箱可复用周转载具", "definition_ref": {"id": "superfactory.demo.pallet12", "version": "0.1.0"}, "media_ref": {"id": "superfactory.demo-media.pallet", "version": "0.1.0"}, "port_roles": [], "resource_roles": [], "instance_fields_required": ["resource_instance_id", "bound_location_id", "slot_to_existing_package_id", "available_capacity"], "holder_rule": "包件唯一位置仍为bound_location_id，slot绑定描述该位置内的载具归属；不能另建第二份库位库存"}
+  ],
+  "nine_category_roles": [
+    {"category": "items", "requirement": "明确shell/pcb/fastener/assembly/carton/package规格、单位及版本；胶带新增meter单位定义", "status": "部分场景本地类型已有；完整独立物品定义及sealed属性仍待S06落实", "new_dependency": "sealing_tape"},
+    {"category": "devices", "requirement": "五个固定设备定义、端口、参数及唯一行为来源", "status": "两个已有design声明，三个本地候选种子；均无运行实现"},
+    {"category": "resources", "requirement": "装配人员、检查人员、可复用托盘；实例及占用分别绑定", "status": "assembler已有角色样例；inspector须显式角色配置；托盘为本地候选"},
+    {"category": "tasks", "requirement": "订单/工序任务绑定目标和输入；此切片不新增准备或维修任务", "status": "引用共同任务体系，未新增独立tasks模块"},
+    {"category": "operations", "requirement": "引用已有装配规则；搬运/输送/封箱行为声明待引擎实现", "status": "装配保持原内联behavior，不同时执行control-box-rule；新行为不伪装已支持builtin"},
+    {"category": "transport", "requirement": "机器人/输送为固定设备；跨厂batch-transport按需另用", "status": "本设备清单不新增跨厂物流，也不把托盘当车辆"},
+    {"category": "templates", "requirement": "后续流水线显式接入装箱工位、库位、资源和物品种子", "status": "本切片未生成完整工程；现有八设备画面仅为空间示意"},
+    {"category": "professional", "requirement": "纸包装成果按原专业契约接入，封箱不冒充结构成型计算", "status": "本切片无新增专业提供者或实际计算"},
+    {"category": "media", "requirement": "六个具版本的共享外观与状态/部件绑定", "status": "GLB及部分独立部件已存在；全部业务驱动仍待实现"}
+  ],
+  "finite_expectations": [
+    {"id": "assembly_four_fasteners", "definition_id": "community.control-box-assembly", "input": {"shell": 2, "pcb": 1, "fastener": 4}, "expected": {"possible_cycles": 1, "remaining": {"shell": 1, "pcb": 0, "fastener": 0}, "output": {"assembly": 1}, "working_seconds": 40}, "actual_result": null},
+    {"id": "same_appearance_different_definition", "definition_id": "community.manual-assembly", "input": {"shell": 2, "pcb": 1, "fastener": 0}, "expected": {"manual_possible_cycles": 1, "four_fastener_possible_cycles": 0, "manual_working_seconds": 60, "shared_asset_is_allowed": true, "automatic_fastening_animation_is_allowed": false}, "actual_result": null},
+    {"id": "robot_identity_and_return", "definition_id": "superfactory.demo.robot-transfer", "input": {"item_id": "A-001", "source": "L-source", "destination": "L-destination", "destination_accepts": true}, "expected": {"robot_holds_at_seconds": 3, "delivered_at_seconds": 9, "robot_free_at_seconds": 12, "received_item_id": "A-001", "new_items_created": 0}, "actual_result": null},
+    {"id": "conveyor_output_blocked", "definition_id": "superfactory.demo.belt-transfer", "input": {"item_id": "A-001", "destination_accepts": false}, "expected": {"at_seconds": 4, "state": "waiting_output", "holder": "conveyor", "same_item_retained": true, "new_items_created": 0}, "actual_result": null},
+    {"id": "inspection_missing_quality", "definition_id": "community.inspect-route", "input": {"item_id": "A-001", "quality_result": null}, "expected": {"after_working_seconds": 10, "item_and_inspector_held": true, "passed_count": 0}, "actual_result": null},
+    {"id": "sealing_keeps_container_and_contents", "definition_id": "superfactory.demo.carton-sealer", "input": {"package_id": "PK-001", "content_ids": ["A-001"], "closure": "open", "tape_meter": 1.2, "destination_accepts": true}, "expected": {"seal_at_seconds": 6, "handoff_at_seconds": 8, "package_id": "PK-001", "content_ids": ["A-001"], "closure": "sealed", "remaining_tape_meter": 0.6, "new_packages_created": 0}, "actual_result": null},
+    {"id": "empty_pallet_then_capacity", "definition_id": "superfactory.demo.pallet12", "input": {"explicit_carrier_instances": 1, "existing_sealed_packages": 13}, "expected": {"initial_contents": 0, "accepted_packages": 12, "waiting_packages": 1, "products_created_by_loading": 0}, "actual_result": null}
+  ],
+  "actual_result": null
+}

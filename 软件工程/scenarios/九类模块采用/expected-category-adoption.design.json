@@ -1,0 +1,146 @@
+{
+  "document_kind": "finite_category_design_expectations_not_runtime",
+  "categories_checked": [
+    "items",
+    "devices",
+    "resources",
+    "tasks",
+    "operations",
+    "transport",
+    "templates",
+    "professional",
+    "media"
+  ],
+  "declaration_entries": 20,
+  "cases": [
+    {
+      "id": "item_definition_import",
+      "manual_expected": {
+        "type_unit": "piece",
+        "current_items_created": 0,
+        "current_stock_created": 0
+      },
+      "actual_result": null
+    },
+    {
+      "id": "resource_definition_import",
+      "manual_expected": {
+        "capacity_per_explicit_instance": 1,
+        "current_workers_created": 0,
+        "occupation_copied": false
+      },
+      "actual_result": null
+    },
+    {
+      "id": "operation_ref_adoption",
+      "manual_expected": {
+        "behavior_source": "operation_ref",
+        "inline_behavior_used": false,
+        "item_role_to_port": {
+          "shell": "shell",
+          "pcb": "pcb",
+          "fastener": "fastener"
+        },
+        "output_role_to_port": {
+          "assembly": "assembled"
+        },
+        "resource_role_to_instance": {
+          "assembler": "R1"
+        },
+        "expected_output_count": 1,
+        "input_remaining": {
+          "shell": 1,
+          "pcb": 0,
+          "fastener": 0
+        },
+        "composition_preserved": true,
+        "stock_commit_owner": "factory_engine"
+      },
+      "actual_result": null
+    },
+    {
+      "id": "double_behavior_source",
+      "manual_expected": {
+        "selected_source_required": true,
+        "execute_both_allowed": false,
+        "duplicate_output_allowed": false
+      },
+      "actual_result": null
+    },
+    {
+      "id": "preparation_completion",
+      "manual_expected": {
+        "effect": {
+          "readiness_flag": "prepared_for_selected_board_job"
+        },
+        "material_created": 0,
+        "work_duration_seconds": 30,
+        "target_and_qualified_setter_required": true,
+        "definition_import_does_not_execute_task": true
+      },
+      "actual_result": null
+    },
+    {
+      "id": "service_capacity",
+      "manual_expected": {
+        "demand_kW": 12,
+        "capacity_kW": 14,
+        "fits_declared_capacity": true,
+        "stock_created": 0,
+        "energy_or_cost_not_inferred": true
+      },
+      "actual_result": null
+    },
+    {
+      "id": "professional_provider_not_implemented",
+      "manual_expected": {
+        "intended_modes": [
+          "calculated_nominal",
+          "software_in_loop"
+        ],
+        "callable_modes": [],
+        "result_created": false,
+        "material_created": 0,
+        "scope": "original_complete_machining_design_preserved"
+      },
+      "actual_result": null
+    },
+    {
+      "id": "media_replacement",
+      "manual_expected": {
+        "anchor_role_bindings": {
+          "input": "shell",
+          "output": "assembled"
+        },
+        "visual_ports_to_bind": [
+          "pcb",
+          "fastener"
+        ],
+        "behavior_changed": false,
+        "quantity_changed": false,
+        "missing_visual_anchor_is_not_missing_material_port": true
+      },
+      "actual_result": null
+    },
+    {
+      "id": "template_import",
+      "manual_expected": {
+        "definitions_and_layout": true,
+        "current_stock_copied": false,
+        "current_demand_copied": false
+      },
+      "actual_result": null
+    },
+    {
+      "id": "transport_rule_import",
+      "manual_expected": {
+        "new_vehicle_created": false,
+        "new_cargo_created": false,
+        "vehicle_binding_required": true,
+        "receive_on_unloading_completion": true,
+        "free_on_declared_return_or_position": true
+      },
+      "actual_result": null
+    }
+  ]
+}

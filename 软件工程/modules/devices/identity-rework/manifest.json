@@ -1,0 +1,92 @@
+{
+  "document_kind": "design_example_not_runtime_plugin",
+  "id": "community.identity-rework",
+  "version": "0.1.0",
+  "category": "devices",
+  "title": "保留身份的返工工位",
+  "placement": "fixed_during_simulation",
+  "parameters": [
+    {
+      "id": "cycle_seconds",
+      "type": "duration",
+      "unit": "second",
+      "binding": "behavior.duration.value"
+    }
+  ],
+  "ports": [
+    {
+      "id": "input",
+      "kind": "material",
+      "direction": "in",
+      "item": "assembly",
+      "unit": "piece"
+    },
+    {
+      "id": "output",
+      "kind": "material",
+      "direction": "out",
+      "item": "assembly",
+      "unit": "piece"
+    }
+  ],
+  "behavior": {
+    "builtin": "rework",
+    "concurrency": 1,
+    "duration": {
+      "value": 20,
+      "unit": "second",
+      "basis": "演示假设"
+    },
+    "resources": [
+      {
+        "role": "repairer",
+        "quantity": 1
+      }
+    ],
+    "identity_policy": "preserve_item",
+    "on_complete": "increment_completed_reworks_and_require_reinspection",
+    "automatic_quality_pass": false,
+    "repeat_mode": "continuous_when_ready",
+    "inputs": [
+      {
+        "port": "input",
+        "quantity": 1
+      }
+    ],
+    "outputs": [
+      {
+        "port": "output",
+        "quantity": 1
+      }
+    ]
+  },
+  "presentation": {
+    "media": {
+      "kind": "image",
+      "path": null
+    },
+    "states": [
+      "idle",
+      "working",
+      "waiting"
+    ],
+    "lod": {
+      "detailed": "media_and_ports",
+      "simplified": "icon_and_state",
+      "region": "parent_aggregate"
+    }
+  },
+  "operations": [
+    "configure",
+    "inspect",
+    "preview_cycle"
+  ],
+  "contribution": {
+    "author": "待填写",
+    "license": "待声明",
+    "assets": [],
+    "example": "并行汇合与返工",
+    "status": "design"
+  },
+  "definition_state": "design"
+}

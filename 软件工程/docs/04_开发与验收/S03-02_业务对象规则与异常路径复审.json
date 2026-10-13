@@ -1,0 +1,186 @@
+{
+  "document_kind": "independent_business_rules_review_not_runtime",
+  "checkpoint": "S03-02",
+  "date": "2026-10-13 Asia/Shanghai",
+  "status": "passed_document_specification",
+  "scope": "现行首版业务对象、规则与异常/恢复；发现缺口直接修正文档/JSON及真实消费者，不代其他检查项复审。",
+  "spec_refs": [
+    "docs/01_业务需求/订单工艺与物料分配.md",
+    "docs/01_业务需求/换单班次与质量处置.md",
+    "packages/domain/business-objects.design.json",
+    "CONTEXT.md",
+    "docs/03_架构与契约/工程模型与彩排状态.md",
+    "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+    "docs/01_业务需求/指标成本与决策口径.md"
+  ],
+  "findings_resolved": [
+    {
+      "id": "F01",
+      "finding": "业务JSON与订单正文把reserved同时放进生命周期和分配，available的普通领用/质量及自有预留取得条件不完整。",
+      "resolution": "生命周期去掉reserved并保留原字段，预留归分配轴；补独立状态轴、质量/位置规则、并集排除和失败取得不改既有预留；业务草案修订为draft-2。"
+    },
+    {
+      "id": "F02",
+      "finding": "对象单位/版本/来源/变换责任分散；priority只有名称未写数值方向，allow_partial未区分物理接收和订单接受。",
+      "resolution": "正文对象职责表和JSON对应引用、单位版本/来源、确定优先序及订单接受规则补齐；同步时间轴与指标。"
+    },
+    {
+      "id": "F03",
+      "finding": "等待/待判/返工/失败的恢复出口分散，取消订单/作业与cancel_task长计算取消未分清。",
+      "resolution": "正文/JSON逐项写9条异常出口，业务撤销仅释本需求未投入预留，计算停止不回滚实物或充完整成功，保留旧结果与版本。"
+    },
+    {
+      "id": "F04",
+      "finding": "共同术语仍暗示生成后必须修正；专业绑定JSON把软件在环写成first edition支持，与当前后置范围冲突。",
+      "resolution": "术语采用初案达标直交；专业JSON保留全产品modes并分列首版declared_process/calculated_nominal及后置software_in_loop，原正文已有后置说明。"
+    }
+  ],
+  "criteria": [
+    {
+      "id": "C01",
+      "criterion": "对象与拥有者",
+      "finding": "物品/规格/库位、产品/BOM/路线、订单/生产任务/分配、设备/资源、质量/换单、运输/接受、成果/认可/绑定、输入/结果的身份和变换责任明确。",
+      "status": "passed_document_or_finite_reasoning"
+    },
+    {
+      "id": "C02",
+      "criterion": "单位、版本和数据来源",
+      "finding": "相对整数ms、离散数量和声明单位、m/mm转换、具体产品/BOM/路线/成果版本与输入/预期/实际来源分开；关键缺项拒绝相应运行而可保存草稿。",
+      "status": "passed_document_or_finite_reasoning"
+    },
+    {
+      "id": "C03",
+      "criterion": "状态与库存不变量",
+      "finding": "唯一持有者；预留只属分配，available不等于自由可用；质量/预留限制按并集排除，自有预留仍需符合质量/版本；失败取得不留部分扣料。",
+      "status": "passed_document_or_finite_reasoning"
+    },
+    {
+      "id": "C04",
+      "criterion": "规则可确定执行",
+      "finding": "派工方向与FIFO并列明确，allow_partial与运输批量分开，物理接收与订单接受分开，组成/装箱/产出/返程不重复计量。",
+      "status": "passed_document_or_finite_reasoning"
+    },
+    {
+      "id": "C05",
+      "criterion": "异常、取消及恢复",
+      "finding": "九项异常写保留/输出/继续或结束；缺料、接收满、待判、日历、返工上限、业务/计算取消、版本失配和执行错误各有出口。",
+      "status": "passed_document_or_finite_reasoning"
+    },
+    {
+      "id": "C06",
+      "criterion": "真实消费者与范围",
+      "finding": "术语、库存/工程模型、时间轴、指标和共享JSON同步；专业JSON明确所选两模式与软件在环后置，不改变首版任务/原两种依赖。",
+      "status": "passed_document_or_finite_reasoning"
+    },
+    {
+      "id": "C07",
+      "criterion": "有限证据和阶段边界",
+      "finding": "6新增冻结边界案例及6既有案例在内存复核通过，原预期未改；只证明业务设计，不代S03-03接口或后续类型/引擎/用户验收。",
+      "status": "passed_document_or_finite_reasoning"
+    }
+  ],
+  "finite_verification": {
+    "command": "python scenarios/真实业务设计/复核业务规则.py",
+    "status": "passed",
+    "result_ref": "scenarios/真实业务设计/business-rule-verification.json",
+    "input_ref": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+    "new_boundary_cases": 6,
+    "preserved_existing_cases": 6,
+    "frozen_expectations_rewritten": false,
+    "actual_runtime": null
+  },
+  "static_verification": {
+    "command": "python tools/检查主线同步.py",
+    "status": "passed_scoped_business_checks_global_reference_open",
+    "result_ref": "docs/04_开发与验收/主线同步检查结果.json",
+    "executed_at": "2026-10-13 Asia/Shanghai",
+    "matrix_passed": 12,
+    "functional_result": {
+      "checkpoint": "S03-02",
+      "status": "passed_static_business_contract_and_finite_calculation",
+      "business_objects": 9,
+      "exception_paths": 9,
+      "reservation_quality_lifecycle_and_holder_separate": "passed",
+      "partial_acceptance_dispatch_and_cancel_semantics": "passed_finite_cases",
+      "finite_business_cases": 12,
+      "existing_expectations_rewritten": false,
+      "professional_first_release_and_deferred_modes": "passed",
+      "formal_reviews": 12,
+      "pending_reviews": 48,
+      "pending_design_reviews": 18,
+      "next_checkpoint": "S03-03",
+      "actual_product_runtime": null,
+      "review_ref": "docs/04_开发与验收/S03-02_业务对象规则与异常路径复审.json"
+    },
+    "global_check_exit_code": 1,
+    "global_reference_errors": [
+      {
+        "path": "软件工程/docs/01_业务需求/非功能需求与测量验收.md",
+        "issues": [
+          "引用不存在: ../04_开发与验收/S03-04_可测量非功能需求复审.md"
+        ]
+      }
+    ],
+    "scope_note": "S03-02业务检查通过；全项目仅新出现的S03-04报告链接未落盘，保留其内容不跨窗口改写。"
+  },
+  "credits": {
+    "completion": [
+      1,
+      1
+    ],
+    "evidence": [
+      1,
+      1
+    ],
+    "S03": [
+      90,
+      70
+    ],
+    "changed": false
+  },
+  "review_state": {
+    "passed_reviews": 12,
+    "pending_reviews": 48,
+    "pending_design_reviews": 18,
+    "next_checkpoint": "S03-03"
+  },
+  "actual_runtime": null,
+  "actual_user_validation": null,
+  "external_actions": [],
+  "open_evidence": [
+    "S03-03模块/外部成果及操作字段边界独立复审",
+    "S03-04非功能与S03-05整体需求基线",
+    "S04—S06详细设计/原型，S07实际准备，产品/Agent与真实使用者验证"
+  ],
+  "changed_files": [
+    "CONTEXT.md",
+    "README.md",
+    "AGENTS.md",
+    "packages/domain/README.md",
+    "packages/domain/business-objects.design.json",
+    "packages/domain/factory-contracts.design.json",
+    "packages/domain/professional-artifact-binding.design.json",
+    "docs/01_业务需求/订单工艺与物料分配.md",
+    "docs/01_业务需求/换单班次与质量处置.md",
+    "docs/01_业务需求/指标成本与决策口径.md",
+    "docs/03_架构与契约/工程模型与彩排状态.md",
+    "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+    "docs/03_架构与契约/首版类型格式与操作契约.md",
+    "docs/00_项目基线/技术与经济可行性.md",
+    "scenarios/真实业务设计/README.md",
+    "scenarios/真实业务设计/business-rule-boundaries.design.json",
+    "scenarios/真实业务设计/复核业务规则.py",
+    "scenarios/真实业务设计/business-rule-verification.json",
+    "tools/检查主线同步.py",
+    "docs/04_开发与验收/软件开发流程与当前成熟度评估.json",
+    "docs/04_开发与验收/软件开发流程与当前成熟度评估.md",
+    "docs/04_开发与验收/完整设计与执行准入.json",
+    "docs/04_开发与验收/完整设计与执行准入.md",
+    "docs/04_开发与验收/任务框架与工量里程碑.json",
+    "docs/04_开发与验收/任务框架与工量里程碑.md",
+    "docs/04_开发与验收/检查项逐项复审.md",
+    "docs/04_开发与验收/阶段实现计划.md",
+    "docs/04_开发与验收/S03-02_业务对象规则与异常路径复审.json",
+    "docs/04_开发与验收/S03-02_业务对象规则与异常路径复审.md"
+  ]
+}

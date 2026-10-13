@@ -1,0 +1,130 @@
+{
+  "document_kind": "design_example_not_runtime_plugin",
+  "id": "community.declared-board-assembly",
+  "version": "0.1.0",
+  "category": "devices",
+  "title": "电子板件组装流转（声明过程）",
+  "placement": "fixed_during_simulation",
+  "parameters": [
+    {
+      "id": "cycle_seconds",
+      "label": "单周期工时",
+      "type": "duration",
+      "unit": "second",
+      "binding": "behavior.duration.value"
+    },
+    {
+      "id": "run_mode",
+      "label": "作业策略",
+      "type": "enum",
+      "binding": "behavior.repeat_mode",
+      "options": [
+        "single_cycle",
+        "continuous_when_ready"
+      ]
+    }
+  ],
+  "ports": [
+    {
+      "id": "bare_board",
+      "kind": "material",
+      "direction": "in",
+      "item": "bare_pcb",
+      "unit": "piece"
+    },
+    {
+      "id": "component",
+      "kind": "material",
+      "direction": "in",
+      "item": "component",
+      "unit": "piece"
+    },
+    {
+      "id": "mounted",
+      "kind": "material",
+      "direction": "out",
+      "item": "mounted_pcb",
+      "unit": "piece"
+    }
+  ],
+  "behavior": {
+    "builtin": "assemble",
+    "repeat_mode": "continuous_when_ready",
+    "inputs": [
+      {
+        "port": "bare_board",
+        "quantity": 1
+      },
+      {
+        "port": "component",
+        "quantity": 8
+      }
+    ],
+    "outputs": [
+      {
+        "port": "mounted",
+        "quantity": 1
+      }
+    ],
+    "duration": {
+      "value": 30,
+      "unit": "second",
+      "basis": "自建演示假设"
+    },
+    "resources": [],
+    "start": "declared_preparation_ready_and_inputs_available",
+    "finish": "duration_elapsed",
+    "blocked": "output_capacity_unavailable"
+  },
+  "presentation": {
+    "media": {
+      "kind": "native_scene",
+      "path": "presentation/native-scene.json"
+    },
+    "states": [
+      "idle",
+      "working",
+      "waiting"
+    ],
+    "lod": {
+      "detailed": "media_and_ports",
+      "simplified": "icon_and_state",
+      "region": "parent_aggregate"
+    }
+  },
+  "operations": [
+    "configure",
+    "inspect",
+    "preview_cycle"
+  ],
+  "contribution": {
+    "author": "待填写",
+    "license": "待声明",
+    "assets": [],
+    "status": "design",
+    "source_basis": "本项目已有声明规则和自建原生几何，未发布运行模块"
+  },
+  "definition_state": "design",
+  "professional_contract": {
+    "artifact_type": "placement_job",
+    "fields": [
+      "board_revision",
+      "coordinate_frame",
+      "component_library_ref",
+      "placements",
+      "fiducials",
+      "feeders",
+      "nozzles",
+      "machine_profile",
+      "native_job_ref",
+      "phase_plan"
+    ],
+    "declared_scope": "aggregate_material_flow_only_not_actual_placement_or_solder_quality",
+    "tool_result_required_for": [
+      "calculated_nominal",
+      "software_in_loop"
+    ],
+    "provider_status": "not_implemented"
+  },
+  "design_notes": "声明过程一次领用一板八部件；实际专业模式由工厂逐事件提交领用，不能再叠加声明过程领用。"
+}

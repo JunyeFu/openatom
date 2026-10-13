@@ -1,0 +1,330 @@
+{
+  "document_kind": "business_domain_draft_not_runtime_schema",
+  "schema_revision": "draft-2",
+  "design_reference": "../../docs/01_业务需求/订单工艺与物料分配.md",
+  "objects": {
+    "product_revision": {
+      "fields": {
+        "id": "id",
+        "item_type": "id",
+        "revision": "text",
+        "bom_ref": "id/version",
+        "routing_ref": "id/version",
+        "artifact_refs": "list"
+      },
+      "meaning": "what product and approved process are intended"
+    },
+    "order_line": {
+      "fields": {
+        "id": "id",
+        "product_revision": "id/version",
+        "quantity": "quantity/unit",
+        "release_at": "relative_ms",
+        "due_at": "relative_ms|null",
+        "destination": "location_id",
+        "acceptance_stage": "enum",
+        "allow_partial": "boolean",
+        "priority": "integer"
+      },
+      "meaning": "demand; does not create stock",
+      "field_semantics": {
+        "allow_partial": "true逐次计指定阶段接受；false剩余需求齐套/放行后一次接受。目的暂存物理接收另计，不替代运输allow_partial_load。",
+        "priority": "整数，大者先；案例dispatch列表为独立的人为输入，不是派工最优证明。",
+        "due_at": "null表示未给交期，可彩排但不计算准时率。"
+      }
+    },
+    "production_task": {
+      "fields": {
+        "id": "id",
+        "order_allocations": "list(order_id,quantity)",
+        "routing_ref": "id/version",
+        "planned_quantity": "quantity/unit"
+      },
+      "meaning": "assigned portion of demand"
+    },
+    "operation_job": {
+      "fields": {
+        "id": "id",
+        "task_ref": "id",
+        "operation_ref": "id/version",
+        "input_refs": "list",
+        "resources": "list",
+        "phase_ref": "id",
+        "start_at": "relative_ms|null",
+        "finish_at": "relative_ms|null"
+      },
+      "meaning": "one operation execution attempt"
+    },
+    "material_allocation": {
+      "fields": {
+        "demand_ref": "id",
+        "item_refs": "list",
+        "quantity": "quantity/unit",
+        "mode": "soft_plan|hard_reserved|committed"
+      },
+      "meaning": "hard reservation excludes reuse; soft plan does not change stock"
+    },
+    "item_state": {
+      "fields": {
+        "holder_ref": "one location/job/transport/container",
+        "lifecycle": "available|in_process|transformed|scrapped",
+        "quality": "unchecked|pending|released|rejected",
+        "allocation_ref": "id|null",
+        "composition_refs": "list"
+      },
+      "meaning": "唯一持有者、物理生命周期、质量和需求分配分别表达；available不等于可自由领用，预留只属allocation。"
+    },
+    "quality_decision": {
+      "fields": {
+        "item_or_lot_ref": "id",
+        "inspection_ref": "id/version",
+        "source_kind": "preset|tool_result|manual",
+        "observed_result": "enum|number|null",
+        "disposition": "pending|release|rework|isolate|scrap",
+        "effective_at": "relative_ms"
+      },
+      "meaning": "result and release are not identical",
+      "field_semantics": {
+        "observed_result": "原始检查结果与处置分开；UNKNOWN/缺失保持pending，PASS仍按声明规则放行。",
+        "effective_at": "预设事件为模拟时间，实际人工交互需相应运行能力；编辑会话时间不当生产时间。"
+      }
+    },
+    "changeover_task": {
+      "fields": {
+        "device_ref": "id",
+        "from_family": "id",
+        "to_family": "id",
+        "duration_ms": "duration",
+        "resources": "list",
+        "readiness_gate": "id|null"
+      },
+      "meaning": "sequence-dependent preparation; not repeated per unit"
+    },
+    "acceptance_event": {
+      "fields": {
+        "order_ref": "id",
+        "item_refs": "list",
+        "quantity": "quantity/unit",
+        "destination": "location_id",
+        "acceptance_stage": "enum",
+        "at_ms": "relative_ms"
+      },
+      "meaning": "completed demand at defined stage, no duplicate allocation"
+    }
+  },
+  "policies": {
+    "dispatch": [
+      "explicit_priority",
+      "due_at_if_present",
+      "ready_at",
+      "stable_id"
+    ],
+    "consumption": "full kit for current operation acquired atomically",
+    "calendar": "resource/phase policy explicit",
+    "quality_wait": [
+      "hold_station",
+      "pending_store"
+    ],
+    "cancellation": "release only uncommitted reservations; preserve physical WIP",
+    "dispatch_directions": {
+      "explicit_priority": "descending",
+      "due_at_if_present": "ascending_null_last",
+      "ready_at": "ascending",
+      "stable_id": "lexicographic_ascending"
+    },
+    "stock_eligibility": {
+      "ordinary_lifecycle": "available",
+      "quality_if_inspection_required": [
+        "released"
+      ],
+      "quality_if_no_inspection_required": [
+        "unchecked",
+        "released"
+      ],
+      "hard_reserved_excluded_from_free_stock": true,
+      "own_hard_reservation_may_be_committed_if_other_conditions_match": true,
+      "overlapping_restrictions": "exclude_union_once",
+      "special_disposition": "rework_or_disposal_only_by_explicit_route",
+      "failed_acquisition": "no_new_material_or_resource_acquisition_preserve_existing_reservations",
+      "ordinary_holder": "location_explicitly_supporting_this_operation_and_material_not_job_transport_container_or_isolation"
+    },
+    "order_acceptance": {
+      "allow_partial_true": "incremental_at_declared_stage",
+      "allow_partial_false": "remaining_demand_full_kit_and_release_then_accept_once",
+      "physical_receipt_separate": true,
+      "transport_partial_load_separate": true,
+      "destination_capacity": "declared_finite_capacity_no_implicit_buffer",
+      "legacy_goal_demand": "retain_original_cumulative_acceptance_not_fabricated_order_flag"
+    },
+    "cancellation_semantics": {
+      "unstarted_demand": "release_own_uncommitted_reservations_and_unstarted_tasks_only",
+      "committed_material": "preserve_holder_quantity_and_declared_disposition",
+      "other_demands": "unchanged",
+      "unsupported_live_business_cancel": "keep_current_run_edit_new_scenario_restart_from_initial_input",
+      "cancel_task": "stop_simulation_or_professional_computation_not_order_or_inventory_rollback",
+      "cancelled_computation_result": "incomplete_or_cancelled_not_complete_success_preserve_version"
+    },
+    "quality_states": {
+      "missing_or_UNKNOWN": "pending",
+      "PASS": "released_only_after_declared_release",
+      "FAIL": "rejected_then_declared_rework_or_isolation",
+      "rework_count": "completed_reworks_per_same_item_not_attempt_start",
+      "limit": "isolate_after_failure_at_max_completed_reworks",
+      "scrap": "explicit_disposition_preserve_identity_no_automatic_component_recovery"
+    },
+    "quality_wait_release": {
+      "hold_station": "declared_wait_resources_until_disposition_and_successful_transfer",
+      "pending_store": "successful_pending_store_transfer_before_releasing_declared_inspection_resources"
+    }
+  },
+  "actual_result": null,
+  "state_axes": {
+    "holder": "exactly_one_location_job_transport_or_container",
+    "lifecycle": [
+      "available",
+      "in_process",
+      "transformed",
+      "scrapped"
+    ],
+    "quality": [
+      "unchecked",
+      "pending",
+      "released",
+      "rejected"
+    ],
+    "allocation": [
+      "soft_plan",
+      "hard_reserved",
+      "committed"
+    ],
+    "reserved_is_allocation_only": true,
+    "available_is_not_free_stock": true
+  },
+  "units_and_versions": {
+    "time": "relative_nonnegative_integer_ms",
+    "example_seconds_to_ms": 1000,
+    "discrete_quantity": "nonnegative_integer_in_declared_item_unit",
+    "quantity_conversion": "only_explicit_content_or_approved_rule_not_implicit_box_piece_sum",
+    "space": "hall_m_paper_geometry_mm_explicit_conversion",
+    "product": "exact_item_bom_routing_and_artifact_revisions",
+    "change": "new_input_revision_preserves_old_RunId_and_result_references",
+    "data_sources": [
+      "user_declared",
+      "template_assumption",
+      "scheduled_quality_preset",
+      "actual_tool_result",
+      "actual_engine_result"
+    ],
+    "expected_result_separate_from_actual": true
+  },
+  "object_contract_refs": {
+    "items_locations_devices_resources": "docs/03_架构与契约/工程模型与彩排状态.md",
+    "product_order_route_allocation": "docs/01_业务需求/订单工艺与物料分配.md",
+    "phases_calendar_changeover_quality": "docs/01_业务需求/换单班次与质量处置.md",
+    "transport": "docs/01_业务需求/物流与布局业务.md",
+    "artifact_acceptance_binding": "packages/domain/professional-artifact-binding.design.json",
+    "scenario_revision_and_run": "docs/03_架构与契约/首版类型格式与操作契约.md"
+  },
+  "ownership_transitions": [
+    {
+      "event": "hard_reserve",
+      "holder_effect": "unchanged",
+      "allocation_effect": "hard_reserved",
+      "quantity_effect": "not_free_but_still_on_hand"
+    },
+    {
+      "event": "start_current_operation",
+      "holder_effect": "job",
+      "allocation_effect": "committed",
+      "quantity_effect": "acquire_complete_kit_and_resources_atomically"
+    },
+    {
+      "event": "assembly",
+      "holder_effect": "new_assembly_composition_for_input_items",
+      "quantity_effect": "input_components_not_independent_free_stock"
+    },
+    {
+      "event": "pack",
+      "holder_effect": "container_for_content",
+      "quantity_effect": "content_not_free_outside_container_empty_container_not_counted_twice"
+    },
+    {
+      "event": "output_blocked",
+      "holder_effect": "retain_job_or_transport",
+      "quantity_effect": "pending_output_not_accepted_or_committed_twice"
+    },
+    {
+      "event": "transport_departure",
+      "holder_effect": "transport",
+      "quantity_effect": "leave_source_on_hand_keep_item_identity"
+    },
+    {
+      "event": "receive",
+      "holder_effect": "destination_location",
+      "quantity_effect": "physical_receipt_once_order_acceptance_follows_declared_stage"
+    },
+    {
+      "event": "scrap",
+      "holder_effect": "retain_recorded_physical_or_disposition_holder",
+      "quantity_effect": "excluded_from_usable_stock_no_automatic_recovery"
+    }
+  ],
+  "exception_paths": [
+    {
+      "id": "EX-01",
+      "trigger": "missing_reference_unit_revision_or_unsupported_rule",
+      "preserved_state_and_output": "draft_with_specific_missing_condition_no_affected_start_or_transfer",
+      "continuation_or_exit": "fix_input_or_supported_rule_in_new_revision"
+    },
+    {
+      "id": "EX-02",
+      "trigger": "kit_resource_setup_or_release_not_ready",
+      "preserved_state_and_output": "no_partial_acquisition_existing_reservations_preserved",
+      "continuation_or_exit": "reconsider_on_condition_event_or_finish_window_incomplete"
+    },
+    {
+      "id": "EX-03",
+      "trigger": "phase_calendar_or_next_phase_resource_unavailable",
+      "preserved_state_and_output": "job_resources_item_and_effective_progress_preserved_completed_phase_resources_released",
+      "continuation_or_exit": "declared_non_preemptive_or_pause_resume_policy_no_guessed_overtime"
+    },
+    {
+      "id": "EX-04",
+      "trigger": "output_or_destination_full",
+      "preserved_state_and_output": "pending_output_or_cargo_and_declared_resources_held_no_acceptance",
+      "continuation_or_exit": "commit_once_when_capacity_available_return_resource_separately"
+    },
+    {
+      "id": "EX-05",
+      "trigger": "UNKNOWN_missing_quality_or_pending_store_full",
+      "preserved_state_and_output": "pending_quality_station_holds_until_successful_pending_transfer",
+      "continuation_or_exit": "explicit_decision_or_reinspection_not_automatic_PASS"
+    },
+    {
+      "id": "EX-06",
+      "trigger": "FAIL_rework_limit_isolation_or_scrap",
+      "preserved_state_and_output": "same_item_completed_rework_count_explicit_scrap_no_recovery",
+      "continuation_or_exit": "reinspect_or_isolate_show_real_order_shortfall"
+    },
+    {
+      "id": "EX-07",
+      "trigger": "business_cancel_or_compute_cancel",
+      "preserved_state_and_output": "uncommitted_own_reservations_only_physical_WIP_and_other_demands_preserved",
+      "continuation_or_exit": "supported_disposition_else_new_run_compute_cancel_not_business_rollback"
+    },
+    {
+      "id": "EX-08",
+      "trigger": "changed_revision_or_invalid_artifact_binding",
+      "preserved_state_and_output": "old_result_keeps_old_revision_current_run_unchanged_binding_needs_review",
+      "continuation_or_exit": "new_scenario_recheck_recompute_and_human_acceptance_if_affected"
+    },
+    {
+      "id": "EX-09",
+      "trigger": "simulation_or_professional_execution_error",
+      "preserved_state_and_output": "stop_task_preserve_input_and_existing_incomplete_state_no_complete_success_or_fabricated_output",
+      "continuation_or_exit": "fix_diagnosed_issue_then_new_task_or_RunId_no_silent_retry_or_physical_rollback"
+    }
+  ],
+  "review_ref": "docs/04_开发与验收/S03-02_业务对象规则与异常路径复审.json",
+  "boundary_checks_ref": "scenarios/真实业务设计/business-rule-boundaries.design.json"
+}

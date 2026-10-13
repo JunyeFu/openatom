@@ -1,0 +1,87 @@
+{
+  "document_kind": "evaluation_export_design_not_runtime",
+  "revision": "draft-1",
+  "implementation_tasks": [
+    "P2-03",
+    "P2-06",
+    "P3-04",
+    "P5-01"
+  ],
+  "read_dependencies": [
+    "domain",
+    "simulation",
+    "presentation"
+  ],
+  "state_effect": "readonly_engine_state_with_selected_file_output",
+  "formats": [
+    "pdf",
+    "html",
+    "csv",
+    "json"
+  ],
+  "report_modes": [
+    "design_description",
+    "simulation_evaluation"
+  ],
+  "required_context": [
+    "report_id",
+    "schema_version",
+    "mode",
+    "project_id",
+    "project_revision",
+    "scenario_refs",
+    "run_refs",
+    "time_reference",
+    "observation_window",
+    "acceptance_scope",
+    "input_assumptions",
+    "module_versions",
+    "supported_scope",
+    "limitations"
+  ],
+  "sections": [
+    "question_and_scope",
+    "inputs_and_sources",
+    "layout_and_schedule",
+    "results_and_resources",
+    "item_history",
+    "scenario_comparison",
+    "conclusions_and_missing_conditions",
+    "editable_project_and_licenses"
+  ],
+  "rules": {
+    "design_description": "run_refs may be empty; result metrics must remain empty and design expectations labeled",
+    "simulation_evaluation": "run_refs must refer to completed actual software runs matching input revisions",
+    "same_source": "all four formats share the same EvaluationReport and metric definitions",
+    "csv_units": "split tables; retain project/scenario/run/object identity, base units and unknown values",
+    "html": "offline browser viewing; filters inspect saved data and do not execute a new simulation",
+    "images": "current presentation render with scene revision; AI preview never used as runtime proof",
+    "project_package": "separate .sfproj editable handoff; JSON report is not a recoverable snapshot",
+    "scenario_comparison": "No comparison required for a single initial-success run; leave comparison data empty/not applicable. A repair with a rerun references both actual runs and changed inputs."
+  },
+  "runtime_available": false,
+  "actual_result": null,
+  "optional_generation_context": {
+    "applies_when": "project_generated_from_industry_goal",
+    "fields": [
+      "generation_goal",
+      "template_id_and_version",
+      "parameter_sources",
+      "site_envelope",
+      "production_calendar",
+      "missing_inputs",
+      "layout_check",
+      "initial_sizing_assumptions",
+      "initial_and_revised_scenario_run_refs",
+      "goal_actual_accepted_quantity_and_gap",
+      "changes_and_reasons",
+      "stop_reason"
+    ],
+    "rules": "actual production metrics only from referenced runs; goals and actual quantities use the same selected unit/scope/window; software timing/FPS only if measured; initial target met may have exactly one run, no revised reference, empty changes/reasons and no comparison; missing/unrepairable conditions do not imply target met",
+    "field_usage": {
+      "initial_and_revised_scenario_run_refs": "Initial actual run when available; revised references optional and empty when initial target met or no repair run exists. Do not duplicate an initial RunId as a revision.",
+      "changes_and_reasons": "Empty for initial-success delivery; otherwise record actual changes or named inability/missing conditions.",
+      "stop_reason": "initial_target_met, repaired_target_met, missing_conditions, unrepairable_shortfall or finite_budget_exhausted, according to actual state."
+    }
+  }
+}

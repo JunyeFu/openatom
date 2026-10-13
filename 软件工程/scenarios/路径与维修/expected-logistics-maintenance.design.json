@@ -1,0 +1,654 @@
+{
+  "document_kind": "finite_manual_design_expectations_not_engine_result",
+  "observation_end_ms": 200000,
+  "cases": [
+    {
+      "id": "fixed_time_after_move",
+      "manual_expected": {
+        "mode": "fixed_time",
+        "path_length_used_m": null,
+        "empty_reposition_ms": 0,
+        "load_interval_ms": [
+          0,
+          2000
+        ],
+        "outbound_interval_ms": [
+          2000,
+          12000
+        ],
+        "unload_interval_ms": [
+          12000,
+          15000
+        ],
+        "accepted_at_ms": 15000,
+        "return_interval_ms": [
+          15000,
+          25000
+        ],
+        "vehicle_free_at_ms": 25000,
+        "cargo_id": "part-1",
+        "before_departure_holder": "source_store",
+        "in_transit_holder": "vehicle",
+        "after_acceptance_holder": "destination_store",
+        "acceptance_scope": "declared_transport_destination_or_operation_output_store_not_customer_order"
+      },
+      "actual_result": null
+    },
+    {
+      "id": "path_baseline",
+      "manual_expected": {
+        "mode": "explicit_path",
+        "path_length_used_m": 10.0,
+        "empty_reposition_ms": 0,
+        "load_interval_ms": [
+          0,
+          2000
+        ],
+        "outbound_interval_ms": [
+          2000,
+          12000
+        ],
+        "unload_interval_ms": [
+          12000,
+          15000
+        ],
+        "accepted_at_ms": 15000,
+        "return_interval_ms": [
+          15000,
+          25000
+        ],
+        "vehicle_free_at_ms": 25000,
+        "cargo_id": "part-1",
+        "before_departure_holder": "source_store",
+        "in_transit_holder": "vehicle",
+        "after_acceptance_holder": "destination_store",
+        "acceptance_scope": "declared_transport_destination_or_operation_output_store_not_customer_order"
+      },
+      "actual_result": null
+    },
+    {
+      "id": "path_after_move",
+      "manual_expected": {
+        "mode": "explicit_path",
+        "path_length_used_m": 20.0,
+        "empty_reposition_ms": 0,
+        "load_interval_ms": [
+          0,
+          2000
+        ],
+        "outbound_interval_ms": [
+          2000,
+          22000
+        ],
+        "unload_interval_ms": [
+          22000,
+          25000
+        ],
+        "accepted_at_ms": 25000,
+        "return_interval_ms": [
+          25000,
+          45000
+        ],
+        "vehicle_free_at_ms": 45000,
+        "cargo_id": "part-1",
+        "before_departure_holder": "source_store",
+        "in_transit_holder": "vehicle",
+        "after_acceptance_holder": "destination_store",
+        "acceptance_scope": "declared_transport_destination_or_operation_output_store_not_customer_order"
+      },
+      "actual_result": null
+    },
+    {
+      "id": "empty_reposition",
+      "manual_expected": {
+        "mode": "explicit_path",
+        "path_length_used_m": 10.0,
+        "empty_reposition_ms": 5000,
+        "load_interval_ms": [
+          5000,
+          7000
+        ],
+        "outbound_interval_ms": [
+          7000,
+          17000
+        ],
+        "unload_interval_ms": [
+          17000,
+          20000
+        ],
+        "accepted_at_ms": 20000,
+        "return_interval_ms": [
+          20000,
+          30000
+        ],
+        "vehicle_free_at_ms": 30000,
+        "cargo_id": "part-1",
+        "before_departure_holder": "source_store",
+        "in_transit_holder": "vehicle",
+        "after_acceptance_holder": "destination_store",
+        "acceptance_scope": "declared_transport_destination_or_operation_output_store_not_customer_order"
+      },
+      "actual_result": null
+    },
+    {
+      "id": "opposing_base",
+      "manual_expected": {
+        "corridor_occupation": [
+          {
+            "vehicle": "A",
+            "kind": "loaded",
+            "start_ms": 2000,
+            "end_ms": 10000,
+            "travel_arrival_ms": 10000
+          },
+          {
+            "vehicle": "B",
+            "kind": "loaded",
+            "start_ms": 10000,
+            "end_ms": 18000,
+            "travel_arrival_ms": 18000
+          },
+          {
+            "vehicle": "A",
+            "kind": "empty_return",
+            "start_ms": 18000,
+            "end_ms": 26000,
+            "travel_arrival_ms": 26000
+          },
+          {
+            "vehicle": "B",
+            "kind": "empty_return",
+            "start_ms": 26000,
+            "end_ms": 34000,
+            "travel_arrival_ms": 34000
+          }
+        ],
+        "accepted_at_ms": {
+          "A": 13000,
+          "B": 21000
+        },
+        "vehicle_returned_at_ms": {
+          "A": 26000,
+          "B": 34000
+        },
+        "destination_waits": [],
+        "outside_bay_by_vehicle": {
+          "A": true,
+          "B": true
+        },
+        "holder_until_acceptance": "vehicle",
+        "road_capacity": 1,
+        "acceptance_scope": "declared_transport_destination_or_operation_output_store_not_customer_order"
+      },
+      "actual_result": null
+    },
+    {
+      "id": "blocked_with_outside_bay",
+      "manual_expected": {
+        "corridor_occupation": [
+          {
+            "vehicle": "A",
+            "kind": "loaded",
+            "start_ms": 2000,
+            "end_ms": 10000,
+            "travel_arrival_ms": 10000
+          },
+          {
+            "vehicle": "B",
+            "kind": "loaded",
+            "start_ms": 10000,
+            "end_ms": 18000,
+            "travel_arrival_ms": 18000
+          },
+          {
+            "vehicle": "B",
+            "kind": "empty_return",
+            "start_ms": 21000,
+            "end_ms": 29000,
+            "travel_arrival_ms": 29000
+          },
+          {
+            "vehicle": "A",
+            "kind": "empty_return",
+            "start_ms": 29000,
+            "end_ms": 37000,
+            "travel_arrival_ms": 37000
+          }
+        ],
+        "accepted_at_ms": {
+          "A": 23000,
+          "B": 21000
+        },
+        "vehicle_returned_at_ms": {
+          "B": 29000,
+          "A": 37000
+        },
+        "destination_waits": [
+          {
+            "vehicle": "A",
+            "start_ms": 10000,
+            "end_ms": 20000,
+            "holder": "vehicle",
+            "outside_corridor": true
+          }
+        ],
+        "outside_bay_by_vehicle": {
+          "A": true,
+          "B": true
+        },
+        "holder_until_acceptance": "vehicle",
+        "road_capacity": 1,
+        "acceptance_scope": "declared_transport_destination_or_operation_output_store_not_customer_order"
+      },
+      "actual_result": null
+    },
+    {
+      "id": "blocked_without_outside_bay",
+      "manual_expected": {
+        "corridor_occupation": [
+          {
+            "vehicle": "A",
+            "kind": "loaded",
+            "start_ms": 2000,
+            "end_ms": 23000,
+            "travel_arrival_ms": 10000
+          },
+          {
+            "vehicle": "B",
+            "kind": "loaded",
+            "start_ms": 23000,
+            "end_ms": 34000,
+            "travel_arrival_ms": 31000
+          },
+          {
+            "vehicle": "A",
+            "kind": "empty_return",
+            "start_ms": 34000,
+            "end_ms": 42000,
+            "travel_arrival_ms": 42000
+          },
+          {
+            "vehicle": "B",
+            "kind": "empty_return",
+            "start_ms": 42000,
+            "end_ms": 50000,
+            "travel_arrival_ms": 50000
+          }
+        ],
+        "accepted_at_ms": {
+          "A": 23000,
+          "B": 34000
+        },
+        "vehicle_returned_at_ms": {
+          "A": 42000,
+          "B": 50000
+        },
+        "destination_waits": [
+          {
+            "vehicle": "A",
+            "start_ms": 10000,
+            "end_ms": 20000,
+            "holder": "vehicle",
+            "outside_corridor": false
+          }
+        ],
+        "outside_bay_by_vehicle": {
+          "A": false,
+          "B": false
+        },
+        "holder_until_acceptance": "vehicle",
+        "road_capacity": 1,
+        "acceptance_scope": "declared_transport_destination_or_operation_output_store_not_customer_order"
+      },
+      "actual_result": null
+    },
+    {
+      "id": "unreachable_route",
+      "manual_expected": {
+        "route_status": "needs_reconnection",
+        "accepted_at_ms": null,
+        "holder": "source_store",
+        "straight_line_substituted": false,
+        "acceptance_scope": "declared_transport_destination_or_operation_output_store_not_customer_order"
+      },
+      "actual_result": null
+    },
+    {
+      "id": "cyclic_position_wait",
+      "manual_expected": {
+        "dependencies": {
+          "A": "B",
+          "B": "A"
+        },
+        "current_positions": {
+          "P1": "A",
+          "P2": "B"
+        },
+        "future_release_events": [],
+        "diagnosis": "current_arrangement_has_no_progress_event",
+        "positions_copied": false,
+        "cargo_retained": true,
+        "acceptance_scope": "declared_transport_destination_or_operation_output_store_not_customer_order"
+      },
+      "actual_result": null
+    },
+    {
+      "id": "maintenance_finish_current",
+      "manual_expected": {
+        "repair_start_ms": 80000,
+        "repair_end_ms": 100000,
+        "qualification_end_ms": 110000,
+        "repair_worker_work_ms": 20000,
+        "spares_consumed": 1,
+        "first_accepted_at_ms": 80000,
+        "completed_items": 2,
+        "spare_wait_is_worker_work": false,
+        "second_accepted_at_ms": 170000,
+        "input_kits_remaining": 0,
+        "intervals": [
+          {
+            "kind": "production",
+            "start_ms": 0,
+            "end_ms": 60000
+          },
+          {
+            "kind": "output_wait",
+            "start_ms": 60000,
+            "end_ms": 80000
+          },
+          {
+            "kind": "repair",
+            "start_ms": 80000,
+            "end_ms": 100000
+          },
+          {
+            "kind": "qualification",
+            "start_ms": 100000,
+            "end_ms": 110000
+          },
+          {
+            "kind": "production_second",
+            "start_ms": 110000,
+            "end_ms": 170000
+          }
+        ],
+        "equipment_exclusive_use": [
+          {
+            "user": "first",
+            "start_ms": 0,
+            "end_ms": 80000
+          },
+          {
+            "user": "repair",
+            "start_ms": 80000,
+            "end_ms": 100000
+          },
+          {
+            "user": "qualification",
+            "start_ms": 100000,
+            "end_ms": 110000
+          },
+          {
+            "user": "second",
+            "start_ms": 110000,
+            "end_ms": 170000
+          }
+        ],
+        "acceptance_scope": "declared_transport_destination_or_operation_output_store_not_customer_order"
+      },
+      "actual_result": null
+    },
+    {
+      "id": "maintenance_pause_resume",
+      "manual_expected": {
+        "repair_start_ms": 50000,
+        "repair_end_ms": 70000,
+        "qualification_end_ms": 80000,
+        "repair_worker_work_ms": 20000,
+        "spares_consumed": 1,
+        "first_accepted_at_ms": 110000,
+        "completed_items": 1,
+        "spare_wait_is_worker_work": false,
+        "effective_work_total_ms": 60000,
+        "input_kits_remaining": 1,
+        "original_item_identity_preserved": true,
+        "intervals": [
+          {
+            "kind": "production",
+            "start_ms": 0,
+            "end_ms": 30000
+          },
+          {
+            "kind": "waiting_for_maintenance_inputs",
+            "start_ms": 30000,
+            "end_ms": 50000
+          },
+          {
+            "kind": "repair",
+            "start_ms": 50000,
+            "end_ms": 70000
+          },
+          {
+            "kind": "qualification",
+            "start_ms": 70000,
+            "end_ms": 80000
+          },
+          {
+            "kind": "production_resume",
+            "start_ms": 80000,
+            "end_ms": 110000
+          }
+        ],
+        "equipment_exclusive_use": [
+          {
+            "user": "first",
+            "start_ms": 0,
+            "end_ms": 30000
+          },
+          {
+            "user": "repair",
+            "start_ms": 50000,
+            "end_ms": 70000
+          },
+          {
+            "user": "qualification",
+            "start_ms": 70000,
+            "end_ms": 80000
+          },
+          {
+            "user": "first",
+            "start_ms": 80000,
+            "end_ms": 110000
+          }
+        ],
+        "acceptance_scope": "declared_transport_destination_or_operation_output_store_not_customer_order"
+      },
+      "actual_result": null
+    },
+    {
+      "id": "maintenance_abort_isolate",
+      "manual_expected": {
+        "repair_start_ms": 50000,
+        "repair_end_ms": 70000,
+        "qualification_end_ms": 80000,
+        "repair_worker_work_ms": 20000,
+        "spares_consumed": 1,
+        "first_accepted_at_ms": null,
+        "completed_items": 1,
+        "spare_wait_is_worker_work": false,
+        "second_accepted_at_ms": 140000,
+        "input_kits_remaining": 0,
+        "first_holder": "isolate_store",
+        "first_quality": "pending",
+        "original_inputs_returned": 0,
+        "automatic_replacement_created": false,
+        "intervals": [
+          {
+            "kind": "production",
+            "start_ms": 0,
+            "end_ms": 30000
+          },
+          {
+            "kind": "isolate_transfer",
+            "start_ms": 30000,
+            "end_ms": 35000
+          },
+          {
+            "kind": "waiting_for_maintenance_inputs",
+            "start_ms": 35000,
+            "end_ms": 50000
+          },
+          {
+            "kind": "repair",
+            "start_ms": 50000,
+            "end_ms": 70000
+          },
+          {
+            "kind": "qualification",
+            "start_ms": 70000,
+            "end_ms": 80000
+          },
+          {
+            "kind": "production_second",
+            "start_ms": 80000,
+            "end_ms": 140000
+          }
+        ],
+        "equipment_exclusive_use": [
+          {
+            "user": "first",
+            "start_ms": 0,
+            "end_ms": 30000
+          },
+          {
+            "user": "disposition",
+            "start_ms": 30000,
+            "end_ms": 35000
+          },
+          {
+            "user": "repair",
+            "start_ms": 50000,
+            "end_ms": 70000
+          },
+          {
+            "user": "qualification",
+            "start_ms": 70000,
+            "end_ms": 80000
+          },
+          {
+            "user": "second",
+            "start_ms": 80000,
+            "end_ms": 140000
+          }
+        ],
+        "acceptance_scope": "declared_transport_destination_or_operation_output_store_not_customer_order"
+      },
+      "actual_result": null
+    },
+    {
+      "id": "maintenance_qualification_fail",
+      "manual_expected": {
+        "repair_start_ms": 50000,
+        "repair_end_ms": 70000,
+        "qualification_end_ms": 80000,
+        "repair_worker_work_ms": 20000,
+        "spares_consumed": 1,
+        "first_accepted_at_ms": null,
+        "completed_items": 0,
+        "spare_wait_is_worker_work": false,
+        "state": "awaiting_release",
+        "holder": "original_job",
+        "resume_ref": "first",
+        "effective_work_done_ms": 30000,
+        "input_kits_remaining": 1,
+        "intervals": [
+          {
+            "kind": "production",
+            "start_ms": 0,
+            "end_ms": 30000
+          },
+          {
+            "kind": "waiting_for_maintenance_inputs",
+            "start_ms": 30000,
+            "end_ms": 50000
+          },
+          {
+            "kind": "repair",
+            "start_ms": 50000,
+            "end_ms": 70000
+          },
+          {
+            "kind": "qualification",
+            "start_ms": 70000,
+            "end_ms": 80000
+          }
+        ],
+        "equipment_exclusive_use": [
+          {
+            "user": "first",
+            "start_ms": 0,
+            "end_ms": 30000
+          },
+          {
+            "user": "repair",
+            "start_ms": 50000,
+            "end_ms": 70000
+          },
+          {
+            "user": "qualification",
+            "start_ms": 70000,
+            "end_ms": 80000
+          }
+        ],
+        "acceptance_scope": "declared_transport_destination_or_operation_output_store_not_customer_order"
+      },
+      "actual_result": null
+    },
+    {
+      "id": "maintenance_missing_stop_policy",
+      "manual_expected": {
+        "first_accepted_at_ms": null,
+        "completed_items": 0,
+        "state": "awaiting_disposition",
+        "holder": "original_job",
+        "effective_work_done_ms": 30000,
+        "resume_ref": "first",
+        "input_kits_remaining": 1,
+        "spares_consumed": 0,
+        "intervals": [
+          {
+            "kind": "production",
+            "start_ms": 0,
+            "end_ms": 30000
+          }
+        ],
+        "acceptance_scope": "declared_transport_destination_or_operation_output_store_not_customer_order"
+      },
+      "actual_result": null
+    },
+    {
+      "id": "maintenance_known_non_preemptive_window",
+      "manual_expected": {
+        "start_at_ms": 80000,
+        "first_accepted_at_ms": 140000,
+        "completed_items": 1,
+        "wip_before_window": false,
+        "input_kits_remaining": 1,
+        "intervals": [
+          {
+            "kind": "production",
+            "start_ms": 80000,
+            "end_ms": 140000
+          }
+        ],
+        "unavailable_interval_ms": [
+          30000,
+          80000
+        ],
+        "repair_parts_consumption": "not_inferred_from_calendar",
+        "acceptance_scope": "declared_transport_destination_or_operation_output_store_not_customer_order"
+      },
+      "actual_result": null
+    }
+  ]
+}
