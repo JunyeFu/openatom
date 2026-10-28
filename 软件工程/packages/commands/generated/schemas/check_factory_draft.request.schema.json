@@ -1,0 +1,580 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Request",
+  "type": "object",
+  "properties": {
+    "api_version": {
+      "$ref": "#/$defs/ApiVersion"
+    },
+    "operation": {
+      "$ref": "#/$defs/CheckFactoryDraftTag"
+    },
+    "params": {
+      "$ref": "#/$defs/CheckFactoryDraftParams"
+    },
+    "project_id": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ProjectId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "request_id": {
+      "$ref": "#/$defs/ObjectId"
+    },
+    "scope": {
+      "$ref": "#/$defs/ApiScope"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "api_version",
+    "request_id",
+    "project_id",
+    "scope",
+    "operation",
+    "params"
+  ],
+  "$defs": {
+    "AcceptanceScope": {
+      "type": "object",
+      "properties": {
+        "destination": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "product_ref": {
+          "$ref": "#/$defs/SubjectRevisionRef"
+        },
+        "stage": {
+          "$ref": "#/$defs/AcceptanceStage"
+        },
+        "unit": {
+          "$ref": "#/$defs/UnitId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "product_ref",
+        "unit",
+        "destination",
+        "stage"
+      ]
+    },
+    "AcceptanceStage": {
+      "type": "string",
+      "enum": [
+        "factory_released",
+        "received",
+        "unloaded_and_released"
+      ]
+    },
+    "ApiScope": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "workspace"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "project"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "data": {
+              "$ref": "#/$defs/ModuleId"
+            },
+            "kind": {
+              "type": "string",
+              "const": "definition_draft"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "data"
+          ]
+        }
+      ]
+    },
+    "ApiVersion": {
+      "type": "string",
+      "enum": [
+        "0.1"
+      ]
+    },
+    "CapabilityPurpose": {
+      "type": "string",
+      "enum": [
+        "execution",
+        "preview",
+        "adoption",
+        "redistribution",
+        "complete_conclusion"
+      ]
+    },
+    "CheckFactoryDraftParams": {
+      "type": "object",
+      "properties": {
+        "check_scope": {
+          "$ref": "#/$defs/FactoryCheckScope"
+        },
+        "generation_goal": {
+          "$ref": "#/$defs/FactoryGenerationGoal"
+        },
+        "revision": {
+          "$ref": "#/$defs/SafeUint"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "revision",
+        "generation_goal",
+        "check_scope"
+      ]
+    },
+    "CheckFactoryDraftTag": {
+      "type": "string",
+      "enum": [
+        "check_factory_draft"
+      ]
+    },
+    "DecimalAmount": {
+      "type": "object",
+      "properties": {
+        "coefficient": {
+          "$ref": "#/$defs/SafeUint"
+        },
+        "decimal_places": {
+          "$ref": "#/$defs/DecimalPlaces"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "coefficient",
+        "decimal_places"
+      ]
+    },
+    "DecimalPlaces": {
+      "type": "integer",
+      "format": "uint8",
+      "maximum": 9,
+      "minimum": 0
+    },
+    "FactoryCheckScope": {
+      "type": "object",
+      "properties": {
+        "check_business": {
+          "type": "boolean"
+        },
+        "check_references": {
+          "type": "boolean"
+        },
+        "check_static_layout": {
+          "type": "boolean"
+        },
+        "objects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ObjectRef"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "objects",
+        "check_references",
+        "check_business",
+        "check_static_layout"
+      ]
+    },
+    "FactoryGenerationGoal": {
+      "type": "object",
+      "properties": {
+        "acceptance_scope": {
+          "$ref": "#/$defs/AcceptanceScope"
+        },
+        "accepted_quantity_per_day": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Quantity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "additional_acceptance_scopes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AcceptanceScope"
+          }
+        },
+        "constraints": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Issue"
+          }
+        },
+        "existing_equipment": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ObjectRef"
+          }
+        },
+        "industry": {
+          "type": "string"
+        },
+        "observation_window": {
+          "$ref": "#/$defs/WindowMs"
+        },
+        "product_family": {
+          "type": "string"
+        },
+        "product_specification_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SubjectRevisionRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "production_calendar_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ObjectId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "site_envelope": {
+          "$ref": "#/$defs/SiteEnvelope"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "industry",
+        "product_family",
+        "acceptance_scope",
+        "observation_window",
+        "site_envelope",
+        "existing_equipment",
+        "constraints"
+      ]
+    },
+    "FiniteNumber": {
+      "type": "number",
+      "format": "double"
+    },
+    "Issue": {
+      "type": "object",
+      "properties": {
+        "blocks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CapabilityPurpose"
+          }
+        },
+        "code": {
+          "type": "string"
+        },
+        "field_path": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "message": {
+          "type": "string"
+        },
+        "object_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ObjectRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "message",
+        "blocks"
+      ]
+    },
+    "LayoutRegion": {
+      "type": "object",
+      "properties": {
+        "clearance_m": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FiniteNumber"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "kind": {
+          "$ref": "#/$defs/LayoutRegionKind"
+        },
+        "polygon_m": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Vec2"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "polygon_m",
+        "kind"
+      ]
+    },
+    "LayoutRegionKind": {
+      "type": "string",
+      "enum": [
+        "usable",
+        "keep_out",
+        "static_lane"
+      ]
+    },
+    "ModuleId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "ObjectId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "ObjectKind": {
+      "type": "string",
+      "enum": [
+        "project",
+        "scenario",
+        "run",
+        "definition_draft",
+        "packaging_job",
+        "asset",
+        "native_scene",
+        "item_type",
+        "item",
+        "location",
+        "hall",
+        "line",
+        "device",
+        "resource",
+        "calendar",
+        "product",
+        "bom",
+        "route",
+        "connection",
+        "order",
+        "task",
+        "job",
+        "supply",
+        "transport",
+        "artifact",
+        "module",
+        "report"
+      ]
+    },
+    "ObjectRef": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "kind": {
+          "$ref": "#/$defs/ObjectKind"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "id"
+      ]
+    },
+    "ProjectId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "Quantity": {
+      "type": "object",
+      "properties": {
+        "unit": {
+          "$ref": "#/$defs/UnitId"
+        },
+        "value": {
+          "$ref": "#/$defs/DecimalAmount"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "unit"
+      ]
+    },
+    "SafeUint": {
+      "type": "integer",
+      "format": "uint64",
+      "maximum": 9007199254740991,
+      "minimum": 0
+    },
+    "SiteEnvelope": {
+      "type": "object",
+      "properties": {
+        "clearance_m": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FiniteNumber"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "height_m": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FiniteNumber"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "length_m": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FiniteNumber"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "regions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/LayoutRegion"
+          }
+        },
+        "usable_polygon_m": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Vec2"
+          }
+        },
+        "width_m": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FiniteNumber"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "regions",
+        "usable_polygon_m"
+      ]
+    },
+    "SubjectRevisionId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "SubjectRevisionRef": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "revision": {
+          "$ref": "#/$defs/SubjectRevisionId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "revision"
+      ]
+    },
+    "UnitId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "Vec2": {
+      "type": "object",
+      "properties": {
+        "x": {
+          "$ref": "#/$defs/FiniteNumber"
+        },
+        "y": {
+          "$ref": "#/$defs/FiniteNumber"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y"
+      ]
+    },
+    "WindowMs": {
+      "type": "object",
+      "properties": {
+        "end_ms": {
+          "$ref": "#/$defs/SafeUint"
+        },
+        "start_ms": {
+          "$ref": "#/$defs/SafeUint"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "start_ms",
+        "end_ms"
+      ]
+    }
+  }
+}

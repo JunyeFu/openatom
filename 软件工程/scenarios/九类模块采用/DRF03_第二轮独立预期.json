@@ -1,0 +1,361 @@
+{
+  "document_kind": "DRF03_second_round_independent_expectations_not_actual_Host",
+  "basis": "Explicit finite inputs/expected outcomes fixed before reference implementation; all runtime fields remain null. Existing first-round 22 and S06-04 numeric expectations unchanged.",
+  "cases": [
+    {
+      "id": "C1-01",
+      "kind": "upgrade",
+      "input": {
+        "fail": null
+      },
+      "expected": {
+        "result": "committed_finite_model",
+        "A": "0.2.0",
+        "B": "0.1.0",
+        "old_run_A": "0.1.0",
+        "override": 40,
+        "project_revision": 2,
+        "stock": 4
+      },
+      "basis": "只升级A；旧Run/B/覆盖/库存保留。",
+      "actual_product_result": null
+    },
+    {
+      "id": "C1-02",
+      "kind": "upgrade",
+      "input": {
+        "fail": "unit"
+      },
+      "expected": {
+        "result": "InvalidInput",
+        "A": "0.1.0",
+        "B": "0.1.0",
+        "old_run_A": "0.1.0",
+        "override": 40,
+        "project_revision": 1,
+        "stock": 4
+      },
+      "basis": "第二校核单位错，先暂存的版本/目标也不提交。",
+      "actual_product_result": null
+    },
+    {
+      "id": "C1-03",
+      "kind": "upgrade",
+      "input": {
+        "fail": "revision"
+      },
+      "expected": {
+        "result": "RevisionConflict",
+        "A": "0.1.0",
+        "B": "0.1.0",
+        "old_run_A": "0.1.0",
+        "override": 40,
+        "project_revision": 1,
+        "stock": 4
+      },
+      "basis": "过期base不可留下半份升级。",
+      "actual_product_result": null
+    },
+    {
+      "id": "C1-04",
+      "kind": "task_lowering",
+      "input": {},
+      "expected": {
+        "work_kind": "preparation",
+        "duration_ms": 30000,
+        "target": "D1",
+        "resource_role": "setter",
+        "material_delta": 0
+      },
+      "basis": "真实旧准备定义30秒，目标来自显式设备绑定，不发新物料。",
+      "actual_product_result": null
+    },
+    {
+      "id": "C1-05",
+      "kind": "transport_lowering",
+      "input": {},
+      "expected": {
+        "accept_at_ms": 50000,
+        "carrier_free_at_ms": 80000,
+        "cargo_ids": [
+          "C1"
+        ]
+      },
+      "basis": "10+30+10秒接受，同货物ID；再30秒返程释放。",
+      "actual_product_result": null
+    },
+    {
+      "id": "C2-01",
+      "kind": "derive",
+      "input": {},
+      "expected": "eligible_selected_profile_only",
+      "basis": "指定J@1、同产品/用途/完整真实检查和可信认可的有限假设。",
+      "actual_product_result": null
+    },
+    {
+      "id": "C2-02",
+      "kind": "derive",
+      "input": {
+        "selection": false
+      },
+      "expected": "missing_job_selection",
+      "basis": "不拿artifact自己的Job充当当前工位期望。",
+      "actual_product_result": null
+    },
+    {
+      "id": "C2-03",
+      "kind": "derive",
+      "input": {
+        "desired_revision": 2
+      },
+      "expected": "job_revision_mismatch",
+      "basis": "同产品r1但工位选择J@2，旧成果J@1不匹配。",
+      "actual_product_result": null
+    },
+    {
+      "id": "C2-04",
+      "kind": "derive",
+      "input": {
+        "requested_scope": [
+          "forming",
+          "opening",
+          "linear_extraction",
+          "net_space"
+        ]
+      },
+      "expected": "scope_cannot_reduce_complete_profile",
+      "basis": "不能省略制造要求放行。",
+      "actual_product_result": null
+    },
+    {
+      "id": "C2-05",
+      "kind": "derive",
+      "input": {
+        "current_subject_revision": "r2"
+      },
+      "expected": "subject_mismatch",
+      "basis": "期望产品来自当前工位/路线与选定Job，不复制artifact旧r1。",
+      "actual_product_result": null
+    },
+    {
+      "id": "C2-06",
+      "kind": "derive",
+      "input": {
+        "ack_host_recorded": false
+      },
+      "expected": "ack_not_host_recorded",
+      "basis": "传入人工文字不是Host已记录人的决定。",
+      "actual_product_result": null
+    },
+    {
+      "id": "C2-07",
+      "kind": "derive",
+      "input": {
+        "has_glue": false
+      },
+      "expected": "required_payload_missing",
+      "basis": "声明有胶接而缺真实共同胶区/胶层不能完整绑定。",
+      "actual_product_result": null
+    },
+    {
+      "id": "C2-08",
+      "kind": "derive",
+      "input": {
+        "artifact_input_thickness": 2
+      },
+      "expected": "immutable_input_mismatch",
+      "basis": "相同id/revision却不同输入内容不得偷换，直接结构比较而非加hash。",
+      "actual_product_result": null
+    },
+    {
+      "id": "C3-01",
+      "kind": "sample",
+      "input": {},
+      "expected": "valid_selected_sample",
+      "basis": "步骤/进度/全部板片ID与Pose明确。",
+      "actual_product_result": null
+    },
+    {
+      "id": "C3-02",
+      "kind": "sample",
+      "input": {
+        "reverse_panels": true
+      },
+      "expected": "valid_selected_sample",
+      "basis": "板片数组重排不改变身份。",
+      "actual_product_result": null
+    },
+    {
+      "id": "C3-03",
+      "kind": "sample",
+      "input": {
+        "step_id": "UNKNOWN"
+      },
+      "expected": "unknown_step",
+      "basis": "未知步骤拒绝，不猜最近步骤。",
+      "actual_product_result": null
+    },
+    {
+      "id": "C3-04",
+      "kind": "sample",
+      "input": {
+        "progress": 1.1
+      },
+      "expected": "invalid_shape",
+      "basis": "progress超出[0,1]拒绝。",
+      "actual_product_result": null
+    },
+    {
+      "id": "C3-05",
+      "kind": "sample",
+      "input": {
+        "missing_panel": true
+      },
+      "expected": "panel_set_mismatch",
+      "basis": "缺固定板也不能拿数组位置补齐。",
+      "actual_product_result": null
+    },
+    {
+      "id": "C3-06",
+      "kind": "sample",
+      "input": {
+        "duplicate_panel": true
+      },
+      "expected": "duplicate_panel",
+      "basis": "同一panel出现两次不覆盖。",
+      "actual_product_result": null
+    },
+    {
+      "id": "C3-07",
+      "kind": "sample",
+      "input": {
+        "pose_unit": "meter"
+      },
+      "expected": "pose_frame_or_unit_mismatch",
+      "basis": "结果在Job毫米坐标，不把米默认当毫米。",
+      "actual_product_result": null
+    },
+    {
+      "id": "C3-08",
+      "kind": "sample",
+      "input": {
+        "old_named_pose": true
+      },
+      "expected": "invalid_shape",
+      "basis": "旧NamedPose不得当专业过程样本自动适配。",
+      "actual_product_result": null
+    },
+    {
+      "id": "C4-01",
+      "kind": "adapter_identity",
+      "input": {},
+      "expected": {
+        "candidates": 9,
+        "identities_preserved": true,
+        "all_design": true
+      },
+      "basis": "实际旧清单生成九个候选，保留自身身份而非复制九夹具。",
+      "actual_product_result": null
+    },
+    {
+      "id": "C4-02",
+      "kind": "adapter_transport",
+      "input": {},
+      "expected": {
+        "times_ms": [
+          10000,
+          30000,
+          10000,
+          30000
+        ],
+        "batch_coefficient": 1,
+        "batch_unit": "piece"
+      },
+      "basis": "实际转换值保留运输独立数值。",
+      "actual_product_result": null
+    },
+    {
+      "id": "C4-03",
+      "kind": "adapter_operation",
+      "input": {},
+      "expected": {
+        "inputs": [
+          1,
+          1,
+          4
+        ],
+        "outputs": [
+          1
+        ],
+        "duration_ms": 40000,
+        "identity": "assembly_with_composition"
+      },
+      "basis": "原齐套配比和40秒不变，身份语义显式映射。",
+      "actual_product_result": null
+    },
+    {
+      "id": "C4-04",
+      "kind": "adapter_template",
+      "input": {},
+      "expected": {
+        "canonical_inner_ready": false,
+        "stores_preserved": 12,
+        "connections_preserved": 18,
+        "raw_equal": true
+      },
+      "basis": "模板内层未闭合，不能删12库位/18连接造空模板成功。",
+      "actual_product_result": null
+    },
+    {
+      "id": "C4-05",
+      "kind": "adapter_duration",
+      "input": {
+        "seconds": "0.0001"
+      },
+      "expected": "duration_not_representable_as_integer_ms",
+      "basis": "运行真实适配函数，0.1ms不静默取整。",
+      "actual_product_result": null
+    },
+    {
+      "id": "C4-06",
+      "kind": "adapter_professional",
+      "input": {},
+      "expected": {
+        "artifact_type": "machining_job",
+        "has_available_modes": false,
+        "has_ack": false,
+        "blocked": true
+      },
+      "basis": "保持原后置加工声明，不假造纸包装提供者、能力或人认可。",
+      "actual_product_result": null
+    },
+    {
+      "id": "C4-07",
+      "kind": "adapter_parameters",
+      "input": {},
+      "expected": {
+        "cycle_unit": "millisecond",
+        "cycle_binding": "/payload/data/behavior/inline/duration",
+        "cycle_value_ms": 40000,
+        "transport_parameter_count": 4
+      },
+      "basis": "真正的duration参数绑定typed容器，秒→ms有明确映射。",
+      "actual_product_result": null
+    },
+    {
+      "id": "C4-08",
+      "kind": "adapter_media",
+      "input": {},
+      "expected": {
+        "source_nodes": 5,
+        "cylinder_radius": 0.07,
+        "cylinder_height": 0.24,
+        "named_poses": 2,
+        "production_effect": "none"
+      },
+      "basis": "转换实际5节点、圆柱尺寸和两姿态，不借表现生产物品。",
+      "actual_product_result": null
+    }
+  ],
+  "actual_result": null
+}

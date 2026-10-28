@@ -1,0 +1,22 @@
+const fs=require('node:fs'),path=require('node:path'),{extract}=require('./capture-design.cjs');
+const {chromium}=require('C:/Users/fujunye/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');
+(async()=>{const b=await chromium.launch({headless:true,channel:'chrome'}),p=await b.newPage({viewport:{width:1920,height:1080}}),summary=[];
+const fresh=async id=>{await p.goto('http://127.0.0.1:8921/?frame='+id);await p.waitForFunction(()=>window.S04_READY,null,{timeout:60000});};
+const click=a=>p.locator(`[data-action="${a}"]:visible`).first().click();
+async function shot(id,title,base,fn){await fresh(base);await fn();summary.push(await extract(p,id,title));}
+await shot('VP15','Agent模板填充候选及8设备/接受资源分类','VP14',()=>click('goal-preview'));
+await shot('VP16','Agent初案达标直交 / 手工预期例','VP15',()=>click('agent-initial'));
+await shot('AXIS0','主轴展开 / 工作与资源并行','VP11',()=>click('timeline-expand'));
+await shot('AXIS1','流水线细化 / 同一结果裁窗','VP11',()=>click('axis-line'));
+await shot('AXIS2','设备阶段 / 有效进度与历史','VP11',()=>click('axis-device'));
+await shot('EDIT0','输入联动预览 / 尚未提交','VP10',()=>click('input-preview'));
+await shot('MEDIA0','设备片段与数据标签创作后','VP04',async()=>{await click('clip-add');await click('tag-data');});
+await shot('PAPER0','纸包装打开取物 / 姿态示例','VP19',()=>click('paper-open'));
+await shot('PAPER1','纸包装成型 / 姿态示例','VP19',()=>click('paper-fold'));
+for(const [id,title,action] of [['REPORTPDF','PDF评估预览','format-PDF'],['REPORTCSV','CSV字段预览','format-CSV'],['REPORTJSON','JSON评估结构预览','format-JSON']])await shot(id,title,'VP22',()=>click(action));
+await shot('CONFLICT','修订冲突 / 保留未应用字段','VP24',async()=>{await p.getByRole('textbox',{name:'X',exact:true}).fill('8.2');await click('inject-conflict');await click('apply');});
+await shot('DIRTY','离开前处理未应用字段','VP24',async()=>{await p.getByRole('textbox',{name:'X',exact:true}).fill('8.2');await click('frame-VP05');});
+await shot('ADOPT','采用定义预览 / 新ID与职责分离','VP05',async()=>{await p.locator('[data-menu="模块"]').click();await click('adoption-preview');});
+for(const [id,title,acts] of [['COLL0','收起工程库',['toggle-left']],['COLL1','收起属性栏',['toggle-right']],['COLL2','双侧收起大画布',['toggle-left','toggle-right']]])await shot(id,title,'VP05',async()=>{for(const a of acts)await click(a);});
+const old=JSON.parse(fs.readFileSync(path.join(__dirname,'capture-index.json'))),by=new Map(old.map(x=>[x.id,x]));for(const r of summary)by.set(r.id,r);fs.writeFileSync(path.join(__dirname,'capture-index.json'),JSON.stringify([...by.values()],null,2));await b.close();console.log(JSON.stringify({newStates:summary.map(x=>x.id),total:by.size}));
+})().catch(e=>{console.error(e);process.exit(1)});

@@ -1,0 +1,39 @@
+{
+  "task_ids": [
+    "P2-01",
+    "P2-04"
+  ],
+  "observed_gap": "Timeline requires actual frozen ScenarioInput; old Run device ports require exact historical ModuleRef even after current draft removes or replaces that version. Current RunSnapshot handles Project/Item only and ModuleVersion admits current Project membership only.",
+  "scenario_read": "get_object Scenario + existing RunSnapshot{run_id,at_ms}: actual frozen_scenario_file, identity/revision must equal same RunInputRef.",
+  "module_read": "ObjectSource::RunModuleVersion{run_id,at_ms,module_ref}, wire kind run_module_version, only matching Module ObjectRef. Exact membership in this Run frozen Project, actual frozen module bytes, never current/latest substitute.",
+  "admission": "Actual visible Run through same caller Project Scope and GetRun authority; requested time within computed frontier; exact Project/Scenario/Module identity; reject wrong Run/Scope/ID/version/unreferenced/missing frozen file. No Definition/private/other-project leak or edit grants.",
+  "compatibility": "Existing draft/run_snapshot/module_version shapes and all18 operation names/API0.1 unchanged; canonical/runtime enum and generated Schema/TS updated together. No new business operation.",
+  "required_actual_checks": [
+    "Run then edit current Scenario/module references, read exact old input",
+    "Save/Open historical frozen inputs",
+    "wrong ID/version/Scope/frontier and missing historical bytes rejection",
+    "no current draft fallback"
+  ],
+  "status": "actual_Host186_and_both_codegen_received_Root_UI_consumer_written_Native_pending",
+  "whole_task_done": false,
+  "human_acceptance": null,
+  "actual_Host": {
+    "commands_tests": 186,
+    "source_frozen": true,
+    "proof_ref": ".work/whole-packages/p204-host-frozen-input-final-first.stdout.txt",
+    "consumer": "actual RunSnapshot Scenario and RunModuleVersion; altered draft, relocated Save/Open and wrong identity/Scope/frontier rejection"
+  },
+  "generated_contracts": {
+    "canonical_roundtrips": 20,
+    "api_roundtrips": 36,
+    "typescript_files": 425,
+    "product_schemas": 40,
+    "product_schema_cases": 92,
+    "proof_refs": [
+      ".work/whole-packages/p204-canonical-codegen.stdout.txt",
+      ".work/whole-packages/p204-product-codegen.stdout.txt",
+      ".work/whole-packages/p204-product-schema.json"
+    ]
+  },
+  "actual_UI_source": "readRunInputs reads only frozen Scenario/exact historical modules; Workbench atomically publishes full matching RunObjectsPage after epoch+Project+Run ownership guard. Actual Native GUI reception remains pending."
+}

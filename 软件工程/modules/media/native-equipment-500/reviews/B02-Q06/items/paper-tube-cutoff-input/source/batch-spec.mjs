@@ -1,0 +1,13 @@
+export const batch='B02-Q06',profile='simulation-efficient-v1',clamp=x=>Math.max(0,Math.min(1,x)),ramp=(u,a,b)=>clamp((u-a)/(b-a));
+export const tube={L:.600,ro:.050,ri:.048,cutL:.298,groundL:.296,kerf:.004,plyT:.001,hub:.018,turns:5};
+export const annulus=Math.PI*(tube.ro**2-tube.ri**2),ply=i=>{const r=tube.ri+(i+.5)*tube.plyT,len=Math.hypot(tube.L,2*Math.PI*r*tube.turns),width=2*Math.PI*r*tube.L/len;return{radius:r,length:len,width,rollR:Math.sqrt(tube.hub**2+len*tube.plyT/Math.PI)};};
+export const specs={
+ 'paper-tube-winder':{title:'螺旋纸管机（双带定量卷绕）',cycle_seconds:30,rule:'assemble',initial:'metered_outer_kraft_strip',final:'wound_tube',auxiliary:'metered_glue_1ml',extra_outputs:[],acceptance_conditions:['missing-component'],mechanisms:['mandrel-and-two-angled-drive-belts','two-metered-plies-with-glue'],flow:{input:'两根预切纸带+1mL计量胶',output:'1根600mm双层纸管，保留三种来源'}},
+ 'paper-tube-cutoff':{title:'纸管定长切割机（两段与独立锯屑）',cycle_seconds:20,rule:'transform',initial:'long_tube',final:'cut_tube',auxiliary:null,extra_outputs:[{role:'waste'}],acceptance_conditions:['waste-wait'],mechanisms:['supported-U-cradles-and-clamp','guarded-plunge-saw-and-dust-extraction'],flow:{input:'1根600mm纸管',output:'2根298mm纸管+1份4mm切缝锯屑'}},
+ 'paper-core-grinder':{title:'纸管端面修磨机（双端进给与集尘）',cycle_seconds:20,rule:'transform',initial:'rough_cut_tube',final:'flat_end_tube',auxiliary:null,extra_outputs:[{role:'waste'}],acceptance_conditions:['waste-wait'],mechanisms:['supported-tube-clamp','opposed-axial-grinding-slides-and-dust-hoods'],flow:{input:'1根298mm毛端纸管',output:'1根296mm平端纸管+1份两端共2mm磨屑'}}
+};
+export const workY=.9,axisY=workY+tube.ro,stagingX=.76,samples=[0,.2,.4,.45,.8,1];
+export const inputPort=()=>[-1,workY,0],outputPort=()=>[1.32,workY,0],outputY=()=>workY,auxPort=()=>[-1,workY,-.52],auxSeat=()=>[.9,workY,-.52],componentPort=()=>[-1,workY,.52],componentSeat=()=>[-.8,workY,-.38],primarySeat=()=>[-.8,workY,.38],wasteSeat=()=>[.20,.55,-.50],wastePort=()=>[.20,.55,-.94];
+export function seat(id,ph,u){if(id==='paper-tube-winder'){const p=primarySeat(),k=ramp(u,0,.4);return ph==='load'?[-1+(p[0]+1)*k,workY,p[2]*k]:p;}if(ph==='load'){if(id==='paper-core-grinder')return[-1+ramp(u,.2,.8),workY+.16*(ramp(u,0,.2)-ramp(u,.8,1)),0];return[-1+u,workY,0];}if(ph==='unload')return[stagingX*ramp(u,id==='paper-tube-cutoff'?.4:.2,.8),workY+(id==='paper-tube-cutoff'?.12:.16)*(ramp(u,0,.2)-ramp(u,.8,1)),0];return[0,workY,0];}
+export const cutSlots=()=>[[0,0,-.075],[0,0,.075]],progress=(ph,u,a,b)=>ph==='auto'?ramp(u,a,b):ph==='unload'?1:0;
+export const clampPose=(ph,u)=>ph==='auto'?ramp(u,0,.10)-ramp(u,.88,1):0;

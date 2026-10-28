@@ -1,0 +1,491 @@
+{
+  "document_kind": "P0_02_window3_native_material_input_history_save_reopen",
+  "task_id": "P0-02",
+  "within_original_step": 2,
+  "owner": "实现窗口3",
+  "role": "W02",
+  "status": "accepted_native_material_input_slice_after_composition_fix",
+  "dispatch_ref": "docs/04_开发与验收/P0-02_初始物料与分配输入切片.json#/parallel_dispatch/2",
+  "source_ref": "apps/planner/src-tauri/src/project_api.rs",
+  "allowed_modified_files": [
+    "apps/planner/src-tauri/src/project_api.rs",
+    "docs/04_开发与验收/P0-02_初始物料_窗口3.json"
+  ],
+  "fixture_contract": {
+    "source": "packages/commands/tests/fixtures/business-inputs/initial-stock.scenario.json",
+    "handoff_ref": "docs/04_开发与验收/P0-02_初始物料_窗口5.json#/fixture_contract",
+    "shape": "正式裸ScenarioInput，id=STOCK；仅project_revision重绑定实际Host当前基线。",
+    "business_dependencies": "复用multi-order.dto.json的ItemType、Product A/B、BOM与ROUTE-AB/r1，在同批向前引用写入STOCK。",
+    "seed_setup": "九类别原生seed声明RAW-STOCK/r1（piece、batch）并为S1/S2增加接收类型；经真实import/open进入同Host，不直接写Host内部状态；RAW-BOX不属本组原生用例。",
+    "declared_axes": {
+      "initial": "BATCH10：10 piece，RAW-STOCK/r1，S1，pending",
+      "future": "ARRIVAL5/FUTURE5：100000ms到料5 piece",
+      "supply": "SUPPLY20：目标20 piece，S1到S2，demo.transport@0.1.0，worker=W1",
+      "demand": "ORDER-A、ORDER-B各4 piece，总8",
+      "hard": "HARD-A/TASK-A=4，HARD-B/TASK-B=6，均引用BATCH10",
+      "soft": "SOFT-FUTURE引用FUTURE5、量5；SOFT-EMPTY源列表为空、量3"
+    }
+  },
+  "implementation": [
+    "smoke(state)在原business_full_smoke_report(state)之后调用物料检查，全链消费调用者提供的同一ProjectApiState及原单FIFO，不创建第二Host。",
+    "所有输入编辑、读取、Issue读取、撤销、重做、导入接收和保存均经dispatch_ui现有操作；等待实际文件Task完成。",
+    "增加26项具名检查及1项原生Rust测试，原8项原生测试和56项同Host检查名保留。",
+    "business_archive_scenario接受明确ScenarioId；既有ORDERS调用仍读取ORDERS，新增STOCK读取实际manifest的当前ScenarioInput文档。",
+    "比较实际返回的输入图，忽略Host分配的revision/project_revision；在检查需要处单独验证修订增长和冻结修订。",
+    "临时目录均由既有owned目录保护创建/清理；历史前后比较实际源及异目录归档文件字节。"
+  ],
+  "finite_expectations_before_execution": [
+    {
+      "name": "material_seed_import_admitted",
+      "expected": "同Host原生import_package成功接单。",
+      "actual": {
+        "executed": true,
+        "passed": true,
+        "raw_ref": ".work/p0-02-stock/verification/desktop-host-smoke.stdout.txt#/checks/56",
+        "result_phase": "post_composition_fix"
+      }
+    },
+    {
+      "name": "material_seed_real_task_completed",
+      "expected": "实际导入Task completed且缺项为空。",
+      "actual": {
+        "executed": true,
+        "passed": true,
+        "raw_ref": ".work/p0-02-stock/verification/desktop-host-smoke.stdout.txt#/checks/57",
+        "result_phase": "post_composition_fix"
+      }
+    },
+    {
+      "name": "material_seed_explicit_same_host_open",
+      "expected": "完整显式AdoptImportedDraft打开声明seed。",
+      "actual": {
+        "executed": true,
+        "passed": true,
+        "raw_ref": ".work/p0-02-stock/verification/desktop-host-smoke.stdout.txt#/checks/58",
+        "result_phase": "post_composition_fix"
+      }
+    },
+    {
+      "name": "material_context_resolves_current_project",
+      "expected": "从当前Host读取实际Project修订。",
+      "actual": {
+        "executed": true,
+        "passed": true,
+        "raw_ref": ".work/p0-02-stock/verification/desktop-host-smoke.stdout.txt#/checks/59",
+        "result_phase": "post_composition_fix"
+      }
+    },
+    {
+      "name": "material_formal_inputs_commit_once",
+      "expected": "含STOCK向前引用的完整批次成功，Project仅增长一修订。",
+      "actual": {
+        "executed": true,
+        "passed": true,
+        "raw_ref": ".work/p0-02-stock/verification/desktop-host-smoke.stdout.txt#/checks/60",
+        "result_phase": "post_composition_fix"
+      }
+    },
+    {
+      "name": "material_six_input_axes_roundtrip",
+      "expected": "真实get_object返回的起点、到料、供货、需求、任务及分配输入等于正式fixture。",
+      "actual": {
+        "executed": true,
+        "passed": true,
+        "raw_ref": ".work/p0-02-stock/verification/desktop-host-smoke.stdout.txt#/checks/61",
+        "result_phase": "post_composition_fix"
+      }
+    },
+    {
+      "name": "material_declared_initial_future_supply_demand_are_separate_inputs",
+      "expected": "10、未来5、供货目标20、需求各4独立原值保留。",
+      "actual": {
+        "executed": true,
+        "passed": true,
+        "raw_ref": ".work/p0-02-stock/verification/desktop-host-smoke.stdout.txt#/checks/62",
+        "result_phase": "post_composition_fix"
+      }
+    },
+    {
+      "name": "material_pending_hard_and_soft_inputs_are_not_execution_results",
+      "expected": "pending原值、硬预留4+6、未来软计划与空源软计划保留，不产生执行数量。",
+      "actual": {
+        "executed": true,
+        "passed": true,
+        "raw_ref": ".work/p0-02-stock/verification/desktop-host-smoke.stdout.txt#/checks/63",
+        "result_phase": "post_composition_fix"
+      }
+    },
+    {
+      "name": "material_positive_declared_inputs_have_no_material_issue",
+      "expected": "正例没有business_inputs.material_*问题；材料总10不按成品总8封顶。",
+      "actual": {
+        "executed": true,
+        "passed": true,
+        "raw_ref": ".work/p0-02-stock/verification/desktop-host-smoke.stdout.txt#/checks/64",
+        "result_phase": "post_composition_fix"
+      }
+    },
+    {
+      "name": "material_semantic_failures_are_saved_as_explicit_draft",
+      "expected": "同批把HARD-B改7并引用缺失运输模块，仍可提交输入草稿。",
+      "actual": {
+        "executed": true,
+        "passed": true,
+        "raw_ref": ".work/p0-02-stock/verification/desktop-host-smoke.stdout.txt#/checks/65",
+        "result_phase": "post_composition_fix"
+      }
+    },
+    {
+      "name": "material_invalid_inputs_remain_visible_with_both_use_blockers",
+      "expected": "坏输入不被改写；分配及运输问题均属STOCK并阻断execution和complete_conclusion。",
+      "actual": {
+        "executed": true,
+        "passed": true,
+        "raw_ref": ".work/p0-02-stock/verification/desktop-host-smoke.stdout.txt#/checks/66",
+        "result_phase": "post_composition_fix"
+      }
+    },
+    {
+      "name": "material_undo_restores_input_graph_and_recomputed_issues",
+      "expected": "撤销恢复完整正例输入，成功读取context且物料问题消除。",
+      "actual": {
+        "executed": true,
+        "passed": true,
+        "raw_ref": ".work/p0-02-stock/verification/desktop-host-smoke.stdout.txt#/checks/67",
+        "result_phase": "post_composition_fix"
+      }
+    },
+    {
+      "name": "material_redo_restores_blocked_input_and_fresh_scenario_revision",
+      "expected": "重做恢复坏输入及运输阻断，Scenario修订高于撤销后修订。",
+      "actual": {
+        "executed": true,
+        "passed": true,
+        "raw_ref": ".work/p0-02-stock/verification/desktop-host-smoke.stdout.txt#/checks/68",
+        "result_phase": "post_composition_fix"
+      }
+    },
+    {
+      "name": "material_frozen_draft_save_admitted",
+      "expected": "冻结坏稿R的save_project实际接单。",
+      "actual": {
+        "executed": true,
+        "passed": true,
+        "raw_ref": ".work/p0-02-stock/verification/desktop-host-smoke.stdout.txt#/checks/69",
+        "result_phase": "post_composition_fix"
+      }
+    },
+    {
+      "name": "material_newer_input_edit_is_independent_of_frozen_save",
+      "expected": "保存接单后不等待磁盘任务即可将当前稿修正为正例。",
+      "actual": {
+        "executed": true,
+        "passed": true,
+        "raw_ref": ".work/p0-02-stock/verification/desktop-host-smoke.stdout.txt#/checks/70",
+        "result_phase": "post_composition_fix"
+      }
+    },
+    {
+      "name": "material_frozen_draft_save_reaches_real_completion",
+      "expected": "真实保存Task completed，saved_revision等于冻结R。",
+      "actual": {
+        "executed": true,
+        "passed": true,
+        "raw_ref": ".work/p0-02-stock/verification/desktop-host-smoke.stdout.txt#/checks/71",
+        "result_phase": "post_composition_fix"
+      }
+    },
+    {
+      "name": "material_save_keeps_frozen_blocked_input_while_newer_input_stays_dirty",
+      "expected": "磁盘当前Scenario保存R及完整坏输入；Host保留较新正例且dirty。",
+      "actual": {
+        "executed": true,
+        "passed": true,
+        "raw_ref": ".work/p0-02-stock/verification/desktop-host-smoke.stdout.txt#/checks/72",
+        "result_phase": "post_composition_fix"
+      }
+    },
+    {
+      "name": "material_relocated_import_admitted",
+      "expected": "复制实际归档到另一目录后，经原生import_package接单。",
+      "actual": {
+        "executed": true,
+        "passed": true,
+        "raw_ref": ".work/p0-02-stock/verification/desktop-host-smoke.stdout.txt#/checks/73",
+        "result_phase": "post_composition_fix"
+      }
+    },
+    {
+      "name": "material_relocated_parser_keeps_typed_missing_transport_issue",
+      "expected": "真实解析完成，missing含business_inputs.material_missing_transport_module，owner=STOCK，pointer=/supplies/0/transport_ref。",
+      "actual": {
+        "executed": true,
+        "passed": true,
+        "raw_ref": ".work/p0-02-stock/verification/desktop-host-smoke.stdout.txt#/checks/74",
+        "result_phase": "post_composition_fix"
+      }
+    },
+    {
+      "name": "material_import_without_explicit_gap_acceptance_preserves_current_input",
+      "expected": "未显式接受缺口时打开失败，当前正例输入不变。",
+      "actual": {
+        "executed": true,
+        "passed": true,
+        "raw_ref": ".work/p0-02-stock/verification/desktop-host-smoke.stdout.txt#/checks/75",
+        "result_phase": "post_composition_fix"
+      }
+    },
+    {
+      "name": "material_relocated_draft_is_explicitly_accepted",
+      "expected": "仅显式accept_missing_as_draft=true后接受完整导入草稿。",
+      "actual": {
+        "executed": true,
+        "passed": true,
+        "raw_ref": ".work/p0-02-stock/verification/desktop-host-smoke.stdout.txt#/checks/76",
+        "result_phase": "post_composition_fix"
+      }
+    },
+    {
+      "name": "material_reopened_input_and_use_blockers_are_preserved",
+      "expected": "重开返回完整坏输入及两类用途阻断。",
+      "actual": {
+        "executed": true,
+        "passed": true,
+        "raw_ref": ".work/p0-02-stock/verification/desktop-host-smoke.stdout.txt#/checks/77",
+        "result_phase": "post_composition_fix"
+      }
+    },
+    {
+      "name": "material_reopened_draft_edit_commits",
+      "expected": "重开后的实际Scenario可再次修正输入。",
+      "actual": {
+        "executed": true,
+        "passed": true,
+        "raw_ref": ".work/p0-02-stock/verification/desktop-host-smoke.stdout.txt#/checks/78",
+        "result_phase": "post_composition_fix"
+      }
+    },
+    {
+      "name": "material_reopened_undo_restores_blocked_draft",
+      "expected": "新会话历史撤销恢复坏输入和运输阻断。",
+      "actual": {
+        "executed": true,
+        "passed": true,
+        "raw_ref": ".work/p0-02-stock/verification/desktop-host-smoke.stdout.txt#/checks/79",
+        "result_phase": "post_composition_fix"
+      }
+    },
+    {
+      "name": "material_reopened_redo_restores_declared_positive_input",
+      "expected": "重做恢复正例，成功读取context且物料问题消除。",
+      "actual": {
+        "executed": true,
+        "passed": true,
+        "raw_ref": ".work/p0-02-stock/verification/desktop-host-smoke.stdout.txt#/checks/80",
+        "result_phase": "post_composition_fix"
+      }
+    },
+    {
+      "name": "material_history_never_changes_saved_or_relocated_archives",
+      "expected": "源目录和异目录所有文件与保存时实际字节相同。",
+      "actual": {
+        "executed": true,
+        "passed": true,
+        "raw_ref": ".work/p0-02-stock/verification/desktop-host-smoke.stdout.txt#/checks/81",
+        "result_phase": "post_composition_fix"
+      }
+    }
+  ],
+  "baseline_retention": {
+    "previous_actual_result_ref": ".work/p0-02-inputs/verification/result.json",
+    "previous_native_raw_ref": ".work/p0-02-inputs/verification/desktop-host-smoke.stdout.txt",
+    "previous_rust_raw_ref": ".work/p0-02-inputs/verification/workspace-tests.stdout.txt",
+    "old_native_test_count": 8,
+    "old_native_test_names": [
+      "project_api_rejects_wire_identity_and_malformed_requests",
+      "project_api_unknown_headers_keep_frozen_errors_without_mutation",
+      "project_api_reports_poison_without_dispatching",
+      "project_directory_picker_gates_purpose_and_preserves_cancelled_state",
+      "project_api_save_reopen_and_history_use_the_same_fifo_host",
+      "project_api_fifo_commits_same_directory_in_admission_order",
+      "project_api_business_inputs_save_reopen_and_history_are_real",
+      "project_api_smoke_uses_the_supplied_host_and_checks_real_data"
+    ],
+    "old_smoke_check_count": 56,
+    "new_native_test": "project_api_material_inputs_are_real_drafts_across_history_save_and_reopen",
+    "expected_native_test_count": 9,
+    "new_smoke_check_count": 26,
+    "expected_combined_smoke_check_count": 82,
+    "static_names_retained": true,
+    "new_runtime_retention_verified": true,
+    "actual_previous_rust_names_retained": 107,
+    "actual_current_rust_test_count": 124,
+    "actual_old_native_test_count_retained": 8,
+    "actual_old_smoke_check_count_retained": 56,
+    "recorded_counts_evidence_phase": "post_composition_fix"
+  },
+  "local_verification": {
+    "rustfmt_single_owned_source": {
+      "executed": true,
+      "exit_code": 0
+    },
+    "baseline_name_comparison": "原始上轮日志的8项原生测试及56项同Host检查名均在本次源中保留。",
+    "cargo_executed_by_this_window": false,
+    "centralized_executor": "实现窗口1/W00",
+    "compile_or_runtime_pass_claimed": false
+  },
+  "actual_result": {
+    "status": "passed_post_composition_fix_centralized_finite_input_chain",
+    "result_phase": "post_composition_fix",
+    "executor": "实现窗口1/W00",
+    "proof_ref": ".work/p0-02-stock/verification/result.json",
+    "execution_started_at": "2026-10-16T00:51:32.9405585+08:00",
+    "execution_finished_at": "2026-10-16T00:52:50.9873068+08:00",
+    "centralized_command_results": [
+      {
+        "key": "format",
+        "exit_code": 0
+      },
+      {
+        "key": "workspace-tests",
+        "exit_code": 0
+      },
+      {
+        "key": "generate-contracts",
+        "exit_code": 0
+      },
+      {
+        "key": "typecheck",
+        "exit_code": 0
+      },
+      {
+        "key": "schema-consumer",
+        "exit_code": 0
+      },
+      {
+        "key": "desktop-build",
+        "exit_code": 0
+      },
+      {
+        "key": "desktop-host-smoke",
+        "exit_code": 0
+      }
+    ],
+    "raw_rust_ref": ".work/p0-02-stock/verification/workspace-tests.stdout.txt",
+    "rust_tests": {
+      "passed": 124,
+      "failed": 0,
+      "previous_107_names_retained": true,
+      "native_tests_passed": 9,
+      "native_test_raw_rows": [
+        "test project_api::tests::project_api_reports_poison_without_dispatching ... ok",
+        "test project_api::tests::project_directory_picker_gates_purpose_and_preserves_cancelled_state ... ok",
+        "test project_api::tests::project_api_rejects_wire_identity_and_malformed_requests ... ok",
+        "test project_api::tests::project_api_smoke_uses_the_supplied_host_and_checks_real_data ... ok",
+        "test project_api::tests::project_api_unknown_headers_keep_frozen_errors_without_mutation ... ok",
+        "test project_api::tests::project_api_fifo_commits_same_directory_in_admission_order ... ok",
+        "test project_api::tests::project_api_save_reopen_and_history_use_the_same_fifo_host ... ok",
+        "test project_api::tests::project_api_business_inputs_save_reopen_and_history_are_real ... ok",
+        "test project_api::tests::project_api_material_inputs_are_real_drafts_across_history_save_and_reopen ... ok"
+      ]
+    },
+    "raw_schema_ref": ".work/p0-02-stock/verification/schema-consumer.stdout.txt",
+    "schema_consumer": {
+      "status": "passed_actual_product_schema_finite_cases",
+      "schemas": 20,
+      "cases": 48
+    },
+    "raw_native_ref": ".work/p0-02-stock/verification/desktop-host-smoke.stdout.txt",
+    "native_host_smoke": {
+      "passed": true,
+      "actual_checks": 82,
+      "baseline_names_retained": 56,
+      "new_material_checks_passed": 26,
+      "raw_json_equals_proof_native_host_smoke": true,
+      "same_managed_host_and_fifo": true
+    },
+    "composition_fix_execution": {
+      "rust_test_names": [
+        "material_inputs::tests::container_closure_and_component_origins_are_separate",
+        "container_holder_and_composition_relations_are_input_graphs_without_duplicate_physical_ownership"
+      ],
+      "actual_raw_rows": [
+        "test container_holder_and_composition_relations_are_input_graphs_without_duplicate_physical_ownership ... ok",
+        "test material_inputs::tests::container_closure_and_component_origins_are_separate ... ok"
+      ],
+      "source_review": "只读核对修后的既有pure及独立Host测试组，新增分支实际随本轮执行，未删除或更名旧测试换取通过。",
+      "covered": "合法初始/同Arrival组成保留；未来/跨组、重复/多父/self/环、组成源与当前容纳或hard预留冲突具名阻断；Host新增正反例保留原输入。",
+      "independent_closure_ref": "docs/04_开发与验收/P0-02_初始物料_窗口6.json#/findings/0/closure"
+    },
+    "observed_save": {
+      "task_state": "completed",
+      "frozen_input_revision": 5,
+      "saved_revision": 5,
+      "current_revision": 6,
+      "still_dirty": true,
+      "saved_hard_b": 7,
+      "current_hard_b": 6
+    },
+    "observed_relocated_import_issues": [
+      {
+        "code": "business_inputs.material_missing_transport_module",
+        "object_ref": {
+          "id": "STOCK",
+          "kind": "scenario"
+        },
+        "field_path": "/supplies/0/transport_ref",
+        "blocks": [
+          "execution",
+          "complete_conclusion"
+        ]
+      },
+      {
+        "code": "business_inputs.material_hard_overallocated",
+        "object_ref": {
+          "id": "STOCK",
+          "kind": "scenario"
+        },
+        "field_path": "/initial_conditions/material_allocations/1/quantity",
+        "blocks": [
+          "execution",
+          "complete_conclusion"
+        ]
+      }
+    ],
+    "observed_unchanged_archive_files": 15,
+    "independent_review": {
+      "status": "accepted_initial_material_input_slice_after_composition_fix",
+      "implementation_passed": true,
+      "review_ref": "docs/04_开发与验收/P0-02_初始物料_窗口6.json",
+      "finding": "W6-M-F01",
+      "finding_status": "closed"
+    },
+    "evidence_interpretation": "本输入校核切片已实际执行并独立接收；Engine库存、执行预留、拆批和未来运行入口准入仍另行实现验收。",
+    "source_changed_during_receipt_update": false,
+    "cargo_repeated_by_this_window": false
+  },
+  "remaining": "本输入校核切片已接收；后续按统筹的既定开发DAG和完整原任务包接续。完整原步骤2的运行库存、实际执行准入、起点拆批及原步骤3未完成，整项P0-02不标完成。",
+  "evidence_scope": "Scenario输入、具名Issue及真实文件/历史行为；运行库存、实际预留/领用、Engine运行和实际执行准入不属本轮。run_scenario的Unsupported不计作执行阻断验证。",
+  "whole_step_done": false,
+  "whole_task_done": false,
+  "human_acceptance": null,
+  "confirmed_review_gap": {
+    "id": "W6-M-F01",
+    "review_ref": "docs/04_开发与验收/P0-02_初始物料_窗口6.json#/findings/0",
+    "status": "closed_after_owner_fix_current_execution_and_independent_review",
+    "finding": "起点components仅凭未来Arrival中的ID存在而无阻断；组成来源的唯一投入、当前容纳冲突及再次硬预留需按新收敛语义诊断。",
+    "repair_owners": "窗口2修pure检查器、窗口5补独立Host回归、窗口1同步业务/算法正文及JSON并集中重验。",
+    "window3_action": "核读修后第二轮proof/raw、组成测试分支及窗口6正式关闭记录，回填本窗实际结果；原生源码持续冻结。",
+    "native_source_change_requested": false,
+    "engine_runtime_failure_claimed": false,
+    "closure_ref": "docs/04_开发与验收/P0-02_初始物料_窗口6.json#/findings/0/closure"
+  },
+  "pre_composition_fix_record": {
+    "proof_ref": ".work/p0-02-stock/pre-composition-fix-verification/result.json",
+    "raw_native_ref": ".work/p0-02-stock/pre-composition-fix-verification/desktop-host-smoke.stdout.txt",
+    "rust_tests_passed": 124,
+    "native_checks_passed": 82,
+    "disposition": "保留修前历史；该轮组成测试曾错误接受未来来源，不能作为修后接收依据。",
+    "invalidating_finding": "W6-M-F01"
+  }
+}

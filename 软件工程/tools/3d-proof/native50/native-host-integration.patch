@@ -1,0 +1,15 @@
+--- a/apps/planner/src-tauri/src/project_api.rs
++++ b/apps/planner/src-tauri/src/project_api.rs
+@@ -437,8 +437,12 @@
+                 host.register_bundled_module_directory(&root.join("media/equipment-quality-v04/installable").join(&name))
+                     .map_err(|failure| format!("Bundled equipment-quality0.4.0 {name}: {}", failure.message))?;
+             }
+         }
++        for directory in include_str!("../../../../modules/media/native-equipment-50/register-directories.txt").lines() {
++            host.register_bundled_module_directory(&root.join("media/native-equipment-50").join(directory))
++                .map_err(|failure| format!("Bundled Native50 {directory}: {}", failure.message))?;
++        }
+         Ok(())
+     }
+ 
+     pub fn new() -> Self {

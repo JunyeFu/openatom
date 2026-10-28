@@ -1,0 +1,1284 @@
+{
+  "document_kind": "frozen_API_shape_expectations_not_Host_authorization_or_product_handlers",
+  "cases": [
+    {
+      "id": "P01_unknown_API_version",
+      "expected_accepted": false,
+      "request": {
+        "api_version": "99",
+        "request_id": "TYPE-get_context",
+        "project_id": "P1",
+        "scope": {
+          "kind": "project"
+        },
+        "operation": "get_context",
+        "params": {
+          "selection": []
+        }
+      }
+    },
+    {
+      "id": "P02_unknown_operation",
+      "expected_accepted": false,
+      "request": {
+        "api_version": "0.1",
+        "request_id": "TYPE-get_context",
+        "project_id": "P1",
+        "scope": {
+          "kind": "project"
+        },
+        "operation": "set_clock",
+        "params": {
+          "selection": []
+        }
+      }
+    },
+    {
+      "id": "P03_empty_request_id",
+      "expected_accepted": false,
+      "request": {
+        "api_version": "0.1",
+        "request_id": "",
+        "project_id": "P1",
+        "scope": {
+          "kind": "project"
+        },
+        "operation": "get_context",
+        "params": {
+          "selection": []
+        }
+      }
+    },
+    {
+      "id": "P04_missing_required_nullable_header",
+      "expected_accepted": false,
+      "request": {
+        "api_version": "0.1",
+        "request_id": "TYPE-get_context",
+        "scope": {
+          "kind": "project"
+        },
+        "operation": "get_context",
+        "params": {
+          "selection": []
+        }
+      }
+    },
+    {
+      "id": "P05_missing_params",
+      "expected_accepted": false,
+      "request": {
+        "api_version": "0.1",
+        "request_id": "TYPE-get_context",
+        "project_id": "P1",
+        "scope": {
+          "kind": "project"
+        },
+        "operation": "get_context"
+      }
+    },
+    {
+      "id": "P06_operation_params_mismatch",
+      "expected_accepted": false,
+      "request": {
+        "api_version": "0.1",
+        "request_id": "TYPE-cancel_task",
+        "project_id": "P1",
+        "scope": {
+          "kind": "project"
+        },
+        "operation": "get_context",
+        "params": {
+          "task_id": "TASK-FIXTURE",
+          "action": "cancel"
+        }
+      }
+    },
+    {
+      "id": "P07_caller_authority_in_body",
+      "expected_accepted": false,
+      "request": {
+        "api_version": "0.1",
+        "request_id": "TYPE-get_context",
+        "project_id": "P1",
+        "scope": {
+          "kind": "project"
+        },
+        "operation": "get_context",
+        "params": {
+          "selection": []
+        },
+        "caller": {
+          "origin": "UI",
+          "granted": true
+        }
+      }
+    },
+    {
+      "id": "P08_invalid_scope_shape",
+      "expected_accepted": false,
+      "request": {
+        "api_version": "0.1",
+        "request_id": "TYPE-get_context",
+        "project_id": "P1",
+        "scope": {
+          "kind": "definition_draft",
+          "data": {
+            "id": "D1"
+          }
+        },
+        "operation": "get_context",
+        "params": {
+          "selection": []
+        }
+      }
+    },
+    {
+      "id": "P09_runtime_item_edit_forbidden",
+      "expected_accepted": false,
+      "request": {
+        "api_version": "0.1",
+        "request_id": "TYPE-apply_commands",
+        "project_id": "P1",
+        "scope": {
+          "kind": "project"
+        },
+        "operation": "apply_commands",
+        "params": {
+          "base_revision": 1,
+          "commands": [
+            {
+              "kind": "put_object",
+              "data": {
+                "kind": "item",
+                "data": {}
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "P10_unsafe_revision_integer",
+      "expected_accepted": false,
+      "request": {
+        "api_version": "0.1",
+        "request_id": "TYPE-apply_commands",
+        "project_id": "P1",
+        "scope": {
+          "kind": "project"
+        },
+        "operation": "apply_commands",
+        "params": {
+          "base_revision": 9007199254740992,
+          "commands": [
+            {
+              "kind": "set_project_settings",
+              "data": {
+                "title": "API type fixture",
+                "time_reference": {
+                  "label": "self-built type fixture",
+                  "origin_iso8601": null,
+                  "timezone": null
+                },
+                "generation_context": null,
+                "sources": []
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "P11_human_approval_claim_in_header",
+      "expected_accepted": false,
+      "request": {
+        "api_version": "0.1",
+        "request_id": "TYPE-get_context",
+        "project_id": "P1",
+        "scope": {
+          "kind": "project"
+        },
+        "operation": "get_context",
+        "params": {
+          "selection": []
+        },
+        "approved_by_human": true
+      }
+    },
+    {
+      "id": "P12_unknown_control_action",
+      "expected_accepted": false,
+      "request": {
+        "api_version": "0.1",
+        "request_id": "TYPE-cancel_task",
+        "project_id": "P1",
+        "scope": {
+          "kind": "project"
+        },
+        "operation": "cancel_task",
+        "params": {
+          "task_id": "TASK-FIXTURE",
+          "action": "resume_render"
+        }
+      }
+    },
+    {
+      "id": "P13_arbitrary_path_in_file_ref",
+      "expected_accepted": false,
+      "request": {
+        "api_version": "0.1",
+        "request_id": "TYPE-import_package",
+        "project_id": "P1",
+        "scope": {
+          "kind": "project"
+        },
+        "operation": "import_package",
+        "params": {
+          "selected_file_ref": {
+            "selection_id": "fixture-selection",
+            "purpose": "import_package",
+            "path": "C:/Users/private"
+          },
+          "import_policy": "into_project",
+          "base_revision": 1
+        }
+      }
+    },
+    {
+      "id": "P14_provider_flags_in_definition",
+      "expected_accepted": false,
+      "request": {
+        "api_version": "0.1",
+        "request_id": "TYPE-apply_commands",
+        "project_id": "P1",
+        "scope": {
+          "kind": "project"
+        },
+        "operation": "apply_commands",
+        "params": {
+          "base_revision": 1,
+          "commands": [
+            {
+              "kind": "put_definition",
+              "data": {
+                "id": "demo.professional",
+                "version": "0.1.0",
+                "title": "type fixture professional",
+                "definition_state": "design",
+                "contribution": {
+                  "author": null,
+                  "license": null,
+                  "assets": []
+                },
+                "parameters": [],
+                "attribute_schema": [],
+                "payload": {
+                  "category": "professional",
+                  "data": {
+                    "input_fields": [],
+                    "output_artifact_type": "paper_packaging",
+                    "output_fields": [],
+                    "intended_modes": [
+                      "calculated_nominal"
+                    ],
+                    "unit": "millimeter",
+                    "coordinate_frame": "right_handed_z_up",
+                    "scope": "complete paper packaging input; this fixture is not a calculation",
+                    "available_modes": [
+                      "calculated_nominal"
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "P15_media_stock_effect",
+      "expected_accepted": false,
+      "request": {
+        "api_version": "0.1",
+        "request_id": "TYPE-apply_commands",
+        "project_id": "P1",
+        "scope": {
+          "kind": "project"
+        },
+        "operation": "apply_commands",
+        "params": {
+          "base_revision": 1,
+          "commands": [
+            {
+              "kind": "put_definition",
+              "data": {
+                "id": "demo.media",
+                "version": "0.1.0",
+                "title": "type fixture media",
+                "definition_state": "design",
+                "contribution": {
+                  "author": null,
+                  "license": null,
+                  "assets": []
+                },
+                "parameters": [],
+                "attribute_schema": [],
+                "payload": {
+                  "category": "media",
+                  "data": {
+                    "kind": "native_scene",
+                    "source": {
+                      "kind": "native_scene",
+                      "data": "demo.media"
+                    },
+                    "unit": "meter",
+                    "coordinate_frame": "right_handed_y_up",
+                    "scale": {
+                      "x": 1.0,
+                      "y": 1.0,
+                      "z": 1.0
+                    },
+                    "nodes": [
+                      {
+                        "id": 0,
+                        "name": "machine",
+                        "parent_index": null,
+                        "transform": {
+                          "translation": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                          },
+                          "rotation": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0,
+                            "w": 1.0
+                          },
+                          "scale": {
+                            "x": 1.0,
+                            "y": 1.0,
+                            "z": 1.0
+                          },
+                          "unit": "meter",
+                          "coordinate_frame": "right_handed_y_up"
+                        },
+                        "geometry": {
+                          "kind": "box",
+                          "data": {
+                            "x": 1.0,
+                            "y": 1.0,
+                            "z": 1.0
+                          }
+                        },
+                        "material": {
+                          "color_rgba": [
+                            0.3,
+                            0.4,
+                            0.5,
+                            1.0
+                          ],
+                          "metallic": 0.0,
+                          "roughness": 1.0,
+                          "texture": null
+                        }
+                      }
+                    ],
+                    "poses": [],
+                    "actions": [],
+                    "timeline": [],
+                    "tags": [],
+                    "anchor_roles": {},
+                    "port_anchors": {},
+                    "lod": {
+                      "detailed": null,
+                      "simplified": null,
+                      "region": "device_icons"
+                    },
+                    "production_effect": "creates_stock"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "P16_workspace_null_header",
+      "expected_accepted": true,
+      "request": {
+        "api_version": "0.1",
+        "request_id": "TYPE-get_context",
+        "project_id": null,
+        "scope": {
+          "kind": "workspace"
+        },
+        "operation": "get_context",
+        "params": {
+          "selection": []
+        }
+      }
+    },
+    {
+      "id": "P17_typed_items_definition",
+      "expected_accepted": true,
+      "request": {
+        "api_version": "0.1",
+        "request_id": "TYPE-apply_commands",
+        "project_id": "P1",
+        "scope": {
+          "kind": "definition_draft",
+          "data": "DRAFT-TYPE"
+        },
+        "operation": "apply_commands",
+        "params": {
+          "base_revision": 1,
+          "commands": [
+            {
+              "kind": "put_definition",
+              "data": {
+                "id": "demo.items",
+                "version": "0.1.0",
+                "title": "type fixture items",
+                "definition_state": "design",
+                "contribution": {
+                  "author": null,
+                  "license": null,
+                  "assets": []
+                },
+                "parameters": [],
+                "attribute_schema": [],
+                "payload": {
+                  "category": "items",
+                  "data": {
+                    "unit": "piece",
+                    "tracking": "individual",
+                    "spec_ref": {
+                      "id": "T1",
+                      "revision": "r1"
+                    },
+                    "attributes": {},
+                    "attribute_schema": [],
+                    "presentation_or_media_ref": null
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "P18_typed_devices_definition",
+      "expected_accepted": true,
+      "request": {
+        "api_version": "0.1",
+        "request_id": "TYPE-apply_commands",
+        "project_id": "P1",
+        "scope": {
+          "kind": "definition_draft",
+          "data": "DRAFT-TYPE"
+        },
+        "operation": "apply_commands",
+        "params": {
+          "base_revision": 1,
+          "commands": [
+            {
+              "kind": "put_definition",
+              "data": {
+                "id": "demo.devices",
+                "version": "0.1.0",
+                "title": "type fixture devices",
+                "definition_state": "design",
+                "contribution": {
+                  "author": null,
+                  "license": null,
+                  "assets": []
+                },
+                "parameters": [],
+                "attribute_schema": [],
+                "payload": {
+                  "category": "devices",
+                  "data": {
+                    "placement": "fixed_during_simulation",
+                    "ports": [
+                      {
+                        "id": "in",
+                        "direction": "input",
+                        "payload": {
+                          "kind": "material",
+                          "data": {
+                            "item_role": "product",
+                            "unit": "piece",
+                            "quantity_rule": null
+                          }
+                        }
+                      },
+                      {
+                        "id": "out",
+                        "direction": "output",
+                        "payload": {
+                          "kind": "material",
+                          "data": {
+                            "item_role": "product",
+                            "unit": "piece",
+                            "quantity_rule": null
+                          }
+                        }
+                      }
+                    ],
+                    "behavior": {
+                      "inline": {
+                        "builtin": "transform",
+                        "item_roles": [
+                          "product"
+                        ],
+                        "inputs": [
+                          {
+                            "role": "product",
+                            "quantity": {
+                              "value": {
+                                "coefficient": 1,
+                                "decimal_places": 0
+                              },
+                              "unit": "piece"
+                            },
+                            "port": "in",
+                            "required_quality": [
+                              "released"
+                            ],
+                            "declared_output_quality": null
+                          }
+                        ],
+                        "outputs": [
+                          {
+                            "role": "product",
+                            "quantity": {
+                              "value": {
+                                "coefficient": 1,
+                                "decimal_places": 0
+                              },
+                              "unit": "piece"
+                            },
+                            "port": "out",
+                            "required_quality": [
+                              "released"
+                            ],
+                            "declared_output_quality": null
+                          }
+                        ],
+                        "resource_roles": [
+                          {
+                            "role": "worker",
+                            "quantity": {
+                              "value": {
+                                "coefficient": 1,
+                                "decimal_places": 0
+                              },
+                              "unit": "person"
+                            },
+                            "qualifications": []
+                          }
+                        ],
+                        "duration": {
+                          "value": 1000,
+                          "unit": "millisecond",
+                          "basis": "template_declared_example",
+                          "source_ref": null
+                        },
+                        "phases": [],
+                        "hold_on_output_wait": [],
+                        "quality_and_routes": null,
+                        "identity_policy": "preserve",
+                        "family": null
+                      },
+                      "operation_ref": null,
+                      "selected": "inline"
+                    },
+                    "configuration": {},
+                    "presentation": {
+                      "kind": "native_scene",
+                      "source": {
+                        "kind": "native_scene",
+                        "data": "demo.media"
+                      },
+                      "unit": "meter",
+                      "coordinate_frame": "right_handed_y_up",
+                      "scale": {
+                        "x": 1.0,
+                        "y": 1.0,
+                        "z": 1.0
+                      },
+                      "nodes": [
+                        {
+                          "id": 0,
+                          "name": "machine",
+                          "parent_index": null,
+                          "transform": {
+                            "translation": {
+                              "x": 0.0,
+                              "y": 0.0,
+                              "z": 0.0
+                            },
+                            "rotation": {
+                              "x": 0.0,
+                              "y": 0.0,
+                              "z": 0.0,
+                              "w": 1.0
+                            },
+                            "scale": {
+                              "x": 1.0,
+                              "y": 1.0,
+                              "z": 1.0
+                            },
+                            "unit": "meter",
+                            "coordinate_frame": "right_handed_y_up"
+                          },
+                          "geometry": {
+                            "kind": "box",
+                            "data": {
+                              "x": 1.0,
+                              "y": 1.0,
+                              "z": 1.0
+                            }
+                          },
+                          "material": {
+                            "color_rgba": [
+                              0.3,
+                              0.4,
+                              0.5,
+                              1.0
+                            ],
+                            "metallic": 0.0,
+                            "roughness": 1.0,
+                            "texture": null
+                          }
+                        }
+                      ],
+                      "poses": [],
+                      "actions": [],
+                      "timeline": [],
+                      "tags": [],
+                      "anchor_roles": {},
+                      "port_anchors": {},
+                      "lod": {
+                        "detailed": null,
+                        "simplified": null,
+                        "region": "device_icons"
+                      },
+                      "production_effect": "none"
+                    },
+                    "operations": [
+                      "configure",
+                      "inspect",
+                      "preview_cycle"
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "P19_typed_resources_definition",
+      "expected_accepted": true,
+      "request": {
+        "api_version": "0.1",
+        "request_id": "TYPE-apply_commands",
+        "project_id": "P1",
+        "scope": {
+          "kind": "definition_draft",
+          "data": "DRAFT-TYPE"
+        },
+        "operation": "apply_commands",
+        "params": {
+          "base_revision": 1,
+          "commands": [
+            {
+              "kind": "put_definition",
+              "data": {
+                "id": "demo.resources",
+                "version": "0.1.0",
+                "title": "type fixture resources",
+                "definition_state": "design",
+                "contribution": {
+                  "author": null,
+                  "license": null,
+                  "assets": []
+                },
+                "parameters": [],
+                "attribute_schema": [],
+                "payload": {
+                  "category": "resources",
+                  "data": {
+                    "kind": "worker",
+                    "role": "worker",
+                    "capacity": {
+                      "value": {
+                        "coefficient": 1,
+                        "decimal_places": 0
+                      },
+                      "unit": "person"
+                    },
+                    "qualifications": [],
+                    "default_calendar_ms": [
+                      {
+                        "start_ms": 0,
+                        "end_ms": 60000
+                      }
+                    ],
+                    "presentation": null
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "P20_typed_tasks_definition",
+      "expected_accepted": true,
+      "request": {
+        "api_version": "0.1",
+        "request_id": "TYPE-apply_commands",
+        "project_id": "P1",
+        "scope": {
+          "kind": "definition_draft",
+          "data": "DRAFT-TYPE"
+        },
+        "operation": "apply_commands",
+        "params": {
+          "base_revision": 1,
+          "commands": [
+            {
+              "kind": "put_definition",
+              "data": {
+                "id": "demo.tasks",
+                "version": "0.1.0",
+                "title": "type fixture tasks",
+                "definition_state": "design",
+                "contribution": {
+                  "author": null,
+                  "license": null,
+                  "assets": []
+                },
+                "parameters": [],
+                "attribute_schema": [],
+                "payload": {
+                  "category": "tasks",
+                  "data": {
+                    "kind": "manual_preparation",
+                    "target_role": "device",
+                    "prerequisites": [],
+                    "steps": [],
+                    "resource_roles": [
+                      {
+                        "role": "worker",
+                        "quantity": {
+                          "value": {
+                            "coefficient": 1,
+                            "decimal_places": 0
+                          },
+                          "unit": "person"
+                        },
+                        "qualifications": []
+                      }
+                    ],
+                    "duration": {
+                      "value": 500,
+                      "unit": "millisecond",
+                      "basis": "template_declared_example",
+                      "source_ref": null
+                    },
+                    "equipment_access": "exclusive",
+                    "completion_effect": {
+                      "target_role": "device",
+                      "marker": "ready",
+                      "produces_material": false
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "P21_typed_operations_definition",
+      "expected_accepted": true,
+      "request": {
+        "api_version": "0.1",
+        "request_id": "TYPE-apply_commands",
+        "project_id": "P1",
+        "scope": {
+          "kind": "definition_draft",
+          "data": "DRAFT-TYPE"
+        },
+        "operation": "apply_commands",
+        "params": {
+          "base_revision": 1,
+          "commands": [
+            {
+              "kind": "put_definition",
+              "data": {
+                "id": "demo.operations",
+                "version": "0.1.0",
+                "title": "type fixture operations",
+                "definition_state": "design",
+                "contribution": {
+                  "author": null,
+                  "license": null,
+                  "assets": []
+                },
+                "parameters": [],
+                "attribute_schema": [],
+                "payload": {
+                  "category": "operations",
+                  "data": {
+                    "builtin": "transform",
+                    "item_roles": [
+                      "product"
+                    ],
+                    "inputs": [
+                      {
+                        "role": "product",
+                        "quantity": {
+                          "value": {
+                            "coefficient": 1,
+                            "decimal_places": 0
+                          },
+                          "unit": "piece"
+                        },
+                        "port": "in",
+                        "required_quality": [
+                          "released"
+                        ],
+                        "declared_output_quality": null
+                      }
+                    ],
+                    "outputs": [
+                      {
+                        "role": "product",
+                        "quantity": {
+                          "value": {
+                            "coefficient": 1,
+                            "decimal_places": 0
+                          },
+                          "unit": "piece"
+                        },
+                        "port": "out",
+                        "required_quality": [
+                          "released"
+                        ],
+                        "declared_output_quality": null
+                      }
+                    ],
+                    "resource_roles": [
+                      {
+                        "role": "worker",
+                        "quantity": {
+                          "value": {
+                            "coefficient": 1,
+                            "decimal_places": 0
+                          },
+                          "unit": "person"
+                        },
+                        "qualifications": []
+                      }
+                    ],
+                    "duration": {
+                      "value": 1000,
+                      "unit": "millisecond",
+                      "basis": "template_declared_example",
+                      "source_ref": null
+                    },
+                    "phases": [],
+                    "hold_on_output_wait": [],
+                    "quality_and_routes": null,
+                    "identity_policy": "preserve",
+                    "family": null
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "P22_typed_transport_definition",
+      "expected_accepted": true,
+      "request": {
+        "api_version": "0.1",
+        "request_id": "TYPE-apply_commands",
+        "project_id": "P1",
+        "scope": {
+          "kind": "definition_draft",
+          "data": "DRAFT-TYPE"
+        },
+        "operation": "apply_commands",
+        "params": {
+          "base_revision": 1,
+          "commands": [
+            {
+              "kind": "put_definition",
+              "data": {
+                "id": "demo.transport",
+                "version": "0.1.0",
+                "title": "type fixture transport",
+                "definition_state": "design",
+                "contribution": {
+                  "author": null,
+                  "license": null,
+                  "assets": []
+                },
+                "parameters": [],
+                "attribute_schema": [],
+                "payload": {
+                  "category": "transport",
+                  "data": {
+                    "ports": [
+                      {
+                        "id": "in",
+                        "direction": "input",
+                        "payload": {
+                          "kind": "material",
+                          "data": {
+                            "item_role": "product",
+                            "unit": "piece",
+                            "quantity_rule": null
+                          }
+                        }
+                      },
+                      {
+                        "id": "out",
+                        "direction": "output",
+                        "payload": {
+                          "kind": "material",
+                          "data": {
+                            "item_role": "product",
+                            "unit": "piece",
+                            "quantity_rule": null
+                          }
+                        }
+                      }
+                    ],
+                    "builtin": "transport",
+                    "batch_capacity": {
+                      "value": {
+                        "coefficient": 1,
+                        "decimal_places": 0
+                      },
+                      "unit": "piece"
+                    },
+                    "resources": [
+                      {
+                        "role": "worker",
+                        "quantity": {
+                          "value": {
+                            "coefficient": 1,
+                            "decimal_places": 0
+                          },
+                          "unit": "person"
+                        },
+                        "qualifications": []
+                      }
+                    ],
+                    "times": {
+                      "loading": {
+                        "value": 500,
+                        "unit": "millisecond",
+                        "basis": "template_declared_example",
+                        "source_ref": null
+                      },
+                      "outbound": {
+                        "value": 500,
+                        "unit": "millisecond",
+                        "basis": "template_declared_example",
+                        "source_ref": null
+                      },
+                      "unloading": {
+                        "value": 500,
+                        "unit": "millisecond",
+                        "basis": "template_declared_example",
+                        "source_ref": null
+                      },
+                      "returning": {
+                        "value": 500,
+                        "unit": "millisecond",
+                        "basis": "template_declared_example",
+                        "source_ref": null
+                      }
+                    },
+                    "acceptance_conditions": [],
+                    "identity_policy": "preserve_cargo_ids",
+                    "presentation": null
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "P23_typed_templates_definition",
+      "expected_accepted": true,
+      "request": {
+        "api_version": "0.1",
+        "request_id": "TYPE-apply_commands",
+        "project_id": "P1",
+        "scope": {
+          "kind": "definition_draft",
+          "data": "DRAFT-TYPE"
+        },
+        "operation": "apply_commands",
+        "params": {
+          "base_revision": 1,
+          "commands": [
+            {
+              "kind": "put_definition",
+              "data": {
+                "id": "demo.templates",
+                "version": "0.1.0",
+                "title": "type fixture templates",
+                "definition_state": "design",
+                "contribution": {
+                  "author": null,
+                  "license": null,
+                  "assets": []
+                },
+                "parameters": [],
+                "attribute_schema": [],
+                "payload": {
+                  "category": "templates",
+                  "data": {
+                    "project": "template.json",
+                    "generation_profile": "generation-profile.json"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "P24_typed_professional_definition",
+      "expected_accepted": true,
+      "request": {
+        "api_version": "0.1",
+        "request_id": "TYPE-apply_commands",
+        "project_id": "P1",
+        "scope": {
+          "kind": "definition_draft",
+          "data": "DRAFT-TYPE"
+        },
+        "operation": "apply_commands",
+        "params": {
+          "base_revision": 1,
+          "commands": [
+            {
+              "kind": "put_definition",
+              "data": {
+                "id": "demo.professional",
+                "version": "0.1.0",
+                "title": "type fixture professional",
+                "definition_state": "design",
+                "contribution": {
+                  "author": null,
+                  "license": null,
+                  "assets": []
+                },
+                "parameters": [],
+                "attribute_schema": [],
+                "payload": {
+                  "category": "professional",
+                  "data": {
+                    "input_fields": [],
+                    "output_artifact_type": "paper_packaging",
+                    "output_fields": [],
+                    "intended_modes": [
+                      "calculated_nominal"
+                    ],
+                    "unit": "millimeter",
+                    "coordinate_frame": "right_handed_z_up",
+                    "scope": "complete paper packaging input; this fixture is not a calculation"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "P25_typed_media_definition",
+      "expected_accepted": true,
+      "request": {
+        "api_version": "0.1",
+        "request_id": "TYPE-apply_commands",
+        "project_id": "P1",
+        "scope": {
+          "kind": "definition_draft",
+          "data": "DRAFT-TYPE"
+        },
+        "operation": "apply_commands",
+        "params": {
+          "base_revision": 1,
+          "commands": [
+            {
+              "kind": "put_definition",
+              "data": {
+                "id": "demo.media",
+                "version": "0.1.0",
+                "title": "type fixture media",
+                "definition_state": "design",
+                "contribution": {
+                  "author": null,
+                  "license": null,
+                  "assets": []
+                },
+                "parameters": [],
+                "attribute_schema": [],
+                "payload": {
+                  "category": "media",
+                  "data": {
+                    "kind": "native_scene",
+                    "source": {
+                      "kind": "native_scene",
+                      "data": "demo.media"
+                    },
+                    "unit": "meter",
+                    "coordinate_frame": "right_handed_y_up",
+                    "scale": {
+                      "x": 1.0,
+                      "y": 1.0,
+                      "z": 1.0
+                    },
+                    "nodes": [
+                      {
+                        "id": 0,
+                        "name": "machine",
+                        "parent_index": null,
+                        "transform": {
+                          "translation": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                          },
+                          "rotation": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0,
+                            "w": 1.0
+                          },
+                          "scale": {
+                            "x": 1.0,
+                            "y": 1.0,
+                            "z": 1.0
+                          },
+                          "unit": "meter",
+                          "coordinate_frame": "right_handed_y_up"
+                        },
+                        "geometry": {
+                          "kind": "box",
+                          "data": {
+                            "x": 1.0,
+                            "y": 1.0,
+                            "z": 1.0
+                          }
+                        },
+                        "material": {
+                          "color_rgba": [
+                            0.3,
+                            0.4,
+                            0.5,
+                            1.0
+                          ],
+                          "metallic": 0.0,
+                          "roughness": 1.0,
+                          "texture": null
+                        }
+                      }
+                    ],
+                    "poses": [],
+                    "actions": [],
+                    "timeline": [],
+                    "tags": [],
+                    "anchor_roles": {},
+                    "port_anchors": {},
+                    "lod": {
+                      "detailed": null,
+                      "simplified": null,
+                      "region": "device_icons"
+                    },
+                    "production_effect": "none"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "P26_pause_calculation_shape",
+      "expected_accepted": true,
+      "request": {
+        "api_version": "0.1",
+        "request_id": "TYPE-cancel_task",
+        "project_id": "P1",
+        "scope": {
+          "kind": "project"
+        },
+        "operation": "cancel_task",
+        "params": {
+          "task_id": "TASK-FIXTURE",
+          "action": "pause_calculation"
+        }
+      }
+    },
+    {
+      "id": "P27_resume_calculation_shape",
+      "expected_accepted": true,
+      "request": {
+        "api_version": "0.1",
+        "request_id": "TYPE-cancel_task",
+        "project_id": "P1",
+        "scope": {
+          "kind": "project"
+        },
+        "operation": "cancel_task",
+        "params": {
+          "task_id": "TASK-FIXTURE",
+          "action": "resume_calculation"
+        }
+      }
+    },
+    {
+      "id": "P28_step_next_timestamp_shape",
+      "expected_accepted": true,
+      "request": {
+        "api_version": "0.1",
+        "request_id": "TYPE-cancel_task",
+        "project_id": "P1",
+        "scope": {
+          "kind": "project"
+        },
+        "operation": "cancel_task",
+        "params": {
+          "task_id": "TASK-FIXTURE",
+          "action": "step_next_timestamp"
+        }
+      }
+    }
+  ],
+  "actual_product_runtime": null
+}

@@ -1,0 +1,400 @@
+{
+  "document_kind": "PL2_window6_production_module_cross_layer_independent_review",
+  "reviewed_on": "2026-10-15 Asia/Shanghai",
+  "owner": "复审窗口6",
+  "status": "received_final_owner_stable_batch_window6_scope",
+  "public_coordination_ref": "docs/04_开发与验收/原型并行深度复审.json",
+  "source_ref": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+  "baseline_ref": "docs/04_开发与验收/首版原型逻辑贯通复审.json",
+  "baseline_reopened": false,
+  "scope": "New combinations of production inputs, explicit device/module identity, adoption/copy/undo and snapshot reopen. Existing PL-01..10 remain historical closed cases; no Engine implementation or actual professional result claimed.",
+  "source_evidence_ref": "tools/design-quality-audit/prototype-parallel/window6/initial-observations.json",
+  "findings": [
+    {
+      "id": "PL2-W6-01",
+      "priority": "P2",
+      "status": "fixed_and_independently_reverified_on_final_stable_batch",
+      "title": "移动非选中设备将选中对象改成另一设备ID，破坏实例唯一身份",
+      "affected_S": [
+        "S04-01",
+        "S04-04",
+        "S05-02",
+        "S06-05"
+      ],
+      "source": [
+        {
+          "path": "docs/02_交互设计/S04_可操作设计原型/scene-view.js",
+          "line": 10
+        },
+        {
+          "path": "docs/02_交互设计/S04_可操作设计原型/scene-view.js",
+          "line": 11
+        },
+        {
+          "path": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+          "line": 42
+        },
+        {
+          "path": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+          "line": 70
+        }
+      ],
+      "actions": [
+        "保持选中A01，启用移动工具",
+        "直接拖动ROB01；SceneView的pointerdown只设dragId，没有先select",
+        "pointerup调用callbacks.move(ROB01,11,6)→moveDevice"
+      ],
+      "actual": "commit(pose)按S.selected找A01，却Object.assign包含ROB01.id的数据；设备列表出现两个ROB01、A01消失，instanceState/连接仍引用旧A01。",
+      "expected": "只改变被拖动ROB01的位置；A01和所有对象ID、版本、配置/连接归属保持。",
+      "minimum_fix": "moveDevice显式按传入ID提交该对象的姿态，或先走能处理dirty表单的选中/提交路径；不可让pose数据改实例ID。保留普通鼠标选择与未应用字段处理。",
+      "repair_owner": "复审窗口2",
+      "closure": [
+        "非选中设备拖动只改变目标姿态，不生成重复ID",
+        "有未应用字段时不绕过应用/丢弃/留在决定",
+        "撤销/重开后ID和连接/instanceState仍解析到同一对象"
+      ],
+      "evidence_case": "move-nonselected",
+      "public_finding_id": "PR-05",
+      "recheck_case_ids": [
+        "W6-C01",
+        "W6-C02",
+        "W6-MOVE-apply",
+        "W6-MOVE-discard",
+        "W6-MOVE-stay"
+      ],
+      "final_evidence_refs": [
+        "tools/design-quality-audit/prototype-parallel/window6/review-after.json",
+        "tools/design-quality-audit/prototype-parallel/window6/closure-combinations-result.json"
+      ]
+    },
+    {
+      "id": "PL2-W6-02",
+      "priority": "P2",
+      "status": "fixed_and_independently_reverified_on_final_stable_batch",
+      "title": "自建设备定义版本未成为所创实例的版本身份",
+      "affected_S": [
+        "S03-03",
+        "S04-04",
+        "S05-03",
+        "S06-05"
+      ],
+      "source": [
+        {
+          "path": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+          "line": 292
+        }
+      ],
+      "actions": [
+        "在九类定义选择设备类",
+        "定义id=local.W6.device，version=2.3.4，确认创作",
+        "检查所创建CUSTOM-10及其配置，再保存重开"
+      ],
+      "actual": "定义库保存local.W6.device@2.3.4；实例version仍为seed的0.1.0，实际配置module/version仍默认community.control-box-assembly@0.1.0，没有表达选定定义与默认行为的区别。",
+      "expected": "新设备明确绑定所创定义的精确版本；若行为仅为默认原型规则，应明确另列行为来源，不把两个版本身份混成一次采用。",
+      "minimum_fix": "创作确认时保留所选定义ID/版本到实例身份和可见字段；为当前原型显式区分定义版本与行为规则版本，深拷贝实例配置；保存/重开/复制/撤销使用同一身份。无需新增公共wire字段或真实Engine。",
+      "repair_owner": "复审窗口2",
+      "closure": [
+        "自定义设备2.3.4在实例详情与保存重开保持精确身份",
+        "复制与两个实例独立配置不串版本",
+        "其他八类定义保持纯定义，不凭空生成生产库存"
+      ],
+      "evidence_case": "definition-version",
+      "public_finding_id": "PR-06",
+      "recheck_case_ids": [
+        "W6-C03",
+        "W6-C04",
+        "W6-C05",
+        "W6-C06",
+        "W6-C16",
+        "W6-FULL-CHAIN"
+      ],
+      "final_evidence_refs": [
+        "tools/design-quality-audit/prototype-parallel/window6/review-after.json",
+        "tools/design-quality-audit/prototype-parallel/window6/closure-combinations-result.json"
+      ]
+    },
+    {
+      "id": "PL2-W6-03",
+      "priority": "P2",
+      "status": "fixed_and_independently_reverified_on_final_stable_batch",
+      "title": "有限数字检查未覆盖生产数值语义，负容量和负运输耗时可应用",
+      "affected_S": [
+        "S03-02",
+        "S04-03",
+        "S04-04",
+        "S06-01"
+      ],
+      "source": [
+        {
+          "path": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+          "line": 44
+        }
+      ],
+      "actions": [
+        "A01设备配置capacity=-1后应用",
+        "运输输入outbound=-1秒后应用",
+        "对照资源整数/非负相对工时契约及零时长合法性"
+      ],
+      "actual": "两次apply均true并进入工程；negative capacity=-1、outbound=-1保存在草稿。另观察duration=0被称为必需项未完整，字段保留但没有说明当前UI不支持合法零时长。",
+      "expected": "非法负值保持未应用草稿且给具体原因；离散容量保持整数。已建立合法零时长边界可用或明确说明当前原型不支持，不把显式0当未知。",
+      "minimum_fix": "只在现有表单边界按已建立单位/范围检查：容量整数且不为负、运输时间非负；时间0按既有有限零时长规则表达或明确标限制，保留原字段/工程。不要增加完整仿真或泛化校验平台。",
+      "repair_owner": "复审窗口2",
+      "closure": [
+        "负容量/负运输时长不提交且字段保留",
+        "容量非整数得到明确反馈",
+        "合法零时间/零到料保留可用或有准确的不支持说明",
+        "正常正值和实例独立配置不受影响"
+      ],
+      "evidence_cases": [
+        "negative-capacity",
+        "negative-transport",
+        "zero-duration"
+      ],
+      "contract_refs": [
+        "docs/03_架构与契约/调度与状态转换算法.md:13",
+        "docs/03_架构与契约/调度与状态转换算法.md:48",
+        "docs/01_业务需求/订单工艺与物料分配.md:45"
+      ],
+      "public_finding_id": "PR-07",
+      "recheck_case_ids": [
+        "W6-C09",
+        "W6-C10",
+        "W6-C11",
+        "W6-C12",
+        "W6-C13"
+      ],
+      "final_evidence_refs": [
+        "tools/design-quality-audit/prototype-parallel/window6/review-after.json",
+        "tools/design-quality-audit/prototype-parallel/window6/closure-combinations-result.json"
+      ]
+    },
+    {
+      "id": "PL2-W6-04",
+      "priority": "P2",
+      "status": "fixed_and_independently_reverified_on_final_stable_batch",
+      "title": "撤销设备采用/创作后仍选择已移除ID，自己保存的快照无法重开",
+      "affected_S": [
+        "S04-01",
+        "S04-04",
+        "S05-02",
+        "S06-05"
+      ],
+      "source": [
+        {
+          "path": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+          "symbol": "restoreDraft"
+        },
+        {
+          "path": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+          "symbol": "snapshot"
+        },
+        {
+          "path": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+          "symbol": "project-file change listener"
+        }
+      ],
+      "actions": [
+        "新空工程→明确采用模板，选中NEW1-A01",
+        "撤销采用：devices=[]但selected仍NEW1-A01",
+        "保存原型快照，再通过打开选择该自己保存的快照",
+        "另例：新建CUSTOM-10设备后撤销，原9设备恢复但selected仍CUSTOM-10"
+      ],
+      "actual": "工程数据已撤销到旧对象集合，UI选择未校正；快照view.selected指向不存在对象，现行打开校验因“选择对象不在候选工程中”拒绝自己保存的快照。",
+      "expected": "撤销/重做后保留仍存在的选择；选择已被移除时清空或选择当前工程实际成员。保存输出应能通过同一原型的打开校验。",
+      "minimum_fix": "restoreDraft恢复项目后立即校正所选ID/所选编组与关联面板上下文；不把UI选择作为可逆生产状态，也不复制旧Run。保持缺真实对象时面板可用，避免随后保存无效view.selected。",
+      "repair_owner": "复审窗口2",
+      "closure": [
+        "空→采用→撤销后无悬空选择",
+        "创建新设备→撤销后选择属于当前工程或明确为空",
+        "同序列保存快照可从当前原型正常重开",
+        "普通有同ID对象的undo保留有效选择，redo后身份仍唯一"
+      ],
+      "evidence_ref": "tools/design-quality-audit/prototype-parallel/window6/selection-followup.json",
+      "evidence_cases": [
+        "adopt-undo-save-open",
+        "definition-undo-selection"
+      ],
+      "recheck_case_ids": [
+        "W6-C07",
+        "W6-C08",
+        "W6-FULL-CHAIN"
+      ],
+      "coordination_note": "Additional local session-selection observation is already corrected in current source; public deduplication/PR numbering stays with coordinator. No new global/product task requested.",
+      "final_evidence_refs": [
+        "tools/design-quality-audit/prototype-parallel/window6/review-after.json",
+        "tools/design-quality-audit/prototype-parallel/window6/closure-combinations-result.json"
+      ]
+    }
+  ],
+  "verification": {
+    "initial_source_observations_ref": "tools/design-quality-audit/prototype-parallel/window6/initial-observations.json",
+    "initial_selection_counterexample_ref": "tools/design-quality-audit/prototype-parallel/window6/selection-followup.json",
+    "actual_original_source_functions_executed": true,
+    "actual_SceneView_move_callback_executed": true,
+    "presentation_stubs": true,
+    "actual_browser_execution": false,
+    "actual_product_runtime": null,
+    "interpretation": "20 unchanged assertions executed after coordinator's owner-batch stable notice; both result sets consume the same source recorded by the final owner delivery and no source changed during either run. Acceptance covers the selected window6 scope, not other-window findings or actual product execution.",
+    "old_17_or_broad_five_flow_tests_rerun": false,
+    "new_service_or_browser_started": false,
+    "harness_corrections": [
+      {
+        "file": "review-before.json",
+        "cases": [
+          "W6-C14",
+          "W6-C15"
+        ],
+        "cause": "Synthetic input target initially lacked real DOM classList; the failure was in the harness, not another product defect.",
+        "correction": "Use a presentation element stub with classList; source business functions/expected predicates unchanged."
+      },
+      {
+        "source_change": "Definition confirm moved from native click callback to common action dispatcher",
+        "correction": "Evaluate current confirmDefinition source and invoke actual definition-confirm action; no replaced business function."
+      }
+    ],
+    "exploratory_not_used_for_verdict": [
+      "initial-observations.adopt-selected-config did not materialize actual default checked DOM controls in the stub; later full-chain test explicitly sets the same checked choices and validates real adoption."
+    ],
+    "prior_intermediate_summary": {
+      "targeted_cases": 16,
+      "combination_cases": 4,
+      "passed": true,
+      "not_final_at_that_time": true,
+      "note": "Inline historical summary only; after-result files now contain the final stable-batch executions."
+    },
+    "final_results": [
+      {
+        "ref": "tools/design-quality-audit/prototype-parallel/window6/review-after.json",
+        "case_count": 16,
+        "passed": 16,
+        "failed": 0,
+        "source_modified_utc": "2026-10-15T03:03:28.79Z",
+        "source_changed_during_execution": false
+      },
+      {
+        "ref": "tools/design-quality-audit/prototype-parallel/window6/closure-combinations-result.json",
+        "case_count": 4,
+        "passed": 4,
+        "failed": 0,
+        "source_modified_utc": "2026-10-15T03:03:28.79Z",
+        "source_changed_during_execution": false
+      }
+    ],
+    "final_fixture_procedure": [
+      "Before reopening a candidate snapshot, execute actual prototype save() through action('save'); no direct savedRevision mutation.",
+      "If create-empty presents the new replacement guard, explicitly choose replace-save; failed saving cannot count as a new empty project.",
+      "Business predicates for identity, field retention, versions, counts, copy independence and reopenability were not relaxed."
+    ],
+    "evidence_kind": "Actual workbench source functions and callback boundaries executed in Node VM with presentation/local storage/FileReader stubs; no browser service or real Host/Engine save invoked."
+  },
+  "preserved": {
+    "tasks21": "planned",
+    "task_count": 21,
+    "all_planned": 21,
+    "coding_packages": "draft_not_dispatchable",
+    "coding_package_count": 21,
+    "all_draft": 21,
+    "S07": "not_ready",
+    "actual_entry": null,
+    "global_status_written": false
+  },
+  "write_scope": [
+    "tools/design-quality-audit/prototype-parallel/window6/",
+    "docs/04_开发与验收/特征细化/PL2_窗口6_生产模块复核.json"
+  ],
+  "de_duplication": {
+    "PR04": "Existing coordinator asynchronous media finding; no additional W6 root cause registered."
+  },
+  "verdict": "received_window6_scope_no_remaining_confirmed_blocker",
+  "new_scope_expansion_stopped": true,
+  "scope_case_refs": [
+    "tools/design-quality-audit/prototype-parallel/window6/review.cjs",
+    "tools/design-quality-audit/prototype-parallel/window6/closure_combinations.cjs"
+  ],
+  "coverage": [
+    {
+      "chain": "empty → nine category definitions",
+      "cases": [
+        "W6-C04"
+      ],
+      "scope": "Only the device category creates one explicit UI instance; the other eight are definition drafts, no order/stock/Run synthesis."
+    },
+    {
+      "chain": "exact definition/instance/configuration versions → reopen",
+      "cases": [
+        "W6-C03",
+        "W6-C05",
+        "W6-C16"
+      ],
+      "scope": "Explicit definition identity and independent per-instance configuration, duplicate immutable version rejection."
+    },
+    {
+      "chain": "adopt → config/media → copy",
+      "cases": [
+        "W6-C06"
+      ],
+      "scope": "Distinct instance IDs and deep copied mutable configuration/media; no second behavior clock."
+    },
+    {
+      "chain": "move on another selected instance and dirty fields",
+      "cases": [
+        "W6-C01",
+        "W6-C02",
+        "W6-MOVE-apply",
+        "W6-MOVE-discard",
+        "W6-MOVE-stay"
+      ],
+      "scope": "Actual SceneView callback boundary and actual common decision actions."
+    },
+    {
+      "chain": "undo creation/adoption → save/reopen",
+      "cases": [
+        "W6-C07",
+        "W6-C08"
+      ],
+      "scope": "UI selection must belong to current objects; snapshot must pass its own reader."
+    },
+    {
+      "chain": "input numeric boundaries and site scope",
+      "cases": [
+        "W6-C09",
+        "W6-C10",
+        "W6-C11",
+        "W6-C12",
+        "W6-C13",
+        "W6-C14",
+        "W6-C15"
+      ],
+      "scope": "Invalid values remain visible/unapplied; explicit zero and unknown geometry are distinct; point-boundary check does not claim envelope/site completion."
+    },
+    {
+      "chain": "full selected user sequence",
+      "cases": [
+        "W6-FULL-CHAIN"
+      ],
+      "scope": "Empty→nine definitions→template→configure/connect/copy→undo/redo→save/reopen;20 unique instances, all connections resolve, original23s/copy17s independent, empty demand/arrivals and no Run preserved."
+    }
+  ],
+  "final_recheck": {
+    "status": "completed_received",
+    "commands": [
+      "node tools/design-quality-audit/prototype-parallel/window6/review.cjs --after",
+      "node tools/design-quality-audit/prototype-parallel/window6/closure_combinations.cjs"
+    ],
+    "targeted_passed": 16,
+    "combination_passed": 4,
+    "failed_ids": [],
+    "source_modified_utc": "2026-10-15T03:03:28.79Z",
+    "source_stable_during_both": true,
+    "old_17_or_broad_five_flow_rerun": false,
+    "additional_scenarios_added_after_stable_notice": false
+  },
+  "remaining_scope_blockers": [],
+  "batch_notice": {
+    "source": "coordinator direct stable batch notice",
+    "owner_delivery_ref": "docs/04_开发与验收/特征细化/PL2_窗口2_原型修复交接.json",
+    "owner_status": "PR01_through_PR18_source_repaired_ready_for_independent_recheck",
+    "source_stable_for_current_batch": true,
+    "owner_source_mtime": 1792033408790.3506
+  }
+}

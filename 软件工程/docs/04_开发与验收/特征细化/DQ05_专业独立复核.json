@@ -1,0 +1,577 @@
+{
+  "document_kind": "DQ05_window3_professional_lifecycle_independent_acceptance",
+  "finding_id": "DQ-05",
+  "priority": "P2",
+  "status": "closed",
+  "scope": "当前专业生命周期规则与实际S04原型DQ-05变更序列；不扩大专业算法或修改冻结源。",
+  "authoritative_refs": [
+    "docs/04_开发与验收/设计阶段全量质量检查.json#/findings/4",
+    "packages/packaging/adoption-lifecycle.design.json",
+    "docs/02_交互设计/S04_可操作设计原型/workbench.js"
+  ],
+  "skill_ref": "C:/Users/fujunye/.codex/skills/superfactory-design-quality-audit/SKILL.md",
+  "families": {
+    "DQ-C": "适用：样例→认可→绑定及修改/撤销/取消认可后的状态闭合",
+    "DQ-S": "适用：冻结专业规则与原型实际消费者比较",
+    "DQ-L": "适用：专业输入与纯显示变化的作用范围",
+    "DQ-M": "本项仅消费同一专业生命周期，不新增模块/协议层",
+    "DQ-P": "本项是有限原型状态序列，不重新评估几何算法成本/原已关闭数值"
+  },
+  "consumer_criteria": [
+    {
+      "id": "K01",
+      "rule": "结果冻结专业输入；当前原型比较mechanism,width,depth,height,thickness,productRevision，不只比较产品版本。",
+      "source": "packages/packaging/adoption-lifecycle.design.json#/professional_version_effects/3",
+      "public_delta_required": false,
+      "acceptance": "matched_current_source_sequence_or_explicit_product_boundary"
+    },
+    {
+      "id": "K02",
+      "rule": "完整产品还比较所选Job/材料/厚度/几何/构件关系/折叠路径/净空间/坐标及数值预算等实际依赖；本原型未提供独立material/path编辑器，不因本次DQ要求新增编辑器或算法。",
+      "source": "packages/packaging/adoption-lifecycle.design.json#/binding_gate_order",
+      "public_delta_required": false,
+      "acceptance": "matched_current_source_sequence_or_explicit_product_boundary"
+    },
+    {
+      "id": "K03",
+      "rule": "相机、LOD、标签或明确纯观看的过程预览angle不改变专业输入；不能误清仍匹配的认可和绑定。若角度属于真实Job路径/工位条件则是专业输入，不能借display名绕过复核。",
+      "source": "packages/packaging/adoption-lifecycle.design.json#/professional_version_effects/0",
+      "public_delta_required": false,
+      "acceptance": "matched_current_source_sequence_or_explicit_product_boundary"
+    },
+    {
+      "id": "K04",
+      "rule": "同版本几何/厚度/机制应用后，旧结果可保留历史或清空，但不能改写成新输入的Pass；当前有效认可和绑定须失配，直接再绑定应被阻止。",
+      "source": "packages/packaging/adoption-lifecycle.design.json#/professional_version_effects/3",
+      "public_delta_required": false,
+      "acceptance": "matched_current_source_sequence_or_explicit_product_boundary"
+    },
+    {
+      "id": "K05",
+      "rule": "重新计算产生新实际结果；本原型只有明确载入manual_expected样例，必须冻结本次已应用输入并标actual_provider=false，不冒充专业计算。新结果/新输入不能借用前一个结果的认可。",
+      "source": "packages/packaging/adoption-lifecycle.design.json#/professional_version_effects/7",
+      "public_delta_required": false,
+      "acceptance": "matched_current_source_sequence_or_explicit_product_boundary"
+    },
+    {
+      "id": "K06",
+      "rule": "仅匹配Pass、明确当前结果用途认可才允许绑定；Fail/Undetermined/缺结果/未应用或冲突字段不能形成新的有效绑定。",
+      "source": "packages/packaging/adoption-lifecycle.design.json#/binding_gate_order",
+      "public_delta_required": false,
+      "acceptance": "matched_current_source_sequence_or_explicit_product_boundary"
+    },
+    {
+      "id": "K07",
+      "rule": "撤销/重做只改草稿，不能把结果/认可从草稿历史回放到另一输入；批准200后撤销到160，不能沿用200结果/认可。纯无关草稿/显示撤销保留仍有效的当前认可。",
+      "source": "docs/03_架构与契约/共享状态与所有权.json",
+      "public_delta_required": false,
+      "acceptance": "matched_current_source_sequence_or_explicit_product_boundary"
+    },
+    {
+      "id": "K08",
+      "rule": "取消勾选本原型当前用途认可后，有效绑定/界面成功标志不得继续成立；历史认可记录如保留必须与当前有效性区分。不能仅在下一次bind按钮里拒绝，却仍显示当前bound=true。",
+      "source": "packages/packaging/adoption-lifecycle.design.json#/binding_gate_order/6",
+      "public_delta_required": false,
+      "acceptance": "matched_current_source_sequence_or_explicit_product_boundary",
+      "source_refs": [
+        "packages/packaging/adoption-lifecycle.design.json#/canonical_objects/acknowledgment",
+        "packages/packaging/adoption-lifecycle.design.json#/binding_gate_order/6",
+        "docs/03_架构与契约/专业作业与模块接口.md:92",
+        "docs/03_架构与契约/专业作业与模块接口.md:96",
+        "docs/02_交互设计/首版表单与反馈.json#/forms/18",
+        "docs/02_交互设计/S04_可操作设计原型/workbench.js:121",
+        "docs/02_交互设计/S04_可操作设计原型/workbench.js:271"
+      ]
+    },
+    {
+      "id": "K09",
+      "rule": "写入原型snapshot.project的认可/绑定当前状态实变时，沿现有revision/savedRevision产生未保存反馈并触发打开离开决定；no-op不制造新修订。",
+      "source_refs": [
+        "docs/02_交互设计/S04_可操作设计原型/workbench.js:142",
+        "docs/02_交互设计/S04_可操作设计原型/workbench.js:143",
+        "docs/02_交互设计/S04_可操作设计原型/workbench.js:144",
+        "docs/02_交互设计/S04_可操作设计原型/workbench.js:67"
+      ],
+      "public_delta_required": false,
+      "acceptance": "matched_current_source_sequence_or_explicit_product_boundary"
+    },
+    {
+      "id": "K10",
+      "rule": "重新应用旧paper几何/预览表单，不得重放已经取消的当前用途认可/绑定；表单base提升不代表其只读生命周期字段也已同步。",
+      "source_refs": [
+        "packages/packaging/adoption-lifecycle.design.json#/canonical_objects/acknowledgment",
+        "docs/03_架构与契约/共享状态与所有权.json",
+        "docs/02_交互设计/S04_可操作设计原型/workbench.js:36",
+        "docs/02_交互设计/S04_可操作设计原型/workbench.js:40"
+      ],
+      "public_delta_required": false,
+      "acceptance": "matched_current_source_sequence_or_explicit_product_boundary"
+    }
+  ],
+  "new_public_types_or_API_required": false,
+  "source_change_observation": {
+    "initial_actual_read": {
+      "bytes": 95003,
+      "mtime_ms": 1791993804163.295,
+      "observed": "commit/apply不比较输入，bind只看产品版本。此处为初次实际源码阅读，不伪称本探针已执行旧源。"
+    },
+    "current_actual_probe": {
+      "mtime_ms": 1792030310204.109,
+      "bytes": 98623,
+      "lines": 286
+    },
+    "changed_observed": true,
+    "current_change": "实际paper输入冻结/匹配；当前ACK取消解除有效bound；实际变化增长revision并重绘/no-op不增长；commit(paper)保留当前ack/bound而非旧form只读标志，再对真实输入变化失配。",
+    "before_ACK_off_fix": {
+      "result_ref": "tools/design-quality-audit/window3/dq05-before-ack-off-fix.json",
+      "cases": 18,
+      "passed": 17,
+      "failed": 1,
+      "failed_case": "DQ05-revoke-current-use"
+    },
+    "ACK_off_relevant_source_change": "实际paper-ack事件加入当前ack无效时bound=false并renderWorkspace；源字节98057→98372，且实际处理器内容已核对，不因mtime变化本身判通过。",
+    "before_stale_form_fix": {
+      "result_ref": "tools/design-quality-audit/window3/dq05-stale-form-counterexample.json",
+      "cases": 21,
+      "passed": 20,
+      "failed": 1
+    }
+  },
+  "independent_probe": {
+    "source_ref": "tools/design-quality-audit/window3/dq05-professional.cjs",
+    "result_ref": "tools/design-quality-audit/window3/dq05-result.json",
+    "case_count": 21,
+    "passed": 21,
+    "failed": 0,
+    "actual_source_functions_executed": true,
+    "owner_tests_or_PASS_used_as_oracle": false,
+    "source_business_functions_replaced": false,
+    "rendering_DOM_SceneView_timers_stubbed": true,
+    "service_started": false,
+    "Figma_used": false,
+    "actual_current_binding_markup_checked": true,
+    "current_persisted_change_dirty_and_open_guard_verified": true,
+    "original18_currently_passed": true,
+    "stale_form_same_input_revival_rejected": true
+  },
+  "confirmed_remaining_blockers": [],
+  "closed_subsequences": [
+    "同产品版本宽/厚/机制/深/高变化与拒绝旧绑定",
+    "变化后明确载入匹配手工样例，再次显式认可后绑定",
+    "同输入新Pass样例不能借用旧认可",
+    "先批准200后撤销160/重做，不串用认可",
+    "纯过程预览角度、相机以及无关A01草稿撤销保留有效状态",
+    "Fail/Undetermined、无效未应用字段不形成新绑定"
+  ],
+  "wait_for": null,
+  "later_product_evidence": [
+    "真实专业计算/三机制完整输入结果与内容校核",
+    "ArtifactRecord/人工用途认可/消费者绑定在真实Host/Engine中的冻结与匹配",
+    "实际浏览器/产品界面及真实用户/工业用途验收"
+  ],
+  "evidence_limit": "本次是实际原型函数及事件回调的隔离状态探针，不是浏览器、产品、真实专业计算或工业认可。",
+  "write_scope": [
+    "docs/04_开发与验收/特征细化/DQ05_专业独立复核.json",
+    "tools/design-quality-audit/window3/"
+  ],
+  "shared_S04_or_frozen_professional_sources_written": false,
+  "closure_scope": "DQ-05及本轮指定的当前用途/保存dirty/旧表单接点，当前实际原型源经21条独立状态序列验收。",
+  "closed_independent_findings": [
+    {
+      "id": "DQ05-W3-ACK-OFF",
+      "parent_finding": "DQ-05",
+      "priority": "P2",
+      "title": "取消当前用途认可后有效绑定成功状态未解除",
+      "owner": "窗口2 S04原型；公共规则/进度由窗口1",
+      "evidence": [
+        {
+          "path": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+          "line": 271,
+          "observed": "paper-ack change更新ack并回写checked，没有解除bound。"
+        },
+        {
+          "path": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+          "line": 121,
+          "observed": "绑定成功文案与success样式只看S.project.paper.bound。"
+        },
+        {
+          "path": "tools/design-quality-audit/window3/dq05-result.json",
+          "json_pointer": "/cases/16",
+          "case_id": "DQ05-revoke-current-use"
+        }
+      ],
+      "sequence": [
+        "载入160/100/80、厚0.5、同产品1.0.0的Pass手工样例",
+        "显式勾选用途认可并绑定P01，ack=true/bound=true",
+        "取消勾选paper-ack",
+        "实际ack=false而bound=true；当前有效绑定成功状态仍保留"
+      ],
+      "actual_trace": [
+        {
+          "label": "purpose acknowledgment unchecked",
+          "revision": 2,
+          "paper": {
+            "mechanism": "tuck_carton",
+            "width": 160,
+            "depth": 100,
+            "height": 80,
+            "thickness": 0.5,
+            "productRevision": "1.0.0",
+            "angle": 0,
+            "outcome": "pass",
+            "ack": false,
+            "bound": true
+          },
+          "form": null,
+          "result": {
+            "outcome": "pass",
+            "productRevision": "1.0.0",
+            "input": {
+              "mechanism": "tuck_carton",
+              "width": 160,
+              "depth": 100,
+              "height": 80,
+              "thickness": 0.5,
+              "productRevision": "1.0.0"
+            },
+            "source_kind": "manual_expected",
+            "actual_provider": false
+          },
+          "undo": 0,
+          "redo": 0,
+          "latest_notice": null
+        }
+      ],
+      "impact": "当前专业用途有效性与原型成功展示互相冲突；不能以几何修改反例已通过就关闭整个DQ-05。",
+      "recommended_minimal_fix": "在当前用途认可取消或不再有效时，使有效bound失效，并由同一有效性判据驱动成功展示；无需新公共类型、认可记录系统或专业算法。",
+      "closure_condition": "窗口2实际源变化后重跑同一18序列；ACK-off为false/false，几何/撤销/预览等17项保持通过；不得只改预期或旧结果记录。",
+      "status": "closed_by_owner_source_change_and_independent_state_and_markup_probe",
+      "before_result_ref": "tools/design-quality-audit/window3/dq05-before-ack-off-fix.json",
+      "after_result_ref": "tools/design-quality-audit/window3/dq05-result.json#/cases/16",
+      "current_observation": "取消当前用途勾选后ack=false/bound=false；实际packagingWorkspace返回warning且无当前success绑定状态；同一旧manual_expected结果对象仍保留。",
+      "closed_without_deleting_canonical_acknowledgment": true,
+      "normative_interpretation_ref": "#/ack_cancellation_interpretation"
+    },
+    {
+      "id": "DQ05-W3-STALE-FORM",
+      "parent_finding": "DQ-05",
+      "priority": "P2",
+      "owner": "窗口2 workbench.js；窗口3只读探针",
+      "title": "已取消当前用途被旧干净paper表单整体应用复活",
+      "evidence": [
+        {
+          "path": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+          "line": 36,
+          "observed": "edit(paper)复制包含ack/bound的当前paper到form.data。"
+        },
+        {
+          "path": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+          "line": 271,
+          "observed": "取消当前用途后更新Project标志和revision，但对未dirty form仅把base设新revision，data仍携旧true标志。"
+        },
+        {
+          "path": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+          "line": 40,
+          "observed": "commit(paper)整体复制form.data；专业输入仍匹配时不会调用invalidatePaper，旧flag被重新引入。"
+        },
+        {
+          "path": "tools/design-quality-audit/window3/dq05-stale-form-counterexample.json",
+          "json_pointer": "/cases/20",
+          "case_id": "DQ05-clean-form-same-width-after-ack-off"
+        }
+      ],
+      "sequence": [
+        "160/100/80、厚0.5、同产品1.0.0的Pass样例，显式认可并绑定",
+        "实际edit(paper)打开未修改表单，data含ack=true/bound=true",
+        "取消当前用途：Project ack=false/bound=false，revision增长；旧表单base被提升但data仍true",
+        "实际fold-angle滑块改预览角35；再在真实width输入控件重录原值160，令表单dirty，但专业值未改变",
+        "实际apply整体提交旧form.data；width仍160、angle35，但ack/bound复活为true，未再次进行用途认可"
+      ],
+      "actual_trace": [
+        {
+          "label": "only angle changed, professional width re-entered unchanged",
+          "revision": 4,
+          "savedRevision": 0,
+          "dirty": true,
+          "save_indicator": " · 未保存",
+          "project_title": "控制盒厂房",
+          "paper": {
+            "mechanism": "tuck_carton",
+            "width": 160,
+            "depth": 100,
+            "height": 80,
+            "thickness": 0.5,
+            "productRevision": "1.0.0",
+            "angle": 35,
+            "outcome": "pass",
+            "ack": false,
+            "bound": false
+          },
+          "form": {
+            "kind": "paper",
+            "data": {
+              "mechanism": "tuck_carton",
+              "width": 160,
+              "depth": 100,
+              "height": 80,
+              "thickness": 0.5,
+              "productRevision": "1.0.0",
+              "angle": 35,
+              "outcome": "pass",
+              "ack": true,
+              "bound": true
+            },
+            "base": 4,
+            "dirty": true
+          },
+          "result": {
+            "outcome": "pass",
+            "productRevision": "1.0.0",
+            "input": {
+              "mechanism": "tuck_carton",
+              "width": 160,
+              "depth": 100,
+              "height": 80,
+              "thickness": 0.5,
+              "productRevision": "1.0.0"
+            },
+            "source_kind": "manual_expected",
+            "actual_provider": false
+          },
+          "undo": 0,
+          "redo": 0,
+          "latest_notice": null
+        },
+        {
+          "label": "applied unchanged professional input with preview angle",
+          "revision": 5,
+          "savedRevision": 0,
+          "dirty": true,
+          "save_indicator": " · 未保存",
+          "project_title": "控制盒厂房",
+          "paper": {
+            "mechanism": "tuck_carton",
+            "width": 160,
+            "depth": 100,
+            "height": 80,
+            "thickness": 0.5,
+            "productRevision": "1.0.0",
+            "angle": 35,
+            "outcome": "pass",
+            "ack": true,
+            "bound": true
+          },
+          "form": null,
+          "result": {
+            "outcome": "pass",
+            "productRevision": "1.0.0",
+            "input": {
+              "mechanism": "tuck_carton",
+              "width": 160,
+              "depth": 100,
+              "height": 80,
+              "thickness": 0.5,
+              "productRevision": "1.0.0"
+            },
+            "source_kind": "manual_expected",
+            "actual_provider": false
+          },
+          "undo": 1,
+          "redo": 0,
+          "latest_notice": "已应用到原型草稿；尚未保存"
+        }
+      ],
+      "impact": "新的当前用途选择被表单旧快照覆盖；这是当前prototype字段所有权/回放错误，不是要求删除真实历史认可。",
+      "minimal_repair_rule": "认可/绑定这类受生命周期控制的当前标志不得从旧几何表单整体复制回当前项目。可同步干净表单相应当前字段，或在paper提交保留当前生命周期字段并按输入匹配派生有效性；不新增公共类型或认可系统。",
+      "closure_condition": "窗口2实际源修改后同21序列全部通过，尤其专业输入未变的同值应用不复活取消标志；不改预期为允许复活。",
+      "status": "closed_by_current_lifecycle_fields_preserved_on_actual_paper_commit",
+      "before_result_ref": "tools/design-quality-audit/window3/dq05-stale-form-counterexample.json#/cases/20",
+      "after_result_ref": "tools/design-quality-audit/window3/dq05-result.json#/cases/20",
+      "current_source_evidence": {
+        "path": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+        "line": 40,
+        "observed": "commit(paper)先取当前S.project.paper的ack/bound，再组合copy(data)，专业输入不匹配仍invalidatePaper。"
+      },
+      "current_observation": "旧form.data仍可携true标志，但取消当前用途后实际重录同宽160/改预览35/应用，当前ack/bound均保持false；旧表单不再拥有这些生命周期字段。"
+    }
+  ],
+  "ack_cancellation_interpretation": {
+    "canonical_rule": "ArtifactAcknowledgment是独立保存、对应artifact/subject/accepted_scope/conditions的人工决定，不是artifact.accepted布尔；ConsumerBinding的合法用途需要匹配已有认可。草稿撤销不回滚这些既有外部事实。",
+    "prototype_rule": "F19是draft_edit界面，原型结果不得称真实检查。此处paper-ack标签是“我认可此原型样例用于P01展示；不是工业用途验收”；paper-bind要求同一当前匹配样例及该显式用途选择。paper.bound在现行VP20是当前绑定成功文案与success样式的直接开关，没有单独的历史/失效指示。",
+    "why_ACK_off_assertion_applies": "本次取消的是原型当前用途勾选/有效性，既有代码立即把当前ack变false。若bound仍为true且继续用当前成功样式，就与自身当前用途门不一致。断言针对这个消费者状态含义，不把取消勾选提升为撤销真实不可逆人工认可的API。",
+    "not_required": [
+      "删除ArtifactAcknowledgment或历史ConsumerBinding记录",
+      "删除旧artifact/result或改写旧Run",
+      "新增通用认可撤销接口/记录系统/公共类型",
+      "宣布专业或工业用途已验收"
+    ],
+    "allowed_alternative": "若将来保留历史绑定对象，可保留记录并明确effective=false/needs_review及历史展示，当前界面不得继续无区分显示有效绑定；不必物理删除历史认可。当前修复采用解除原型active bound布尔，旧manual结果仍保留。",
+    "actual_after_fix": {
+      "label": "actual current prototype markup",
+      "current_warning": true,
+      "current_binding_success": false,
+      "same_manual_result_retained": true
+    }
+  },
+  "independent_sequences": [
+    {
+      "id": "DQ05-width",
+      "meaning": "same product version: width change invalidates old effective approval/binding",
+      "passed": true
+    },
+    {
+      "id": "DQ05-thickness",
+      "meaning": "same product version: thickness change invalidates old effective approval/binding",
+      "passed": true
+    },
+    {
+      "id": "DQ05-mechanism",
+      "meaning": "same product version: mechanism change invalidates old effective approval/binding",
+      "passed": true
+    },
+    {
+      "id": "DQ05-depth",
+      "meaning": "same product version: depth change invalidates old effective approval/binding",
+      "passed": true
+    },
+    {
+      "id": "DQ05-height",
+      "meaning": "same product version: height change invalidates old effective approval/binding",
+      "passed": true
+    },
+    {
+      "id": "DQ05-reload-width",
+      "meaning": "changed input -> explicit matching sample -> new purpose acknowledgment -> bind",
+      "passed": true
+    },
+    {
+      "id": "DQ05-reload-thickness",
+      "meaning": "changed input -> explicit matching sample -> new purpose acknowledgment -> bind",
+      "passed": true
+    },
+    {
+      "id": "DQ05-reload-mechanism",
+      "meaning": "changed input -> explicit matching sample -> new purpose acknowledgment -> bind",
+      "passed": true
+    },
+    {
+      "id": "DQ05-new-same-input-result",
+      "meaning": "reloading a new Pass sample for identical input does not borrow old result acknowledgment",
+      "passed": true
+    },
+    {
+      "id": "DQ05-undo-after-change",
+      "meaning": "undo geometry must not recreate acknowledgment/binding from draft snapshot",
+      "passed": true
+    },
+    {
+      "id": "DQ05-undo-new-result",
+      "meaning": "undo160 after approved200 must not attach200 result/ack to160; redo creates no approval",
+      "passed": true
+    },
+    {
+      "id": "DQ05-display-angle",
+      "meaning": "fold/open/range are declared viewing changes and keep same valid result/ack/binding",
+      "passed": true
+    },
+    {
+      "id": "DQ05-camera",
+      "meaning": "camera reset/back are pure display actions and do not clear valid professional state",
+      "passed": true
+    },
+    {
+      "id": "DQ05-undo-unrelated-draft",
+      "meaning": "undo unrelated A01 layout rotation preserves current valid paper approval",
+      "passed": true
+    },
+    {
+      "id": "DQ05-fail",
+      "meaning": "non-Pass sample cannot acknowledge or bind",
+      "passed": true
+    },
+    {
+      "id": "DQ05-undetermined",
+      "meaning": "non-Pass sample cannot acknowledge or bind",
+      "passed": true
+    },
+    {
+      "id": "DQ05-revoke-current-use",
+      "meaning": "unchecking current purpose acknowledgment makes effective binding inactive",
+      "passed": true
+    },
+    {
+      "id": "DQ05-invalid-apply",
+      "meaning": "invalid pending width is not committed or treated as a newly computed sample",
+      "passed": true
+    },
+    {
+      "id": "DQ05-saved-current-use-dirty",
+      "meaning": "saved prototype -> cancel current use -> dirty and unsaved-open decision; no-op does not add revision",
+      "passed": true
+    },
+    {
+      "id": "DQ05-clean-form-preview-after-ack-off",
+      "meaning": "actual clean form -> cancel current use -> viewing slider + Apply cannot revive cancelled use",
+      "passed": true
+    },
+    {
+      "id": "DQ05-clean-form-same-width-after-ack-off",
+      "meaning": "clean stale form -> cancel use -> view angle + same numeric width input -> Apply must not resurrect flags",
+      "passed": true
+    }
+  ],
+  "harness_scope_note": "实际模块去除SceneView import与浏览器初始启动语句；原业务函数、原input/change事件、原save/open/confirm与save-indicator语句均执行。DOM/SceneView/full paints/timers/localStorage/download终端隔离；前三处早期探针输入/类型纠正见harness_corrections，不计为消费者缺陷。原Fail/Undetermined严格断言保留。",
+  "closure_judgment": "closed：当前21/21。取消的是原型当前用途，不删除历史专业认可；当前生命周期字段不能被旧几何/预览表单或undo重放。原型仍明确manual_expected/actual_provider=false，真实专业计算/工业用途证据未冒充。",
+  "remaining_design_blockers_in_this_scope": [],
+  "public_or_S04_or_frozen_source_repaired_here": false,
+  "reverse_messages_sent": false,
+  "source_updated_after_last_probe": {
+    "current_source_matches_verified_run": true,
+    "method": "Source metadata checked after actual execution; critical changed code is retained in probe source_evidence, no hash or time-only closure."
+  },
+  "exact_preview_only_request": {
+    "case_id": "DQ05-clean-form-preview-after-ack-off",
+    "result": "passed_no_resurrection",
+    "observed": "实际fold-angle监听器不置form.dirty，因此纯滑块后apply没有提交，ack/bound保持false。没有把这个尚未复现的精确路径写成缺陷。",
+    "related_confirmed_counterexample": "原20/21中同宽160输入导致复活的实际反例已由当前commit保留当前生命周期字段修复；current cases/20通过。",
+    "current_result_ref": "tools/design-quality-audit/window3/dq05-result.json#/cases/19"
+  },
+  "saved_dirty_request": {
+    "case_id": "DQ05-saved-current-use-dirty",
+    "result": "passed",
+    "observed": "实际save通过逻辑localStorage/download端点保存bound=true快照；取消当前用途后revision增长、savedRevision保持旧值、实际save-indicator语句输出未保存；尝试打开OTHER_C仍保留当前工程并出现保存/丢弃/留在决定；同值再次取消不制造新revision。",
+    "boundary": "原型save与真实打开事件回调隔离执行；localStorage/download为内存终端，不声称Windows正式持久化。",
+    "current_result_ref": "tools/design-quality-audit/window3/dq05-result.json#/cases/18"
+  },
+  "verification_history": [
+    {
+      "source_bytes": 98057,
+      "result": "17/18",
+      "evidence_ref": "tools/design-quality-audit/window3/dq05-before-ack-off-fix.json",
+      "observed": "ACK取消后bound仍true，实际消费者独立反例。"
+    },
+    {
+      "source_bytes": 98372,
+      "result": "18/18 at that source",
+      "observed": "ACK取消及warning展示修复；后来源继续变化，未用这份旧通过关闭新源。"
+    },
+    {
+      "source_bytes": 98341,
+      "result": "16/18",
+      "observed": "实际源中暂时丢失Pass限制，Fail/Undetermined ACK=true，已在实际执行输出与统筹读取中确认；未将16/18失败忽略或伪写为通过。",
+      "record_kind": "summary of observed execution, not a reconstructed full trace"
+    },
+    {
+      "source_bytes": 98522,
+      "result": "20/21",
+      "evidence_ref": "tools/design-quality-audit/window3/dq05-stale-form-counterexample.json",
+      "observed": "恢复Pass门与dirty后，旧form携带flag的再应用仍复活取消状态。"
+    },
+    {
+      "source_bytes": 98623,
+      "result": "21/21",
+      "evidence_ref": "tools/design-quality-audit/window3/dq05-result.json",
+      "observed": "当前源：专业输入变化/样例/ACK/绑定/undo/纯展示、当前用途dirty、打开决定及旧表单重放全部通过。"
+    }
+  ]
+}

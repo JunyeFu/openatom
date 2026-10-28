@@ -1,0 +1,158 @@
+{
+  "api_version": "0.1",
+  "request_id": "DRF03-transport-scenario",
+  "project_id": "P1",
+  "scope": {
+    "kind": "project"
+  },
+  "operation": "apply_commands",
+  "params": {
+    "base_revision": 1,
+    "commands": [
+      {
+        "kind": "put_object",
+        "data": {
+          "kind": "scenario",
+          "data": {
+            "quality_presets": [],
+            "id": "SC1",
+            "revision": 1,
+            "project_revision": 1,
+            "title": "scenario",
+            "time_reference": {
+              "label": "self-built type fixture",
+              "origin_iso8601": null,
+              "timezone": null
+            },
+            "window": {
+              "start_ms": 0,
+              "end_ms": 60000
+            },
+            "initial_conditions": {
+              "items": [
+                {
+                  "id": "I1",
+                  "item_type_ref": {
+                    "id": "T1",
+                    "revision": "r1"
+                  },
+                  "quantity": {
+                    "value": {
+                      "coefficient": 1,
+                      "decimal_places": 0
+                    },
+                    "unit": "piece"
+                  },
+                  "holder": {
+                    "kind": "location",
+                    "id": "S1"
+                  },
+                  "quality": "released",
+                  "components": [],
+                  "contents": [],
+                  "source": "template_declared_example"
+                }
+              ],
+              "initial_setup_families": {},
+              "declared_quality_decisions": [],
+              "material_allocations": []
+            },
+            "orders": [
+              {
+                "id": "O1",
+                "product_ref": {
+                  "id": "PRODUCT1",
+                  "revision": "r1"
+                },
+                "quantity": {
+                  "value": {
+                    "coefficient": 1,
+                    "decimal_places": 0
+                  },
+                  "unit": "piece"
+                },
+                "release_at_ms": 0,
+                "due_at_ms": 5000,
+                "destination": "S2",
+                "acceptance_stage": "factory_released",
+                "allow_partial": true,
+                "priority": 0
+              }
+            ],
+            "production_tasks": [
+              {
+                "id": "TASK1",
+                "routing_ref": {
+                  "id": "ROUTE1",
+                  "revision": "r1"
+                },
+                "order_allocations": [
+                  {
+                    "order_id": "O1",
+                    "quantity": {
+                      "value": {
+                        "coefficient": 1,
+                        "decimal_places": 0
+                      },
+                      "unit": "piece"
+                    }
+                  }
+                ],
+                "planned_quantity": {
+                  "value": {
+                    "coefficient": 1,
+                    "decimal_places": 0
+                  },
+                  "unit": "piece"
+                },
+                "release_at_ms": 0,
+                "priority": 0
+              }
+            ],
+            "arrivals": [],
+            "supplies": [
+              {
+                "id": "TRIAL-SUPPLY",
+                "source": "TRIAL-SOURCE",
+                "destination": "TRIAL-DEST",
+                "item_type_ref": {
+                  "id": "T1",
+                  "revision": "r1"
+                },
+                "target_quantity": {
+                  "value": {
+                    "coefficient": 1,
+                    "decimal_places": 0
+                  },
+                  "unit": "piece"
+                },
+                "window": {
+                  "start_ms": 0,
+                  "end_ms": 80000
+                },
+                "transport_ref": {
+                  "id": "community.batch-transport",
+                  "version": "0.1.0"
+                },
+                "resources": {
+                  "carrier": "TRIAL-CARRIER"
+                },
+                "departure_windows": [],
+                "allow_partial_load": false
+              }
+            ],
+            "parameter_overrides": [],
+            "scope": [
+              {
+                "kind": "device",
+                "id": "D1"
+              }
+            ],
+            "issues": [],
+            "cost_inputs": []
+          }
+        }
+      }
+    ]
+  }
+}

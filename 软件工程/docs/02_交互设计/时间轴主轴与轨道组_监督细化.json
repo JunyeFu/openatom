@@ -1,0 +1,2571 @@
+{
+  "document_id": "timeline-main-axis-track-groups-human-supervision",
+  "schema_kind": "local_design_decision_table",
+  "schema_version": 1,
+  "title": "时间轴主轴与轨道组：监督细化",
+  "date": "2026-10-14",
+  "status": "adopted_for_document_requirements_by_current_user_instruction",
+  "user_explicit_directions": [
+    "一条共享主轴",
+    "自动或手动归类流水线为组",
+    "设备或组可各占一条轨道",
+    "问题表按推荐选项完成填写"
+  ],
+  "selection_notice": "36项推荐按本轮用户指令落实到文档要求；不等于视觉、原型、产品运行或人工验收通过。",
+  "figma_action": "none",
+  "sources": [
+    {
+      "id": "U",
+      "kind": "current_user_request",
+      "title": "一条主轴；自动或手动归类；设备或组可各占一条轨道；推荐选项预填"
+    },
+    {
+      "id": "D1",
+      "kind": "project_file",
+      "path": "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+      "title": "全厂时间轴、阶段资源与现有确定性调度"
+    },
+    {
+      "id": "D2",
+      "kind": "project_file",
+      "path": "docs/02_交互设计/Figma制作依据核对与工作台纠偏.json",
+      "title": "工业工作台、中央画布、左右伸缩及上下固定栏"
+    },
+    {
+      "id": "D3",
+      "kind": "project_file",
+      "path": "docs/03_架构与契约/共享状态与生命周期.md",
+      "title": "Engine 与 ui_host 状态边界"
+    },
+    {
+      "id": "D4",
+      "kind": "project_file",
+      "path": "packages/domain/types.design.rs",
+      "title": "LineGroup、JobState、ResourceClaim、RunResult 与事件公共类型"
+    },
+    {
+      "id": "D5",
+      "kind": "project_file",
+      "path": "packages/commands/api.design.rs",
+      "title": "EditCommand、RunSummary、RunQuery 与有类型编辑"
+    },
+    {
+      "id": "D6",
+      "kind": "project_file",
+      "path": "docs/03_架构与契约/调度与状态转换算法.md",
+      "title": "同刻闭包、阶段暂停、区间与等待口径"
+    },
+    {
+      "id": "D7",
+      "kind": "project_file",
+      "path": "docs/02_交互设计/设备时间轴与标签设计.md",
+      "title": "设备局部表现与全厂实际生产的边界"
+    },
+    {
+      "id": "D8",
+      "kind": "project_file",
+      "path": "docs/02_交互设计/首版表单与反馈.json",
+      "title": "F14/F16/F17/F22/F28 输入、运行与等待定位"
+    },
+    {
+      "id": "R1",
+      "kind": "official_software_documentation",
+      "url": "https://help.autodesk.com/cloudhelp/2026/ENU/Navisworks-Timeliner/files/GUID-91B08CFD-0B6B-4A2B-A853-BC8E173BA78C.htm",
+      "title": "Navisworks TimeLiner Tasks Tab",
+      "inspiration": "任务层级折叠、计划/实际区分、模型对象绑定和仅影响显示的筛选；不复制实际结果拖动权限"
+    },
+    {
+      "id": "R2",
+      "kind": "official_software_documentation",
+      "url": "https://www.simio.com/whitepapers/business-benefits-of-simios-risk-based-planning-and-scheduling-rps?hs_amp=true",
+      "title": "Simio 资源/实体甘特图与约束定位",
+      "inspiration": "资源或订单视角、等待原因、同实体同时间的场景定位；不引入优化排程或风险预测"
+    },
+    {
+      "id": "R3",
+      "kind": "official_software_documentation",
+      "url": "https://helpx.adobe.com/premiere/desktop/edit-projects/change-clip-sequence/snap-clips.html",
+      "title": "Premiere Snap clips",
+      "inspiration": "吸附开关、边界/标记/播放头候选与可见对齐线；6px 是项目推荐初值"
+    },
+    {
+      "id": "R4",
+      "kind": "official_software_documentation",
+      "url": "https://support.apple.com/guide/final-cut-pro/intro-to-the-magnetic-timeline-verb8fcfc133/12.4/mac/26.6",
+      "title": "Final Cut Pro Magnetic Timeline",
+      "inspiration": "关联锚点与联动移动的交互概念；生产等待不能自动闭合，实际 Run 不可推移"
+    },
+    {
+      "id": "W2-UI",
+      "kind": "trusted_thread_user_instruction",
+      "thread_id": "01a11f4e-f8a4-7a62-9d23-24834761b07e",
+      "turn_id": "01a13934-99e3-7bf2-b989-e3b6d33aadd2",
+      "title": "窗口2最新：窄时间轴/描述分块/窗口显隐/下方工具"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "T01",
+      "sources": [
+        "U",
+        "D1"
+      ],
+      "question": "主轴与时钟",
+      "options": [
+        {
+          "id": "A",
+          "label": "一条共享时间标尺"
+        },
+        {
+          "id": "B",
+          "label": "各组各自一条时间轴"
+        }
+      ],
+      "recommended_option": "A",
+      "selected_option": "A",
+      "selection_basis": "user_direction",
+      "specification": "共享一个Engine时钟、一个已确认view_time和相对毫秒坐标。全厂主轴、流水线细化和设备细化引用同一Run；局部显示窗可放大，但时间不重新归零，也不建立子Engine。",
+      "application_basis": "current_user_instruction_apply_table_and_sources"
+    },
+    {
+      "id": "T02",
+      "sources": [
+        "U",
+        "D2",
+        "W2-UI"
+      ],
+      "question": "放在哪里、保持什么风格",
+      "options": [
+        {
+          "id": "A",
+          "label": "工业工作台底部停靠"
+        },
+        {
+          "id": "B",
+          "label": "独立看板页面"
+        }
+      ],
+      "recommended_option": "A",
+      "selected_option": "A",
+      "selection_basis": "recommendation_prefilled",
+      "specification": "中央画布下方停靠窄时间轴与独立只读描述区，顶部“窗口”菜单分别控制时间轴和描述区显隐；“视图”管理相机/LOD/缩放；选择/移动等工具在下方工具带，上下全局栏固定、左右可伸缩。",
+      "application_basis": "current_user_instruction_apply_table_and_sources"
+    },
+    {
+      "id": "T03",
+      "sources": [
+        "D2",
+        "W2-UI"
+      ],
+      "question": "轨道与标尺尺寸",
+      "options": [
+        {
+          "id": "A",
+          "label": "紧凑可调"
+        },
+        {
+          "id": "B",
+          "label": "大卡片固定高度"
+        }
+      ],
+      "recommended_option": "A",
+      "selected_option": "A",
+      "selection_basis": "recommendation_prefilled",
+      "specification": "参考初值：底部停靠区高160px，可拖高120—320px；关闭两块释放画布。设备行32px、组行40px、标尺28px、面板条24px；名称列240px、描述区320px可调。替换此前280px初值，字体沿母版并至少13px。",
+      "application_basis": "current_user_instruction_apply_table_and_sources"
+    },
+    {
+      "id": "T04",
+      "sources": [
+        "U",
+        "D1",
+        "R1"
+      ],
+      "question": "自动如何分类",
+      "options": [
+        {
+          "id": "A",
+          "label": "按已声明厂房/流水线"
+        },
+        {
+          "id": "B",
+          "label": "按空间邻近或连通图猜测"
+        }
+      ],
+      "recommended_option": "A",
+      "selected_option": "A",
+      "selection_basis": "recommendation_prefilled",
+      "specification": "厂房 → 轨道组 → 设备，最多三层。默认用 LineGroup.members 与 DeviceInstance.line_id；未归属设备进入该厂房“未分组”。不同声明冲突须显示待确认，不能静默选一边。",
+      "application_basis": "current_user_instruction_apply_table_and_sources"
+    },
+    {
+      "id": "T05",
+      "sources": [
+        "U",
+        "D3"
+      ],
+      "question": "手动组如何创建和管理",
+      "options": [
+        {
+          "id": "A",
+          "label": "独立显示组"
+        },
+        {
+          "id": "B",
+          "label": "重写实体流水线"
+        }
+      ],
+      "recommended_option": "A",
+      "selected_option": "A",
+      "selection_basis": "recommendation_prefilled",
+      "specification": "选设备或整条流水线→“建立轨道组”→命名；允许改名、加入/移出、解散。手动覆盖优先；重新自动分类只替换所选范围的覆盖。仅改变显示归类，不改实体流水线、坐标、端口或生产路线；跨厂房选择按厂房拆组。",
+      "application_basis": "current_user_instruction_apply_table_and_sources"
+    },
+    {
+      "id": "T06",
+      "sources": [
+        "U"
+      ],
+      "question": "设备行和组行如何混用",
+      "options": [
+        {
+          "id": "A",
+          "label": "同一视图唯一归属"
+        },
+        {
+          "id": "B",
+          "label": "同设备在多个组重复出现"
+        }
+      ],
+      "recommended_option": "A",
+      "selected_option": "A",
+      "selection_basis": "user_direction",
+      "specification": "可把部分设备独立成行，其余留在折叠组；从组中移出的设备在当前视图只出现一次。共享资源引用和订单筛选不改变设备归属。",
+      "application_basis": "current_user_instruction_apply_table_and_sources"
+    },
+    {
+      "id": "T07",
+      "sources": [
+        "U",
+        "D1",
+        "R1"
+      ],
+      "question": "展开与折叠怎样减少轨道",
+      "options": [
+        {
+          "id": "A",
+          "label": "组摘要/设备明细切换"
+        },
+        {
+          "id": "B",
+          "label": "折叠后只剩名称"
+        }
+      ],
+      "recommended_option": "A",
+      "selected_option": "A",
+      "selection_basis": "recommendation_prefilled",
+      "specification": "默认每条流水线一条摘要行。展开显示子设备；父行保留组名与摘要并明确为汇总，任何总计只算唯一成员。筛选只隐藏行，不修改组成员。",
+      "application_basis": "current_user_instruction_apply_table_and_sources"
+    },
+    {
+      "id": "T08",
+      "sources": [
+        "D1",
+        "D4",
+        "R2"
+      ],
+      "question": "跨线共享人员、小车放在哪里",
+      "options": [
+        {
+          "id": "A",
+          "label": "共享资源区按需固定"
+        },
+        {
+          "id": "B",
+          "label": "复制到每个流水线组"
+        }
+      ],
+      "recommended_option": "A",
+      "selected_option": "A",
+      "selection_basis": "recommendation_prefilled",
+      "specification": "共享资源显示为独立资源行，默认收起、选中等待时定位打开。各组显示同一资源的引用图标；资源身份和占用只计算一次。运输车的去程、接收等待、返程放在该车行。",
+      "application_basis": "current_user_instruction_apply_table_and_sources"
+    },
+    {
+      "id": "T09",
+      "sources": [
+        "R2",
+        "D1"
+      ],
+      "question": "订单和物品会不会各新增一条永久轨道",
+      "options": [
+        {
+          "id": "A",
+          "label": "筛选/临时追踪层"
+        },
+        {
+          "id": "B",
+          "label": "每个订单和物品都常驻"
+        }
+      ],
+      "recommended_option": "A",
+      "selected_option": "A",
+      "selection_basis": "recommendation_prefilled",
+      "specification": "主视图仍是组/设备。选择订单高亮它的相关作业；选择物品临时显示身份与移交链。关闭追踪恢复原有折叠与滚动位置，不为每件物品生成常驻行。",
+      "application_basis": "current_user_instruction_apply_table_and_sources"
+    },
+    {
+      "id": "T10",
+      "sources": [
+        "D1",
+        "D4"
+      ],
+      "question": "设备轨道上展示什么",
+      "options": [
+        {
+          "id": "A",
+          "label": "作业条内含阶段与等待"
+        },
+        {
+          "id": "B",
+          "label": "只有一条总忙碌色块"
+        }
+      ],
+      "recommended_option": "A",
+      "selected_option": "A",
+      "selection_basis": "recommendation_prefilled",
+      "specification": "主条显示作业短 ID/产品或任务名；内部展示有证据的阶段分界；等待斜纹、换型短标签、完成/接收标记。资源占用用条边细线，细节展开显示角色、有效加工、等待、持有者。",
+      "application_basis": "current_user_instruction_apply_table_and_sources"
+    },
+    {
+      "id": "T11",
+      "sources": [
+        "U",
+        "D1"
+      ],
+      "question": "折叠组如何表达并发",
+      "options": [
+        {
+          "id": "A",
+          "label": "加工、等待分别汇总"
+        },
+        {
+          "id": "B",
+          "label": "把整组画成一台大设备"
+        }
+      ],
+      "recommended_option": "A",
+      "selected_option": "A",
+      "selection_basis": "recommendation_prefilled",
+      "specification": "按真实事件边界分段；组行显示加工 B/N、等待 W/N、占用 O/N，加工/等待分上下两带。各集合按执行设备去重，可交叠；等待只取Engine记录，包含待料、等人、接收阻塞与已记录的排队等待，未释放或无需求不算等待。组跨度不等于周期之和。",
+      "application_basis": "current_user_instruction_apply_table_and_sources"
+    },
+    {
+      "id": "T12",
+      "sources": [
+        "D1",
+        "D4"
+      ],
+      "question": "组的产量与完成怎么计数",
+      "options": [
+        {
+          "id": "A",
+          "label": "按真实身份和接受口径"
+        },
+        {
+          "id": "B",
+          "label": "相加所有工序完成数"
+        }
+      ],
+      "recommended_option": "A",
+      "selected_option": "A",
+      "selection_basis": "recommendation_prefilled",
+      "specification": "组内工序完成显示作业数；产出按明确出口/产品汇总；订单达标取 AcceptanceEvent/OrderOutcome。移交不新增产量，同一件经过多设备不重复计数，件/箱分别显示。",
+      "application_basis": "current_user_instruction_apply_table_and_sources"
+    },
+    {
+      "id": "T13",
+      "sources": [
+        "D4"
+      ],
+      "question": "缓存、物料数量从哪里来",
+      "options": [
+        {
+          "id": "A",
+          "label": "时点物品状态"
+        },
+        {
+          "id": "B",
+          "label": "把到料计划直接当库存曲线"
+        }
+      ],
+      "recommended_option": "A",
+      "selected_option": "A",
+      "selection_basis": "recommendation_prefilled",
+      "specification": "通过 ObjectsAt(at_ms) 的 RuntimeItem、holder、lifecycle 和 Quantity 按类型/单位汇总；趋势只用可重建的真实转移/接受记录。final_items 只能表示结果末态，不当作任意历史库存。缺少历史证据时显示未知。",
+      "application_basis": "current_user_instruction_apply_table_and_sources"
+    },
+    {
+      "id": "T14",
+      "sources": [
+        "D1",
+        "D4"
+      ],
+      "question": "资源容量和日历如何呈现",
+      "options": [
+        {
+          "id": "A",
+          "label": "容量占用叠加可用日历"
+        },
+        {
+          "id": "B",
+          "label": "占用等于加工、下班等于故障"
+        }
+      ],
+      "recommended_option": "A",
+      "selected_option": "A",
+      "selection_basis": "recommendation_prefilled",
+      "specification": "人员/资源行标出占用 2/3，日历关闭区为灰色斜纹；机床持有与有效加工分开。资源利用率沿用 ResourceMetric；同单位组汇总用 Σoccupied_capacity_ms/Σavailable_capacity_ms，不平均单机百分比。",
+      "application_basis": "current_user_instruction_apply_table_and_sources"
+    },
+    {
+      "id": "T15",
+      "sources": [
+        "D2",
+        "R1"
+      ],
+      "question": "颜色、文字、标记怎么区分",
+      "options": [
+        {
+          "id": "A",
+          "label": "有限语义色+形状"
+        },
+        {
+          "id": "B",
+          "label": "每设备随机彩色"
+        }
+      ],
+      "recommended_option": "A",
+      "selected_option": "A",
+      "selection_basis": "recommendation_prefilled",
+      "specification": "文字 13px 起；加工钢蓝、资源青绿、等待琥珀、故障/明确冲突红；选择用描边。输入空心/虚线，实际实心，手工预期点线且有来源标签；到料三角、接受菱形、交期旗标。零时长事件画标记。",
+      "application_basis": "current_user_instruction_apply_table_and_sources"
+    },
+    {
+      "id": "T16",
+      "sources": [
+        "D1"
+      ],
+      "question": "缩小时密集片段怎样显示",
+      "options": [
+        {
+          "id": "A",
+          "label": "密度摘要、放大后原片段"
+        },
+        {
+          "id": "B",
+          "label": "强行放大每个短条"
+        }
+      ],
+      "recommended_option": "A",
+      "selected_option": "A",
+      "selection_basis": "recommendation_prefilled",
+      "specification": "按屏幕时间桶显示数量/覆盖信息，悬停给真实起止。短事件用标记和数量徽标，不改其时间长度。时间轴缩放独立于画布 LOD，放大不会自动进入设备详情。",
+      "application_basis": "current_user_instruction_apply_table_and_sources"
+    },
+    {
+      "id": "T17",
+      "sources": [
+        "D1",
+        "D5",
+        "R1"
+      ],
+      "question": "输入、预期、实际是否混成一种条",
+      "options": [
+        {
+          "id": "A",
+          "label": "同一坐标上的来源切换/叠加"
+        },
+        {
+          "id": "B",
+          "label": "无标识混排"
+        }
+      ],
+      "recommended_option": "A",
+      "selected_option": "A",
+      "selection_basis": "recommendation_prefilled",
+      "specification": "默认有 Run 看实际，无 Run 看输入。输入只显示释放、交期、到料、班次和声明参数，不冒充已排程开工；手工预期显式标记，实际引用冻结 Run。对照模式沿同一行轻叠加，不给每设备另加三行。",
+      "application_basis": "current_user_instruction_apply_table_and_sources"
+    },
+    {
+      "id": "T18",
+      "sources": [
+        "D4"
+      ],
+      "question": "作业如何唯一绑定执行设备",
+      "options": [
+        {
+          "id": "A",
+          "label": "结果给显式执行身份"
+        },
+        {
+          "id": "B",
+          "label": "按同名模块或空间猜测"
+        }
+      ],
+      "recommended_option": "A",
+      "selected_option": "A",
+      "selection_basis": "recommendation_prefilled",
+      "specification": "已合入JobExecutionRef区分project_device与definition_cycle，作业/等待/blocked phase和执行容量按唯一公共规范绑定；不能靠同名模块、最终phase、坐标或人员Claim猜历史。Engine/Host真实输出仍待实现。",
+      "application_basis": "current_user_instruction_apply_table_and_sources"
+    },
+    {
+      "id": "T19",
+      "sources": [
+        "D4",
+        "D6"
+      ],
+      "question": "历史阶段、暂停和恢复能否精确绘制",
+      "options": [
+        {
+          "id": "A",
+          "label": "真实有效阶段区间"
+        },
+        {
+          "id": "B",
+          "label": "用总时长按比例切开"
+        }
+      ],
+      "recommended_option": "A",
+      "selected_option": "A",
+      "selection_basis": "recommendation_prefilled",
+      "specification": "已合入RunResult.phase_work_intervals及computed_until_ms，阶段有效工作取PhaseWorkInterval；等待不计加工，computed_boundary不表示完成，零时长沿真实PhaseCompleted点事件。字段/快照规则取唯一公共规范；实际Engine输出待实现。",
+      "application_basis": "current_user_instruction_apply_table_and_sources"
+    },
+    {
+      "id": "T20",
+      "sources": [
+        "D1",
+        "D4"
+      ],
+      "question": "运输链和接收完成怎么画",
+      "options": [
+        {
+          "id": "A",
+          "label": "分别显示出发/到达/接收/返回"
+        },
+        {
+          "id": "B",
+          "label": "到达即完成"
+        }
+      ],
+      "recommended_option": "A",
+      "selected_option": "A",
+      "selection_basis": "recommendation_prefilled",
+      "specification": "取 TransportState.departed_ms/arrived_ms/received_ms/returned_ms 与 TransportChanged；到达未接收显示等待。物品链取 ItemTransferred 和真实 holder，订单计数以声明 acceptance_stage 对应接受事件为准。",
+      "application_basis": "current_user_instruction_apply_table_and_sources"
+    },
+    {
+      "id": "T21",
+      "sources": [
+        "D4",
+        "D5"
+      ],
+      "question": "运行未算完、数据怎样读取",
+      "options": [
+        {
+          "id": "A",
+          "label": "只画已计算范围"
+        },
+        {
+          "id": "B",
+          "label": "延长最后状态到观察窗末尾"
+        }
+      ],
+      "recommended_option": "A",
+      "selected_option": "A",
+      "selection_basis": "recommendation_prefilled",
+      "specification": "读取同一次冻结快照的RunSummary与RunResult.computed_until_ms，再用既有get_run Events/ObjectsAt/FullResult；事件稳定分页保持sequence，interval:null不加时间过滤但仍限scope。未知/未计算范围不补全；续算以新快照替换旧临时截断段。",
+      "application_basis": "current_user_instruction_apply_table_and_sources"
+    },
+    {
+      "id": "T22",
+      "sources": [
+        "D1",
+        "D5",
+        "R2"
+      ],
+      "question": "点击轨道怎样联动中央画布",
+      "options": [
+        {
+          "id": "A",
+          "label": "同 Run、对象与时点定位"
+        },
+        {
+          "id": "B",
+          "label": "打开详情后重置场景"
+        }
+      ],
+      "recommended_option": "A",
+      "selected_option": "A",
+      "selection_basis": "recommendation_prefilled",
+      "specification": "同Run/绝对时点定位设备、物品与真实等待；流水线看成员，设备看阶段/资源/等待。父布局保存，Back恢复窗/行/筛选/滚动；子轴主动选时保持新的共享view_time。",
+      "application_basis": "current_user_instruction_apply_table_and_sources"
+    },
+    {
+      "id": "T23",
+      "sources": [
+        "U",
+        "R3"
+      ],
+      "question": "吸附到哪些目标",
+      "options": [
+        {
+          "id": "A",
+          "label": "显式时间边界"
+        },
+        {
+          "id": "B",
+          "label": "视觉上最近任意条边"
+        }
+      ],
+      "recommended_option": "A",
+      "selected_option": "A",
+      "selection_basis": "recommendation_prefilled",
+      "specification": "编辑输入可吸附刻度网格、释放/到料、班次边界及明确选中的参考事件；交期也可作参考。实际事件只供对齐，不产生新约束。关闭无关隐藏行的目标，磁吸不会改生产依赖。",
+      "application_basis": "current_user_instruction_apply_table_and_sources"
+    },
+    {
+      "id": "T24",
+      "sources": [
+        "R3"
+      ],
+      "question": "吸附操作细节",
+      "options": [
+        {
+          "id": "A",
+          "label": "可见候选、临时关闭"
+        },
+        {
+          "id": "B",
+          "label": "隐形自动跳动"
+        }
+      ],
+      "recommended_option": "A",
+      "selected_option": "A",
+      "selection_basis": "recommendation_prefilled",
+      "specification": "初值屏幕 6px 内候选；选择绝对屏幕距离最近者，同距显式参考优先、其后业务边界、网格，再按稳定 ID。显示垂直线、目标名称、精确时间与 Δt；Alt 暂停吸附，数字输入毫秒精调。",
+      "application_basis": "current_user_instruction_apply_table_and_sources"
+    },
+    {
+      "id": "T25",
+      "sources": [
+        "D1",
+        "D6"
+      ],
+      "question": "吸附是不是自动消除冲突",
+      "options": [
+        {
+          "id": "A",
+          "label": "先编辑输入，再按规则重跑"
+        },
+        {
+          "id": "B",
+          "label": "吸附等于资源已可用"
+        }
+      ],
+      "recommended_option": "A",
+      "selected_option": "A",
+      "selection_basis": "recommendation_prefilled",
+      "specification": "只允许合法输入字段横向拖动；跨行不会把任务换到另一设备。释放时间不是开工时间。拖动预览差异，松手提交已有编辑命令；业务约束校验仍执行。资源齐套、容量、班次和接收由 Engine 决定。",
+      "application_basis": "current_user_instruction_apply_table_and_sources"
+    },
+    {
+      "id": "T26",
+      "sources": [
+        "U",
+        "D1",
+        "D4",
+        "R4"
+      ],
+      "question": "磁链怎样匹配模拟生产线",
+      "options": [
+        {
+          "id": "A",
+          "label": "业务依赖链与编辑联动分开"
+        },
+        {
+          "id": "B",
+          "label": "相邻条块天然成链"
+        }
+      ],
+      "recommended_option": "A",
+      "selected_option": "A",
+      "selection_basis": "recommendation_prefilled",
+      "specification": "业务链引用 RouteStep.predecessors、物料/逻辑连接、Job.input_refs、真实 ItemTransferred 和阶段资源；只在选择时显示前后依赖，跨组保留端点引用。不能按条块位置、颜色或流水线名称推导依赖。",
+      "application_basis": "current_user_instruction_apply_table_and_sources"
+    },
+    {
+      "id": "T27",
+      "sources": [
+        "U",
+        "D5",
+        "R4"
+      ],
+      "question": "磁链能否带着一组输入移动",
+      "options": [
+        {
+          "id": "A",
+          "label": "明确选定输入同 Δt 移动"
+        },
+        {
+          "id": "B",
+          "label": "自动推移全部下游"
+        }
+      ],
+      "recommended_option": "A",
+      "selected_option": "A",
+      "selection_basis": "recommendation_prefilled",
+      "specification": "另设“联动移动输入”：选同一 Scenario 的到料/释放标记，按相同 Δt 保持间距；列出每个变更。交期仅明确选中才移；日历、时长、库存和实际条不跟随。一次 PutObject(ScenarioInput) 提交，支持原有撤销。",
+      "application_basis": "current_user_instruction_apply_table_and_sources"
+    },
+    {
+      "id": "T28",
+      "sources": [
+        "D1",
+        "D6",
+        "R4"
+      ],
+      "question": "是否吸满空隙、强制首尾相接",
+      "options": [
+        {
+          "id": "A",
+          "label": "保留真实等待空隙"
+        },
+        {
+          "id": "B",
+          "label": "像视频剪辑自动闭合"
+        }
+      ],
+      "recommended_option": "A",
+      "selected_option": "A",
+      "selection_basis": "recommendation_prefilled",
+      "specification": "生产链要求材料到位、前驱达成、资源/日历可用、运输接收等；它不是视频的连续拼接。实际 Run 禁止磁性闭合和联动位移；移动输入后由同一 Engine 重跑，重新产生开工和等待。",
+      "application_basis": "current_user_instruction_apply_table_and_sources"
+    },
+    {
+      "id": "T29",
+      "sources": [
+        "D1",
+        "D7"
+      ],
+      "question": "哪些条能拉伸、哪些不能",
+      "options": [
+        {
+          "id": "A",
+          "label": "有类型的输入/表现分别编辑"
+        },
+        {
+          "id": "B",
+          "label": "任意实际条拖拽拉伸"
+        }
+      ],
+      "recommended_option": "A",
+      "selected_option": "A",
+      "selection_basis": "recommendation_prefilled",
+      "specification": "订单/任务释放、交期、到料和日历走相应表单命令；阶段时长只改已声明参数或定义草稿。设备外观时间片属于局部表现编辑，不能改变产能；实际阶段条与折叠组条不拉伸。",
+      "application_basis": "current_user_instruction_apply_table_and_sources"
+    },
+    {
+      "id": "T30",
+      "sources": [
+        "D3",
+        "D4"
+      ],
+      "question": "改组或改输入后旧 Run 怎么办",
+      "options": [
+        {
+          "id": "A",
+          "label": "按 Run 的冻结身份回看"
+        },
+        {
+          "id": "B",
+          "label": "套用最新工程解释旧结果"
+        }
+      ],
+      "recommended_option": "A",
+      "selected_option": "A",
+      "selection_basis": "recommendation_prefilled",
+      "specification": "显示归类可调整但按稳定 ID 引用；真实设备/工艺/输入变更形成新 revision、新 Run。旧结果使用 RunInputRef 冻结工程与方案，另标“与当前草稿不同”；不把已删/改的设备解释成新设备。",
+      "application_basis": "current_user_instruction_apply_table_and_sources"
+    },
+    {
+      "id": "T31",
+      "sources": [
+        "D3"
+      ],
+      "question": "组和折叠设置保存在哪里",
+      "options": [
+        {
+          "id": "A",
+          "label": "UI 视图偏好"
+        },
+        {
+          "id": "B",
+          "label": "写入生产数据/定义"
+        }
+      ],
+      "recommended_option": "A",
+      "selected_option": "A",
+      "selection_basis": "recommendation_prefilled",
+      "specification": "ui_host以本机localStorage私有V1键保存工程/草稿或冻结Run的组/排序/折叠/窗口/停靠显隐等视图偏好，不写ProjectState、不新增公开API；跨机无偏好按所选冻结工程自动分类，详情见TL10。",
+      "application_basis": "current_user_instruction_apply_table_and_sources"
+    },
+    {
+      "id": "T32",
+      "sources": [
+        "D1",
+        "D5"
+      ],
+      "question": "播放、计算暂停、单步怎样区分",
+      "options": [
+        {
+          "id": "A",
+          "label": "两组明确控制"
+        },
+        {
+          "id": "B",
+          "label": "共用含混的播放按钮"
+        }
+      ],
+      "recommended_option": "A",
+      "selected_option": "A",
+      "selection_basis": "recommendation_prefilled",
+      "specification": "“回看播放/暂停/倍速/回到当前”只改 view_time；“计算暂停/继续/下一事件时刻”依 get_task.allowed_controls 操作 Worker。运行位置与回看位置分别标线，用户回看时不被自动抢回。",
+      "application_basis": "current_user_instruction_apply_table_and_sources"
+    },
+    {
+      "id": "T33",
+      "sources": [
+        "D6"
+      ],
+      "question": "同一时刻多个事件如何显示与选择",
+      "options": [
+        {
+          "id": "A",
+          "label": "同刻闭包+事件列表"
+        },
+        {
+          "id": "B",
+          "label": "伪造毫秒间隔错开"
+        }
+      ],
+      "recommended_option": "A",
+      "selected_option": "A",
+      "selection_basis": "recommendation_prefilled",
+      "specification": "零时长/同刻事件共用一个时点标记和数量徽标，列表按 sequence。计算单步执行完整同刻闭包，不按一条视觉片段推进；区间沿用 [start,end)，观察窗末端事件按既有闭包规则处理。",
+      "application_basis": "current_user_instruction_apply_table_and_sources"
+    },
+    {
+      "id": "T34",
+      "sources": [
+        "D1",
+        "D4"
+      ],
+      "question": "组之间、Run 之间如何比较",
+      "options": [
+        {
+          "id": "A",
+          "label": "一致口径叠加"
+        },
+        {
+          "id": "B",
+          "label": "直接比较任意总数"
+        }
+      ],
+      "recommended_option": "A",
+      "selected_option": "A",
+      "selection_basis": "recommendation_prefilled",
+      "specification": "同时间基准、初始条件、观察窗与接受口径才给直接对照；不同者列明差异。对齐设备稳定 ID 与唯一成员集合，展开/折叠不改变产量、等待和利用率结论。",
+      "application_basis": "current_user_instruction_apply_table_and_sources"
+    },
+    {
+      "id": "T35",
+      "sources": [
+        "D2",
+        "R1"
+      ],
+      "question": "鼠标与键盘是否有一致入口",
+      "options": [
+        {
+          "id": "A",
+          "label": "树形行+精确编辑"
+        },
+        {
+          "id": "B",
+          "label": "只能拖小条块"
+        }
+      ],
+      "recommended_option": "A",
+      "selected_option": "A",
+      "selection_basis": "recommendation_prefilled",
+      "specification": "行首箭头展开，方向键移动选择/展开，Enter 打开细节；输入标记可用表单精调，Undo/Redo 撤销草稿编辑。拖动组头只排序，不能隐式改变时间。状态必须有文字或纹理。",
+      "application_basis": "current_user_instruction_apply_table_and_sources"
+    },
+    {
+      "id": "T36",
+      "sources": [
+        "D1",
+        "D6"
+      ],
+      "question": "视觉分组或联动会不会改派工顺序",
+      "options": [
+        {
+          "id": "A",
+          "label": "沿用现有确定性调度"
+        },
+        {
+          "id": "B",
+          "label": "按轨道顺序重新排程"
+        }
+      ],
+      "recommended_option": "A",
+      "selected_option": "A",
+      "selection_basis": "recommendation_prefilled",
+      "specification": "轨道上下顺序与运行优先级无关。仍按优先级数值大→有交期且较早→较早就绪→稳定 ID；视觉磁链不新增优化排程器，也不覆盖齐套、阶段资源和接收约束。",
+      "application_basis": "current_user_instruction_apply_table_and_sources"
+    }
+  ],
+  "observed_gaps": [
+    {
+      "id": "G01",
+      "question_ids": [
+        "T04",
+        "T05",
+        "T06",
+        "T07"
+      ],
+      "finding": "现有文件只声明厂房/流水线/设备层级折叠，缺少手动显示组与实体流水线分离、唯一归属及冲突处理规则。",
+      "resolution": "本表已预填视图归类规则；实体归属冲突须回到工程编辑确认，不能由自动分组改写。",
+      "scope": "owned_design_refinement",
+      "status": "resolved_in_design_requirements"
+    },
+    {
+      "id": "G02",
+      "question_ids": [
+        "T11",
+        "T12",
+        "T14"
+      ],
+      "finding": "缺少折叠组内同时加工/等待、跨设备产量去重和容量利用率的明确口径。",
+      "resolution": "加工/等待/占用分别按设备集合计数；接受数量按真实接受事件；同单位容量时间加权利用率。",
+      "scope": "owned_design_refinement",
+      "status": "aggregation_rules_and_public_types_resolved_actual_engine_data_pending"
+    },
+    {
+      "id": "G03",
+      "question_ids": [
+        "T18"
+      ],
+      "finding": "JobState 缺少显式执行设备和工艺步骤身份。同一模块多设备、多步骤时不能仅靠 task_ref/operation_ref 唯一映射。",
+      "resolution": "已合入JobExecutionRef及Wait执行/blocked phase引用；执行容量只按同job的明确capacity Claim证明，不猜设备。 唯一规范为timeline_runtime_contract；实际Engine/Host数据仍待实现。",
+      "scope": "public_contract_handoff",
+      "public_schema_changed": true,
+      "status": "public_design_types_merged_finite_proof_passed_runtime_pending",
+      "request_id": "TC01",
+      "canonical_ref": "docs/03_架构与契约/全层类型与工程格式.json#/timeline_runtime_contract",
+      "finding_time": "before_TC01_TC02_canonical_merge",
+      "public_schema_update_owner": "W00"
+    },
+    {
+      "id": "G04",
+      "question_ids": [
+        "T19"
+      ],
+      "finding": "现有状态/事件未明确提供完整历史阶段有效工作区间、暂停及恢复边界；不得按计划时长伪造真实阶段。",
+      "resolution": "已合入PhaseWorkInterval及RunResult.computed_until_ms；有效工作排除等待，零阶段用完成点，临时前缀按新快照替换。 唯一规范为timeline_runtime_contract；实际Engine/Host数据仍待实现。",
+      "scope": "public_contract_handoff",
+      "public_schema_changed": true,
+      "status": "public_design_types_merged_finite_proof_passed_runtime_pending",
+      "request_id": "TC02",
+      "canonical_ref": "docs/03_架构与契约/全层类型与工程格式.json#/timeline_runtime_contract",
+      "finding_time": "before_TC01_TC02_canonical_merge",
+      "public_schema_update_owner": "W00"
+    },
+    {
+      "id": "G05",
+      "question_ids": [
+        "T23",
+        "T24",
+        "T25",
+        "T26",
+        "T27",
+        "T28",
+        "T29"
+      ],
+      "finding": "吸附没有目标与优先规则；磁链混淆编辑联动、生产依赖和表现片段连接。",
+      "resolution": "本表明确三类语义及可编辑字段；仅同方案显式选定到料/释放等输入可按相同 Δt 联动，实际 Run 不移动。",
+      "scope": "owned_design_refinement",
+      "status": "resolved_in_design_requirements"
+    },
+    {
+      "id": "G06",
+      "question_ids": [
+        "T21",
+        "T30",
+        "T31",
+        "T32",
+        "T33"
+      ],
+      "finding": "视图持久化、未计算区域、旧 Run 解释和回看/计算控制的视觉落点不足。",
+      "resolution": "ui_host按工程ID与草稿/冻结Run上下文保存本机私有视图偏好：显示组成员ID、名称、排序、折叠、固定行、缩放和吸附开关；不写ProjectState或定义，不新增公开操作。跨机器未带偏好时按冻结工程自动归类，历史Run不能套用新草稿设备。未计算范围和双时标依既有RunSummary/Task控制契约。",
+      "scope": "UI_local_design_not_public_schema_extension",
+      "status": "resolved_in_design_requirements_private_UI_persistence"
+    }
+  ],
+  "design_contract": {
+    "main_axis": {
+      "time_unit": "relative_ms",
+      "shared_view_time": true,
+      "grouping_changes_engine_clock": false,
+      "detail_view_rule": "TL01/TL02: same Run/confirmed view_time, local windows and projection only"
+    },
+    "layout": {
+      "reference_viewport_px": [
+        1440,
+        900
+      ],
+      "dock": "below_central_canvas_above_fixed_global_status_bar",
+      "initial_height_px": 160,
+      "min_open_height_px": 120,
+      "collapsed_height_px": 0,
+      "device_row_px": 32,
+      "group_row_px": 40,
+      "ruler_px": 28,
+      "row_header_initial_px": 240,
+      "font_min_px": 13,
+      "basis": "project_design_initial_values",
+      "max_open_height_px": 320,
+      "panel_bar_px": 24,
+      "description_initial_width_px": 300,
+      "description_width_range_px": [
+        240,
+        480
+      ],
+      "tools_position": "bottom_tool_strip",
+      "independent_window_menu_toggles": [
+        "timeline",
+        "description"
+      ],
+      "description_side": "left",
+      "timeline_side": "right",
+      "hidden_description_on_selection": "keep_hidden_update_shared_selected_event_ref",
+      "hide_X": "hide_only_restore_layout_on_explicit_reopen"
+    },
+    "grouping": {
+      "max_levels": 3,
+      "levels": [
+        "hall",
+        "display_group",
+        "device"
+      ],
+      "automatic_sources": [
+        "LineGroup.members",
+        "DeviceInstance.line_id"
+      ],
+      "unassigned_bucket": "未分组",
+      "conflicting_membership": "explicit_issue_do_not_overwrite_project",
+      "manual_groups": "view_only",
+      "canonical_device_membership_per_projection": 1,
+      "cross_hall_selection": "split_per_hall",
+      "order_and_item_trace": "filter_or_temporary_overlay"
+    },
+    "group_summary": {
+      "boundaries": "union_of_observed_member_job_phase_wait_claim_calendar_boundaries",
+      "N": "distinct devices in displayed group, fixed across filters",
+      "B": "distinct devices with observed effective work in interval",
+      "W": "distinct execution devices attached to actual Engine WaitInterval records; include material/resource/output/receiving and recorded queue waits; exclude unreleased or no-demand objects",
+      "O": "distinct devices with actual capacity occupancy in interval",
+      "bands": [
+        "B/N effective work",
+        "W/N waiting"
+      ],
+      "caption": "加工 B/N · 等待 W/N · 占用 O/N",
+      "sets_may_overlap": true,
+      "waiting_tooltip_split": [
+        "active_job_wait",
+        "recorded_queue_wait"
+      ],
+      "not_a_partition": true,
+      "aggregation_invariant": "folding and filtering do not change member-set metrics",
+      "utilization": "sum occupied_capacity_ms / sum available_capacity_ms only for commensurate resource units; zero denominator displays unavailable",
+      "waiting_binding": "require explicit execution identity or verified unique frozen-input mapping; otherwise display unmapped wait with reason",
+      "B_unknown_policy": "without authoritative phase effective-work evidence, display unknown; never substitute occupied devices O",
+      "N_filter_policy": "group denominator and metrics keep full member set; show matched/visible count separately"
+    },
+    "snap": {
+      "threshold_screen_px": 6,
+      "targets": [
+        "visible_time_grid",
+        "explicit_release_or_arrival",
+        "calendar_boundary",
+        "explicit_selected_reference_event_or_due"
+      ],
+      "ordering": [
+        "smallest_screen_distance",
+        "tie: explicit_reference > business_boundary > grid",
+        "stable_reference_id"
+      ],
+      "indicator": [
+        "vertical_line",
+        "target_label",
+        "exact_relative_ms",
+        "delta_ms"
+      ],
+      "temporary_disable": "Alt",
+      "actual_event_is_reference_only": true,
+      "does_not_add_precedence": true
+    },
+    "magnetic_chain": {
+      "business_edges": [
+        "RouteStep.predecessors",
+        "declared_connections_and_item_bindings",
+        "JobState.input_refs",
+        "ItemTransferred",
+        "phase_and_job_resource_requirements"
+      ],
+      "derived_edges_read_only": true,
+      "edit_links": "explicit selection of editable markers within one ScenarioInput",
+      "shared_delta_ms": true,
+      "default_linked_fields": [
+        "ArrivalPlan.at_ms",
+        "OrderLine.release_at_ms",
+        "ProductionTask.release_at_ms"
+      ],
+      "optional_explicit_field": "OrderLine.due_at_ms",
+      "excluded_from_default_links": [
+        "Calendar.intervals",
+        "phase durations",
+        "stock",
+        "actual Run intervals"
+      ],
+      "commit": "existing EditCommand.PutObject(ScenarioInput), one input revision change",
+      "auto_close_waits": false,
+      "group_header_drag": "reorder_only"
+    },
+    "data_bindings": [
+      {
+        "content": "group hierarchy",
+        "source": "frozen Project LineGroup and DeviceInstance; ui_host display overrides"
+      },
+      {
+        "content": "input markers",
+        "source": "ScenarioInput.orders / production_tasks / arrivals; project Calendar.intervals"
+      },
+      {
+        "content": "job envelope",
+        "source": "RunResult.jobs with canonical JobState.execution_ref; actual Engine production pending"
+      },
+      {
+        "content": "phase work",
+        "source": "RunResult.phase_work_intervals + computed_until_ms via FullResult; canonical type merged, actual Engine output pending"
+      },
+      {
+        "content": "capacity occupied",
+        "source": "RunResult.resource_claims resource_id / job_id / units / intervals"
+      },
+      {
+        "content": "waiting",
+        "source": "RunResult.waits object_ref / interval / reasons"
+      },
+      {
+        "content": "transport",
+        "source": "RunResult.transport and TransportChanged timestamps"
+      },
+      {
+        "content": "item at selected time",
+        "source": "RunQuery.ObjectsAt / RuntimeItem holder,lifecycle,quantity; never substitute final_items"
+      },
+      {
+        "content": "acceptance",
+        "source": "RunResult.acceptance_events and orders with acceptance-stage scope"
+      },
+      {
+        "content": "computed boundary",
+        "source": "same snapshot RunResult.computed_until_ms and RunSummary.computed_until_ms; null unknown, not complete"
+      },
+      {
+        "content": "event ordering",
+        "source": "SimulationEvent.at_ms and sequence; stable event paging"
+      }
+    ],
+    "controls": {
+      "presentation": [
+        "playback",
+        "pause_playback",
+        "speed",
+        "seek_view_time",
+        "return_to_current"
+      ],
+      "engine": "only get_task.allowed_controls",
+      "event_step": "full_same_timestamp_closure",
+      "interval_convention": "[start_ms,end_ms); observation-end events follow existing closure contract"
+    },
+    "persistence": {
+      "version": 1,
+      "storage_owner": "ui_host",
+      "storage": "machine-local localStorage",
+      "key": "superfactory.timeline.view.v1:<project_id>:draft|run:<run_id>",
+      "fields": [
+        "group_overrides",
+        "row_order",
+        "collapsed_group_ids",
+        "pinned_resource_ids",
+        "axis_windows",
+        "row_scroll",
+        "time_scale",
+        "dock_height_px",
+        "description_width_px",
+        "timeline_visible",
+        "description_visible",
+        "snap_enabled"
+      ],
+      "owner": "ui_host",
+      "current_public_schema_extended": false,
+      "design_status": "fully_specified_private_UI_V1",
+      "runtime_implemented": false
+    },
+    "implementation_status": "adopted_design_requirements_runtime_not_implemented",
+    "canonical_public_ref": "docs/03_架构与契约/全层类型与工程格式.json#/timeline_runtime_contract"
+  },
+  "walkthrough_cases": [
+    {
+      "id": "E01",
+      "purpose": "折叠不吞等待、不累加并行周期",
+      "input": "组含两台设备，同一 [0,10000) 一台有效加工、另一台有实际等待。",
+      "expected": "组行同时显示加工 1/2、等待 1/2；展开后各自原区间；不能显示整组全忙或周期 20000ms。",
+      "actual_result": null
+    },
+    {
+      "id": "E02",
+      "purpose": "共享人员与阶段等待",
+      "input": "沿既有 CNC 例：上料 10s 要人、自动 45s 释放人、下料 5s 再要人；下料人员不可用。",
+      "expected": "设备占用保留；自动段 10—55s 与等待/下料真实区间分开；不开新完成数、不用名义 60s 补完实际。",
+      "actual_result": null
+    },
+    {
+      "id": "E03",
+      "purpose": "吸附仅对齐输入",
+      "input": "拖一个释放标记吸附到选中参考事件 120000ms；材料到 125000ms。",
+      "expected": "输入释放=120000ms；实际开工由重跑确定且不能仅因吸附显示 120000ms 开工。",
+      "actual_result": null
+    },
+    {
+      "id": "E04",
+      "purpose": "编辑联动不修改实际 Run",
+      "input": "显式选择同方案两个到料标记 10000/20000ms 联动 +5000ms，交期和班次未选。",
+      "expected": "提交新输入的到料为 15000/25000ms；交期、班次不动；旧 Run 区间不变，新 Run 重新计算。",
+      "actual_result": null
+    },
+    {
+      "id": "E05",
+      "purpose": "末态、部分计算与历史身份",
+      "input": "Run 观察窗到 600000ms，但只计算到 300000ms；工程草稿随后移走设备；选中旧 Run 的 100000ms。",
+      "expected": "300000ms 后灰罩未计算；100000ms 用旧 Run 冻结身份和 ObjectsAt；不把 final_items 当该时点库存，不用新工程重解释旧作业。",
+      "actual_result": null
+    },
+    {
+      "id": "E06",
+      "purpose": "待料统计与手动组优先",
+      "input": "设备D1有Engine待料记录，D2加工；将D1手动移为独立行后按所选范围重置自动归类。",
+      "expected": "组内等待不能因未齐套而漏计；D1在当前视图唯一出现，重置不会修改实体流水线或派工。",
+      "actual_result": null
+    },
+    {
+      "id": "E07",
+      "purpose": "同刻闭包与零时长事件",
+      "input": "同刻到料、移交、阶段完成、新作业开工，包含零时长阶段。",
+      "expected": "共用同刻标记，列表按sequence；下一事件时刻执行完整闭包；不伪造毫秒间隔。",
+      "actual_result": null
+    },
+    {
+      "id": "E08",
+      "purpose": "复用模块与阶段中断证据",
+      "input": "两个设备复用同一工艺模块；一个阶段离班中断后恢复，Run在恢复过程中只形成部分结果。",
+      "expected": "已合入TC01绑定唯一设备；TC02只画有效段，computed_boundary不是完成，容量占用不能替代加工。真实Engine记录尚未提供时仍显示未知，不能把字段已合入当作已有Run。",
+      "actual_result": null
+    }
+  ],
+  "public_contract_handoff": [
+    "TC01",
+    "TC02"
+  ],
+  "runtime_verified": false,
+  "application_rule": "用户本轮要求按推荐表和官方资料完整更新SXX-XX；T01—T36成为本轮设计/验收要求。原Q01—Q64、60个S身份、运行结果、成熟度和编码准入不变。公共类型仍按W00实际合入结果判断。 本轮TL01—TL12完整定义与同步子轴要求已由用户授权采用；窄时间轴/独立描述区/窗口菜单/下方工具按窗口2最新要求落实。",
+  "public_contract_change_requests": [
+    {
+      "id": "TC01",
+      "owner": "W00",
+      "checkpoints": [
+        "S05-02",
+        "S06-01",
+        "S06-02",
+        "S06-03",
+        "S06-05"
+      ],
+      "status": "canonical_public_design_merged_finite_proof_passed",
+      "existing_gap": "Job执行设备/路线步骤、设备自身容量占用与历史等待所阻塞阶段的精确绑定缺公共字段，不能用当前Job末态或人员claim猜测。",
+      "proposed_contract": {
+        "JobState.execution_ref": "JobExecutionRef",
+        "JobExecutionRef": "project_device {device_id:ObjectId,route_step_id:Option<ObjectId>,execution_capacity_ref:ObjectRef(Device|Resource)} | definition_cycle {module_ref:ModuleRef}",
+        "WaitInterval.execution_ref": "Option<JobExecutionRef>: only Engine-known execution assignment; pure shared-resource waits may remain None",
+        "WaitInterval.phase_ref": "Option<PhaseId>: phase whose work/entry is blocked, not necessarily currently posed previous phase",
+        "producer_rule": "Job和执行相关Wait引用冻结输入中的真实设备/步骤；execution_capacity_ref区分设备自身占用与人员/辅助资源。纯资源等待保留object_ref不猜设备。阻塞下一阶段时显示blocked phase，表现姿态仍遵从前阶段结束冻结规则。",
+        "projection_rule": "Claim.resource_id须对应明确execution_capacity_ref才能计O；Job相关等待依执行引用/原subject关联；没有映射显示未归属，不能伪造零等待。"
+      },
+      "producers": [
+        "simulation",
+        "desktop_host frozen Run/result"
+      ],
+      "consumers": [
+        "factory_ui timeline/group summary",
+        "presentation device pose",
+        "authoring_ui runtime inspect",
+        "reporting selected job/resource scope"
+      ],
+      "target_files": [
+        "packages/domain/types.design.rs",
+        "packages/domain/type-inventory.design.json",
+        "packages/domain/module-field-bindings.design.json",
+        "packages/commands/api.design.rs"
+      ],
+      "acceptance": [
+        "两个设备复用同一OperationDefinition时作业仍唯一定位",
+        "同任务多步骤复用相同模块时步骤可识别",
+        "定义隔离周期不会伪造正式DeviceInstance",
+        "旧Run使用冻结绑定",
+        "待料/等待进入下一阶段无Job或最终phase改变时仍能定位真实执行对象和被阻塞阶段",
+        "人员忙碌不自动计为对应设备自身容量占用"
+      ],
+      "canonical_ref": "docs/03_架构与契约/全层类型与工程格式.json#/timeline_runtime_contract",
+      "proof_ref": "tools/type-contract-proof/output/timeline-contract-proof-result.json",
+      "proposed_contract_role": "historical_request_only_current_authority_is_canonical_ref",
+      "actual_runtime": null
+    },
+    {
+      "id": "TC02",
+      "owner": "W00",
+      "checkpoints": [
+        "S05-02",
+        "S06-01",
+        "S06-02",
+        "S06-03",
+        "S06-05"
+      ],
+      "status": "canonical_public_design_merged_finite_proof_passed",
+      "existing_gap": "JobState末态和PhaseCompleted事件不足以直接提供完整有效阶段历史区间。",
+      "proposed_contract": {
+        "RunResult.phase_work_intervals": "Vec<PhaseWorkInterval>",
+        "PhaseWorkInterval": {
+          "job_id": "ObjectId",
+          "phase_id": "PhaseId",
+          "interval": "IntervalMs",
+          "effective_progress_start_ms": "DurationMs",
+          "effective_progress_end_ms": "DurationMs",
+          "end_cause": "phase_completed | interrupted | computed_boundary"
+        },
+        "producer_rule": "Engine在一致事件边界记录实际有效工作段；等待和停工不纳入；部分结果截至computed_until_ms，computed_boundary不是阶段完成；零时长阶段沿现有PhaseCompleted记录。",
+        "read_rule": "沿现有get_run FullResult/受管结果引用读取；ObjectsAt供时点状态；不新增第19个操作，不由UI采样或时长反推结果。"
+      },
+      "producers": [
+        "simulation",
+        "desktop_host RunResult"
+      ],
+      "consumers": [
+        "factory_ui phase bands and B/N summary",
+        "presentation phase effective progress",
+        "authoring_ui runtime tags",
+        "reporting effective-work evidence"
+      ],
+      "target_files": [
+        "packages/domain/types.design.rs",
+        "packages/domain/type-inventory.design.json",
+        "packages/commands/api.design.rs",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json"
+      ],
+      "acceptance": [
+        "暂停恢复有效区间不含等待",
+        "全作业持有与阶段工作分开",
+        "计算截断不画完成端帽",
+        "零时长阶段保留真实事件",
+        "相同Run在UI/表现/报告保持同一阶段数据"
+      ],
+      "canonical_ref": "docs/03_架构与契约/全层类型与工程格式.json#/timeline_runtime_contract",
+      "proof_ref": "tools/type-contract-proof/output/timeline-contract-proof-result.json",
+      "proposed_contract_role": "historical_request_only_current_authority_is_canonical_ref",
+      "actual_runtime": null
+    }
+  ],
+  "checkpoint_requirements": {
+    "S03-01": {
+      "decision_ids": [
+        "T01",
+        "T04",
+        "T05",
+        "T06",
+        "T09",
+        "T17",
+        "T25",
+        "T27",
+        "T29"
+      ],
+      "required_delivery": "明确显示归类、输入排期与结果查看是不同用户任务，联动只改明确选定输入。",
+      "consumer_task_ids": [
+        "P2-01",
+        "P2-04",
+        "P2-05"
+      ],
+      "source_refs": [
+        "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+        "docs/02_交互设计/交互流程与视图导航.json",
+        "docs/02_交互设计/时间轴主轴与子轴完整定义.json"
+      ]
+    },
+    "S03-02": {
+      "decision_ids": [
+        "T11",
+        "T12",
+        "T13",
+        "T14",
+        "T20",
+        "T26",
+        "T28",
+        "T33",
+        "T36"
+      ],
+      "required_delivery": "业务等待、接受、库存和依赖沿真实Engine口径；磁链不产生另一派工器。",
+      "consumer_task_ids": [
+        "P0-02",
+        "P1-01",
+        "P1-03",
+        "P1-04",
+        "P2-02",
+        "P2-04",
+        "P3-02"
+      ],
+      "source_refs": [
+        "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+        "docs/02_交互设计/时间轴主轴与子轴完整定义.json"
+      ]
+    },
+    "S03-04": {
+      "decision_ids": [
+        "T03",
+        "T15",
+        "T16",
+        "T35"
+      ],
+      "required_delivery": "核对文字、密度与键盘入口；时间轴显示压缩不删真实物品/事件身份，原NFR实测口径保留。",
+      "consumer_task_ids": [
+        "P2-04",
+        "P3-02",
+        "P5-01"
+      ],
+      "source_refs": [
+        "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+        "docs/02_交互设计/时间轴主轴与子轴完整定义.json"
+      ]
+    },
+    "S03-05": {
+      "decision_ids": [
+        "T12",
+        "T17",
+        "T18",
+        "T19",
+        "T21",
+        "T34"
+      ],
+      "required_delivery": "验收追踪包含TC01/TC02及八个有限走查案例；未合入结果字段不能标已精准运行。",
+      "consumer_task_ids": [
+        "P1-03",
+        "P2-04",
+        "P2-05",
+        "P5-01"
+      ],
+      "source_refs": [
+        "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+        "docs/02_交互设计/首版表单与反馈.json",
+        "docs/02_交互设计/时间轴主轴与子轴完整定义.json"
+      ]
+    },
+    "S04-01": {
+      "decision_ids": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06",
+        "T07",
+        "T08",
+        "T09",
+        "T16",
+        "T22",
+        "T30",
+        "T31"
+      ],
+      "required_delivery": "同一工作台中打开主轴；保存并恢复组折叠/筛选/滚动/对象和冻结Run时点。 同步细化/返回、窄时间轴与描述区、窗口显隐和下方工具按TL01—TL12完整定义。",
+      "consumer_task_ids": [
+        "P2-01",
+        "P2-04",
+        "P2-05"
+      ],
+      "source_refs": [
+        "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+        "docs/02_交互设计/交互流程与视图导航.json",
+        "docs/02_交互设计/时间轴主轴与子轴完整定义.json"
+      ]
+    },
+    "S04-02": {
+      "decision_ids": [
+        "T02",
+        "T03",
+        "T07",
+        "T10",
+        "T11",
+        "T15",
+        "T16",
+        "T17",
+        "T19",
+        "T20",
+        "T21",
+        "T32",
+        "T33"
+      ],
+      "required_delivery": "现行工业母版由拥有者补组摘要/设备展开、来源、等待、部分计算及双时标画面；本轮文字更新不宣布母版通过。 同步细化/返回、窄时间轴与描述区、窗口显隐和下方工具按TL01—TL12完整定义。",
+      "consumer_task_ids": [
+        "P2-01",
+        "P2-04",
+        "P3-02"
+      ],
+      "source_refs": [
+        "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+        "docs/02_交互设计/首版表单与反馈.json",
+        "docs/02_交互设计/工业工作台母版与字段细化.json",
+        "docs/02_交互设计/时间轴主轴与子轴完整定义.json"
+      ]
+    },
+    "S04-03": {
+      "decision_ids": [
+        "T04",
+        "T05",
+        "T06",
+        "T10",
+        "T11",
+        "T12",
+        "T13",
+        "T14",
+        "T17",
+        "T18",
+        "T19",
+        "T20",
+        "T21",
+        "T22",
+        "T23",
+        "T24",
+        "T25",
+        "T26",
+        "T27",
+        "T28",
+        "T29",
+        "T30",
+        "T32",
+        "T35"
+      ],
+      "required_delivery": "落实F16-01至09与F28等待定位；view_selection不改草稿修订，实际结果只读，字段缺口明确显示。 同步细化/返回、窄时间轴与描述区、窗口显隐和下方工具按TL01—TL12完整定义。",
+      "consumer_task_ids": [
+        "P2-01",
+        "P2-04",
+        "P2-05"
+      ],
+      "source_refs": [
+        "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+        "docs/02_交互设计/首版表单与反馈.json",
+        "docs/02_交互设计/时间轴主轴与子轴完整定义.json"
+      ]
+    },
+    "S04-04": {
+      "decision_ids": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06",
+        "T07",
+        "T08",
+        "T09",
+        "T10",
+        "T11",
+        "T12",
+        "T13",
+        "T14",
+        "T15",
+        "T16",
+        "T17",
+        "T18",
+        "T19",
+        "T20",
+        "T21",
+        "T22",
+        "T23",
+        "T24",
+        "T25",
+        "T26",
+        "T27",
+        "T28",
+        "T29",
+        "T30",
+        "T31",
+        "T32",
+        "T33",
+        "T34",
+        "T35",
+        "T36"
+      ],
+      "required_delivery": "原五条贯通链补分组/展开/定位、吸附预览、输入联动和回看控制操作；原型例子明确为示例，不冒充真实Run。 同步细化/返回、窄时间轴与描述区、窗口显隐和下方工具按TL01—TL12完整定义。",
+      "consumer_task_ids": [
+        "P2-01",
+        "P2-04",
+        "P2-05",
+        "P3-03"
+      ],
+      "source_refs": [
+        "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+        "docs/02_交互设计/首版表单与反馈.json",
+        "docs/02_交互设计/连续任务与原型制作依据.json",
+        "docs/02_交互设计/时间轴主轴与子轴完整定义.json"
+      ]
+    },
+    "S04-05": {
+      "decision_ids": [
+        "T04",
+        "T05",
+        "T06",
+        "T07",
+        "T11",
+        "T17",
+        "T21",
+        "T22",
+        "T23",
+        "T24",
+        "T25",
+        "T26",
+        "T27",
+        "T28",
+        "T30",
+        "T31",
+        "T32",
+        "T35"
+      ],
+      "required_delivery": "用户本人实际完成时间轴走查并复核问题；AI检查、设计JSON和截图不能代替本人结果。 同步细化/返回、窄时间轴与描述区、窗口显隐和下方工具按TL01—TL12完整定义。",
+      "consumer_task_ids": [
+        "P1-03",
+        "P2-04",
+        "P2-05",
+        "P5-01"
+      ],
+      "source_refs": [
+        "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+        "docs/04_开发与验收/S04-05_本人原型走查.json",
+        "docs/02_交互设计/时间轴主轴与子轴完整定义.json"
+      ]
+    },
+    "S05-01": {
+      "decision_ids": [
+        "T01",
+        "T18",
+        "T19",
+        "T21",
+        "T31",
+        "T32"
+      ],
+      "required_delivery": "simulation产真实区间，Host保留结果，ui_host持视图偏好，factory_ui投影；不另起Engine/库存/时钟。",
+      "consumer_task_ids": [
+        "P0-01",
+        "P0-02",
+        "P1-01",
+        "P1-03",
+        "P1-04",
+        "P2-02",
+        "P2-04",
+        "P3-02"
+      ],
+      "source_refs": [
+        "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+        "docs/03_架构与契约/共享状态与所有权.json",
+        "docs/02_交互设计/时间轴主轴与子轴完整定义.json"
+      ]
+    },
+    "S05-02": {
+      "decision_ids": [
+        "T01",
+        "T05",
+        "T17",
+        "T21",
+        "T30",
+        "T31",
+        "T32"
+      ],
+      "required_delivery": "OS15/OS16明确私有视图偏好与view_time，冻结Run和当前草稿分开；TC01/TC02归口。",
+      "consumer_task_ids": [
+        "P0-01",
+        "P1-03",
+        "P2-04"
+      ],
+      "source_refs": [
+        "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+        "docs/03_架构与契约/共享状态与所有权.json",
+        "docs/02_交互设计/时间轴主轴与子轴完整定义.json"
+      ]
+    },
+    "S05-03": {
+      "decision_ids": [
+        "T19",
+        "T29"
+      ],
+      "required_delivery": "设备表现只消费阶段有效进度；图片片段联动不改实际工时或其他设备产能。",
+      "consumer_task_ids": [
+        "P1-03",
+        "P3-02",
+        "P3-03"
+      ],
+      "source_refs": [
+        "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+        "docs/02_交互设计/设备时间轴与标签设计.md",
+        "docs/02_交互设计/时间轴主轴与子轴完整定义.json"
+      ]
+    },
+    "S05-05": {
+      "decision_ids": [
+        "T18",
+        "T19",
+        "T21",
+        "T22",
+        "T31",
+        "T32"
+      ],
+      "required_delivery": "实际架构接点试做须核实Job设备身份、有效阶段区间和计算边界流到同一UI/3D消费者；文档不替真实桌面接点。",
+      "consumer_task_ids": [
+        "P0-01",
+        "P1-03",
+        "P2-04",
+        "P3-02"
+      ],
+      "source_refs": [
+        "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+        "docs/03_架构与契约/共享状态与所有权.json",
+        "docs/02_交互设计/时间轴主轴与子轴完整定义.json"
+      ]
+    },
+    "S06-01": {
+      "decision_ids": [
+        "T10",
+        "T11",
+        "T12",
+        "T14",
+        "T18",
+        "T19",
+        "T20",
+        "T26",
+        "T28",
+        "T33",
+        "T36"
+      ],
+      "required_delivery": "冻结Engine输出TC01/TC02与同刻闭包、阶段资源/等待口径；真实占用不代替有效加工。",
+      "consumer_task_ids": [
+        "P0-02",
+        "P1-01",
+        "P1-03",
+        "P1-04",
+        "P2-02",
+        "P2-04",
+        "P3-02"
+      ],
+      "source_refs": [
+        "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+        "docs/03_架构与契约/调度与状态转换算法.json",
+        "docs/02_交互设计/时间轴主轴与子轴完整定义.json"
+      ]
+    },
+    "S06-02": {
+      "decision_ids": [
+        "T04",
+        "T05",
+        "T12",
+        "T13",
+        "T18",
+        "T19",
+        "T20",
+        "T21",
+        "T30",
+        "T31"
+      ],
+      "required_delivery": "W00合入TC01/TC02的公共字段及类型消费者；本机UI偏好私有格式不嵌入ProjectState，不伪称现有类型已覆盖。",
+      "consumer_task_ids": [
+        "P0-01",
+        "P0-02",
+        "P2-04",
+        "P3-02"
+      ],
+      "source_refs": [
+        "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+        "docs/03_架构与契约/共享状态与所有权.json",
+        "docs/02_交互设计/时间轴主轴与子轴完整定义.json"
+      ]
+    },
+    "S06-03": {
+      "decision_ids": [
+        "T21",
+        "T23",
+        "T25",
+        "T27",
+        "T29",
+        "T31",
+        "T32"
+      ],
+      "required_delivery": "继续使用既有apply_commands/get_run/get_task/cancel_task；同方案联动一次PutObject，未算时间不查询，来源/Scope/冲突沿现有契约。",
+      "consumer_task_ids": [
+        "P0-01",
+        "P2-04",
+        "P2-05",
+        "P3-04"
+      ],
+      "source_refs": [
+        "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json",
+        "docs/02_交互设计/时间轴主轴与子轴完整定义.json"
+      ]
+    },
+    "S06-05": {
+      "decision_ids": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06",
+        "T07",
+        "T08",
+        "T09",
+        "T10",
+        "T11",
+        "T12",
+        "T13",
+        "T14",
+        "T15",
+        "T16",
+        "T17",
+        "T18",
+        "T19",
+        "T20",
+        "T21",
+        "T22",
+        "T23",
+        "T24",
+        "T25",
+        "T26",
+        "T27",
+        "T28",
+        "T29",
+        "T30",
+        "T31",
+        "T32",
+        "T33",
+        "T34",
+        "T35",
+        "T36"
+      ],
+      "required_delivery": "TC01/TC02合入后用E01—E08及五条原业务链联合核查；原型/本人/实际接点未过仍不得全冻结。 同步细化/返回、窄时间轴与描述区、窗口显隐和下方工具按TL01—TL12完整定义。",
+      "consumer_task_ids": [
+        "P1-03",
+        "P2-04",
+        "P2-05",
+        "P5-01",
+        "P0-01",
+        "P0-02"
+      ],
+      "source_refs": [
+        "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+        "docs/02_交互设计/首版表单与反馈.json",
+        "docs/03_架构与契约/共享状态与所有权.json",
+        "docs/02_交互设计/时间轴主轴与子轴完整定义.json"
+      ]
+    },
+    "S07-05": {
+      "decision_ids": [
+        "T06",
+        "T11",
+        "T12",
+        "T13",
+        "T14",
+        "T18",
+        "T19",
+        "T20",
+        "T21",
+        "T25",
+        "T27",
+        "T28",
+        "T30",
+        "T31",
+        "T33",
+        "T34"
+      ],
+      "required_delivery": "准备独立有限预期和既有测试入口；当前案例actual_result保持null，编码准入不因文字更新开放。",
+      "consumer_task_ids": [
+        "P1-03",
+        "P2-04",
+        "P2-05",
+        "P5-01"
+      ],
+      "source_refs": [
+        "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+        "docs/02_交互设计/时间轴主轴与子轴完整定义.json"
+      ]
+    },
+    "S08-01": {
+      "decision_ids": [
+        "T18",
+        "T19",
+        "T30",
+        "T31"
+      ],
+      "required_delivery": "实现获准公共结果字段与冻结身份；UI偏好独立保存，不污染工程生产输入。",
+      "consumer_task_ids": [
+        "P0-01",
+        "P0-02",
+        "P2-04"
+      ],
+      "source_refs": [
+        "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+        "docs/03_架构与契约/共享状态与所有权.json",
+        "docs/02_交互设计/时间轴主轴与子轴完整定义.json"
+      ]
+    },
+    "S08-02": {
+      "decision_ids": [
+        "T11",
+        "T12",
+        "T14",
+        "T18",
+        "T19",
+        "T20",
+        "T28",
+        "T33",
+        "T36"
+      ],
+      "required_delivery": "Engine产生真实绑定和有效区间；等待、运输、接受及同刻闭包保持原业务行为。",
+      "consumer_task_ids": [
+        "P0-02",
+        "P1-01",
+        "P1-03",
+        "P1-04",
+        "P2-02",
+        "P2-04",
+        "P3-02"
+      ],
+      "source_refs": [
+        "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+        "docs/02_交互设计/时间轴主轴与子轴完整定义.json"
+      ]
+    },
+    "S08-03": {
+      "decision_ids": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06",
+        "T07",
+        "T08",
+        "T09",
+        "T10",
+        "T11",
+        "T12",
+        "T13",
+        "T14",
+        "T15",
+        "T16",
+        "T17",
+        "T18",
+        "T19",
+        "T20",
+        "T21",
+        "T22",
+        "T23",
+        "T24",
+        "T25",
+        "T26",
+        "T27",
+        "T28",
+        "T29",
+        "T30",
+        "T31",
+        "T32",
+        "T33",
+        "T34",
+        "T35"
+      ],
+      "required_delivery": "获准编码后实现一条主轴、显示组、混排、吸附与输入联动；同一Commands/Run结果供两个画布。 同步细化/返回、窄时间轴与描述区、窗口显隐和下方工具按TL01—TL12完整定义。",
+      "consumer_task_ids": [
+        "P2-01",
+        "P2-04",
+        "P2-05",
+        "P3-03"
+      ],
+      "source_refs": [
+        "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+        "docs/02_交互设计/交互流程与视图导航.json",
+        "docs/02_交互设计/首版表单与反馈.json",
+        "docs/02_交互设计/时间轴主轴与子轴完整定义.json"
+      ]
+    },
+    "S08-04": {
+      "decision_ids": [
+        "T19",
+        "T29"
+      ],
+      "required_delivery": "真实阶段有效进度接入受控表现，等待保持姿态；外观媒体循环不重新生产。",
+      "consumer_task_ids": [
+        "P1-03",
+        "P3-02",
+        "P3-03"
+      ],
+      "source_refs": [
+        "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+        "docs/02_交互设计/时间轴主轴与子轴完整定义.json"
+      ]
+    },
+    "S08-05": {
+      "decision_ids": [
+        "T06",
+        "T11",
+        "T12",
+        "T13",
+        "T14",
+        "T18",
+        "T19",
+        "T20",
+        "T21",
+        "T23",
+        "T24",
+        "T25",
+        "T27",
+        "T28",
+        "T30",
+        "T31",
+        "T33",
+        "T34"
+      ],
+      "required_delivery": "实现后验证唯一归属、统计不变量、真实区间、冻结身份及联动提交；不把本轮静态检查当产品测试。",
+      "consumer_task_ids": [
+        "P1-03",
+        "P2-04",
+        "P2-05",
+        "P5-01"
+      ],
+      "source_refs": [
+        "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+        "docs/02_交互设计/时间轴主轴与子轴完整定义.json"
+      ]
+    },
+    "S09-01": {
+      "decision_ids": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06",
+        "T07",
+        "T08",
+        "T09",
+        "T10",
+        "T11",
+        "T12",
+        "T13",
+        "T14",
+        "T15",
+        "T16",
+        "T17",
+        "T18",
+        "T19",
+        "T20",
+        "T21",
+        "T22",
+        "T23",
+        "T24",
+        "T25",
+        "T26",
+        "T27",
+        "T28",
+        "T29",
+        "T30",
+        "T31",
+        "T32",
+        "T33",
+        "T34",
+        "T35",
+        "T36"
+      ],
+      "required_delivery": "按E01—E08实测主轴、设备/组、等待、输入联动与同一Run场景联动；保留原系统/SF/IX全量验收。",
+      "consumer_task_ids": [
+        "P1-03",
+        "P2-04",
+        "P2-05",
+        "P5-01",
+        "P3-02",
+        "P3-04"
+      ],
+      "source_refs": [
+        "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+        "docs/02_交互设计/首版表单与反馈.json",
+        "docs/02_交互设计/时间轴主轴与子轴完整定义.json"
+      ]
+    },
+    "S09-02": {
+      "decision_ids": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06",
+        "T07",
+        "T08",
+        "T09",
+        "T10",
+        "T11",
+        "T12",
+        "T13",
+        "T14",
+        "T15",
+        "T16",
+        "T17",
+        "T18",
+        "T19",
+        "T20",
+        "T21",
+        "T22",
+        "T23",
+        "T24",
+        "T25",
+        "T26",
+        "T27",
+        "T28",
+        "T29",
+        "T30",
+        "T31",
+        "T32",
+        "T33",
+        "T34",
+        "T35",
+        "T36"
+      ],
+      "required_delivery": "按E01—E08实测主轴、设备/组、等待、输入联动与同一Run场景联动；保留原系统/SF/IX全量验收。",
+      "consumer_task_ids": [
+        "P1-03",
+        "P2-04",
+        "P2-05",
+        "P5-01",
+        "P3-02",
+        "P3-04"
+      ],
+      "source_refs": [
+        "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+        "docs/02_交互设计/首版表单与反馈.json",
+        "docs/02_交互设计/时间轴主轴与子轴完整定义.json"
+      ]
+    },
+    "S09-03": {
+      "decision_ids": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06",
+        "T07",
+        "T08",
+        "T09",
+        "T10",
+        "T11",
+        "T12",
+        "T13",
+        "T14",
+        "T15",
+        "T16",
+        "T17",
+        "T18",
+        "T19",
+        "T20",
+        "T21",
+        "T22",
+        "T23",
+        "T24",
+        "T25",
+        "T26",
+        "T27",
+        "T28",
+        "T29",
+        "T30",
+        "T31",
+        "T32",
+        "T33",
+        "T34",
+        "T35",
+        "T36"
+      ],
+      "required_delivery": "按E01—E08实测主轴、设备/组、等待、输入联动与同一Run场景联动；保留原系统/SF/IX全量验收。",
+      "consumer_task_ids": [
+        "P1-03",
+        "P2-04",
+        "P2-05",
+        "P5-01",
+        "P3-02",
+        "P3-04"
+      ],
+      "source_refs": [
+        "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+        "docs/02_交互设计/首版表单与反馈.json",
+        "docs/02_交互设计/时间轴主轴与子轴完整定义.json"
+      ]
+    },
+    "S09-04": {
+      "decision_ids": [
+        "T21",
+        "T30",
+        "T31"
+      ],
+      "required_delivery": "实际保存/重开/旧Run回看：结果不套新草稿，私有偏好不成为跨机工程必要依赖。",
+      "consumer_task_ids": [
+        "P0-01",
+        "P2-03",
+        "P2-04"
+      ],
+      "source_refs": [
+        "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+        "docs/03_架构与契约/共享状态与所有权.json",
+        "docs/02_交互设计/时间轴主轴与子轴完整定义.json"
+      ]
+    },
+    "S09-05": {
+      "decision_ids": [
+        "T03",
+        "T07",
+        "T09",
+        "T16",
+        "T21"
+      ],
+      "required_delivery": "原NFR负载下测轨道折叠/密度/分页与中央画布表现；不能删除物品身份或静默截事件来达标。",
+      "consumer_task_ids": [
+        "P2-01",
+        "P2-04",
+        "P5-01"
+      ],
+      "source_refs": [
+        "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+        "docs/02_交互设计/时间轴主轴与子轴完整定义.json"
+      ]
+    },
+    "S10-01": {
+      "decision_ids": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06",
+        "T07",
+        "T08",
+        "T09",
+        "T10",
+        "T11",
+        "T12",
+        "T13",
+        "T14",
+        "T15",
+        "T16",
+        "T17",
+        "T18",
+        "T19",
+        "T20",
+        "T21",
+        "T22",
+        "T23",
+        "T24",
+        "T25",
+        "T26",
+        "T27",
+        "T28",
+        "T29",
+        "T30",
+        "T31",
+        "T32",
+        "T33",
+        "T34",
+        "T35",
+        "T36"
+      ],
+      "required_delivery": "最终以真实执行证明时间轴要求；包含公共字段合入、原型和本人走查，静态通过不替运行。",
+      "consumer_task_ids": [
+        "P1-03",
+        "P2-04",
+        "P2-05",
+        "P5-01"
+      ],
+      "source_refs": [
+        "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+        "docs/02_交互设计/时间轴主轴与子轴完整定义.json"
+      ]
+    },
+    "S10-03": {
+      "decision_ids": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06",
+        "T07",
+        "T08",
+        "T09",
+        "T10",
+        "T11",
+        "T12",
+        "T13",
+        "T14",
+        "T15",
+        "T16",
+        "T17",
+        "T18",
+        "T19",
+        "T20",
+        "T21",
+        "T22",
+        "T23",
+        "T24",
+        "T25",
+        "T26",
+        "T27",
+        "T28",
+        "T29",
+        "T30",
+        "T31",
+        "T32",
+        "T33",
+        "T34",
+        "T35",
+        "T36"
+      ],
+      "required_delivery": "最终以真实执行证明时间轴要求；包含公共字段合入、原型和本人走查，静态通过不替运行。",
+      "consumer_task_ids": [
+        "P1-03",
+        "P2-04",
+        "P2-05",
+        "P5-01"
+      ],
+      "source_refs": [
+        "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+        "docs/02_交互设计/时间轴主轴与子轴完整定义.json"
+      ]
+    },
+    "S10-02": {
+      "decision_ids": [
+        "T04",
+        "T05",
+        "T06",
+        "T07",
+        "T09",
+        "T11",
+        "T15",
+        "T16",
+        "T17",
+        "T21",
+        "T22",
+        "T23",
+        "T24",
+        "T25",
+        "T26",
+        "T27",
+        "T28",
+        "T31",
+        "T32",
+        "T35"
+      ],
+      "required_delivery": "实际用户能完成归类、等待定位、吸附输入、联动修改及回看；根据真实反馈修正。",
+      "consumer_task_ids": [
+        "P1-03",
+        "P2-04",
+        "P2-05",
+        "P5-01"
+      ],
+      "source_refs": [
+        "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+        "docs/02_交互设计/首版表单与反馈.json",
+        "docs/02_交互设计/时间轴主轴与子轴完整定义.json"
+      ]
+    },
+    "S10-05": {
+      "decision_ids": [
+        "T30",
+        "T31"
+      ],
+      "required_delivery": "接手机器没有本机偏好仍按冻结工程自动分类；旧Run可还原，不要求复制私有UI文件才可读工程。",
+      "consumer_task_ids": [
+        "P2-03",
+        "P2-04",
+        "P5-01"
+      ],
+      "source_refs": [
+        "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+        "docs/02_交互设计/时间轴主轴与子轴完整定义.json"
+      ]
+    },
+    "S11-01": {
+      "decision_ids": [
+        "T30",
+        "T31"
+      ],
+      "required_delivery": "工程包包含原需冻结输入/结果，不混入本机私有UI偏好；另一目录重开保持结果身份和自动分类。",
+      "consumer_task_ids": [
+        "P0-01",
+        "P2-03",
+        "P2-04"
+      ],
+      "source_refs": [
+        "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+        "docs/02_交互设计/时间轴主轴与子轴完整定义.json"
+      ]
+    },
+    "S11-04": {
+      "decision_ids": [
+        "T18",
+        "T19",
+        "T30",
+        "T31"
+      ],
+      "required_delivery": "公共格式变化由W00声明实际支持版本及未验证旧结果；不由UI猜测旧Job执行设备/阶段历史。",
+      "consumer_task_ids": [
+        "P0-01",
+        "P0-02",
+        "P2-04"
+      ],
+      "source_refs": [
+        "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+        "docs/02_交互设计/时间轴主轴与子轴完整定义.json"
+      ]
+    },
+    "S05-04": {
+      "decision_ids": [
+        "T03",
+        "T16",
+        "T21",
+        "T31"
+      ],
+      "required_delivery": "消费TL11与现行React/TypeScript/SVG实现方法、版本来源及WebView2验证要求；不增时间轴依赖，不以选型替实际接点。",
+      "consumer_task_ids": [
+        "P0-01",
+        "P2-04",
+        "P3-02"
+      ],
+      "source_refs": [
+        "docs/02_交互设计/时间轴主轴与子轴完整定义.json",
+        "docs/03_架构与契约/首版技术栈与部署设计.json"
+      ]
+    }
+  },
+  "applied_source_files": [
+    "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+    "docs/02_交互设计/交互流程与视图导航.json",
+    "docs/02_交互设计/首版表单与反馈.json",
+    "docs/02_交互设计/主流程与视图导航.md",
+    "docs/02_交互设计/设备时间轴与标签设计.md",
+    "docs/02_交互设计/业务界面与方案评审.md",
+    "docs/02_交互设计/完整操作流程与方案交付.md",
+    "docs/02_交互设计/连续任务与原型制作依据.json",
+    "docs/03_架构与契约/共享状态与生命周期.md",
+    "docs/03_架构与契约/共享状态与所有权.json",
+    "docs/04_开发与验收/全量设计编码确认/SXX-XX_确认选择落实.json",
+    "tools/同步确认选择到任务.py",
+    "docs/02_交互设计/时间轴主轴与子轴完整定义.json"
+  ],
+  "clarification_comparison": {
+    "user_question": "画布→流水线/设备创建→设备/输送带/机械臂；主轴→流水线/设备→独立显示但同时间的子轴，细化主轴某一段。",
+    "status": "adopted_in_complete_definition_by_current_user_instruction",
+    "consistent": [
+      "同一工程/同一Run/同一生产时钟",
+      "流水线组可以展开设备",
+      "设备详情可以显示局部过程",
+      "子轴若指主轴下展开的成员轨道，现行组展开已支持这种设计要求"
+    ],
+    "differences": [
+      {
+        "id": "HC01",
+        "current": "画布是投影，LineGroup/DeviceInstance是工程实例；RuntimeItem是生产工件/物料/容器。",
+        "user_term": "设备/传送带/机械臂等物品",
+        "recommendation": "有独立行为/资源/端口/事件的机械对象建DeviceInstance；仅几何/姿态的部件建Presentation.nodes；工件用RuntimeItem。"
+      },
+      {
+        "id": "HC02",
+        "current": "主轴是共享时间坐标，显示组是可折叠行，不按创建树逐节点自动生成轨道。",
+        "user_term": "创建层级对应时间轴层级",
+        "recommendation": "默认LineGroup摘要→DeviceInstance轨道；仅在选定设备上展开阶段/资源/等待，不为全部几何部件生成轨道。"
+      },
+      {
+        "id": "HC03",
+        "current": "已明确主轴下展开成员轨道与设备条内阶段；未明确选中时间片段后钻取局部范围，以及设备阶段/资源/等待各占细化行的规则。",
+        "user_term": "主轴某段的流水线/设备子轴",
+        "recommendation": "默认在底部面板展开子轨道；需要时在同面板钻取所选绝对时段，设备细化为阶段/资源/等待行。无需另开窗口，所有时点仍属同一Run。"
+      }
+    ],
+    "recommended_linked_detail_contract": {
+      "recommended_status": "adopted_document_definition_runtime_pending",
+      "source_key": [
+        "run_id",
+        "RunInputRef",
+        "object/group identity",
+        "selected_interval_ms"
+      ],
+      "selection": "main group segment selects a real absolute-time interval and member set",
+      "line_detail": "show member device jobs in selected interval, not a new simulated line",
+      "device_detail": "show job phase work/resource claims/waits in selected interval",
+      "clock": "same Engine clock and shared view_time; no child Run or recursive Engine",
+      "zoom": "local time scale may differ; absolute ms labels and cursor synchronize, not normalize the segment to time zero or u",
+      "editing": "actual detail read-only; input editing goes through same ScenarioInput/Commands; Presentation clip edit remains separate",
+      "child_components": "only independently modeled execution identities have execution rows; geometry parts may have optional media tracks in authoring view",
+      "return": "restore main interval/group/filter/scroll/selection; selection and folding remain view-only",
+      "data_prerequisites": [
+        "TC01",
+        "TC02"
+      ],
+      "container": "existing bottom timeline panel; inline expansion by default, selected-range detail via explicit drill-in/back; no additional mandatory window",
+      "segment_rule": "selected interval clips the displayed portion only; preserve job/phase identity and true timestamps; continuation marks for events crossing interval edges",
+      "tree_rule": "global grouping remains hall/group/device; phase/resource/wait detail rows belong to selected inspector, not a new production hierarchy",
+      "public_type_state": "merged_under_canonical_ref_actual_producers_pending"
+    },
+    "complete_definition_ref": "docs/02_交互设计/时间轴主轴与子轴完整定义.json"
+  },
+  "complete_definition_ref": "docs/02_交互设计/时间轴主轴与子轴完整定义.json",
+  "public_contract_merge": {
+    "status": "canonical_public_types_merged_finite_proof_passed_product_execution_pending",
+    "canonical_ref": "docs/03_架构与契约/全层类型与工程格式.json#/timeline_runtime_contract",
+    "proof_ref": "tools/type-contract-proof/output/timeline-contract-proof-result.json",
+    "finite_case_count": 13,
+    "evidence_kind": "Rust_derived_TS_Schema_and_native_FullResult_finite_contract_proof",
+    "Engine_or_Host_executed": false,
+    "actual_product_runtime": null,
+    "actual_prototype": null
+  }
+}

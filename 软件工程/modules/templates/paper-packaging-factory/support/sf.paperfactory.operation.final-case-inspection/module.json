@@ -1,0 +1,172 @@
+{
+  "schema_version": "1.0",
+  "data": {
+    "assets": [],
+    "definition": {
+      "attribute_schema": [],
+      "contribution": {
+        "assets": [],
+        "author": "Super Factory demo factory design",
+        "license": "CC0-1.0"
+      },
+      "definition_state": "runtime_candidate",
+      "id": "sf.paperfactory.operation.final-case-inspection",
+      "parameters": [],
+      "payload": {
+        "category": "operations",
+        "data": {
+          "builtin": "inspect_and_route",
+          "duration": null,
+          "family": "vision-carton-inspector",
+          "hold_on_output_wait": [],
+          "identity_policy": "preserve",
+          "inputs": [
+            {
+              "declared_output_quality": null,
+              "port": "input",
+              "quantity": {
+                "unit": "piece",
+                "value": {
+                  "coefficient": 1,
+                  "decimal_places": 0
+                }
+              },
+              "required_quality": [
+                "unchecked",
+                "released"
+              ],
+              "role": "input"
+            }
+          ],
+          "item_roles": [
+            "input",
+            "output",
+            "rejected",
+            "isolation"
+          ],
+          "outputs": [
+            {
+              "declared_output_quality": null,
+              "port": "output",
+              "quantity": {
+                "unit": "piece",
+                "value": {
+                  "coefficient": 1,
+                  "decimal_places": 0
+                }
+              },
+              "required_quality": [],
+              "role": "output"
+            },
+            {
+              "declared_output_quality": null,
+              "port": "rejected",
+              "quantity": {
+                "unit": "piece",
+                "value": {
+                  "coefficient": 1,
+                  "decimal_places": 0
+                }
+              },
+              "required_quality": [],
+              "role": "rejected"
+            },
+            {
+              "declared_output_quality": null,
+              "port": "isolation",
+              "quantity": {
+                "unit": "piece",
+                "value": {
+                  "coefficient": 1,
+                  "decimal_places": 0
+                }
+              },
+              "required_quality": [],
+              "role": "isolation"
+            }
+          ],
+          "phases": [
+            {
+              "duration": {
+                "basis": "module_declared",
+                "source_ref": null,
+                "unit": "millisecond",
+                "value": 2400
+              },
+              "id": "load",
+              "interruption_policy": "pause_resume",
+              "phase_resources": [],
+              "work_kind": "loading"
+            },
+            {
+              "duration": {
+                "basis": "module_declared",
+                "source_ref": null,
+                "unit": "millisecond",
+                "value": 7200
+              },
+              "id": "auto",
+              "interruption_policy": "pause_resume",
+              "phase_resources": [
+                {
+                  "qualifications": [],
+                  "quantity": {
+                    "unit": "slot",
+                    "value": {
+                      "coefficient": 1,
+                      "decimal_places": 0
+                    }
+                  },
+                  "role": "auto_fixture"
+                }
+              ],
+              "work_kind": "inspection"
+            },
+            {
+              "duration": {
+                "basis": "module_declared",
+                "source_ref": null,
+                "unit": "millisecond",
+                "value": 2400
+              },
+              "id": "unload",
+              "interruption_policy": "pause_resume",
+              "phase_resources": [],
+              "work_kind": "unloading"
+            }
+          ],
+          "quality_and_routes": {
+            "fail_port": "rejected",
+            "isolation_location_role": "isolation",
+            "max_completed_reworks": 1,
+            "pass_port": "output",
+            "pending_location_role": null,
+            "pending_policy": "hold_station",
+            "release_required": true,
+            "result_ref": null,
+            "source_kind": "preset"
+          },
+          "resource_roles": [
+            {
+              "qualifications": [],
+              "quantity": {
+                "unit": "person",
+                "value": {
+                  "coefficient": 1,
+                  "decimal_places": 0
+                }
+              },
+              "role": "operator"
+            }
+          ]
+        }
+      },
+      "title": "纸箱最终检验（含已获工序放行的来料）",
+      "version": "1.0.0"
+    },
+    "dependencies": [],
+    "files": [],
+    "issues": [],
+    "rights": []
+  }
+}

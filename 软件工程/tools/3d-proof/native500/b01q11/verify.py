@@ -1,0 +1,27 @@
+from pathlib import Path
+import json,math,sys
+ROOT=Path(__file__).resolve().parents[4];HOME=ROOT/'modules/media/native-equipment-500/reviews/B01-Q11';attempt=ROOT/(sys.argv[1]if len(sys.argv)>1 else'.work/native500-quality-20261025/b01q11/attempt-01');read=lambda p:json.loads(p.read_text(encoding='utf8'));write=lambda p,v:p.write_text(json.dumps(v,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
+run=read(attempt/'PAPER-QA.run.json');receipt=read(attempt/'host-receipt.json');spec=read(HOME/'catalog.json')['equipment'][0];key=spec['id'];assert len(run['jobs'])==8 and all(j['state']=='completed'for j in run['jobs'])and receipt['fresh_Host_save_reopen']and run['whole_window_computed'];checks=[];row={'id':key,'version':spec['version'],'conditions':{}};cases=[]
+for condition in ['normal','missing','missing-component','missing-auxiliary','phase-wait','interrupted','output-wait']:
+ dev=key+'--'+condition;job=next(j for j in run['jobs']if j['execution_ref']['data']['device_id']==dev);assert job['operation_ref']==dict(id=spec['definition_id'],version=spec['version']);intervals=[p for p in run['phase_work_intervals']if p['job_id']==job['id']];assert sum(p['interval']['end_ms']-p['interval']['start_ms']for p in intervals)==26000
+ expected=None if condition=='normal'else('missing_material',0,8000)if condition.startswith('missing')else('calendar',5200,10200)if condition=='phase-wait'else('calendar',11440,16440)if condition=='interrupted'else('output_capacity',26000,30000)
+ waits=[w for w in run['waits']if w['object_ref']['id']==job['id']]
+ if expected:
+  reason,start,end=expected;w=next(w for w in waits if any(r['kind']==reason for r in w['reasons']));assert w['interval']==dict(start_ms=start,end_ms=end)and w['end_cause']=='resolved'
+ else:assert not waits
+ finished=26000 if condition=='normal'else 34000 if condition.startswith('missing')else 31000 if condition in['phase-wait','interrupted']else 30000;assert job['finished_at_ms']==finished
+ ids=['paper-'+dev,'component-'+dev,'auxiliary-'+dev];assert set(job['input_refs'])==set(ids)
+ for id in ids:
+  i=next(i for i in run['final_items']if i['id']==id);assert i['lifecycle']=='transformed'and i['quantity']==dict(unit='piece',value=dict(coefficient=1,decimal_places=0))
+  e=next(e for e in run['events']if e['payload']['kind']=='item_transferred'and e['payload']['data']['item_ref']==id and e['payload']['data']['to_holder']==dict(kind='job',id=job['id']));assert e['at_ms']==(8000 if condition.startswith('missing')else 0)
+ outputs=[i for i in run['final_items']if i['holder']==dict(kind='location',id=dev+'-out')];assert len(outputs)==1;o=outputs[0];assert o['id']not in ids and set(o['composition_refs'])==set(ids)and o['contents']==[]and o['attributes']['presentation_state']['value']=='wet_laminated_board'and math.isclose(o['attributes']['finished_total_thickness_m']['value'],.0047,abs_tol=1e-12)and o['attributes']['area_m2']['value']==.20 and o['quality']=='released';assert next(i for i in run['final_items']if i['id']=='auxiliary-'+dev)['attributes']['declared_dose_volume_m3']['value']==.000004
+ row['conditions'][condition]={'job_id':job['id'],'wait':expected,'started_ms':job['started_at_ms'],'finished_ms':finished,'effective_work_ms':26000,'source_ids':ids,'composite_id':o['id'],'passed':True}
+def capture(condition,label,at,lod='detailed'):
+ dev=key+'--'+condition;view={'kind':'line_canvas','canvas':'line_canvas','hall_id':'hall-'+dev,'object_ref':{'kind':'line','id':'line-'+dev},'project_revision':3,'run_id':run['id'],'view_time_ms':at,'lod':lod,'camera':{'coordinate_frame':'right_handed_z_up','unit':'meter','eye':dict(x=6.8,y=7.3,z=3.8),'target':dict(x=3,y=3.2,z=1.0),'zoom':1}}
+ cases.append({'name':dev+' / '+label,'scope':{'kind':'project'},'params':{'revision':3,'view':view,'object_id':{'kind':'line','id':'line-'+dev},'preview':None,'delivery':'capture_only'}})
+for label,at,lod in [('held while joining',14560,'detailed'),('held simple LOD',14560,'simplified'),('loading three inputs',2600,'detailed'),('unloading wet composite',23400,'detailed'),('delivered composite',26001,'detailed'),('crest glue application',9880,'detailed'),('fully joined before unload',17680,'detailed')]:capture('normal',label,at,lod)
+for condition in ['missing','missing-component','missing-auxiliary']:capture(condition,'waiting for '+condition,4000);capture(condition,'recovered '+condition,22560)
+capture('phase-wait','holding three sources before phase resource',6200)
+for label,at in [('paused A',12440),('paused B',15440),('resumed joining',18000)]:capture('interrupted',label,at)
+capture('output-wait','holding new composite while blocked',27000);capture('output-wait','delivered after buffer clearance',30001);assert len(cases)==19
+write(attempt/'behavior-checks.json',{'passed':True,'scope':'actual Host Run; Native visual acceptance pending','run_id':run['id'],'input_ref':run['input_ref'],'checks':[row],'fresh_Host_save_reopen':True,'actual_device_conditions':7,'actual_jobs':8,'three_sources_to_new_wet_composite':True});write(attempt/'native-plan.json',{'preparations':[],'allow_view_control':False,'cases':cases});write(HOME/'host-checks.json',{'passed':True,'attempt':attempt.relative_to(ROOT).as_posix(),'jobs':8,'device_conditions':7,'three_real_sources_and_new_composite':True,'fresh_Host_save_reopen':True,'Native':'pending'});print('B01-Q11 Host8 jobs/7 conditions: three transformed sources, one new wet composite with exact origins, waits and fresh reopen PASS;19 Native views prepared.')

@@ -1,0 +1,1574 @@
+{
+  "schema_version": "1.0",
+  "data": {
+    "setup_policies": [],
+    "id": "p401.carton-factory.blueprint",
+    "revision": 1,
+    "title": "采购纸板→模切→折糊→检验：纸箱制造声明例 · 显式示例产品",
+    "time_reference": {
+      "label": "scenario_start",
+      "origin_iso8601": null,
+      "timezone": null
+    },
+    "item_types": [
+      {
+        "id": "board",
+        "revision": "r1",
+        "title": "board",
+        "unit": "piece",
+        "tracking": "individual",
+        "spec_ref": null,
+        "attributes": {},
+        "attribute_schema": []
+      },
+      {
+        "id": "carton-blank",
+        "revision": "r1",
+        "title": "carton-blank",
+        "unit": "piece",
+        "tracking": "individual",
+        "spec_ref": null,
+        "attributes": {},
+        "attribute_schema": []
+      },
+      {
+        "id": "carton",
+        "revision": "r1",
+        "title": "carton",
+        "unit": "piece",
+        "tracking": "individual",
+        "spec_ref": null,
+        "attributes": {},
+        "attribute_schema": []
+      }
+    ],
+    "locations": [
+      {
+        "id": "store-board",
+        "title": "store-board",
+        "hall_id": "H1",
+        "position": {
+          "translation": {
+            "x": 2,
+            "y": 2,
+            "z": 0
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0,
+            "w": 1
+          },
+          "scale": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          },
+          "unit": "meter",
+          "coordinate_frame": "right_handed_z_up"
+        },
+        "capacity": {
+          "value": {
+            "coefficient": 4,
+            "decimal_places": 0
+          },
+          "unit": "piece"
+        },
+        "accepted_item_types": [
+          "board"
+        ],
+        "purpose": "input",
+        "ordinary_issue_enabled": true
+      },
+      {
+        "id": "store-blank",
+        "title": "store-blank",
+        "hall_id": "H1",
+        "position": {
+          "translation": {
+            "x": 5,
+            "y": 2,
+            "z": 0
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0,
+            "w": 1
+          },
+          "scale": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          },
+          "unit": "meter",
+          "coordinate_frame": "right_handed_z_up"
+        },
+        "capacity": {
+          "value": {
+            "coefficient": 4,
+            "decimal_places": 0
+          },
+          "unit": "piece"
+        },
+        "accepted_item_types": [
+          "carton-blank"
+        ],
+        "purpose": "buffer",
+        "ordinary_issue_enabled": true
+      },
+      {
+        "id": "store-carton",
+        "title": "store-carton",
+        "hall_id": "H1",
+        "position": {
+          "translation": {
+            "x": 8,
+            "y": 2,
+            "z": 0
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0,
+            "w": 1
+          },
+          "scale": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          },
+          "unit": "meter",
+          "coordinate_frame": "right_handed_z_up"
+        },
+        "capacity": {
+          "value": {
+            "coefficient": 4,
+            "decimal_places": 0
+          },
+          "unit": "piece"
+        },
+        "accepted_item_types": [
+          "carton"
+        ],
+        "purpose": "output",
+        "ordinary_issue_enabled": true
+      },
+      {
+        "id": "store-released",
+        "title": "store-released",
+        "hall_id": "H1",
+        "position": {
+          "translation": {
+            "x": 11,
+            "y": 2,
+            "z": 0
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0,
+            "w": 1
+          },
+          "scale": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          },
+          "unit": "meter",
+          "coordinate_frame": "right_handed_z_up"
+        },
+        "capacity": {
+          "value": {
+            "coefficient": 4,
+            "decimal_places": 0
+          },
+          "unit": "piece"
+        },
+        "accepted_item_types": [
+          "carton"
+        ],
+        "purpose": "output",
+        "ordinary_issue_enabled": true
+      },
+      {
+        "id": "store-isolate",
+        "title": "store-isolate",
+        "hall_id": "H1",
+        "position": {
+          "translation": {
+            "x": 14,
+            "y": 2,
+            "z": 0
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0,
+            "w": 1
+          },
+          "scale": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          },
+          "unit": "meter",
+          "coordinate_frame": "right_handed_z_up"
+        },
+        "capacity": {
+          "value": {
+            "coefficient": 4,
+            "decimal_places": 0
+          },
+          "unit": "piece"
+        },
+        "accepted_item_types": [
+          "carton"
+        ],
+        "purpose": "isolation",
+        "ordinary_issue_enabled": false
+      }
+    ],
+    "halls": [
+      {
+        "id": "H1",
+        "title": "H1",
+        "width_m": 24,
+        "depth_m": 16,
+        "height_m": null,
+        "origin": {
+          "translation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0,
+            "w": 1
+          },
+          "scale": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          },
+          "unit": "meter",
+          "coordinate_frame": "right_handed_z_up"
+        },
+        "input_locations": [
+          "store-board"
+        ],
+        "output_locations": [
+          "store-carton",
+          "store-released"
+        ]
+      }
+    ],
+    "lines": [
+      {
+        "id": "L-carton",
+        "title": "L-carton",
+        "hall_id": "H1",
+        "transform": {
+          "translation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0,
+            "w": 1
+          },
+          "scale": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          },
+          "unit": "meter",
+          "coordinate_frame": "right_handed_z_up"
+        },
+        "members": [
+          "DieCut01",
+          "FoldGlue01",
+          "Inspection01"
+        ],
+        "boundary_ports": [],
+        "region_polygon_m": []
+      }
+    ],
+    "devices": [
+      {
+        "id": "DieCut01",
+        "title": "DieCut01",
+        "hall_id": "H1",
+        "line_id": "L-carton",
+        "module_ref": {
+          "id": "p401.carton-factory.DieCut01",
+          "version": "1.0.0"
+        },
+        "pose": {
+          "translation": {
+            "x": 4,
+            "y": 8,
+            "z": 0
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0,
+            "w": 1
+          },
+          "scale": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          },
+          "unit": "meter",
+          "coordinate_frame": "right_handed_z_up"
+        },
+        "footprint_m": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 1,
+            "y": 0
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "height_m": 1,
+        "configuration": {
+          "cycle_seconds": {
+            "kind": "duration",
+            "value": {
+              "value": 20000,
+              "unit": "millisecond",
+              "basis": "module_declared",
+              "source_ref": null
+            }
+          }
+        },
+        "role_bindings": {
+          "item_types": {
+            "input": "board",
+            "output": "carton-blank"
+          },
+          "resources": {
+            "legacy.worker.W-C": "W-C",
+            "execution_capacity": "capacity-DieCut01"
+          },
+          "targets": {
+            "material_store.input": {
+              "kind": "location",
+              "id": "store-board"
+            },
+            "material_store.output": {
+              "kind": "location",
+              "id": "store-blank"
+            }
+          },
+          "ports": {}
+        },
+        "presentation_override": null,
+        "operation_binding": null
+      },
+      {
+        "id": "FoldGlue01",
+        "title": "FoldGlue01",
+        "hall_id": "H1",
+        "line_id": "L-carton",
+        "module_ref": {
+          "id": "p401.carton-factory.FoldGlue01",
+          "version": "1.0.0"
+        },
+        "pose": {
+          "translation": {
+            "x": 8,
+            "y": 8,
+            "z": 0
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0,
+            "w": 1
+          },
+          "scale": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          },
+          "unit": "meter",
+          "coordinate_frame": "right_handed_z_up"
+        },
+        "footprint_m": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 1,
+            "y": 0
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "height_m": 1,
+        "configuration": {
+          "cycle_seconds": {
+            "kind": "duration",
+            "value": {
+              "value": 20000,
+              "unit": "millisecond",
+              "basis": "module_declared",
+              "source_ref": null
+            }
+          }
+        },
+        "role_bindings": {
+          "item_types": {
+            "input": "carton-blank",
+            "output": "carton"
+          },
+          "resources": {
+            "legacy.worker.W-A": "W-A",
+            "execution_capacity": "capacity-FoldGlue01"
+          },
+          "targets": {
+            "material_store.input": {
+              "kind": "location",
+              "id": "store-blank"
+            },
+            "material_store.output": {
+              "kind": "location",
+              "id": "store-carton"
+            }
+          },
+          "ports": {}
+        },
+        "presentation_override": null,
+        "operation_binding": null
+      },
+      {
+        "id": "Inspection01",
+        "title": "Inspection01",
+        "hall_id": "H1",
+        "line_id": "L-carton",
+        "module_ref": {
+          "id": "p401.carton-factory.Inspection01",
+          "version": "1.0.0"
+        },
+        "pose": {
+          "translation": {
+            "x": 15,
+            "y": 8,
+            "z": 0
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0,
+            "w": 1
+          },
+          "scale": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          },
+          "unit": "meter",
+          "coordinate_frame": "right_handed_z_up"
+        },
+        "footprint_m": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 1,
+            "y": 0
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "height_m": 1,
+        "configuration": {
+          "cycle_seconds": {
+            "kind": "duration",
+            "value": {
+              "value": 5000,
+              "unit": "millisecond",
+              "basis": "module_declared",
+              "source_ref": null
+            }
+          }
+        },
+        "role_bindings": {
+          "item_types": {
+            "input": "carton",
+            "passed": "carton",
+            "rework": "carton"
+          },
+          "resources": {
+            "inspector": "W-B",
+            "execution_capacity": "capacity-Inspection01"
+          },
+          "targets": {
+            "material_store.input": {
+              "kind": "location",
+              "id": "store-carton"
+            },
+            "material_store.passed": {
+              "kind": "location",
+              "id": "store-released"
+            },
+            "material_store.rework": {
+              "kind": "location",
+              "id": "store-isolate"
+            },
+            "isolation": {
+              "kind": "location",
+              "id": "store-isolate"
+            }
+          },
+          "ports": {}
+        },
+        "presentation_override": null,
+        "operation_binding": null
+      }
+    ],
+    "resources": [
+      {
+        "id": "W-B",
+        "definition_ref": {
+          "id": "p401.carton-factory.resource.W-B",
+          "version": "0.1.0"
+        },
+        "title": "W-B",
+        "kind": "worker",
+        "role": "legacy.worker.W-B",
+        "capacity": {
+          "value": {
+            "coefficient": 1,
+            "decimal_places": 0
+          },
+          "unit": "person"
+        },
+        "qualifications": [],
+        "calendar_id": "calendar-W-B",
+        "home_location": null,
+        "presentation": null
+      },
+      {
+        "id": "W-C",
+        "definition_ref": {
+          "id": "p401.carton-factory.resource.W-C",
+          "version": "0.1.0"
+        },
+        "title": "W-C",
+        "kind": "worker",
+        "role": "legacy.worker.W-C",
+        "capacity": {
+          "value": {
+            "coefficient": 1,
+            "decimal_places": 0
+          },
+          "unit": "person"
+        },
+        "qualifications": [],
+        "calendar_id": "calendar-W-C",
+        "home_location": null,
+        "presentation": null
+      },
+      {
+        "id": "W-A",
+        "definition_ref": {
+          "id": "p401.carton-factory.resource.W-A",
+          "version": "0.1.0"
+        },
+        "title": "W-A",
+        "kind": "worker",
+        "role": "legacy.worker.W-A",
+        "capacity": {
+          "value": {
+            "coefficient": 1,
+            "decimal_places": 0
+          },
+          "unit": "person"
+        },
+        "qualifications": [],
+        "calendar_id": "calendar-W-A",
+        "home_location": null,
+        "presentation": null
+      },
+      {
+        "id": "capacity-DieCut01",
+        "definition_ref": {
+          "id": "p401.carton-factory.resource.capacity-DieCut01",
+          "version": "0.1.0"
+        },
+        "title": "capacity-DieCut01",
+        "kind": "fixture",
+        "role": "execution_capacity",
+        "capacity": {
+          "value": {
+            "coefficient": 1,
+            "decimal_places": 0
+          },
+          "unit": "slot"
+        },
+        "qualifications": [],
+        "calendar_id": "calendar-capacity-DieCut01",
+        "home_location": null,
+        "presentation": null
+      },
+      {
+        "id": "capacity-FoldGlue01",
+        "definition_ref": {
+          "id": "p401.carton-factory.resource.capacity-FoldGlue01",
+          "version": "0.1.0"
+        },
+        "title": "capacity-FoldGlue01",
+        "kind": "fixture",
+        "role": "execution_capacity",
+        "capacity": {
+          "value": {
+            "coefficient": 1,
+            "decimal_places": 0
+          },
+          "unit": "slot"
+        },
+        "qualifications": [],
+        "calendar_id": "calendar-capacity-FoldGlue01",
+        "home_location": null,
+        "presentation": null
+      },
+      {
+        "id": "capacity-Inspection01",
+        "definition_ref": {
+          "id": "p401.carton-factory.resource.capacity-Inspection01",
+          "version": "0.1.0"
+        },
+        "title": "capacity-Inspection01",
+        "kind": "fixture",
+        "role": "execution_capacity",
+        "capacity": {
+          "value": {
+            "coefficient": 1,
+            "decimal_places": 0
+          },
+          "unit": "slot"
+        },
+        "qualifications": [],
+        "calendar_id": "calendar-capacity-Inspection01",
+        "home_location": null,
+        "presentation": null
+      }
+    ],
+    "calendars": [
+      {
+        "id": "calendar-W-B",
+        "title": "calendar-W-B",
+        "intervals": [
+          {
+            "start_ms": 0,
+            "end_ms": 300000
+          }
+        ],
+        "source": "template_declared_example"
+      },
+      {
+        "id": "calendar-W-C",
+        "title": "calendar-W-C",
+        "intervals": [
+          {
+            "start_ms": 0,
+            "end_ms": 300000
+          }
+        ],
+        "source": "template_declared_example"
+      },
+      {
+        "id": "calendar-W-A",
+        "title": "calendar-W-A",
+        "intervals": [
+          {
+            "start_ms": 0,
+            "end_ms": 300000
+          }
+        ],
+        "source": "template_declared_example"
+      },
+      {
+        "id": "calendar-capacity-DieCut01",
+        "title": "calendar-capacity-DieCut01",
+        "intervals": [
+          {
+            "start_ms": 0,
+            "end_ms": 300000
+          }
+        ],
+        "source": "template_declared_example"
+      },
+      {
+        "id": "calendar-capacity-FoldGlue01",
+        "title": "calendar-capacity-FoldGlue01",
+        "intervals": [
+          {
+            "start_ms": 0,
+            "end_ms": 300000
+          }
+        ],
+        "source": "template_declared_example"
+      },
+      {
+        "id": "calendar-capacity-Inspection01",
+        "title": "calendar-capacity-Inspection01",
+        "intervals": [
+          {
+            "start_ms": 0,
+            "end_ms": 300000
+          }
+        ],
+        "source": "template_declared_example"
+      }
+    ],
+    "products": [
+      {
+        "id": "example-product",
+        "revision": "r1",
+        "item_type_ref": {
+          "id": "carton",
+          "revision": "r1"
+        },
+        "bom_ref": {
+          "id": "example-bom",
+          "revision": "r1"
+        },
+        "routing_ref": {
+          "id": "example-route",
+          "revision": "r1"
+        },
+        "artifact_refs": []
+      }
+    ],
+    "boms": [
+      {
+        "id": "example-bom",
+        "revision": "r1",
+        "rows": [
+          {
+            "item_type_ref": {
+              "id": "board",
+              "revision": "r1"
+            },
+            "quantity": {
+              "value": {
+                "coefficient": 1,
+                "decimal_places": 0
+              },
+              "unit": "piece"
+            },
+            "consume_at_operation": "step-DieCut01"
+          },
+          {
+            "item_type_ref": {
+              "id": "carton-blank",
+              "revision": "r1"
+            },
+            "quantity": {
+              "value": {
+                "coefficient": 1,
+                "decimal_places": 0
+              },
+              "unit": "piece"
+            },
+            "consume_at_operation": "step-FoldGlue01"
+          },
+          {
+            "item_type_ref": {
+              "id": "carton",
+              "revision": "r1"
+            },
+            "quantity": {
+              "value": {
+                "coefficient": 1,
+                "decimal_places": 0
+              },
+              "unit": "piece"
+            },
+            "consume_at_operation": "step-Inspection01"
+          }
+        ]
+      }
+    ],
+    "routes": [
+      {
+        "id": "example-route",
+        "revision": "r1",
+        "steps": [
+          {
+            "id": "step-DieCut01",
+            "operation_ref": {
+              "id": "p401.carton-factory.DieCut01",
+              "version": "1.0.0"
+            },
+            "device_id": "DieCut01",
+            "predecessors": [],
+            "item_bindings": {
+              "input": "board",
+              "output": "carton-blank"
+            },
+            "resource_bindings": {
+              "legacy.worker.W-C": "W-C",
+              "execution_capacity": "capacity-DieCut01"
+            }
+          },
+          {
+            "id": "step-FoldGlue01",
+            "operation_ref": {
+              "id": "p401.carton-factory.FoldGlue01",
+              "version": "1.0.0"
+            },
+            "device_id": "FoldGlue01",
+            "predecessors": [
+              "step-DieCut01"
+            ],
+            "item_bindings": {
+              "input": "carton-blank",
+              "output": "carton"
+            },
+            "resource_bindings": {
+              "legacy.worker.W-A": "W-A",
+              "execution_capacity": "capacity-FoldGlue01"
+            }
+          },
+          {
+            "id": "step-Inspection01",
+            "operation_ref": {
+              "id": "p401.carton-factory.Inspection01",
+              "version": "1.0.0"
+            },
+            "device_id": "Inspection01",
+            "predecessors": [
+              "step-FoldGlue01"
+            ],
+            "item_bindings": {
+              "input": "carton",
+              "passed": "carton",
+              "rework": "carton"
+            },
+            "resource_bindings": {
+              "inspector": "W-B",
+              "execution_capacity": "capacity-Inspection01"
+            }
+          }
+        ]
+      }
+    ],
+    "connections": [
+      {
+        "kind": "material",
+        "data": {
+          "id": "MC01",
+          "source": {
+            "kind": "location",
+            "data": "store-board"
+          },
+          "destination": {
+            "kind": "port",
+            "data": {
+              "module_ref": {
+                "id": "p401.carton-factory.DieCut01",
+                "version": "1.0.0"
+              },
+              "instance_id": "DieCut01",
+              "port_id": "input"
+            }
+          },
+          "item_type": "board",
+          "unit": "piece",
+          "quantity_rule": null,
+          "capacity_rule": null,
+          "destination_store": "store-board"
+        }
+      },
+      {
+        "kind": "material",
+        "data": {
+          "id": "MC02",
+          "source": {
+            "kind": "port",
+            "data": {
+              "module_ref": {
+                "id": "p401.carton-factory.DieCut01",
+                "version": "1.0.0"
+              },
+              "instance_id": "DieCut01",
+              "port_id": "output"
+            }
+          },
+          "destination": {
+            "kind": "location",
+            "data": "store-blank"
+          },
+          "item_type": "carton-blank",
+          "unit": "piece",
+          "quantity_rule": null,
+          "capacity_rule": null,
+          "destination_store": "store-blank"
+        }
+      },
+      {
+        "kind": "material",
+        "data": {
+          "id": "MC03",
+          "source": {
+            "kind": "location",
+            "data": "store-blank"
+          },
+          "destination": {
+            "kind": "port",
+            "data": {
+              "module_ref": {
+                "id": "p401.carton-factory.FoldGlue01",
+                "version": "1.0.0"
+              },
+              "instance_id": "FoldGlue01",
+              "port_id": "input"
+            }
+          },
+          "item_type": "carton-blank",
+          "unit": "piece",
+          "quantity_rule": null,
+          "capacity_rule": null,
+          "destination_store": "store-blank"
+        }
+      },
+      {
+        "kind": "material",
+        "data": {
+          "id": "MC04",
+          "source": {
+            "kind": "port",
+            "data": {
+              "module_ref": {
+                "id": "p401.carton-factory.FoldGlue01",
+                "version": "1.0.0"
+              },
+              "instance_id": "FoldGlue01",
+              "port_id": "output"
+            }
+          },
+          "destination": {
+            "kind": "location",
+            "data": "store-carton"
+          },
+          "item_type": "carton",
+          "unit": "piece",
+          "quantity_rule": null,
+          "capacity_rule": null,
+          "destination_store": "store-carton"
+        }
+      },
+      {
+        "kind": "material",
+        "data": {
+          "id": "MC05",
+          "source": {
+            "kind": "location",
+            "data": "store-carton"
+          },
+          "destination": {
+            "kind": "port",
+            "data": {
+              "module_ref": {
+                "id": "p401.carton-factory.Inspection01",
+                "version": "1.0.0"
+              },
+              "instance_id": "Inspection01",
+              "port_id": "input"
+            }
+          },
+          "item_type": "carton",
+          "unit": "piece",
+          "quantity_rule": null,
+          "capacity_rule": null,
+          "destination_store": "store-carton"
+        }
+      },
+      {
+        "kind": "material",
+        "data": {
+          "id": "MC06",
+          "source": {
+            "kind": "port",
+            "data": {
+              "module_ref": {
+                "id": "p401.carton-factory.Inspection01",
+                "version": "1.0.0"
+              },
+              "instance_id": "Inspection01",
+              "port_id": "passed"
+            }
+          },
+          "destination": {
+            "kind": "location",
+            "data": "store-released"
+          },
+          "item_type": "carton",
+          "unit": "piece",
+          "quantity_rule": null,
+          "capacity_rule": null,
+          "destination_store": "store-released"
+        }
+      },
+      {
+        "kind": "material",
+        "data": {
+          "id": "MC07",
+          "source": {
+            "kind": "port",
+            "data": {
+              "module_ref": {
+                "id": "p401.carton-factory.Inspection01",
+                "version": "1.0.0"
+              },
+              "instance_id": "Inspection01",
+              "port_id": "rework"
+            }
+          },
+          "destination": {
+            "kind": "location",
+            "data": "store-isolate"
+          },
+          "item_type": "carton",
+          "unit": "piece",
+          "quantity_rule": null,
+          "capacity_rule": null,
+          "destination_store": "store-isolate"
+        }
+      }
+    ],
+    "module_refs": [
+      {
+        "id": "p401.carton-factory.DieCut01",
+        "version": "1.0.0"
+      },
+      {
+        "id": "p401.carton-factory.FoldGlue01",
+        "version": "1.0.0"
+      },
+      {
+        "id": "p401.carton-factory.Inspection01",
+        "version": "1.0.0"
+      },
+      {
+        "id": "p401.carton-factory.resource.W-B",
+        "version": "0.1.0"
+      },
+      {
+        "id": "p401.carton-factory.resource.W-C",
+        "version": "0.1.0"
+      },
+      {
+        "id": "p401.carton-factory.resource.W-A",
+        "version": "0.1.0"
+      },
+      {
+        "id": "p401.carton-factory.resource.capacity-DieCut01",
+        "version": "0.1.0"
+      },
+      {
+        "id": "p401.carton-factory.resource.capacity-FoldGlue01",
+        "version": "0.1.0"
+      },
+      {
+        "id": "p401.carton-factory.resource.capacity-Inspection01",
+        "version": "0.1.0"
+      }
+    ],
+    "scenario_refs": [],
+    "artifact_refs": [],
+    "acknowledgments": [],
+    "bindings": [],
+    "views": {
+      "normal_canvas": "line_canvas",
+      "selected_hall": "H1",
+      "selected_objects": [],
+      "lod": "detailed",
+      "line_camera": {
+        "eye": {
+          "x": 5.0,
+          "y": -5.0,
+          "z": 5.0
+        },
+        "target": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "zoom": 1.0,
+        "coordinate_frame": "right_handed_y_up",
+        "unit": "meter"
+      },
+      "multi_hall_camera": {
+        "eye": {
+          "x": 5.0,
+          "y": -5.0,
+          "z": 5.0
+        },
+        "target": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "zoom": 1.0,
+        "coordinate_frame": "right_handed_y_up",
+        "unit": "meter"
+      }
+    },
+    "generation_context": null,
+    "sources": [
+      {
+        "id": "example-source",
+        "title": "Original template design plus separately selected synthetic example Product/BOM/Route",
+        "locator": "modules/templates/carton-factory/project.design.json",
+        "read_scope": "all declared source rows; no field measurement or professional result",
+        "read_date": null,
+        "basis": "template_declared_example"
+      },
+      {
+        "id": "cu-explicit-geometry-example",
+        "title": "Controlled complete-input geometry example, not measured equipment geometry",
+        "locator": "D:\\Agent\\ICNSD-KEL\\大作业\\02_竞赛作品\\超级工厂\\软件工程\\.work\\cu-closeout-20261022\\window6-agent\\tests\\delivery\\mcp\\full-package\\cu_geometry.json",
+        "read_scope": "new instance footprint and height only; no cycle, BOM, quality, staffing or stock changes",
+        "read_date": "2026-10-22",
+        "basis": "template_declared_example"
+      }
+    ],
+    "issues": [],
+    "template_adoptions": [
+      {
+        "id": "p401.carton-factory.adoption",
+        "template_ref": {
+          "id": "cu.complete-carton-example",
+          "version": "0.1.0"
+        },
+        "source_archive": {
+          "path": "source-project.design.json",
+          "kind": "asset"
+        },
+        "resource_choices": [
+          {
+            "source_id": "W-B",
+            "requirement_index": 0,
+            "resource_id": null
+          },
+          {
+            "source_id": "W-C",
+            "requirement_index": 1,
+            "resource_id": null
+          },
+          {
+            "source_id": "W-A",
+            "requirement_index": 2,
+            "resource_id": null
+          },
+          {
+            "source_id": "capacity-DieCut01",
+            "requirement_index": 3,
+            "resource_id": null
+          },
+          {
+            "source_id": "capacity-FoldGlue01",
+            "requirement_index": 4,
+            "resource_id": null
+          },
+          {
+            "source_id": "capacity-Inspection01",
+            "requirement_index": 5,
+            "resource_id": null
+          }
+        ],
+        "preparation_bindings": [],
+        "imported_claims": [],
+        "inspection_presets": [
+          {
+            "id": "local.template-carton-factory.quality_inputs",
+            "consumer_device_id": "Inspection01",
+            "inspection_module": {
+              "id": "p401.carton-factory.Inspection01",
+              "version": "1.0.0"
+            },
+            "item_or_ancestor": null,
+            "match_kind": null,
+            "results": [
+              {
+                "kind": "string",
+                "value": "PASS"
+              },
+              {
+                "kind": "string",
+                "value": "PASS"
+              }
+            ]
+          }
+        ],
+        "deferred_seed": {
+          "time_reference": {
+            "label": "scenario_start",
+            "origin_iso8601": null,
+            "timezone": null
+          },
+          "window": {
+            "start_ms": 0,
+            "end_ms": 300000
+          },
+          "initial_stock": [
+            {
+              "location_id": "store-board",
+              "item_type_id": "board",
+              "quantity": {
+                "value": {
+                  "coefficient": 2,
+                  "decimal_places": 0
+                },
+                "unit": "piece"
+              },
+              "quality": null
+            }
+          ],
+          "demand": {
+            "item_type_id": "carton",
+            "quantity": {
+              "value": {
+                "coefficient": 2,
+                "decimal_places": 0
+              },
+              "unit": "piece"
+            },
+            "destination_location_id": "store-released",
+            "acceptance_stage": "factory_released"
+          },
+          "product_ref": null,
+          "bom_ref": null,
+          "routing_ref": null
+        },
+        "missing_inputs": [
+          {
+            "kind": "site_geometry",
+            "object_ref": {
+              "kind": "hall",
+              "id": "H1"
+            },
+            "source_pointer": "/halls/0",
+            "required_fields": [
+              "height_m"
+            ]
+          },
+          {
+            "kind": "site_geometry",
+            "object_ref": {
+              "kind": "device",
+              "id": "DieCut01"
+            },
+            "source_pointer": "/devices/0",
+            "required_fields": [
+              "footprint_m",
+              "height_m",
+              "clearance_m"
+            ]
+          },
+          {
+            "kind": "site_geometry",
+            "object_ref": {
+              "kind": "device",
+              "id": "FoldGlue01"
+            },
+            "source_pointer": "/devices/1",
+            "required_fields": [
+              "footprint_m",
+              "height_m",
+              "clearance_m"
+            ]
+          },
+          {
+            "kind": "site_geometry",
+            "object_ref": {
+              "kind": "device",
+              "id": "Inspection01"
+            },
+            "source_pointer": "/devices/2",
+            "required_fields": [
+              "footprint_m",
+              "height_m",
+              "clearance_m"
+            ]
+          },
+          {
+            "kind": "specification",
+            "object_ref": {
+              "kind": "item_type",
+              "id": "board"
+            },
+            "source_pointer": "/item_types/0/spec_ref",
+            "required_fields": [
+              "spec_ref"
+            ]
+          },
+          {
+            "kind": "specification",
+            "object_ref": {
+              "kind": "item_type",
+              "id": "carton-blank"
+            },
+            "source_pointer": "/item_types/1/spec_ref",
+            "required_fields": [
+              "spec_ref"
+            ]
+          },
+          {
+            "kind": "specification",
+            "object_ref": {
+              "kind": "item_type",
+              "id": "carton"
+            },
+            "source_pointer": "/item_types/2/spec_ref",
+            "required_fields": [
+              "spec_ref"
+            ]
+          }
+        ]
+      }
+    ],
+    "parameter_sources": [
+      {
+        "target": {
+          "kind": "hall",
+          "id": "H1"
+        },
+        "field_path": "/width_m",
+        "value": null,
+        "basis": "template_declared_example",
+        "source_ref": "example-source"
+      },
+      {
+        "target": {
+          "kind": "hall",
+          "id": "H1"
+        },
+        "field_path": "/depth_m",
+        "value": null,
+        "basis": "template_declared_example",
+        "source_ref": "example-source"
+      },
+      {
+        "target": {
+          "kind": "hall",
+          "id": "H1"
+        },
+        "field_path": "/height_m",
+        "value": null,
+        "basis": "unknown",
+        "source_ref": "example-source"
+      },
+      {
+        "target": {
+          "kind": "device",
+          "id": "DieCut01"
+        },
+        "field_path": "/pose",
+        "value": null,
+        "basis": "template_declared_example",
+        "source_ref": "example-source"
+      },
+      {
+        "target": {
+          "kind": "device",
+          "id": "DieCut01"
+        },
+        "field_path": "/footprint_m",
+        "value": null,
+        "basis": "template_declared_example",
+        "source_ref": "cu-explicit-geometry-example"
+      },
+      {
+        "target": {
+          "kind": "device",
+          "id": "DieCut01"
+        },
+        "field_path": "/height_m",
+        "value": null,
+        "basis": "template_declared_example",
+        "source_ref": "cu-explicit-geometry-example"
+      },
+      {
+        "target": {
+          "kind": "device",
+          "id": "FoldGlue01"
+        },
+        "field_path": "/pose",
+        "value": null,
+        "basis": "template_declared_example",
+        "source_ref": "example-source"
+      },
+      {
+        "target": {
+          "kind": "device",
+          "id": "FoldGlue01"
+        },
+        "field_path": "/footprint_m",
+        "value": null,
+        "basis": "template_declared_example",
+        "source_ref": "cu-explicit-geometry-example"
+      },
+      {
+        "target": {
+          "kind": "device",
+          "id": "FoldGlue01"
+        },
+        "field_path": "/height_m",
+        "value": null,
+        "basis": "template_declared_example",
+        "source_ref": "cu-explicit-geometry-example"
+      },
+      {
+        "target": {
+          "kind": "device",
+          "id": "Inspection01"
+        },
+        "field_path": "/pose",
+        "value": null,
+        "basis": "template_declared_example",
+        "source_ref": "example-source"
+      },
+      {
+        "target": {
+          "kind": "device",
+          "id": "Inspection01"
+        },
+        "field_path": "/footprint_m",
+        "value": null,
+        "basis": "template_declared_example",
+        "source_ref": "cu-explicit-geometry-example"
+      },
+      {
+        "target": {
+          "kind": "device",
+          "id": "Inspection01"
+        },
+        "field_path": "/height_m",
+        "value": null,
+        "basis": "template_declared_example",
+        "source_ref": "cu-explicit-geometry-example"
+      },
+      {
+        "target": {
+          "kind": "product",
+          "id": "example-product"
+        },
+        "field_path": "/item_type_ref",
+        "value": null,
+        "basis": "template_declared_example",
+        "source_ref": "example-source"
+      },
+      {
+        "target": {
+          "kind": "product",
+          "id": "example-product"
+        },
+        "field_path": "/bom_ref",
+        "value": null,
+        "basis": "template_declared_example",
+        "source_ref": "example-source"
+      },
+      {
+        "target": {
+          "kind": "product",
+          "id": "example-product"
+        },
+        "field_path": "/routing_ref",
+        "value": null,
+        "basis": "template_declared_example",
+        "source_ref": "example-source"
+      },
+      {
+        "target": {
+          "kind": "device",
+          "id": "DieCut01"
+        },
+        "field_path": "/configuration/cycle_seconds/value",
+        "value": {
+          "kind": "duration",
+          "value": {
+            "value": 20000,
+            "unit": "millisecond",
+            "basis": "module_declared",
+            "source_ref": null
+          }
+        },
+        "basis": "template_declared_example",
+        "source_ref": "example-source"
+      },
+      {
+        "target": {
+          "kind": "device",
+          "id": "FoldGlue01"
+        },
+        "field_path": "/configuration/cycle_seconds/value",
+        "value": {
+          "kind": "duration",
+          "value": {
+            "value": 20000,
+            "unit": "millisecond",
+            "basis": "module_declared",
+            "source_ref": null
+          }
+        },
+        "basis": "template_declared_example",
+        "source_ref": "example-source"
+      },
+      {
+        "target": {
+          "kind": "device",
+          "id": "Inspection01"
+        },
+        "field_path": "/configuration/cycle_seconds/value",
+        "value": {
+          "kind": "duration",
+          "value": {
+            "value": 5000,
+            "unit": "millisecond",
+            "basis": "module_declared",
+            "source_ref": null
+          }
+        },
+        "basis": "template_declared_example",
+        "source_ref": "example-source"
+      }
+    ]
+  }
+}

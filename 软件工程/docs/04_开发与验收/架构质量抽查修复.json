@@ -1,0 +1,144 @@
+{
+  "document_kind": "AQ01_AQ05_design_revision_and_isolated_evidence",
+  "status": "passed_design_revision_and_isolated_verification",
+  "at": "2026-10-15T09:28:42+08:00",
+  "authority": "用户明确授权直接修正AQ-01至AQ-05并完成必要试做及整体复核",
+  "original_sampling": {
+    "seed": 200770625,
+    "checkpoints": [
+      "S01-01",
+      "S02-02",
+      "S03-03",
+      "S04-04",
+      "S05-03",
+      "S06-04"
+    ],
+    "additional_probes": [
+      "公开接口",
+      "状态所有权"
+    ]
+  },
+  "findings": [
+    {
+      "id": "AQ-01",
+      "status": "resolved_design_and_isolated_verification",
+      "sources": [
+        "packages/commands/api.design.rs",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json",
+        "docs/03_架构与契约/大结果传输设计.md"
+      ],
+      "decision": "在共同传输层以Managed封装完整原Response<R>；所有18操作共用，小结果内联、超1MiB走只读附件；功能消费者不识别传输细节。",
+      "evidence_refs": [
+        "tools/type-contract-proof/output/aq01-native-result.json",
+        "tools/type-contract-proof/output/aq01-transport-result.json"
+      ],
+      "later_product_verification": "真实产品Host/Bridge/Codex按同一合同接线，仍属于原实施验收。"
+    },
+    {
+      "id": "AQ-02",
+      "status": "resolved_design_and_isolated_verification",
+      "sources": [
+        "AGENTS.md",
+        "README.md",
+        "docs/04_开发与验收/完整设计与执行准入.json",
+        "docs/04_开发与验收/软件开发流程与当前成熟度评估.json",
+        "docs/04_开发与验收/软件开发流程与当前成熟度评估.md"
+      ],
+      "decision": "当前30设计通过/待审0、报告25页/傅钧烨，S07实际准备未完成；现行正文和JSON对齐，历史资料另标。",
+      "evidence_refs": [
+        "docs/04_开发与验收/主线同步检查结果.json"
+      ],
+      "later_product_verification": "S07实际准备、21产品任务及S10用户证据保持原关口。"
+    },
+    {
+      "id": "AQ-03",
+      "status": "resolved_design_and_isolated_verification",
+      "sources": [
+        "docs/03_架构与契约/全层组件与接点.json",
+        "docs/03_架构与契约/全层组件与接点设计.md",
+        "docs/03_架构与契约/目录与依赖设计.md"
+      ],
+      "decision": "既有公共控件/主题单列shared_ui；W02目录权限不变，业务feature不互相import，ui_host/App组织上下文。",
+      "evidence_refs": [
+        "docs/04_开发与验收/架构接点检查结果.json",
+        "tools/architecture-quality-proof/output/aq03-aq05-change-result.json"
+      ],
+      "later_product_verification": "未来实际产品代码继续执行相同导入边界。"
+    },
+    {
+      "id": "AQ-04",
+      "status": "resolved_design_and_isolated_verification",
+      "sources": [
+        "packages/packaging/algorithm.design.json",
+        "docs/03_架构与契约/纸包装数值与制造规则.md",
+        "docs/03_架构与契约/纸包装结构与过程算法.md"
+      ],
+      "decision": "实际18组成本/规模/预算边界；明确1/2048/512参考档及64/50000/8192探索档、输入复杂度、局部工作复用和取消点；预算不足仍未判定。",
+      "evidence_refs": [
+        "tools/packaging-algorithm-proof/output/aq04-cost-result.json",
+        "tools/packaging-algorithm-proof/output/proof-result.json",
+        "tools/packaging-algorithm-proof/output/fixed-pose-result.json"
+      ],
+      "later_product_verification": "完整三机制Rust内核的耗时/取消/体验校准属于S07/S08产品实现，不由参考毫秒外推。"
+    },
+    {
+      "id": "AQ-05",
+      "status": "resolved_design_and_isolated_verification",
+      "sources": [
+        "docs/03_架构与契约/全层组件与接点.json",
+        "docs/04_开发与验收/编码任务包与AI实现审查.md",
+        "docs/01_业务需求/非功能需求与测量验收.json"
+      ],
+      "decision": "CH01公开已有工艺参数、CH02报告样式、CH03公共控件；实际Schema/HTML文本/双版本TS消费者检查，并拒绝三条越界依赖。",
+      "evidence_refs": [
+        "tools/architecture-quality-proof/output/aq03-aq05-change-result.json"
+      ],
+      "later_product_verification": "实际产品diff重验局部性；不新增NFR编号/运行信用或无消费者抽象。"
+    }
+  ],
+  "open_AQ_findings": [],
+  "review_basis": [
+    "业务与状态正确性",
+    "低耦合/高内聚",
+    "共同层隐藏传输与控件复杂性",
+    "变更局部性",
+    "具体情景及正反验证",
+    "有范围的成本/停止规则"
+  ],
+  "verification": {
+    "native_types_and_codegen": "tools/type-contract-proof/output/type-proof-result.json",
+    "standard_schemas": "tools/type-contract-proof/output/schema-validation-result.json",
+    "API": "docs/04_开发与验收/公开操作契约检查结果.json",
+    "types_TS": "docs/04_开发与验收/类型格式检查结果.json",
+    "timeline": "tools/type-contract-proof/output/timeline-schema-proof-result.json",
+    "architecture": "docs/04_开发与验收/架构接点检查结果.json",
+    "mainline": "docs/04_开发与验收/主线同步检查结果.json",
+    "closure": "tools/architecture-quality-proof/output/aq-closure-result.json"
+  },
+  "design_freeze": "original30_checkpoints_retained_with_post_freeze_AQ_revision",
+  "actual_product_runtime": null,
+  "product_coding_started": false,
+  "scope_limits": "所列设计及有限实际接点；不是完整产品或对所有输入的性能承诺。",
+  "overall_review": {
+    "status": "passed_AQ01_to_AQ05_design_and_isolated_evidence_closure",
+    "at": "2026-10-15T09:30:11+08:00",
+    "closed_AQ_ids": [
+      "AQ-01",
+      "AQ-02",
+      "AQ-03",
+      "AQ-04",
+      "AQ-05"
+    ],
+    "open_AQ_findings": [],
+    "mainline_matrices": 12,
+    "checked_local_references": 4809,
+    "operations": 18,
+    "components": 16,
+    "cost_cases": 18,
+    "change_scenarios": 3,
+    "original_design_reviews_passed": 30,
+    "product_tasks_planned": 21,
+    "actual_product_runtime": null,
+    "errors": []
+  }
+}

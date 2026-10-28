@@ -1,0 +1,3010 @@
+{
+  "document_kind": "TC01_TC02_independent_canonical_contract_fixtures",
+  "scope": "typed serialization and finite consumer rules; not Engine output",
+  "cases": [
+    {
+      "id": "TCF01",
+      "source_expectation": "B18 + blocked next phase",
+      "run": {
+        "evidence_origin": "type_fixture",
+        "id": "R1",
+        "input_ref": {
+          "project_id": "P1",
+          "project_revision": 1,
+          "scenario_id": "SC1",
+          "scenario_revision": 1,
+          "frozen_project_file": {
+            "path": "project.json",
+            "kind": "project"
+          },
+          "frozen_scenario_file": {
+            "path": "scenario.json",
+            "kind": "scenario"
+          }
+        },
+        "scope": [],
+        "window": {
+          "start_ms": 0,
+          "end_ms": 60000
+        },
+        "computation_status": "paused",
+        "whole_window_computed": false,
+        "goal_met": null,
+        "final_items": [],
+        "jobs": [
+          {
+            "id": "J1",
+            "task_ref": "T1",
+            "operation_ref": {
+              "id": "shared",
+              "version": "1.0.0"
+            },
+            "execution_ref": {
+              "kind": "project_device",
+              "data": {
+                "device_id": "D1",
+                "route_step_id": "S1",
+                "execution_capacity_ref": {
+                  "kind": "resource",
+                  "id": "seat1"
+                }
+              }
+            },
+            "input_refs": [],
+            "job_resources": [],
+            "phase_ref": "auto",
+            "phase_resources": [],
+            "effective_progress_ms": 0,
+            "started_at_ms": 0,
+            "finished_at_ms": null,
+            "state": "working",
+            "pending_outputs": []
+          },
+          {
+            "id": "J2",
+            "task_ref": "T1",
+            "operation_ref": {
+              "id": "shared",
+              "version": "1.0.0"
+            },
+            "execution_ref": {
+              "kind": "project_device",
+              "data": {
+                "device_id": "D2",
+                "route_step_id": "S2",
+                "execution_capacity_ref": {
+                  "kind": "device",
+                  "id": "D2"
+                }
+              }
+            },
+            "input_refs": [],
+            "job_resources": [],
+            "phase_ref": "auto",
+            "phase_resources": [],
+            "effective_progress_ms": 0,
+            "started_at_ms": 0,
+            "finished_at_ms": null,
+            "state": "working",
+            "pending_outputs": []
+          }
+        ],
+        "transport": [],
+        "resource_claims": [
+          {
+            "id": "C1",
+            "resource_id": "W1",
+            "job_id": "J1",
+            "units": 1,
+            "intervals": [
+              {
+                "start_ms": 0,
+                "end_ms": 10000
+              }
+            ],
+            "kind": "phase",
+            "phase_ref": "auto",
+            "interval_end_causes": [
+              "released"
+            ]
+          },
+          {
+            "id": "C2",
+            "resource_id": "D2",
+            "job_id": "J2",
+            "units": 1,
+            "intervals": [
+              {
+                "start_ms": 0,
+                "end_ms": 10000
+              }
+            ],
+            "kind": "job",
+            "phase_ref": null,
+            "interval_end_causes": [
+              "released"
+            ]
+          }
+        ],
+        "waits": [
+          {
+            "object_ref": {
+              "kind": "job",
+              "id": "J1"
+            },
+            "execution_ref": {
+              "kind": "project_device",
+              "data": {
+                "device_id": "D1",
+                "route_step_id": "S1",
+                "execution_capacity_ref": {
+                  "kind": "resource",
+                  "id": "seat1"
+                }
+              }
+            },
+            "phase_ref": "unload",
+            "interval": {
+              "start_ms": 10000,
+              "end_ms": 20000
+            },
+            "reasons": [
+              {
+                "kind": "resource_busy",
+                "blocking_object": {
+                  "kind": "resource",
+                  "id": "W1"
+                },
+                "required": "operator",
+                "next_known_boundary_ms": 20000
+              }
+            ],
+            "end_cause": "resolved"
+          }
+        ],
+        "allocations": [],
+        "events": [],
+        "acceptance_events": [],
+        "orders": [],
+        "limitations": [],
+        "computed_until_ms": 40000,
+        "phase_work_intervals": []
+      },
+      "expected_shape_accepted": true,
+      "expected_semantics_accepted": true,
+      "expected_metrics": {
+        "job_device_rows": {
+          "J1": "D1",
+          "J2": "D2"
+        },
+        "occupied_devices": [
+          "D2"
+        ],
+        "effective_work_ms": 0,
+        "wait_ms": 10000,
+        "phase_completed_points": 0
+      },
+      "actual_product_result": null
+    },
+    {
+      "id": "TCF02",
+      "source_expectation": "B10",
+      "run": {
+        "evidence_origin": "type_fixture",
+        "id": "R1",
+        "input_ref": {
+          "project_id": "P1",
+          "project_revision": 1,
+          "scenario_id": "SC1",
+          "scenario_revision": 1,
+          "frozen_project_file": {
+            "path": "project.json",
+            "kind": "project"
+          },
+          "frozen_scenario_file": {
+            "path": "scenario.json",
+            "kind": "scenario"
+          }
+        },
+        "scope": [],
+        "window": {
+          "start_ms": 0,
+          "end_ms": 60000
+        },
+        "computation_status": "paused",
+        "whole_window_computed": false,
+        "goal_met": null,
+        "final_items": [],
+        "jobs": [
+          {
+            "id": "J1",
+            "task_ref": "T1",
+            "operation_ref": {
+              "id": "shared",
+              "version": "1.0.0"
+            },
+            "execution_ref": {
+              "kind": "project_device",
+              "data": {
+                "device_id": "D1",
+                "route_step_id": "S1",
+                "execution_capacity_ref": {
+                  "kind": "device",
+                  "id": "D1"
+                }
+              }
+            },
+            "input_refs": [],
+            "job_resources": [],
+            "phase_ref": "auto",
+            "phase_resources": [],
+            "effective_progress_ms": 0,
+            "started_at_ms": 0,
+            "finished_at_ms": null,
+            "state": "working",
+            "pending_outputs": []
+          }
+        ],
+        "transport": [],
+        "resource_claims": [
+          {
+            "id": "M1",
+            "resource_id": "D1",
+            "job_id": "J1",
+            "units": 1,
+            "intervals": [
+              {
+                "start_ms": 5000,
+                "end_ms": 23000
+              }
+            ],
+            "kind": "job",
+            "phase_ref": null,
+            "interval_end_causes": [
+              "computed_boundary"
+            ]
+          },
+          {
+            "id": "P1",
+            "resource_id": "W1",
+            "job_id": "J1",
+            "units": 1,
+            "intervals": [
+              {
+                "start_ms": 5000,
+                "end_ms": 10000
+              }
+            ],
+            "kind": "phase",
+            "phase_ref": "auto",
+            "interval_end_causes": [
+              "released"
+            ]
+          },
+          {
+            "id": "P2",
+            "resource_id": "W1",
+            "job_id": "J1",
+            "units": 1,
+            "intervals": [
+              {
+                "start_ms": 20000,
+                "end_ms": 23000
+              }
+            ],
+            "kind": "phase",
+            "phase_ref": "auto",
+            "interval_end_causes": [
+              "released"
+            ]
+          }
+        ],
+        "waits": [
+          {
+            "object_ref": {
+              "kind": "job",
+              "id": "J1"
+            },
+            "execution_ref": {
+              "kind": "project_device",
+              "data": {
+                "device_id": "D1",
+                "route_step_id": "S1",
+                "execution_capacity_ref": {
+                  "kind": "device",
+                  "id": "D1"
+                }
+              }
+            },
+            "phase_ref": "auto",
+            "interval": {
+              "start_ms": 10000,
+              "end_ms": 20000
+            },
+            "reasons": [
+              {
+                "kind": "resource_busy",
+                "blocking_object": {
+                  "kind": "resource",
+                  "id": "W1"
+                },
+                "required": "operator",
+                "next_known_boundary_ms": 20000
+              }
+            ],
+            "end_cause": "resolved"
+          }
+        ],
+        "allocations": [],
+        "events": [
+          {
+            "sequence": 1,
+            "at_ms": 23000,
+            "subject": {
+              "kind": "job",
+              "id": "J1"
+            },
+            "payload": {
+              "kind": "phase_completed",
+              "data": "auto"
+            }
+          }
+        ],
+        "acceptance_events": [],
+        "orders": [],
+        "limitations": [],
+        "computed_until_ms": 23000,
+        "phase_work_intervals": [
+          {
+            "job_id": "J1",
+            "phase_id": "auto",
+            "interval": {
+              "start_ms": 5000,
+              "end_ms": 10000
+            },
+            "effective_progress_start_ms": 0,
+            "effective_progress_end_ms": 5000,
+            "end_cause": "interrupted"
+          },
+          {
+            "job_id": "J1",
+            "phase_id": "auto",
+            "interval": {
+              "start_ms": 20000,
+              "end_ms": 23000
+            },
+            "effective_progress_start_ms": 5000,
+            "effective_progress_end_ms": 8000,
+            "end_cause": "phase_completed"
+          }
+        ]
+      },
+      "expected_shape_accepted": true,
+      "expected_semantics_accepted": true,
+      "expected_metrics": {
+        "job_device_rows": {
+          "J1": "D1"
+        },
+        "occupied_devices": [
+          "D1"
+        ],
+        "effective_work_ms": 8000,
+        "wait_ms": 10000,
+        "phase_completed_points": 1
+      },
+      "actual_product_result": null
+    },
+    {
+      "id": "TCF03",
+      "source_expectation": "B12 partial",
+      "run": {
+        "evidence_origin": "type_fixture",
+        "id": "R1",
+        "input_ref": {
+          "project_id": "P1",
+          "project_revision": 1,
+          "scenario_id": "SC1",
+          "scenario_revision": 1,
+          "frozen_project_file": {
+            "path": "project.json",
+            "kind": "project"
+          },
+          "frozen_scenario_file": {
+            "path": "scenario.json",
+            "kind": "scenario"
+          }
+        },
+        "scope": [],
+        "window": {
+          "start_ms": 0,
+          "end_ms": 60000
+        },
+        "computation_status": "paused",
+        "whole_window_computed": false,
+        "goal_met": null,
+        "final_items": [],
+        "jobs": [
+          {
+            "id": "J1",
+            "task_ref": "T1",
+            "operation_ref": {
+              "id": "shared",
+              "version": "1.0.0"
+            },
+            "execution_ref": {
+              "kind": "project_device",
+              "data": {
+                "device_id": "D1",
+                "route_step_id": "S1",
+                "execution_capacity_ref": {
+                  "kind": "device",
+                  "id": "D1"
+                }
+              }
+            },
+            "input_refs": [],
+            "job_resources": [],
+            "phase_ref": "auto",
+            "phase_resources": [],
+            "effective_progress_ms": 0,
+            "started_at_ms": 0,
+            "finished_at_ms": null,
+            "state": "working",
+            "pending_outputs": []
+          }
+        ],
+        "transport": [],
+        "resource_claims": [],
+        "waits": [],
+        "allocations": [],
+        "events": [],
+        "acceptance_events": [],
+        "orders": [],
+        "limitations": [],
+        "computed_until_ms": 20000,
+        "phase_work_intervals": [
+          {
+            "job_id": "J1",
+            "phase_id": "auto",
+            "interval": {
+              "start_ms": 5000,
+              "end_ms": 20000
+            },
+            "effective_progress_start_ms": 0,
+            "effective_progress_end_ms": 15000,
+            "end_cause": "computed_boundary"
+          }
+        ]
+      },
+      "expected_shape_accepted": true,
+      "expected_semantics_accepted": true,
+      "expected_metrics": {
+        "job_device_rows": {
+          "J1": "D1"
+        },
+        "occupied_devices": [],
+        "effective_work_ms": 15000,
+        "wait_ms": 0,
+        "phase_completed_points": 0
+      },
+      "actual_product_result": null
+    },
+    {
+      "id": "TCF04",
+      "source_expectation": "B11/B17 zero phase point",
+      "run": {
+        "evidence_origin": "type_fixture",
+        "id": "R1",
+        "input_ref": {
+          "project_id": "P1",
+          "project_revision": 1,
+          "scenario_id": "SC1",
+          "scenario_revision": 1,
+          "frozen_project_file": {
+            "path": "project.json",
+            "kind": "project"
+          },
+          "frozen_scenario_file": {
+            "path": "scenario.json",
+            "kind": "scenario"
+          }
+        },
+        "scope": [],
+        "window": {
+          "start_ms": 0,
+          "end_ms": 60000
+        },
+        "computation_status": "paused",
+        "whole_window_computed": false,
+        "goal_met": null,
+        "final_items": [],
+        "jobs": [
+          {
+            "id": "J1",
+            "task_ref": "T1",
+            "operation_ref": {
+              "id": "shared",
+              "version": "1.0.0"
+            },
+            "execution_ref": {
+              "kind": "project_device",
+              "data": {
+                "device_id": "D1",
+                "route_step_id": "S1",
+                "execution_capacity_ref": {
+                  "kind": "device",
+                  "id": "D1"
+                }
+              }
+            },
+            "input_refs": [],
+            "job_resources": [],
+            "phase_ref": "auto",
+            "phase_resources": [],
+            "effective_progress_ms": 0,
+            "started_at_ms": 0,
+            "finished_at_ms": null,
+            "state": "working",
+            "pending_outputs": []
+          }
+        ],
+        "transport": [],
+        "resource_claims": [],
+        "waits": [],
+        "allocations": [],
+        "events": [
+          {
+            "sequence": 1,
+            "at_ms": 20000,
+            "subject": {
+              "kind": "job",
+              "id": "J1"
+            },
+            "payload": {
+              "kind": "phase_completed",
+              "data": "logic"
+            }
+          }
+        ],
+        "acceptance_events": [],
+        "orders": [],
+        "limitations": [],
+        "computed_until_ms": 40000,
+        "phase_work_intervals": []
+      },
+      "expected_shape_accepted": true,
+      "expected_semantics_accepted": true,
+      "expected_metrics": {
+        "job_device_rows": {
+          "J1": "D1"
+        },
+        "occupied_devices": [],
+        "effective_work_ms": 0,
+        "wait_ms": 0,
+        "phase_completed_points": 1
+      },
+      "actual_product_result": null
+    },
+    {
+      "id": "TCF05",
+      "source_expectation": "isolated definition cycle",
+      "run": {
+        "evidence_origin": "type_fixture",
+        "id": "R1",
+        "input_ref": {
+          "project_id": "P1",
+          "project_revision": 1,
+          "scenario_id": "SC1",
+          "scenario_revision": 1,
+          "frozen_project_file": {
+            "path": "project.json",
+            "kind": "project"
+          },
+          "frozen_scenario_file": {
+            "path": "scenario.json",
+            "kind": "scenario"
+          }
+        },
+        "scope": [],
+        "window": {
+          "start_ms": 0,
+          "end_ms": 60000
+        },
+        "computation_status": "paused",
+        "whole_window_computed": false,
+        "goal_met": null,
+        "final_items": [],
+        "jobs": [
+          {
+            "id": "J1",
+            "task_ref": "T1",
+            "operation_ref": {
+              "id": "shared",
+              "version": "1.0.0"
+            },
+            "execution_ref": {
+              "kind": "definition_cycle",
+              "data": {
+                "module_ref": {
+                  "id": "shared",
+                  "version": "1.0.0"
+                }
+              }
+            },
+            "input_refs": [],
+            "job_resources": [],
+            "phase_ref": "auto",
+            "phase_resources": [],
+            "effective_progress_ms": 0,
+            "started_at_ms": 0,
+            "finished_at_ms": null,
+            "state": "working",
+            "pending_outputs": []
+          }
+        ],
+        "transport": [],
+        "resource_claims": [],
+        "waits": [],
+        "allocations": [],
+        "events": [],
+        "acceptance_events": [],
+        "orders": [],
+        "limitations": [],
+        "computed_until_ms": 40000,
+        "phase_work_intervals": []
+      },
+      "expected_shape_accepted": true,
+      "expected_semantics_accepted": true,
+      "expected_metrics": {
+        "job_device_rows": {},
+        "occupied_devices": [],
+        "effective_work_ms": 0,
+        "wait_ms": 0,
+        "phase_completed_points": 0
+      },
+      "actual_product_result": null
+    },
+    {
+      "id": "TCF06",
+      "source_expectation": "pre-job assignment and generic resource wait",
+      "run": {
+        "evidence_origin": "type_fixture",
+        "id": "R1",
+        "input_ref": {
+          "project_id": "P1",
+          "project_revision": 1,
+          "scenario_id": "SC1",
+          "scenario_revision": 1,
+          "frozen_project_file": {
+            "path": "project.json",
+            "kind": "project"
+          },
+          "frozen_scenario_file": {
+            "path": "scenario.json",
+            "kind": "scenario"
+          }
+        },
+        "scope": [],
+        "window": {
+          "start_ms": 0,
+          "end_ms": 60000
+        },
+        "computation_status": "paused",
+        "whole_window_computed": false,
+        "goal_met": null,
+        "final_items": [],
+        "jobs": [],
+        "transport": [],
+        "resource_claims": [],
+        "waits": [
+          {
+            "object_ref": {
+              "kind": "task",
+              "id": "T1"
+            },
+            "execution_ref": {
+              "kind": "project_device",
+              "data": {
+                "device_id": "D1",
+                "route_step_id": "S1",
+                "execution_capacity_ref": {
+                  "kind": "device",
+                  "id": "D1"
+                }
+              }
+            },
+            "phase_ref": "load",
+            "interval": {
+              "start_ms": 0,
+              "end_ms": 5000
+            },
+            "reasons": [
+              {
+                "kind": "resource_busy",
+                "blocking_object": {
+                  "kind": "resource",
+                  "id": "W1"
+                },
+                "required": "operator",
+                "next_known_boundary_ms": 5000
+              }
+            ],
+            "end_cause": "resolved"
+          },
+          {
+            "object_ref": {
+              "kind": "resource",
+              "id": "W1"
+            },
+            "execution_ref": null,
+            "phase_ref": null,
+            "interval": {
+              "start_ms": 5000,
+              "end_ms": 10000
+            },
+            "reasons": [
+              {
+                "kind": "resource_busy",
+                "blocking_object": {
+                  "kind": "resource",
+                  "id": "W1"
+                },
+                "required": "operator",
+                "next_known_boundary_ms": 10000
+              }
+            ],
+            "end_cause": "resolved"
+          }
+        ],
+        "allocations": [],
+        "events": [],
+        "acceptance_events": [],
+        "orders": [],
+        "limitations": [],
+        "computed_until_ms": 40000,
+        "phase_work_intervals": []
+      },
+      "expected_shape_accepted": true,
+      "expected_semantics_accepted": true,
+      "expected_metrics": {
+        "job_device_rows": {},
+        "occupied_devices": [],
+        "effective_work_ms": 0,
+        "wait_ms": 10000,
+        "phase_completed_points": 0
+      },
+      "actual_product_result": null
+    },
+    {
+      "id": "TCF07",
+      "source_expectation": "required execution missing",
+      "run": {
+        "evidence_origin": "type_fixture",
+        "id": "R1",
+        "input_ref": {
+          "project_id": "P1",
+          "project_revision": 1,
+          "scenario_id": "SC1",
+          "scenario_revision": 1,
+          "frozen_project_file": {
+            "path": "project.json",
+            "kind": "project"
+          },
+          "frozen_scenario_file": {
+            "path": "scenario.json",
+            "kind": "scenario"
+          }
+        },
+        "scope": [],
+        "window": {
+          "start_ms": 0,
+          "end_ms": 60000
+        },
+        "computation_status": "paused",
+        "whole_window_computed": false,
+        "goal_met": null,
+        "final_items": [],
+        "jobs": [
+          {
+            "id": "J1",
+            "task_ref": "T1",
+            "operation_ref": {
+              "id": "shared",
+              "version": "1.0.0"
+            },
+            "input_refs": [],
+            "job_resources": [],
+            "phase_ref": "auto",
+            "phase_resources": [],
+            "effective_progress_ms": 0,
+            "started_at_ms": 0,
+            "finished_at_ms": null,
+            "state": "working",
+            "pending_outputs": []
+          },
+          {
+            "id": "J2",
+            "task_ref": "T1",
+            "operation_ref": {
+              "id": "shared",
+              "version": "1.0.0"
+            },
+            "execution_ref": {
+              "kind": "project_device",
+              "data": {
+                "device_id": "D2",
+                "route_step_id": "S2",
+                "execution_capacity_ref": {
+                  "kind": "device",
+                  "id": "D2"
+                }
+              }
+            },
+            "input_refs": [],
+            "job_resources": [],
+            "phase_ref": "auto",
+            "phase_resources": [],
+            "effective_progress_ms": 0,
+            "started_at_ms": 0,
+            "finished_at_ms": null,
+            "state": "working",
+            "pending_outputs": []
+          }
+        ],
+        "transport": [],
+        "resource_claims": [
+          {
+            "id": "C1",
+            "resource_id": "W1",
+            "job_id": "J1",
+            "units": 1,
+            "intervals": [
+              {
+                "start_ms": 0,
+                "end_ms": 10000
+              }
+            ],
+            "kind": "phase",
+            "phase_ref": "auto",
+            "interval_end_causes": [
+              "released"
+            ]
+          },
+          {
+            "id": "C2",
+            "resource_id": "D2",
+            "job_id": "J2",
+            "units": 1,
+            "intervals": [
+              {
+                "start_ms": 0,
+                "end_ms": 10000
+              }
+            ],
+            "kind": "job",
+            "phase_ref": null,
+            "interval_end_causes": [
+              "released"
+            ]
+          }
+        ],
+        "waits": [
+          {
+            "object_ref": {
+              "kind": "job",
+              "id": "J1"
+            },
+            "execution_ref": {
+              "kind": "project_device",
+              "data": {
+                "device_id": "D1",
+                "route_step_id": "S1",
+                "execution_capacity_ref": {
+                  "kind": "resource",
+                  "id": "seat1"
+                }
+              }
+            },
+            "phase_ref": "unload",
+            "interval": {
+              "start_ms": 10000,
+              "end_ms": 20000
+            },
+            "reasons": [
+              {
+                "kind": "resource_busy",
+                "blocking_object": {
+                  "kind": "resource",
+                  "id": "W1"
+                },
+                "required": "operator",
+                "next_known_boundary_ms": 20000
+              }
+            ],
+            "end_cause": "resolved"
+          }
+        ],
+        "allocations": [],
+        "events": [],
+        "acceptance_events": [],
+        "orders": [],
+        "limitations": [],
+        "computed_until_ms": 40000,
+        "phase_work_intervals": []
+      },
+      "expected_shape_accepted": false,
+      "expected_semantics_accepted": false,
+      "expected_metrics": null,
+      "actual_product_result": null
+    },
+    {
+      "id": "TCF08",
+      "source_expectation": "unknown end cause",
+      "run": {
+        "evidence_origin": "type_fixture",
+        "id": "R1",
+        "input_ref": {
+          "project_id": "P1",
+          "project_revision": 1,
+          "scenario_id": "SC1",
+          "scenario_revision": 1,
+          "frozen_project_file": {
+            "path": "project.json",
+            "kind": "project"
+          },
+          "frozen_scenario_file": {
+            "path": "scenario.json",
+            "kind": "scenario"
+          }
+        },
+        "scope": [],
+        "window": {
+          "start_ms": 0,
+          "end_ms": 60000
+        },
+        "computation_status": "paused",
+        "whole_window_computed": false,
+        "goal_met": null,
+        "final_items": [],
+        "jobs": [
+          {
+            "id": "J1",
+            "task_ref": "T1",
+            "operation_ref": {
+              "id": "shared",
+              "version": "1.0.0"
+            },
+            "execution_ref": {
+              "kind": "project_device",
+              "data": {
+                "device_id": "D1",
+                "route_step_id": "S1",
+                "execution_capacity_ref": {
+                  "kind": "device",
+                  "id": "D1"
+                }
+              }
+            },
+            "input_refs": [],
+            "job_resources": [],
+            "phase_ref": "auto",
+            "phase_resources": [],
+            "effective_progress_ms": 0,
+            "started_at_ms": 0,
+            "finished_at_ms": null,
+            "state": "working",
+            "pending_outputs": []
+          }
+        ],
+        "transport": [],
+        "resource_claims": [],
+        "waits": [],
+        "allocations": [],
+        "events": [],
+        "acceptance_events": [],
+        "orders": [],
+        "limitations": [],
+        "computed_until_ms": 20000,
+        "phase_work_intervals": [
+          {
+            "job_id": "J1",
+            "phase_id": "auto",
+            "interval": {
+              "start_ms": 5000,
+              "end_ms": 20000
+            },
+            "effective_progress_start_ms": 0,
+            "effective_progress_end_ms": 15000,
+            "end_cause": "guessed_complete"
+          }
+        ]
+      },
+      "expected_shape_accepted": false,
+      "expected_semantics_accepted": false,
+      "expected_metrics": null,
+      "actual_product_result": null
+    },
+    {
+      "id": "TCF09",
+      "source_expectation": "capacity kind must be device/resource",
+      "run": {
+        "evidence_origin": "type_fixture",
+        "id": "R1",
+        "input_ref": {
+          "project_id": "P1",
+          "project_revision": 1,
+          "scenario_id": "SC1",
+          "scenario_revision": 1,
+          "frozen_project_file": {
+            "path": "project.json",
+            "kind": "project"
+          },
+          "frozen_scenario_file": {
+            "path": "scenario.json",
+            "kind": "scenario"
+          }
+        },
+        "scope": [],
+        "window": {
+          "start_ms": 0,
+          "end_ms": 60000
+        },
+        "computation_status": "paused",
+        "whole_window_computed": false,
+        "goal_met": null,
+        "final_items": [],
+        "jobs": [
+          {
+            "id": "J1",
+            "task_ref": "T1",
+            "operation_ref": {
+              "id": "shared",
+              "version": "1.0.0"
+            },
+            "execution_ref": {
+              "kind": "project_device",
+              "data": {
+                "device_id": "D1",
+                "route_step_id": "S1",
+                "execution_capacity_ref": {
+                  "kind": "item",
+                  "id": "seat1"
+                }
+              }
+            },
+            "input_refs": [],
+            "job_resources": [],
+            "phase_ref": "auto",
+            "phase_resources": [],
+            "effective_progress_ms": 0,
+            "started_at_ms": 0,
+            "finished_at_ms": null,
+            "state": "working",
+            "pending_outputs": []
+          },
+          {
+            "id": "J2",
+            "task_ref": "T1",
+            "operation_ref": {
+              "id": "shared",
+              "version": "1.0.0"
+            },
+            "execution_ref": {
+              "kind": "project_device",
+              "data": {
+                "device_id": "D2",
+                "route_step_id": "S2",
+                "execution_capacity_ref": {
+                  "kind": "device",
+                  "id": "D2"
+                }
+              }
+            },
+            "input_refs": [],
+            "job_resources": [],
+            "phase_ref": "auto",
+            "phase_resources": [],
+            "effective_progress_ms": 0,
+            "started_at_ms": 0,
+            "finished_at_ms": null,
+            "state": "working",
+            "pending_outputs": []
+          }
+        ],
+        "transport": [],
+        "resource_claims": [
+          {
+            "id": "C1",
+            "resource_id": "W1",
+            "job_id": "J1",
+            "units": 1,
+            "intervals": [
+              {
+                "start_ms": 0,
+                "end_ms": 10000
+              }
+            ],
+            "kind": "phase",
+            "phase_ref": "auto",
+            "interval_end_causes": [
+              "released"
+            ]
+          },
+          {
+            "id": "C2",
+            "resource_id": "D2",
+            "job_id": "J2",
+            "units": 1,
+            "intervals": [
+              {
+                "start_ms": 0,
+                "end_ms": 10000
+              }
+            ],
+            "kind": "job",
+            "phase_ref": null,
+            "interval_end_causes": [
+              "released"
+            ]
+          }
+        ],
+        "waits": [
+          {
+            "object_ref": {
+              "kind": "job",
+              "id": "J1"
+            },
+            "execution_ref": {
+              "kind": "project_device",
+              "data": {
+                "device_id": "D1",
+                "route_step_id": "S1",
+                "execution_capacity_ref": {
+                  "kind": "item",
+                  "id": "seat1"
+                }
+              }
+            },
+            "phase_ref": "unload",
+            "interval": {
+              "start_ms": 10000,
+              "end_ms": 20000
+            },
+            "reasons": [
+              {
+                "kind": "resource_busy",
+                "blocking_object": {
+                  "kind": "resource",
+                  "id": "W1"
+                },
+                "required": "operator",
+                "next_known_boundary_ms": 20000
+              }
+            ],
+            "end_cause": "resolved"
+          }
+        ],
+        "allocations": [],
+        "events": [],
+        "acceptance_events": [],
+        "orders": [],
+        "limitations": [],
+        "computed_until_ms": 40000,
+        "phase_work_intervals": []
+      },
+      "expected_shape_accepted": true,
+      "expected_semantics_accepted": false,
+      "expected_metrics": null,
+      "actual_product_result": null
+    },
+    {
+      "id": "TCF10",
+      "source_expectation": "beyond computed frontier",
+      "run": {
+        "evidence_origin": "type_fixture",
+        "id": "R1",
+        "input_ref": {
+          "project_id": "P1",
+          "project_revision": 1,
+          "scenario_id": "SC1",
+          "scenario_revision": 1,
+          "frozen_project_file": {
+            "path": "project.json",
+            "kind": "project"
+          },
+          "frozen_scenario_file": {
+            "path": "scenario.json",
+            "kind": "scenario"
+          }
+        },
+        "scope": [],
+        "window": {
+          "start_ms": 0,
+          "end_ms": 60000
+        },
+        "computation_status": "paused",
+        "whole_window_computed": false,
+        "goal_met": null,
+        "final_items": [],
+        "jobs": [
+          {
+            "id": "J1",
+            "task_ref": "T1",
+            "operation_ref": {
+              "id": "shared",
+              "version": "1.0.0"
+            },
+            "execution_ref": {
+              "kind": "project_device",
+              "data": {
+                "device_id": "D1",
+                "route_step_id": "S1",
+                "execution_capacity_ref": {
+                  "kind": "device",
+                  "id": "D1"
+                }
+              }
+            },
+            "input_refs": [],
+            "job_resources": [],
+            "phase_ref": "auto",
+            "phase_resources": [],
+            "effective_progress_ms": 0,
+            "started_at_ms": 0,
+            "finished_at_ms": null,
+            "state": "working",
+            "pending_outputs": []
+          }
+        ],
+        "transport": [],
+        "resource_claims": [],
+        "waits": [],
+        "allocations": [],
+        "events": [],
+        "acceptance_events": [],
+        "orders": [],
+        "limitations": [],
+        "computed_until_ms": 20000,
+        "phase_work_intervals": [
+          {
+            "job_id": "J1",
+            "phase_id": "auto",
+            "interval": {
+              "start_ms": 5000,
+              "end_ms": 21000
+            },
+            "effective_progress_start_ms": 0,
+            "effective_progress_end_ms": 16000,
+            "end_cause": "computed_boundary"
+          }
+        ]
+      },
+      "expected_shape_accepted": true,
+      "expected_semantics_accepted": false,
+      "expected_metrics": null,
+      "actual_product_result": null
+    },
+    {
+      "id": "TCF11",
+      "source_expectation": "waiting incorrectly included as work",
+      "run": {
+        "evidence_origin": "type_fixture",
+        "id": "R1",
+        "input_ref": {
+          "project_id": "P1",
+          "project_revision": 1,
+          "scenario_id": "SC1",
+          "scenario_revision": 1,
+          "frozen_project_file": {
+            "path": "project.json",
+            "kind": "project"
+          },
+          "frozen_scenario_file": {
+            "path": "scenario.json",
+            "kind": "scenario"
+          }
+        },
+        "scope": [],
+        "window": {
+          "start_ms": 0,
+          "end_ms": 60000
+        },
+        "computation_status": "paused",
+        "whole_window_computed": false,
+        "goal_met": null,
+        "final_items": [],
+        "jobs": [
+          {
+            "id": "J1",
+            "task_ref": "T1",
+            "operation_ref": {
+              "id": "shared",
+              "version": "1.0.0"
+            },
+            "execution_ref": {
+              "kind": "project_device",
+              "data": {
+                "device_id": "D1",
+                "route_step_id": "S1",
+                "execution_capacity_ref": {
+                  "kind": "device",
+                  "id": "D1"
+                }
+              }
+            },
+            "input_refs": [],
+            "job_resources": [],
+            "phase_ref": "auto",
+            "phase_resources": [],
+            "effective_progress_ms": 0,
+            "started_at_ms": 0,
+            "finished_at_ms": null,
+            "state": "working",
+            "pending_outputs": []
+          }
+        ],
+        "transport": [],
+        "resource_claims": [
+          {
+            "id": "M1",
+            "resource_id": "D1",
+            "job_id": "J1",
+            "units": 1,
+            "intervals": [
+              {
+                "start_ms": 5000,
+                "end_ms": 23000
+              }
+            ],
+            "kind": "job",
+            "phase_ref": null,
+            "interval_end_causes": [
+              "computed_boundary"
+            ]
+          },
+          {
+            "id": "P1",
+            "resource_id": "W1",
+            "job_id": "J1",
+            "units": 1,
+            "intervals": [
+              {
+                "start_ms": 5000,
+                "end_ms": 10000
+              }
+            ],
+            "kind": "phase",
+            "phase_ref": "auto",
+            "interval_end_causes": [
+              "released"
+            ]
+          },
+          {
+            "id": "P2",
+            "resource_id": "W1",
+            "job_id": "J1",
+            "units": 1,
+            "intervals": [
+              {
+                "start_ms": 20000,
+                "end_ms": 23000
+              }
+            ],
+            "kind": "phase",
+            "phase_ref": "auto",
+            "interval_end_causes": [
+              "released"
+            ]
+          }
+        ],
+        "waits": [
+          {
+            "object_ref": {
+              "kind": "job",
+              "id": "J1"
+            },
+            "execution_ref": {
+              "kind": "project_device",
+              "data": {
+                "device_id": "D1",
+                "route_step_id": "S1",
+                "execution_capacity_ref": {
+                  "kind": "device",
+                  "id": "D1"
+                }
+              }
+            },
+            "phase_ref": "auto",
+            "interval": {
+              "start_ms": 10000,
+              "end_ms": 20000
+            },
+            "reasons": [
+              {
+                "kind": "resource_busy",
+                "blocking_object": {
+                  "kind": "resource",
+                  "id": "W1"
+                },
+                "required": "operator",
+                "next_known_boundary_ms": 20000
+              }
+            ],
+            "end_cause": "resolved"
+          }
+        ],
+        "allocations": [],
+        "events": [
+          {
+            "sequence": 1,
+            "at_ms": 23000,
+            "subject": {
+              "kind": "job",
+              "id": "J1"
+            },
+            "payload": {
+              "kind": "phase_completed",
+              "data": "auto"
+            }
+          }
+        ],
+        "acceptance_events": [],
+        "orders": [],
+        "limitations": [],
+        "computed_until_ms": 23000,
+        "phase_work_intervals": [
+          {
+            "job_id": "J1",
+            "phase_id": "auto",
+            "interval": {
+              "start_ms": 5000,
+              "end_ms": 23000
+            },
+            "effective_progress_start_ms": 0,
+            "effective_progress_end_ms": 8000,
+            "end_cause": "phase_completed"
+          }
+        ]
+      },
+      "expected_shape_accepted": true,
+      "expected_semantics_accepted": false,
+      "expected_metrics": null,
+      "actual_product_result": null
+    },
+    {
+      "id": "TCF12",
+      "source_expectation": "completion cause without same-time event",
+      "run": {
+        "evidence_origin": "type_fixture",
+        "id": "R1",
+        "input_ref": {
+          "project_id": "P1",
+          "project_revision": 1,
+          "scenario_id": "SC1",
+          "scenario_revision": 1,
+          "frozen_project_file": {
+            "path": "project.json",
+            "kind": "project"
+          },
+          "frozen_scenario_file": {
+            "path": "scenario.json",
+            "kind": "scenario"
+          }
+        },
+        "scope": [],
+        "window": {
+          "start_ms": 0,
+          "end_ms": 60000
+        },
+        "computation_status": "paused",
+        "whole_window_computed": false,
+        "goal_met": null,
+        "final_items": [],
+        "jobs": [
+          {
+            "id": "J1",
+            "task_ref": "T1",
+            "operation_ref": {
+              "id": "shared",
+              "version": "1.0.0"
+            },
+            "execution_ref": {
+              "kind": "project_device",
+              "data": {
+                "device_id": "D1",
+                "route_step_id": "S1",
+                "execution_capacity_ref": {
+                  "kind": "device",
+                  "id": "D1"
+                }
+              }
+            },
+            "input_refs": [],
+            "job_resources": [],
+            "phase_ref": "auto",
+            "phase_resources": [],
+            "effective_progress_ms": 0,
+            "started_at_ms": 0,
+            "finished_at_ms": null,
+            "state": "working",
+            "pending_outputs": []
+          }
+        ],
+        "transport": [],
+        "resource_claims": [
+          {
+            "id": "M1",
+            "resource_id": "D1",
+            "job_id": "J1",
+            "units": 1,
+            "intervals": [
+              {
+                "start_ms": 5000,
+                "end_ms": 23000
+              }
+            ],
+            "kind": "job",
+            "phase_ref": null,
+            "interval_end_causes": [
+              "computed_boundary"
+            ]
+          },
+          {
+            "id": "P1",
+            "resource_id": "W1",
+            "job_id": "J1",
+            "units": 1,
+            "intervals": [
+              {
+                "start_ms": 5000,
+                "end_ms": 10000
+              }
+            ],
+            "kind": "phase",
+            "phase_ref": "auto",
+            "interval_end_causes": [
+              "released"
+            ]
+          },
+          {
+            "id": "P2",
+            "resource_id": "W1",
+            "job_id": "J1",
+            "units": 1,
+            "intervals": [
+              {
+                "start_ms": 20000,
+                "end_ms": 23000
+              }
+            ],
+            "kind": "phase",
+            "phase_ref": "auto",
+            "interval_end_causes": [
+              "released"
+            ]
+          }
+        ],
+        "waits": [
+          {
+            "object_ref": {
+              "kind": "job",
+              "id": "J1"
+            },
+            "execution_ref": {
+              "kind": "project_device",
+              "data": {
+                "device_id": "D1",
+                "route_step_id": "S1",
+                "execution_capacity_ref": {
+                  "kind": "device",
+                  "id": "D1"
+                }
+              }
+            },
+            "phase_ref": "auto",
+            "interval": {
+              "start_ms": 10000,
+              "end_ms": 20000
+            },
+            "reasons": [
+              {
+                "kind": "resource_busy",
+                "blocking_object": {
+                  "kind": "resource",
+                  "id": "W1"
+                },
+                "required": "operator",
+                "next_known_boundary_ms": 20000
+              }
+            ],
+            "end_cause": "resolved"
+          }
+        ],
+        "allocations": [],
+        "events": [],
+        "acceptance_events": [],
+        "orders": [],
+        "limitations": [],
+        "computed_until_ms": 23000,
+        "phase_work_intervals": [
+          {
+            "job_id": "J1",
+            "phase_id": "auto",
+            "interval": {
+              "start_ms": 5000,
+              "end_ms": 10000
+            },
+            "effective_progress_start_ms": 0,
+            "effective_progress_end_ms": 5000,
+            "end_cause": "interrupted"
+          },
+          {
+            "job_id": "J1",
+            "phase_id": "auto",
+            "interval": {
+              "start_ms": 20000,
+              "end_ms": 23000
+            },
+            "effective_progress_start_ms": 5000,
+            "effective_progress_end_ms": 8000,
+            "end_cause": "phase_completed"
+          }
+        ]
+      },
+      "expected_shape_accepted": true,
+      "expected_semantics_accepted": false,
+      "expected_metrics": null,
+      "actual_product_result": null
+    },
+    {
+      "id": "TCF13",
+      "source_expectation": "zero phase must be point only",
+      "run": {
+        "evidence_origin": "type_fixture",
+        "id": "R1",
+        "input_ref": {
+          "project_id": "P1",
+          "project_revision": 1,
+          "scenario_id": "SC1",
+          "scenario_revision": 1,
+          "frozen_project_file": {
+            "path": "project.json",
+            "kind": "project"
+          },
+          "frozen_scenario_file": {
+            "path": "scenario.json",
+            "kind": "scenario"
+          }
+        },
+        "scope": [],
+        "window": {
+          "start_ms": 0,
+          "end_ms": 60000
+        },
+        "computation_status": "paused",
+        "whole_window_computed": false,
+        "goal_met": null,
+        "final_items": [],
+        "jobs": [
+          {
+            "id": "J1",
+            "task_ref": "T1",
+            "operation_ref": {
+              "id": "shared",
+              "version": "1.0.0"
+            },
+            "execution_ref": {
+              "kind": "project_device",
+              "data": {
+                "device_id": "D1",
+                "route_step_id": "S1",
+                "execution_capacity_ref": {
+                  "kind": "device",
+                  "id": "D1"
+                }
+              }
+            },
+            "input_refs": [],
+            "job_resources": [],
+            "phase_ref": "auto",
+            "phase_resources": [],
+            "effective_progress_ms": 0,
+            "started_at_ms": 0,
+            "finished_at_ms": null,
+            "state": "working",
+            "pending_outputs": []
+          }
+        ],
+        "transport": [],
+        "resource_claims": [],
+        "waits": [],
+        "allocations": [],
+        "events": [
+          {
+            "sequence": 1,
+            "at_ms": 20000,
+            "subject": {
+              "kind": "job",
+              "id": "J1"
+            },
+            "payload": {
+              "kind": "phase_completed",
+              "data": "logic"
+            }
+          }
+        ],
+        "acceptance_events": [],
+        "orders": [],
+        "limitations": [],
+        "computed_until_ms": 40000,
+        "phase_work_intervals": [
+          {
+            "job_id": "J1",
+            "phase_id": "logic",
+            "interval": {
+              "start_ms": 20000,
+              "end_ms": 20000
+            },
+            "effective_progress_start_ms": 0,
+            "effective_progress_end_ms": 0,
+            "end_cause": "phase_completed"
+          }
+        ]
+      },
+      "expected_shape_accepted": true,
+      "expected_semantics_accepted": false,
+      "expected_metrics": null,
+      "actual_product_result": null
+    },
+    {
+      "id": "TCF14",
+      "source_expectation": "B18 + blocked next phase",
+      "run": {
+        "evidence_origin": "type_fixture",
+        "id": "R1",
+        "input_ref": {
+          "project_id": "P1",
+          "project_revision": 1,
+          "scenario_id": "SC1",
+          "scenario_revision": 1,
+          "frozen_project_file": {
+            "path": "project.json",
+            "kind": "project"
+          },
+          "frozen_scenario_file": {
+            "path": "scenario.json",
+            "kind": "scenario"
+          }
+        },
+        "scope": [],
+        "window": {
+          "start_ms": 0,
+          "end_ms": 60000
+        },
+        "computation_status": "paused",
+        "whole_window_computed": false,
+        "goal_met": null,
+        "final_items": [],
+        "jobs": [
+          {
+            "id": "J1",
+            "task_ref": "T1",
+            "operation_ref": {
+              "id": "shared",
+              "version": "1.0.0"
+            },
+            "execution_ref": {
+              "kind": "project_device",
+              "data": {
+                "device_id": "D1",
+                "route_step_id": "S1",
+                "execution_capacity_ref": {
+                  "kind": "resource",
+                  "id": "seat1"
+                }
+              }
+            },
+            "input_refs": [],
+            "job_resources": [],
+            "phase_ref": "auto",
+            "phase_resources": [],
+            "effective_progress_ms": 0,
+            "started_at_ms": 0,
+            "finished_at_ms": null,
+            "state": "working",
+            "pending_outputs": []
+          },
+          {
+            "id": "J2",
+            "task_ref": "T1",
+            "operation_ref": {
+              "id": "shared",
+              "version": "1.0.0"
+            },
+            "execution_ref": {
+              "kind": "project_device",
+              "data": {
+                "device_id": "D2",
+                "route_step_id": "S2",
+                "execution_capacity_ref": {
+                  "kind": "device",
+                  "id": "D2"
+                }
+              }
+            },
+            "input_refs": [],
+            "job_resources": [],
+            "phase_ref": "auto",
+            "phase_resources": [],
+            "effective_progress_ms": 0,
+            "started_at_ms": 0,
+            "finished_at_ms": null,
+            "state": "working",
+            "pending_outputs": []
+          }
+        ],
+        "transport": [],
+        "resource_claims": [
+          {
+            "id": "C1",
+            "resource_id": "W1",
+            "job_id": "J1",
+            "units": 1,
+            "intervals": [
+              {
+                "start_ms": 0,
+                "end_ms": 10000
+              }
+            ],
+            "kind": "phase",
+            "phase_ref": "auto",
+            "interval_end_causes": [
+              "released"
+            ]
+          },
+          {
+            "id": "C2",
+            "resource_id": "D2",
+            "job_id": "J2",
+            "units": 1,
+            "intervals": [
+              {
+                "start_ms": 0,
+                "end_ms": 10000
+              }
+            ],
+            "kind": "job",
+            "phase_ref": null,
+            "interval_end_causes": [
+              "released"
+            ]
+          }
+        ],
+        "waits": [
+          {
+            "object_ref": {
+              "kind": "job",
+              "id": "J1"
+            },
+            "execution_ref": {
+              "kind": "project_device",
+              "data": {
+                "device_id": "D1",
+                "route_step_id": "S1",
+                "execution_capacity_ref": {
+                  "kind": "resource",
+                  "id": "seat1"
+                }
+              }
+            },
+            "phase_ref": "unload",
+            "interval": {
+              "start_ms": 10000,
+              "end_ms": 20000
+            },
+            "reasons": [
+              {
+                "kind": "resource_busy",
+                "blocking_object": {
+                  "kind": "resource",
+                  "id": "W1"
+                },
+                "required": "operator",
+                "next_known_boundary_ms": 20000
+              }
+            ],
+            "end_cause": "maybe_done"
+          }
+        ],
+        "allocations": [],
+        "events": [],
+        "acceptance_events": [],
+        "orders": [],
+        "limitations": [],
+        "computed_until_ms": 40000,
+        "phase_work_intervals": []
+      },
+      "expected_shape_accepted": false,
+      "expected_semantics_accepted": false,
+      "expected_metrics": null,
+      "actual_product_result": null,
+      "purpose": "unknown wait end cause rejected"
+    },
+    {
+      "id": "TCF15",
+      "source_expectation": "B18 + blocked next phase",
+      "run": {
+        "evidence_origin": "type_fixture",
+        "id": "R1",
+        "input_ref": {
+          "project_id": "P1",
+          "project_revision": 1,
+          "scenario_id": "SC1",
+          "scenario_revision": 1,
+          "frozen_project_file": {
+            "path": "project.json",
+            "kind": "project"
+          },
+          "frozen_scenario_file": {
+            "path": "scenario.json",
+            "kind": "scenario"
+          }
+        },
+        "scope": [],
+        "window": {
+          "start_ms": 0,
+          "end_ms": 60000
+        },
+        "computation_status": "paused",
+        "whole_window_computed": false,
+        "goal_met": null,
+        "final_items": [],
+        "jobs": [
+          {
+            "id": "J1",
+            "task_ref": "T1",
+            "operation_ref": {
+              "id": "shared",
+              "version": "1.0.0"
+            },
+            "execution_ref": {
+              "kind": "project_device",
+              "data": {
+                "device_id": "D1",
+                "route_step_id": "S1",
+                "execution_capacity_ref": {
+                  "kind": "resource",
+                  "id": "seat1"
+                }
+              }
+            },
+            "input_refs": [],
+            "job_resources": [],
+            "phase_ref": "auto",
+            "phase_resources": [],
+            "effective_progress_ms": 0,
+            "started_at_ms": 0,
+            "finished_at_ms": null,
+            "state": "working",
+            "pending_outputs": []
+          },
+          {
+            "id": "J2",
+            "task_ref": "T1",
+            "operation_ref": {
+              "id": "shared",
+              "version": "1.0.0"
+            },
+            "execution_ref": {
+              "kind": "project_device",
+              "data": {
+                "device_id": "D2",
+                "route_step_id": "S2",
+                "execution_capacity_ref": {
+                  "kind": "device",
+                  "id": "D2"
+                }
+              }
+            },
+            "input_refs": [],
+            "job_resources": [],
+            "phase_ref": "auto",
+            "phase_resources": [],
+            "effective_progress_ms": 0,
+            "started_at_ms": 0,
+            "finished_at_ms": null,
+            "state": "working",
+            "pending_outputs": []
+          }
+        ],
+        "transport": [],
+        "resource_claims": [
+          {
+            "id": "C1",
+            "resource_id": "W1",
+            "job_id": "J1",
+            "units": 1,
+            "intervals": [
+              {
+                "start_ms": 0,
+                "end_ms": 10000
+              }
+            ],
+            "kind": "phase",
+            "phase_ref": null,
+            "interval_end_causes": [
+              "released"
+            ]
+          },
+          {
+            "id": "C2",
+            "resource_id": "D2",
+            "job_id": "J2",
+            "units": 1,
+            "intervals": [
+              {
+                "start_ms": 0,
+                "end_ms": 10000
+              }
+            ],
+            "kind": "job",
+            "phase_ref": null,
+            "interval_end_causes": [
+              "released"
+            ]
+          }
+        ],
+        "waits": [
+          {
+            "object_ref": {
+              "kind": "job",
+              "id": "J1"
+            },
+            "execution_ref": {
+              "kind": "project_device",
+              "data": {
+                "device_id": "D1",
+                "route_step_id": "S1",
+                "execution_capacity_ref": {
+                  "kind": "resource",
+                  "id": "seat1"
+                }
+              }
+            },
+            "phase_ref": "unload",
+            "interval": {
+              "start_ms": 10000,
+              "end_ms": 20000
+            },
+            "reasons": [
+              {
+                "kind": "resource_busy",
+                "blocking_object": {
+                  "kind": "resource",
+                  "id": "W1"
+                },
+                "required": "operator",
+                "next_known_boundary_ms": 20000
+              }
+            ],
+            "end_cause": "resolved"
+          }
+        ],
+        "allocations": [],
+        "events": [],
+        "acceptance_events": [],
+        "orders": [],
+        "limitations": [],
+        "computed_until_ms": 40000,
+        "phase_work_intervals": []
+      },
+      "expected_shape_accepted": true,
+      "expected_semantics_accepted": false,
+      "expected_metrics": null,
+      "actual_product_result": null,
+      "purpose": "phase claim must name captured phase"
+    },
+    {
+      "id": "TCF16",
+      "source_expectation": "B18 + blocked next phase",
+      "run": {
+        "evidence_origin": "type_fixture",
+        "id": "R1",
+        "input_ref": {
+          "project_id": "P1",
+          "project_revision": 1,
+          "scenario_id": "SC1",
+          "scenario_revision": 1,
+          "frozen_project_file": {
+            "path": "project.json",
+            "kind": "project"
+          },
+          "frozen_scenario_file": {
+            "path": "scenario.json",
+            "kind": "scenario"
+          }
+        },
+        "scope": [],
+        "window": {
+          "start_ms": 0,
+          "end_ms": 60000
+        },
+        "computation_status": "paused",
+        "whole_window_computed": false,
+        "goal_met": null,
+        "final_items": [],
+        "jobs": [
+          {
+            "id": "J1",
+            "task_ref": "T1",
+            "operation_ref": {
+              "id": "shared",
+              "version": "1.0.0"
+            },
+            "execution_ref": {
+              "kind": "project_device",
+              "data": {
+                "device_id": "D1",
+                "route_step_id": "S1",
+                "execution_capacity_ref": {
+                  "kind": "resource",
+                  "id": "seat1"
+                }
+              }
+            },
+            "input_refs": [],
+            "job_resources": [],
+            "phase_ref": "auto",
+            "phase_resources": [],
+            "effective_progress_ms": 0,
+            "started_at_ms": 0,
+            "finished_at_ms": null,
+            "state": "working",
+            "pending_outputs": []
+          },
+          {
+            "id": "J2",
+            "task_ref": "T1",
+            "operation_ref": {
+              "id": "shared",
+              "version": "1.0.0"
+            },
+            "execution_ref": {
+              "kind": "project_device",
+              "data": {
+                "device_id": "D2",
+                "route_step_id": "S2",
+                "execution_capacity_ref": {
+                  "kind": "device",
+                  "id": "D2"
+                }
+              }
+            },
+            "input_refs": [],
+            "job_resources": [],
+            "phase_ref": "auto",
+            "phase_resources": [],
+            "effective_progress_ms": 0,
+            "started_at_ms": 0,
+            "finished_at_ms": null,
+            "state": "working",
+            "pending_outputs": []
+          }
+        ],
+        "transport": [],
+        "resource_claims": [
+          {
+            "id": "C1",
+            "resource_id": "W1",
+            "job_id": "J1",
+            "units": 1,
+            "intervals": [
+              {
+                "start_ms": 0,
+                "end_ms": 10000
+              }
+            ],
+            "kind": "phase",
+            "phase_ref": "auto",
+            "interval_end_causes": []
+          },
+          {
+            "id": "C2",
+            "resource_id": "D2",
+            "job_id": "J2",
+            "units": 1,
+            "intervals": [
+              {
+                "start_ms": 0,
+                "end_ms": 10000
+              }
+            ],
+            "kind": "job",
+            "phase_ref": null,
+            "interval_end_causes": [
+              "released"
+            ]
+          }
+        ],
+        "waits": [
+          {
+            "object_ref": {
+              "kind": "job",
+              "id": "J1"
+            },
+            "execution_ref": {
+              "kind": "project_device",
+              "data": {
+                "device_id": "D1",
+                "route_step_id": "S1",
+                "execution_capacity_ref": {
+                  "kind": "resource",
+                  "id": "seat1"
+                }
+              }
+            },
+            "phase_ref": "unload",
+            "interval": {
+              "start_ms": 10000,
+              "end_ms": 20000
+            },
+            "reasons": [
+              {
+                "kind": "resource_busy",
+                "blocking_object": {
+                  "kind": "resource",
+                  "id": "W1"
+                },
+                "required": "operator",
+                "next_known_boundary_ms": 20000
+              }
+            ],
+            "end_cause": "resolved"
+          }
+        ],
+        "allocations": [],
+        "events": [],
+        "acceptance_events": [],
+        "orders": [],
+        "limitations": [],
+        "computed_until_ms": 40000,
+        "phase_work_intervals": []
+      },
+      "expected_shape_accepted": true,
+      "expected_semantics_accepted": false,
+      "expected_metrics": null,
+      "actual_product_result": null,
+      "purpose": "claim interval/end-cause ordinals must align"
+    },
+    {
+      "id": "TCF17",
+      "source_expectation": "B18 + blocked next phase",
+      "run": {
+        "evidence_origin": "type_fixture",
+        "id": "R1",
+        "input_ref": {
+          "project_id": "P1",
+          "project_revision": 1,
+          "scenario_id": "SC1",
+          "scenario_revision": 1,
+          "frozen_project_file": {
+            "path": "project.json",
+            "kind": "project"
+          },
+          "frozen_scenario_file": {
+            "path": "scenario.json",
+            "kind": "scenario"
+          }
+        },
+        "scope": [],
+        "window": {
+          "start_ms": 0,
+          "end_ms": 60000
+        },
+        "computation_status": "paused",
+        "whole_window_computed": false,
+        "goal_met": null,
+        "final_items": [],
+        "jobs": [
+          {
+            "id": "J1",
+            "task_ref": "T1",
+            "operation_ref": {
+              "id": "shared",
+              "version": "1.0.0"
+            },
+            "execution_ref": {
+              "kind": "project_device",
+              "data": {
+                "device_id": "D1",
+                "route_step_id": "S1",
+                "execution_capacity_ref": {
+                  "kind": "resource",
+                  "id": "seat1"
+                }
+              }
+            },
+            "input_refs": [],
+            "job_resources": [],
+            "phase_ref": "auto",
+            "phase_resources": [],
+            "effective_progress_ms": 0,
+            "started_at_ms": 0,
+            "finished_at_ms": null,
+            "state": "working",
+            "pending_outputs": []
+          },
+          {
+            "id": "J2",
+            "task_ref": "T1",
+            "operation_ref": {
+              "id": "shared",
+              "version": "1.0.0"
+            },
+            "execution_ref": {
+              "kind": "project_device",
+              "data": {
+                "device_id": "D2",
+                "route_step_id": "S2",
+                "execution_capacity_ref": {
+                  "kind": "device",
+                  "id": "D2"
+                }
+              }
+            },
+            "input_refs": [],
+            "job_resources": [],
+            "phase_ref": "auto",
+            "phase_resources": [],
+            "effective_progress_ms": 0,
+            "started_at_ms": 0,
+            "finished_at_ms": null,
+            "state": "working",
+            "pending_outputs": []
+          }
+        ],
+        "transport": [],
+        "resource_claims": [
+          {
+            "id": "C1",
+            "resource_id": "W1",
+            "job_id": "J1",
+            "units": 1,
+            "intervals": [
+              {
+                "start_ms": 0,
+                "end_ms": 10000
+              }
+            ],
+            "kind": "phase",
+            "phase_ref": "auto",
+            "interval_end_causes": [
+              "released"
+            ]
+          },
+          {
+            "id": "C2",
+            "resource_id": "D2",
+            "job_id": "J2",
+            "units": 1,
+            "intervals": [
+              {
+                "start_ms": 0,
+                "end_ms": 10000
+              }
+            ],
+            "kind": "job",
+            "phase_ref": null,
+            "interval_end_causes": [
+              "released"
+            ]
+          }
+        ],
+        "waits": [
+          {
+            "object_ref": {
+              "kind": "job",
+              "id": "J1"
+            },
+            "execution_ref": {
+              "kind": "project_device",
+              "data": {
+                "device_id": "D1",
+                "route_step_id": "S1",
+                "execution_capacity_ref": {
+                  "kind": "resource",
+                  "id": "seat1"
+                }
+              }
+            },
+            "phase_ref": "unload",
+            "interval": {
+              "start_ms": 10000,
+              "end_ms": 20000
+            },
+            "reasons": [
+              {
+                "kind": "resource_busy",
+                "blocking_object": {
+                  "kind": "resource",
+                  "id": "W1"
+                },
+                "required": "operator",
+                "next_known_boundary_ms": 20000
+              }
+            ],
+            "end_cause": "computed_boundary"
+          }
+        ],
+        "allocations": [],
+        "events": [],
+        "acceptance_events": [],
+        "orders": [],
+        "limitations": [],
+        "computed_until_ms": 40000,
+        "phase_work_intervals": []
+      },
+      "expected_shape_accepted": true,
+      "expected_semantics_accepted": false,
+      "expected_metrics": null,
+      "actual_product_result": null,
+      "purpose": "wait computed boundary must equal actual frontier"
+    },
+    {
+      "id": "TCF18",
+      "source_expectation": "B18 + blocked next phase",
+      "run": {
+        "evidence_origin": "type_fixture",
+        "id": "R1",
+        "input_ref": {
+          "project_id": "P1",
+          "project_revision": 1,
+          "scenario_id": "SC1",
+          "scenario_revision": 1,
+          "frozen_project_file": {
+            "path": "project.json",
+            "kind": "project"
+          },
+          "frozen_scenario_file": {
+            "path": "scenario.json",
+            "kind": "scenario"
+          }
+        },
+        "scope": [],
+        "window": {
+          "start_ms": 0,
+          "end_ms": 60000
+        },
+        "computation_status": "paused",
+        "whole_window_computed": false,
+        "goal_met": null,
+        "final_items": [],
+        "jobs": [
+          {
+            "id": "J1",
+            "task_ref": "T1",
+            "operation_ref": {
+              "id": "shared",
+              "version": "1.0.0"
+            },
+            "execution_ref": {
+              "kind": "project_device",
+              "data": {
+                "device_id": "D1",
+                "route_step_id": "S1",
+                "execution_capacity_ref": {
+                  "kind": "resource",
+                  "id": "seat1"
+                }
+              }
+            },
+            "input_refs": [],
+            "job_resources": [],
+            "phase_ref": "auto",
+            "phase_resources": [],
+            "effective_progress_ms": 0,
+            "started_at_ms": 0,
+            "finished_at_ms": null,
+            "state": "working",
+            "pending_outputs": []
+          },
+          {
+            "id": "J2",
+            "task_ref": "T1",
+            "operation_ref": {
+              "id": "shared",
+              "version": "1.0.0"
+            },
+            "execution_ref": {
+              "kind": "project_device",
+              "data": {
+                "device_id": "D2",
+                "route_step_id": "S2",
+                "execution_capacity_ref": {
+                  "kind": "device",
+                  "id": "D2"
+                }
+              }
+            },
+            "input_refs": [],
+            "job_resources": [],
+            "phase_ref": "auto",
+            "phase_resources": [],
+            "effective_progress_ms": 0,
+            "started_at_ms": 0,
+            "finished_at_ms": null,
+            "state": "working",
+            "pending_outputs": []
+          }
+        ],
+        "transport": [],
+        "resource_claims": [
+          {
+            "id": "C1",
+            "resource_id": "W1",
+            "job_id": "J1",
+            "units": 1,
+            "intervals": [
+              {
+                "start_ms": 0,
+                "end_ms": 10000
+              }
+            ],
+            "kind": "phase",
+            "phase_ref": "auto",
+            "interval_end_causes": [
+              "computed_boundary"
+            ]
+          },
+          {
+            "id": "C2",
+            "resource_id": "D2",
+            "job_id": "J2",
+            "units": 1,
+            "intervals": [
+              {
+                "start_ms": 0,
+                "end_ms": 10000
+              }
+            ],
+            "kind": "job",
+            "phase_ref": null,
+            "interval_end_causes": [
+              "released"
+            ]
+          }
+        ],
+        "waits": [
+          {
+            "object_ref": {
+              "kind": "job",
+              "id": "J1"
+            },
+            "execution_ref": {
+              "kind": "project_device",
+              "data": {
+                "device_id": "D1",
+                "route_step_id": "S1",
+                "execution_capacity_ref": {
+                  "kind": "resource",
+                  "id": "seat1"
+                }
+              }
+            },
+            "phase_ref": "unload",
+            "interval": {
+              "start_ms": 10000,
+              "end_ms": 20000
+            },
+            "reasons": [
+              {
+                "kind": "resource_busy",
+                "blocking_object": {
+                  "kind": "resource",
+                  "id": "W1"
+                },
+                "required": "operator",
+                "next_known_boundary_ms": 20000
+              }
+            ],
+            "end_cause": "resolved"
+          }
+        ],
+        "allocations": [],
+        "events": [],
+        "acceptance_events": [],
+        "orders": [],
+        "limitations": [],
+        "computed_until_ms": 40000,
+        "phase_work_intervals": []
+      },
+      "expected_shape_accepted": true,
+      "expected_semantics_accepted": false,
+      "expected_metrics": null,
+      "actual_product_result": null,
+      "purpose": "claim computed boundary must equal actual frontier"
+    },
+    {
+      "id": "TCF19",
+      "source_expectation": "B18 + blocked next phase",
+      "run": {
+        "evidence_origin": "type_fixture",
+        "id": "R1",
+        "input_ref": {
+          "project_id": "P1",
+          "project_revision": 1,
+          "scenario_id": "SC1",
+          "scenario_revision": 1,
+          "frozen_project_file": {
+            "path": "project.json",
+            "kind": "project"
+          },
+          "frozen_scenario_file": {
+            "path": "scenario.json",
+            "kind": "scenario"
+          }
+        },
+        "scope": [],
+        "window": {
+          "start_ms": 0,
+          "end_ms": 40000
+        },
+        "computation_status": "completed",
+        "whole_window_computed": true,
+        "goal_met": false,
+        "final_items": [],
+        "jobs": [
+          {
+            "id": "J1",
+            "task_ref": "T1",
+            "operation_ref": {
+              "id": "shared",
+              "version": "1.0.0"
+            },
+            "execution_ref": {
+              "kind": "project_device",
+              "data": {
+                "device_id": "D1",
+                "route_step_id": "S1",
+                "execution_capacity_ref": {
+                  "kind": "resource",
+                  "id": "seat1"
+                }
+              }
+            },
+            "input_refs": [],
+            "job_resources": [],
+            "phase_ref": "auto",
+            "phase_resources": [],
+            "effective_progress_ms": 0,
+            "started_at_ms": 0,
+            "finished_at_ms": null,
+            "state": "working",
+            "pending_outputs": []
+          },
+          {
+            "id": "J2",
+            "task_ref": "T1",
+            "operation_ref": {
+              "id": "shared",
+              "version": "1.0.0"
+            },
+            "execution_ref": {
+              "kind": "project_device",
+              "data": {
+                "device_id": "D2",
+                "route_step_id": "S2",
+                "execution_capacity_ref": {
+                  "kind": "device",
+                  "id": "D2"
+                }
+              }
+            },
+            "input_refs": [],
+            "job_resources": [],
+            "phase_ref": "auto",
+            "phase_resources": [],
+            "effective_progress_ms": 0,
+            "started_at_ms": 0,
+            "finished_at_ms": null,
+            "state": "working",
+            "pending_outputs": []
+          }
+        ],
+        "transport": [],
+        "resource_claims": [
+          {
+            "id": "C1",
+            "resource_id": "W1",
+            "job_id": "J1",
+            "units": 1,
+            "intervals": [
+              {
+                "start_ms": 0,
+                "end_ms": 10000
+              }
+            ],
+            "kind": "phase",
+            "phase_ref": "auto",
+            "interval_end_causes": [
+              "released"
+            ]
+          },
+          {
+            "id": "C2",
+            "resource_id": "D2",
+            "job_id": "J2",
+            "units": 1,
+            "intervals": [
+              {
+                "start_ms": 0,
+                "end_ms": 10000
+              }
+            ],
+            "kind": "job",
+            "phase_ref": null,
+            "interval_end_causes": [
+              "released"
+            ]
+          }
+        ],
+        "waits": [
+          {
+            "object_ref": {
+              "kind": "job",
+              "id": "J1"
+            },
+            "execution_ref": {
+              "kind": "project_device",
+              "data": {
+                "device_id": "D1",
+                "route_step_id": "S1",
+                "execution_capacity_ref": {
+                  "kind": "resource",
+                  "id": "seat1"
+                }
+              }
+            },
+            "phase_ref": "unload",
+            "interval": {
+              "start_ms": 10000,
+              "end_ms": 40000
+            },
+            "reasons": [
+              {
+                "kind": "resource_busy",
+                "blocking_object": {
+                  "kind": "resource",
+                  "id": "W1"
+                },
+                "required": "operator",
+                "next_known_boundary_ms": 20000
+              }
+            ],
+            "end_cause": "observation_end"
+          }
+        ],
+        "allocations": [],
+        "events": [],
+        "acceptance_events": [],
+        "orders": [],
+        "limitations": [],
+        "computed_until_ms": 40000,
+        "phase_work_intervals": []
+      },
+      "expected_shape_accepted": true,
+      "expected_semantics_accepted": true,
+      "expected_metrics": {
+        "job_device_rows": {
+          "J1": "D1",
+          "J2": "D2"
+        },
+        "occupied_devices": [
+          "D2"
+        ],
+        "effective_work_ms": 0,
+        "wait_ms": 30000,
+        "phase_completed_points": 0
+      },
+      "actual_product_result": null,
+      "purpose": "unresolved wait boundary stays explicit: observation_end"
+    },
+    {
+      "id": "TCF20",
+      "source_expectation": "B18 + blocked next phase",
+      "run": {
+        "evidence_origin": "type_fixture",
+        "id": "R1",
+        "input_ref": {
+          "project_id": "P1",
+          "project_revision": 1,
+          "scenario_id": "SC1",
+          "scenario_revision": 1,
+          "frozen_project_file": {
+            "path": "project.json",
+            "kind": "project"
+          },
+          "frozen_scenario_file": {
+            "path": "scenario.json",
+            "kind": "scenario"
+          }
+        },
+        "scope": [],
+        "window": {
+          "start_ms": 0,
+          "end_ms": 60000
+        },
+        "computation_status": "paused",
+        "whole_window_computed": false,
+        "goal_met": null,
+        "final_items": [],
+        "jobs": [
+          {
+            "id": "J1",
+            "task_ref": "T1",
+            "operation_ref": {
+              "id": "shared",
+              "version": "1.0.0"
+            },
+            "execution_ref": {
+              "kind": "project_device",
+              "data": {
+                "device_id": "D1",
+                "route_step_id": "S1",
+                "execution_capacity_ref": {
+                  "kind": "resource",
+                  "id": "seat1"
+                }
+              }
+            },
+            "input_refs": [],
+            "job_resources": [],
+            "phase_ref": "auto",
+            "phase_resources": [],
+            "effective_progress_ms": 0,
+            "started_at_ms": 0,
+            "finished_at_ms": null,
+            "state": "working",
+            "pending_outputs": []
+          },
+          {
+            "id": "J2",
+            "task_ref": "T1",
+            "operation_ref": {
+              "id": "shared",
+              "version": "1.0.0"
+            },
+            "execution_ref": {
+              "kind": "project_device",
+              "data": {
+                "device_id": "D2",
+                "route_step_id": "S2",
+                "execution_capacity_ref": {
+                  "kind": "device",
+                  "id": "D2"
+                }
+              }
+            },
+            "input_refs": [],
+            "job_resources": [],
+            "phase_ref": "auto",
+            "phase_resources": [],
+            "effective_progress_ms": 0,
+            "started_at_ms": 0,
+            "finished_at_ms": null,
+            "state": "working",
+            "pending_outputs": []
+          }
+        ],
+        "transport": [],
+        "resource_claims": [
+          {
+            "id": "C1",
+            "resource_id": "W1",
+            "job_id": "J1",
+            "units": 1,
+            "intervals": [
+              {
+                "start_ms": 0,
+                "end_ms": 10000
+              }
+            ],
+            "kind": "phase",
+            "phase_ref": "auto",
+            "interval_end_causes": [
+              "released"
+            ]
+          },
+          {
+            "id": "C2",
+            "resource_id": "D2",
+            "job_id": "J2",
+            "units": 1,
+            "intervals": [
+              {
+                "start_ms": 0,
+                "end_ms": 10000
+              }
+            ],
+            "kind": "job",
+            "phase_ref": null,
+            "interval_end_causes": [
+              "released"
+            ]
+          }
+        ],
+        "waits": [
+          {
+            "object_ref": {
+              "kind": "job",
+              "id": "J1"
+            },
+            "execution_ref": {
+              "kind": "project_device",
+              "data": {
+                "device_id": "D1",
+                "route_step_id": "S1",
+                "execution_capacity_ref": {
+                  "kind": "resource",
+                  "id": "seat1"
+                }
+              }
+            },
+            "phase_ref": "unload",
+            "interval": {
+              "start_ms": 10000,
+              "end_ms": 40000
+            },
+            "reasons": [
+              {
+                "kind": "resource_busy",
+                "blocking_object": {
+                  "kind": "resource",
+                  "id": "W1"
+                },
+                "required": "operator",
+                "next_known_boundary_ms": 20000
+              }
+            ],
+            "end_cause": "computed_boundary"
+          }
+        ],
+        "allocations": [],
+        "events": [],
+        "acceptance_events": [],
+        "orders": [],
+        "limitations": [],
+        "computed_until_ms": 40000,
+        "phase_work_intervals": []
+      },
+      "expected_shape_accepted": true,
+      "expected_semantics_accepted": true,
+      "expected_metrics": {
+        "job_device_rows": {
+          "J1": "D1",
+          "J2": "D2"
+        },
+        "occupied_devices": [
+          "D2"
+        ],
+        "effective_work_ms": 0,
+        "wait_ms": 30000,
+        "phase_completed_points": 0
+      },
+      "actual_product_result": null,
+      "purpose": "unresolved wait boundary stays explicit: computed_boundary"
+    }
+  ],
+  "actual_product_runtime": null,
+  "endpoint_field_extension_note": "New unpublished-design fields are explicit fixture declarations: phase claims use declared auto phase; M1 remains held at the prefix boundary, other listed claims declare released; old waits declare resolved. Original numeric inputs, expected projection and acceptance decisions are unchanged. Not inferred production history.",
+  "original_13_cases_preserved": true,
+  "additional_endpoint_cases": [
+    "TCF14",
+    "TCF15",
+    "TCF16",
+    "TCF17",
+    "TCF18",
+    "TCF19",
+    "TCF20"
+  ]
+}

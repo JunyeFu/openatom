@@ -1,0 +1,1175 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Response",
+  "type": "object",
+  "properties": {
+    "api_version": {
+      "$ref": "#/$defs/ApiVersion"
+    },
+    "context": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ResponseContext"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "outcome": {
+      "$ref": "#/$defs/ApiOutcome"
+    },
+    "request_id": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ObjectId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "api_version",
+    "outcome"
+  ],
+  "$defs": {
+    "ApiError": {
+      "type": "object",
+      "properties": {
+        "actual_revision": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SafeUint"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "code": {
+          "$ref": "#/$defs/ErrorCode"
+        },
+        "expected_revision": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SafeUint"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "field_errors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ApiFieldError"
+          }
+        },
+        "message": {
+          "type": "string"
+        },
+        "object_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ObjectRef"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "message",
+        "object_refs",
+        "field_errors"
+      ]
+    },
+    "ApiFieldError": {
+      "type": "object",
+      "properties": {
+        "pointer": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "pointer",
+        "reason"
+      ]
+    },
+    "ApiOutcome": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "data": {
+              "$ref": "#/$defs/ProjectContext"
+            },
+            "status": {
+              "type": "string",
+              "const": "ok"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "data"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "data": {
+              "$ref": "#/$defs/ApiError"
+            },
+            "status": {
+              "type": "string",
+              "const": "error"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "data"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "data": {
+              "$ref": "#/$defs/ManagedJsonResultRef"
+            },
+            "status": {
+              "type": "string",
+              "const": "managed"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "data"
+          ]
+        }
+      ]
+    },
+    "ApiVersion": {
+      "type": "string",
+      "enum": [
+        "0.1"
+      ]
+    },
+    "CameraState": {
+      "type": "object",
+      "properties": {
+        "coordinate_frame": {
+          "$ref": "#/$defs/CoordinateFrame"
+        },
+        "eye": {
+          "$ref": "#/$defs/Vec3"
+        },
+        "target": {
+          "$ref": "#/$defs/Vec3"
+        },
+        "unit": {
+          "$ref": "#/$defs/LengthUnit"
+        },
+        "zoom": {
+          "$ref": "#/$defs/FiniteNumber"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "coordinate_frame",
+        "unit",
+        "eye",
+        "target",
+        "zoom"
+      ]
+    },
+    "CanvasKind": {
+      "type": "string",
+      "enum": [
+        "line_canvas",
+        "multi_hall_canvas"
+      ]
+    },
+    "CapabilityPurpose": {
+      "type": "string",
+      "enum": [
+        "execution",
+        "preview",
+        "adoption",
+        "redistribution",
+        "complete_conclusion"
+      ]
+    },
+    "ComputationStatus": {
+      "type": "string",
+      "enum": [
+        "queued",
+        "running",
+        "paused",
+        "cancel_requested",
+        "completed",
+        "failed",
+        "cancelled"
+      ]
+    },
+    "CoordinateFrame": {
+      "type": "string",
+      "enum": [
+        "right_handed_z_up",
+        "right_handed_y_up"
+      ]
+    },
+    "DecimalAmount": {
+      "type": "object",
+      "properties": {
+        "coefficient": {
+          "$ref": "#/$defs/SafeUint"
+        },
+        "decimal_places": {
+          "$ref": "#/$defs/DecimalPlaces"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "coefficient",
+        "decimal_places"
+      ]
+    },
+    "DecimalPlaces": {
+      "type": "integer",
+      "format": "uint8",
+      "maximum": 9,
+      "minimum": 0
+    },
+    "DefinitionScopeIdentity": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/ModuleId"
+        },
+        "revision": {
+          "$ref": "#/$defs/SafeUint"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "revision"
+      ]
+    },
+    "DefinitionSummary": {
+      "type": "object",
+      "properties": {
+        "definition_ref": {
+          "$ref": "#/$defs/ModuleRef"
+        },
+        "draft_id": {
+          "$ref": "#/$defs/ModuleId"
+        },
+        "history": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/HistoryAvailability"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "issues": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Issue"
+          }
+        },
+        "revision": {
+          "$ref": "#/$defs/SafeUint"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "draft_id",
+        "revision",
+        "definition_ref",
+        "issues"
+      ]
+    },
+    "DocumentKind": {
+      "type": "string",
+      "enum": [
+        "artifact_record",
+        "project",
+        "scenario",
+        "module",
+        "template",
+        "generation_profile",
+        "presentation",
+        "packaging_job",
+        "packaging_result",
+        "run_input",
+        "run_result",
+        "evaluation",
+        "execution_archive",
+        "asset"
+      ]
+    },
+    "EditScope": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "data": {
+              "$ref": "#/$defs/ProjectId"
+            },
+            "kind": {
+              "type": "string",
+              "const": "project"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "data"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "data": {
+              "$ref": "#/$defs/DefinitionScopeIdentity"
+            },
+            "kind": {
+              "type": "string",
+              "const": "definition_draft"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "data"
+          ]
+        }
+      ]
+    },
+    "ErrorCode": {
+      "type": "string",
+      "enum": [
+        "NoActiveProject",
+        "UnsupportedCapability",
+        "InvalidInput",
+        "MissingReference",
+        "RevisionConflict",
+        "PermissionDenied",
+        "ComputationFailed",
+        "Cancelled",
+        "UnsupportedSchema",
+        "IoFailure"
+      ]
+    },
+    "FileRef": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "$ref": "#/$defs/DocumentKind"
+        },
+        "path": {
+          "$ref": "#/$defs/RelativeFilePath"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "kind"
+      ]
+    },
+    "FiniteNumber": {
+      "type": "number",
+      "format": "double"
+    },
+    "HistoryAvailability": {
+      "type": "object",
+      "properties": {
+        "boundary_reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "can_redo": {
+          "type": "boolean"
+        },
+        "can_undo": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "can_undo",
+        "can_redo"
+      ]
+    },
+    "HostContextIdentity": {
+      "type": "object",
+      "properties": {
+        "active_project_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ProjectId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "active_project_revision": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SafeUint"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "active_run_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RunId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "selected_scope": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/EditScope"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "session_id": {
+          "$ref": "#/$defs/ObjectId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "session_id"
+      ]
+    },
+    "Issue": {
+      "type": "object",
+      "properties": {
+        "blocks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CapabilityPurpose"
+          }
+        },
+        "code": {
+          "type": "string"
+        },
+        "field_path": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "message": {
+          "type": "string"
+        },
+        "object_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ObjectRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "message",
+        "blocks"
+      ]
+    },
+    "LengthUnit": {
+      "type": "string",
+      "enum": [
+        "meter",
+        "millimeter"
+      ]
+    },
+    "LodLevel": {
+      "type": "string",
+      "enum": [
+        "detailed",
+        "simplified",
+        "region"
+      ]
+    },
+    "LongTaskKind": {
+      "type": "string",
+      "enum": [
+        "simulation",
+        "packaging",
+        "rendering",
+        "importing",
+        "exporting",
+        "cloud_read",
+        "execution_preparation"
+      ]
+    },
+    "ManagedJsonResultRef": {
+      "type": "object",
+      "properties": {
+        "byte_length": {
+          "$ref": "#/$defs/SafeUint"
+        },
+        "response_schema_ref": {
+          "type": "string"
+        },
+        "result_id": {
+          "$ref": "#/$defs/ObjectId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "result_id",
+        "response_schema_ref",
+        "byte_length"
+      ]
+    },
+    "ModuleId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "ModuleRef": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/ModuleId"
+        },
+        "version": {
+          "$ref": "#/$defs/VersionId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "version"
+      ]
+    },
+    "ObjectId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "ObjectKind": {
+      "type": "string",
+      "enum": [
+        "project",
+        "scenario",
+        "run",
+        "definition_draft",
+        "packaging_job",
+        "asset",
+        "native_scene",
+        "item_type",
+        "item",
+        "location",
+        "hall",
+        "line",
+        "device",
+        "resource",
+        "calendar",
+        "product",
+        "bom",
+        "route",
+        "connection",
+        "order",
+        "task",
+        "job",
+        "supply",
+        "transport",
+        "artifact",
+        "module",
+        "report"
+      ]
+    },
+    "ObjectRef": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "kind": {
+          "$ref": "#/$defs/ObjectKind"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "id"
+      ]
+    },
+    "OperationName": {
+      "type": "string",
+      "enum": [
+        "describe_capabilities",
+        "get_context",
+        "get_object",
+        "apply_commands",
+        "render_view",
+        "run_scenario",
+        "get_run",
+        "compare_runs",
+        "compute_packaging",
+        "get_task",
+        "cancel_task",
+        "adopt_artifact",
+        "import_package",
+        "save_project",
+        "export_package",
+        "export_evaluation",
+        "query_module_library",
+        "check_factory_draft",
+        "read_cloud_production",
+        "start_execution_session",
+        "get_execution_snapshot",
+        "control_execution_session",
+        "apply_device_receipt",
+        "get_execution_cloud_work",
+        "acknowledge_execution_cloud_work",
+        "apply_device_observation",
+        "read_execution_view",
+        "export_execution_report",
+        "export_cloud_data"
+      ]
+    },
+    "ProjectContext": {
+      "type": "object",
+      "properties": {
+        "authorized_operations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/OperationName"
+          }
+        },
+        "definition": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DefinitionSummary"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "host": {
+          "$ref": "#/$defs/HostContextIdentity"
+        },
+        "issues": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Issue"
+          }
+        },
+        "project": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ProjectSummary"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "run_summaries": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/RunSummary"
+          }
+        },
+        "selected_objects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ObjectRef"
+          }
+        },
+        "tasks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TaskHandle"
+          }
+        },
+        "view_state": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ViewState"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "host",
+        "selected_objects",
+        "tasks",
+        "authorized_operations",
+        "issues"
+      ]
+    },
+    "ProjectId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "ProjectSummary": {
+      "type": "object",
+      "properties": {
+        "dirty": {
+          "type": "boolean"
+        },
+        "id": {
+          "$ref": "#/$defs/ProjectId"
+        },
+        "revision": {
+          "$ref": "#/$defs/SafeUint"
+        },
+        "title": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "revision",
+        "title",
+        "dirty"
+      ]
+    },
+    "Quantity": {
+      "type": "object",
+      "properties": {
+        "unit": {
+          "$ref": "#/$defs/UnitId"
+        },
+        "value": {
+          "$ref": "#/$defs/DecimalAmount"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "unit"
+      ]
+    },
+    "RelativeFilePath": {
+      "type": "string",
+      "pattern": "^(?!\\.{1,2}(?:/|$))[^/\\\\:\\u0000]+(?:/(?!\\.{1,2}(?:/|$))[^/\\\\:\\u0000]+)*$"
+    },
+    "ResponseContext": {
+      "type": "object",
+      "properties": {
+        "host_instance_id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "project_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ProjectId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "project_revision": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SafeUint"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "scope": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/EditScope"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "scope_revision": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SafeUint"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "session_id": {
+          "$ref": "#/$defs/ObjectId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "host_instance_id",
+        "session_id"
+      ]
+    },
+    "RunId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "RunInputRef": {
+      "type": "object",
+      "properties": {
+        "frozen_project_file": {
+          "$ref": "#/$defs/FileRef"
+        },
+        "frozen_scenario_file": {
+          "$ref": "#/$defs/FileRef"
+        },
+        "project_id": {
+          "$ref": "#/$defs/ProjectId"
+        },
+        "project_revision": {
+          "$ref": "#/$defs/SafeUint"
+        },
+        "scenario_id": {
+          "$ref": "#/$defs/ScenarioId"
+        },
+        "scenario_revision": {
+          "$ref": "#/$defs/SafeUint"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "project_id",
+        "project_revision",
+        "scenario_id",
+        "scenario_revision",
+        "frozen_project_file",
+        "frozen_scenario_file"
+      ]
+    },
+    "RunSummary": {
+      "type": "object",
+      "properties": {
+        "accepted": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Quantity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "computation_status": {
+          "$ref": "#/$defs/ComputationStatus"
+        },
+        "computed_until_ms": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SafeUint"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "goal_met": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "input": {
+          "$ref": "#/$defs/RunInputRef"
+        },
+        "issues": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Issue"
+          }
+        },
+        "run_id": {
+          "$ref": "#/$defs/RunId"
+        },
+        "whole_window_computed": {
+          "type": "boolean"
+        },
+        "window": {
+          "$ref": "#/$defs/WindowMs"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "run_id",
+        "input",
+        "computation_status",
+        "window",
+        "whole_window_computed",
+        "issues"
+      ]
+    },
+    "SafeUint": {
+      "type": "integer",
+      "format": "uint64",
+      "maximum": 9007199254740991,
+      "minimum": 0
+    },
+    "ScenarioId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "TaskHandle": {
+      "type": "object",
+      "properties": {
+        "failure": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Issue"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "id": {
+          "$ref": "#/$defs/TaskId"
+        },
+        "input_revision": {
+          "$ref": "#/$defs/SafeUint"
+        },
+        "kind": {
+          "$ref": "#/$defs/LongTaskKind"
+        },
+        "progress": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TaskProgress"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "result_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FileRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "scope": {
+          "$ref": "#/$defs/TaskScope"
+        },
+        "state": {
+          "$ref": "#/$defs/ComputationStatus"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "scope",
+        "kind",
+        "state",
+        "input_revision"
+      ]
+    },
+    "TaskId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "TaskProgress": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "phase": {
+          "type": "string"
+        },
+        "processed": {
+          "$ref": "#/$defs/SafeUint"
+        },
+        "total": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SafeUint"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "phase",
+        "processed"
+      ]
+    },
+    "TaskScope": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "data": {
+              "$ref": "#/$defs/ObjectId"
+            },
+            "kind": {
+              "type": "string",
+              "const": "workspace"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "data"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "data": {
+              "$ref": "#/$defs/EditScope"
+            },
+            "kind": {
+              "type": "string",
+              "const": "edit"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "data"
+          ]
+        }
+      ]
+    },
+    "UnitId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "Vec3": {
+      "type": "object",
+      "properties": {
+        "x": {
+          "$ref": "#/$defs/FiniteNumber"
+        },
+        "y": {
+          "$ref": "#/$defs/FiniteNumber"
+        },
+        "z": {
+          "$ref": "#/$defs/FiniteNumber"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y",
+        "z"
+      ]
+    },
+    "VersionId": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)(?:\\.(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*)?(?:\\+[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?$"
+    },
+    "ViewState": {
+      "type": "object",
+      "properties": {
+        "line_camera": {
+          "$ref": "#/$defs/CameraState"
+        },
+        "lod": {
+          "$ref": "#/$defs/LodLevel"
+        },
+        "multi_hall_camera": {
+          "$ref": "#/$defs/CameraState"
+        },
+        "normal_canvas": {
+          "$ref": "#/$defs/CanvasKind"
+        },
+        "selected_hall": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ObjectId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "selected_objects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ObjectRef"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "normal_canvas",
+        "selected_objects",
+        "lod",
+        "line_camera",
+        "multi_hall_camera"
+      ]
+    },
+    "WindowMs": {
+      "type": "object",
+      "properties": {
+        "end_ms": {
+          "$ref": "#/$defs/SafeUint"
+        },
+        "start_ms": {
+          "$ref": "#/$defs/SafeUint"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "start_ms",
+        "end_ms"
+      ]
+    }
+  }
+}

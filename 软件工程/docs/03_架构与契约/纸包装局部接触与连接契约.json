@@ -1,0 +1,56 @@
+{
+  "document_kind": "S06_04_local_contact_and_bond_activation_design_not_geometry_implementation",
+  "checkpoint": "S06-04",
+  "status": "typed_carrier_and_owned_interval_method_with_nonempty_finite_examples",
+  "rust_source_ref": "packages/domain/types.design.rs",
+  "carrier_types": [
+    "LocalContactAllowance",
+    "PanelFaceSide",
+    "FixedConnection",
+    "PackagingConditions"
+  ],
+  "coordinate_rule": "patch polygons are in the referenced panel local XY millimetres; front/back lies at local Z=+/-thickness/2 and transforms through that actual panel pose",
+  "admission_rules": [
+    "both panels and explicit active steps exist in this Job; IDs and references unique and scoped",
+    "each patch is a finite simple polygon with positive area contained in its selected panel face; holes not representable by this carrier",
+    "normal_overlap_limit_mm is finite and nonnegative, has explicit basis and does not grant pair-wide penetration",
+    "FixedConnection.allow_contact=false requires no contact references; true requires actual local references for that connection pair",
+    "glue output consumes the exact declared face patch; absent/invalid patch is a missing manufacturing input, not an invented rectangle",
+    "engage_after_step_id=null means active in the initial assembly; otherwise activation only at successful completion of the referenced forming step, after checking both connection frames",
+    "after activation both frames must satisfy position/angle closure tolerance; a remaining free hinge cannot silently contradict the fixed bond",
+    "0 <= normal_overlap_limit_mm < min(actual thickness of both panels); do not clamp a full-thickness allowance. For each panel pair and active step, the allowance union must leave positive-volume unlicensed residual in both panels."
+  ],
+  "process_rule": [
+    "during each permitted step only overlap inside both matched transformed patches and the explicit allowed normal extent can use this allowance",
+    "outside either patch remains part of the ordinary solid collision check; neither allow_contact nor a pair ID exempts whole panels",
+    "interval proof must cover patch membership and overlap bound for the whole interval; unknown boundary or insufficient budget stays Undetermined"
+  ],
+  "legacy_input_rule": "old pair-only contacts require explicit PREP-PACKAGING mapping and user-declared patch/allowed extent; no automatic whole-face patch; empty contacts remain empty",
+  "manufacturing_rule": "生效端点的双面patch实际共同投影映回应用板flat_pose，只在panel_a输出一次glue；连接frames不决定面积，缺区域/斜交不可靠保持Undetermined。",
+  "actual_geometry_execution": {
+    "evidence_level": "isolated_exact_rational_finite_geometry_not_product",
+    "result_ref": "tools/packaging-algorithm-proof/output/proof-result.json",
+    "nonempty_contact_cases": [
+      "LC01",
+      "LC02",
+      "LC03",
+      "LC04",
+      "LC07",
+      "LC08",
+      "LC11",
+      "PUBLIC01",
+      "LC12",
+      "LC13"
+    ],
+    "actual_public_job_ref": "tools/packaging-algorithm-proof/output/local-contact-job.json",
+    "actual_glue_svg_ref": "tools/packaging-algorithm-proof/output/PART_A.svg",
+    "whole_geometric_kernel_proved": false
+  },
+  "algorithm_ref": "packages/packaging/algorithm.design.json",
+  "interval_method": {
+    "volume": "指定面局部polygon向本体内部延伸批准深度，0≤d<两板实际厚度最小值，不截成t；同一pair/step的区域联合须在两板都留下正体积未许可残余。",
+    "partition": "按patch边/Z层切成凸单元，标签为同一有效双面许可ID集合",
+    "accept": "两单元共享同一个有效许可ID才允许其交集；其他单元对全区间证明分离",
+    "unknown": "裁剪/归属/阈值未定或预算不足保持Undetermined，不扩大patch"
+  }
+}

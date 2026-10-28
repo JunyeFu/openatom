@@ -1,0 +1,547 @@
+{
+  "document_kind": "DRF05_exact_public_field_delta_not_implementation",
+  "revision": "DRF05-r3",
+  "date": "2026-10-14 Asia/Shanghai",
+  "merge_owner": "复审窗口1",
+  "visual_owner": "复审窗口2",
+  "authority": "本轮最新分工及Wait/Claim结束枚举选择",
+  "canonical_target_files": [
+    "packages/domain/types.design.rs",
+    "packages/commands/api.design.rs"
+  ],
+  "derived_consumers": [
+    "Rust type inventory/ContractTypeBundle",
+    "Schema/TS",
+    "Host",
+    "simulation",
+    "compare_runs",
+    "reporting",
+    "Agent",
+    "factory_ui"
+  ],
+  "schema_policy": "现行1.0设计尚未运行发布；窗口1同次刷新唯一源和派生物，无兼容别名/新增操作",
+  "records": {
+    "InputChange": {
+      "fields": {
+        "target": "ObjectRef",
+        "path": "String",
+        "kind": "InputChangeKind",
+        "before": "Option<InputChangeValue>",
+        "after": "Option<InputChangeValue>",
+        "basis": "Option<SourceBasis>",
+        "reason": "Option<String>"
+      },
+      "rules": [
+        "added:before=null/after存在；removed相反；changed两侧均存在且不等",
+        "集合新增/删除引用同一冻结Scenario的path，对应InitialItem等快照含自身ID；父Scenario修订不当作唯一业务变化",
+        "basis/reason确无来源时null；source或单位变化亦列；修改定义只列精确ModuleRef/受影响采用，旧Run不重绑定"
+      ],
+      "serde": "deny_unknown_fields; Option读missing/null、写canonical null；Vec必须存在，空写[]"
+    },
+    "ComparisonCondition": {
+      "fields": {
+        "key": "ComparisonConditionKey",
+        "matches": "bool",
+        "issues": "Vec<Issue>"
+      },
+      "rules": [
+        "每对覆盖全部8个key各一次；false附具体已知差异，不用版本号不同代替业务不同",
+        "initial_conditions严格比较物品/初始setup/质量；新增PCB为false，即使受控可比"
+      ],
+      "serde": "deny_unknown_fields; Option读missing/null、写canonical null；Vec必须存在，空写[]"
+    },
+    "RunPairComparison": {
+      "fields": {
+        "baseline_run_id": "RunId",
+        "candidate_run_id": "RunId",
+        "status": "ComparisonStatus",
+        "conditions": "Vec<ComparisonCondition>",
+        "input_changes": "Vec<InputChange>"
+      },
+      "rules": [
+        "pairs按首个Run为基线与其余所选Run各一对；两Run也只有一对；双向查看不自行重算",
+        "严格共同上下文、初始完全相同且无生产输入变化为strict；共同口径与范围一致、变化完整为controlled_changes，初始不同允许但必须被变化解释",
+        "时间参考/观察窗/接受口径/需求/范围不同或未解释变化为side_by_side_only；正常差异结果而非API异常",
+        "selected_scope是所选厂房/订单/评价边界；同边界内新增设备作为有类型变化，不自动视为扩大业务范围。"
+      ],
+      "serde": "deny_unknown_fields; Option读missing/null、写canonical null；Vec必须存在，空写[]"
+    },
+    "MetricPairDifference": {
+      "fields": {
+        "baseline_run_id": "RunId",
+        "candidate_run_id": "RunId",
+        "comparable": "bool",
+        "difference": "Option<NumericDifference>",
+        "change_percent": "Option<FiniteNumber>",
+        "conditions": "Vec<Issue>"
+      },
+      "rules": [
+        "不可比/任一值未知：difference/percent=null并列原因；可比且基值0：差值已知、percent=null",
+        "每个MetricComparison对相同pairs产生结果；不得跨订单/资源对象混算"
+      ],
+      "serde": "deny_unknown_fields; Option读missing/null、写canonical null；Vec必须存在，空写[]"
+    },
+    "MetricComparison": {
+      "fields": {
+        "metric": "MetricKey",
+        "object_ref": "Option<ObjectRef>",
+        "acceptance_scope": "Option<AcceptanceScope>",
+        "currency": "Option<String>",
+        "values": "Vec<RunMetric>",
+        "pair_differences": "Vec<MetricPairDifference>"
+      },
+      "rules": [
+        "保留各Run实际MetricValue；Unknown(Issue)原样；当前对象由同一次MetricScope选定，多个对象逐对象评估，不先无单位合并",
+        "同一metric+object_ref+acceptance_scope+currency是一组；人员/机器、不同订单、不同币种不可混行。多个对象产生多组；factory范围变化按所选评价边界判断，不按新增设备自动改为另一评价范围。"
+      ],
+      "serde": "deny_unknown_fields; Option读missing/null、写canonical null；Vec必须存在，空写[]"
+    },
+    "RunComparison": {
+      "fields": {
+        "run_ids": "Vec<RunId>",
+        "pairs": "Vec<RunPairComparison>",
+        "metrics": "Vec<MetricComparison>",
+        "conclusions": "Vec<String>",
+        "limitations": "Vec<Issue>"
+      },
+      "rules": [
+        "同一类型供compare_runs和EvaluationReport，不另存ScenarioComparison平行对象",
+        "无实际第二Run，scenario_comparison=null，不复制初案Run凑比较"
+      ],
+      "serde": "deny_unknown_fields; Option读missing/null、写canonical null；Vec必须存在，空写[]"
+    },
+    "CostInput": {
+      "fields": {
+        "id": "ObjectId",
+        "object_ref": "ObjectRef",
+        "component": "String",
+        "basis": "CostBasis",
+        "rate": "Option<DecimalAmount>",
+        "currency": "Option<String>",
+        "rate_quantity": "Quantity",
+        "includes": "Vec<String>",
+        "source": "ParameterSource"
+      },
+      "rules": [
+        "费率币种缺少为null；rate_quantity始终正且明确所计单位；零费率须显式DecimalAmount零",
+        "component标注同对象费项，例如labor/machine/transport；同对象同component的paid_calendar与occupied_time互斥",
+        "includes列已包含费项；同对象另行收费不能再次加入同一包含项；无自动汇率/单位换算",
+        "占用/付费日历采用capacity_unit_ms基准，36CNY/人时写rate=36、rate_quantity=3600000 person_ms；材料/批次按自身单位"
+      ],
+      "serde": "deny_unknown_fields; Option读missing/null、写canonical null；Vec必须存在，空写[]"
+    },
+    "ConditionalCost": {
+      "fields": {
+        "cost_input_id": "ObjectId",
+        "object_ref": "ObjectRef",
+        "basis": "CostBasis",
+        "measured_quantity": "Option<Quantity>",
+        "amount": "Option<FiniteNumber>",
+        "currency": "Option<String>",
+        "missing_conditions": "Vec<Issue>"
+      },
+      "rules": [
+        "输入引用指向该Run冻结Scenario.cost_inputs，旧结果不读取当前费率",
+        "计量unit必须等于rate_quantity.unit；amount=rate*measured/rate_quantity，精确十进制/整数中间计算后一次转现行FiniteNumber",
+        "rate/currency/计量缺失或单位不匹配：amount=null且原因；明确rate0且计量已知时amount0",
+        "材料按实际消耗；occupancy用容量积分；paid_calendar用冻结付费容量日历；运输按明确已执行批次；首版不自造信用/负费率"
+      ],
+      "serde": "deny_unknown_fields; Option读missing/null、写canonical null；Vec必须存在，空写[]"
+    },
+    "CurrencyCostSummary": {
+      "fields": {
+        "currency": "String",
+        "cost_input_ids": "Vec<ObjectId>",
+        "known_subtotal": "FiniteNumber",
+        "complete_total": "Option<FiniteNumber>",
+        "accepted_scope": "Option<AcceptanceScope>",
+        "accepted_quantity": "Option<Quantity>",
+        "unit_cost": "Option<FiniteNumber>",
+        "missing_conditions": "Vec<Issue>"
+      },
+      "rules": [
+        "按币种列已知小计；complete_total只在完整所选观察窗、全部所选成本条件齐全、无未定币种时填",
+        "任一所选币种未定：所有币种complete_total=null，避免把未定费用漏出总额；各已知小计仍可列",
+        "单位成本仅完整总额/同窗正接受量，且单一明确接受Scope；多产品/多Scope不默分成本，unit_cost=null并列需选口径",
+        "缺费用或接受量0时unit_cost=null；不可把paid与occupied两计价相加"
+      ],
+      "serde": "deny_unknown_fields; Option读missing/null、写canonical null；Vec必须存在，空写[]"
+    },
+    "CostEvaluation": {
+      "fields": {
+        "inputs": "Vec<CostInput>",
+        "lines": "Vec<ConditionalCost>",
+        "currencies": "Vec<CurrencyCostSummary>",
+        "unassigned_cost_input_ids": "Vec<ObjectId>",
+        "missing_conditions": "Vec<Issue>"
+      },
+      "rules": [
+        "lines完整覆盖所选冻结cost_inputs；空集合表示用户未选成本，不叫完整成本0",
+        "unassigned列币种未知的输入；完整性跨所有所选输入判定；多币种分列，不产生跨币种总成本",
+        "缺未支持但本次要求的费用计量/费用范围也列此处；涉及所选完整成本的缺项使complete_total/unit_cost为空，不仅检查现有lines。",
+        "inputs只含本次所选冻结CostInput；lines的cost_input_id一一引用inputs。所有输出器从同一报告读rate/rate_quantity/component/includes/source，不能再查当前Scenario或本机价格。"
+      ],
+      "serde": "deny_unknown_fields; Option读missing/null、写canonical null；Vec必须存在，空写[]"
+    },
+    "RunEvaluation": {
+      "fields": {
+        "run_id": "RunId",
+        "input_ref": "ReportRunInputRef",
+        "evidence_origin": "EvidenceOrigin",
+        "scope": "Vec<ObjectRef>",
+        "time_reference": "TimeReference",
+        "requested_window": "WindowMs",
+        "computed_until_ms": "Option<SimTimeMs>",
+        "computation_status": "ComputationStatus",
+        "whole_window_computed": "bool",
+        "goal_met": "Option<bool>",
+        "acceptance_scope": "Vec<AcceptanceScope>",
+        "order_metrics": "Vec<OrderOutcome>",
+        "resource_metrics": "Vec<ResourceMetric>",
+        "costs": "CostEvaluation",
+        "events": "Vec<SimulationEvent>",
+        "acceptance_events": "Vec<AcceptanceEvent>",
+        "resource_claims": "Vec<ResourceClaim>",
+        "waits": "Vec<WaitInterval>",
+        "phase_work_intervals": "Vec<PhaseWorkInterval>",
+        "limitations": "Vec<Issue>",
+        "module_versions": "Vec<ModuleRef>",
+        "input_assumptions": "Vec<ParameterSource>",
+        "jobs": "Vec<JobState>",
+        "transport": "Vec<TransportState>"
+      },
+      "rules": [
+        "复用TC01/TC02和现行RunResult字段，不复制库存/final_items/生产时钟/Job状态",
+        "simulation_evaluation只接受Host持有的ActualSoftware且存在一致computed_until_ms；输入声明ActualSoftware不创造证据",
+        "请求窗为所选Run.window；只有complete结果给整窗goal与complete cost；prefix保留真实已知量和边界，缺项不补0",
+        "input_ref保留冻结版本，当前导出project_revision不重写旧Run归属",
+        "module_versions/input_assumptions来自该Run冻结输入；jobs/transport直接来自该RunResult，含TC01执行绑定，不按同名模块或当前设备推断历史",
+        "顶层module_versions可由逐Run精确版本求去重并集作所选清单；不会作为某个Run的隐式版本来源"
+      ],
+      "serde": "deny_unknown_fields; Option读missing/null、写canonical null；Vec必须存在，空写[]"
+    },
+    "ReportRunInputRef": {
+      "fields": {
+        "project_id": "ProjectId",
+        "project_revision": "Revision",
+        "scenario_id": "ScenarioId",
+        "scenario_revision": "Revision"
+      },
+      "rules": [
+        "由Host同一次冻结RunInputRef逐字段投影；独立报告不复制工程内部frozen_project_file/frozen_scenario_file相对路径为报告可打开文件",
+        "工程包/RunResult仍使用完整RunInputRef并按工程根解析；editable_project_ref只有实际附工程才填，图/字体按报告根解析"
+      ],
+      "serde": "deny_unknown_fields; 4个身份字段必填"
+    }
+  },
+  "enums": {
+    "WaitEndCause": [
+      "condition_changed",
+      "resolved",
+      "observation_end",
+      "computed_boundary"
+    ],
+    "InputChangeKind": [
+      "added",
+      "removed",
+      "changed"
+    ],
+    "ComparisonStatus": [
+      "strict",
+      "controlled_changes",
+      "side_by_side_only"
+    ],
+    "ComparisonConditionKey": [
+      "time_reference",
+      "observation_window",
+      "acceptance_scope",
+      "demand",
+      "selected_scope",
+      "initial_conditions",
+      "supported_capabilities",
+      "explained_changes"
+    ],
+    "ClaimIntervalEndCause": [
+      "released",
+      "observation_end",
+      "computed_boundary"
+    ]
+  },
+  "mutations": [
+    {
+      "target": "WaitInterval",
+      "add": {
+        "end_cause": "WaitEndCause"
+      },
+      "replace": {},
+      "remove": []
+    },
+    {
+      "target": "ResourceClaim",
+      "add": {
+        "phase_ref": "Option<PhaseId>",
+        "interval_end_causes": "Vec<ClaimIntervalEndCause>"
+      },
+      "replace": {},
+      "remove": []
+    },
+    {
+      "target": "ScenarioInput",
+      "add": {
+        "cost_inputs": "Vec<CostInput>"
+      },
+      "replace": {},
+      "remove": []
+    },
+    {
+      "target": "ResourceMetric",
+      "add": {
+        "capacity_unit": "UnitId",
+        "open_calendar_occupied_capacity_ms": "Option<SafeUint>",
+        "closed_calendar_held_capacity_ms": "Option<SafeUint>",
+        "missing_conditions": "Vec<Issue>"
+      },
+      "replace": {
+        "available_capacity_ms": "Option<SafeUint>",
+        "effective_work_ms": "Option<DurationMs>",
+        "waiting_ms": "Option<DurationMs>"
+      },
+      "remove": []
+    },
+    {
+      "target": "EvaluationReport",
+      "add": {
+        "run_evaluations": "Vec<RunEvaluation>"
+      },
+      "replace": {
+        "time_reference": "Option<TimeReference>",
+        "observation_window": "Option<WindowMs>",
+        "scenario_comparison": "Option<RunComparison>"
+      },
+      "remove": [
+        "order_metrics",
+        "resource_metrics",
+        "conditional_costs",
+        "item_history"
+      ]
+    }
+  ],
+  "actual_product_runtime": null,
+  "actual_source_merge_by_this_window": false,
+  "InputChangeValue": {
+    "serde": "tag=kind, content=data, snake_case; no arbitrary JSON",
+    "variants": {
+      "null": null,
+      "scalar": {
+        "value": "TypedValue",
+        "unit": "Option<UnitId>"
+      },
+      "initial_item": "InitialItem",
+      "arrival": "ArrivalPlan",
+      "order": "OrderLine",
+      "task": "ProductionTask",
+      "supply": "SupplyRelation",
+      "module_ref": "ModuleRef",
+      "item_type": "ItemType",
+      "location": "StockLocation",
+      "hall": "HallDesign",
+      "line": "LineGroup",
+      "device": "DeviceInstance",
+      "resource": "ResourceInstance",
+      "calendar": "Calendar",
+      "product": "ProductRevision",
+      "bom": "BomDefinition",
+      "route": "RouteDefinition",
+      "connection": "Connection",
+      "binding": "ConsumerBinding",
+      "presentation": "Presentation",
+      "quality_decision": "QualityDecision",
+      "cost_input": "CostInput",
+      "window": "WindowMs",
+      "setup_policy": "DeviceSetupPolicy",
+      "parameter_override": "ParameterOverride",
+      "source_record": "SourceRecord",
+      "definition": "Box<ModuleDefinition>"
+    },
+    "rules": [
+      "仅引用已有domain类型，不能从domain引用API DomainObject/EditableProjectObject",
+      "scalar物理数值unit必须已声明；dimensionless/string/bool可null；Quantity/Duration内嵌单位与额外unit须一致",
+      "路径为稳定对象中的RFC6901；数组按ID差分，每个新增/删除元素用对应有类型快照，不用显示名称/数组次序猜身份",
+      "before/after=None表示该侧不存在；Some(kind=null)表示该侧字段实际为空，二者不混淆"
+    ]
+  },
+  "NumericDifference": {
+    "serde": "tag=kind,content=data,snake_case",
+    "variants": {
+      "quantity": {
+        "negative": "bool",
+        "magnitude": "Quantity"
+      },
+      "duration": {
+        "negative": "bool",
+        "magnitude": "DurationMs"
+      },
+      "scalar": {
+        "value": "FiniteNumber",
+        "unit": "UnitId"
+      },
+      "money_per_unit": {
+        "amount": "FiniteNumber",
+        "currency": "String",
+        "unit": "UnitId"
+      }
+    },
+    "rules": [
+      "B-A；Quantity/Duration用符号+非负幅度保持现有精确单位/整数；零negative=false",
+      "不同unit/currency不算差；scalar/amount允许负值；百分比100*(B-A)/A仅A>0",
+      "FiniteNumber差值在共同报告构造时算一次，输出器只序列化"
+    ]
+  },
+  "move_existing_types": {
+    "from": "packages/commands/api.design.rs",
+    "to": "packages/domain/types.design.rs",
+    "names": [
+      "MetricKey",
+      "MetricValue",
+      "RunMetric"
+    ],
+    "body_policy": "按当前源原样移动，在domain唯一声明；API通过现有domain导入消费，不增加兼容副本",
+    "extend_MetricValue": {
+      "money_per_unit": {
+        "amount": "FiniteNumber",
+        "currency": "String",
+        "unit": "UnitId"
+      }
+    }
+  },
+  "replace_existing_types": [
+    "API MetricComparison/RunComparison使用以上domain唯一声明",
+    "domain ScenarioComparison删除；EvaluationReport.scenario_comparison改Option<RunComparison>；ContractTypeBundle/inventory/Schema/TS同步，不能保留别名"
+  ],
+  "context_rules": [
+    "time_reference/observation_window在多Run完全相同时填公共值，否则null+限制；逐Run保留全部；无Run设计说明来自所选Scenario共同上下文",
+    "顶层run_refs保留调用所选ID列表，与run_evaluations顺序/集合一致；run_refs不是另一份指标",
+    "顶层acceptance_scope为所选口径列表，逐Runscope是实际核对口径；单位/目的不相同不能给统一接受量",
+    "每Run.costs从该冻结输入构造；comparison使用同批快照，分页事件不构造产量；四格式同一报告与同一投影"
+  ],
+  "resource_rules": [
+    "held integral全体实际Claim单位毫秒；开放容量分母Calendar交集；open_held+closed_held=held仅在日历已知时成立",
+    "any_busy_ms是至少一单位占用并集；utilization=open_held/available，分母0或未知则null；超容量冲突保留，不裁100%",
+    "effective_work_ms为TC02真实阶段与该资源适用Claim交集并集；waiting_ms为执行等待与实际持有Claim交集并集；未取得资源的等待只计对象，不计该资源持有中等待",
+    "无计算历史不生成actual metric行；历史已知而无发生为已知0；calendar/阶段/绑定缺失字段null+missing_conditions"
+  ],
+  "end_cause_alias_mapping": {
+    "scope": "仅显式转换旧设计记录；不是API接受旧值或运行fallback",
+    "wait": {
+      "conditions_changed": "condition_changed",
+      "conditions_satisfied": "resolved",
+      "run_boundary": "observation_end",
+      "computed_boundary": "computed_boundary"
+    },
+    "claim": {
+      "run_boundary": "observation_end",
+      "released": "released",
+      "computed_boundary": "computed_boundary"
+    },
+    "existing_phase_end_cause": "PhaseWorkEndCause保持phase_completed|interrupted|computed_boundary，不映射等待别名到阶段完成"
+  },
+  "file_commit_delta": {
+    "targets": [
+      "docs/03_架构与契约/全层类型与工程格式.json#/storage",
+      "docs/03_架构与契约/公开操作与宿主调用契约.json#/operations",
+      "docs/03_架构与契约/共享状态与所有权.json"
+    ],
+    "common_owner": "复审窗口1",
+    "no_new_API_field": "沿TaskState.failure ApiError IoFailure；在授权目标内报告实际相对恢复文件名，不暴露其他机器路径",
+    "same_target_queue": {
+      "key": "Host已解析的实际目标目录对象和文件名，不采用调用者字符串作为锁键",
+      "ordering": "按请求准入顺序，后任务可准备文件但只能等前任务结束再提交；失败释放轮次",
+      "freeze": "每任务接收时冻结R，先前保存的旧根在该轮提交时确定，不把R+1写入R",
+      "result": "SavedProject.saved_revision为本轮R；current_revision反映当前；R+1存在仍dirty；队列最后成功新代才是磁盘当前根"
+    },
+    "existing_target_steps": [
+      "新代/临时ZIP完整关闭，旧根引用数据不原位覆盖",
+      "提交前保存唯一内部编号的同目录旧根保留路径，调用ReplaceFileW的lpBackupFileName；不使用IGNORE_ACL_ERRORS或IGNORE_MERGE_ERRORS掩盖失败",
+      "成功根替换为提交点，TaskOutput仅此后生成；取消输给提交则Completed",
+      "失败先GetLastError核对实际根/旧保留文件/临时文件：只认与旧project_id+generation+revision对应的已解析清单，不认文件名，不新增hash",
+      "旧根仍有效则保持；旧保留文件有效则在同卷恢复旧根；恢复失败保留可恢复文件并报IoFailure、实际位置、dirty",
+      "恢复动作失败不声称旧根完好；不把新临时目录当成功或删除旧数据；下一次由人明确选择恢复/新目标再保存"
+    ],
+    "initial_target": "同卷rename；无先前有效工程就不声称已恢复旧根",
+    "report_target": "report内部生成新目录名；全所选格式形成后同卷提交；绝不合并覆盖上一报告",
+    "actual_windows_execution": null
+  },
+  "generator_preservation_delta": {
+    "target": "scenarios/模板与交接/推导模板接手预期.py",
+    "owner": "复审窗口1",
+    "input_owner_file": "scenarios/模板与交接/expected-template-handoff.design.json",
+    "preserve_top_level_fields": [
+      "refinement_ref",
+      "drf05_handoff_cases",
+      "refinement_generation_note"
+    ],
+    "method": "生成器已有原10案例重算完成后，输出前从已有拥有者JSON读取这3字段并明确带入最终对象；第一次不存在字段时不假造情景或实际结果",
+    "contract": "原templates/cases及10例既有数值不改；所有新增actual_result保持null；本窗口不运行这个覆写生成器"
+  },
+  "claim_interval_contract": {
+    "current_canonical_carrier": "ResourceClaim.intervals:Vec<IntervalMs> + interval_end_causes:Vec<ClaimIntervalEndCause>",
+    "one_to_one": "两个向量长度相同，按原interval序号一一绑定；输出同一行两值，不再提议改成嵌套ClaimInterval",
+    "causes": [
+      "released",
+      "observation_end",
+      "computed_boundary"
+    ],
+    "priority": "真实释放在末刻仍released；全窗未释放observation_end；前缀/暂停/取消computed_boundary；不从end_ms猜原因",
+    "phase_ref": "kind=phase必须来自开始时的真实phase；job/transport可null"
+  },
+  "initial_proposal_adjustment": "消费者复核发现窗口1已沿原请求合入平行结束数组；沿已建立的一一对应载荷消费，撤回本轮暂拟的嵌套ClaimInterval，以当前公共结构为准。",
+  "CostBasis_review": {
+    "canonical_values": [
+      "consumed_material",
+      "occupied_time",
+      "paid_calendar",
+      "batch_transport",
+      "explicit_disposal"
+    ],
+    "existing_enum_sufficient_for_selected_scope": true,
+    "mapping": {
+      "材料/耗材": "consumed_material",
+      "人员/机器占用": "occupied_time",
+      "人员/机器明确付费容量日历": "paid_calendar",
+      "按已执行批次运费": "batch_transport",
+      "实际明确处置数量": "explicit_disposal"
+    },
+    "not_implicitly_supported": [
+      "独立能源需求计量",
+      "投资/折旧年化",
+      "现金收益/信用",
+      "专业服务支出自动归因"
+    ],
+    "unsupported_selected_cost": "CostEvaluation.missing_conditions列所要求但未支持费用，complete_total/unit_cost=null；不借其他basis补0或推断。机器费率已含能源时includes标出。"
+  },
+  "rust_fragment_ref": "docs/04_开发与验收/特征细化/DRF05_公共增量.design.rs",
+  "record_completeness": "所有新增/替换目标都有字段表或tagged enum；现有CostBasis不改，MetricKey/MetricValue/RunMetric从API唯一迁入domain，Step/Commands数量保持18。",
+  "post_r2_consumer_correction": {
+    "targets": {
+      "CostEvaluation": {
+        "add": {
+          "inputs": "Vec<CostInput>",
+          "missing_conditions": "Vec<Issue>"
+        }
+      },
+      "InputChangeValue": {
+        "add_variants": {
+          "setup_policy": "DeviceSetupPolicy",
+          "parameter_override": "ParameterOverride",
+          "source_record": "SourceRecord",
+          "definition": "Box<ModuleDefinition>"
+        }
+      }
+    },
+    "reason": "冻结费率/分母/包含项须随报告；未支持的所选费项须进入完整性缺项；新增/移除setup策略、参数覆盖、来源或定义须有类型快照而不是裸JSON。均复用现有domain类型",
+    "owner": "复审窗口1",
+    "exact_fragment": "docs/04_开发与验收/特征细化/DRF05_公共增量.design.rs",
+    "source_status": "DRF05_消费者复核.json:pending_owner_items=[]",
+    "status": "merged_verified_current_Rust_Schema_TS"
+  }
+}

@@ -53,14 +53,19 @@
         "start_at": "relative_ms|null",
         "finish_at": "relative_ms|null"
       },
-      "meaning": "one operation execution attempt"
+      "meaning": "one operation execution attempt",
+      "field_semantics": {
+        "finish_at": "最后phase完成不等Job完成；待判/输出待交waiting_output且finished_at_ms=None，全部声明结果/效果提交并释放才completed",
+        "execution_ref": "当前Rust已合入JobExecutionRef，真实冻结设备/步骤/容量不从模块猜"
+      }
     },
     "material_allocation": {
       "fields": {
         "demand_ref": "id",
         "item_refs": "list",
         "quantity": "quantity/unit",
-        "mode": "soft_plan|hard_reserved|committed"
+        "mode": "soft_plan|hard_reserved|committed",
+        "id": "stable allocation id"
       },
       "meaning": "hard reservation excludes reuse; soft plan does not change stock"
     },
@@ -70,9 +75,13 @@
         "lifecycle": "available|in_process|transformed|scrapped",
         "quality": "unchecked|pending|released|rejected",
         "allocation_ref": "id|null",
-        "composition_refs": "list"
+        "composition_refs": "list",
+        "contents": "list(container contents)"
       },
-      "meaning": "唯一持有者、物理生命周期、质量和需求分配分别表达；available不等于可自由领用，预留只属allocation。"
+      "meaning": "唯一持有者、物理生命周期、质量和需求分配分别表达；available不等于可自由领用，预留只属allocation。",
+      "selected_fields": {
+        "split_from_ref": "现行RuntimeItem.split_from_ref Option<ObjectId>；完整源transformed，全部子批守恒"
+      }
     },
     "quality_decision": {
       "fields": {
@@ -80,7 +89,7 @@
         "inspection_ref": "id/version",
         "source_kind": "preset|tool_result|manual",
         "observed_result": "enum|number|null",
-        "disposition": "pending|release|rework|isolate|scrap",
+        "disposition": "pending|release|reinspect|rework|isolate|scrap",
         "effective_at": "relative_ms"
       },
       "meaning": "result and release are not identical",
@@ -110,6 +119,31 @@
         "at_ms": "relative_ms"
       },
       "meaning": "completed demand at defined stage, no duplicate allocation"
+    },
+    "initial_material_allocations": {
+      "selected_path": "InitialConditions.material_allocations",
+      "selected_type": "Vec<MaterialAllocation>",
+      "status": "canonical_field_merged_local_business_rules",
+      "reference": "docs/04_开发与验收/特征细化/DRF06_公共字段合入delta.json#field_changes",
+      "meaning": "软计划不排他；硬预留同起点输入允许规范化部分批次，不带committed/WIP恢复"
+    },
+    "resource_claim": {
+      "canonical_fields": "ResourceClaim.id/resource_id/job_id/units/intervals/kind",
+      "selected_fields": {
+        "phase_ref": "现行Option<PhaseId>",
+        "intervals": "现行Vec<IntervalMs>保留",
+        "interval_end_causes": "现行Vec<ClaimIntervalEndCause>按索引逐项配intervals，等长同序"
+      },
+      "status": "canonical_merged_local_consumer_aligned",
+      "meaning": "每段结束记录实际释放/封口，phase人/整job设备和运输区分，同资源不双扣"
+    },
+    "wait_interval": {
+      "canonical_fields": "WaitInterval.object_ref/execution_ref/phase_ref/interval/reasons",
+      "selected_fields": {
+        "end_cause": "condition_changed|resolved|observation_end|computed_boundary"
+      },
+      "status": "canonical_merged_local_consumer_aligned",
+      "meaning": "多原因一段取并集；同末端不推已解除"
     }
   },
   "policies": {
@@ -170,11 +204,132 @@
       "FAIL": "rejected_then_declared_rework_or_isolation",
       "rework_count": "completed_reworks_per_same_item_not_attempt_start",
       "limit": "isolate_after_failure_at_max_completed_reworks",
-      "scrap": "explicit_disposition_preserve_identity_no_automatic_component_recovery"
+      "scrap": "explicit_disposition_preserve_ID_holder_components_and_physical_capacity_no_automatic_recovery"
     },
     "quality_wait_release": {
       "hold_station": "declared_wait_resources_until_disposition_and_successful_transfer",
       "pending_store": "successful_pending_store_transfer_before_releasing_declared_inspection_resources"
+    },
+    "material_FIFO": "own_eligible_hard_reservations_first_then_location_received_time_stable_id; initial_stock_time=window.start",
+    "rework_dispatch": "inherits_original_task_priority_due_ready_id; no_hidden_rework_preemption",
+    "initial_allocations": {
+      "allowed_modes": [
+        "soft_plan",
+        "hard_reserved"
+      ],
+      "hard_demand_ref": "explicit existing ProductionTask.id",
+      "soft_demand_ref": "existing Order/Task; empty item_refs permitted for plan",
+      "single_source_partial": true,
+      "multiple_sources": "same_type_revision_unit_full_quantities_only; aggregate_quantity_equals_total",
+      "hard_sum": "per source <= actual quantity, deterministic nonoverlapping portions",
+      "pending_quality": "reservable_not_ordinary_issuable",
+      "atomicity": "validate_all_before_initialize_split_and_claim"
+    },
+    "batch_partition": {
+      "source": "现行split_from_ref；完整源transformed仅留来源，全部子批量和等于源量",
+      "quantities": "children sum to source in same explicit unit",
+      "ids": "source/allocation logical id/stable split ordinal",
+      "holder": "one per child; no source+child stock/space double count",
+      "failed_acquisition": "preserve existing partition_reservation_holder_no_resplit"
+    },
+    "interval_end_causes": {
+      "status": "canonical_merged_local_consumers",
+      "wait": [
+        "condition_changed",
+        "resolved",
+        "observation_end",
+        "computed_boundary"
+      ],
+      "claim": [
+        "released",
+        "observation_end",
+        "computed_boundary"
+      ],
+      "natural_boundary_priority": "same_timestamp_actual_resolution_or_release_first",
+      "complete_end": "still_blocked_or_held -> observation_end",
+      "prefix_pause_cancel": "still_blocked_or_held -> computed_boundary",
+      "end_ms_is_not_end_cause": true,
+      "resume": "new snapshot replaces temporary truncated segment"
+    },
+    "job_completion": "all_declared_outputs_or_effects_committed_and_job_resources_released; pending_outputs_or_quality_wait -> waiting_output_finished_at_null",
+    "quality_decision_applicability": "matching item_and_inspection_id_version_scope_state_at_effective_time; early_or_mismatched_not_applied_never_queued_future_release",
+    "transport_detail": {
+      "departure_alias": "departures_ms t -> departure_windows [t,t+1ms) loading_start_opportunity; depart after load completion",
+      "unload": "actual_receiver_space_and_unloader_calendar; recheck_at_finish; before_receive cargo_transport_holder",
+      "return": "carrier whole transport claim until actual return_complete released",
+      "daily": "acceptance by [d,d+86400000); midnight preserves original demand/cargo/claims",
+      "capacity": "scrap stays physical slot; acceptance does not vacate slot"
+    },
+    "current_snapshot": "RunResult.computed_until_ms and frozen input/scope match all returned records; closed timestamp; no final_items-as-history",
+    "module_lowering": {
+      "authority": "docs/04_开发与验收/特征细化/DRF03_C01_逐类原子采用.json",
+      "tasks": "RouteStep精确同设备selected inline的Device.module_ref解析一个有效inline来源；其余精确Operations/Tasks按类别分派，互斥。Tasks编Preparation，目标由RoleBindings.targets明示，资源同账本日历，完成派生本Run同目标/Task/配置readiness且不造物品；同配置已完成不重复准备。现行公共采用/冻结规范已一致。",
+      "transport": "ScenarioInput.supplies→SupplyRelation.transport_ref→Transport payload，实货同ID走现有物流；PutObject Scenario，不加Supply对象变体/库存",
+      "readiness": "本Run同目标/配置实际准备完成的派生态，不写库定义/不造库存，不重复造Job",
+      "unsupported": "维修/建设/未支持TaskKind后置并明确拒绝用途"
+    },
+    "material_endpoints": {
+      "carrier": "MaterialEndpoint.port(PortRef)|location(ObjectId)",
+      "authority": "current types.design.rs + DRF06五链业务设计",
+      "source_port": "out from frozen declared module, exact instance/version",
+      "destination_port": "in and explicit destination_store binding; source port_bindings if present must agree",
+      "destination_location": "destination_store == location ID",
+      "inventory": "one RuntimeItem ledger; input edge selects stock only at atomic start; output slot transfers once",
+      "capacity": "real destination capacity plus declared same-unit edge restriction; no hidden Port stock",
+      "quantity": "current operation/BOM quantities, no implicit one-piece edge",
+      "cross_store_input": "explicit supported transfer required if source != receiver",
+      "authorization": "source/destination/store/instance/definitions and remapped refs within caller grant"
+    },
+    "template_locations_height": {
+      "locations": "TemplateSubset.locations declares locations without inventory",
+      "unknown_height": "HallDesign.height_m nullable; null never site Pass",
+      "seed": "explicit selection only; existing stock not reset by insertion",
+      "C04_phase_policy": "current companion explicitly selects pause_resume, original durations unchanged; prior local non_preemptive selection is superseded for C04 only"
+    },
+    "resource_utilization": {
+      "total_held": "all actual claim capacity time",
+      "utilization": "open_calendar_held / available_calendar_capacity",
+      "closed_calendar_hold": "separate, not utilization numerator",
+      "prefix": "clip both basis and denominator to exact computed prefix"
+    },
+    "prefix_cost_and_zero_acceptance": {
+      "cost": "selected frozen CostInput + actual prefix basis; unknown amounts null, explicit zero rate known0",
+      "complete_total": "null if selected missing inputs or only prefix summary",
+      "unit_cost": "null when accepted=0 or complete_total unknown",
+      "accepted_zero": "known0 only with actual full authorized prefix evidence; no actual Run => unknown",
+      "completion_goal": "C=null if unmet; no prefix full-window goal inference"
+    },
+    "initial_success": "one actual Run meets target -> report/save directly; no forced compare/new Run",
+    "C04_explicit_bindings": {
+      "execution_capacity": "RoleBindings.resources.execution_capacity -> explicitly selected fixture ResourceInstance/Calendar; one Claim only",
+      "worker_sources": "requirement order W-B/W-C/W-A/W-E -> legacy.worker.* -> actual selected IDs",
+      "phase_policy": "companion pause_resume; whole duration null for phased devices",
+      "readiness": "completed Preparation Job plus frozen target/config as durable same-Run evidence; no pre-import marker",
+      "preset_cursor": "this Run + qualified actual preset ID + exact inspection_module; shared ancestor sequence, lock ordinal at actual start/use once on completion; resume/compute cancel retains attempt",
+      "output_quality": "current BoardFinish01@0.2.0 outputs.declared_output_quality -> actual unique output-slot creation at final effective completion, once; blocked retry keeps item/holder/quality/claims; no order/professional acceptance",
+      "missing_route": "persistent adoption obligation until actual Product/BOM/Route supplied",
+      "inline_route": "exact same device ModuleRef identifies selected inline; external Ops/Tasks remain explicit one source",
+      "adoption_carrier": "current TemplateSubset.adoption / ProjectState.template_adoptions; source worker keys stable, actual choices explicit",
+      "public_normative_alignment": "merged module_adoption_contract.tasks/reserved_execution_capacity_role and typed_template_adoption_contract.execution_capacity_binding/effective_operation_identity; no business design gap remains"
+    },
+    "initial_composition": {
+      "source": "InitialItem.components",
+      "source_group": "same initial_conditions.items or same ArrivalPlan.items group; no future/cross-group component source",
+      "identity": "each source has one consuming parent; no duplicate edges/self/cycles",
+      "source_lifecycle": "transformed provenance, not independent current/free stock or space",
+      "holder": "normal Location retains historical source position; cannot also be current container contents/holder.container",
+      "initial_allocations": "transformed composition sources cannot be hard_reserved available sources",
+      "initialization": "validate complete graph before atomic initialization; copy components to composition_refs, mark sources transformed, preserve IDs and frozen input",
+      "implementation_boundary": "current P0-02 slice diagnoses input only; actual RuntimeItem initialization remains Engine work"
+    },
+    "pack_identity": {
+      "carrier": "OperationDefinition.pack_identity:Option<PackIdentityRule>",
+      "source_refs": [
+        "modules/devices/carton-pack/manifest.json",
+        "modules/devices/parameterized-pack/manifest.json"
+      ],
+      "rule": "Pack + ContainerWithContents必须声明OperationDefinition.pack_identity，output_role精确指向唯一实际输出角色；container_material_roles和content_roles均非空、各自不重复且互斥，恰好覆盖全部inputs角色；不按英文角色名、顺序或输出类型推断。一次实际装盒产生新容器ID，包装材料源保留ID及来源关系但转为transformed，内容保留原ID/类型/质量/组成并将唯一holder变为该容器；容器composition_refs只记录包装材料，contents只记录内容。内容仍是物理对象但不重复算外部自由库存/库位空间，空盒源不再算现有库存；输出类型/数量/单位与质量取实际输出声明，内容单位不改成箱单位。缺映射或不一致允许保存草稿，但阻止该工序执行并定位pack_identity；非Pack不得借该字段改变身份。现有carton-pack/parameterized-pack显式contents_from=product、container_material_from=carton映射为output_role=package/container_material_roles=[carton]/content_roles=[product]，该已知来源映射不推广成按名称猜测规则。",
+      "actual_runtime": "P1-01整包实现与实际验证中；合同修订不构成运行通过"
     }
   },
   "actual_result": null,
@@ -267,6 +422,13 @@
       "event": "scrap",
       "holder_effect": "retain_recorded_physical_or_disposition_holder",
       "quantity_effect": "excluded_from_usable_stock_no_automatic_recovery"
+    },
+    {
+      "event": "batch_partition",
+      "holder_effect": "source_transformed_trace_children_each_one_original_holder",
+      "quantity_effect": "children_sum_to_source_parent_not_on_hand_or_space_again",
+      "source_effect": "split_from_ref_on_children",
+      "status": "canonical_source_field_merged_business_rule_written"
     }
   ],
   "exception_paths": [
@@ -326,5 +488,117 @@
     }
   ],
   "review_ref": "docs/04_开发与验收/S03-02_业务对象规则与异常路径复审.json",
-  "boundary_checks_ref": "scenarios/真实业务设计/business-rule-boundaries.design.json"
+  "boundary_checks_ref": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+  "refinement_revision": "DRF06-2a",
+  "current_design_owner": "复审窗口6；共同Rust/API/派生类型/全层合同由复审窗口1",
+  "canonical_type_source_ref": "packages/domain/types.design.rs",
+  "canonical_field_aliases": {
+    "order_line.product_revision": "OrderLine.product_ref",
+    "order_line.release_at": "OrderLine.release_at_ms",
+    "order_line.due_at": "OrderLine.due_at_ms",
+    "operation_job.resources": "JobState.job_resources + phase_resources，按持有层分列",
+    "operation_job.start_at": "JobState.started_at_ms",
+    "operation_job.finish_at": "JobState.finished_at_ms：全部输出/效果提交并释放后",
+    "item_state.holder_ref": "RuntimeItem.holder",
+    "item_state.allocation_ref": "RuntimeItem.allocation_refs（Vec<ObjectId>）",
+    "quality_decision.item_or_lot_ref": "QualityDecision.item_ref",
+    "quality_decision.effective_at": "QualityDecision.effective_at_ms",
+    "acceptance_event.order_ref": "AcceptanceEvent.order_id，目标模式可None"
+  },
+  "selected_DTO_delta_ref": "docs/04_开发与验收/特征细化/DRF06_公共字段合入delta.json",
+  "five_chain_design_ref": "docs/04_开发与验收/特征细化/DRF06_五链贯通核对.json",
+  "C04_business_input_coverage_ref": "docs/04_开发与验收/特征细化/DRF06_C04_显式绑定收口.json",
+  "C04_current_type_fixture_ref": "docs/04_开发与验收/特征细化/DRF06_C04_type_fixture.json",
+  "C04_current_binding_verification_ref": "docs/04_开发与验收/特征细化/DRF06_C04_绑定有限核验.json",
+  "C04_business_design_ready": true,
+  "manual_acceptance_goal_contract": {
+    "status": "implemented_and_bounded_Engine_Host_native_verified",
+    "field": "ScenarioInput.acceptance_goal: Option<FactoryGenerationGoal>",
+    "source": "Explicit manual no-order acceptance declaration, independently saved with the selected Scenario through existing PutObject Scenario",
+    "compatibility": "Absent or null reads as no manual goal; None omits the new field on write to preserve exact legacy Scenario shape. Some writes the complete explicit goal. No new operation or fake GenerationContext/OrderLine.",
+    "selection": "A supplied manual goal must agree exactly with any genuine frozen GenerationContext.goal and internal explicit goal. Conflict blocks enqueue; OrderLines and a manual goal are mutually exclusive.",
+    "freeze": "The exact selected Scenario revision containing acceptance_goal is saved in RunInputRef.frozen_scenario_file; later goal edits form a new Scenario/Project revision and never change old Run/stock/events.",
+    "execution": "Exact product revision/unit/destination/stage/window, positive optional target and declared calendar are checked before enqueue by the same Engine. No inference from device name, output, missing goal, latest source or target quantity.",
+    "quantity": "Target controls only full-window goal comparison, never caps production, stock, arrivals or cumulative acceptance. Per-day conclusions require the explicitly declared daily observation basis; short cases prove only their stated finite window.",
+    "history": "Goal acceptance records have nonempty real accepted items and order_id=null; no synthetic order/allocation/allow_partial/GenerationContext.",
+    "task_refs": [
+      "docs/04_开发与验收/整包派发/P0-01_整包执行.json",
+      "docs/04_开发与验收/整包派发/P1-01_整包执行.json",
+      "docs/04_开发与验收/整包派发/P1-03_整包执行.json"
+    ],
+    "actual_result": {
+      "actual_Host_result_ref": ".work/whole-packages/native-143-result.json",
+      "Engine_result_ref": "docs/04_开发与验收/整包派发/P1-03_整包执行.json#/shared_goal_source_integration",
+      "scope": "Actual finite declared input consumers, not whole original package/UI/daily/release acceptance",
+      "current_concentrated_result_ref": ".work/whole-packages/verification-with-packaging/result.json"
+    }
+  },
+  "order_transport_execution_contract": {
+    "status": "shared_type_source_frozen_actual_Engine_Host_consumers_pending",
+    "observed_gaps": [
+      "One physical Assembly needs exact A/B operation/family choices; the current compiler accepts only one default operation binding",
+      "Flat TransportDefinition.resources cannot state loading-only/unloading-only requirements without name heuristics"
+    ],
+    "fields": {
+      "DeviceInstance.route_operation_refs": "Vec<ModuleRef>; default empty and skip empty",
+      "TransportDefinition.loading_resources": "Vec<ResourceRequirement>; default empty and skip empty",
+      "TransportDefinition.unloading_resources": "Vec<ResourceRequirement>; default empty and skip empty"
+    },
+    "compatibility": "New empty arrays omit on write and absent reads empty; all previous no-choice/no-phase inputs retain their exact shape. The existing default source and whole-trip resources are unchanged.",
+    "operation_choice": {
+      "selection": "For each RouteStep, use exactly its operation_ref if it matches the current explicit default/inline source or an explicitly listed route_operation_refs entry. Additional entries are exact loaded Operations modules, never latest/category/name fallback.",
+      "physical_owner": "All alternatives remain the same DeviceInstance and execution_capacity ResourceInstance; no second physical Assembly, clock, inventory or capacity.",
+      "per_job": "Every actual Job records its one selected exact source. Material roles, ports, parameters, family, duration and readiness come from that definition and the explicit step bindings; do not merge different source trees.",
+      "validation": "Missing/mismatched/duplicate choice, unsupported category, incompatible material/resource/unit/parameter or binding cannot execute. Existing professional producer/purpose/binding/selected-input authorization is not granted by this list; an actual professional operation must still match its real consumer gate."
+    },
+    "transport_resources": {
+      "resources": "Existing resources remain held for the whole actual trip, including declared waits and return; no role name is reinterpreted into a phase.",
+      "loading_resources": "Acquire only for actual loading; release on loading completion. Waiting does not manufacture elapsed work or cargo.",
+      "unloading_resources": "Acquire only for actual unloading; retain cargo and whole-trip resources while unavailable/blocked, release the phase requirement on completion.",
+      "binding": "All tables use explicit ResourceRequirement.role through SupplyRelation.resources to actual resources with exact quantity units/qualification/calendar. Roles may have arbitrary names; no loader/unloader string inference.",
+      "aliases": "Same physical resource aliased within one trip merges overlapping declared requirements by maximum, as existing job/phase rules; independent jobs/trips still compete on aggregate actual capacity.",
+      "boundaries": "Existing declared stage times and non-preemptive conditions remain; zero-duration stages cannot claim a closed calendar boundary. Unknown durations/resources remain named gaps, not zero/default availability."
+    },
+    "task_refs": [
+      "docs/04_开发与验收/整包派发/P1-04_整包执行.json",
+      "docs/04_开发与验收/整包派发/P2-02_整包执行.json"
+    ],
+    "actual_result": null,
+    "contract_ref": "docs/04_开发与验收/P1-04_P2-02_共同类型接收约定.json"
+  },
+  "explicit_quality_reinspection_contract": {
+    "task_id": "P1-05",
+    "gap_id": "P105-EXPLICIT-REINSPECT-DISPOSITION",
+    "status": "canonical_runtime_product_type_schema_TS_verified_actual_Engine_and_independent_reception_pending",
+    "type": "QualityDisposition::Reinspect",
+    "wire_value": "reinspect",
+    "unchanged_existing_values": [
+      "pending",
+      "release",
+      "rework",
+      "isolate",
+      "scrap"
+    ],
+    "producer": "Existing ScenarioInput.initial_conditions.declared_quality_decisions:QualityDecision with exact item_ref/inspection_ref/source_kind/effective_at_ms/decision_source",
+    "consumer": "Unique Engine starts a distinct actual inspection attempt on the same physical item and exact inspection definition. It acquires actual resources and honors duration/preset cursor; pending-store item is not removed before its real check can start; hold-station handoff is atomic.",
+    "semantics": "Reinspection performs a new check; it is not rework and does not increment completed_reworks. Previous completed attempt stays completed. UNKNOWN remains pending; actual rejected recheck follows declared finite-rework/isolation policy. It does not grant professional acknowledgment or manufacture a human decision.",
+    "state_and_storage": "No new QualityDecision payload or independent quality state. Existing declared preset/human/provider source, exact refs, time, archive, frozen Scenario and event contracts remain.",
+    "source_refs": [
+      "packages/domain/types.design.rs",
+      "packages/domain/src/models.rs"
+    ],
+    "wire_version": "Existing API0.1/schema1.0 unchanged; all existing enum strings remain unchanged.",
+    "verification": "Root Schema cases cover explicit reinspect and rejection of invented automatic_pass; actual Engine behavior is owned by W3 and independent W5 consumers, not inferred from type parsing.",
+    "actual_type_verification": {
+      "canonical_native_stdout_ref": ".work/whole-packages/reinspect-design-types.stdout.txt",
+      "canonical_schema_stdout_ref": ".work/whole-packages/reinspect-design-schemas.stdout.txt",
+      "canonical_format_stdout_ref": ".work/whole-packages/reinspect-design-format.stdout.txt",
+      "product_generation_stdout_ref": ".work/whole-packages/reinspect-product-types.stdout.txt",
+      "product_schema_result_ref": ".work/whole-packages/reinspect-product-schema.json",
+      "product_TS_stdout_ref": ".work/whole-packages/reinspect-product-typecheck.stdout.txt",
+      "product_schema_documents": 40,
+      "product_schema_cases": 82,
+      "actual_Engine_disposition_execution_proven_by_types": false
+    }
+  }
 }

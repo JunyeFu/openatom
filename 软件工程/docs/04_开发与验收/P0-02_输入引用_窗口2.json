@@ -1,0 +1,345 @@
+{
+  "document_kind": "P0_02_business_input_reference_validator_window2",
+  "task_id": "P0-02",
+  "within_original_step": 1,
+  "window": "实现窗口2",
+  "authority_ref": "docs/04_开发与验收/P0-02_业务输入与引用切片.json#/parallel_dispatch/1",
+  "status": "completed_scoped_validator_and_native_verified_final_post_findings",
+  "allowed_files": [
+    "packages/domain/src/business_inputs.rs",
+    "apps/planner/src-tauri/src/project_api.rs",
+    "docs/04_开发与验收/P0-02_输入引用_窗口2.json"
+  ],
+  "pure_interface": "sf_domain::check_business_inputs(project: &ProjectState, scenarios: &BTreeMap<ScenarioId, ScenarioInput>) -> Vec<Issue>",
+  "independent_expectations": [
+    "完整正式DTO精确产品/BOM/物品/路线与模块声明、设备绑定、订单/生产任务引用无错误；不按名称或最新业务版本替代",
+    "同ID改r1为r2后旧ref r1保留并定位缺项；BOM消费工序必须属于对应产品采用的路线",
+    "路线前置仅在该路线内解析；缺前置、重复步骤或环定位到实际Route及字段；设备/物品/资源绑定必须有实际声明",
+    "quantity=null只报缺项不填0；due=null仅限制完整准时率结论，不阻断执行；没有orders不补造订单",
+    "数量按明确单位核对；piece必须decimal_places=0；数量比较使用十进制系数的精确整数推导，不使用浮点或隐式单位换算",
+    "生产任务分配指向本Scenario真实订单，使用该产品认可的精确路线；分配不能超过明确计划量或已给订单量；不生成库存、预留或运行状态",
+    "Issue仅使用现有类型，code以business_inputs.开头；Project对象以自身ObjectRef定位，Scenario内数据以真实Scenario引用和RFC6901字段定位",
+    "纯检查不修改任何输入，所有缺项均为可保存草稿Issue；Host只替换自己派生的前缀Issue",
+    "ProjectState不携带ModuleDefinition正文，本检查只证实精确模块声明和显式设备operation_binding一致性；不能据此声称算子已实现或角色定义正文已验证"
+  ],
+  "native_scope": "Host稳定后沿用同一managed Host及FIFO，保留原31项和原7组，新增正式业务输入编辑、保存/重开及原子历史验证",
+  "verification": [
+    {
+      "command": "rustfmt --edition 2024 packages/domain/src/business_inputs.rs",
+      "exit_code": 0,
+      "executed_by": "实现窗口2"
+    },
+    {
+      "result": "initial_shared_compile_failed_then_source_corrected",
+      "error": "E0599 VersionId has no as_str at business_inputs.rs",
+      "evidence_ref": ".work/p0-02-inputs/first-check.stderr.txt",
+      "correction": "仅改String::from(step.operation_ref.version.clone())；不扩公共ID接口"
+    },
+    {
+      "command": "rustfmt --edition 2024 apps/planner/src-tauri/src/project_api.rs",
+      "exit_code": 0,
+      "executed_by": "实现窗口2"
+    },
+    {
+      "result": "first_shared_workspace_failed_before_test_semantics",
+      "error": "9 pure tests failed at fixture decode: exact SemVer required",
+      "evidence_ref": ".work/p0-02-inputs/pre-semver-fixture-verification/workspace-tests.stdout.txt",
+      "correction": "仅把自建夹具5处模块version=1改为1.0.0；保持冻结VersionId解析与所有预期，业务检查算法未变"
+    },
+    {
+      "result": "initial_nine_pure_groups_reported_passed_before_legacy_reference_extension",
+      "executed_by": "W00",
+      "current_source_requires_full_revalidation": true
+    },
+    {
+      "key": "format",
+      "command": "cargo fmt -p sf-domain -p sf-commands -p sf-desktop-host -- --check",
+      "started_at": "2026-10-16T00:04:54.8776572+08:00",
+      "finished_at": "2026-10-16T00:04:55.5176757+08:00",
+      "exit_code": 0,
+      "stdout_ref": ".work/p0-02-inputs/verification/format.stdout.txt",
+      "stderr_ref": ".work/p0-02-inputs/verification/format.stderr.txt",
+      "executed_by": "W00",
+      "consumed_by_window2": "actual result/原始workspace stdout/原生stdout回读"
+    },
+    {
+      "key": "workspace-tests",
+      "command": "npm.cmd run test:rust",
+      "started_at": "2026-10-16T00:04:55.5413946+08:00",
+      "finished_at": "2026-10-16T00:05:46.2825358+08:00",
+      "exit_code": 0,
+      "stdout_ref": ".work/p0-02-inputs/verification/workspace-tests.stdout.txt",
+      "stderr_ref": ".work/p0-02-inputs/verification/workspace-tests.stderr.txt",
+      "distinct_tests_executed": 107,
+      "executed_by": "W00",
+      "consumed_by_window2": "actual result/原始workspace stdout/原生stdout回读"
+    },
+    {
+      "key": "generate-contracts",
+      "command": "npm.cmd run generate:contracts",
+      "started_at": "2026-10-16T00:05:46.3017898+08:00",
+      "finished_at": "2026-10-16T00:06:09.8888396+08:00",
+      "exit_code": 0,
+      "stdout_ref": ".work/p0-02-inputs/verification/generate-contracts.stdout.txt",
+      "stderr_ref": ".work/p0-02-inputs/verification/generate-contracts.stderr.txt",
+      "executed_by": "W00",
+      "consumed_by_window2": "actual result/原始workspace stdout/原生stdout回读"
+    },
+    {
+      "key": "typecheck",
+      "command": "npm.cmd run typecheck",
+      "started_at": "2026-10-16T00:06:09.8909177+08:00",
+      "finished_at": "2026-10-16T00:06:11.2971516+08:00",
+      "exit_code": 0,
+      "stdout_ref": ".work/p0-02-inputs/verification/typecheck.stdout.txt",
+      "stderr_ref": ".work/p0-02-inputs/verification/typecheck.stderr.txt",
+      "executed_by": "W00",
+      "consumed_by_window2": "actual result/原始workspace stdout/原生stdout回读"
+    },
+    {
+      "key": "schema-consumer",
+      "command": "C:/Users/fujunye/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe -B -X utf8 tools/检查工程与Command边界.py --output .work/p0-02-inputs/schema-validation-result.json",
+      "started_at": "2026-10-16T00:06:11.2992244+08:00",
+      "finished_at": "2026-10-16T00:06:13.7956291+08:00",
+      "exit_code": 0,
+      "stdout_ref": ".work/p0-02-inputs/verification/schema-consumer.stdout.txt",
+      "stderr_ref": ".work/p0-02-inputs/verification/schema-consumer.stderr.txt",
+      "executed_by": "W00",
+      "consumed_by_window2": "actual result/原始workspace stdout/原生stdout回读"
+    },
+    {
+      "key": "desktop-build",
+      "command": "cargo build -p sf-desktop-host --bin superfactory --locked",
+      "started_at": "2026-10-16T00:06:13.7975143+08:00",
+      "finished_at": "2026-10-16T00:06:48.0624210+08:00",
+      "exit_code": 0,
+      "stdout_ref": ".work/p0-02-inputs/verification/desktop-build.stdout.txt",
+      "stderr_ref": ".work/p0-02-inputs/verification/desktop-build.stderr.txt",
+      "executed_by": "W00",
+      "consumed_by_window2": "actual result/原始workspace stdout/原生stdout回读"
+    },
+    {
+      "key": "desktop-host-smoke",
+      "command": ".\\target\\debug\\superfactory.exe --p0-01-host-smoke",
+      "started_at": "2026-10-16T00:06:48.0642388+08:00",
+      "finished_at": "2026-10-16T00:06:50.4012303+08:00",
+      "exit_code": 0,
+      "stdout_ref": ".work/p0-02-inputs/verification/desktop-host-smoke.stdout.txt",
+      "stderr_ref": ".work/p0-02-inputs/verification/desktop-host-smoke.stderr.txt",
+      "executed_by": "W00",
+      "consumed_by_window2": "actual result/原始workspace stdout/原生stdout回读"
+    }
+  ],
+  "actual_result": {
+    "executed_by": "W00",
+    "receipt_ref": ".work/p0-02-inputs/verification/result.json",
+    "workspace_stdout_ref": ".work/p0-02-inputs/verification/workspace-tests.stdout.txt",
+    "workspace_test_count": 107,
+    "pure_test_groups_passed": 9,
+    "pure_test_output": [
+      "test business_inputs::tests::scenario_index_and_document_identity_do_not_silently_repair ... ok",
+      "test business_inputs::tests::units_and_piece_integrality_are_explicit ... ok",
+      "test business_inputs::tests::route_gaps_cycles_and_escaped_binding_pointers_are_located ... ok",
+      "test business_inputs::tests::bom_consumption_must_belong_to_the_selected_product_route ... ok",
+      "test business_inputs::tests::task_allocation_references_and_demand_limits_are_checked ... ok",
+      "test business_inputs::tests::complete_exact_business_references_have_no_input_issues ... ok",
+      "test business_inputs::tests::decimal_allocation_overrun_is_exact_below_float_resolution ... ok",
+      "test business_inputs::tests::old_subject_revision_is_not_silently_upgraded ... ok",
+      "test business_inputs::tests::missing_quantity_due_and_legacy_orders_preserve_input ... ok"
+    ],
+    "adapter_test_groups_passed": 8,
+    "adapter_test_output": [
+      "test project_api::tests::project_api_reports_poison_without_dispatching ... ok",
+      "test project_api::tests::project_directory_picker_gates_purpose_and_preserves_cancelled_state ... ok",
+      "test project_api::tests::project_api_rejects_wire_identity_and_malformed_requests ... ok",
+      "test project_api::tests::project_api_unknown_headers_keep_frozen_errors_without_mutation ... ok",
+      "test project_api::tests::project_api_smoke_uses_the_supplied_host_and_checks_real_data ... ok",
+      "test project_api::tests::project_api_fifo_commits_same_directory_in_admission_order ... ok",
+      "test project_api::tests::project_api_save_reopen_and_history_use_the_same_fifo_host ... ok",
+      "test project_api::tests::project_api_business_inputs_save_reopen_and_history_are_real ... ok"
+    ],
+    "old_seven_adapter_groups_preserved": true,
+    "native_stdout_ref": ".work/p0-02-inputs/verification/desktop-host-smoke.stdout.txt",
+    "native_process_passed": true,
+    "native_stdout_json_lines": 1,
+    "stdout_kind": "P0_01_host_smoke",
+    "native_checks_passed": 56,
+    "old_31_checks_preserved_by_exact_names": true,
+    "new_business_checks_passed": 25,
+    "complete_positive_issue_count": 0,
+    "single_managed_host_instance_id": "desktop-host-70388",
+    "single_ui_session_id": "desktop-main-ui",
+    "second_Host_created_by_smoke": false,
+    "source_frozen_after_execution": true,
+    "input_mutation_by_validator": false,
+    "native_picker_interactively_exercised": false,
+    "whole_P0_02_done": false,
+    "verification_round": "final_after_F02_F03_and_new_regression_branches",
+    "receipt_native_equals_raw_complete_JSON": true,
+    "old_round_used_for_current_acceptance": false
+  },
+  "boundaries": {
+    "business_frontend_changed": false,
+    "new_public_DTO": false,
+    "inventory_or_execution_created": false,
+    "reservation_or_cancellation_step_expanded": false,
+    "native_picker_interactively_exercised": false,
+    "whole_P0_02_done": false
+  },
+  "pure_implementation": {
+    "source": "packages/domain/src/business_inputs.rs",
+    "interface_ready": true,
+    "finite_test_groups": 9,
+    "quantity_arithmetic": "u128 scaled coefficient; decimal_places<=9, no float or implicit unit conversion",
+    "missing_module_consumer_code": "business_inputs.missing_module",
+    "issue_owner_policy": "owning Project object or actual Scenario + RFC6901 field; no fabricated missing-target owner",
+    "module_payload_check": "not_available_in_this_signature; declared refs and explicit device operation binding consistency only",
+    "input_mutation": false,
+    "migrated_legacy_item_references": [
+      "ItemType.spec_ref精确Product SubjectRevisionRef",
+      "attributes TypedValue::ItemType实际物品类型ID"
+    ],
+    "new_issue_codes": [
+      "business_inputs.missing_item_spec_product",
+      "business_inputs.missing_attribute_item"
+    ],
+    "legacy_reference_tests": "保留9组，在旧版本用例内加入规格/属性正例、缺版本/缺属性物品反例、ItemType owner+RFC6901定位及输入不变断言"
+  },
+  "native_implementation": {
+    "source": "apps/planner/src-tauri/src/project_api.rs",
+    "same_managed_host_and_FIFO": true,
+    "seed": "现有tools/type-contract-proof/fixtures完整九类归档，沿用窗口5 builder显式D1 operation binding；未以缺项替代正例",
+    "formal_business_fixture": "packages/commands/tests/fixtures/business-inputs/multi-order.dto.json",
+    "positive": "先Scenario再产品/BOM/路线/物品前向同批，要求真实get_context无Issue",
+    "preserved_checks": 31,
+    "new_business_checks": 25,
+    "expected_native_total": 56,
+    "old_adapter_test_groups_preserved": 7,
+    "new_business_adapter_test_groups": 1,
+    "expected_adapter_total": 8,
+    "coverage": [
+      "完整归档真实Import/Open",
+      "正式DTO前向原子提交和精确回读",
+      "Scenario内容与结构修订同步undo/redo",
+      "冻结Project与Scenario同代保存，更新输入仍dirty",
+      "异目录Import不隐式接纳",
+      "显式Open恢复保存输入后继续编辑/history",
+      "两目录文件不随历史改变"
+    ],
+    "source_frozen": true
+  },
+  "date": "2026-10-16 Asia/Shanghai",
+  "handoff": {
+    "status": "final_post_finding_evidence_ready_for_W00_and_window6_acceptance",
+    "source_frozen": true,
+    "public_progress_owner": "W00",
+    "limits": [
+      "输入/引用与归档/历史验收，不是Engine运行或预留取消实现",
+      "ModuleDefinition正文不是纯函数入参，纯检查不能宣布算子已实现",
+      "Webview invoke和真人picker未走；业务UI未改；整项P0-02保持未完成"
+    ]
+  },
+  "superseded_native_rounds": [
+    {
+      "host_instance_id": "desktop-host-60940",
+      "state": "superseded_by_final_post_F02_F03_shared_verification",
+      "native_checks_passed": 56
+    }
+  ],
+  "final_post_finding_verification": {
+    "round": "final_after_F02_F03_and_window5_new_regressions",
+    "executed_by": "W00",
+    "receipt_ref": ".work/p0-02-inputs/verification/result.json",
+    "workspace_stdout_ref": ".work/p0-02-inputs/verification/workspace-tests.stdout.txt",
+    "native_stdout_ref": ".work/p0-02-inputs/verification/desktop-host-smoke.stdout.txt",
+    "status": "passed",
+    "workspace_test_count": 107,
+    "pure_groups": 9,
+    "adapter_groups": 8,
+    "native_checks": 56,
+    "host_instance_id": "desktop-host-70388",
+    "prior_host_instance_id": "desktop-host-60940",
+    "receipt_native_equals_raw_complete_JSON": true,
+    "old_31_native_checks_preserved": true,
+    "checks": [
+      {
+        "key": "format",
+        "command": "cargo fmt -p sf-domain -p sf-commands -p sf-desktop-host -- --check",
+        "started_at": "2026-10-16T00:10:03.9898223+08:00",
+        "finished_at": "2026-10-16T00:10:05.0444391+08:00",
+        "exit_code": 0,
+        "stdout_ref": ".work/p0-02-inputs/verification/format.stdout.txt",
+        "stderr_ref": ".work/p0-02-inputs/verification/format.stderr.txt",
+        "executed_by": "W00",
+        "consumed_by_window2": "final_post_F02_F03_raw_readback"
+      },
+      {
+        "key": "workspace-tests",
+        "command": "npm.cmd run test:rust",
+        "started_at": "2026-10-16T00:10:05.0789703+08:00",
+        "finished_at": "2026-10-16T00:10:37.6407114+08:00",
+        "exit_code": 0,
+        "stdout_ref": ".work/p0-02-inputs/verification/workspace-tests.stdout.txt",
+        "stderr_ref": ".work/p0-02-inputs/verification/workspace-tests.stderr.txt",
+        "distinct_tests_executed": 107,
+        "executed_by": "W00",
+        "consumed_by_window2": "final_post_F02_F03_raw_readback"
+      },
+      {
+        "key": "generate-contracts",
+        "command": "npm.cmd run generate:contracts",
+        "started_at": "2026-10-16T00:10:37.7074135+08:00",
+        "finished_at": "2026-10-16T00:10:52.2512000+08:00",
+        "exit_code": 0,
+        "stdout_ref": ".work/p0-02-inputs/verification/generate-contracts.stdout.txt",
+        "stderr_ref": ".work/p0-02-inputs/verification/generate-contracts.stderr.txt",
+        "executed_by": "W00",
+        "consumed_by_window2": "final_post_F02_F03_raw_readback"
+      },
+      {
+        "key": "typecheck",
+        "command": "npm.cmd run typecheck",
+        "started_at": "2026-10-16T00:10:52.2534504+08:00",
+        "finished_at": "2026-10-16T00:10:53.8319053+08:00",
+        "exit_code": 0,
+        "stdout_ref": ".work/p0-02-inputs/verification/typecheck.stdout.txt",
+        "stderr_ref": ".work/p0-02-inputs/verification/typecheck.stderr.txt",
+        "executed_by": "W00",
+        "consumed_by_window2": "final_post_F02_F03_raw_readback"
+      },
+      {
+        "key": "schema-consumer",
+        "command": "C:/Users/fujunye/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe -B -X utf8 tools/检查工程与Command边界.py --output .work/p0-02-inputs/schema-validation-result.json",
+        "started_at": "2026-10-16T00:10:53.8338364+08:00",
+        "finished_at": "2026-10-16T00:10:56.3233709+08:00",
+        "exit_code": 0,
+        "stdout_ref": ".work/p0-02-inputs/verification/schema-consumer.stdout.txt",
+        "stderr_ref": ".work/p0-02-inputs/verification/schema-consumer.stderr.txt",
+        "executed_by": "W00",
+        "consumed_by_window2": "final_post_F02_F03_raw_readback"
+      },
+      {
+        "key": "desktop-build",
+        "command": "cargo build -p sf-desktop-host --bin superfactory --locked",
+        "started_at": "2026-10-16T00:10:56.3255079+08:00",
+        "finished_at": "2026-10-16T00:11:09.8786727+08:00",
+        "exit_code": 0,
+        "stdout_ref": ".work/p0-02-inputs/verification/desktop-build.stdout.txt",
+        "stderr_ref": ".work/p0-02-inputs/verification/desktop-build.stderr.txt",
+        "executed_by": "W00",
+        "consumed_by_window2": "final_post_F02_F03_raw_readback"
+      },
+      {
+        "key": "desktop-host-smoke",
+        "command": ".\\target\\debug\\superfactory.exe --p0-01-host-smoke",
+        "started_at": "2026-10-16T00:11:09.8810424+08:00",
+        "finished_at": "2026-10-16T00:11:11.8827272+08:00",
+        "exit_code": 0,
+        "stdout_ref": ".work/p0-02-inputs/verification/desktop-host-smoke.stdout.txt",
+        "stderr_ref": ".work/p0-02-inputs/verification/desktop-host-smoke.stderr.txt",
+        "executed_by": "W00",
+        "consumed_by_window2": "final_post_F02_F03_raw_readback"
+      }
+    ]
+  }
+}

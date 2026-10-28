@@ -1,0 +1,443 @@
+{
+  "document_kind": "S06_01_detailed_scheduler_and_state_transition_design_not_product_implementation",
+  "checkpoint": "S06-01",
+  "date": "2026-10-14 Asia/Shanghai",
+  "spec_md_ref": "docs/03_架构与契约/调度与状态转换算法.md",
+  "review_ref": "docs/04_开发与验收/S06-01_调度归属与状态转换复审.json",
+  "finite_cases_ref": "scenarios/调度算法设计/algorithm-cases.design.json",
+  "scope": "全部首版生产物流和消费接点：P1-01至05、P2-02/04/06，九类/Agent/纸包装绑定消费；维修/交通/连续专业内核不进入首版。",
+  "authority_refs": [
+    "docs/00_项目基线/首版任务选择.json",
+    "packages/domain/business-objects.design.json",
+    "docs/03_架构与契约/共享状态与所有权.json",
+    "packages/module-kit/category-contracts.design.json",
+    "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+    "docs/01_业务需求/订单工艺与物料分配.md",
+    "docs/01_业务需求/换单班次与质量处置.md",
+    "docs/01_业务需求/指标成本与决策口径.md"
+  ],
+  "owners": {
+    "authoritative_algorithm_owner": "W01",
+    "common_types_and_host_owner": "W00",
+    "state": "immutable_Run_input_then_single_Worker_business_state",
+    "presentation": "W02/W03 readonly_Run_snapshot_and_view_time",
+    "professional": "W04 provides separate versioned artifact; never owns production inventory",
+    "agent_report": "W05 calls same Host/Commands and consumes same Run",
+    "current_design_algorithm_writer": "复审窗口6",
+    "current_design_canonical_type_API_writer": "复审窗口1"
+  },
+  "implementation_choices": {
+    "language": "Rust 1.97.0 on Windows x64 per S05-04",
+    "dependencies": "std only for event/state scheduler; geometry/report selected dependencies remain their own packages",
+    "event_queue": "BinaryHeap<Reverse<EventKey>> with fixed Ord key and immutable heap ordering",
+    "deterministic_iteration": "BTreeMap/BTreeSet or explicitly sorted Vec; no HashMap iteration/heap.iter decides dispatch",
+    "numeric_model": "integer millisecond time, integer discrete quantity/capacity, explicit units; input range and checked conversions bound overflow at admission",
+    "concurrency": "one mutable business state per Run in Worker; Host short admission transaction; snapshots are readonly copies; no per-hall engines",
+    "complexity": "heap insertion/removal O(log E); readiness scan over declared candidates/resources, no unproven wall-time/performance guarantee"
+  },
+  "event_phases": [
+    {
+      "order": 0,
+      "kind": "completed_work_or_transport_segment"
+    },
+    {
+      "order": 1,
+      "kind": "calendar_order_arrival_quality_boundaries"
+    },
+    {
+      "order": 2,
+      "kind": "pending_output_transfer_and_receipt"
+    },
+    {
+      "order": 3,
+      "kind": "stable_dispatch_setup_next_phase_new_work"
+    }
+  ],
+  "rules": [
+    {
+      "id": "ALG-01",
+      "title": "离散事件与同刻闭包",
+      "inputs": "冻结Run输入、边界事件、候选集合",
+      "algorithm": [
+        "Engine采用相对整数ms；事件键为(at_ms,event_phase,stable_subject_key,deterministic_sequence)。用BinaryHeap<Reverse<EventKey>>，不可在堆内改排序键；顺序来自排序后的输入和确定性生成，不来自线程完成先后。",
+        "同一时刻：0已结束阶段/作业/运输段；1日历边界、订单释放、到料与预设质量决定；2可移交结果/接收；3准备/下一阶段/新作业派工。边界完成先结算[previous,t)有效进度，再应用t处可用性。",
+        "把当前时刻所有已有0/1事件处理完，再做转移与派工。每提交一个转移或开工都重新判就绪；派生t处零时长完成立即回到事件处理，再尝试后续，不留到t+1ms。新低级事件的因果先后由确定生成序保持，不要求结果流人为全局按phase重排。",
+        "处理直到当前t没有剩余事件、移交或可开工。然后跳到堆中下一实际事件/日历边界或观察窗末，不做逐毫秒轮询。等待没有未来可改变条件的事件就保留未完成原因，计算可正常结束。",
+        "零时长阶段和移交允许但必须有限；路线无界循环拒绝执行，返工回边按有限已完成次数展开。空闲预准备每设备在本同刻闭包至多一次；只做完准备但未开工，不可反复在缺料家族间零时长切换。下一个虚拟时点或实际生产开工/完成才打开新的预准备机会。"
+      ],
+      "outputs": "稳定事件/虚拟时钟/静止等待结果",
+      "boundary": "不使用动画、墙钟tick或UI刷新推进物料；排期不是自动最优排程。"
+    },
+    {
+      "id": "ALG-02",
+      "title": "候选派工及资源选择",
+      "inputs": "已释放订单、路线、作业阶段和实际资源",
+      "algorithm": [
+        "订单模式排序：priority降序→due_at升序且null最后→ready_at升序→稳定ID字典序；无订单模式使用显式优先序→ready_at→ID。继续阶段、返工、准备和新生产均继承所属任务的显式优先序，不另设隐蔽抢占等级。",
+        "ready_at记录当前任务前置和释放已满足的时刻，物料/资源等待不持续改写ready_at。遍历排序后的候选，未满足者列缺项并跳过，允许其他合法候选开工；已有硬预留不能被低优先任务夺取。",
+        "目标设备及替代资源只有显式认可集合可选；满足资格/位置/容量/日历的候选按稳定ID选。人员行走动画不产生额外耗时，实际搬运必须是声明运输阶段。",
+        "现有multi_order两变体的显式dispatch序列映射为A/B任务优先输入；它是输入对照，不依据后来结果反推最优。所有派工行为只在Worker本Run内部发生。",
+        "材料FIFO与候选作业排序分开：先取当前任务自己的合法硬预留，其余按库位/到库时点/稳定ID；返工、复检、准备与继续阶段继承原任务显式优先序，不设隐蔽插队等级。ready_at不因重复等待重写。"
+      ],
+      "outputs": "一次确定性候选与阻断集",
+      "boundary": "不对未来事件隐式预占全部资源，不因图标相同替代材料/设备。"
+    },
+    {
+      "id": "ALG-03",
+      "title": "齐套、预留与一次原子取得",
+      "inputs": "当前工序BOM、可取得物品、资源和容量",
+      "algorithm": [
+        "先按版本/单位/用途/质量/holder筛选；普通生产只取可领库位的available物品，要求质量时仅released，否则unchecked或released。pending/rejected和作业/车上/箱内/隔离物品不可作普通输入。",
+        "计划软分配不扣库存；硬预留仍在原holder但排除别人。当前任务自有硬预留先用，其余按库位/到库时点/稳定ID选择；无到库时点的初始库存采用工程起点。",
+        "先形成完整取得计划：本工序全部用料、设备容量、job_resources与第一阶段phase_resources、合法阶段可工作时间。资源ID合并取所需最大同一占用，不因机器同时写在job/phase两表而重复扣容量。",
+        "全部满足后一次提交：投入物品改job holder/in_process/committed，记录组成输入；取得各资源。任何缺项不部分扣料/占资源，原有显式预留保持。后续阶段再取得自己资源，不在开工时要求未来所有阶段人员连续可用。",
+        "对批次数量拆分保持总量和来源关系，生成稳定执行子ID；离散piece使用整数。单位不一致且无声明换算拒绝此用途，不猜配比。",
+        "冻结JobExecutionRef，原子取得执行容量后生成对应ResourceClaim；同模块不同设备/步骤不混同，人员claim不当设备容量。",
+        "现行InitialConditions.material_allocations: Vec<MaterialAllocation>；同起点只soft_plan/hard_reserved，不接受committed或WIP恢复。硬预留demand_ref明确指ProductionTask；软计划可指已声明Order/Task且可无实货引用。Host准入核对引用/单位/版本；soft_plan不排他，pending材料可预留但不能绕过普通领用质量条件。",
+        "单一item_ref硬预留允许部分数量；多个item_refs只接受同类型/版本/单位整量组合、quantity恰等于总量。缺逐源数量的多源部分量拒绝歧义配置，不按列表顺序猜分配。单源多个硬预留按allocation.id稳定序划份，总和不超实量且不重叠。",
+        "部分初始预留在Run起点原子规范化：全部分配先验证，再把源批次拆为实际预留子量及余量。源RuntimeItem为transformed来源记录、不计现有/空间；子批唯一holder，split_from_ref指源，继承类型版本/单位/质量。分配item_refs转实际子ID，稳定ID来自源ID/分配逻辑ID/拆分序。冻结方案输入不改写；未实际初始化不宣称运行拆分。",
+        "后续取得若再拆子批，也只在完整齐套/资源计划成功后提交；失败保留既有子量/holder/预留，不再拆或补库存。B07源10=预留4+自由6，资源失败仍4/6。字段已由复审窗口1合入Rust/Schema/TS；本条消费现行合同，不声明Worker实际初始化。",
+        "初始硬预留不等质量放行；pending可保留给本任务但普通取得必须满足released等既定资格。未放行时整次取得失败，不扣其他齐套件/人员。质量声明只作用实际匹配对象/检查版本，不把预留状态当PASS。",
+        "MaterialEndpoint.location是StockLocation引用，port是精确模块/实例/端口引用，不给库位伪造ModuleRef。位置声明不含另一套库存；Location→输入Port只声明用料位置，实际开工一次从RuntimeItem所在地取得，不因连线先复制到缓存。若来源库位不同于显式接收库位，必须有已有运输/转移效果，不自动瞬移。",
+        "输入Port必须来自冻结定义的in方向，源Port必须out方向，端点item_type/unit及合法版本用途匹配；destination为location时destination_store同ID，destination为port时destination_store是明确选定且存在的接收库位绑定。有原port_bindings/绑定声明时必须一致；缺项或冲突报告原路径，不从坐标、名字或唯一附近库位猜。",
+        "quantity_rule缺省不表示每条边消耗1件；当前工序配比仍由OperationDefinition/BOM声明决定，连线本身不生产/领料。capacity_rule若声明与该同单位目的容量共同约束，不建第二库存；容量缺真实输入不能按无限缓存执行。",
+        "初始组成来源先校核：InitialItem.components只指同一初始或同次Arrival来源组，源唯一父、无重复/自含/环，不同时作容器内容或可用硬预留源。完整准入成功后初始化将源映为transformed来源记录，保留历史Location，components转composition_refs；源不计独立现有/自由/空间量，冻结输入不改写。未来到料不能作为既有组成来源。当前P0-02纯诊断不冒充实际初始化。"
+      ],
+      "outputs": "投入集、唯一holder、资源占用与缺项",
+      "boundary": "不在每次重试扣料，不按整BOM阻止已具备条件的上游加工。"
+    },
+    {
+      "id": "ALG-04",
+      "title": "阶段与日历算法",
+      "inputs": "phases、job_resources、资源日历和中断策略",
+      "algorithm": [
+        "日历和占用区间均[a,b)；一段工作可以恰在b完成，t=b处新工作只使用下一可用段。先合并同一资源重叠/相邻可用段，再求当前阶段所有所需资源共同可用交集；已被本job持有的设备不再次扣容量，但其工作日历仍约束加工。 零时长但需取得资源的阶段同样要求start<b；若at=b且无下一可用段，不可利用零时长在闭班边界开工。无所需资源的零时长逻辑推进另按有限闭包。",
+        "non_preemptive只在能容纳本阶段剩余全部工作量的连续共同段开始；先找最早可行段，当前t不是该段起点则登记等待/唤醒，不把预计开工画成已开工。没有段则在窗口内未完成。",
+        "pause_resume累计共同可工作段中的有效时间。断开时保留job_resources、物品与已做工作量，释放仅属于phase的辅助资源；恢复按同一派工顺序原子重新取得phase资源。若资源必须跨暂停占住，应声明为job_resources。等待不增加有效进度。",
+        "阶段完成时释放该阶段独有资源，保留job_resources；下一阶段可用再进入。无phases的旧声明映射为单阶段且旧资源全作业持有，不把它擅自拆成省人阶段。",
+        "阶段策略非明确、负时长、缺日历或规则不支持时留可定位缺项，不自动加班或从模型动画推工时。",
+        "Engine在阶段就绪/恢复打开有效段，停工/阻塞关闭为interrupted；等待不进有效工作。记录起止有效进度，零阶段用同刻PhaseCompleted事件，不造零宽工作段。",
+        "同job同resource的job/phase重复需求合为一个容量取得：连续全作业持有用kind=job、phase_ref=None。独立phase-only Claim用kind=phase、phase_ref=所属PhaseId；全job/transport/output_hold的phase_ref=None。phase实际完成或断班释放该段标released，不累加重复占用。",
+        "现行ResourceClaim.intervals为Vec<IntervalMs>，interval_end_causes为Vec<ClaimIntervalEndCause>，等长同序逐项配对；released|observation_end|computed_boundary。零时长取得/释放仅留真实点事件，不造正长度Claim。",
+        "真实释放在截点同刻发生先闭包再标released；仍持有段在完整观察窗末用observation_end，前缀/暂停/取消用computed_boundary。相同末端不能推已释放；恢复快照替换临时截断，不重新取得同job资源或双计。",
+        "日历与预留均从冻结输入的明确绑定取得；人员calendar_id已有值不能替设备日历。TC01容量若绑定Resource，使用该ResourceInstance.calendar_id；设备自身容量没有明确可工作日历时，准入列该执行对象缺项，不以观察窗补全天。模板适配可提出已有机位Resource/Calendar候选并明确选择，不能在运行时隐式新增。",
+        "C04采用窗口3伴随selected_policy中的pause_resume，CNC10/45/5与Board5/20/5工时不变；inline.duration=null，不重复加cycle_seconds。其他新输入策略依明确选择，不用此特定模板政策覆盖通用规则。",
+        "本轮C04选定执行容量采用RoleBindings.resources的系统绑定execution_capacity→真实ResourceInstance(kind=fixture, capacity以station明确)。其calendar_id须指实际Calendar；JobExecutionRef.execution_capacity_ref为该Resource，原设备job_resources身份只降为这一占用，不再另扣Device容量。",
+        "execution_capacity是编译层保留绑定，不伪装人员业务角色；采用时用户明确匹配/新建机位与日历。W-B/W-C/W-A/W-E来源要求按伴随数组顺序映射legacy.worker.W-*，实际ID由显式选择而非源字符串假定；旧device/Route/Task引用在同事务重映射，W-B用于Inspection/Packing仍同一个人。",
+        "C04 CNC/Board机器整Job持有，人员仅load/unload；prepare30秒W-E全任务并exclusive占Board机位，Assembly/Inspection/Packing原未分phases的人员仍整Job持有。phase中断释放仅phase人、保机器/在制/进度，不能把原全Job人改成省人phase。"
+      ],
+      "outputs": "有效工作区间、人员/机器持有、阶段等待",
+      "boundary": "45秒历时/40秒有效/10秒人占用分别记录；不引入维修服务内核。"
+    },
+    {
+      "id": "ALG-05",
+      "title": "家族准备与首件门槛",
+      "inputs": "设备初始家族、换单矩阵、目标任务和首件声明",
+      "algorithm": [
+        "新家族需明确初始family或cold_start条目。内部换单先占设备及所需辅助资源，外部准备仅在声明支持的独立任务/辅助资源下可与旧批加工并行；准备本身不生成产品。",
+        "选定目标任务即可提前准备，不以物料已到为必要条件；同家族不重复准备，除非矩阵明确要求。multi_a_first在60—75秒换单后等待PCB到100秒，属于合法提前准备。空闲预准备按ALG-01有限闭包规则执行。",
+        "准备完成更新设备家族与准备epoch。首件门槛键含设备/工艺版本/目标家族/本次准备epoch；仅对应首件的有效质量放行能解除。旧家族、旧工艺或上次换单的放行不能解除新门槛。",
+        "未放行时允许声明首件任务，不允许其余批量开工；UNKNOWN维持待判，FAIL按返工/隔离声明，不能按时间过了自动解除。取消后续需求不撤销已完成准备。"
+      ],
+      "outputs": "准备任务、家族、首件前置",
+      "boundary": "不把准备耗时加到每件自动加工，不默认任意行业可无人换单。"
+    },
+    {
+      "id": "ALG-06",
+      "title": "转换、装配与包装身份",
+      "inputs": "已投入输入集、工艺效果和固定结果槽",
+      "algorithm": [
+        "转换/装配在最后有效阶段完成时形成一次候选结果；普通加工保持或转换身份以行为声明为准。新输出ID由固定作业逻辑ID+输出端口+执行序号形成，不使用线程顺序或随机UUID决定业务追踪关系。RunId另列。",
+        "组成件保留ID和转化关系但不可重复成为自由库存；装箱把实际内容holder改container，包装物不再是空盒，箱内内容与箱数按各自单位统计。",
+        "质量检查/返工保持同一检查对象ID；完成返工增加已完成次数而不是开工就增加。声明多输出时每个实际输出有端口/数量/单位，输出不是目标需求复制出来的。",
+        "候选结果在作业内等待移交，不因Worker或画面反复访问再次产出；工序结束与实际移交/订单接受各计一次。",
+        "Pack + ContainerWithContents必须声明OperationDefinition.pack_identity，output_role精确指向唯一实际输出角色；container_material_roles和content_roles均非空、各自不重复且互斥，恰好覆盖全部inputs角色；不按英文角色名、顺序或输出类型推断。一次实际装盒产生新容器ID，包装材料源保留ID及来源关系但转为transformed，内容保留原ID/类型/质量/组成并将唯一holder变为该容器；容器composition_refs只记录包装材料，contents只记录内容。内容仍是物理对象但不重复算外部自由库存/库位空间，空盒源不再算现有库存；输出类型/数量/单位与质量取实际输出声明，内容单位不改成箱单位。缺映射或不一致允许保存草稿，但阻止该工序执行并定位pack_identity；非Pack不得借该字段改变身份。现有carton-pack/parameterized-pack显式contents_from=product、container_material_from=carton映射为output_role=package/container_material_roles=[carton]/content_roles=[product]，该已知来源映射不推广成按名称猜测规则。"
+      ],
+      "outputs": "结果槽、组成/容器关系、端口产出",
+      "boundary": "未支持的批处理或多输出不能伪装逐件成功；不调用额外专业算法。"
+    },
+    {
+      "id": "ALG-07",
+      "title": "输出受阻与资源释放",
+      "inputs": "作业候选结果、目标库位/连接容量",
+      "algorithm": [
+        "移交前检查目的版本/质量/用途、单位、容量及当前holder；同刻多个发送方按(结果就绪时刻,逻辑job ID,输出端口)顺序处理，不能依赖容器迭代顺序。目标容量释放后重试原结果槽。",
+        "满库位时结果仍属原job/运输，保持设备作业容量和job_resources；已结束phase辅助资源按声明释放。hold_on_output_wait列额外需要保持的辅助资源；与job全程持有冲突的声明先报告缺项，不自选释放。",
+        "成功移交一次改变holder/位置，关闭结果槽并释放该作业应释放的资源；同刻取得新物料释放下游库位后，再尝试上游阻塞移交。端口或设备外观不能私建无限暂存。",
+        "已完成移交的槽再次检查只返回当前状态，不重复接受；这是既有一次提交不变量，不新增事件去重数据库。",
+        "Job.started_at_ms为齐套实际取得并开工时刻；最后phase结束只产生唯一候选槽。质量待判或输出未移交state=waiting_output、finished_at_ms=None；全部声明输出成功移交并释放该job应释放资源后才completed并填finished_at_ms。无实物输出作业以声明效果成功提交/资源释放完成，不虚构移交。",
+        "输出等待phase_ref=None；等待进入下一阶段才指blocked phase。T07工作0—20秒、等输出20—40、Job40秒完成；机器Claim0—40、phase-only人员0—20。多个端口已交槽不重试，仍待槽保持Job包络，不部分宣称作业完成。",
+        "MaterialEndpoint输出移交遵循out Port→真实location/接收Port的既定结果槽、目的容量和唯一holder规则；Port不是隐含库位。缺接收绑定保持原结果及资源，不补Port库存；多条合法分支也只按实际质量出口一次选择。"
+      ],
+      "outputs": "output_wait区间、一次转移、真实释放",
+      "boundary": "hold_station/pending_store及运输接受共用容量/holder规则。"
+    },
+    {
+      "id": "ALG-08",
+      "title": "质量分支、有限返工与处置",
+      "inputs": "检查来源、结果序列、放行要求、最大返工次数",
+      "algorithm": [
+        "检查次数在检查实际开始时增加，用固定物品/祖先绑定定位预设序列；null、数组耗尽或来源缺结果均UNKNOWN，质量pending，不生成有效质量决定。",
+        "PASS须按声明完成放行才released；FAIL为rejected，已完成返工次数<上限且存在显式回路才转返工，否则隔离。返工完成不自动合格，须重新检查；达到上限不自动报废。",
+        "hold_station保持工位及声明资源到有效决定和成功移交；pending_store仅接收成功后释放，满则原位保持。决定时间到达而对象未达对应待判状态时记录未应用理由，不预先放行未来物品。",
+        "预设人工放行或scrap按冻结输入的对象/质量规则/范围生效。报废保存holder/ID/组成记录，排除可用与订单接受；不自动退零件或补产。运行中的用户改决定按新方案重跑，不把编辑变真实运行处置。",
+        "预设决定按item_ref、inspection_ref.id/version、来源/作用范围及对象当时状态匹配；早到、错对象、错检查版本/范围保留未应用原因，不缓存成未来放行。B15的2秒早到、4秒错版本不应用，5秒匹配才放行。",
+        "hold_station原无phase人员全job保持；pending_store成功物理接收后才释放相应工位/job人，quality仍pending。phase-only辅助人沿真实阶段结束/显式hold，不因待判策略私改资源种类。",
+        "scrap保持原物理holder/ID/组成并lifecycle=scrapped，不自动腾隔离容量。原scrap_record是处置记录标签，不是新物理库位；非报废隔离数0与原位报废物理占位1可并存。不自动回收/补产。",
+        "InspectionPreset按精确ModuleRef及ExactItem/Ancestor/Batch范围匹配唯一preset。真实Scenario/Route给出前只有伴随PASS/PASS质量绑定义务，不猜未来物品ID；多个适用preset/祖先歧义拒绝用途，不按数组偶然顺序选择。",
+        "游标作用域为本Run+实际限定ID的唯一InspectionPreset+精确inspection_module；同祖先范围两件共享序列，按既定事件/派工稳定次序取得，不各自从0开始。实际检查开始锁定该preset的attempt ordinal并增加started_count；完成时读取已锁定results[ordinal]并提交决定一次，正是伴随的完成时消费结果。暂停/恢复或重复结果查询不新领序号；计算取消保留当前尝试序号，另起新Run才按其初始声明重置。null/耗尽/不可识别值为UNKNOWN pending，不产生PASS；错module/用途在准入报缺项。",
+        "当前BoardFinish01@0.2.0的实际output行declared_output_quality=released；在该准确行为最后有效阶段完成、唯一实际候选结果槽创建的同一提交中应用一次，作用于output端口/pcb类型，不在import/start或无产出时应用。输出容量阻塞保同物品/品质/holder和Claim，重试只移交原槽，不重造/重放行。outputs.required_quality不是setter；inputs.declared_output_quality必须null，inspect继续QualityRule，不创建订单接受或专业认可。该字段与typed adoption已实际公共合入。",
+        "Inspection max_reworks=0且preserve identity：PASS、FAIL隔离、UNKNOWN待判只选一个实际结果出口，不能因inline列三个outputs就复制三份装配体。Packing.product.required_quality=[released]沿源声明执行。"
+      ],
+      "outputs": "单一检验出口、待判/返工/隔离/报废",
+      "boundary": "专业成果Pass不直接作为质量放行；来源和人的认可保持独立。"
+    },
+    {
+      "id": "ALG-09",
+      "title": "固定时间批次运输",
+      "inputs": "供货目标、来源库存、容量、装卸/去返/日历/接受条件",
+      "algorithm": [
+        "每日供货是需求上界/目标而非库存；从明确发运窗口中选实际可用批量，allow_partial_load独立于订单allow_partial。未足整批且禁止不足批量则等待；允许不足则min(剩余目标,载具容量,合法实货)且>0。",
+        "装载前一次取得来源预留与载具/装载人员，装载期间货物仍在来源且已预留。depart事件改变holder为transport、离开来源库存；arrival只表示到目的，不增加接收库存。",
+        "目的具备接收/卸载条件才开始卸载；卸载完成再次检查实际空间，受阻保持车上货物和需保留载具/资源，不复制到缓存。successful_receive一次转到目的，允许下游领取。",
+        "货物接受后独立返程，到return_complete才释放该载具/人员供下一批。原例110秒货物可用但140秒资源可再用；控制盒第六件370—420秒接收阻塞，425秒返程可用。",
+        "物流工作阶段使用ALG-04日历，阶段暂停保持货物/载具job资源；释放仅本段辅助人。首版时长来自声明，场地线长/播放速度不换算实际运输耗时，复杂交通/最短路径后置。",
+        "departures_ms整数点t显式映射SupplyRelation.departure_windows中的[t,t+1ms)装载开始机会；load>0时depart在装载完成，不扩整日/窗外补发。t+1超支持SimTimeMs范围由已有准入拒绝，不补默认窗。",
+        "到达后用实际接收容量/卸载资源共同日历决定卸载，完成再核实际空间。B14到达110秒、卸载120—125、接收125、返回135；等卸载仍车上货物。载具整趟transport Claim直到返程实际完成released；装卸人按声明阶段释放。",
+        "日目标只是需求，按显式TimeReference与展开日历定义生产日，用[d,d+86400000)统计真实接受。午夜不重置订单/子批/容器/载具、不造库存/复制在途；B13两日接受0/2，接收86425000ms、返回86435000ms。"
+      ],
+      "outputs": "发出/在途/物理接收/返程/接受分别发生",
+      "boundary": "无物料不会发出日目标数量，不在返程中再次分配同一运输资源。"
+    },
+    {
+      "id": "ALG-10",
+      "title": "目的接受及订单完成",
+      "inputs": "实际位置/质量/单位/订单分配及allow_partial",
+      "algorithm": [
+        "物理接收与业务接受分开；只计与订单产品/版本、质量、目的和阶段匹配的分配实物。allow_partial=true逐次接受但不超过剩余需求；false要剩余需求实物齐套且均已放行才一次接受。",
+        "允许分次卸载到声明暂存，但容量有限；齐套前不计订单接受。OrderAccepted本身不移除实物或释放库位；终端外部交付只有声明移交才改变holder。容量小于所需齐套可能使订单未完成，这是真实方案缺陷，不补无限缓存。",
+        "同一订单阶段和实物分配只履约一次；箱内件数按声明内容换算，不把箱数加产品数。不超产补良率，未完成数=demand-accepted，C=null，不填0。",
+        "观察窗[start,end]内事件包含end当刻闭包。C<=due准时，迟延=max(0,C-due)；没有due的指标null。目的已接受但载具未返程时订单可完成，仍继续至观察窗记录运输资源。",
+        "scrapped及transformed来源记录不接受；容器按声明内容换算实际piece身份，不把箱数加内容。同订单同阶段分配只履约一次，OrderAccepted不腾目的容量；B16需求2/容量1/非部分/无终端出库只接收1、接受0、余2，第二件车上等待是正确未达目标。",
+        "观察窗末完成/接受点属于同刻闭包；日统计半开，午夜接受归下一日。end处真实resolved/released先胜，仍未解/未释放才observation_end；前缀不推全窗结论。"
+      ],
+      "outputs": "真实接受量、完成/未交/准时性",
+      "boundary": "包装完成/发出/到达均不自动完成指定目的订单。"
+    },
+    {
+      "id": "ALG-11",
+      "title": "等待分段与说明",
+      "inputs": "候选阻断集合及资源/物品/容量变化",
+      "algorithm": [
+        "每次相关边界后重新评价阻断集：缺料/资格、资源或日历、准备/质量前置、输出/接收容量，附对象和所需实际条件。无需求或窗口外未释放任务是idle/not_released，不虚构缺料等待。",
+        "等待区间从第一次无法推进到下一次条件变化或窗口末；理由集合变化则分段，同一作业同刻多原因组成一段，不把重叠时长相加。资源忙区间依据实际holder任务，future_calendar记录下个可工作段而非已占用。",
+        "时间轴按事件归并、人员实际phase占用及运输段显示；物品追踪从单一holder和组成/容器引用读取，代表物品/LOD不改变3000身份。等待姿态按未开工/阶段边界/暂停/完成待移交四种过程位置选择。",
+        "WaitInterval冻结execution_ref和blocked phase_ref，不能借末态Job.phase_ref重建历史；显示/报告消费相同真实区间。",
+        "现行WaitInterval.end_cause=condition_changed|resolved|observation_end|computed_boundary。原因集合/阻塞对象/所需条件变化仍不能推进时前段condition_changed并开新段；全部阻断实际解除才resolved。next_known_boundary只是下个已知可改变条件的边界，不承诺开工。",
+        "仍阻断等待在完整观察窗末为observation_end，前缀/计算暂停/取消为computed_boundary，不能据end_ms猜已解。截点有真实解除/原因变化先闭包再记实际end_cause；无持续时间的同刻变化留点/状态，不造1ms等待。",
+        "B09的0—10秒missing_material+calendar、10—20秒calendar，总等待20秒；reasons并列、时长取并集。W按唯一执行设备集合；纯资源/运输等待保留subject，不猜DeviceInstance。"
+      ],
+      "outputs": "可定位等待、时间轴与追踪只读数据",
+      "boundary": "理由是可解释机制，不是额外等待生产事件；无第二时钟。"
+    },
+    {
+      "id": "ALG-12",
+      "title": "运行冻结、暂停取消与结束",
+      "inputs": "Host所登记唯一正式Run输入、Worker状态、观察窗",
+      "algorithm": [
+        "Host短事务确认Scope/修订/必要引用并冻结输入；Worker只改变本Run的业务状态，UI/Agent/报告读同一Run结果。草稿编辑生成新revision，当前Run不换输入。",
+        "计算暂停在当前虚拟时刻完整同刻闭包后确认；单步仍下一虚拟时刻完整闭包，返回实际processed与TaskState，不在原子释放中间暴露可编辑假状态。播放暂停/倍速/回看仅view_time。",
+        "停止/暂停请求在原子转换边界记录request；当前有限同刻闭包完成后才确认暂停/取消并发布快照，不混半个闭包与更晚状态。若completed已先胜保持completed；cancel_task不撤单/回滚库存。",
+        "到end处理完整同刻闭包，随后封闭占用/等待区间；无未来事件时把区间封至end并保留阻断。计算正常完成与目标达成分开；不满足目标、缺料待判等可成为正确的完整观察窗结果。",
+        "生成前缀时记录computed_until_ms与临时computed_boundary；恢复后的新快照替换临时截断段，不双算。边界完成先做同刻闭包，再发布完成端。",
+        "完整观察窗末end闭包后，仍持有Claim和仍阻断Wait用observation_end；正在工作Phase沿现行PhaseWorkEndCause仍用computed_boundary（不同类型枚举）。部分/暂停/取消的Claim/Wait/Phase临时截断均computed_boundary。自然resolved/released/phase_completed若已同刻发生先用真实结束。",
+        "RunResult/RunSummary/ObjectsAt与各自返回数据同一冻结输入/Scope/computed_until_ms，起点闭包前None。UI以FullResult自带边界显示，不拿晚Summary补早FullResult，final_items不冒充历史；恢复新快照替换临时截断，旧导出快照冻结。",
+        "get_run Events未指定interval仅取消时间过滤，仍Scope/稳定分页；观察窗上端点事件按闭包成员包含，持续区间仍半开。期末点也可取同快照FullResult，按(run_id,sequence)去重；ObjectsAt只查已计算同Run时点。未取完页/缺历史不得宣称全量。"
+      ],
+      "outputs": "冻结Run结果/实际终态/同起点比较",
+      "boundary": "实验CLI不是产品Engine，不对未知scope假造整体结果。"
+    },
+    {
+      "id": "ALG-13",
+      "title": "接受、资源与比较数学口径",
+      "inputs": "同输入/观察窗的事件和区间、价格条件",
+      "algorithm": [
+        "资源占用为同一资源已取得区间并集长度；有效加工、等待、持有历时分别计。所有区间先截到[start,end)，同时多任务不能超声明容量；同资源job/phase重复引用不重复计价。 容量池另按每个独立占用claim的区间并集×所取单位数积分；同claim的job/phase重复不加量，不同合法并发claim要相加。池任意忙时长与资源单位·ms分列，容量利用率以可用日历容量积分为分母，离班持有另外列。",
+        "接受量按指定实物单位/阶段；订单未完成C/迟延未知留null；窗口内已到期且未完成标未达目标，不用迟延0。占用计价与班次计价是选择策略，不叠加；未知单价/缺币种成本null。",
+        "比较使用共同初始库存/观察窗/接受条件，改一方案输入重新运行。结果冻结引用各自RunId和参数差异；外观变更不改业务状态，修改行为/资源日历应形成不同输入，不能把旧结果补新方案。",
+        "与现行ResourceMetric/报告口径一致：occupied_capacity_ms是全部实际持有积分；open_calendar_occupied_capacity_ms只取Claim∩该资源可用日历；closed_calendar_held_capacity_ms单列。utilization=open_calendar_occupied_capacity_ms/available_capacity_ms，零分母/缺绑定为null；不把离班持有加入利用率分子再剪到100%。",
+        "前缀所有材料/Claim/付费日历/执行批次计量封到该快照computed_until_ms，不从未来名义作业/观察窗收费。occupied_time含声明的实际持有等待；paid_calendar同对象同component与occupied_time互斥，不能叠加。",
+        "CostInput.rate_quantity与实际计量单位必须一致；容量时间明确machine_ms/person_ms等已有声明单位，不自动猜时/秒换算。缺rate/currency/计量仍amount=null；明确零费率且输入齐全才为0。同币种known_subtotal只加已知项，所选缺项令complete_total=null；前缀只称已知小计，0接受或完整总额未知令unit_cost=null。",
+        "公开批次计费若选择BatchTransport，本轮业务计量取实际depart批次一次，未发出/仅装载预留不收费；includes所含段不再按arrival/receive/return重复计。同订单接受仍只由指定目的/阶段决定，不能用计费触发代接受。"
+      ],
+      "outputs": "EvaluationReport同源指标与比较",
+      "boundary": "不宣称最优，产能演示不是实际工业精度/收益证明。"
+    },
+    {
+      "id": "ALG-14",
+      "title": "模板、模块和纸包装消费者接点",
+      "inputs": "已采用九类规则、支持能力、专业成果与认可绑定",
+      "algorithm": [
+        "模板先实例化稳定对象/角色绑定与来源，定义不携运行库存；初始库存和到料由工程输入单独创建。Agent生成目标/场地/布局，实际可执行规则依本规范进入Engine，不因目标1万件生成1万件库存。",
+        "行为版本/单位/支持能力在进入冻结输入前核对；未支持规则及未齐关键输入列对象/用途。仅已有支持且齐输入的选定scope可运行，结果声明部分范围，不能宣称全厂已验证。",
+        "纸包装成果、人的认可、工位绑定及工序运行四对象分开。绑定产品/工程/成果版本失配、未认可或专业Fail/Undetermined时阻止相应用途；几何结论不提供未声明的装盒节拍。完整三机制/三变化算法仍由S06-04落实。",
+        "设备图片/模型/标签只读结果：模拟阶段和有效进度驱动动画，循环播放和换LOD不领料。Agent读取缺项/等待/接受量，可达标直交；不足才依既有最多三次有限反馈重跑，不把建议直接写成真实结果。",
+        "按DRF03 C01逐类采用语义解析RouteStep.operation_ref：ModulePayload.category为Operations时编生产行为，为Tasks时编TaskDefinition/TaskStep。Task的device_id指真实执行设备，target_role及ReadinessRef.target_role由该设备RoleBindings.targets明示映射，不能按名字/同设备猜目标；resource_bindings映射资源，equipment_access=exclusive时执行容量进入同一Claim。",
+        "有TaskStep按其步骤/资源/工时编PhaseWorkKind::Preparation，无steps则duration单阶段；Job.operation_ref保留Tasks ModuleRef，task_ref为真实ProductionTask；input_refs/pending_outputs不凭空加入物品。未支持TaskKind尤其维修/建设仍拒绝执行/明确后置，不用加工转换冒充。",
+        "仅本Run同目标/同任务版本与选定作业配置实际准备完成、声明效果提交后派生readiness marker并保留完成Job引用；不同目标/配置不能复用。已完成同配置用已有marker判就绪，不重复取得资源/追加工作段/伪造completed Job。marker属Worker派生态，不写模块定义、不增加库存或全局时钟，也不新增配置hash。",
+        "Transport仅从ScenarioInput.supplies的SupplyRelation.transport_ref解析Transport payload和显式载具/工人绑定，真实source货物同ID进入既有装载/发出/接收/返程；目标不造库存。编辑仍把Supply嵌入PutObject(Scenario)，不塞new_instances、不加EditableProjectObject::Supply变体。",
+        "TemplateSubset.locations保留真实库位声明，MaterialEndpoint保留port/location形状，采用时全量ID映射同时重写位置/端点/destination_store/seed/资源和任务引用；端点与物品/设备/位置的相关读取/写入须在同一授权范围。越界、缺引用或映射冲突在Commands原子提交前拒绝，不部分采用。",
+        "将模板插入既有工程时显式demo seed未选就不增加样例库存/需求；新场景明确选择完整seed才进入ScenarioInput.initial_conditions。Hall.height_m=None是未知，不能给site/高度净空Pass；可保存草稿和检查已有输入的合法scope，不替未知高度造值。",
+        "初案已经达成指定接受目标时直接报告/保存/交付，EvaluationReport.scenario_comparison=None；compare_runs至少两条真实Run才可调用。初案不计一次修正，只有目标不足且有获授权有效改动才进入原最多3轮；无有效改动/关键缺参保草稿停止，不为流程图强制造第二Run。",
+        "C04 board-preparation精确Tasks ModuleRef=local.template-parallel-electromechanical.preparation.board-preparation@0.1.0；target_role=target显式指采用后Board01，worker=legacy.worker.W-E指实际人员，Task为manual_preparation/exclusive/30000ms/marker board-preparation/produces_material=false。",
+        "实际Product/BOM/Route缺失时，prepare先后、资源选择、preset匹配和品质effect保存在明确采用义务，seed保持null；保存/重开不能丢这些语义，不能造Route/Order/目标ID来取Schema通过。真实路线给出后才把prepare置于Board工序前。",
+        "本轮定明inline工序来源：RouteStep.operation_ref若等于该device_id的精确Device.module_ref且selected=inline，解析这一个有效inline行为身份，不造不存在的Operations ModuleRef；若选择外部Operations/Tasks仍沿C01类别分派且必须匹配当前有效绑定。两条来源互斥，不重复执行；现行公共module_adoption_contract与typed_template_adoption_contract已同步这两条采用/冻结约定。",
+        "完成准备标记的持久依据是同Run已完成Preparation Job及其execution_ref/operation_ref和冻结目标配置；Worker缓存由该证据派生，不能写模板/全局库存。只有实际效果提交/资源释放后才可复用。同Run同目标/配置只引用原完成Job，新Run同起点不继承旧运行标记。"
+      ],
+      "outputs": "真实共享Engine输入/消费者与范围限制",
+      "boundary": "不扩大到41专业内核、不变更18公开操作、不绕过Figma监督。"
+    }
+  ],
+  "interfaces": [
+    {
+      "id": "SIM-C01",
+      "producer": "W00 Host/Commands",
+      "consumer": "W01 simulation",
+      "logical_input": "accepted Project/Scenario revision + selected scope + common initial state/observation window/capabilities",
+      "logical_output": "frozen Run input or object/use-specific readiness issues; typed field names frozen only at S06-02/03",
+      "behavior": "no silent defaults/unsupported execution; no public operation additions"
+    },
+    {
+      "id": "SIM-C02",
+      "producer": "W03 module-kit",
+      "consumer": "W01 admission",
+      "logical_input": "exact version/role binding + operational rule/stages/ports/resources + execution capability",
+      "logical_output": "compiled declared rules, deterministic ordered tasks, required inputs and limitations",
+      "behavior": "asset/media/timeline irrelevant to production count"
+    },
+    {
+      "id": "SIM-C03",
+      "producer": "W04 packaging + human acknowledgment",
+      "consumer": "W01 operation start",
+      "logical_input": "matching artifact/product revision + human acknowledgment + consumer binding",
+      "logical_output": "purpose eligibility or precise review requirement",
+      "behavior": "geometry Pass does not fabricate cycle time or release quality"
+    },
+    {
+      "id": "SIM-C04",
+      "producer": "W01 Worker",
+      "consumer": "W00 Host/W02/W03",
+      "logical_input": "actual transition boundary and current Run/scenario scope",
+      "logical_output": "readonly state snapshot/events/stage progress/holder/intervals/waits + processed event count",
+      "behavior": "correct Run and revision; clocks independent; no synthetic progress"
+    },
+    {
+      "id": "SIM-C05",
+      "producer": "W01 result",
+      "consumer": "W05 reporting/Agent",
+      "logical_input": "sealed window/end condition + explicit partial/cancelled status and source refs",
+      "logical_output": "accepted/not delivered/intervals/known-or-null completion/cost conditions",
+      "behavior": "same EvaluationReport math and no inventing zero unknown cost"
+    },
+    {
+      "id": "SIM-C06",
+      "producer": "UI/Agent via W00",
+      "consumer": "W01 control",
+      "logical_input": "authorized run/task reference and planned pause/step/cancel control",
+      "logical_output": "actual acknowledged compute state/terminal outcome; scene playback separate",
+      "behavior": "control at consistent boundary; no order rollback"
+    }
+  ],
+  "applicable_views": {
+    "task_interaction": "adopt/edit → validate → submit frozen scope → compute/pause/cancel → trace/wait/compare → report/reopen; Q31—37 retained",
+    "structure_data": "Host holds Run handle/input identity; Worker owns event queue/item/resource/job/order/transport state; existing domain axes kept",
+    "state_behavior": "ALG-01..14 define atomic acquisition, stage progress, output/quality/transport/acceptance and termination",
+    "interface_collaboration": "SIM-C01..06 logical handoffs; exact Rust/TS/schema and params in S06-02/03, with this behavior as source",
+    "UI_presentation": "no kernel UI; existing two canvases, full timeline/details and waiting panels consume snapshots; no new UI or Figma start",
+    "deployment_verification": "std scheduler inside existing native Worker; finite proof separated from product; actual NFR/IX retained for S07—09"
+  },
+  "source_records": [
+    {
+      "title": "Rust BinaryHeap official std docs",
+      "url": "https://doc.rust-lang.org/std/collections/struct.BinaryHeap.html",
+      "read_date": "2026-10-14",
+      "read_position": "Description/Min-heap/Time complexity, lines100–174",
+      "read_version": "web documentation reports1.99.0; 1.97 archive could not be opened",
+      "fact": "BinaryHeap is max heap; Reverse gives minimum pop; heap iteration is not sorted; ordering key must not change while queued",
+      "validation": "use only longstanding std APIs; compile dedicated std trial on installed1.97.0 before claiming usable"
+    },
+    {
+      "title": "Rust Reverse official std docs",
+      "url": "https://doc.rust-lang.org/std/cmp/struct.Reverse.html",
+      "read_date": "2026-10-14",
+      "read_position": "struct description/examples",
+      "fact": "comparison wrapper reverses ordering; no third-party priority queue needed"
+    },
+    {
+      "title": "Rust BTreeMap official std docs",
+      "url": "https://doc.rust-lang.org/std/collections/struct.BTreeMap.html",
+      "read_date": "2026-10-14",
+      "read_position": "description/ordered key iteration",
+      "fact": "key-based ordered map for deterministic iteration; not a guarantee of business scheduling correctness"
+    }
+  ],
+  "protected_expectations": [
+    "scenarios/真实业务设计/expected-business.design.json",
+    "scenarios/两厂房装配包装/expected-events.design.json",
+    "scenarios/并行汇合与返工/cases.design.json",
+    "scenarios/从零搭建控制盒厂房/expected-timeline.design.json",
+    "scenarios/非功能基准/benchmark.design.json"
+  ],
+  "actual_product_runtime": null,
+  "actual_full_engine_implemented": false,
+  "actual_Figma_or_frontend_started": false,
+  "detailed_types_and_function_freeze": "S06-02/03; checkpoint responsibility separate, not permission to guess algorithm during coding",
+  "isolated_std_trial_ref": "tools/scheduler-proof/output/std-queue-result.json",
+  "timeline_result_contract_ref": "docs/03_架构与契约/全层类型与工程格式.json#/timeline_runtime_contract",
+  "refinement_revision": "DRF06-2a",
+  "current_design_owners": {
+    "authority": "本机并行窗口计划.json.current_design_reassignment；2026-10-14用户新分工",
+    "scheduler_and_business_semantics": "复审窗口6",
+    "canonical_Rust_API_schema_TS_and_public_contracts": "复审窗口1",
+    "S04_visual_prototype_human_preparation": "复审窗口2",
+    "original_product_planned_windows": "不变；W00仍是共同底座逻辑角色，不改原P任务"
+  },
+  "selected_interval_end_contract": {
+    "status": "canonical_merged_local_business_consumers_aligned_runtime_pending",
+    "wait_end_cause": [
+      "condition_changed",
+      "resolved",
+      "observation_end",
+      "computed_boundary"
+    ],
+    "claim_interval_end_cause": [
+      "released",
+      "observation_end",
+      "computed_boundary"
+    ],
+    "source_ref": "docs/04_开发与验收/本机并行窗口计划.json#/current_design_reassignment/contract_decisions",
+    "delta_ref": "docs/04_开发与验收/特征细化/DRF06_公共字段合入delta.json",
+    "actual_result": null,
+    "canonical_contract_ref": "docs/03_架构与契约/全层类型与工程格式.json#/timeline_runtime_contract",
+    "claim_shape": "intervals:Vec<IntervalMs> + interval_end_causes:Vec<ClaimIntervalEndCause>，等长同序",
+    "merge_evidence_ref": "tools/type-contract-proof/output/timeline-contract-proof-result.json"
+  },
+  "finite_business_consumer_ref": "docs/04_开发与验收/特征细化/DRF06_静态与有限计算核验.json",
+  "module_lowering_alignment_ref": "docs/04_开发与验收/特征细化/DRF03_C01_逐类原子采用.json",
+  "five_chain_business_check_ref": "docs/04_开发与验收/特征细化/DRF06_五链贯通核对.json",
+  "five_chain_refinement": "S06-05_business_design_walkthrough_not_freeze",
+  "C04_explicit_binding_ref": "docs/04_开发与验收/特征细化/DRF06_C04_显式绑定收口.json",
+  "C04_selected_policy": "pause_resume from current companion; prior local non_preemptive selection superseded for C04 only",
+  "C04_explicit_binding_verification_ref": "docs/04_开发与验收/特征细化/DRF06_C04_绑定有限核验.json",
+  "C04_current_typed_adoption": {
+    "source": "scenarios/九类模块采用/adoption-output/template.json",
+    "template_version": "0.3.0",
+    "BoardFinish_version": "0.2.0",
+    "adoption_carrier": "TemplateSubset.adoption + ProjectState.template_adoptions",
+    "output_carrier": "MaterialRoleQuantity.declared_output_quality",
+    "new_finite_checks": 18,
+    "actual_Engine": null,
+    "public_normative_alignment_ref": "docs/04_开发与验收/特征细化/DRF06_C04_显式绑定收口.json#/closed_required_items",
+    "business_design_ready": true
+  }
+}

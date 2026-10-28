@@ -1,0 +1,52 @@
+{
+  "evidence_scope": "current canonical Job/API carriers and isolated identity-rotation rectangular hold examples; no Host/product runtime",
+  "cases": [
+    {
+      "id": "HOLD01",
+      "change": "none",
+      "expected": "Pass",
+      "basis": "明确保持PART_B在(20,20,2)；PART_A在原点且不变化，两板实体间有1mm轴向间隙。"
+    },
+    {
+      "id": "HOLD02",
+      "change": "unknown_part",
+      "expected": "input_rejected",
+      "basis": "声明MISSING_PART不属于该Job；Schema形状合法不替目标引用校核。"
+    },
+    {
+      "id": "HOLD03",
+      "change": "pose_mismatch",
+      "expected": "Fail",
+      "basis": "当前B的Z=2而声明保持Z=9；引用及载体合法，按合入公共API归为明确专业Fail，禁止瞬移到9后Pass。"
+    },
+    {
+      "id": "HOLD04",
+      "change": "peer_collision",
+      "expected": "Fail",
+      "basis": "当前B在(20,20,0)，无局部许可；(25,25,0)严格位于两板实体内，即使姿态保持也须Fail。"
+    },
+    {
+      "id": "HOLD05",
+      "change": "product_collision",
+      "expected": "Fail",
+      "basis": "subject_ref解析出的有限产品障碍为中心(25,25,2)的1mm立方体；该点严格位于产品与保持B内部。"
+    },
+    {
+      "id": "HOLD06",
+      "change": "active_bond_broken",
+      "expected": "Fail",
+      "basis": "现有GLUE1标为初始生效；A帧Z=0.45，B帧Z=2-0.45=1.55，闭合差1.1mm，不因FixedPose跳过连接约束。"
+    }
+  ],
+  "schema_rejections": [
+    "missing_part_id",
+    "old_bare_pose",
+    "missing_pose"
+  ],
+  "expected_carriers": [
+    "Versioned<PackageStructureJob>",
+    "ComputePackagingParams.packaging_job",
+    "EditCommand.PutPackagingJob"
+  ],
+  "post_merge_classification_alignment": "HOLD03初稿按输入拒绝分类；合入公共API明确合法输入中的姿态不匹配为专业Fail，现统一错误分类。禁止瞬移及不得Pass的原始业务预期不变，原32项未改。"
+}

@@ -1,0 +1,59 @@
+{
+  "task_ids": [
+    "P4-01",
+    "P2-01",
+    "P3-04"
+  ],
+  "observed_gap": "Empty Native Host has no actual bundled definitions. The existing library query exposes metadata only; no real client can read the exact subset/source resources or obtain canonical prepare_template output required by instantiate_template. Reimplementing preparation in TypeScript would duplicate the algorithm.",
+  "typed_read": {
+    "operation": "existing get_object",
+    "request": "Module ObjectRef + ObjectSource::TemplatePreview{module_ref,base_revision,choices:Option<TemplatePreparationChoices>,seed:Option<TemplateSeedSelection>}",
+    "result": "DomainObject::TemplatePreview{module_ref,project_id,base_revision,subset,source_project,resources,command:Option<TemplateInstantiation>,issues}",
+    "metadata": "choices=None and seed=None returns only actual source subset, listed typed source Project path and declared resource instances; no mutation or prepared command.",
+    "preparation": "Some choices calls the same Rust prepare_template and optional fill_template_site. Some seed calls the same prepare_template_seed only with explicit scenario ID, supply/demand flags, initial-quality map and declared-inspection flag.",
+    "authority": "Actual Project Scope/session and matching current base_revision; Module ObjectRef must match exact ModuleRef ID. Source is a registered bundled exact version or current Project selected exact version, never another Project, hidden removed version or DefinitionDraft. Preview grants no edits and consumes no creation ledger.",
+    "commit": "UI/MCP sends the returned canonical TemplateInstantiation via existing ApplyCommands using the preview's captured Project revision. Host replays actual source, checks every effect and commits imported exact packages/objects/selected seed atomically. Conflicts preserve UI preview and current actual state.",
+    "compatibility": "All18 operation names/API0.1/old source shapes unchanged. No raw file reader, alternate Host/Engine, UI preparation algorithm, automatic adoption, supply, orders or acknowledgment."
+  },
+  "bundled_library": {
+    "trusted_entry": "ProjectHost::register_bundled_template_directory(&Path)",
+    "source": "Actual canonical candidate module.json plus declared exact definitions/assets/files; registration itself does not select definitions or create Project state.",
+    "storage": "Deterministic package-scoped file/AssetId relocation preserves semantic definitions, original source/rights and exact ModuleRef. Existing same-version immutable conflicts reject atomically; no rights inferred or files silently omitted.",
+    "native_bootstrap": "Root source now registers4 canonical candidate directories and8 existing support sample directories on the single managed Host. New generic entry targeted2 passed; Native rebuilt runtime and independent nine-category recheck still pending. Previous actual195 binary original/template/Run/timeline16 checks passed.",
+    "additional_trusted_entry": "ProjectHost::register_bundled_module_directory(&Path)"
+  },
+  "consumers": [
+    "apps/planner/src/features/factory/ModuleLibrary.tsx",
+    "apps/planner/src/features/factory/TemplatePreparation.tsx",
+    "apps/planner/src/services/projectHost.ts",
+    "apps/planner/src/features/factory/Workbench.tsx"
+  ],
+  "required_actual_checks": [
+    "metadata/prepare do not change Project, selected module refs, dirty flag, history or grants",
+    "actual create/reuse resources, explicit seed and initial quality preserve exact source",
+    "wrong source/ID/version/Project/Scope/revision/seed-without-choices rejected",
+    "stale preview cannot overwrite later revision; malformed later effects roll back entire candidate",
+    "three actual bundled templates adopt/Run/Save/Open and historical sources remain exact",
+    "actual Native UI preview/confirm and independent original full-package acceptance"
+  ],
+  "status": "actual_Host_and_Native_nine_category_library_template_input_comparison_passed_independent_full_reception_pending",
+  "actual_evidence": {
+    "canonical_roundtrips": 20,
+    "API_roundtrips": 36,
+    "generated_TS_files": 427,
+    "Host_old_template_reception_tests": 2,
+    "new_Host_regression_pending": false,
+    "actual_native_template_GUI": true,
+    "Host_full_regression_passed": 195,
+    "Host_preserved_previous": 186,
+    "Host_four_candidate_tests": 6,
+    "independent_finding": "W5-P401-01",
+    "integration_intake_ref": "docs/04_开发与验收/整包派发/整包集成验证.json",
+    "independent_actual_native_checks": 16,
+    "independent_actual_native_ref": ".work/whole-packages/window5-timeline-evaluation/native-combined-result.json",
+    "actual_native_nine_category_query": true,
+    "actual_native_query_ref": ".work/whole-packages/p205-delivery-native-ui/current-panels.json"
+  },
+  "whole_task_done": false,
+  "human_acceptance": null
+}

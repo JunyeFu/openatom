@@ -1,0 +1,166 @@
+{
+  "document_kind": "DRF03_packaging_artifact_lifecycle_design_not_runtime",
+  "P_refs": [
+    "P0-03",
+    "P4-02"
+  ],
+  "public_source_ref": "packages/domain/types.design.rs",
+  "canonical_objects": {
+    "artifact": "ArtifactRecord：id/subject_ref/input_ref/result_ref/unit/coordinate_frame/supported_scope/actual_outcome/evidence_origin；不可原地覆盖同ID的结果。",
+    "acknowledgment": "ArtifactAcknowledgment：id/artifact_ref/accepted_subject/accepted_scope/decision_source/conditions；单独保存指定用途的人工决定，不是artifact.accepted布尔。",
+    "binding": "ConsumerBinding：consumer_ref/operation_ref/artifact_ref/expected_subject_revision/required_payload/requested_scope/acceptance_ref/mode；由adopt_artifact生成，不由模块manifest伪造。",
+    "execution": "首版专业实际结果是PackagingResult及Task输出；工厂实际结果是RunResult及其RunInputRef。旧逻辑execution_result仅描述后置专业插件的执行记录，不能虚构首版新API对象。"
+  },
+  "binding_gate_order": [
+    "actual_supported_mode",
+    "actual_software_evidence_and_frozen_input",
+    "exact_subject_revision_and_required_input_conditions",
+    "required_check_coverage_and_all_Pass",
+    "requested_scope_subset_of_artifact_and_human_ack",
+    "required_payload_files_complete",
+    "matching_existing_human_ack",
+    "consumer_operation_and_base_revision_match"
+  ],
+  "scope_tokens": [
+    "forming",
+    "opening",
+    "linear_extraction",
+    "net_space",
+    "manufacturing"
+  ],
+  "scope_status": "推荐业务词表；W00-C02公共消费者合入前不宣称已有自动推导。",
+  "outcome_rule": {
+    "Fail": "任一所请求硬条件有严格违反即Fail；保留未完成项，不因缺其他检查抹掉反例。",
+    "Undetermined": "无已证Fail但缺输入/覆盖/所需制造内容、精度或预算不足，保持未知。",
+    "Pass": "所有明确所需目的均有可核对通过与必需内容；空checks集合或缺目的不能依空集all()取得Pass。",
+    "input_error": "畸形引用/单位/域问题沿既有InvalidInput；合法几何不满足为专业Fail；取消/未执行不写完整结果。"
+  },
+  "required_payload_resolution": "按目标工艺精确版本确定要求，不能由请求人省略manufacturing来伪造完整纸包装；结果文件及原始Job可编辑输入分别存在，是否齐备从实际文件/内容校核。",
+  "three_mechanisms": [
+    "restricted_folded_container",
+    "outer_box_and_inner_liner",
+    "cover_or_sliding_sleeve"
+  ],
+  "three_changes": [
+    "product_function",
+    "material_approved",
+    "part_relations_or_repeat_order"
+  ],
+  "mechanism_evidence": "六份Job只证明构造/Schema；cover分支不是滑套闭缝的实际几何证明。",
+  "manufacturing_gate": "每个显式part有cut轮廓；存在折带时有相应fold；存在胶接时从生效双面共同区域产glue。无折/胶结构可明确零需求，不用猜胶；有胶连接但缺区域为Undetermined。面积mm²、显式part数量，不从订单放大。",
+  "editable_project": "ArtifactRecord.input_ref必须指向实际冻结的可编辑PackageStructureJob及所需材料/依赖；SVG只作制造成果，不能替可编辑结构/过程。",
+  "professional_version_effects": [
+    {
+      "change": "instance_title_or_display_only",
+      "artifact": "原成果不变",
+      "acknowledgment": "原认可不变",
+      "binding": "用途/条件未变则保留",
+      "new_run": "冻结新Project修订",
+      "old_run": "始终读原RunInputRef",
+      "test": "R09"
+    },
+    {
+      "change": "media_or_LOD_only",
+      "artifact": "原几何成果不变",
+      "acknowledgment": "不产生新认可",
+      "binding": "仅表现修改不破坏业务绑定",
+      "new_run": "引用新表现版本或实例override",
+      "old_run": "旧表现/定义保持冻结",
+      "test": "R09"
+    },
+    {
+      "change": "subject_revision_r1_to_r2",
+      "artifact": "r1成果保留，不改成r2",
+      "acknowledgment": "r1用途认可保留",
+      "binding": "r2目标不能沿用r1绑定，派生needs_review不覆盖原记录",
+      "new_run": "所请求产品版本逐项校核",
+      "old_run": "匹配r1旧Run仍有效",
+      "test": "R01"
+    },
+    {
+      "change": "material_thickness_geometry_fold_path_or_clearance",
+      "artifact": "新Job修订/冻结输入及新artifact ID",
+      "acknowledgment": "不得将旧认可复制为新成果认可",
+      "binding": "即使产品仍r1，也比较所需材料/几何/用途条件，受影响绑定复核",
+      "new_run": "明确采用新成果后再冻结",
+      "old_run": "旧计算结果不重算回填",
+      "test": "R22"
+    },
+    {
+      "change": "budget_or_numeric_profile",
+      "artifact": "新冻结计算输入；不覆盖原结果",
+      "acknowledgment": "新成果重新明确认可",
+      "binding": "不能从加大预算推断新Pass，旧相符成果可明确继续采用",
+      "new_run": "用实际选定成果与输入",
+      "old_run": "保留原预算/未知原因",
+      "test": "R05"
+    },
+    {
+      "change": "operation_version_or_required_payload",
+      "artifact": "原成果仍保留",
+      "acknowledgment": "按新用途判断原认可覆盖；不自动扩scope",
+      "binding": "requested_scope/required_payload/operation_ref重新匹配",
+      "new_run": "新工艺版本写入冻结输入",
+      "old_run": "原工艺/成果保持",
+      "test": "R03"
+    },
+    {
+      "change": "consumer_or_station_configuration",
+      "artifact": "不自动修改artifact",
+      "acknowledgment": "若原认可条件限定工位/姿态则复核",
+      "binding": "只影响该consumer及实际依赖条件，不全局禁用r1",
+      "new_run": "目标引用必须仍存在且匹配",
+      "old_run": "冻结旧对象与绑定",
+      "test": "R02"
+    },
+    {
+      "change": "new_same_subject_artifact",
+      "artifact": "新旧ID并存，不按latest覆盖",
+      "acknowledgment": "仅引用明确选中的artifact ID",
+      "binding": "选择新ID需新匹配认可；不因新Fail删除旧合法成果",
+      "new_run": "冻结显式选择",
+      "old_run": "原ID保持",
+      "test": "R01"
+    },
+    {
+      "change": "definition_upgrade",
+      "artifact": "不改旧专业成果",
+      "acknowledgment": "专业依赖实变才受影响",
+      "binding": "仅明确选择的实例/依赖；端口/单位不相容则整个事务不提交",
+      "new_run": "使用明确精确版本",
+      "old_run": "不重绑当前库latest",
+      "test": "R11"
+    }
+  ],
+  "algorithm_ref": "packages/packaging/algorithm.design.json",
+  "existing_evidence_refs": [
+    "docs/04_开发与验收/S06-04_纸包装算法与数值方法复审.json",
+    "tools/packaging-algorithm-proof/output/proof-result.json",
+    "tools/packaging-algorithm-proof/output/fixed-pose-result.json",
+    "tools/packaging-algorithm-proof/output/float-interval-result.json",
+    "tools/packaging-algorithm-proof/output/svg-readback-result.json",
+    "tools/packaging-algorithm-proof/output/structure-expansion-result.json"
+  ],
+  "actual_result": null,
+  "actual_product_runtime": null,
+  "public_merge_requests": [
+    "DRF03-C01",
+    "DRF03-C02",
+    "DRF03-C03",
+    "DRF03-C04"
+  ],
+  "outcome_scope": "outcome_rule作用于一个确定候选/已选择结构。多候选搜索若找到全部要求通过的候选可交付它；一个失败候选不结束整个搜索。给定候选未穷尽/连续域未覆盖则Undetermined，不声称全局无解；各失败反例单独保留。",
+  "selected_binding_derivation_ref": "docs/04_开发与验收/特征细化/DRF03_C02_专业绑定推导.json",
+  "selected_process_carrier_ref": "docs/04_开发与验收/特征细化/DRF03_C03_过程样本语义.json",
+  "current_public_owner": "复审窗口1",
+  "current_consumer_binding_selection": {
+    "status": "explicit_resolution_of_observed_P003_RESELECT_OLD_BINDING",
+    "scope": "first-release single paper-packaging execution profile per actual consumer; no new wire fields",
+    "active_selection": "Project.bindings preserves successful explicit adoption order. The last successfully adopted binding for the same exact consumer is its current execution choice; historical rows remain unchanged. This is explicit adoption order, not newest artifact or Job revision.",
+    "gate": "The current choice must still match the independently selected exact Job, currently selected operation, exact subject, accepted purposes, actual provider, actual frozen files and runtime authority. Changing Job/product alone never grants a new binding; the current choice stays needs-review and blocks until explicitly adopted.",
+    "historical": "Older bindings/Jobs/artifacts/acknowledgments and old Run snapshots remain readable and unchanged. Superseded bindings do not block the new explicitly adopted current consumer; immutable references/identity integrity still apply to all stored documents.",
+    "reselect": "Re-adopting a historical artifact is another explicit current selection and creates/appends a new binding fact; only repeating the already-current identical choice may be idempotent. No automatic latest or silent fallback.",
+    "consumers": "Domain current-use issues and actual Host Run validation must call the same current-binding derivation; save/reopen preserves binding list order. Imported order/labels alone never grant actual producer/UI authority.",
+    "finding_ref": "docs/04_开发与验收/整包派发/P0-03_整包执行.json#/frozen_Host_consumer_batch_review"
+  }
+}

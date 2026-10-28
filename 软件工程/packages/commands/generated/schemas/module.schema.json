@@ -1,0 +1,3246 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Versioned",
+  "type": "object",
+  "properties": {
+    "data": {
+      "$ref": "#/$defs/ModulePackage"
+    },
+    "schema_version": {
+      "$ref": "#/$defs/SchemaVersion"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "data"
+  ],
+  "$defs": {
+    "AnchorRef": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "data": {
+              "$ref": "#/$defs/Vec2"
+            },
+            "kind": {
+              "type": "string",
+              "const": "image_normalized"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "data"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "data": {
+              "$ref": "#/$defs/SafeUint"
+            },
+            "kind": {
+              "type": "string",
+              "const": "scene_node"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "data"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "data": {
+              "$ref": "#/$defs/Vec2"
+            },
+            "kind": {
+              "type": "string",
+              "const": "viewport"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "data"
+          ]
+        }
+      ]
+    },
+    "ArtifactPort": {
+      "type": "object",
+      "properties": {
+        "artifact_type": {
+          "type": "string"
+        },
+        "coordinate_frame": {
+          "$ref": "#/$defs/CoordinateFrame"
+        },
+        "schema_version": {
+          "$ref": "#/$defs/SchemaVersion"
+        },
+        "supported_scope": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "unit": {
+          "$ref": "#/$defs/UnitId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "schema_version",
+        "unit",
+        "coordinate_frame",
+        "supported_scope"
+      ]
+    },
+    "AssetId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "AssetKind": {
+      "type": "string",
+      "enum": [
+        "png",
+        "jpeg",
+        "gif",
+        "glb",
+        "svg",
+        "csv",
+        "json"
+      ]
+    },
+    "AssetRef": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/AssetId"
+        },
+        "kind": {
+          "$ref": "#/$defs/AssetKind"
+        },
+        "path": {
+          "$ref": "#/$defs/RelativeFilePath"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "path",
+        "kind"
+      ]
+    },
+    "AssetRights": {
+      "type": "object",
+      "properties": {
+        "asset_ref": {
+          "$ref": "#/$defs/AssetId"
+        },
+        "license": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "missing_reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "redistribution_confirmed": {
+          "type": "boolean"
+        },
+        "source": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "asset_ref",
+        "redistribution_confirmed"
+      ]
+    },
+    "AttributeDeclaration": {
+      "type": "object",
+      "properties": {
+        "basis": {
+          "$ref": "#/$defs/SourceBasis"
+        },
+        "name": {
+          "type": "string"
+        },
+        "options": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "shape": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/$defs/SafeUint"
+          }
+        },
+        "unit": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UnitId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "value_type": {
+          "$ref": "#/$defs/ValueKind"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "value_type",
+        "options",
+        "basis"
+      ]
+    },
+    "BehaviorSourceKind": {
+      "type": "string",
+      "enum": [
+        "inline",
+        "operation_ref"
+      ]
+    },
+    "BehaviorSources": {
+      "type": "object",
+      "properties": {
+        "inline": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/OperationDefinition"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "operation_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ModuleRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "selected": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/BehaviorSourceKind"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "CanonicalTimeUnit": {
+      "type": "string",
+      "enum": [
+        "millisecond"
+      ]
+    },
+    "CapabilityPurpose": {
+      "type": "string",
+      "enum": [
+        "execution",
+        "preview",
+        "adoption",
+        "redistribution",
+        "complete_conclusion"
+      ]
+    },
+    "ClipSource": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "data": {
+              "$ref": "#/$defs/AssetRef"
+            },
+            "kind": {
+              "type": "string",
+              "const": "image_asset"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "data"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "data": {
+              "$ref": "#/$defs/GifSegment"
+            },
+            "kind": {
+              "type": "string",
+              "const": "gif_segment"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "data"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "data": {
+              "$ref": "#/$defs/ModelAnimationRef"
+            },
+            "kind": {
+              "type": "string",
+              "const": "model_animation"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "data"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "data": {
+              "$ref": "#/$defs/ObjectId"
+            },
+            "kind": {
+              "type": "string",
+              "const": "native_pose"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "data"
+          ]
+        }
+      ]
+    },
+    "Contribution": {
+      "type": "object",
+      "properties": {
+        "assets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AssetRights"
+          }
+        },
+        "author": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "license": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "assets"
+      ]
+    },
+    "CoordinateFrame": {
+      "type": "string",
+      "enum": [
+        "right_handed_z_up",
+        "right_handed_y_up"
+      ]
+    },
+    "CylinderGeometry": {
+      "type": "object",
+      "properties": {
+        "height": {
+          "$ref": "#/$defs/FiniteNumber"
+        },
+        "radius": {
+          "$ref": "#/$defs/FiniteNumber"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "radius",
+        "height"
+      ]
+    },
+    "DataFieldDeclaration": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "scope": {
+          "type": "string"
+        },
+        "unit": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UnitId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "value_type": {
+          "$ref": "#/$defs/ValueKind"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "value_type",
+        "required",
+        "scope"
+      ]
+    },
+    "DataTagBinding": {
+      "type": "object",
+      "properties": {
+        "object_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ObjectRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "port_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PortRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source_field": {
+          "type": "string"
+        },
+        "unit": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UnitId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "value_type": {
+          "$ref": "#/$defs/ValueKind"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "source_field",
+        "value_type"
+      ]
+    },
+    "DecimalAmount": {
+      "type": "object",
+      "properties": {
+        "coefficient": {
+          "$ref": "#/$defs/SafeUint"
+        },
+        "decimal_places": {
+          "$ref": "#/$defs/DecimalPlaces"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "coefficient",
+        "decimal_places"
+      ]
+    },
+    "DecimalPlaces": {
+      "type": "integer",
+      "format": "uint8",
+      "maximum": 9,
+      "minimum": 0
+    },
+    "DefinitionState": {
+      "type": "string",
+      "enum": [
+        "design",
+        "editable_example",
+        "runtime_candidate",
+        "released",
+        "unmaintained"
+      ]
+    },
+    "DestinationCondition": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "$ref": "#/$defs/DestinationConditionKind"
+        },
+        "required_value": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TypedValue"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "target_role": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RoleId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ]
+    },
+    "DestinationConditionKind": {
+      "type": "string",
+      "enum": [
+        "capacity",
+        "quality_released",
+        "declared_readiness"
+      ]
+    },
+    "DeviceAction": {
+      "type": "string",
+      "enum": [
+        "configure",
+        "inspect",
+        "preview_cycle"
+      ]
+    },
+    "DeviceDefinition": {
+      "type": "object",
+      "properties": {
+        "behavior": {
+          "$ref": "#/$defs/BehaviorSources"
+        },
+        "configuration": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/TypedValue"
+          }
+        },
+        "operations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/DeviceAction"
+          }
+        },
+        "placement": {
+          "$ref": "#/$defs/PlacementKind"
+        },
+        "ports": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PortDefinition"
+          }
+        },
+        "presentation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Presentation"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "placement",
+        "ports",
+        "behavior",
+        "configuration",
+        "operations"
+      ]
+    },
+    "DeviceTag": {
+      "type": "object",
+      "properties": {
+        "anchor": {
+          "$ref": "#/$defs/AnchorRef"
+        },
+        "id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "label": {
+          "type": "string"
+        },
+        "payload": {
+          "$ref": "#/$defs/TagPayload"
+        },
+        "progress_range": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/$defs/FiniteNumber"
+          },
+          "maxItems": 2,
+          "minItems": 2
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "label",
+        "anchor",
+        "payload"
+      ]
+    },
+    "Direction": {
+      "type": "string",
+      "enum": [
+        "input",
+        "output",
+        "bidirectional"
+      ]
+    },
+    "DocumentKind": {
+      "type": "string",
+      "enum": [
+        "artifact_record",
+        "project",
+        "scenario",
+        "module",
+        "template",
+        "generation_profile",
+        "presentation",
+        "packaging_job",
+        "packaging_result",
+        "run_input",
+        "run_result",
+        "evaluation",
+        "execution_archive",
+        "asset"
+      ]
+    },
+    "DurationValue": {
+      "type": "object",
+      "properties": {
+        "basis": {
+          "$ref": "#/$defs/SourceBasis"
+        },
+        "source_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ObjectId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "unit": {
+          "$ref": "#/$defs/CanonicalTimeUnit"
+        },
+        "value": {
+          "$ref": "#/$defs/SafeUint"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "unit",
+        "basis"
+      ]
+    },
+    "EquipmentAccess": {
+      "type": "string",
+      "enum": [
+        "shared",
+        "exclusive"
+      ]
+    },
+    "FileRef": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "$ref": "#/$defs/DocumentKind"
+        },
+        "path": {
+          "$ref": "#/$defs/RelativeFilePath"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "kind"
+      ]
+    },
+    "FiniteNumber": {
+      "type": "number",
+      "format": "double"
+    },
+    "GifSegment": {
+      "type": "object",
+      "properties": {
+        "asset_ref": {
+          "$ref": "#/$defs/AssetRef"
+        },
+        "end_ms": {
+          "$ref": "#/$defs/SafeUint"
+        },
+        "start_ms": {
+          "$ref": "#/$defs/SafeUint"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "asset_ref",
+        "start_ms",
+        "end_ms"
+      ]
+    },
+    "IdentityPolicy": {
+      "type": "string",
+      "enum": [
+        "preserve",
+        "transform_with_origin",
+        "assembly_with_composition",
+        "container_with_contents"
+      ]
+    },
+    "ImageTransition": {
+      "type": "string",
+      "enum": [
+        "hold",
+        "crossfade",
+        "pan",
+        "zoom"
+      ]
+    },
+    "ImportedNodeGeometry": {
+      "type": "object",
+      "properties": {
+        "asset_ref": {
+          "$ref": "#/$defs/AssetRef"
+        },
+        "node_index": {
+          "$ref": "#/$defs/SafeUint"
+        },
+        "unsupported_extensions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "asset_ref",
+        "node_index",
+        "unsupported_extensions"
+      ]
+    },
+    "InterruptionPolicy": {
+      "type": "string",
+      "enum": [
+        "non_preemptive",
+        "pause_resume"
+      ]
+    },
+    "IntervalMs": {
+      "type": "object",
+      "properties": {
+        "end_ms": {
+          "$ref": "#/$defs/SafeUint"
+        },
+        "start_ms": {
+          "$ref": "#/$defs/SafeUint"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "start_ms",
+        "end_ms"
+      ]
+    },
+    "Issue": {
+      "type": "object",
+      "properties": {
+        "blocks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CapabilityPurpose"
+          }
+        },
+        "code": {
+          "type": "string"
+        },
+        "field_path": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "message": {
+          "type": "string"
+        },
+        "object_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ObjectRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "message",
+        "blocks"
+      ]
+    },
+    "ItemDefinition": {
+      "type": "object",
+      "properties": {
+        "attribute_schema": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AttributeDeclaration"
+          }
+        },
+        "attributes": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/TypedValue"
+          }
+        },
+        "presentation_or_media_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Presentation"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "spec_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SubjectRevisionRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "tracking": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TrackingKind"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "unit": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UnitId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "attributes",
+        "attribute_schema"
+      ]
+    },
+    "LengthUnit": {
+      "type": "string",
+      "enum": [
+        "meter",
+        "millimeter"
+      ]
+    },
+    "LodPresentation": {
+      "type": "object",
+      "properties": {
+        "detailed": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/MediaLocator"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "region": {
+          "$ref": "#/$defs/RegionPolicy"
+        },
+        "simplified": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/MediaLocator"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "region"
+      ]
+    },
+    "MaterialPort": {
+      "type": "object",
+      "properties": {
+        "item_role": {
+          "$ref": "#/$defs/RoleId"
+        },
+        "quantity_rule": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Quantity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "unit": {
+          "$ref": "#/$defs/UnitId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "item_role",
+        "unit"
+      ]
+    },
+    "MaterialRoleQuantity": {
+      "type": "object",
+      "properties": {
+        "declared_output_quality": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/QualityState"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "port": {
+          "$ref": "#/$defs/PortId"
+        },
+        "quantity": {
+          "$ref": "#/$defs/Quantity"
+        },
+        "required_quality": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/QualityState"
+          }
+        },
+        "role": {
+          "$ref": "#/$defs/RoleId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "role",
+        "quantity",
+        "port",
+        "required_quality"
+      ]
+    },
+    "MediaLocator": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "data": {
+              "$ref": "#/$defs/AssetRef"
+            },
+            "kind": {
+              "type": "string",
+              "const": "asset"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "data"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "data": {
+              "$ref": "#/$defs/ModuleRef"
+            },
+            "kind": {
+              "type": "string",
+              "const": "media_ref"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "data"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "data": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/AssetRef"
+              }
+            },
+            "kind": {
+              "type": "string",
+              "const": "image_sequence"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "data"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "data": {
+              "$ref": "#/$defs/ObjectId"
+            },
+            "kind": {
+              "type": "string",
+              "const": "native_scene"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "data"
+          ]
+        }
+      ]
+    },
+    "ModelAnimationRef": {
+      "type": "object",
+      "properties": {
+        "animation_index": {
+          "$ref": "#/$defs/SafeUint"
+        },
+        "asset_ref": {
+          "$ref": "#/$defs/AssetRef"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "asset_ref",
+        "animation_index"
+      ]
+    },
+    "ModuleDefinition": {
+      "type": "object",
+      "properties": {
+        "attribute_schema": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AttributeDeclaration"
+          }
+        },
+        "contribution": {
+          "$ref": "#/$defs/Contribution"
+        },
+        "definition_state": {
+          "$ref": "#/$defs/DefinitionState"
+        },
+        "id": {
+          "$ref": "#/$defs/ModuleId"
+        },
+        "parameters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ParameterDeclaration"
+          }
+        },
+        "payload": {
+          "$ref": "#/$defs/ModulePayload"
+        },
+        "title": {
+          "type": "string"
+        },
+        "version": {
+          "$ref": "#/$defs/VersionId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "version",
+        "title",
+        "definition_state",
+        "contribution",
+        "parameters",
+        "attribute_schema",
+        "payload"
+      ]
+    },
+    "ModuleId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "ModulePackage": {
+      "type": "object",
+      "properties": {
+        "assets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AssetRef"
+          }
+        },
+        "definition": {
+          "$ref": "#/$defs/ModuleDefinition"
+        },
+        "dependencies": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ModuleRef"
+          }
+        },
+        "files": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FileRef"
+          }
+        },
+        "issues": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Issue"
+          }
+        },
+        "rights": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AssetRights"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "assets",
+        "definition",
+        "files",
+        "dependencies",
+        "rights",
+        "issues"
+      ]
+    },
+    "ModulePayload": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "category": {
+              "type": "string",
+              "const": "items"
+            },
+            "data": {
+              "$ref": "#/$defs/ItemDefinition"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "category",
+            "data"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "category": {
+              "type": "string",
+              "const": "devices"
+            },
+            "data": {
+              "$ref": "#/$defs/DeviceDefinition"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "category",
+            "data"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "category": {
+              "type": "string",
+              "const": "resources"
+            },
+            "data": {
+              "$ref": "#/$defs/ResourceDefinition"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "category",
+            "data"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "category": {
+              "type": "string",
+              "const": "tasks"
+            },
+            "data": {
+              "$ref": "#/$defs/TaskDefinition"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "category",
+            "data"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "category": {
+              "type": "string",
+              "const": "operations"
+            },
+            "data": {
+              "$ref": "#/$defs/OperationDefinition"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "category",
+            "data"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "category": {
+              "type": "string",
+              "const": "transport"
+            },
+            "data": {
+              "$ref": "#/$defs/TransportDefinition"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "category",
+            "data"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "category": {
+              "type": "string",
+              "const": "templates"
+            },
+            "data": {
+              "$ref": "#/$defs/TemplateDefinition"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "category",
+            "data"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "category": {
+              "type": "string",
+              "const": "professional"
+            },
+            "data": {
+              "$ref": "#/$defs/ProfessionalDefinition"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "category",
+            "data"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "category": {
+              "type": "string",
+              "const": "media"
+            },
+            "data": {
+              "$ref": "#/$defs/Presentation"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "category",
+            "data"
+          ]
+        }
+      ]
+    },
+    "ModuleRef": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/ModuleId"
+        },
+        "version": {
+          "$ref": "#/$defs/VersionId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "version"
+      ]
+    },
+    "MotionTrack": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "keys": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PoseKey"
+          }
+        },
+        "node_index": {
+          "$ref": "#/$defs/SafeUint"
+        },
+        "transition": {
+          "$ref": "#/$defs/NativeTransition"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "node_index",
+        "keys",
+        "transition"
+      ]
+    },
+    "NamedPose": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "node_transforms": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/NodePoseTransform"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "node_transforms"
+      ]
+    },
+    "NativeTransition": {
+      "type": "string",
+      "enum": [
+        "hold",
+        "linear"
+      ]
+    },
+    "NodePoseTransform": {
+      "type": "object",
+      "properties": {
+        "node_index": {
+          "$ref": "#/$defs/SafeUint"
+        },
+        "pose": {
+          "$ref": "#/$defs/Pose"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "node_index",
+        "pose"
+      ]
+    },
+    "ObjectId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "ObjectKind": {
+      "type": "string",
+      "enum": [
+        "project",
+        "scenario",
+        "run",
+        "definition_draft",
+        "packaging_job",
+        "asset",
+        "native_scene",
+        "item_type",
+        "item",
+        "location",
+        "hall",
+        "line",
+        "device",
+        "resource",
+        "calendar",
+        "product",
+        "bom",
+        "route",
+        "connection",
+        "order",
+        "task",
+        "job",
+        "supply",
+        "transport",
+        "artifact",
+        "module",
+        "report"
+      ]
+    },
+    "ObjectRef": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "kind": {
+          "$ref": "#/$defs/ObjectKind"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "id"
+      ]
+    },
+    "OperationDefinition": {
+      "type": "object",
+      "properties": {
+        "builtin": {
+          "$ref": "#/$defs/RuleKind"
+        },
+        "duration": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DurationValue"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "family": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "hold_on_output_wait": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/RoleId"
+          }
+        },
+        "identity_policy": {
+          "$ref": "#/$defs/IdentityPolicy"
+        },
+        "inputs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/MaterialRoleQuantity"
+          }
+        },
+        "item_roles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/RoleId"
+          }
+        },
+        "material_flow": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PhaseMaterialFlow"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "outputs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/MaterialRoleQuantity"
+          }
+        },
+        "pack_identity": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PackIdentityRule"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "phases": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PhaseDefinition"
+          }
+        },
+        "quality_and_routes": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/QualityRule"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "resource_roles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ResourceRequirement"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "builtin",
+        "item_roles",
+        "inputs",
+        "outputs",
+        "resource_roles",
+        "phases",
+        "hold_on_output_wait",
+        "identity_policy"
+      ]
+    },
+    "PackIdentityRule": {
+      "type": "object",
+      "properties": {
+        "container_material_roles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/RoleId"
+          }
+        },
+        "content_roles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/RoleId"
+          }
+        },
+        "output_role": {
+          "$ref": "#/$defs/RoleId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "output_role",
+        "container_material_roles",
+        "content_roles"
+      ]
+    },
+    "ParameterDeclaration": {
+      "type": "object",
+      "properties": {
+        "basis": {
+          "$ref": "#/$defs/SourceBasis"
+        },
+        "binding": {
+          "type": "string"
+        },
+        "id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "integer": {
+          "type": "boolean"
+        },
+        "label": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "maximum": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FiniteNumber"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "minimum": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FiniteNumber"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "options": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "unit": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UnitId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "value_type": {
+          "$ref": "#/$defs/ValueKind"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "value_type",
+        "binding",
+        "integer",
+        "options",
+        "basis"
+      ]
+    },
+    "PendingPolicy": {
+      "type": "string",
+      "enum": [
+        "hold_station",
+        "pending_store"
+      ]
+    },
+    "PhaseDefinition": {
+      "type": "object",
+      "properties": {
+        "duration": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DurationValue"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "id": {
+          "$ref": "#/$defs/PhaseId"
+        },
+        "interruption_policy": {
+          "$ref": "#/$defs/InterruptionPolicy"
+        },
+        "phase_resources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ResourceRequirement"
+          }
+        },
+        "work_kind": {
+          "$ref": "#/$defs/PhaseWorkKind"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "phase_resources",
+        "interruption_policy",
+        "work_kind"
+      ]
+    },
+    "PhaseId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "PhaseMaterialFlow": {
+      "description": "Explicit physical effects of phases on one preserved main item and its\nconsumed auxiliary materials. Absent on existing operation definitions.",
+      "type": "object",
+      "properties": {
+        "acquire_after_phase": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PhaseId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "attributes_after_consume": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/TypedValue"
+          }
+        },
+        "auxiliary_roles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/RoleId"
+          }
+        },
+        "consume_after_phase": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PhaseId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "deliver_after_phase": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PhaseId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "primary_role": {
+          "$ref": "#/$defs/RoleId"
+        },
+        "required_primary_attributes": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/TypedValue"
+          }
+        },
+        "reserve_before_phase": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PhaseId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "primary_role",
+        "auxiliary_roles",
+        "required_primary_attributes",
+        "attributes_after_consume"
+      ]
+    },
+    "PhaseWorkKind": {
+      "type": "string",
+      "enum": [
+        "loading",
+        "processing",
+        "unloading",
+        "inspection",
+        "packing",
+        "preparation",
+        "transport"
+      ]
+    },
+    "PlacementKind": {
+      "type": "string",
+      "enum": [
+        "fixed_during_simulation"
+      ]
+    },
+    "PortDefinition": {
+      "type": "object",
+      "properties": {
+        "direction": {
+          "$ref": "#/$defs/Direction"
+        },
+        "id": {
+          "$ref": "#/$defs/PortId"
+        },
+        "payload": {
+          "$ref": "#/$defs/PortPayload"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "direction",
+        "payload"
+      ]
+    },
+    "PortId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "PortPayload": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "data": {
+              "$ref": "#/$defs/MaterialPort"
+            },
+            "kind": {
+              "type": "string",
+              "const": "material"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "data"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "data": {
+              "$ref": "#/$defs/SignalPort"
+            },
+            "kind": {
+              "type": "string",
+              "const": "signal"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "data"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "data": {
+              "$ref": "#/$defs/ArtifactPort"
+            },
+            "kind": {
+              "type": "string",
+              "const": "artifact"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "data"
+          ]
+        }
+      ]
+    },
+    "PortRef": {
+      "type": "object",
+      "properties": {
+        "instance_id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "module_ref": {
+          "$ref": "#/$defs/ModuleRef"
+        },
+        "port_id": {
+          "$ref": "#/$defs/PortId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "module_ref",
+        "instance_id",
+        "port_id"
+      ]
+    },
+    "Pose": {
+      "type": "object",
+      "properties": {
+        "coordinate_frame": {
+          "$ref": "#/$defs/CoordinateFrame"
+        },
+        "rotation": {
+          "$ref": "#/$defs/Quaternion"
+        },
+        "scale": {
+          "$ref": "#/$defs/Vec3"
+        },
+        "translation": {
+          "$ref": "#/$defs/Vec3"
+        },
+        "unit": {
+          "$ref": "#/$defs/LengthUnit"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "translation",
+        "rotation",
+        "scale",
+        "unit",
+        "coordinate_frame"
+      ]
+    },
+    "PoseKey": {
+      "type": "object",
+      "properties": {
+        "at_progress": {
+          "$ref": "#/$defs/FiniteNumber"
+        },
+        "pose": {
+          "$ref": "#/$defs/Pose"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "at_progress",
+        "pose"
+      ]
+    },
+    "Presentation": {
+      "type": "object",
+      "properties": {
+        "actions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/MotionTrack"
+          }
+        },
+        "anchor_roles": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[^\\u0000]+$": {
+              "$ref": "#/$defs/AnchorRef"
+            }
+          }
+        },
+        "coordinate_frame": {
+          "$ref": "#/$defs/CoordinateFrame"
+        },
+        "kind": {
+          "$ref": "#/$defs/PresentationKind"
+        },
+        "lod": {
+          "$ref": "#/$defs/LodPresentation"
+        },
+        "nodes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SceneNode"
+          }
+        },
+        "port_anchors": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[^\\u0000]+$": {
+              "$ref": "#/$defs/AnchorRef"
+            }
+          }
+        },
+        "poses": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/NamedPose"
+          }
+        },
+        "production_effect": {
+          "$ref": "#/$defs/ProductionEffect"
+        },
+        "scale": {
+          "$ref": "#/$defs/Vec3"
+        },
+        "source": {
+          "$ref": "#/$defs/MediaLocator"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/DeviceTag"
+          }
+        },
+        "timeline": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TimelineClip"
+          }
+        },
+        "unit": {
+          "$ref": "#/$defs/LengthUnit"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "source",
+        "unit",
+        "coordinate_frame",
+        "scale",
+        "nodes",
+        "poses",
+        "actions",
+        "timeline",
+        "tags",
+        "anchor_roles",
+        "port_anchors",
+        "lod",
+        "production_effect"
+      ]
+    },
+    "PresentationKind": {
+      "type": "string",
+      "enum": [
+        "image",
+        "image_sequence",
+        "gif",
+        "model",
+        "native_scene"
+      ]
+    },
+    "ProductionEffect": {
+      "type": "string",
+      "enum": [
+        "none"
+      ]
+    },
+    "ProfessionalDefinition": {
+      "type": "object",
+      "properties": {
+        "coordinate_frame": {
+          "$ref": "#/$defs/CoordinateFrame"
+        },
+        "input_fields": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/DataFieldDeclaration"
+          }
+        },
+        "intended_modes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ProfessionalMode"
+          }
+        },
+        "output_artifact_type": {
+          "type": "string"
+        },
+        "output_fields": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/DataFieldDeclaration"
+          }
+        },
+        "scope": {
+          "type": "string"
+        },
+        "unit": {
+          "$ref": "#/$defs/UnitId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "input_fields",
+        "output_artifact_type",
+        "output_fields",
+        "intended_modes",
+        "unit",
+        "coordinate_frame",
+        "scope"
+      ]
+    },
+    "ProfessionalMode": {
+      "type": "string",
+      "enum": [
+        "declared_process",
+        "calculated_nominal",
+        "software_in_loop"
+      ]
+    },
+    "QualityRule": {
+      "type": "object",
+      "properties": {
+        "fail_port": {
+          "$ref": "#/$defs/PortId"
+        },
+        "isolation_location_role": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RoleId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "max_completed_reworks": {
+          "$ref": "#/$defs/SafeUint"
+        },
+        "pass_port": {
+          "$ref": "#/$defs/PortId"
+        },
+        "pending_location_role": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RoleId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "pending_policy": {
+          "$ref": "#/$defs/PendingPolicy"
+        },
+        "release_required": {
+          "type": "boolean"
+        },
+        "result_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ObjectId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source_kind": {
+          "$ref": "#/$defs/QualitySourceKind"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "source_kind",
+        "max_completed_reworks",
+        "pass_port",
+        "fail_port",
+        "pending_policy",
+        "release_required"
+      ]
+    },
+    "QualitySourceKind": {
+      "type": "string",
+      "enum": [
+        "preset",
+        "tool_result",
+        "manual"
+      ]
+    },
+    "QualityState": {
+      "type": "string",
+      "enum": [
+        "unchecked",
+        "pending",
+        "released",
+        "rejected"
+      ]
+    },
+    "Quantity": {
+      "type": "object",
+      "properties": {
+        "unit": {
+          "$ref": "#/$defs/UnitId"
+        },
+        "value": {
+          "$ref": "#/$defs/DecimalAmount"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "unit"
+      ]
+    },
+    "Quaternion": {
+      "type": "object",
+      "properties": {
+        "w": {
+          "$ref": "#/$defs/FiniteNumber"
+        },
+        "x": {
+          "$ref": "#/$defs/FiniteNumber"
+        },
+        "y": {
+          "$ref": "#/$defs/FiniteNumber"
+        },
+        "z": {
+          "$ref": "#/$defs/FiniteNumber"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y",
+        "z",
+        "w"
+      ]
+    },
+    "ReadinessEffect": {
+      "type": "object",
+      "properties": {
+        "marker": {
+          "type": "string"
+        },
+        "produces_material": {
+          "type": "boolean"
+        },
+        "target_role": {
+          "$ref": "#/$defs/RoleId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "target_role",
+        "marker",
+        "produces_material"
+      ]
+    },
+    "ReadinessRef": {
+      "type": "object",
+      "properties": {
+        "marker": {
+          "type": "string"
+        },
+        "required_revision": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SafeUint"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "target_role": {
+          "$ref": "#/$defs/RoleId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "target_role",
+        "marker"
+      ]
+    },
+    "RegionPolicy": {
+      "type": "string",
+      "enum": [
+        "device_icons",
+        "line_whole",
+        "region_whole"
+      ]
+    },
+    "RelativeFilePath": {
+      "type": "string",
+      "pattern": "^(?!\\.{1,2}(?:/|$))[^/\\\\:\\u0000]+(?:/(?!\\.{1,2}(?:/|$))[^/\\\\:\\u0000]+)*$"
+    },
+    "ResourceDefinition": {
+      "type": "object",
+      "properties": {
+        "capacity": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Quantity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "default_calendar_ms": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/IntervalMs"
+          }
+        },
+        "kind": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ResourceKind"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "presentation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Presentation"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "qualifications": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "role": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RoleId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "qualifications",
+        "default_calendar_ms"
+      ]
+    },
+    "ResourceKind": {
+      "type": "string",
+      "enum": [
+        "worker",
+        "fixture",
+        "vehicle",
+        "reusable_carrier",
+        "service_declaration"
+      ]
+    },
+    "ResourceRequirement": {
+      "type": "object",
+      "properties": {
+        "qualifications": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "quantity": {
+          "$ref": "#/$defs/Quantity"
+        },
+        "role": {
+          "$ref": "#/$defs/RoleId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "role",
+        "quantity",
+        "qualifications"
+      ]
+    },
+    "RoleId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "RuleKind": {
+      "type": "string",
+      "enum": [
+        "transform",
+        "assemble",
+        "inspect_and_route",
+        "rework",
+        "pack"
+      ]
+    },
+    "SafeUint": {
+      "type": "integer",
+      "format": "uint64",
+      "maximum": 9007199254740991,
+      "minimum": 0
+    },
+    "SceneGeometry": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "data": {
+              "$ref": "#/$defs/Vec3"
+            },
+            "kind": {
+              "type": "string",
+              "const": "box"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "data"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "data": {
+              "$ref": "#/$defs/CylinderGeometry"
+            },
+            "kind": {
+              "type": "string",
+              "const": "cylinder"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "data"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "data": {
+              "$ref": "#/$defs/Vec2"
+            },
+            "kind": {
+              "type": "string",
+              "const": "plane"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "data"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "data": {
+              "$ref": "#/$defs/ImportedNodeGeometry"
+            },
+            "kind": {
+              "type": "string",
+              "const": "imported_node"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "data"
+          ]
+        }
+      ]
+    },
+    "SceneMaterial": {
+      "type": "object",
+      "properties": {
+        "color_rgba": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FiniteNumber"
+          },
+          "maxItems": 4,
+          "minItems": 4
+        },
+        "metallic": {
+          "$ref": "#/$defs/FiniteNumber"
+        },
+        "roughness": {
+          "$ref": "#/$defs/FiniteNumber"
+        },
+        "texture": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/AssetRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "color_rgba",
+        "metallic",
+        "roughness"
+      ]
+    },
+    "SceneNode": {
+      "type": "object",
+      "properties": {
+        "geometry": {
+          "$ref": "#/$defs/SceneGeometry"
+        },
+        "id": {
+          "$ref": "#/$defs/SafeUint"
+        },
+        "material": {
+          "$ref": "#/$defs/SceneMaterial"
+        },
+        "name": {
+          "type": "string"
+        },
+        "parent_index": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SafeUint"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "transform": {
+          "$ref": "#/$defs/Pose"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "transform",
+        "geometry",
+        "material"
+      ]
+    },
+    "SchemaVersion": {
+      "type": "string",
+      "enum": [
+        "1.0"
+      ]
+    },
+    "SignalPort": {
+      "type": "object",
+      "properties": {
+        "effect_target": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RoleId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "enum_values": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "value_type": {
+          "$ref": "#/$defs/ValueKind"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "value_type",
+        "enum_values"
+      ]
+    },
+    "SourceBasis": {
+      "type": "string",
+      "enum": [
+        "user_provided",
+        "module_declared",
+        "template_declared_example",
+        "unknown"
+      ]
+    },
+    "SubjectRevisionId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "SubjectRevisionRef": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "revision": {
+          "$ref": "#/$defs/SubjectRevisionId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "revision"
+      ]
+    },
+    "TagPayload": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "data": {
+              "$ref": "#/$defs/DataTagBinding"
+            },
+            "kind": {
+              "type": "string",
+              "const": "data"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "data"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "data": {
+              "$ref": "#/$defs/ObjectId"
+            },
+            "kind": {
+              "type": "string",
+              "const": "parameter"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "data"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "data": {
+              "$ref": "#/$defs/DeviceAction"
+            },
+            "kind": {
+              "type": "string",
+              "const": "action"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "data"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "data": {
+              "type": "string"
+            },
+            "kind": {
+              "type": "string",
+              "const": "annotation"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "data"
+          ]
+        }
+      ]
+    },
+    "TaskDefinition": {
+      "type": "object",
+      "properties": {
+        "completion_effect": {
+          "$ref": "#/$defs/ReadinessEffect"
+        },
+        "duration": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DurationValue"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "equipment_access": {
+          "$ref": "#/$defs/EquipmentAccess"
+        },
+        "kind": {
+          "$ref": "#/$defs/TaskKind"
+        },
+        "prerequisites": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ReadinessRef"
+          }
+        },
+        "resource_roles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ResourceRequirement"
+          }
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TaskStep"
+          }
+        },
+        "target_role": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RoleId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "prerequisites",
+        "steps",
+        "resource_roles",
+        "equipment_access",
+        "completion_effect"
+      ]
+    },
+    "TaskKind": {
+      "type": "string",
+      "enum": [
+        "manual_preparation",
+        "supported_automatic",
+        "deferred_maintenance",
+        "deferred_construction"
+      ]
+    },
+    "TaskStep": {
+      "type": "object",
+      "properties": {
+        "completion_markers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "duration": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DurationValue"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "id": {
+          "$ref": "#/$defs/PhaseId"
+        },
+        "resources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ResourceRequirement"
+          }
+        },
+        "target_role": {
+          "$ref": "#/$defs/RoleId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "target_role",
+        "resources",
+        "completion_markers"
+      ]
+    },
+    "TemplateDefinition": {
+      "type": "object",
+      "properties": {
+        "generation_profile": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RelativeFilePath"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "project": {
+          "$ref": "#/$defs/RelativeFilePath"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "project"
+      ]
+    },
+    "TimelineClip": {
+      "type": "object",
+      "properties": {
+        "end_progress": {
+          "$ref": "#/$defs/FiniteNumber"
+        },
+        "id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "phase_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PhaseId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source": {
+          "$ref": "#/$defs/ClipSource"
+        },
+        "start_progress": {
+          "$ref": "#/$defs/FiniteNumber"
+        },
+        "transition": {
+          "$ref": "#/$defs/ImageTransition"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "start_progress",
+        "end_progress",
+        "source",
+        "transition"
+      ]
+    },
+    "TrackingKind": {
+      "type": "string",
+      "enum": [
+        "individual",
+        "batch"
+      ]
+    },
+    "TransportBuiltin": {
+      "type": "string",
+      "enum": [
+        "transport"
+      ]
+    },
+    "TransportDefinition": {
+      "type": "object",
+      "properties": {
+        "acceptance_conditions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/DestinationCondition"
+          }
+        },
+        "batch_capacity": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Quantity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "builtin": {
+          "$ref": "#/$defs/TransportBuiltin"
+        },
+        "identity_policy": {
+          "$ref": "#/$defs/TransportIdentityPolicy"
+        },
+        "loading_resources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ResourceRequirement"
+          }
+        },
+        "ports": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PortDefinition"
+          }
+        },
+        "presentation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Presentation"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "resources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ResourceRequirement"
+          }
+        },
+        "times": {
+          "$ref": "#/$defs/TransportTimes"
+        },
+        "unloading_resources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ResourceRequirement"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "ports",
+        "builtin",
+        "resources",
+        "times",
+        "acceptance_conditions",
+        "identity_policy"
+      ]
+    },
+    "TransportIdentityPolicy": {
+      "type": "string",
+      "enum": [
+        "preserve_cargo_ids"
+      ]
+    },
+    "TransportTimes": {
+      "type": "object",
+      "properties": {
+        "loading": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DurationValue"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "outbound": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DurationValue"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "returning": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DurationValue"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "unloading": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DurationValue"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "TypedValue": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "number"
+            },
+            "value": {
+              "$ref": "#/$defs/FiniteNumber"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "integer"
+            },
+            "value": {
+              "$ref": "#/$defs/SafeUint"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "boolean"
+            },
+            "value": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "string"
+            },
+            "value": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "enum"
+            },
+            "value": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "vector3"
+            },
+            "value": {
+              "$ref": "#/$defs/Vec3"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "duration"
+            },
+            "value": {
+              "$ref": "#/$defs/DurationValue"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "quantity"
+            },
+            "value": {
+              "$ref": "#/$defs/Quantity"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "item_type"
+            },
+            "value": {
+              "$ref": "#/$defs/ObjectId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        }
+      ]
+    },
+    "UnitId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "ValueKind": {
+      "type": "string",
+      "enum": [
+        "number",
+        "integer",
+        "boolean",
+        "string",
+        "enum",
+        "vector3",
+        "duration",
+        "quantity",
+        "item_type"
+      ]
+    },
+    "Vec2": {
+      "type": "object",
+      "properties": {
+        "x": {
+          "$ref": "#/$defs/FiniteNumber"
+        },
+        "y": {
+          "$ref": "#/$defs/FiniteNumber"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y"
+      ]
+    },
+    "Vec3": {
+      "type": "object",
+      "properties": {
+        "x": {
+          "$ref": "#/$defs/FiniteNumber"
+        },
+        "y": {
+          "$ref": "#/$defs/FiniteNumber"
+        },
+        "z": {
+          "$ref": "#/$defs/FiniteNumber"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y",
+        "z"
+      ]
+    },
+    "VersionId": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)(?:\\.(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*)?(?:\\+[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?$"
+    }
+  }
+}

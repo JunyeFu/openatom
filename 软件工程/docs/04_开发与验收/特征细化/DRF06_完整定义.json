@@ -1,0 +1,495 @@
+{
+  "document_kind": "DRF06_complete_business_definition_design_only",
+  "date": "2026-10-14",
+  "refinement_revision": "DRF06-2a",
+  "status": "closed_local_business_design_and_current_canonical_consumers_static_finite_verified_runtime_pending",
+  "authority": "本轮授权窗口6写共同调度算法/business-objects及自有消费者；共同Rust/API/派生合同窗口1唯一写，S04全线窗口2",
+  "dispatch_ref": "docs/04_开发与验收/重要特征细化统筹与派发.json#DRF06",
+  "identity": {
+    "P_refs": [
+      "P0-02",
+      "P1-01",
+      "P1-02",
+      "P1-03",
+      "P1-04",
+      "P1-05",
+      "P2-02"
+    ],
+    "S_refs": [
+      "S03-02",
+      "S06-01",
+      "S06-02",
+      "S06-05"
+    ],
+    "original_counts": {
+      "SF": 17,
+      "P": 21,
+      "S": 60,
+      "Q": 64
+    },
+    "changed_original_task_id": false,
+    "extra_rules_are_dispatch_projection_only": true
+  },
+  "source_refs": [
+    "docs/02_交互设计/时间轴主轴与子轴完整定义.json",
+    "docs/02_交互设计/时间轴主轴与轨道组_监督细化.json",
+    "docs/03_架构与契约/调度与状态转换算法.json",
+    "docs/04_开发与验收/编码任务包与AI实现审查.md",
+    "docs/00_项目基线/首版任务选择.json",
+    "packages/domain/types.design.rs",
+    "packages/commands/api.design.rs",
+    "packages/domain/business-objects.design.json",
+    "docs/04_开发与验收/特征细化/DRF06_公共字段合入delta.json"
+  ],
+  "business_sources": [
+    "docs/01_业务需求/订单工艺与物料分配.md",
+    "docs/01_业务需求/并行汇合与检验返工.md",
+    "docs/01_业务需求/换单班次与质量处置.md",
+    "docs/01_业务需求/物流与布局业务.md"
+  ],
+  "field_mappings": [
+    {
+      "public_path": "OrderLine.product_ref/quantity/release_at_ms/due_at_ms/destination/acceptance_stage/allow_partial/priority",
+      "type": "SubjectRevisionRef/Quantity/SimTimeMs/Option<SimTimeMs>/ObjectId/AcceptanceStage/bool/i32",
+      "unit": "piece整数；时间ms；priority降序",
+      "producer": "订单表单/Agent经Commands",
+      "consumer": "simulation冻结输入→OrderOutcome/AcceptanceEvent",
+      "mapping": "business-inputs.orders.product_revision/release_ms/due_ms是设计表别名；不直接传DTO"
+    },
+    {
+      "public_path": "ProductRevision.bom_ref/routing_ref + BomRow.consume_at_operation",
+      "type": "版本引用/工序ID",
+      "unit": "BOM Quantity.unit逐项明确",
+      "producer": "产品/BOM/路线表单",
+      "consumer": "simulation按当前工序齐套",
+      "mapping": "CNC不需PCB；装配才取壳体PCB紧固件；包装才取合格装配体及空盒"
+    },
+    {
+      "public_path": "RouteStep.device_id/operation_ref/predecessors/resource_bindings",
+      "type": "ObjectId/ModuleRef/Vec<ObjectId>/role映射",
+      "unit": "模块版本与工程实例ID分开",
+      "producer": "工程路线与已采用定义",
+      "consumer": "simulation任务编译/派工",
+      "mapping": "按C01的payload.category分Operations生产/Tasks Preparation；target_role通过设备RoleBindings.targets明示，同一模块不合并执行设备"
+    },
+    {
+      "public_path": "InitialConditions.items/initial_setup_families/declared_quality_decisions",
+      "type": "InitialItem[]/map/QualityDecision[]",
+      "unit": "显式初始量和家族；ms",
+      "producer": "Scenario表单/模板明确seed",
+      "consumer": "simulation初始化",
+      "mapping": "来源明确，目标不是库存；预留输入缺口见H04"
+    },
+    {
+      "public_path": "RuntimeItem.holder/lifecycle/quality/allocation_refs/composition_refs/contents/completed_reworks",
+      "type": "唯一HolderRef/状态枚举/ID[]/SafeUint",
+      "unit": "批次piece整数；箱与内容分别计",
+      "producer": "simulation唯一运行状态",
+      "consumer": "库存/追踪/表现/报告",
+      "mapping": "组成件转化，内容holder指容器；拆分来源见H05；scrap不删除"
+    },
+    {
+      "public_path": "MaterialAllocation.item_refs/quantity/mode/demand_ref",
+      "type": "ID[]/Quantity/soft_plan|hard_reserved|committed/ID",
+      "unit": "同单位且不重叠",
+      "producer": "编辑明确预留+simulation实际投入",
+      "consumer": "齐套/库存/订单接受",
+      "mapping": "软计划不扣库；失败取得保持此前预留"
+    },
+    {
+      "public_path": "OperationDefinition.resource_roles/phases/hold_on_output_wait + PhaseDefinition.phase_resources/interruption_policy/duration",
+      "type": "ResourceRequirement[]/PhaseDefinition[]/RoleId[]/DurationValue",
+      "unit": "resource_roles沿ALG-03全job；phase按当前阶段；ms",
+      "producer": "已采用行为/显式参数",
+      "consumer": "simulation日历/取得/保持",
+      "mapping": "声明无phase则映射单phase保持旧全作业资源；不新增内部库存"
+    },
+    {
+      "public_path": "JobState.phase_ref/effective_progress_ms/started_at_ms/finished_at_ms/state/pending_outputs",
+      "type": "阶段ID/DurationMs/Option<SimTimeMs>/JobStatus/ID[]",
+      "unit": "末态字段不能替历史；工序完成≠移交/订单",
+      "producer": "simulation",
+      "consumer": "设备详情/表现",
+      "mapping": "实际历史取TC02，执行设备取TC01"
+    },
+    {
+      "public_path": "ResourceClaim.resource_id/job_id/units/intervals/kind",
+      "type": "ObjectId/ObjectId/SafeUint/IntervalMs[]/ResourceClaimKind",
+      "unit": "容量单位×ms积分；同claim区间并集",
+      "producer": "simulation实际取得/释放",
+      "consumer": "timeline O/资源行/报告",
+      "mapping": "现行phase_ref、interval_end_causes:Vec<ClaimIntervalEndCause>与intervals等长同序；不改段形状，同资源不双计"
+    },
+    {
+      "public_path": "WaitInterval.object_ref/interval/reasons + WaitReason.kind/blocking_object/required/next_known_boundary_ms",
+      "type": "ObjectRef/IntervalMs/WaitReason[]/typed理由与引用",
+      "unit": "等待并集ms；未知边界null",
+      "producer": "simulation相关边界重新判阻断",
+      "consumer": "timeline W/说明/Agent",
+      "mapping": "执行/历史phase/end_cause均已合入；同刻真实结束先胜，完整观察窗末未解observation_end，前缀computed_boundary"
+    },
+    {
+      "public_path": "SupplyRelation.source/destination/target_quantity/window/transport_ref/resources/departure_windows/allow_partial_load",
+      "type": "ID/Quantity/WindowMs/ModuleRef/role映射/IntervalMs[]/bool",
+      "unit": "目标/容量按明确货物单位；ms",
+      "producer": "供货与固定运输表单",
+      "consumer": "simulation transport",
+      "mapping": "发运点映射1ms机会窗，不改去返程；目标不造库存"
+    },
+    {
+      "public_path": "TransportState.cargo/carrier_id/phase/departed_ms/arrived_ms/received_ms/returned_ms",
+      "type": "ID[]/ObjectId/TransportPhase/Option<SimTimeMs>",
+      "unit": "单一ms时钟；None代表未发生",
+      "producer": "simulation",
+      "consumer": "物流行/订单/报告",
+      "mapping": "装载预留仍源holder，depart上车，receive入目的，return释放载具"
+    },
+    {
+      "public_path": "QualityDecision.item_ref/inspection_ref/source_kind/observed_result/disposition/effective_at_ms/decision_source",
+      "type": "版本/来源/Option<TypedValue>/处置/ms/来源",
+      "unit": "未测结果不是PASS；预设来源显式",
+      "producer": "冻结预设/已有真实提供者与认可",
+      "consumer": "simulation质量规则",
+      "mapping": "UNKNOWN不生成有效决定；早到/失配不应用；返工完成不放行"
+    },
+    {
+      "public_path": "RunInputRef + RunResult.scope/window/computation_status/whole_window_computed/goal_met",
+      "type": "冻结工程/方案版本及文件；范围和状态",
+      "unit": "同初始起点/观察窗；相对ms",
+      "producer": "Host短事务冻结→Worker",
+      "consumer": "UI/Agent/比较/报告",
+      "mapping": "RunResult.computed_until_ms已合入；该快照身份/Scope/边界一致，末态final_items不充当历史"
+    },
+    {
+      "public_path": "AcceptanceEvent + OrderOutcome",
+      "type": "实际实物/订单分配/目的/阶段/数量/时刻；完成或null",
+      "unit": "piece/box显式换算；completion/tardiness ms|null",
+      "producer": "simulation目的接受",
+      "consumer": "订单表/时间轴点/报告",
+      "mapping": "allow_partial=false齐套接受；不腾库位；C<=due准时"
+    },
+    {
+      "public_path": "InitialConditions.material_allocations / RuntimeItem.split_from_ref",
+      "type": "Vec<MaterialAllocation> / Option<ObjectId>",
+      "unit": "Quantity同单位、批次数量守恒",
+      "producer": "编辑明确输入→Host冻结→Worker原子规范化/取得",
+      "consumer": "齐套/库存/追踪/报告",
+      "mapping": "现行公共字段已合入；ALG-03/business-objects消费仅软/硬初始分配、完整源transformed及子批守恒",
+      "status": "canonical_merged"
+    }
+  ],
+  "business_rules": [
+    {
+      "id": "DRF06-R01",
+      "P_refs": [
+        "P0-02",
+        "P1-01",
+        "P1-04"
+      ],
+      "algorithm_refs": [
+        "ALG-02",
+        "ALG-03"
+      ],
+      "decision": "每当前工序全物料+设备容量+job及首阶段资源原子取得；自有合格预留先取，别人预留排除；失败不改状态。任务候选优先序与选料FIFO分开。",
+      "expected_refs": [
+        "B01",
+        "B05",
+        "B07",
+        "B09"
+      ]
+    },
+    {
+      "id": "DRF06-R02",
+      "P_refs": [
+        "P0-02",
+        "P1-01"
+      ],
+      "algorithm_refs": [
+        "ALG-06",
+        "ALG-10"
+      ],
+      "decision": "批次拆分总量与来源保持；组成件保留转化，装箱内容只有容器holder。订单接受按声明实物单位一次，不把箱数加内容。",
+      "expected_refs": [
+        "B07",
+        "B08"
+      ]
+    },
+    {
+      "id": "DRF06-R03",
+      "P_refs": [
+        "P1-02",
+        "P1-05"
+      ],
+      "algorithm_refs": [
+        "ALG-01",
+        "ALG-06",
+        "ALG-08"
+      ],
+      "decision": "汇合完整BOM；检验只走一个出口；UNKNOWN/null/耗尽待判；返工同一物品完成后加次数，再独立复检，达到上限隔离。",
+      "expected_refs": [
+        "DRF06-T03",
+        "DRF06-T05",
+        "B04",
+        "B15"
+      ]
+    },
+    {
+      "id": "DRF06-R04",
+      "P_refs": [
+        "P1-03"
+      ],
+      "algorithm_refs": [
+        "ALG-04",
+        "ALG-07"
+      ],
+      "decision": "日历[a,b)，non_preemptive仅连续可工作段开工；pause_resume累计有效段，job机器/物品保持，phase人员暂停释放。工作/占用/等待分开。",
+      "expected_refs": [
+        "DRF06-T01",
+        "DRF06-T02",
+        "B10",
+        "B11",
+        "B12"
+      ]
+    },
+    {
+      "id": "DRF06-R05",
+      "P_refs": [
+        "P1-04"
+      ],
+      "algorithm_refs": [
+        "ALG-01",
+        "ALG-05"
+      ],
+      "decision": "内部换单占设备与声明人；可提前准备，不每件重复。首件键含设备/工艺版本/目标家族/准备epoch，旧认可无效；无首件声明不强加。",
+      "expected_refs": [
+        "DRF06-T04",
+        "scenarios/调度算法设计/algorithm-cases.design.json#SCHED-15/SCHED-17"
+      ]
+    },
+    {
+      "id": "DRF06-R06",
+      "P_refs": [
+        "P1-03",
+        "P1-05"
+      ],
+      "algorithm_refs": [
+        "ALG-07",
+        "ALG-08"
+      ],
+      "decision": "输出或待判接收满保留原holder及job/声明hold；已结束phase辅助人按声明释放。scrap保持ID/holder/组成和空间占用，不自动回收/补产。",
+      "expected_refs": [
+        "B04",
+        "B06",
+        "DRF06-T03",
+        "DRF06-T05"
+      ]
+    },
+    {
+      "id": "DRF06-R07",
+      "P_refs": [
+        "P2-02"
+      ],
+      "algorithm_refs": [
+        "ALG-04",
+        "ALG-07",
+        "ALG-09"
+      ],
+      "decision": "固定时间装载/出发/到达/卸载成功接收/返回分开；车全程持有到返回，接收前不入目的库存；不足批量独立allow_partial_load。跨日不重置。",
+      "expected_refs": [
+        "DRF06-T04",
+        "DRF06-T06",
+        "DRF06-T08",
+        "B13",
+        "B14"
+      ]
+    },
+    {
+      "id": "DRF06-R08",
+      "P_refs": [
+        "P0-02",
+        "P1-04",
+        "P2-02"
+      ],
+      "algorithm_refs": [
+        "ALG-10"
+      ],
+      "decision": "指定产品版本/质量/目的/阶段和实际分配满足才接受；部分=false须剩余需求齐套；接受不释放库位；窗口末同刻闭包接受可计入。",
+      "expected_refs": [
+        "B02",
+        "B08",
+        "B13",
+        "B16",
+        "B17"
+      ]
+    },
+    {
+      "id": "DRF06-R09",
+      "P_refs": [
+        "P1-03",
+        "P1-05",
+        "P2-02"
+      ],
+      "algorithm_refs": [
+        "ALG-01",
+        "ALG-11",
+        "ALG-12"
+      ],
+      "decision": "当前同刻处理到没有派生事件/移交/可开工再跳时；零时长有限点事件；原因变化分段取并集，未释放/无需求非等待；部分快照只画已有闭包证据。",
+      "expected_refs": [
+        "B09",
+        "B11",
+        "B12",
+        "B17",
+        "DRF06-T07"
+      ]
+    },
+    {
+      "id": "DRF06-R10",
+      "P_refs": [
+        "P0-02",
+        "P1-03",
+        "P1-04",
+        "P1-05"
+      ],
+      "algorithm_refs": [
+        "ALG-12",
+        "ALG-13"
+      ],
+      "decision": "修改新修订并同初始起点重跑；cancel_task仅控制长计算不撤单/回滚库存。计算完成与目标完成分开，未知完成/费用不填0。",
+      "expected_refs": [
+        "B03",
+        "B12",
+        "B16"
+      ]
+    }
+  ],
+  "applicable_views": {
+    "task_interaction": {
+      "entry": "选定工程→订单/BOM/路线/供货/日历/质量预设→检查缺项→冻结选定Scope运行→看等待/接受→改新方案重跑",
+      "user_decisions": "优先序、产品版本、硬预留、阶段策略、质量预设、接收/订单口径；本轮不假设实时处置已实现",
+      "returns": "表单保草稿/冲突定位，运行返回同Run父轴；只读描述有定位和修改输入入口"
+    },
+    "structure_data": {
+      "source": "types.design.rs及field_mappings；共同Schema/TS由W00派生",
+      "owners": "Host冻结RunInputRef；simulation单Worker拥有物品/任务/资源/运输/接受；UI只读投影",
+      "version": "定义ModuleRef.version、产品SubjectRevisionRef.revision、方案ScenarioInput.revision、工程revision与RunId分列；旧Run保持冻结引用"
+    },
+    "state_behavior": {
+      "source": "ALG-01—14，不复制第二引擎",
+      "invariants": "唯一holder；原子取得；有限返工；一次结果槽/移交/接受；容量/日历真实；质量独立；有限同刻闭包",
+      "outputs": "实际Job/phase段/claim/wait/transport/acceptance/OrderOutcome；缺失字段交公共拥有者"
+    },
+    "interface_collaboration": {
+      "source": "packages/commands/api.design.rs现行18操作",
+      "call_flow_refs": [
+        "CALL01",
+        "CALL02",
+        "CALL03",
+        "CALL04"
+      ],
+      "shared_merge_ref": "docs/04_开发与验收/特征细化/DRF06_公共字段合入delta.json"
+    },
+    "UI_presentation": {
+      "owner": "复审窗口2统一S04；本窗口提供业务数据/预期",
+      "bindings": "订单缺项与接受；全厂B/W/O；设备phase/资源/等待；运输四时点；只读说明定位同Run",
+      "layout": "窗口菜单控制独立dock，底部工具，时间轴默认160px、描述独立dock；不恢复旧母版",
+      "empty_unknown": "无需求/未释放显示各自状态，未计算灰罩，缺历史未知，多原因并列，partial分页明示"
+    },
+    "deployment_verification": {
+      "technology": "沿现行Rust 1.97.0 std确定性调度设计与单Worker；依赖/锁文件W00管理；本轮无新增依赖",
+      "verification": "Python标准库有限算术/源引用和原冻结预期核验，写DRF06证据；不执行产品API或Figma/3d-proof",
+      "stage": "S06-05/原30设计项/真实接点与本人证据仍沿原准入"
+    }
+  },
+  "call_flows": [
+    {
+      "id": "CALL01",
+      "caller": "订单/路线/日历/物流/质量表单或已授权Agent",
+      "operation": "apply_commands",
+      "request": "Request envelope按现行api_version/request_id/project_id/scope；params.base_revision=current revision；commands=[PutObject(ScenarioInput or declared Route/BOM/Product)]；一次事务，不能任意patch运行状态",
+      "return": "EditCommit.new_revision/changed_objects/issues/history；旧Run不改",
+      "errors": [
+        "InvalidInput：字段单位/引用/输入范围问题，保持草稿",
+        "RevisionConflict：保留本地草稿并定位差异",
+        "PermissionDenied/UnsupportedCapability：不部分修改"
+      ]
+    },
+    {
+      "id": "CALL02",
+      "caller": "UI/Agent",
+      "operation": "run_scenario → get_task",
+      "request": "RunScenarioParams {scenario_id,input_revision,observation_window,intent=ProjectScenario}；Host冻结同工程/方案和Scope；定义隔离周期用既有DefinitionCycle",
+      "return": "TaskHandle；get_task返回TaskState/result中的RunSummary；输入缺项沿issues精确对象/用途，不伪造全厂运行",
+      "errors": [
+        "MissingReference/InvalidInput/UnsupportedCapability：补输入/受支持Scope再新提交",
+        "ComputationFailed：保留输入及不完整已知结果，不自动重试"
+      ]
+    },
+    {
+      "id": "CALL03",
+      "caller": "时间轴/描述/报告只读消费者",
+      "operation": "get_run Summary → FullResult/Events → ObjectsAt",
+      "request": "同run_id；Events.interval=null仅去时间过滤、Scope/稳定分页仍保留，观察窗末点按闭包closed membership；ObjectsAt.at_ms<=该快照computed_until_ms",
+      "return": "同Run冻结输入和Scope；TC01/TC02/等待/四时点/接受；未计算/缺历史显示未知；end点独立去重",
+      "errors": [
+        "Run/权限/引用错误返回原视图和明确错误；不补库存",
+        "分页不完整只承诺取得范围",
+        "迟到或异Run/异at回复丢弃对当前视图替换"
+      ]
+    },
+    {
+      "id": "CALL04",
+      "caller": "长任务控制按钮",
+      "operation": "cancel_task → get_task → get_run",
+      "request": "params.task_id及action=PauseCalculation|ResumeCalculation|StepNextTimestamp|Cancel；现行control权限与allowed_controls",
+      "return": "CancellationState.action_accepted/terminal_won及真实TaskState；单步一个完整虚拟时刻闭包，cancelled不是订单撤销",
+      "errors": [
+        "不允许action按现行Issue/Error返回",
+        "completed先胜保completed；停止不伪造完整成功",
+        "业务改质量/需求返回CALL01新方案重跑"
+      ]
+    }
+  ],
+  "evidence": {
+    "frozen_expectations": "expected-business.design.json六变体、并行A/Q/U、控制盒440/570秒及原SCHED预期只读保持",
+    "new_boundary_cases": "B07—B18；B01—B06保持",
+    "timeline_fixture_ref": "docs/04_开发与验收/特征细化/DRF06_时间轴独立预期.json",
+    "verification_ref": "docs/04_开发与验收/特征细化/DRF06_静态与有限计算核验.json",
+    "document_static_math": "35项本窗静态/有限计算通过；只读核对公共原13+新增7共20有限证明；实际Engine/Host为空",
+    "actual_product_runtime": null,
+    "actual_prototype": null,
+    "actual_human_walkthrough": null,
+    "public_merge_evidence": {
+      "base_contract_ref": "docs/03_架构与契约/全层类型与工程格式.json#/timeline_runtime_contract",
+      "existing_finite_proof_ref": "tools/type-contract-proof/output/timeline-contract-proof-result.json",
+      "selected_remaining_delta_ref": "docs/04_开发与验收/特征细化/DRF06_公共字段合入delta.json",
+      "product_execution": null,
+      "remaining_delta": "H01—H08当前字段与本窗算法/消费者已收口；无重复嵌套改型请求；真实产品/原型/本人证据仍待原阶段"
+    }
+  },
+  "scope_constraints": {
+    "product_code_started": false,
+    "dependency_or_lock_changed": false,
+    "figma_resumed": false,
+    "protected_3d_proof_modified": false,
+    "commit_push_publish": false,
+    "public_task_state_modified": false,
+    "common_algorithm_and_business_objects_changed_with_current_authorization": true
+  },
+  "shared_gap_ref": "docs/04_开发与验收/特征细化/DRF06_缺口与修复.json",
+  "actual_result": null,
+  "api_and_file_versions": {
+    "api_version": "0.1",
+    "project_file_version": "1.0",
+    "source": "docs/03_架构与契约/公开操作与宿主调用契约.json",
+    "design_fixture_revision": "DRF06-2a；保留原draft-1案例格式"
+  },
+  "current_ownership": {
+    "common_Rust_API_schema_TS": "复审窗口1",
+    "common_scheduler_and_business_objects": "复审窗口6",
+    "S04": "复审窗口2",
+    "original_P_planned_window_status": "不变"
+  },
+  "selected_DTO_delta_ref": "docs/04_开发与验收/特征细化/DRF06_公共字段合入delta.json",
+  "C01_alignment_ref": "docs/04_开发与验收/特征细化/DRF03_C01_逐类原子采用.json"
+}

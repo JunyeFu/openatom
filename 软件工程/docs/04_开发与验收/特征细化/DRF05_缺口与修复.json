@@ -1,0 +1,349 @@
+{
+  "document_kind": "DRF05_owned_repairs_and_cross_owner_handoffs",
+  "date": "2026-10-14 Asia/Shanghai",
+  "P_refs": [
+    "P2-03",
+    "P2-06",
+    "P5-01"
+  ],
+  "S_refs": [
+    "S03-05",
+    "S06-02",
+    "S06-03",
+    "S06-05",
+    "S11-01",
+    "S11-03"
+  ],
+  "owned_repairs": [
+    {
+      "id": "DRF05-R01",
+      "state": "resolved_in_owned_design",
+      "repair": "比较/端点/前缀/容量/成本精确定义"
+    },
+    {
+      "id": "DRF05-R02",
+      "state": "resolved_in_owned_design",
+      "repair": "25字段映射、Versioned/TaskHandle修正、15 CSV表及四格式提交/异常"
+    },
+    {
+      "id": "DRF05-R03",
+      "state": "resolved_in_owned_design",
+      "repair": "目录/ZIP原子边界、相对引用、跨机及14接手预期"
+    },
+    {
+      "id": "DRF05-R04",
+      "state": "resolved_in_owned_design",
+      "repair": "采用/候选/发布区分、固定版本与逐文件权利"
+    }
+  ],
+  "handoffs": [
+    {
+      "id": "DRF05-H01",
+      "finding": "Engine末刻事件闭包包含end，时间轴曾将查询/统计一律半开；部分Run缺稳定计算边界载荷",
+      "source_files": [
+        "docs/03_架构与契约/调度与状态转换算法.json",
+        "docs/02_交互设计/时间轴主轴与子轴完整定义.json",
+        "packages/domain/types.design.rs",
+        "packages/commands/api.design.rs"
+      ],
+      "source_pointers": [
+        "RunResult.computed_until_ms/phase_work_intervals",
+        "WaitInterval.end_cause",
+        "ResourceClaim.phase_ref/interval_end_causes",
+        "RunQuery::Events interval null"
+      ],
+      "independent_expected": "DRF05-E01在100000接受计入、100001不计；E02计算到99999不能补100000事件；原actual_result=null",
+      "consumers": [
+        "simulation",
+        "Host get_run",
+        "timeline/seek/description",
+        "reporting",
+        "compare_runs",
+        "Agent"
+      ],
+      "owner": "复审窗口1（本轮共同合同/生成器）",
+      "status": "merged_current_canonical_schema_TS",
+      "public_source_written_by_this_window": false,
+      "scheduler_exact_records": [
+        {
+          "json_pointer": "/rules/9/algorithm/3",
+          "id": "ALG-10",
+          "title": "目的接受及订单完成",
+          "rule": "观察窗[start,end]内事件包含end当刻闭包。C<=due准时，迟延=max(0,C-due)；没有due的指标null。目的已接受但载具未返程时订单可完成，仍继续至观察窗记录运输资源。"
+        },
+        {
+          "json_pointer": "/rules/11/algorithm/3",
+          "id": "ALG-12",
+          "title": "运行冻结、暂停取消与结束",
+          "rule": "到end处理完整同刻闭包，随后封闭占用/等待区间；无未来事件时把区间封至end并保留阻断。计算正常完成与目标达成分开；不满足目标、缺料待判等可成为正确的完整观察窗结果。"
+        }
+      ],
+      "current_evidence_ref": "docs/04_开发与验收/特征细化/DRF05_消费者复核.json",
+      "delta_ref": "packages/reporting/public-delta.design.json",
+      "exact_current_definition": "见delta records/enums/mutations及拥有者canonical_bindings；已合入端点见timeline_runtime_contract",
+      "historical_source_pointers": [
+        "scheduler_exact_records below",
+        "TL02/TL07",
+        "RunResult; RunSummary; RunQuery::Events"
+      ]
+    },
+    {
+      "id": "DRF05-H02",
+      "finding": "多Run报告的订单/资源/成本/事件缺逐Run归属；报告缺等待/接受/Claim/历史阶段载荷",
+      "source_files": [
+        "packages/domain/types.design.rs",
+        "packages/commands/api.design.rs",
+        "packages/reporting/evaluation-report.contract.design.json"
+      ],
+      "source_pointers": [
+        "EvaluationReport.run_evaluations/scenario_comparison",
+        "RunEvaluation.input_ref/jobs/transport/module_versions/input_assumptions/costs",
+        "ReportRunInputRef four identity fields"
+      ],
+      "independent_expected": "E10同order_id在A/B各有归属；导出工程R8不能把旧Run输入R3/R4改写",
+      "consumers": [
+        "Host export",
+        "reporting四格式",
+        "比较UI",
+        "Agent",
+        "工程持久化"
+      ],
+      "owner": "复审窗口1（本轮共同合同/生成器）",
+      "status": "merged_current_r2_grouping_consumer_aligned",
+      "public_source_written_by_this_window": false,
+      "current_evidence_ref": "docs/04_开发与验收/特征细化/DRF05_消费者复核.json",
+      "delta_ref": "packages/reporting/public-delta.design.json",
+      "exact_current_definition": "见delta records/enums/mutations及拥有者canonical_bindings；已合入端点见timeline_runtime_contract",
+      "historical_source_pointers": [
+        "EvaluationReport.order_metrics/resource_metrics/conditional_costs/item_history",
+        "RunResult; TC01/TC02",
+        "ExportEvaluation.context"
+      ]
+    },
+    {
+      "id": "DRF05-H03",
+      "finding": "ParameterOverride只含after；比较布尔不能说明受控初始库存变化；字符串变化列表不够确定",
+      "source_files": [
+        "packages/domain/types.design.rs",
+        "packages/commands/api.design.rs",
+        "scenarios/两厂房装配包装/variants.design.json"
+      ],
+      "source_pointers": [
+        "RunComparison.pairs/metrics",
+        "RunPairComparison.conditions/input_changes",
+        "InputChangeValue tagged variants; NumericDifference"
+      ],
+      "independent_expected": "E08准备30->90秒使接受160/200->220/260秒；E09补PCB为controlled_changes但strict_initial=false；E11不同接受阶段不可比",
+      "consumers": [
+        "compare_runs",
+        "P2-03比较",
+        "报告",
+        "SF-17变化",
+        "Agent"
+      ],
+      "owner": "复审窗口1（本轮共同合同/生成器）",
+      "status": "merged_current_r3_canonical_schema_TS_consumer_aligned",
+      "public_source_written_by_this_window": false,
+      "current_evidence_ref": "docs/04_开发与验收/特征细化/DRF05_消费者复核.json",
+      "delta_ref": "packages/reporting/public-delta.design.json",
+      "exact_current_definition": "见delta records/enums/mutations及拥有者canonical_bindings；已合入端点见timeline_runtime_contract",
+      "historical_source_pointers": [
+        "ScenarioComparison.differences/same_initial_conditions",
+        "ParameterOverride",
+        "RunComparison.input_changes/MetricComparison.comparable"
+      ]
+    },
+    {
+      "id": "DRF05-H04",
+      "finding": "容量指标缺单位/日历开放占用分子/离班持有，实际工作和等待需TC01/TC02",
+      "source_files": [
+        "packages/domain/types.design.rs",
+        "docs/01_业务需求/指标成本与决策口径.md",
+        "docs/02_交互设计/时间轴主轴与轨道组_监督细化.json"
+      ],
+      "source_pointers": [
+        "ResourceMetric capacity_unit/open/closed/available/effective_work_ms/waiting_ms",
+        "ResourceClaim interval_end_causes plus phase_ref",
+        "JobState.execution_ref/PhaseWorkInterval"
+      ],
+      "independent_expected": "E04：held80000/open60000/closed20000/available160000单位毫秒，busy60000ms，utilization=.375",
+      "consumers": [
+        "simulation",
+        "reporting",
+        "时间轴组/资源摘要",
+        "Agent比较"
+      ],
+      "owner": "复审窗口1（本轮共同合同/生成器）",
+      "status": "merged_current_canonical_schema_TS",
+      "public_source_written_by_this_window": false,
+      "current_evidence_ref": "docs/04_开发与验收/特征细化/DRF05_消费者复核.json",
+      "delta_ref": "packages/reporting/public-delta.design.json",
+      "exact_current_definition": "见delta records/enums/mutations及拥有者canonical_bindings；已合入端点见timeline_runtime_contract",
+      "historical_source_pointers": [
+        "ResourceMetric/ResourceClaim",
+        "TC01.execution_capacity_ref",
+        "TC02.phase_work_intervals"
+      ]
+    },
+    {
+      "id": "DRF05-H05",
+      "finding": "成本已有结果类型但缺冻结费率/币种/计量输入，单位成本缺完整性语义",
+      "source_files": [
+        "packages/domain/types.design.rs",
+        "packages/commands/api.design.rs",
+        "docs/01_业务需求/指标成本与决策口径.md"
+      ],
+      "source_pointers": [
+        "ScenarioInput.cost_inputs",
+        "ConditionalCost/CostEvaluation/CurrencyCostSummary",
+        "domain MetricValue::MoneyPerUnit"
+      ],
+      "independent_expected": "E07：135000ms*36CNY/h=1.35；600000ms=6；材料10；已知小计11.35；缺运输总额/单位成本null",
+      "consumers": [
+        "Host冻结",
+        "成本表单",
+        "reporting",
+        "compare_runs",
+        "Agent"
+      ],
+      "owner": "复审窗口1（本轮共同合同/生成器）",
+      "status": "merged_current_r3_canonical_schema_TS_consumer_aligned",
+      "public_source_written_by_this_window": false,
+      "current_evidence_ref": "docs/04_开发与验收/特征细化/DRF05_消费者复核.json",
+      "delta_ref": "packages/reporting/public-delta.design.json",
+      "exact_current_definition": "见delta records/enums/mutations及拥有者canonical_bindings；已合入端点见timeline_runtime_contract",
+      "historical_source_pointers": [
+        "ScenarioInput/ConditionalCost/CostBasis",
+        "MetricKey::UnitCost"
+      ]
+    },
+    {
+      "id": "DRF05-H06",
+      "finding": "ReplaceFileW失败可能移走旧根，不能无条件保证原路径不变；同目标保存应顺序提交",
+      "source_files": [
+        "docs/03_架构与契约/全层类型与工程格式.json",
+        "docs/03_架构与契约/全层类型与工程格式.md",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json",
+        "docs/03_架构与契约/共享状态与所有权.json"
+      ],
+      "source_pointers": [
+        "storage.replacement_recovery/same_target_queue",
+        "TaskState.failure -> ApiError IoFailure"
+      ],
+      "independent_expected": "HFC01保存R7/当前R8仍dirty；HFC02写中失败不提交；HFC14恢复也失败报告真实位置",
+      "consumers": [
+        "Host持久化",
+        "保存/打开UI",
+        "Agent保存",
+        "P5-01接手"
+      ],
+      "owner": "复审窗口1（本轮共同合同/生成器）",
+      "status": "merged_shared_storage_and_ownership_definition_actual_Windows_not_executed",
+      "public_source_written_by_this_window": false,
+      "current_evidence_ref": "docs/04_开发与验收/特征细化/DRF05_消费者复核.json",
+      "delta_ref": "packages/reporting/public-delta.design.json",
+      "exact_current_definition": "见delta records/enums/mutations及拥有者canonical_bindings；已合入端点见timeline_runtime_contract",
+      "historical_source_pointers": [
+        "storage.existing_commit_primitive/failed_save/concurrent_save",
+        "save_project/export_package"
+      ]
+    },
+    {
+      "id": "DRF05-H07",
+      "finding": "比较/导出视觉须绑定同源范围/未知/末刻点，不从可见时间轴页推断总量",
+      "source_files": [
+        "docs/02_交互设计/首版表单与反馈.json",
+        "docs/02_交互设计/时间轴主轴与子轴完整定义.json"
+      ],
+      "source_pointers": [
+        "comparison_export_display_contract"
+      ],
+      "independent_expected": "E01/E02/E06/E11与HFC10",
+      "consumers": [
+        "factory_ui比较/导出/时间轴"
+      ],
+      "owner": "复审窗口2（实际视觉）",
+      "status": "consumer_form_definition_integrated_actual_visual_owned_by_window2",
+      "public_source_written_by_this_window": false,
+      "current_evidence_ref": "docs/02_交互设计/首版表单与反馈.json#/comparison_export_display_contract",
+      "delta_ref": "packages/reporting/public-delta.design.json",
+      "exact_current_definition": "见delta records/enums/mutations及拥有者canonical_bindings；已合入端点见timeline_runtime_contract",
+      "historical_source_pointers": [
+        "比较/导出表单",
+        "TL02/TL07/TL09/TL10"
+      ]
+    },
+    {
+      "id": "DRF05-H08",
+      "finding": "旧模板预期生成器会覆盖新增接手定义；正式任务包引用须待W00冻结后刷新",
+      "source_files": [
+        "scenarios/模板与交接/推导模板接手预期.py",
+        "tools/同步确认选择到任务.py",
+        "docs/04_开发与验收/编码任务包/P2-03.md",
+        "docs/04_开发与验收/编码任务包/P2-06.md",
+        "docs/04_开发与验收/编码任务包/P5-01.md"
+      ],
+      "source_pointers": [
+        "generator preservation loop for refinement_ref/drf05_handoff_cases/refinement_generation_note",
+        "existing task package S06/S07 entry gates"
+      ],
+      "independent_expected": "原10例与14个HFC共存，运行结果不代填",
+      "consumers": [
+        "W00生成器",
+        "三任务实现者",
+        "统筹"
+      ],
+      "owner": "复审窗口1（本轮共同合同/生成器）",
+      "status": "generator_preservation_merged_frozen_package_projection_still_stage_gated",
+      "public_source_written_by_this_window": false,
+      "current_evidence_ref": "docs/04_开发与验收/特征细化/DRF05_消费者复核.json",
+      "delta_ref": "packages/reporting/public-delta.design.json",
+      "exact_current_definition": "见delta records/enums/mutations及拥有者canonical_bindings；已合入端点见timeline_runtime_contract",
+      "exact_preservation": {
+        "target": "scenarios/模板与交接/推导模板接手预期.py",
+        "owner": "复审窗口1",
+        "input_owner_file": "scenarios/模板与交接/expected-template-handoff.design.json",
+        "preserve_top_level_fields": [
+          "refinement_ref",
+          "drf05_handoff_cases",
+          "refinement_generation_note"
+        ],
+        "method": "生成器已有原10案例重算完成后，输出前从已有拥有者JSON读取这3字段并明确带入最终对象；第一次不存在字段时不假造情景或实际结果",
+        "contract": "原templates/cases及10例既有数值不改；所有新增actual_result保持null；本窗口不运行这个覆写生成器"
+      },
+      "remaining_stage_work": "S06冻结后任务包引用/S07实际入口仍按原阶段；不是本轮新任务或产品完成",
+      "historical_source_pointers": [
+        "模板生成器最终write_text",
+        "三任务包设计引用"
+      ]
+    }
+  ],
+  "actual_product_runtime": null,
+  "actual_prototype": null,
+  "actual_user_walkthrough": null,
+  "public_progress_written": false,
+  "actual_submission_or_publish": null,
+  "revision": "DRF05-r3-projection",
+  "current_batch_ownership": {
+    "common_types_API_generators": "复审窗口1",
+    "docs02_visual_prototype_S04_02_04_05": "复审窗口2",
+    "DRF05_owned_consumers": "复审窗口5"
+  },
+  "minimal_remaining_r3": {
+    "status": "merged_verified_current_Rust_Schema_TS",
+    "required_extra_fields_or_variants": [],
+    "consumer_recheck_ref": "docs/04_开发与验收/特征细化/DRF05_消费者复核.json"
+  },
+  "post_merge_consumer_check": "19个载体/union检查与精确枚举匹配，公共字段同步剩余0",
+  "isolated_projection_ref": "docs/04_开发与验收/特征细化/DRF05_四格式试做/projection-result.json",
+  "save_reference_ref": "docs/04_开发与验收/特征细化/DRF05_四格式试做/save-reference-result.json",
+  "new_design_decisions_pending": [],
+  "execution_remaining": [
+    "实际printpdf产品导出/API接点仍按原阶段",
+    "1176/1177等Windows替换后恢复、Host实际目录键并发未实测",
+    "16交接情景及另一机器修改重跑未执行",
+    "用户本人/目标使用者检查未取得"
+  ],
+  "html_browser_ref": "docs/04_开发与验收/特征细化/DRF05_四格式试做/html-browser-result.json",
+  "save_contact_ref": "docs/04_开发与验收/特征细化/DRF05_四格式试做/save-contact-result.json"
+}

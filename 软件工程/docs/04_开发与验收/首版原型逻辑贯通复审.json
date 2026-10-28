@@ -1,0 +1,333 @@
+{
+  "document_kind": "first_release_design_prototype_logical_continuity_review",
+  "date": "2026-10-15T10:26:32+08:00",
+  "authority": "用户：从逻辑上能否跑通首版原型为要求进行复审并修复存在的问题",
+  "status": "completed_repair_and_browser_review",
+  "scope": {
+    "prototype_ref": "docs/02_交互设计/S04_可操作设计原型/README.md",
+    "source_ref": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+    "entry_url": "http://127.0.0.1:8921/",
+    "check_basis": [
+      "docs/00_项目基线/首版任务选择.json",
+      "docs/02_交互设计/交互流程与视图导航.json",
+      "docs/02_交互设计/首版表单与反馈.json"
+    ],
+    "success_rule": "五条连续设计任务链可操作，输入/草稿/样例归属/保存/重开/撤销及专业用途状态衔接一致；新证实反例修复后实际浏览器重验。",
+    "actual_product_runtime": null,
+    "manual_fixture_rule": "原型显式manual_expected/独立UI例保留；任意输入后的生产结果仍需产品Engine，不能将设计例计为真实仿真。"
+  },
+  "summary": {
+    "new_root_causes": 10,
+    "open_defects": 0,
+    "closed_defects": 10,
+    "priority_counts": {
+      "P2": 10
+    },
+    "initial_browser_sequences": 17,
+    "initial_failed": 16,
+    "initial_passed": 1,
+    "final_browser_sequences": 17,
+    "final_failed": 0,
+    "continuous_flows_passed": 5,
+    "special_checks_passed": 8,
+    "prior_DQ_browser_cases_passed": 16,
+    "judgment": "已验五条设计任务链可连续操作；本轮10个已证实根因全部修复关闭。实际仿真仍按明确标注的手工/独立样例，不以任意输入自动推演。"
+  },
+  "prior_closed_DQ_ref": "docs/04_开发与验收/设计阶段全量质量检查.json",
+  "findings": [
+    {
+      "id": "PL-01",
+      "priority": "P2",
+      "status": "closed_after_browser_recheck",
+      "cases": [
+        "LC01",
+        "LC02",
+        "LC12"
+      ],
+      "title": "新工程和新任务链继承旧会话历史与专业状态",
+      "source_location": "startFlow; action(create-empty)",
+      "counterexample": "先改x10再12，开始新任务链后undo恢复10；新空工程undo恢复9台旧设备；旧认可/绑定仍true。",
+      "closure_criteria": [
+        "清空旧工程undo/redo、Run/任务/样例结果及待定上下文",
+        "新空工程不继承旧认可/绑定，保留本次新工程名与场地"
+      ],
+      "owner": "复审窗口2",
+      "source_before_line": 58,
+      "repair": {
+        "changes": [
+          "新链、新空工程与重开统一走resetProjectSession，清旧历史/结果/专业有效标志和待定上下文",
+          "空工程保留本次名称和场地，不能undo回旧设备"
+        ],
+        "verification_ref": "tools/design-quality-audit/prototype-logic/output/playwright/after-repair.json",
+        "closed_at": "2026-10-15T10:40:30+08:00"
+      }
+    },
+    {
+      "id": "PL-02",
+      "priority": "P2",
+      "status": "closed_after_browser_recheck",
+      "cases": [
+        "LC03",
+        "LC04"
+      ],
+      "title": "无到料或无选中项的排期预览触发页面异常",
+      "source_location": "action(input-preview); renderTimeline",
+      "counterexample": "空工程或取消全部到料勾选，预览产生[]，时间轴读取[0].after抛TypeError。",
+      "closure_criteria": [
+        "无可预览输入时提示并保持当前草稿",
+        "渲染不读取不存在的预览首项，选项来自当前到料集合"
+      ],
+      "owner": "复审窗口2",
+      "source_before_line": 211,
+      "repair": {
+        "changes": [
+          "排期选项消费当前arrivals，保留显式选择",
+          "无对象或未选择时提示且不创建空预览，渲染不访问空数组首项"
+        ],
+        "verification_ref": "tools/design-quality-audit/prototype-logic/output/playwright/after-repair.json",
+        "closed_at": "2026-10-15T10:40:30+08:00"
+      }
+    },
+    {
+      "id": "PL-03",
+      "priority": "P2",
+      "status": "closed_after_browser_recheck",
+      "cases": [
+        "LC05"
+      ],
+      "title": "排期增量可将负到料时点提交到草稿",
+      "source_location": "action(input-commit); apply(arrivals)",
+      "counterexample": "10/20s到料联动-25s后保存为-15/-5s。",
+      "closure_criteria": [
+        "负时点在预览/提交边界拒绝或明确夹限",
+        "无效输入不进入已应用草稿，也不改变旧样例"
+      ],
+      "owner": "复审窗口2",
+      "source_before_line": 212,
+      "repair": {
+        "changes": [
+          "联动预览拒绝负/非有限时点",
+          "arrivals与inputs提交都检查非负有限时点和数量"
+        ],
+        "verification_ref": "tools/design-quality-audit/prototype-logic/output/playwright/after-repair.json",
+        "closed_at": "2026-10-15T10:40:30+08:00"
+      }
+    },
+    {
+      "id": "PL-04",
+      "priority": "P2",
+      "status": "closed_after_browser_recheck",
+      "cases": [
+        "LC06",
+        "LC14"
+      ],
+      "title": "直写编辑绕过历史并保留失效重做分支",
+      "source_location": "action(move-line/tag-data/...); restoreDraft",
+      "counterexample": "x10→undo→整线右移→redo覆盖新移动；工时55→加标签→undo回到工时40。",
+      "closure_criteria": [
+        "实际可撤销编辑统一进入会话草稿历史",
+        "新编辑清除失效redo；撤销标签不回滚更早已应用的工时",
+        "专业认可与结果不由草稿历史恢复"
+      ],
+      "owner": "复审窗口2",
+      "source_before_line": 206,
+      "repair": {
+        "changes": [
+          "recordEdit统一登记实际支持的布局、连接、定义和表现草稿编辑并清redo",
+          "草稿恢复继续保留当前认可有效性判断，结果不回滚"
+        ],
+        "verification_ref": "tools/design-quality-audit/prototype-logic/output/playwright/after-repair.json",
+        "closed_at": "2026-10-15T10:40:30+08:00"
+      }
+    },
+    {
+      "id": "PL-05",
+      "priority": "P2",
+      "status": "closed_after_browser_recheck",
+      "cases": [
+        "LC07"
+      ],
+      "title": "工程名及场地修改没有更新未保存状态",
+      "source_location": "input(scope=project/site)",
+      "counterexample": "保存后改title，revision未增长，仍显示已保存；打开旧快照直接覆盖改名。",
+      "closure_criteria": [
+        "保存后修改持久化工程名/场地须标未保存",
+        "打开旧快照或新工程时保留实际离开决定"
+      ],
+      "owner": "复审窗口2",
+      "source_before_line": 265,
+      "repair": {
+        "changes": [
+          "工程名称/场地的直写通过markDirectEdit更新修订与未保存状态",
+          "保留输入焦点，打开离开决定读取真实修订"
+        ],
+        "verification_ref": "tools/design-quality-audit/prototype-logic/output/playwright/after-repair.json",
+        "closed_at": "2026-10-15T10:40:30+08:00"
+      }
+    },
+    {
+      "id": "PL-06",
+      "priority": "P2",
+      "status": "closed_after_browser_recheck",
+      "cases": [
+        "LC08",
+        "LC09"
+      ],
+      "title": "设备行为和包装机制下拉框不回显已应用值",
+      "source_location": "renderWorkspace(VP03); packagingWorkspace(VP18)",
+      "counterexample": "inline保存后显示operation_ref；tray_sleeve保存后显示tuck_carton。",
+      "closure_criteria": [
+        "选项selected来自当前草稿/表单值",
+        "离开返回与保存重开后回显一致"
+      ],
+      "owner": "复审窗口2",
+      "source_before_line": 96,
+      "repair": {
+        "changes": [
+          "行为来源、包装机制及相关选项按当前表单值回显"
+        ],
+        "verification_ref": "tools/design-quality-audit/prototype-logic/output/playwright/after-repair.json",
+        "closed_at": "2026-10-15T10:40:30+08:00"
+      }
+    },
+    {
+      "id": "PL-07",
+      "priority": "P2",
+      "status": "closed_after_browser_recheck",
+      "cases": [
+        "LC10"
+      ],
+      "title": "比较导出含无法在同份报告中解析的样例引用",
+      "source_location": "reportData; action(compare-a/b)",
+      "counterexample": "只选择A就导出，pair引用B但run_evaluations只有A。",
+      "closure_criteria": [
+        "每个比较引用都能解析到同份冻结样例评价",
+        "不足以比较时明确保留限制，不生成悬空pair"
+      ],
+      "owner": "复审窗口2",
+      "source_before_line": 122,
+      "repair": {
+        "changes": [
+          "comparisonReady要求成对冻结样例均在run_evaluations中",
+          "缺少任一方时不发比较pair并保留具体限制说明"
+        ],
+        "verification_ref": "tools/design-quality-audit/prototype-logic/output/playwright/after-repair.json",
+        "closed_at": "2026-10-15T10:40:30+08:00"
+      }
+    },
+    {
+      "id": "PL-08",
+      "priority": "P2",
+      "status": "closed_after_browser_recheck",
+      "cases": [
+        "LC13"
+      ],
+      "title": "没有消费设备的空工程仍可形成有效工位绑定",
+      "source_location": "action(paper-bind)",
+      "counterexample": "空工程devices=[]，载入Pass并认可后bound=true，界面称已绑定P01。",
+      "closure_criteria": [
+        "当前绑定目标必须存在并对应当前工程消费者",
+        "独立专业样例不冒充当前工程有效绑定",
+        "空工程采用模板后，选择真实新ID包装工位可正常绑定，显示实际消费目标，不硬编码旧P01"
+      ],
+      "owner": "复审窗口2",
+      "source_before_line": 246,
+      "repair": {
+        "changes": [
+          "提供当前真实包装工位选择，支持采用后的NEW前缀ID",
+          "绑定校验目标存在，切换目标清认可/绑定，目标上下文与专业输入分开",
+          "快照记录所选目标；新工程清目标上下文"
+        ],
+        "verification_ref": "tools/design-quality-audit/prototype-logic/output/playwright/after-repair.json",
+        "closed_at": "2026-10-15T10:40:30+08:00"
+      }
+    },
+    {
+      "id": "PL-09",
+      "priority": "P2",
+      "status": "closed_after_browser_recheck",
+      "cases": [
+        "LC15"
+      ],
+      "title": "非数字坐标可应用并在快照中变成null",
+      "source_location": "apply(pose); input numeric parsing",
+      "counterexample": "X=abc转换NaN，apply仍增加修订；JSON序列化把NaN写为null。",
+      "closure_criteria": [
+        "非有限数字在输入/应用边界明确拒绝并保留字段",
+        "无效坐标不增加已应用修订，不进入可保存草稿"
+      ],
+      "owner": "复审窗口2",
+      "source_before_line": 42,
+      "repair": {
+        "changes": [
+          "应用边界检查已提供数字须有限，拒绝NaN坐标并保留表单",
+          "场地尺寸明确拒绝非有限或非正输入，空值保持未知"
+        ],
+        "verification_ref": "tools/design-quality-audit/prototype-logic/output/playwright/after-repair.json",
+        "closed_at": "2026-10-15T10:40:30+08:00"
+      }
+    },
+    {
+      "id": "PL-10",
+      "priority": "P2",
+      "status": "closed_after_browser_recheck",
+      "cases": [
+        "LC16",
+        "LC17"
+      ],
+      "title": "作业和等待的描述定位未绑定当前样例身份",
+      "source_location": "renderTimeline(event-job); action(locate-wait)",
+      "source_before_line": 125,
+      "counterexample": "T1持有shell006的等待却选中返工台R01；基线0—40s的物品001作业段显示DTC02固定J-01/90—180s。",
+      "closure_criteria": [
+        "被点击段按当前样例、物品、作业与原区间显示",
+        "等待保留真实holder T1；未映射画布对象时明确说明，不能误选R01",
+        "DTC02裁窗仍显示90—180s原区间，不改样例事件"
+      ],
+      "owner": "复审窗口2",
+      "repair": {
+        "changes": [
+          "作业段携带当前样例、物品、种类、资源及真实起止区间",
+          "描述消费被点击记录；未映射T1明确说明并保持合法画布选择，不误选R01"
+        ],
+        "verification_ref": "tools/design-quality-audit/prototype-logic/output/playwright/after-repair.json",
+        "closed_at": "2026-10-15T10:40:30+08:00"
+      }
+    }
+  ],
+  "verification": {
+    "script_ref": "tools/design-quality-audit/prototype-logic/review-browser.cjs",
+    "initial_refs": [
+      "tools/design-quality-audit/prototype-logic/output/playwright/before-repair.json",
+      "tools/design-quality-audit/prototype-logic/output/playwright/supplemental-before.json",
+      "tools/design-quality-audit/prototype-logic/output/playwright/numeric-before.json",
+      "tools/design-quality-audit/prototype-logic/output/playwright/identity-before.json",
+      "tools/design-quality-audit/prototype-logic/output/playwright/identity-content-before.json"
+    ],
+    "final_ref": "tools/design-quality-audit/prototype-logic/output/playwright/after-repair.json",
+    "continuous_flow_script_ref": "tools/design-quality-audit/prototype-logic/continuous-flows.cjs",
+    "continuous_flow_ref": "tools/design-quality-audit/prototype-logic/output/playwright/continuous-flows/walkthrough-result.json",
+    "previous_DQ_regression_ref": "tools/design-quality-audit/prototype-logic/output/playwright/prior-dq/result.json",
+    "source_stable_during_final_tests": true,
+    "source_mtime_ms": 1792031698998.538,
+    "source_files": [
+      "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+      "docs/02_交互设计/连续任务与原型制作依据.json",
+      "docs/02_交互设计/S04_可操作设计原型/逻辑连续性与状态约束.md"
+    ],
+    "probe_updates": [
+      "LC13按新增的实际目标选择控件显式选择NEW1-P01；保留未选控件时的首次结果，未改变有效绑定断言。",
+      "修复后首次结果与最终稳定源结果分开，17条与五链运行期间均无源码变化。"
+    ],
+    "mainline_result_ref": "docs/04_开发与验收/主线同步检查结果.json",
+    "mainline_errors": []
+  },
+  "roles": {
+    "source_repair_owner": "复审窗口2",
+    "independent_browser_and_public_acceptance_owner": "复审窗口1"
+  },
+  "actual_product_runtime": null,
+  "completed_at": "2026-10-15T10:40:30+08:00",
+  "source_delivery_ref": "docs/04_开发与验收/特征细化/原型逻辑修复交接.json",
+  "accepted_followup_ref": "docs/04_开发与验收/原型并行深度复审.json"
+}

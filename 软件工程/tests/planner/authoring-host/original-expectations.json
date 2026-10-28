@@ -1,0 +1,36 @@
+{
+  "document_kind": "deterministic_frontend_transport_expectations_not_native_execution",
+  "source": "P3-01 original 4 steps and 17 Q, frozen features/modules/types.ts and actual DefinitionCycle Host consumer contract",
+  "test_boundary": "Real moduleAuthoring.ts and existing projectHost.ts SDK with actual Tauri API invoke entry replaced only by recorded deterministic protocol fixtures; no process, Host, Engine, listener or real picker is launched",
+  "fixed_expectations": [
+    "ImportPackage/ExportPackage choose actual native file-selection command; SaveProject/ExportEvaluation use native directory-selection command; typed Cancelled returns null, other errors propagate",
+    "DefinitionTask observation keeps actual ProjectId, original opaque DraftId, exact Draft revision, TaskId and original TaskOutput/TaskState",
+    "Sample readiness requires exact Draft Scope in describe_capabilities, never operation-only authorized flag or another Draft",
+    "Each actual sample request freshly checks capabilities and uses input_revision=DraftR, definition_revision=DraftR, unmodified explicit ScenarioInput and its ProjectR",
+    "Original Host RevisionConflict/PermissionDenied/other API errors are not converted into success or a manufactured Task",
+    "Actual failed/cancelled terminal TaskState is returned unchanged to the sample panel; incomplete/missing terminal does not imply completion",
+    "Session/project switch before or during a request/picker/task prevents publishing old-context results, without invoking cancel or rewriting Scope",
+    "Foreign/mismatched Task identity or scope/revision is rejected",
+    "Five non-simulation categories and two deferred TaskKind scopes remain unavailable when Host does not advertise them",
+    "Template composition remains explicitly unavailable until real carrier is frozen; no invented public operation/type/field"
+  ],
+  "frozen_template_carrier_expectations": [
+    "Only actual available_command_kinds=put_template_composition enables save; recheck actual capability before mutation",
+    "Existing Draft saves one put_template_composition Command using base_revision=DraftR and payload.project_revision=captured ProjectR, then reads actual Host Definition/path and actual commit history",
+    "New definition uses existing create_definition_draft followed by atomic composition save; they are two calls, not one atomic create",
+    "Second call failure after successful creation carries only real createdDraft/creationCommit and original cause, leaves local definition/subset intact, and retry may explicitly use that Draft",
+    "Existing Draft revision conflict propagates original HostFailure without claiming a new Draft or changing input",
+    "Draft TemplatePreview uses exact DefinitionDraft Scope/ModuleRef and source.base_revision=DraftR; returned preview.base_revision remains actual ProjectR with no inferred paths, seeds or instances"
+  ],
+  "frozen_seed_context_reference_expectations": [
+    "Forward the explicitly captured source_scenario id/revision unchanged with the complete declared subset.seed; no automatic current Scenario lookup/rebase",
+    "Absent source_scenario stays absent even if Workspace contains a current Scenario; explicit null remains explicit null",
+    "Source Scenario/Project conflict returns original HostFailure and captured input unchanged; partial creation failure keeps cause/created Draft and does not rewrite the captured source",
+    "Actual returned TemplatePreview including its exact old source_scenario is returned unchanged; missing ref is never inferred from seed body or current Workspace",
+    "Original sixteen checks remain unchanged; no new process, Host, Engine, Native UI or seed adoption is claimed by these wire fixtures"
+  ],
+  "whole_task_done": false,
+  "native_acceptance": false,
+  "human_acceptance": false
+}
+

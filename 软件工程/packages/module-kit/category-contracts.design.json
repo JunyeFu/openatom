@@ -1,6 +1,6 @@
 {
   "document_kind": "category_contract_design_not_registered_loader",
-  "revision": "draft-2-S03-03",
+  "revision": "draft-4-DRF03-field-and-lifecycle-refinement",
   "common_fields": [
     "id",
     "version",
@@ -42,7 +42,167 @@
         "P0-02",
         "P3-01"
       ],
-      "deferred_task_refs": []
+      "deferred_task_refs": [],
+      "confirmed_question_ids": [
+        "Q20",
+        "Q21",
+        "Q25",
+        "Q61"
+      ],
+      "field_contracts": [
+        {
+          "path": "item_definition.unit",
+          "type": "unit_id",
+          "required_when": "adopt_type",
+          "meaning": "类型单位；工程数量在实例。",
+          "unit_rule": "类型UnitId；数量另有Quantity.unit",
+          "validation_rule": "明确数量维度；piece/kg不可隐式换算",
+          "reference_rule": "与采用目标ItemType.unit一致或显式新建类型",
+          "canonical_carriers": [
+            {
+              "rust_type": "ItemDefinition",
+              "fields": [
+                "unit"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "domain/planner",
+          "instantiation_rule": "先采用ItemType规格；仅显式ScenarioInput初始输入创建物品。",
+          "sample_ref": "modules/items/shell-spec/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-items.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        },
+        {
+          "path": "item_definition.tracking",
+          "type": "individual_or_batch",
+          "required_when": "adopt_type",
+          "meaning": "明确单件/批次，不由画面代表数决定。",
+          "unit_rule": "无量纲枚举",
+          "validation_rule": "individual/batch只能声明一种；单件计数为整数",
+          "reference_rule": "ItemType.tracking，不能从LOD推断",
+          "canonical_carriers": [
+            {
+              "rust_type": "ItemDefinition",
+              "fields": [
+                "tracking"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "domain/planner",
+          "instantiation_rule": "先采用ItemType规格；仅显式ScenarioInput初始输入创建物品。",
+          "sample_ref": "modules/items/shell-spec/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-items.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        },
+        {
+          "path": "item_definition.spec_ref",
+          "type": "subject_revision_ref_or_string",
+          "required_when": "matching_existing_type",
+          "meaning": "规格/版本；同名不同规格必须显式匹配或另建类型。",
+          "unit_rule": "SubjectRevisionRef无量纲",
+          "validation_rule": "按id及revision精确解析；同名不合并",
+          "reference_rule": "Product/ItemType规格精确版本",
+          "canonical_carriers": [
+            {
+              "rust_type": "ItemDefinition",
+              "fields": [
+                "spec_ref"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "domain/planner",
+          "instantiation_rule": "先采用ItemType规格；仅显式ScenarioInput初始输入创建物品。",
+          "sample_ref": "modules/items/shell-spec/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-items.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        },
+        {
+          "path": "item_definition.attributes",
+          "type": "typed_value_map",
+          "required_when": "when_attributes_present",
+          "meaning": "值由attribute_schema声明；包络属性不替实际几何/认证。",
+          "unit_rule": "每个TypedValue沿对应schema单位",
+          "validation_rule": "key先有声明且类型/维数/枚举相符；无消费者只保存展示",
+          "reference_rule": "AttributeDeclaration，核心库存不可覆盖",
+          "canonical_carriers": [
+            {
+              "rust_type": "ItemDefinition",
+              "fields": [
+                "attributes"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "domain/planner",
+          "instantiation_rule": "先采用ItemType规格；仅显式ScenarioInput初始输入创建物品。",
+          "sample_ref": "modules/items/shell-spec/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-items.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        },
+        {
+          "path": "item_definition.attribute_schema",
+          "type": "attribute_declaration[]",
+          "required_when": "when_custom_attributes_present",
+          "meaning": "属性型别/单位/shape，和实际值一致。",
+          "unit_rule": "有量纲声明unit；vector3三分量",
+          "validation_rule": "属性名唯一；不得冒充核心id/quantity/holder",
+          "reference_rule": "同定义内attributes和公共TypedValue",
+          "canonical_carriers": [
+            {
+              "rust_type": "ItemDefinition",
+              "fields": [
+                "attribute_schema"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "domain/planner",
+          "instantiation_rule": "先采用ItemType规格；仅显式ScenarioInput初始输入创建物品。",
+          "sample_ref": "modules/items/shell-spec/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-items.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        },
+        {
+          "path": "presentation_or_media_ref",
+          "type": "optional_presentation",
+          "required_when": "preview_requested",
+          "meaning": "物品外观只表现；物品定义导入不产生物品。",
+          "unit_rule": "仅表现长度/坐标/缩放",
+          "validation_rule": "资产路径在授权包内，缺表现不产生默认业务值",
+          "reference_rule": "Presentation/精确media版本",
+          "canonical_carriers": [
+            {
+              "rust_type": "ItemDefinition",
+              "fields": [
+                "presentation_or_media_ref"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "domain/planner",
+          "instantiation_rule": "先采用ItemType规格；仅显式ScenarioInput初始输入创建物品。",
+          "sample_ref": "modules/items/shell-spec/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-items.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        }
+      ],
+      "six_views": {
+        "task_interaction": "读取共同身份/版本后编辑本类载荷；草稿检查/类别预览/采用/导出，与当前表单共用工程。",
+        "structure_data": "本类field_contracts及共同值/引用定义；模块定义、工程实例覆盖与运行结果分别存储。",
+        "state_behavior": "Host存DefinitionScope草稿；module-kit解析/采用，实际执行仍交唯一Engine或所选packaging。",
+        "interface_integration": "domain/planner；共同Commands原18操作，细参数由S06统一，不开放上传脚本。",
+        "ui_presentation": "复用F01,F02；用户查看来源/缺项/预览/采用差异。71字段表单映射已接入；控件现由窗口2维护；当前母版下方工具、160px时间轴和独立描述dock，不恢复Figma。",
+        "deployment_validation": "本地类别包/例子/许可/精确依赖；解析/引用/采用有限预期先核对，S08—S09实际加载和接手。"
+      },
+      "form_refs": [
+        "F01",
+        "F02"
+      ],
+      "refinement_ref": "docs/04_开发与验收/特征细化/DRF03_完整定义.json",
+      "instantiation_rule": "先采用ItemType规格；仅显式ScenarioInput初始输入创建物品。"
     },
     {
       "id": "devices",
@@ -75,7 +235,207 @@
         "P1-01",
         "P3-01"
       ],
-      "deferred_task_refs": []
+      "deferred_task_refs": [],
+      "confirmed_question_ids": [
+        "Q09",
+        "Q20",
+        "Q24",
+        "Q25",
+        "Q29",
+        "Q61"
+      ],
+      "field_contracts": [
+        {
+          "path": "placement",
+          "type": "fixed_during_simulation",
+          "required_when": "adopt_device",
+          "meaning": "编辑可移动，运行中固定；坐标/姿态/包络由实例设置。",
+          "unit_rule": "实例Pose显式长度/坐标",
+          "validation_rule": "运行冻结固定；编辑位置不改变规则/库存",
+          "reference_rule": "DeviceInstance.pose、hall_id、line_id",
+          "canonical_carriers": [
+            {
+              "rust_type": "DeviceDefinition",
+              "fields": [
+                "placement"
+              ]
+            },
+            {
+              "rust_type": "DeviceInstance",
+              "fields": [
+                "pose"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "module-kit/simulation/presentation",
+          "instantiation_rule": "ModuleAdoption.new_instances中的Device对象，冻结module_ref、pose、configuration和RoleBindings。",
+          "sample_ref": "modules/devices/control-box-assembly/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-devices.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        },
+        {
+          "path": "parameters",
+          "type": "parameter_declaration[]",
+          "required_when": "parameter_editor",
+          "meaning": "公开配置叶字段，未填写可以草稿保存，执行必需项须完成。",
+          "unit_rule": "各声明unit与目标叶一致",
+          "validation_rule": "仅RFC6901公开叶；范围/枚举匹配；未填不得默认为0",
+          "reference_rule": "ModuleDefinition.parameters与SetDeclaredParameter",
+          "canonical_carriers": [
+            {
+              "rust_type": "ModuleDefinition",
+              "fields": [
+                "parameters"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "module-kit/simulation/presentation",
+          "instantiation_rule": "ModuleAdoption.new_instances中的Device对象，冻结module_ref、pose、configuration和RoleBindings。",
+          "sample_ref": "modules/devices/control-box-assembly/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-devices.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        },
+        {
+          "path": "ports",
+          "type": "typed_port[]",
+          "required_when": "connect_or_run",
+          "meaning": "端口ID唯一；参数化item_parameter只能引用已有item_type公开参数。",
+          "unit_rule": "物品Quantity单位/信号ValueKind/成果单位坐标",
+          "validation_rule": "端口ID唯一、方向和kind相符；参数引用须存在",
+          "reference_rule": "PortRef的module_ref/instance_id/port_id",
+          "canonical_carriers": [
+            {
+              "rust_type": "DeviceDefinition",
+              "fields": [
+                "ports"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "module-kit/simulation/presentation",
+          "instantiation_rule": "ModuleAdoption.new_instances中的Device对象，冻结module_ref、pose、configuration和RoleBindings。",
+          "sample_ref": "modules/devices/control-box-assembly/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-devices.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        },
+        {
+          "path": "behavior OR operation_ref",
+          "type": "exactly_one_behavior_source",
+          "required_when": "run",
+          "meaning": "内联受支持builtin或精确规则版本；两者可保留候选但必须显式选一，不重复执行。",
+          "unit_rule": "duration转整数ms；数量单位明确",
+          "validation_rule": "仅执行selected来源；另一候选不叠加；builtin需真实支持",
+          "reference_rule": "BehaviorSources.selected及精确operation_ref",
+          "canonical_carriers": [
+            {
+              "rust_type": "DeviceDefinition",
+              "fields": [
+                "behavior"
+              ]
+            },
+            {
+              "rust_type": "BehaviorSources",
+              "fields": [
+                "inline",
+                "operation_ref",
+                "selected"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "module-kit/simulation/presentation",
+          "instantiation_rule": "ModuleAdoption.new_instances中的Device对象，冻结module_ref、pose、configuration和RoleBindings。",
+          "sample_ref": "modules/devices/control-box-assembly/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-devices.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        },
+        {
+          "path": "configuration",
+          "type": "typed_parameter_value_map",
+          "required_when": "when_parameterized",
+          "meaning": "模板默认/实例覆盖各有来源，不修改库版本。",
+          "unit_rule": "各TypedValue沿参数声明",
+          "validation_rule": "覆盖只作用所选实例，未知参数/错误单位拒绝",
+          "reference_rule": "DeviceInstance.configuration",
+          "canonical_carriers": [
+            {
+              "rust_type": "DeviceDefinition",
+              "fields": [
+                "configuration"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "module-kit/simulation/presentation",
+          "instantiation_rule": "ModuleAdoption.new_instances中的Device对象，冻结module_ref、pose、configuration和RoleBindings。",
+          "sample_ref": "modules/devices/control-box-assembly/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-devices.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        },
+        {
+          "path": "presentation",
+          "type": "presentation_or_media_ref",
+          "required_when": "preview_or_scene",
+          "meaning": "静态图/序列/GIF/原生部件/受支持GLB，缺表现标缺项，不能假设模型等于算法。",
+          "unit_rule": "只显示单位/坐标",
+          "validation_rule": "无业务写入；锚点未绑只提示；外观不改footprint",
+          "reference_rule": "DeviceInstance.presentation_override或定义默认",
+          "canonical_carriers": [
+            {
+              "rust_type": "DeviceDefinition",
+              "fields": [
+                "presentation"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "module-kit/simulation/presentation",
+          "instantiation_rule": "ModuleAdoption.new_instances中的Device对象，冻结module_ref、pose、configuration和RoleBindings。",
+          "sample_ref": "modules/devices/control-box-assembly/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-devices.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        },
+        {
+          "path": "operations",
+          "type": "declared_ui_actions[]",
+          "required_when": "action_display",
+          "meaning": "configure/inspect/preview_cycle是创作意图；真正调用能力来自Commands，不当任意脚本。",
+          "unit_rule": "无量纲动作枚举",
+          "validation_rule": "只能请求Host实际允许命令；不eval上传脚本",
+          "reference_rule": "CapabilityCatalog.available_command_kinds",
+          "canonical_carriers": [
+            {
+              "rust_type": "DeviceDefinition",
+              "fields": [
+                "operations"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "module-kit/simulation/presentation",
+          "instantiation_rule": "ModuleAdoption.new_instances中的Device对象，冻结module_ref、pose、configuration和RoleBindings。",
+          "sample_ref": "modules/devices/control-box-assembly/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-devices.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        }
+      ],
+      "six_views": {
+        "task_interaction": "读取共同身份/版本后编辑本类载荷；草稿检查/类别预览/采用/导出，与当前表单共用工程。",
+        "structure_data": "本类field_contracts及共同值/引用定义；模块定义、工程实例覆盖与运行结果分别存储。",
+        "state_behavior": "Host存DefinitionScope草稿；module-kit解析/采用，实际执行仍交唯一Engine或所选packaging。",
+        "interface_integration": "module-kit/simulation/presentation；共同Commands原18操作，细参数由S06统一，不开放上传脚本。",
+        "ui_presentation": "复用F01,F03；用户查看来源/缺项/预览/采用差异。71字段表单映射已接入；控件现由窗口2维护；当前母版下方工具、160px时间轴和独立描述dock，不恢复Figma。",
+        "deployment_validation": "本地类别包/例子/许可/精确依赖；解析/引用/采用有限预期先核对，S08—S09实际加载和接手。"
+      },
+      "form_refs": [
+        "F01",
+        "F03"
+      ],
+      "refinement_ref": "docs/04_开发与验收/特征细化/DRF03_完整定义.json",
+      "instantiation_rule": "ModuleAdoption.new_instances中的Device对象，冻结module_ref、pose、configuration和RoleBindings。",
+      "professional_packaging_specialization_ref": "packages/packaging/consumer-device.design.json"
     },
     {
       "id": "resources",
@@ -105,7 +465,167 @@
         "P1-07",
         "P1-08",
         "P2-08"
-      ]
+      ],
+      "confirmed_question_ids": [
+        "Q20",
+        "Q22",
+        "Q25",
+        "Q61"
+      ],
+      "field_contracts": [
+        {
+          "path": "resource_definition.kind",
+          "type": "discrete_resource_kind_or_deferred_service",
+          "required_when": "adopt_resource",
+          "meaning": "worker/fixture/vehicle/reusable_carrier等实际离散资源；service可保存声明，执行P1-07后置。",
+          "unit_rule": "无量纲ResourceKind",
+          "validation_rule": "首版只执行支持离散资源；service声明不授执行权",
+          "reference_rule": "ResourceInstance.kind",
+          "canonical_carriers": [
+            {
+              "rust_type": "ResourceDefinition",
+              "fields": [
+                "kind"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "domain/simulation",
+          "instantiation_rule": "显式Resource对象及Calendar；角色不自动复制人数，当前占用不在定义。",
+          "sample_ref": "modules/resources/operator-role/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-resources.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        },
+        {
+          "path": "resource_definition.role",
+          "type": "role_id",
+          "required_when": "bind_resource",
+          "meaning": "需求角色，与具体实例不同。",
+          "unit_rule": "无量纲角色ID",
+          "validation_rule": "需求角色必须显式绑定实际资源，不按名字创建人",
+          "reference_rule": "RoleBindings.resources",
+          "canonical_carriers": [
+            {
+              "rust_type": "ResourceDefinition",
+              "fields": [
+                "role"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "domain/simulation",
+          "instantiation_rule": "显式Resource对象及Calendar；角色不自动复制人数，当前占用不在定义。",
+          "sample_ref": "modules/resources/operator-role/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-resources.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        },
+        {
+          "path": "resource_definition.capacity",
+          "type": "quantity",
+          "required_when": "adopt_resource",
+          "meaning": "明确人数/槽位/车辆等单位；载具capacity是装载量，不等于可调度车辆数。",
+          "unit_rule": "明确person/vehicle/slot或货物单位",
+          "validation_rule": "容量非负且离散计数为整数；车辆数和装载量分开",
+          "reference_rule": "ResourceInstance.capacity与Transport.batch_capacity",
+          "canonical_carriers": [
+            {
+              "rust_type": "ResourceDefinition",
+              "fields": [
+                "capacity"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "domain/simulation",
+          "instantiation_rule": "显式Resource对象及Calendar；角色不自动复制人数，当前占用不在定义。",
+          "sample_ref": "modules/resources/operator-role/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-resources.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        },
+        {
+          "path": "resource_definition.qualifications",
+          "type": "qualification_id[]",
+          "required_when": "when_required_by_task",
+          "meaning": "命名资格匹配任务/阶段；未要求不强行增加资格。",
+          "unit_rule": "无量纲资格ID集合",
+          "validation_rule": "按任务要求包含资格；缺资格不自动补齐",
+          "reference_rule": "目标ResourceInstance.qualifications",
+          "canonical_carriers": [
+            {
+              "rust_type": "ResourceDefinition",
+              "fields": [
+                "qualifications"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "domain/simulation",
+          "instantiation_rule": "显式Resource对象及Calendar；角色不自动复制人数，当前占用不在定义。",
+          "sample_ref": "modules/resources/operator-role/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-resources.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        },
+        {
+          "path": "resource_definition.default_calendar_ms",
+          "type": "interval_ms[]",
+          "required_when": "when_calendar_default_given",
+          "meaning": "建议可用区间，采用可替换/绑定；不复制占用或实际人数。",
+          "unit_rule": "相对整数ms半开区间",
+          "validation_rule": "end>start；采用时显式新建/复用Calendar；不复制claim",
+          "reference_rule": "Calendar.id与intervals",
+          "canonical_carriers": [
+            {
+              "rust_type": "ResourceDefinition",
+              "fields": [
+                "default_calendar_ms"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "domain/simulation",
+          "instantiation_rule": "显式Resource对象及Calendar；角色不自动复制人数，当前占用不在定义。",
+          "sample_ref": "modules/resources/operator-role/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-resources.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        },
+        {
+          "path": "presentation",
+          "type": "optional_presentation",
+          "required_when": "visual_resource_preview",
+          "meaning": "人员/载具位置从绑定和真实占用读，不从走路动画推工时。",
+          "unit_rule": "显示长度与坐标",
+          "validation_rule": "读取实际资源归属；走路动画不计工时",
+          "reference_rule": "Presentation和实际Run资源记录",
+          "canonical_carriers": [
+            {
+              "rust_type": "ResourceDefinition",
+              "fields": [
+                "presentation"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "domain/simulation",
+          "instantiation_rule": "显式Resource对象及Calendar；角色不自动复制人数，当前占用不在定义。",
+          "sample_ref": "modules/resources/operator-role/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-resources.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        }
+      ],
+      "six_views": {
+        "task_interaction": "读取共同身份/版本后编辑本类载荷；草稿检查/类别预览/采用/导出，与当前表单共用工程。",
+        "structure_data": "本类field_contracts及共同值/引用定义；模块定义、工程实例覆盖与运行结果分别存储。",
+        "state_behavior": "Host存DefinitionScope草稿；module-kit解析/采用，实际执行仍交唯一Engine或所选packaging。",
+        "interface_integration": "domain/simulation；共同Commands原18操作，细参数由S06统一，不开放上传脚本。",
+        "ui_presentation": "复用F01,F04；用户查看来源/缺项/预览/采用差异。71字段表单映射已接入；控件现由窗口2维护；当前母版下方工具、160px时间轴和独立描述dock，不恢复Figma。",
+        "deployment_validation": "本地类别包/例子/许可/精确依赖；解析/引用/采用有限预期先核对，S08—S09实际加载和接手。"
+      },
+      "form_refs": [
+        "F01",
+        "F04"
+      ],
+      "refinement_ref": "docs/04_开发与验收/特征细化/DRF03_完整定义.json",
+      "instantiation_rule": "显式Resource对象及Calendar；角色不自动复制人数，当前占用不在定义。"
     },
     {
       "id": "tasks",
@@ -134,7 +654,223 @@
       "deferred_task_refs": [
         "P1-06",
         "P1-08"
-      ]
+      ],
+      "confirmed_question_ids": [
+        "Q20",
+        "Q23",
+        "Q25",
+        "Q61"
+      ],
+      "field_contracts": [
+        {
+          "path": "task_definition.kind",
+          "type": "manual_preparation_or_supported_automatic",
+          "required_when": "adopt_task",
+          "meaning": "维修/建设声明可保留，执行后置。",
+          "unit_rule": "无量纲TaskKind",
+          "validation_rule": "准备/人工按真实能力；维修建设后置",
+          "reference_rule": "精确任务ModuleRef及目标绑定",
+          "canonical_carriers": [
+            {
+              "rust_type": "TaskDefinition",
+              "fields": [
+                "kind"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "simulation/planner",
+          "instantiation_rule": "采用任务精确版本和target/resource映射，现有就绪/准备/工艺消费者接入；不得凭instantiate_as字符串新建调度器。",
+          "sample_ref": "modules/tasks/board-preparation/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-tasks.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        },
+        {
+          "path": "task_definition.target_role",
+          "type": "target_role_id",
+          "required_when": "adopt_task",
+          "meaning": "采用绑定具体目标/配置/作业版本。",
+          "unit_rule": "无量纲角色/目标引用",
+          "validation_rule": "采用必须指向具体工程对象及当前配置",
+          "reference_rule": "RoleBindings.targets",
+          "canonical_carriers": [
+            {
+              "rust_type": "TaskDefinition",
+              "fields": [
+                "target_role"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "simulation/planner",
+          "instantiation_rule": "采用任务精确版本和target/resource映射，现有就绪/准备/工艺消费者接入；不得凭instantiate_as字符串新建调度器。",
+          "sample_ref": "modules/tasks/board-preparation/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-tasks.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        },
+        {
+          "path": "task_definition.prerequisites",
+          "type": "supported_readiness_ref[]",
+          "required_when": "run",
+          "meaning": "结构化前置或已登记标记，不执行自然语言/脚本条件。",
+          "unit_rule": "目标引用及相对时间",
+          "validation_rule": "结构化就绪条件精确解析，未满足进入等待",
+          "reference_rule": "目标状态/已有准备条件，不自然语言求值",
+          "canonical_carriers": [
+            {
+              "rust_type": "TaskDefinition",
+              "fields": [
+                "prerequisites"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "simulation/planner",
+          "instantiation_rule": "采用任务精确版本和target/resource映射，现有就绪/准备/工艺消费者接入；不得凭instantiate_as字符串新建调度器。",
+          "sample_ref": "modules/tasks/board-preparation/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-tasks.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        },
+        {
+          "path": "task_definition.steps",
+          "type": "task_step[]",
+          "required_when": "multi_step_task",
+          "meaning": "每步骤目标/角色/工时/完成标记；单步既有duration视为单步骤，不建立第二调度器。",
+          "unit_rule": "每步工时整数ms、资源同单位",
+          "validation_rule": "step ID唯一；目标/资源/前置齐备；不另建时钟",
+          "reference_rule": "TaskStep和共同Engine阶段",
+          "canonical_carriers": [
+            {
+              "rust_type": "TaskDefinition",
+              "fields": [
+                "steps"
+              ]
+            },
+            {
+              "rust_type": "TaskStep",
+              "fields": [
+                "id",
+                "target_role",
+                "resources",
+                "duration",
+                "completion_markers"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "simulation/planner",
+          "instantiation_rule": "采用任务精确版本和target/resource映射，现有就绪/准备/工艺消费者接入；不得凭instantiate_as字符串新建调度器。",
+          "sample_ref": "modules/tasks/board-preparation/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-tasks.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        },
+        {
+          "path": "task_definition.resource_roles",
+          "type": "role_quantity[]",
+          "required_when": "run",
+          "meaning": "同一资源服务及日历；须绑定实际实例。",
+          "unit_rule": "Quantity及资格",
+          "validation_rule": "同阶段需求原子齐套，不把角色当实例",
+          "reference_rule": "RoleBindings.resources",
+          "canonical_carriers": [
+            {
+              "rust_type": "TaskDefinition",
+              "fields": [
+                "resource_roles"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "simulation/planner",
+          "instantiation_rule": "采用任务精确版本和target/resource映射，现有就绪/准备/工艺消费者接入；不得凭instantiate_as字符串新建调度器。",
+          "sample_ref": "modules/tasks/board-preparation/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-tasks.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        },
+        {
+          "path": "task_definition.duration",
+          "type": "duration",
+          "required_when": "single_step_task",
+          "meaning": "整体一次准备工时，与生产工艺工时分开。",
+          "unit_rule": "整数ms",
+          "validation_rule": "旧second显式乘1000，不能表示为整数ms则拒绝；0不触发无限循环",
+          "reference_rule": "DurationValue.value/unit/basis",
+          "canonical_carriers": [
+            {
+              "rust_type": "TaskDefinition",
+              "fields": [
+                "duration"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "simulation/planner",
+          "instantiation_rule": "采用任务精确版本和target/resource映射，现有就绪/准备/工艺消费者接入；不得凭instantiate_as字符串新建调度器。",
+          "sample_ref": "modules/tasks/board-preparation/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-tasks.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        },
+        {
+          "path": "task_definition.equipment_access",
+          "type": "shared_or_exclusive",
+          "required_when": "equipment_target_task",
+          "meaning": "明确占用目标设备的阶段。",
+          "unit_rule": "无量纲shared/exclusive",
+          "validation_rule": "排他访问占用对应设备资源；不从人claim推设备占用",
+          "reference_rule": "共同Engine设备容量归属",
+          "canonical_carriers": [
+            {
+              "rust_type": "TaskDefinition",
+              "fields": [
+                "equipment_access"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "simulation/planner",
+          "instantiation_rule": "采用任务精确版本和target/resource映射，现有就绪/准备/工艺消费者接入；不得凭instantiate_as字符串新建调度器。",
+          "sample_ref": "modules/tasks/board-preparation/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-tasks.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        },
+        {
+          "path": "task_definition.completion_effect",
+          "type": "supported_readiness_effect",
+          "required_when": "run",
+          "meaning": "只改变目标准备条件等已支持作用；produces_material=false，制造交工艺。",
+          "unit_rule": "无量纲支持作用",
+          "validation_rule": "仅目标就绪/标记；禁止生产物料；历史Run不回写",
+          "reference_rule": "目标条件及支持的CompletionEffect",
+          "canonical_carriers": [
+            {
+              "rust_type": "TaskDefinition",
+              "fields": [
+                "completion_effect"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "simulation/planner",
+          "instantiation_rule": "采用任务精确版本和target/resource映射，现有就绪/准备/工艺消费者接入；不得凭instantiate_as字符串新建调度器。",
+          "sample_ref": "modules/tasks/board-preparation/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-tasks.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        }
+      ],
+      "six_views": {
+        "task_interaction": "读取共同身份/版本后编辑本类载荷；草稿检查/类别预览/采用/导出，与当前表单共用工程。",
+        "structure_data": "本类field_contracts及共同值/引用定义；模块定义、工程实例覆盖与运行结果分别存储。",
+        "state_behavior": "Host存DefinitionScope草稿；module-kit解析/采用，实际执行仍交唯一Engine或所选packaging。",
+        "interface_integration": "simulation/planner；共同Commands原18操作，细参数由S06统一，不开放上传脚本。",
+        "ui_presentation": "复用F01,F05；用户查看来源/缺项/预览/采用差异。71字段表单映射已接入；控件现由窗口2维护；当前母版下方工具、160px时间轴和独立描述dock，不恢复Figma。",
+        "deployment_validation": "本地类别包/例子/许可/精确依赖；解析/引用/采用有限预期先核对，S08—S09实际加载和接手。"
+      },
+      "form_refs": [
+        "F01",
+        "F05"
+      ],
+      "refinement_ref": "docs/04_开发与验收/特征细化/DRF03_完整定义.json",
+      "instantiation_rule": "采用任务精确版本和target/resource映射，现有就绪/准备/工艺消费者接入；不得凭instantiate_as字符串新建调度器。"
     },
     {
       "id": "operations",
@@ -161,7 +897,192 @@
         "P1-05",
         "P3-01"
       ],
-      "deferred_task_refs": []
+      "deferred_task_refs": [],
+      "confirmed_question_ids": [
+        "Q20",
+        "Q24",
+        "Q25",
+        "Q61"
+      ],
+      "field_contracts": [
+        {
+          "path": "operation_definition.builtin",
+          "type": "supported_rule_kind",
+          "required_when": "run",
+          "meaning": "transform/assemble/inspect_and_route/rework/pack；能力未实现不能运行。",
+          "unit_rule": "无量纲RuleKind",
+          "validation_rule": "Host已实现规则才执行；设计名不是插件",
+          "reference_rule": "真实能力发现及规则ModuleRef",
+          "canonical_carriers": [
+            {
+              "rust_type": "OperationDefinition",
+              "fields": [
+                "builtin"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "simulation",
+          "instantiation_rule": "DeviceInstance.operation_binding或RouteStep.operation_ref明确版本，端口/物品/资源角色须逐项解析。",
+          "sample_ref": "modules/operations/control-box-rule/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-operations.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        },
+        {
+          "path": "operation_definition.item_roles",
+          "type": "role_id[]",
+          "required_when": "bind_rule",
+          "meaning": "输入/输出角色各自映射类型与设备端口。",
+          "unit_rule": "无量纲角色ID",
+          "validation_rule": "输入输出角色唯一且显式映射ItemType/端口",
+          "reference_rule": "RoleBindings.item_types/ports",
+          "canonical_carriers": [
+            {
+              "rust_type": "OperationDefinition",
+              "fields": [
+                "item_roles"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "simulation",
+          "instantiation_rule": "DeviceInstance.operation_binding或RouteStep.operation_ref明确版本，端口/物品/资源角色须逐项解析。",
+          "sample_ref": "modules/operations/control-box-rule/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-operations.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        },
+        {
+          "path": "operation_definition.inputs/outputs",
+          "type": "role_quantity_unit[]",
+          "required_when": "rule_requires_material",
+          "meaning": "配比明确，原料转换/齐套/同件检查/返工/容器内容身份分别解释。",
+          "unit_rule": "Quantity.value和unit",
+          "validation_rule": "非负合法量；整件为整数；投入和产出身份按规则解释",
+          "reference_rule": "MaterialRoleQuantity及真实端口",
+          "canonical_carriers": [
+            {
+              "rust_type": "OperationDefinition",
+              "fields": [
+                "inputs",
+                "outputs"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "simulation",
+          "instantiation_rule": "DeviceInstance.operation_binding或RouteStep.operation_ref明确版本，端口/物品/资源角色须逐项解析。",
+          "sample_ref": "modules/operations/control-box-rule/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-operations.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        },
+        {
+          "path": "operation_definition.resource_roles",
+          "type": "role_quantity[]",
+          "required_when": "when_resources_required",
+          "meaning": "共同资源，不直接创建人员。",
+          "unit_rule": "每角色Quantity",
+          "validation_rule": "资源/资格/日历匹配，共同Engine统一占用",
+          "reference_rule": "ResourceRequirement和RoleBindings.resources",
+          "canonical_carriers": [
+            {
+              "rust_type": "OperationDefinition",
+              "fields": [
+                "resource_roles"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "simulation",
+          "instantiation_rule": "DeviceInstance.operation_binding或RouteStep.operation_ref明确版本，端口/物品/资源角色须逐项解析。",
+          "sample_ref": "modules/operations/control-box-rule/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-operations.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        },
+        {
+          "path": "operation_definition.duration OR phases",
+          "type": "duration_or_phase_plan",
+          "required_when": "run",
+          "meaning": "每阶段持续/资源/中断策略；共享引擎处理，自动段可不占人。",
+          "unit_rule": "相对整数ms",
+          "validation_rule": "单工时或明确phase计划，不能两套工时叠加；零段走同刻闭包",
+          "reference_rule": "PhaseDefinition及当前调度合同",
+          "canonical_carriers": [
+            {
+              "rust_type": "OperationDefinition",
+              "fields": [
+                "duration",
+                "phases"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "simulation",
+          "instantiation_rule": "DeviceInstance.operation_binding或RouteStep.operation_ref明确版本，端口/物品/资源角色须逐项解析。",
+          "sample_ref": "modules/operations/control-box-rule/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-operations.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        },
+        {
+          "path": "operation_definition.quality_and_routes",
+          "type": "supported_quality_rules",
+          "required_when": "inspection_or_rework",
+          "meaning": "有来源检验结果/重工限制/分路；缺结果保持待补，不自动合格。",
+          "unit_rule": "枚举/计数无量纲",
+          "validation_rule": "来源缺失不得自动PASS；返工次数/分路有明确界限",
+          "reference_rule": "QualityRule及实际质量事件",
+          "canonical_carriers": [
+            {
+              "rust_type": "OperationDefinition",
+              "fields": [
+                "quality_and_routes"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "simulation",
+          "instantiation_rule": "DeviceInstance.operation_binding或RouteStep.operation_ref明确版本，端口/物品/资源角色须逐项解析。",
+          "sample_ref": "modules/operations/control-box-rule/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-operations.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        },
+        {
+          "path": "operation_definition.identity_policy",
+          "type": "identity_effect",
+          "required_when": "run",
+          "meaning": "转换新身份保来源；装配新身份保组成；检查返工同ID；包装容器与内容独立，不按外观制造库存。",
+          "unit_rule": "无量纲IdentityPolicy",
+          "validation_rule": "转换新ID保来源；装配新ID保组成；检查/返工保原ID；包装保contents",
+          "reference_rule": "RuntimeItem唯一持有者归simulation",
+          "canonical_carriers": [
+            {
+              "rust_type": "OperationDefinition",
+              "fields": [
+                "identity_policy"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "simulation",
+          "instantiation_rule": "DeviceInstance.operation_binding或RouteStep.operation_ref明确版本，端口/物品/资源角色须逐项解析。",
+          "sample_ref": "modules/operations/control-box-rule/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-operations.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        }
+      ],
+      "six_views": {
+        "task_interaction": "读取共同身份/版本后编辑本类载荷；草稿检查/类别预览/采用/导出，与当前表单共用工程。",
+        "structure_data": "本类field_contracts及共同值/引用定义；模块定义、工程实例覆盖与运行结果分别存储。",
+        "state_behavior": "Host存DefinitionScope草稿；module-kit解析/采用，实际执行仍交唯一Engine或所选packaging。",
+        "interface_integration": "simulation；共同Commands原18操作，细参数由S06统一，不开放上传脚本。",
+        "ui_presentation": "复用F01,F06；用户查看来源/缺项/预览/采用差异。71字段表单映射已接入；控件现由窗口2维护；当前母版下方工具、160px时间轴和独立描述dock，不恢复Figma。",
+        "deployment_validation": "本地类别包/例子/许可/精确依赖；解析/引用/采用有限预期先核对，S08—S09实际加载和接手。"
+      },
+      "form_refs": [
+        "F01",
+        "F06"
+      ],
+      "refinement_ref": "docs/04_开发与验收/特征细化/DRF03_完整定义.json",
+      "instantiation_rule": "DeviceInstance.operation_binding或RouteStep.operation_ref明确版本，端口/物品/资源角色须逐项解析。"
     },
     {
       "id": "transport",
@@ -191,7 +1112,219 @@
       "deferred_task_refs": [
         "P2-08",
         "P2-09"
-      ]
+      ],
+      "confirmed_question_ids": [
+        "Q20",
+        "Q25",
+        "Q26",
+        "Q61"
+      ],
+      "field_contracts": [
+        {
+          "path": "parameters/ports",
+          "type": "parameter_and_material_ports",
+          "required_when": "adopt_transport",
+          "meaning": "已有来源/目的端口及公开工时参数；实际起讫库位由采用绑定。",
+          "unit_rule": "公开工时ms及货物单位",
+          "validation_rule": "端口/源目的均存在；参数只控制已选规则",
+          "reference_rule": "TransportDefinition.ports和ModuleDefinition.parameters",
+          "canonical_carriers": [
+            {
+              "rust_type": "ModuleDefinition",
+              "fields": [
+                "parameters"
+              ]
+            },
+            {
+              "rust_type": "TransportDefinition",
+              "fields": [
+                "ports"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "simulation/planner",
+          "instantiation_rule": "选实际运输设备/载具/源目的和货物；仅绑定计划，不在采用时创建货物或运行结果。",
+          "sample_ref": "modules/transport/batch-transport/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-transport.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        },
+        {
+          "path": "behavior.builtin",
+          "type": "transport",
+          "required_when": "run",
+          "meaning": "固定时间批次搬运，复杂路径/交通后置。",
+          "unit_rule": "无量纲TransportBuiltin",
+          "validation_rule": "首版固定时间，路径动力学/交通求解后置",
+          "reference_rule": "Host实际支持transport规则",
+          "canonical_carriers": [
+            {
+              "rust_type": "TransportDefinition",
+              "fields": [
+                "builtin"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "simulation/planner",
+          "instantiation_rule": "选实际运输设备/载具/源目的和货物；仅绑定计划，不在采用时创建货物或运行结果。",
+          "sample_ref": "modules/transport/batch-transport/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-transport.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        },
+        {
+          "path": "behavior.batch_capacity",
+          "type": "cargo_quantity",
+          "required_when": "run",
+          "meaning": "与绑定货物单位一致；载具/人员实例分别绑定。",
+          "unit_rule": "货物Quantity.unit",
+          "validation_rule": "与被运物品量纲一致；不能当车辆实例数量",
+          "reference_rule": "Transport.batch_capacity和实际货物集合",
+          "canonical_carriers": [
+            {
+              "rust_type": "TransportDefinition",
+              "fields": [
+                "batch_capacity"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "simulation/planner",
+          "instantiation_rule": "选实际运输设备/载具/源目的和货物；仅绑定计划，不在采用时创建货物或运行结果。",
+          "sample_ref": "modules/transport/batch-transport/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-transport.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        },
+        {
+          "path": "behavior.resources",
+          "type": "role_quantity[]",
+          "required_when": "run",
+          "meaning": "载具角色占用至声明返程/实际释放点。",
+          "unit_rule": "角色Quantity",
+          "validation_rule": "绑定实际载具/工人，返程释放按原规则",
+          "reference_rule": "RoleBindings.resources及共同claim",
+          "canonical_carriers": [
+            {
+              "rust_type": "TransportDefinition",
+              "fields": [
+                "resources"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "simulation/planner",
+          "instantiation_rule": "选实际运输设备/载具/源目的和货物；仅绑定计划，不在采用时创建货物或运行结果。",
+          "sample_ref": "modules/transport/batch-transport/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-transport.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        },
+        {
+          "path": "behavior.times",
+          "type": "loading/outbound/unloading/returning_duration",
+          "required_when": "run",
+          "meaning": "各段固定时长，0允许但不能无时进无限循环。",
+          "unit_rule": "loading/outbound/unloading/returning整数ms",
+          "validation_rule": "分别明示工时；缺值为缺项不补0",
+          "reference_rule": "TransportTimes各DurationValue",
+          "canonical_carriers": [
+            {
+              "rust_type": "TransportDefinition",
+              "fields": [
+                "times"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "simulation/planner",
+          "instantiation_rule": "选实际运输设备/载具/源目的和货物；仅绑定计划，不在采用时创建货物或运行结果。",
+          "sample_ref": "modules/transport/batch-transport/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-transport.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        },
+        {
+          "path": "behavior.acceptance_conditions",
+          "type": "supported_destination_conditions",
+          "required_when": "when_destination_requires",
+          "meaning": "目的容量/质量/接收条件；已到不等于卸货完成，阻塞保留原货物/载具。",
+          "unit_rule": "容量单位及质量/就绪枚举",
+          "validation_rule": "到达非接受；阻塞仍保留货物/载具；接受时点按既有规则",
+          "reference_rule": "DestinationCondition及目的库位",
+          "canonical_carriers": [
+            {
+              "rust_type": "TransportDefinition",
+              "fields": [
+                "acceptance_conditions"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "simulation/planner",
+          "instantiation_rule": "选实际运输设备/载具/源目的和货物；仅绑定计划，不在采用时创建货物或运行结果。",
+          "sample_ref": "modules/transport/batch-transport/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-transport.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        },
+        {
+          "path": "behavior.identity_policy",
+          "type": "preserve_cargo_ids",
+          "required_when": "run",
+          "meaning": "固定运输保留同一货物ID；供应任务的件数是需求，不创建件。",
+          "unit_rule": "无量纲保货物身份",
+          "validation_rule": "同货物ID只转持有者，不复制供应/运输件",
+          "reference_rule": "RuntimeItem.holder及TransportState",
+          "canonical_carriers": [
+            {
+              "rust_type": "TransportDefinition",
+              "fields": [
+                "identity_policy"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "simulation/planner",
+          "instantiation_rule": "选实际运输设备/载具/源目的和货物；仅绑定计划，不在采用时创建货物或运行结果。",
+          "sample_ref": "modules/transport/batch-transport/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-transport.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        },
+        {
+          "path": "presentation",
+          "type": "optional_transport_media",
+          "required_when": "visual_transport",
+          "meaning": "运动可沿声明线表现，不声称道路动力学；动画结束不等于接受/返程。",
+          "unit_rule": "显示单位/坐标",
+          "validation_rule": "动画结束不产生卸货接受/释放事件",
+          "reference_rule": "实际阶段/移交事件",
+          "canonical_carriers": [
+            {
+              "rust_type": "TransportDefinition",
+              "fields": [
+                "presentation"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "simulation/planner",
+          "instantiation_rule": "选实际运输设备/载具/源目的和货物；仅绑定计划，不在采用时创建货物或运行结果。",
+          "sample_ref": "modules/transport/batch-transport/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-transport.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        }
+      ],
+      "six_views": {
+        "task_interaction": "读取共同身份/版本后编辑本类载荷；草稿检查/类别预览/采用/导出，与当前表单共用工程。",
+        "structure_data": "本类field_contracts及共同值/引用定义；模块定义、工程实例覆盖与运行结果分别存储。",
+        "state_behavior": "Host存DefinitionScope草稿；module-kit解析/采用，实际执行仍交唯一Engine或所选packaging。",
+        "interface_integration": "simulation/planner；共同Commands原18操作，细参数由S06统一，不开放上传脚本。",
+        "ui_presentation": "复用F01,F07；用户查看来源/缺项/预览/采用差异。71字段表单映射已接入；控件现由窗口2维护；当前母版下方工具、160px时间轴和独立描述dock，不恢复Figma。",
+        "deployment_validation": "本地类别包/例子/许可/精确依赖；解析/引用/采用有限预期先核对，S08—S09实际加载和接手。"
+      },
+      "form_refs": [
+        "F01",
+        "F07"
+      ],
+      "refinement_ref": "docs/04_开发与验收/特征细化/DRF03_完整定义.json",
+      "instantiation_rule": "选实际运输设备/载具/源目的和货物；仅绑定计划，不在采用时创建货物或运行结果。"
     },
     {
       "id": "templates",
@@ -231,7 +1364,174 @@
       "deferred_task_refs": [
         "P2-07",
         "P2-09"
-      ]
+      ],
+      "confirmed_question_ids": [
+        "Q09",
+        "Q20",
+        "Q25",
+        "Q27",
+        "Q61"
+      ],
+      "field_contracts": [
+        {
+          "path": "project",
+          "type": "relative_project_design_path",
+          "required_when": "adopt_template",
+          "meaning": "厂房/线组/区域及成员/边界、布局/连接/角色；使用共同Project模型，不自建特殊工厂文件。",
+          "unit_rule": "授权包内相对FileRef",
+          "validation_rule": "读取Versioned<TemplateSubset>，旧project.design非直接运行格式",
+          "reference_rule": "TemplateDefinition.project",
+          "canonical_carriers": [
+            {
+              "rust_type": "TemplateDefinition",
+              "fields": [
+                "project"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "planner/module-kit",
+          "instantiation_rule": "InstantiateTemplate给proposed_objects/mapped_bindings，重映射内部ID；新Scenario种子单独显式选择。",
+          "sample_ref": "modules/templates/parallel-electromechanical/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-templates.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        },
+        {
+          "path": "project.module_refs",
+          "type": "definition_ref[]",
+          "required_when": "adopt_template",
+          "meaning": "精确版本，不从文件名猜模块。",
+          "unit_rule": "精确ModuleRef无单位",
+          "validation_rule": "依赖按id/version全闭包，不取latest；循环引用拒绝",
+          "reference_rule": "ModulePackage.dependencies",
+          "canonical_carriers": [
+            {
+              "rust_type": "TemplateSubset",
+              "fields": [
+                "module_refs"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "planner/module-kit",
+          "instantiation_rule": "InstantiateTemplate给proposed_objects/mapped_bindings，重映射内部ID；新Scenario种子单独显式选择。",
+          "sample_ref": "modules/templates/parallel-electromechanical/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-templates.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        },
+        {
+          "path": "project.layout_scope/halls/lines/connections",
+          "type": "common_project_subset",
+          "required_when": "adopt_layout",
+          "meaning": "局部线组和整厂都可；局部根姿态和边界暴露保存，内部连接跟随。",
+          "unit_rule": "厂房m、Pose按显式单位",
+          "validation_rule": "新命名空间重写全部内部引用；只将外部角色显式复用",
+          "reference_rule": "TemplateSubset布局对象及PortRef",
+          "canonical_carriers": [
+            {
+              "rust_type": "TemplateSubset",
+              "fields": [
+                "layout_scope",
+                "halls",
+                "lines",
+                "connections"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "planner/module-kit",
+          "instantiation_rule": "InstantiateTemplate给proposed_objects/mapped_bindings，重映射内部ID；新Scenario种子单独显式选择。",
+          "sample_ref": "modules/templates/parallel-electromechanical/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-templates.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        },
+        {
+          "path": "project.resources/item_types/role_bindings",
+          "type": "requirements_and_suggested_bindings",
+          "required_when": "adopt_template",
+          "meaning": "先预览新实例/复用既有资源/类型，再用户选择，不能自动复制现有人数或清零库存。",
+          "unit_rule": "类型/资源各自单位",
+          "validation_rule": "展示新建与复用差异；禁止同名自动合并",
+          "reference_rule": "TemplateSubset要求与RoleBindings",
+          "canonical_carriers": [
+            {
+              "rust_type": "TemplateSubset",
+              "fields": [
+                "resource_requirements",
+                "item_types",
+                "role_requirements",
+                "suggested_role_bindings"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "planner/module-kit",
+          "instantiation_rule": "InstantiateTemplate给proposed_objects/mapped_bindings，重映射内部ID；新Scenario种子单独显式选择。",
+          "sample_ref": "modules/templates/parallel-electromechanical/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-templates.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        },
+        {
+          "path": "project.initial_stock/demand",
+          "type": "explicit_optional_seed",
+          "required_when": "explicit_new_scenario_seed",
+          "meaning": "既有工程默认不导入；新工程用户明确采用演示初始输入；不恢复旧Run。",
+          "unit_rule": "初始Quantity、到料/交期ms",
+          "validation_rule": "已有工程默认不带；仅用户明确新方案种子；不恢复旧Run",
+          "reference_rule": "TemplateSubset.seed与explicit_new_scenario_seed",
+          "canonical_carriers": [
+            {
+              "rust_type": "TemplateSubset",
+              "fields": [
+                "seed"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "planner/module-kit",
+          "instantiation_rule": "InstantiateTemplate给proposed_objects/mapped_bindings，重映射内部ID；新Scenario种子单独显式选择。",
+          "sample_ref": "modules/templates/parallel-electromechanical/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-templates.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        },
+        {
+          "path": "generation_profile",
+          "type": "optional_relative_profile_path",
+          "required_when": "goal_driven_generation",
+          "meaning": "行业目标/场地填充/限制与来源映射，消费既有九类，未有模板就列缺项。",
+          "unit_rule": "目标/场地m与明确指标单位",
+          "validation_rule": "只调用真实库/专业能力；缺模板列缺项",
+          "reference_rule": "TemplateGenerationProfile及原SF-17",
+          "canonical_carriers": [
+            {
+              "rust_type": "TemplateDefinition",
+              "fields": [
+                "generation_profile"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "planner/module-kit",
+          "instantiation_rule": "InstantiateTemplate给proposed_objects/mapped_bindings，重映射内部ID；新Scenario种子单独显式选择。",
+          "sample_ref": "modules/templates/parallel-electromechanical/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-templates.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        }
+      ],
+      "six_views": {
+        "task_interaction": "读取共同身份/版本后编辑本类载荷；草稿检查/类别预览/采用/导出，与当前表单共用工程。",
+        "structure_data": "本类field_contracts及共同值/引用定义；模块定义、工程实例覆盖与运行结果分别存储。",
+        "state_behavior": "Host存DefinitionScope草稿；module-kit解析/采用，实际执行仍交唯一Engine或所选packaging。",
+        "interface_integration": "planner/module-kit；共同Commands原18操作，细参数由S06统一，不开放上传脚本。",
+        "ui_presentation": "复用F01,F08；用户查看来源/缺项/预览/采用差异。71字段表单映射已接入；控件现由窗口2维护；当前母版下方工具、160px时间轴和独立描述dock，不恢复Figma。",
+        "deployment_validation": "本地类别包/例子/许可/精确依赖；解析/引用/采用有限预期先核对，S08—S09实际加载和接手。"
+      },
+      "form_refs": [
+        "F01",
+        "F08"
+      ],
+      "refinement_ref": "docs/04_开发与验收/特征细化/DRF03_完整定义.json",
+      "instantiation_rule": "InstantiateTemplate给proposed_objects/mapped_bindings，重映射内部ID；新Scenario种子单独显式选择。"
     },
     {
       "id": "professional",
@@ -260,7 +1560,172 @@
       "deferred_task_refs": [
         "P4-03"
       ],
-      "example_disposition": "deferred_provider_declaration_not_first_release_packaging_implementation"
+      "example_disposition": "deferred_provider_declaration_not_first_release_packaging_implementation",
+      "confirmed_question_ids": [
+        "Q20",
+        "Q25",
+        "Q28",
+        "Q61"
+      ],
+      "field_contracts": [
+        {
+          "path": "professional_contract.input_fields",
+          "type": "typed_job_inputs_or_named_references",
+          "required_when": "call_provider",
+          "meaning": "名义字段声明可保存；真实纸包装消费PackageStructureJob，完整结构/过程由S06-04。",
+          "unit_rule": "DataFieldDeclaration单位",
+          "validation_rule": "required字段/类型/范围齐备才调用；纸包装为真实PackageStructureJob",
+          "reference_rule": "ProfessionalDefinition.input_fields及ProviderCapability.supported_input_schema",
+          "canonical_carriers": [
+            {
+              "rust_type": "ProfessionalDefinition",
+              "fields": [
+                "input_fields"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "professional_tool_and_factory_consumer",
+          "instantiation_rule": "采用提供者契约只登记定义；实际计算、成果、人工认可和adopt_artifact分别调用。",
+          "sample_ref": "modules/professional/machining-producer/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-professional.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        },
+        {
+          "path": "professional_contract.output_artifact_type/output_fields",
+          "type": "artifact_kind_and_payload_fields",
+          "required_when": "call_or_bind",
+          "meaning": "成果/结果/可编辑内容与单位、坐标、产品版本、支持范围完整。",
+          "unit_rule": "输出单位/坐标/版本明确",
+          "validation_rule": "文件/类型/产品/用途匹配；设计expected不能填实际result",
+          "reference_rule": "ArtifactRecord及PackagingResult",
+          "canonical_carriers": [
+            {
+              "rust_type": "ProfessionalDefinition",
+              "fields": [
+                "output_artifact_type",
+                "output_fields"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "professional_tool_and_factory_consumer",
+          "instantiation_rule": "采用提供者契约只登记定义；实际计算、成果、人工认可和adopt_artifact分别调用。",
+          "sample_ref": "modules/professional/machining-producer/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-professional.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        },
+        {
+          "path": "professional_contract.intended_modes",
+          "type": "mode[]",
+          "required_when": "provider_design",
+          "meaning": "设计愿望，不加入运行能力发现。",
+          "unit_rule": "无量纲ProfessionalMode",
+          "validation_rule": "设计可声明，不加入真实能力",
+          "reference_rule": "ProfessionalDefinition.intended_modes",
+          "canonical_carriers": [
+            {
+              "rust_type": "ProfessionalDefinition",
+              "fields": [
+                "intended_modes"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "professional_tool_and_factory_consumer",
+          "instantiation_rule": "采用提供者契约只登记定义；实际计算、成果、人工认可和adopt_artifact分别调用。",
+          "sample_ref": "modules/professional/machining-producer/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-professional.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        },
+        {
+          "path": "professional_contract.available_modes/producer_status",
+          "type": "actual_provider_capability_readonly",
+          "required_when": "run",
+          "meaning": "必须由实际实现注册；上传者不能声明已实现来骗过Host。",
+          "unit_rule": "Host只读能力",
+          "validation_rule": "来自ProviderCapability；草稿/released不扩大支持",
+          "reference_rule": "CapabilityCatalog.providers",
+          "canonical_carriers": [
+            {
+              "rust_type": "ProviderCapability",
+              "fields": [
+                "available_modes",
+                "producer_status"
+              ]
+            }
+          ],
+          "producer": "Host实际提供者注册，只读；DefinitionScope作者不可声明执行能力。",
+          "consumer": "professional_tool_and_factory_consumer",
+          "instantiation_rule": "采用提供者契约只登记定义；实际计算、成果、人工认可和adopt_artifact分别调用。",
+          "sample_ref": "modules/professional/machining-producer/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-professional.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        },
+        {
+          "path": "professional_contract.unit/coordinate_frame/scope",
+          "type": "explicit_scope",
+          "required_when": "call_or_bind",
+          "meaning": "输入/输出坐标与实际支持范围，超范围不默默声明化。",
+          "unit_rule": "明确长度与右手坐标，scope精确token",
+          "validation_rule": "不得前缀猜范围/自动换模式；转换须明确",
+          "reference_rule": "ArtifactRecord及冻结Job和请求用途",
+          "canonical_carriers": [
+            {
+              "rust_type": "ProfessionalDefinition",
+              "fields": [
+                "unit",
+                "coordinate_frame",
+                "scope"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "professional_tool_and_factory_consumer",
+          "instantiation_rule": "采用提供者契约只登记定义；实际计算、成果、人工认可和adopt_artifact分别调用。",
+          "sample_ref": "modules/professional/machining-producer/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-professional.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        },
+        {
+          "path": "acceptance/consumer_binding",
+          "type": "project_owned_refs_not_definition_results",
+          "required_when": "factory_adoption",
+          "meaning": "成果→人认可用途→指定工位绑定→Engine；定义包不能携带虚构已认可结果。",
+          "unit_rule": "版本引用及无量纲用途集合",
+          "validation_rule": "真实成果/匹配人工认可/所需全Pass后才绑定，计算/认可/绑定均不产库存",
+          "reference_rule": "ProjectState.acknowledgments/bindings",
+          "canonical_carriers": [
+            {
+              "rust_type": "ProjectState",
+              "fields": [
+                "acknowledgments",
+                "bindings"
+              ]
+            }
+          ],
+          "producer": "可信人工通道记录ArtifactAcknowledgment；Host经adopt_artifact生成ConsumerBinding。",
+          "consumer": "professional_tool_and_factory_consumer",
+          "instantiation_rule": "采用提供者契约只登记定义；实际计算、成果、人工认可和adopt_artifact分别调用。",
+          "sample_ref": "modules/professional/machining-producer/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-professional.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        }
+      ],
+      "six_views": {
+        "task_interaction": "读取共同身份/版本后编辑本类载荷；草稿检查/类别预览/采用/导出，与当前表单共用工程。",
+        "structure_data": "本类field_contracts及共同值/引用定义；模块定义、工程实例覆盖与运行结果分别存储。",
+        "state_behavior": "Host存DefinitionScope草稿；module-kit解析/采用，实际执行仍交唯一Engine或所选packaging。",
+        "interface_integration": "professional_tool_and_factory_consumer；共同Commands原18操作，细参数由S06统一，不开放上传脚本。",
+        "ui_presentation": "复用F01,F09；用户查看来源/缺项/预览/采用差异。71字段表单映射已接入；控件现由窗口2维护；当前母版下方工具、160px时间轴和独立描述dock，不恢复Figma。",
+        "deployment_validation": "本地类别包/例子/许可/精确依赖；解析/引用/采用有限预期先核对，S08—S09实际加载和接手。"
+      },
+      "form_refs": [
+        "F01",
+        "F09"
+      ],
+      "refinement_ref": "docs/04_开发与验收/特征细化/DRF03_完整定义.json",
+      "instantiation_rule": "采用提供者契约只登记定义；实际计算、成果、人工认可和adopt_artifact分别调用。"
     },
     {
       "id": "media",
@@ -288,7 +1753,198 @@
       ],
       "deferred_task_refs": [
         "P4-03"
-      ]
+      ],
+      "confirmed_question_ids": [
+        "Q14",
+        "Q20",
+        "Q25",
+        "Q29",
+        "Q61"
+      ],
+      "field_contracts": [
+        {
+          "path": "presentation.kind/path OR media_ref",
+          "type": "supported_media_locator",
+          "required_when": "preview",
+          "meaning": "静态PNG/JPEG、图像序列/GIF、原生部件或受支持GLB；选定后保持实际文件/许可。",
+          "unit_rule": "本地支持格式与长度单位",
+          "validation_rule": "路径在授权包内；不按.glb扩展名假定外部资源齐备",
+          "reference_rule": "Presentation.source及ModulePackage.assets/files",
+          "canonical_carriers": [
+            {
+              "rust_type": "Presentation",
+              "fields": [
+                "kind",
+                "source"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "presentation",
+          "instantiation_rule": "通过目标实例presentation_override或选定定义默认绑定；不改变业务规则和库存。",
+          "sample_ref": "modules/media/editable-bench/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-media.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        },
+        {
+          "path": "presentation.unit/coordinate_frame/scale",
+          "type": "explicit_display_transform",
+          "required_when": "3D_or_layout_binding",
+          "meaning": "glTF米/右手Y-up，其他源先显式变换；表现缩放不改规划包络。",
+          "unit_rule": "GLB米/Y-up；纸构mm/Z-up显式变换",
+          "validation_rule": "显示缩放不改物理包络，非均匀缩放不进入专业Job",
+          "reference_rule": "Presentation与真实规划尺寸分开",
+          "canonical_carriers": [
+            {
+              "rust_type": "Presentation",
+              "fields": [
+                "unit",
+                "coordinate_frame",
+                "scale"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "presentation",
+          "instantiation_rule": "通过目标实例presentation_override或选定定义默认绑定；不改变业务规则和库存。",
+          "sample_ref": "modules/media/editable-bench/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-media.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        },
+        {
+          "path": "presentation.nodes/poses/actions",
+          "type": "editable_scene_and_named_tracks",
+          "required_when": "native_or_supported_model_authoring",
+          "meaning": "部件树/TRS/材质/动作可编辑，索引绑定不靠重名。",
+          "unit_rule": "局部TRS显式单位",
+          "validation_rule": "按稳定节点/索引绑定；树无环；name可重名",
+          "reference_rule": "SceneNode/NamedPose/MotionTrack",
+          "canonical_carriers": [
+            {
+              "rust_type": "Presentation",
+              "fields": [
+                "nodes",
+                "poses",
+                "actions"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "presentation",
+          "instantiation_rule": "通过目标实例presentation_override或选定定义默认绑定；不改变业务规则和库存。",
+          "sample_ref": "modules/media/editable-bench/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-media.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        },
+        {
+          "path": "presentation.timeline",
+          "type": "ordered_phase_media_tracks",
+          "required_when": "image_sequence_or_GIF_authoring",
+          "meaning": "图像排序、每帧持续/轨道标签、循环与实际阶段映射；view_time是呈现而非生产时钟。",
+          "unit_rule": "设备过程u∈[0,1]；帧/提示时长ms",
+          "validation_rule": "过程编辑/专业预览/Run时间轴三者分开；不推生产完成",
+          "reference_rule": "TimelineClip.phase_ref与实际phase进度",
+          "canonical_carriers": [
+            {
+              "rust_type": "Presentation",
+              "fields": [
+                "timeline"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "presentation",
+          "instantiation_rule": "通过目标实例presentation_override或选定定义默认绑定；不改变业务规则和库存。",
+          "sample_ref": "modules/media/editable-bench/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-media.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        },
+        {
+          "path": "presentation.anchor_roles/port_anchors",
+          "type": "named_anchor_bindings",
+          "required_when": "data_or_operation_label",
+          "meaning": "预设类型化数据标签只读允许字段，操作标签请求已允许Commands；无绑定显示待补。",
+          "unit_rule": "归一图坐标或显式3D坐标",
+          "validation_rule": "锚点读允许字段；物品/信号/artifact端口不可混绑",
+          "reference_rule": "DataTagBinding、PortRef及Action",
+          "canonical_carriers": [
+            {
+              "rust_type": "Presentation",
+              "fields": [
+                "tags",
+                "anchor_roles",
+                "port_anchors"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "presentation",
+          "instantiation_rule": "通过目标实例presentation_override或选定定义默认绑定；不改变业务规则和库存。",
+          "sample_ref": "modules/media/editable-bench/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-media.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        },
+        {
+          "path": "presentation.lod",
+          "type": "detailed/simplified/region_policy",
+          "required_when": "factory_canvas",
+          "meaning": "三档读同对象，专业完整模型不因放大自动进入设备页；区域由真实组聚合。",
+          "unit_rule": "无量纲档位",
+          "validation_rule": "三档同对象/同状态；聚合不丢真实成员身份",
+          "reference_rule": "Presentation.lod及既有组",
+          "canonical_carriers": [
+            {
+              "rust_type": "Presentation",
+              "fields": [
+                "lod"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "presentation",
+          "instantiation_rule": "通过目标实例presentation_override或选定定义默认绑定；不改变业务规则和库存。",
+          "sample_ref": "modules/media/editable-bench/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-media.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        },
+        {
+          "path": "presentation.production_effect",
+          "type": "none",
+          "required_when": "all_media",
+          "meaning": "动画/图像/标签/GLB都不能提交生产完成或认可。",
+          "unit_rule": "none",
+          "validation_rule": "不允许动画、标签或缩放提交数量/认可/时钟",
+          "reference_rule": "simulation唯一生产拥有者",
+          "canonical_carriers": [
+            {
+              "rust_type": "Presentation",
+              "fields": [
+                "production_effect"
+              ]
+            }
+          ],
+          "producer": "DefinitionScope作者；通过既有Commands采用",
+          "consumer": "presentation",
+          "instantiation_rule": "通过目标实例presentation_override或选定定义默认绑定；不改变业务规则和库存。",
+          "sample_ref": "modules/media/editable-bench/manifest.json",
+          "canonical_shape_fixture_ref": "tools/type-contract-proof/fixtures/module-media.json",
+          "version_rule": "库内容改变另存新精确版本；实例覆盖只改当前Project修订；冻结旧Run/成果不重写。"
+        }
+      ],
+      "six_views": {
+        "task_interaction": "读取共同身份/版本后编辑本类载荷；草稿检查/类别预览/采用/导出，与当前表单共用工程。",
+        "structure_data": "本类field_contracts及共同值/引用定义；模块定义、工程实例覆盖与运行结果分别存储。",
+        "state_behavior": "Host存DefinitionScope草稿；module-kit解析/采用，实际执行仍交唯一Engine或所选packaging。",
+        "interface_integration": "presentation；共同Commands原18操作，细参数由S06统一，不开放上传脚本。",
+        "ui_presentation": "复用F01,F10；用户查看来源/缺项/预览/采用差异。71字段表单映射已接入；控件现由窗口2维护；当前母版下方工具、160px时间轴和独立描述dock，不恢复Figma。",
+        "deployment_validation": "本地类别包/例子/许可/精确依赖；解析/引用/采用有限预期先核对，S08—S09实际加载和接手。"
+      },
+      "form_refs": [
+        "F01",
+        "F10"
+      ],
+      "refinement_ref": "docs/04_开发与验收/特征细化/DRF03_完整定义.json",
+      "instantiation_rule": "通过目标实例presentation_override或选定定义默认绑定；不改变业务规则和库存。"
     }
   ],
   "implementation_tasks": [
@@ -353,7 +2009,7 @@
   },
   "boundary_owners": {
     "definitions": "module-kit解析；定义不拥有库存/当前占用/运行结果",
-    "project_and_bindings": "domain经共同commands保存明确采用的实例/版本/方案/认可/绑定",
+    "project_and_bindings": "domain定义共同类型；desktop_host经commands持有明确采用的实例/版本/方案/认可/绑定。",
     "professional_results": "首版packaging只产生专业成果，不认可自己的用途或提交生产数量",
     "production": "simulation拥有唯一生产时钟、物品归属/数量、资源占用及实际RunId结果",
     "presentation": "读取共同状态和绑定；受支持操作仍经commands，不从动画提交生产完成",
@@ -385,7 +2041,17 @@
     "agent_acceptance_policy": "existing_human_acceptance_reference_only",
     "unsupported_mode_policy": "retain_missing_capability_no_silent_downgrade",
     "material_commit_owner": "simulation",
-    "actual_result": null
+    "actual_result": null,
+    "version_effects_ref": "docs/04_开发与验收/特征细化/DRF03_完整定义.json#professional_version_effects",
+    "canonical_types": [
+      "ArtifactRecord",
+      "ArtifactAcknowledgment",
+      "ConsumerBinding",
+      "PackagingResult",
+      "RunInputRef"
+    ],
+    "logical_draft_rule": "professional-artifact-binding.design.json只保留逻辑术语；真实序列化字段沿types.design.rs，不创建accepted状态布尔或把execution_result当新首版公共对象。",
+    "selected_derivation_ref": "docs/04_开发与验收/特征细化/DRF03_C02_专业绑定推导.json"
   },
   "external_calls": {
     "agent_contract_ref": "docs/03_架构与契约/通用Agent接入与专业软件连接器.md",
@@ -397,5 +2063,511 @@
     "definition_state_grants_runtime_capability": false,
     "arbitrary_uploaded_scripts_executed": false,
     "actual_result": null
+  },
+  "confirmed_design_choices": {
+    "selection_ref": "docs/00_项目基线/全量设计编码确认选择.json",
+    "checkpoint_requirements_ref": "docs/04_开发与验收/全量设计编码确认/SXX-XX_确认选择落实.json",
+    "question_ids": [
+      "Q09",
+      "Q10",
+      "Q14",
+      "Q20",
+      "Q21",
+      "Q22",
+      "Q23",
+      "Q24",
+      "Q25",
+      "Q26",
+      "Q27",
+      "Q28",
+      "Q29",
+      "Q61"
+    ],
+    "requirements": {
+      "Q09": "多选、编组/解组、整体移动、复制为新ID；连接/角色待重绑和种子供给单独确认。",
+      "Q10": "加入本次会话内草稿编辑的撤销/重做；生产结果、人工认可和外部发布不能用它倒退。",
+      "Q14": "完善现有代表设备/载具，补必要物品与包装结构；新类型由可编辑原生部件或合法导入素材表示。",
+      "Q20": "共同身份/版本/来源页，加各类载荷表单；均支持草稿、检查、适合的预览、明确采用和导出。",
+      "Q21": "保留核心类型化字段，加显式命名/单位的自定义属性；数量和当前位置只属于工程实例。",
+      "Q22": "定义角色/容量/资格/日历，采用时创建或绑定实际实例；服务声明可保存但显示执行后置。",
+      "Q23": "用目标/前置/步骤/角色/工时/声明效果表单，制造产出交工艺规则；无实现能力显示不可执行。",
+      "Q24": "从转换/齐套/检查/返工/包装规则起步，结构化编辑配比、条件、阶段、资源和输出。",
+      "Q25": "详情明确显示三层和当前版本；改实例不改库，另存新定义后列变化并选择受影响实例升级。",
+      "Q26": "编辑货物、容量、装卸/去返时长、角色和接受条件；采用时绑定实际起讫库位/载具。",
+      "Q27": "导出选定组合及角色需求；采用前预览新ID/引用/资源复用，种子供料和订单单独确认。",
+      "Q28": "纸包装可进入实际输入/计算/认可/绑定；其他提供者展示契约/缺能力，可保存定义，不伪装可算。",
+      "Q29": "编辑部件树、位置/尺度/朝向/材质、锚点与命名动作；GLB只操作受支持节点和绑定。",
+      "Q61": "本地类别包＋真实示例＋许可/版本/支持范围，经仓库Issue/PR审阅后显式采用；发布由你决定。"
+    }
+  },
+  "draft_edit_history_requirement_ref": "docs/00_项目基线/全量设计编码确认选择.json#new_selected_requirement",
+  "checkpoint": "S05-03",
+  "protocol_md_ref": "docs/03_架构与契约/九类协议与采用设计.md",
+  "review_ref": "docs/04_开发与验收/S05-03_九类协议及消费者复审.json",
+  "common_field_contracts": [
+    {
+      "field": "id",
+      "type": "namespaced_string",
+      "required": "new_draft_identity",
+      "meaning": "命名空间内稳定定义身份，不是显示名或工程实例ID。",
+      "canonical_carriers": [
+        {
+          "rust_type": "ModuleDefinition",
+          "fields": [
+            "id"
+          ]
+        }
+      ],
+      "unit_rule": "标识/版本/权利无量纲；参数及属性的量纲沿其显式声明。",
+      "validation_rule": "定义命名空间内稳定；不等于实例ID；提交版本不能重用不同内容。"
+    },
+    {
+      "field": "version",
+      "type": "SemVer_string",
+      "required": "new_draft_identity",
+      "meaning": "定义版本；采用/导出冻结精确版本；草稿修订另由DefinitionScope管理。",
+      "canonical_carriers": [
+        {
+          "rust_type": "ModuleDefinition",
+          "fields": [
+            "version"
+          ]
+        }
+      ],
+      "unit_rule": "标识/版本/权利无量纲；参数及属性的量纲沿其显式声明。",
+      "validation_rule": "SemVer 2.0.0严格语法，冻结后不可原地覆盖；精确引用包含原版本字符串。"
+    },
+    {
+      "field": "category",
+      "type": "enum_of_existing_nine_ids",
+      "required": "new_draft_identity",
+      "meaning": "决定载荷解释，不按目录或标题猜分类。",
+      "canonical_carriers": [
+        {
+          "rust_type": "ModulePayload",
+          "discriminator": "category",
+          "values": [
+            "items",
+            "devices",
+            "resources",
+            "tasks",
+            "operations",
+            "transport",
+            "templates",
+            "professional",
+            "media"
+          ]
+        }
+      ],
+      "unit_rule": "标识/版本/权利无量纲；参数及属性的量纲沿其显式声明。",
+      "validation_rule": "只取既有九类；canonical位置为definition.payload.category。"
+    },
+    {
+      "field": "title",
+      "type": "string",
+      "required": "editable_definition",
+      "meaning": "可显示名称，不参与匹配或状态判断。",
+      "canonical_carriers": [
+        {
+          "rust_type": "ModuleDefinition",
+          "fields": [
+            "title"
+          ]
+        }
+      ],
+      "unit_rule": "标识/版本/权利无量纲；参数及属性的量纲沿其显式声明。",
+      "validation_rule": "显示文本；不参与匹配/权限/引用解析。"
+    },
+    {
+      "field": "definition_state",
+      "type": "existing_definition_state_enum",
+      "required": "editable_definition",
+      "meaning": "设计生命周期；released不授予执行能力。",
+      "canonical_carriers": [
+        {
+          "rust_type": "ModuleDefinition",
+          "fields": [
+            "definition_state"
+          ]
+        }
+      ],
+      "unit_rule": "标识/版本/权利无量纲；参数及属性的量纲沿其显式声明。",
+      "validation_rule": "既有五值；不授真实执行能力。"
+    },
+    {
+      "field": "contribution.author",
+      "type": "string_or_null",
+      "required": "publication",
+      "meaning": "真实作者/组织声明；未取得为待补，不编成员。",
+      "canonical_carriers": [
+        {
+          "rust_type": "Contribution",
+          "fields": [
+            "author"
+          ]
+        }
+      ],
+      "unit_rule": "标识/版本/权利无量纲；参数及属性的量纲沿其显式声明。",
+      "validation_rule": "保留真实声明或null；不得填虚构贡献者。"
+    },
+    {
+      "field": "contribution.license",
+      "type": "license_expression_or_LicenseRef_or_null",
+      "required": "redistributable_export",
+      "meaning": "定义代码/数据许可；待声明/待确认文本表示未解决，不能当许可。",
+      "canonical_carriers": [
+        {
+          "rust_type": "Contribution",
+          "fields": [
+            "license"
+          ]
+        }
+      ],
+      "unit_rule": "标识/版本/权利无量纲；参数及属性的量纲沿其显式声明。",
+      "validation_rule": "草稿可null；再分发需明确许可，不把待声明视为许可。"
+    },
+    {
+      "field": "contribution.assets[]",
+      "type": "asset_right_record",
+      "required": "when_assets_referenced",
+      "meaning": "path/source/license/redistribution_confirmed逐素材；声明许可与允许再分发分别记录。",
+      "canonical_carriers": [
+        {
+          "rust_type": "Contribution",
+          "fields": [
+            "assets"
+          ]
+        },
+        {
+          "rust_type": "AssetRights",
+          "fields": [
+            "asset_ref",
+            "source",
+            "license",
+            "redistribution_confirmed"
+          ]
+        },
+        {
+          "rust_type": "ModulePackage",
+          "fields": [
+            "assets"
+          ]
+        },
+        {
+          "rust_type": "AssetRef",
+          "fields": [
+            "id",
+            "path",
+            "kind"
+          ]
+        }
+      ],
+      "unit_rule": "标识/版本/权利无量纲；参数及属性的量纲沿其显式声明。",
+      "validation_rule": "每个实际导出资产有授权范围内文件和权利记录，缺权利不自动带入可再分发包。"
+    },
+    {
+      "field": "parameters[]",
+      "type": "parameter_declaration",
+      "required": "when_public_parameter_exposed",
+      "meaning": "独立参数入口可用于全部类别；仅显式类型/单位/有限枚举/合法绑定，不修改正在运行的数据。",
+      "canonical_carriers": [
+        {
+          "rust_type": "ModuleDefinition",
+          "fields": [
+            "parameters"
+          ]
+        }
+      ],
+      "unit_rule": "标识/版本/权利无量纲；参数及属性的量纲沿其显式声明。",
+      "validation_rule": "参数ID唯一；RFC6901绑定实际公开叶；type/unit/range/options一致；不写运行状态。"
+    },
+    {
+      "field": "attribute_schema",
+      "type": "named_typed_attribute_declarations",
+      "required": "when_custom_attributes_used",
+      "meaning": "自定义属性名/type/unit/shape/允许值声明；核心状态字段不能被同名扩展覆盖。",
+      "canonical_carriers": [
+        {
+          "rust_type": "ModuleDefinition",
+          "fields": [
+            "attribute_schema"
+          ]
+        }
+      ],
+      "unit_rule": "标识/版本/权利无量纲；参数及属性的量纲沿其显式声明。",
+      "validation_rule": "名称唯一，值类型/单位/shape一致；不覆盖系统字段。"
+    }
+  ],
+  "value_and_reference_contracts": {
+    "definition_ref": {
+      "fields": [
+        "id",
+        "version"
+      ],
+      "resolution": "精确匹配；同id/version而已冻结内容不同拒绝导入，不按latest或显示名自动升级。"
+    },
+    "role_ref": "定义内符号角色；采用时显式映射工程ItemTypeId/PortId/ResourceId/TargetId；角色字符串不是自动创建的现有对象。",
+    "parameter_declaration": {
+      "fields": [
+        "id",
+        "type",
+        "binding"
+      ],
+      "optional": [
+        "label",
+        "unit",
+        "minimum",
+        "maximum",
+        "integer",
+        "options",
+        "basis"
+      ],
+      "types": [
+        "number",
+        "boolean",
+        "string",
+        "enum",
+        "duration",
+        "quantity",
+        "item_type",
+        "vector3"
+      ],
+      "value_source": "当前载荷/实例覆盖值；未知与例子假设可见，不能把未填默认成0。",
+      "binding": "只解析identifier(.identifier|[integer])*，取指定载荷公开叶字段；不eval，不写id/version/category、运行结果/库存或外部文件。转生成schema/Commands路径由S06-02/03统一。",
+      "selected_behavior_rule": "绑定目标须属于当前显式选中的行为来源；选operation_ref后，旧inline behavior参数不能假装控制已采用规则，须显示实际规则公开参数及角色映射。"
+    },
+    "attribute_declaration": {
+      "fields": [
+        "name",
+        "type"
+      ],
+      "optional": [
+        "unit",
+        "shape",
+        "options",
+        "basis"
+      ],
+      "types": [
+        "number",
+        "integer",
+        "boolean",
+        "string",
+        "enum",
+        "vector3"
+      ],
+      "rule": "name在定义内唯一；有量纲须unit，vector3须三分量和单位；未知保留草稿，执行必需值缺失列具体问题。没有消费者的属性只随工程保存/展示，不改变调度。"
+    },
+    "duration": "value和unit（millisecond/second等已支持时间），basis注明人给/自建/实测；执行转相对整数ms，允许零阶段但不能建立零时自动循环。具体精度/溢出由S06-02冻结，不用浮点墙钟。",
+    "calendar": "相对ms半开区间[start,end)，end>start；所采用工程提供起点/日历引用。定义的default_calendar是建议，不能复制当前人员占用。",
+    "quantity": "value/unit与物品类型或角色同时声明；离散单件为整数计数，连续耗材按类型声明量纲。m与mm可由明确映射转换，件与kg不自动换算。",
+    "port": "id/kind/direction及对应material item角色+unit、signal数据类型+作用范围、artifact类型+单位/坐标/支持范围；三个kind不混作库存。",
+    "asset_ref": "相对本模块目录路径或精确media定义引用；资源只在用户选择包/项目授权目录内解析，绝对路径/逃出包/远端脚本不能自动读取或执行。",
+    "native_geometry": "节点ID、父子树、box/cylinder/plane尺寸/局部TRS/材质、命名姿态/动作与锚点；几何为表现，不偷偷改设备规划包络。",
+    "glb_subset": "glTF2/GLB2；按节点索引和稳定绑定处理（name不保证唯一），读取scene/mesh/节点TRS/PBR材质/本地允许纹理。需要的外部资源列明并纳入包，不能因扩展名.glb假定自包含；不支持的皮肤/形变/扩展具体列缺项，不伪装全GLB支持。现有绑定动作只能经实际支持的节点变换。"
+  },
+  "adoption_protocol": [
+    {
+      "step": "select_source",
+      "action": "选择本地目录/已导入模块精确版本，读取共同头与文件清单；不运行上传脚本。",
+      "owner": "module_kit",
+      "outcome": "待编辑/解析声明，不创建现有物品/资源。"
+    },
+    {
+      "step": "edit_definition_draft",
+      "action": "在独立DefinitionScope修订编辑本类载荷与公开参数；空值/缺引用保留为草稿。",
+      "owner": "desktop_host + module_kit",
+      "outcome": "本地未采用定义，当前Project/Run不变。"
+    },
+    {
+      "step": "check_definition",
+      "action": "按分类/公开叶字段/精确依赖/单位/资产引用列具体缺项；不支持能力区分可保存定义与不可运行实例。",
+      "owner": "module_kit",
+      "outcome": "可采用部分和所需角色/兼容项，不返回生产成功。"
+    },
+    {
+      "step": "preview_category",
+      "action": "按类别预览规格/日历/作用/布局/真实专业输入或表现；需执行时使用隔离样例上下文，原库存不写入。",
+      "owner": "category consumer",
+      "outcome": "支持范围内预览，未实现求解显示缺能力。"
+    },
+    {
+      "step": "prepare_adoption",
+      "action": "用户选目标工程/位置、类型/端口/资源角色映射及实例覆盖；模板列新ID与既有复用；演示种子单独选择。",
+      "owner": "module_kit + commands",
+      "outcome": "可审阅采用计划，依赖原Project base_revision；尚未提交。"
+    },
+    {
+      "step": "commit_adoption",
+      "action": "通过共同Commands短事务检查当前scope/base_revision，保存精确定义与新实例/映射；不完整执行必需绑定只能保留非执行草稿。",
+      "owner": "desktop_host + commands",
+      "outcome": "新Project修订或显式冲突；部分失败不先创建一半物品/设备，Run不被覆盖。"
+    },
+    {
+      "step": "run_selected_scope",
+      "action": "所选执行范围要求实际能力与输入完整；无能力只能草稿/明确部分范围，不能自动忽略而宣称全厂成功。",
+      "owner": "simulation or packaging",
+      "outcome": "实际Run/专业结果，各自归原输入；认可与库存不由模块导入制造。"
+    },
+    {
+      "step": "export_contribution",
+      "action": "导出选定定义/公开配置与必要合法资产/精确依赖/许可/示例，工程实例及种子明确选择；公开发布另由人决定。",
+      "owner": "module_kit + reporting",
+      "outcome": "本地贡献包；没有自动上传社区。"
+    }
+  ],
+  "version_and_update_policy": {
+    "identity": "定义(id,version)与DraftScope revision、Project revision、RunId、产品subject_revision不同；名字不当identity。",
+    "pinning": "工程采用后冻结精确版本和实际内容；草稿改实例只改该实例覆盖。0.y.z表示开发阶段，不承诺旧设计稿自动兼容。",
+    "new_version": "改变库载荷/端口/默认值/素材另存新版本，列受影响实例差异并用户选升级；不倒拨旧Run或新产品引用旧认可。",
+    "same_identity_different_content": "同id/version已有冻结内容且新包不同，返回具体冲突，不覆盖；无hash层，直接用规范字段/文件内容比较所需差异。",
+    "unknown_format": "保留原包/工程并列缺格式/引用，不做自动迁移；S06-02冻结唯一真实保存结构。",
+    "upgrade_commit": "仅在同一Project Scope apply_commands事务中暂存Project.module_refs及明确PutObject目标，全部校核后一次提交；先前独立库版本提交不回滚。逐类Task/Transport消费者见C01。"
+  },
+  "consumer_handoffs": [
+    {
+      "consumer": "domain",
+      "input": "module identity/category + typed defaults + references",
+      "owns": "公共类型；Host保存精确版本/实例/绑定，非库文件创建库存"
+    },
+    {
+      "consumer": "commands/desktop_host",
+      "input": "DefinitionScope edits + ProjectScope adoption plan/base_revision",
+      "owns": "唯一编辑事务与取消/冲突；临时预览不绕过授权"
+    },
+    {
+      "consumer": "simulation",
+      "input": "采用后的类型/工艺/阶段/资源/库位/运输及实际输入",
+      "owns": "唯一时钟/物品/占用/完成，不解析任意脚本"
+    },
+    {
+      "consumer": "presentation",
+      "input": "media/anchor/LOD绑定＋实际快照/阶段/view_time",
+      "owns": "表现树与动作；数据标签不写状态，操作标签经共同命令"
+    },
+    {
+      "consumer": "packaging",
+      "input": "实际可执行纸包装输入/范围/参数/素材",
+      "owns": "专业计算与成果；不人认可、不生产库存"
+    },
+    {
+      "consumer": "reporting/handoff",
+      "input": "选定定义/许可资产/依赖/示例/实际结果范围",
+      "owns": "贡献包/可编辑接手资料，不从漂亮画面编计算结果"
+    },
+    {
+      "consumer": "external_agent",
+      "input": "真实能力/类别字段/当前scope/base_revision与允许变量",
+      "owns": "与UI同入口的编辑/检查/采用；不能自授capability或人工认可"
+    }
+  ],
+  "community_package": {
+    "layout": [
+      "manifest.json",
+      "assets/ (if referenced)",
+      "examples/ (if provided)",
+      "README.md",
+      "LICENSE or LICENSES/"
+    ],
+    "README_required": [
+      "适用任务/行业与首版/后置范围",
+      "公开参数/角色/单位/版本",
+      "实际支持的预览与执行方法",
+      "自建/实测假设来源",
+      "采用和复核方式"
+    ],
+    "rights_rule": "本地未发布草稿可保留许可待补，公开或可再分发包只带权利已明确资产；缺资产用具体清单，不偷换视觉质量或自动删检查。",
+    "workflow": "先本地导出与另一目录打开，再由真实贡献者或本人通过仓库Issue/PR/维护者复核；自动发布和虚构社区规模均不属于本轮。",
+    "dependency_rule": "必要模块精确id/version随包或列真实获取位置/许可，首版不建立云市场/自动下载更新。"
+  },
+  "source_records": [
+    {
+      "title": "Semantic Versioning 2.0.0",
+      "url": "https://semver.org/",
+      "read_date": "2026-10-14",
+      "read_scope": "Specification items1–4, lines66–70",
+      "use": "公开接口清晰、发布内容不可原地变更、0.y.z仍为开发阶段；本项目额外决定精确固定引用。"
+    },
+    {
+      "title": "RFC6901 JSON Pointer",
+      "url": "https://www.rfc-editor.org/rfc/rfc6901.txt",
+      "read_date": "2026-10-14",
+      "read_scope": "Sections3–4 Syntax/Evaluation",
+      "use": "S06统一生成结构定位采用规范字段路径；现有dot/bracket参数语法明确解析，不作为任意脚本。"
+    },
+    {
+      "title": "glTF2 specification",
+      "url": "https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html",
+      "read_date": "2026-10-14",
+      "read_scope": "3.3–3.5 names, units/TRS; 4.1–4.4 GLB",
+      "use": "name可重名、米/右手Y-up、GLB可以引用外部资源；不按扩展名假定独立或全功能支持。"
+    }
+  ],
+  "actual_protocol_execution": null,
+  "S06_bindings_pending": "S06-02/03载体/API与S06-04专业算法设计已有真实静态/有限证据；S06-05、界面认可、公共交接及产品运行继续原关口。",
+  "six_module_views_ref": "docs/04_开发与验收/编码任务包与AI实现审查.md",
+  "type_field_bindings_ref": "packages/domain/module-field-bindings.design.json",
+  "type_format_spec_ref": "docs/03_架构与契约/全层类型与工程格式.json",
+  "S06_type_bindings_status": "validated_actual_Rust_and_derived_schema_61_category_10_common_fields",
+  "S06_bindings_pending_reason": "S06-05/real_UI_Host_execution_and_DRF03_explicit_cross_owner_handoffs; S06-04_design_review_already_passed",
+  "api_contract_spec_ref": "docs/03_架构与契约/公开操作与宿主调用契约.json",
+  "S06_API_bindings_status": "passed_typed_contract_not_product_execution",
+  "refinement_ref": "docs/04_开发与验收/特征细化/DRF03_完整定义.json",
+  "serialization_rule": {
+    "source_ref": "packages/domain/types.design.rs",
+    "envelope": "Versioned<ModulePackage>",
+    "category_pointer": "/data/definition/payload/category",
+    "payload_pointer": "/data/definition/payload/data",
+    "logical_names_are_wire_fields": false,
+    "legacy_rule": "modules中的平铺design清单由PREP-RUNTIME明确适配，不直接冒充canonical；九份canonical夹具只证明形状。",
+    "binding_syntax": "运行ParameterDeclaration.binding为RFC6901相对于ModuleDefinition；旧dot/bracket须显式转换，不eval。"
+  },
+  "timeline_boundary": {
+    "factory_axis": "TC01/TC02及computed_until_ms/Events末刻已合入；只读timeline_runtime_contract。消费同Run冻结版本和phase_work_intervals，不再列为pending。",
+    "device_media": "TimelineClip.phase_ref与实际有效阶段进度；等待/日历关闭不按墙钟推进动作。",
+    "packaging_preview": "冻结Job的step_id/u∈[0,1]；duration_hint_ms仅预览建议，不是工位工时或Run时间。",
+    "process_pose_mapping": "C03已由窗口1合入实际PackagingProcessSample/PackagingPanelPose并复核Schema消费者；step_id/progress及全部panel_id-Pose明确，不猜数组。"
+  },
+  "current_refinement_owner": "复审窗口3；本轮公共类型/API唯一写入复审窗口1，交互/表单维护复审窗口2。",
+  "adoption_effects_ref": "docs/04_开发与验收/特征细化/DRF03_C01_逐类原子采用.json",
+  "legacy_adapter_trial_ref": "scenarios/九类模块采用/DRF03_适配试做结果.json",
+  "legacy_field_transform_ref": "scenarios/九类模块采用/DRF03_适配字段规则.json",
+  "packaging_consumer_device": {
+    "canonical_definition_ref": "packages/packaging/consumer-device.design.json",
+    "module_ref": {
+      "id": "community.parameterized-pack",
+      "version": "0.2.0"
+    },
+    "state": "unregistered_design_candidate_not_catalog_extension",
+    "required_profile": "paper_packaging_complete_v1",
+    "actual_parameter_declarations": [
+      {
+        "id": "packaging_job_id",
+        "label": "所选包装作业ID",
+        "value_type": "string",
+        "unit": null,
+        "binding": "/payload/data/configuration/packaging_job_id/value",
+        "minimum": null,
+        "maximum": null,
+        "integer": false,
+        "options": [],
+        "basis": "user_provided"
+      },
+      {
+        "id": "packaging_job_revision",
+        "label": "所选包装作业修订",
+        "value_type": "integer",
+        "unit": null,
+        "binding": "/payload/data/configuration/packaging_job_revision/value",
+        "minimum": null,
+        "maximum": null,
+        "integer": true,
+        "options": [],
+        "basis": "user_provided"
+      }
+    ],
+    "unselected_instance_configuration": {},
+    "absence_rule": "缺声明或缺显式选择都阻止完整绑定；不给0/最新Job/示例Job默认值。",
+    "adoption_rule": "明确选择0.2.0且两个值齐备后，同一采用/PutObject批次写所选Device.configuration，不能静默升级原0.1.0实例。",
+    "generator_handoff_ref": "docs/04_开发与验收/特征细化/DRF03_C02_实际工位定义与生成接入.json"
   }
 }

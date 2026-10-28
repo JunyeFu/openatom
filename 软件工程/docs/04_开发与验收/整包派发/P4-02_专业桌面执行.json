@@ -1,0 +1,257 @@
+{
+  "task_id": "P4-02",
+  "document_kind": "Root_owned_complete_original_package_desktop_continuation",
+  "status": "in_progress",
+  "authority": "current autonomous original-DAG whole-package goal",
+  "packet_ref": "docs/04_开发与验收/整包派发/P4-02_专业桌面消费者完整续作.md",
+  "original_packet_ref": "docs/04_开发与验收/整包派发/P4-02_完整任务包.md",
+  "business_frontend_authorized": true,
+  "Root_owns_shared_glue": true,
+  "implementation_progress": {
+    "status": "owned_full_desktop_consumer_complete_pending_Root_reader_mount_and_actual_acceptance",
+    "source_frozen": true,
+    "entry": "apps/planner/src/features/packaging/PackagingWorkspace.tsx#PackagingWorkspace",
+    "props_type": "apps/planner/src/features/packaging/types.ts#PackagingWorkspaceProps",
+    "props": {
+      "workspace": "actual WorkspaceSnapshot; actual Project plus capability/provider list",
+      "scope": "ApiScope Project or exact DefinitionDraft; Workspace excluded",
+      "scopeRevision": "actual current ProjectR or DraftR, never Job revision",
+      "io": "existing AuthoringIO supplied by createModuleAuthoringIO(current); shared dispatch/awaitTask/pickDirectory, no new caller or poller",
+      "initialJob": "optional actual previously get_object-read PackageStructureJob; declarations chosen separately and initially unsaved",
+      "onCommitted": "actual EditCommit only; Root refreshes current Scope revision, preserving unsaved local input",
+      "onRefresh": "Root re-reads actual same workspace after Task/binding; no simulated result",
+      "onClose": "unmount closes observation display, does not cancel business Task implicitly",
+      "initialEvidence": "optional actual previously read Artifact/PackagingResult/exact input; not a design or protocol fixture",
+      "storedArtifacts": "optional discriminated actual reader status; unavailable reason shown; available.read(artifactId) -> PackagingEvidence bound to current Project/Scope/session"
+    },
+    "events": [
+      "save Job/product -> onCommitted(actual EditCommit)",
+      "compute -> io.awaitTask(actual TaskHandle,onState); explicit cancel_task",
+      "read Artifact and exact-result Job -> actual get_object; mismatched latest Job not used for geometry",
+      "human click -> record_artifact_acknowledgment in Project only; explicit separate adopt_artifact",
+      "export -> actual export_package private_project/private_module including selected artifact through existing real ZIP picker",
+      "explicit set_declared_parameter Job id+revision in one real command batch before separate adopt_artifact; inline pack uses actual Device ModuleRef, independent pack uses actual selected Operation ModuleRef",
+      "DefinitionDraft export reads actual context; dirty draft requires separate explicit commit_definition_version; private_module export selects actual committed exact ModuleRef",
+      "manual refresh reads actual scoped context/tasks without overwriting local input; existing Task read/observation reuses same IO"
+    ],
+    "shared_interface_requests": [
+      {
+        "owner": "Root/Core",
+        "observed_gap": "DomainObject has Artifact but no PackagingResult; get_object(packaging_job) only returns highest Job revision. Actual files are retained in ProfessionalDocuments.files/additions/backing; reopened artifacts have no TaskOutput in the new session.",
+        "minimum_request": "Root private authorized readPackagingArtifact(artifactId, exact Project/DefinitionDraft Scope) -> {artifact:ArtifactRecord,result:PackagingResult,input:PackageStructureJob}, decoded only from the actual authorized Artifact.input_ref/result_ref; verify result.artifact_id/job_ref/subject and exact Job. No caller-supplied arbitrary path/URL and no 19th operation. Keep real read errors. Adapter supplies storedArtifacts.available.read after actual implementation; until then UI explicit unavailable and real Task history remains usable.",
+        "consumer_type": "apps/planner/src/features/packaging/types.ts#PackagingWorkspaceProps.storedArtifacts",
+        "status": "producer_not_implemented_by_this_owner"
+      }
+    ],
+    "remaining_acceptance": [
+      "Root implements actual authorized stored-artifact exact file reader and supplies storedArtifacts.available.read",
+      "Root mount/import glue with real scoped revision refresh and actual current AuthoringIO",
+      "actual Native clicks/WebGL/Task cancel/explicit user acknowledgment and station binding",
+      "actual ZIP save/reopen and same source validation",
+      "IX-03/factory consumer regression and target-machine/NFR",
+      "original full release and human acceptance"
+    ],
+    "handoff_ref": "scenarios/专业桌面/runtime/handoff.md",
+    "mount_key": "JSON.stringify([workspace.context.host.session_id, workspace.project?.id, scope]); scoped onCommitted/onRefresh retain actual ProjectR or DraftR",
+    "original_step_consumer_mapping": {
+      "1": "canonical ProductRevision/PackageStructureJob/Budget complete structured editor; W01 geometric producer and original independent expectations read-only",
+      "2": "all actual checks/three states/budget/process samples/manufacturing content consumed; no solver/time/stock duplication",
+      "3": "same IO Scope/R saving, Task/cancel, explicit human acknowledgment, station Job selection, separate real adoption and ZIP export typed calls; Root native/reader/factory integration remains open"
+    },
+    "Q_mapping": {
+      "Q02": "actual project devices/products/stations consumed; full eight-device SF/IX remains Root integration",
+      "Q28": "paper packaging invokes actual scoped compute; other providers show actual catalog status only",
+      "Q38": "three mechanism declaration seeds plus blank; panels/folds/connections/parts/variables/constraints all editable",
+      "Q39": "actual versioned product references, envelope vertices/allowed poses/clearance/extraction and hard condition fields",
+      "Q40": "material thickness/basis/source and local contacts explicit; no automatically created material approval",
+      "Q41": "actual steps/sample selection and exact polygon/thickness/world poses with orbit/pan/zoom; no sample fallback; manufacturing separate",
+      "Q42": "shared actual Task state/progress and cancellation; explicit tolerance/budget; 30-second target not measured",
+      "Q43": "explicit purposes/human statement -> real acknowledgment; real selected pack station/Job ID+R -> separate adoption; actual Host diagnostics retained",
+      "Q44": "actual manufacturing files/layers/material counts and exact versions; actual ZIP export protocol; persisted artifact reader and real reopen remain open"
+    },
+    "verification": {
+      "model_and_process": {
+        "passed": 23,
+        "failed": 0,
+        "command": "node --test tests/planner/packaging/model.test.mjs tests/planner/packaging/process.test.mjs",
+        "raw": "scenarios/专业桌面/runtime/model-process-frozen.stdout.txt"
+      },
+      "actual_component_finite_SSR": {
+        "passed": 6,
+        "failed": 0,
+        "build_command": "node tests/planner/packaging/build-view.mjs",
+        "test_command": "node --test tests/planner/packaging/view.test.mjs",
+        "raw": "scenarios/专业桌面/runtime/view-accepted.stdout.txt"
+      },
+      "planner_typecheck": {
+        "exit_code": 0,
+        "command": "npm run typecheck --workspace @superfactory/planner",
+        "raw": "scenarios/专业桌面/runtime/typecheck-accepted.stdout.txt"
+      },
+      "standalone_typed_fixture": {
+        "exit_code": 0,
+        "command": "node_modules/.bin/tsc.cmd --noEmit --jsx react-jsx --moduleResolution Bundler --module ESNext --target ES2022 --esModuleInterop --skipLibCheck --types vite/client tests/planner/packaging/view-fixture.tsx apps/planner/src/features/packaging/raw.d.ts",
+        "raw": "scenarios/专业桌面/runtime/fixture-typed-consumer.stdout.txt"
+      },
+      "scope": "bounded typed consumer/protocol/geometry-view transformations/SSR only, no new Native/Host/Kernel/human or NFR proof"
+    },
+    "self_review": {
+      "result": "owned_current_executable_consumer_review_complete",
+      "no_second_poller_or_solver": true,
+      "actual_Scope_R_Task_identity_and_original_errors_preserved": true,
+      "unknown_sources_and_old_results_not_promoted": true,
+      "statement_and_purpose_selection_cleared_on_new_artifact_or_context": true,
+      "geometry_exact_input_or_explicitly_unavailable": true,
+      "inline_and_independent_pack_match_actual_Host_branch": true,
+      "original_W01_core_and_independent_expectations_modified": false,
+      "public_or_other_owner_sources_modified": false,
+      "Native_or_import_graph_operated": false
+    }
+  },
+  "original_steps": [
+    1,
+    2,
+    3
+  ],
+  "original9Q_release_preserved": true,
+  "whole_task_done": false,
+  "actual_result": null,
+  "human_acceptance": null,
+  "stored_artifacts_progress": {
+    "packet_ref": "docs/04_开发与验收/整包派发/P4-02_保存成果精确读取完整续作.md",
+    "status": "Host_exact_reader_targeted_complete_Root_Native_adapter_and_release_pending",
+    "source_frozen": true,
+    "method": "ProjectHost::read_stored_packaging_artifact(&self, &ObjectId, &ProjectId, &ApiScope, &Revision, &ArtifactId) -> Result<(ArtifactRecord, PackagingResult, PackageStructureJob), ApiError>",
+    "shared_mod_owner": "Core, exact two-line module declaration connected by owner",
+    "native_private_DTO_service_and_UI_owner": "Root",
+    "public_operations_changed": false,
+    "source_paths": [
+      "packages/commands/src/host_stored_artifacts.rs",
+      "packages/commands/tests/stored_artifact_host.rs"
+    ],
+    "expected_ref": "scenarios/专业桌面/runtime-stored-artifacts/expected.json",
+    "actual_result": {
+      "integration": {
+        "passed": 4,
+        "failed": 0,
+        "command": "cargo test -p sf-commands --test stored_artifact_host --locked --offline -- --nocapture",
+        "raw_stdout": "scenarios/专业桌面/runtime-stored-artifacts/integration-second.stdout.txt",
+        "raw_stderr": "scenarios/专业桌面/runtime-stored-artifacts/integration-second.stderr.txt"
+      },
+      "owned_source_boundaries": {
+        "passed": 4,
+        "failed": 0,
+        "command": "cargo test -p sf-commands --lib host_stored_artifacts::tests --locked --offline -- --nocapture",
+        "raw_stdout": "scenarios/专业桌面/runtime-stored-artifacts/boundaries-first.stdout.txt",
+        "raw_stderr": "scenarios/专业桌面/runtime-stored-artifacts/boundaries-first.stderr.txt"
+      },
+      "actual_saved_roundtrip_ref": "scenarios/专业桌面/runtime-stored-artifacts/actual-saved-roundtrip.json",
+      "scope": "actual finite Host/kernel/Save/moved-directory Open in a fresh application Host; not Native/user/NFR/IX release",
+      "original_HOLD01_expected_pass_preserved": true,
+      "first_red": "integration-first:3/4, owned test incorrectly presumed same-Host same-ID reopen removes old Tasks. Corrected test uses real fresh Host restart; production getter unchanged. Raw preserved."
+    },
+    "original_full_release_preserved": true,
+    "cargo_released_to_Core": true,
+    "handoff_ref": "scenarios/专业桌面/runtime-stored-artifacts/handoff.md",
+    "self_review": {
+      "same_Host_only_read_method": true,
+      "actual_UI_GetObject_Project_or_Draft_and_scope_revision_first": true,
+      "Artifact_refs_Versioned_decode_and_exact_id_revision_subject_outcome": true,
+      "never_latest_Job_or_TaskOutput_reconstruction": true,
+      "Draft_missing_files_cannot_borrow_Project_files": true,
+      "no_read_side_effect_or_producer_ack_binding_authority_granted": true,
+      "shared_and_original_independent_expectations_untouched": true
+    },
+    "remaining": [
+      "Root Native strict private DTO/Main guard/shared Host service adapter",
+      "Root connects storedArtifacts.available.read and actual UI",
+      "Core full commands regression after all owner freezes",
+      "actual Native ZIP reopen and factory IX-03/target-machine NFR/human/original full release"
+    ]
+  },
+  "F18_scope_artifact_list": {
+    "finding": "F18 P2: Project artifact_refs is not the current DefinitionDraft artifact catalog",
+    "status": "owned_scope_list_implementation_and_targeted_complete",
+    "source_frozen": true,
+    "method": "ProjectHost::list_stored_packaging_artifacts(&self, &ObjectId, &ProjectId, &ApiScope, &Revision) -> Result<Vec<ArtifactId>, ApiError>",
+    "consumer_protocol": "storedArtifacts available: list(): Promise<ArtifactId[]>; original read(artifactId: string): Promise<PackagingEvidence> preserved",
+    "actual_sources": {
+      "project": "self.professional.artifacts",
+      "definition_draft": "self.definition_drafts[id].professional.artifacts",
+      "filter": "input_ref.kind=PackagingJob && result_ref.kind=PackagingResult"
+    },
+    "admission": "Same actual InteractiveUi / GetObject / current Project / legal Draft / Project-read / exact ScopeR gate as the original getter, before record disclosure",
+    "no_file_loading_or_write": true,
+    "project_summary_Task_latest_or_other_scope_fallback": false,
+    "unsaved_close_confirmation_preserved": true,
+    "component_refresh": "identity/revision/list producer/current-Scope completed Tasks, existing Task observer Completed callbacks, Scope refresh and explicit list refresh; late successful/failed reads do not publish",
+    "source_paths": [
+      "packages/commands/src/host_stored_artifacts.rs",
+      "packages/commands/tests/stored_artifact_host.rs",
+      "apps/planner/src/features/packaging/types.ts",
+      "apps/planner/src/features/packaging/PackagingWorkspace.tsx",
+      "tests/planner/packaging/view-fixture.tsx",
+      "tests/planner/packaging/view.test.mjs",
+      "tests/planner/packaging/stored-list.test.mjs"
+    ],
+    "expected_ref": "scenarios/专业桌面/runtime-stored-artifacts/f18-expected.json",
+    "actual_result": {
+      "red_host": {
+        "exit_code": 101,
+        "reason": "new frozen list tests cannot compile against the original Host without the list producer",
+        "raw": "scenarios/专业桌面/runtime-stored-artifacts/f18-red.stderr.txt"
+      },
+      "red_actual_component_SSR": {
+        "passed": 6,
+        "failed": 1,
+        "reason": "Project-only Artifact appeared in the select before actual Scope list read",
+        "raw": "scenarios/专业桌面/runtime-stored-artifacts/f18-view-red.stdout.txt"
+      },
+      "host_integration": {
+        "passed": 6,
+        "failed": 0,
+        "old_checks": 4,
+        "new_checks": 2,
+        "raw": "scenarios/专业桌面/runtime-stored-artifacts/f18-integration-green.stdout.txt"
+      },
+      "host_boundaries": {
+        "passed": 5,
+        "failed": 0,
+        "old_checks": 4,
+        "new_checks": 1,
+        "raw": "scenarios/专业桌面/runtime-stored-artifacts/f18-boundaries-green.stdout.txt"
+      },
+      "ui_finite_consumer": {
+        "passed": 33,
+        "failed": 0,
+        "old_checks": 29,
+        "new_checks": 4,
+        "raw": "scenarios/专业桌面/runtime-stored-artifacts/f18-ui-green.stdout.txt"
+      },
+      "planner_typecheck": {
+        "exit_code": 0,
+        "raw": "scenarios/专业桌面/runtime-stored-artifacts/f18-typecheck.stdout.txt"
+      },
+      "standalone_typed_fixture": {
+        "exit_code": 0,
+        "raw": "scenarios/专业桌面/runtime-stored-artifacts/f18-typed-fixture.stdout.txt"
+      },
+      "scope": "actual targeted Host/kernel checks plus finite frontend consumer/SSR; no new Native/human/NFR/IX acceptance"
+    },
+    "self_review": {
+      "old_8_Host_and_29_UI_expectations_preserved": true,
+      "original_exact_reader_semantics_preserved": true,
+      "no_second_poller_or_new_public_operation": true,
+      "Root_Native_services_Workbench_and_Core_shared_Host_not_modified": true,
+      "late_scope_revision_unmount_reads_guarded": true
+    },
+    "handoff_ref": "scenarios/专业桌面/runtime-stored-artifacts/f18-handoff.md",
+    "cargo_released": true,
+    "original_3_steps_9Q_release_preserved": true,
+    "whole_task_done": false,
+    "remaining": [
+      "Root actual Native precise-Scope stored-list walk-through and shared integration regression",
+      "Original full P4-02 user/IX-03/target-machine NFR/release gates"
+    ]
+  }
+}

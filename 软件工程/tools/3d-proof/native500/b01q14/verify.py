@@ -1,0 +1,26 @@
+from pathlib import Path
+import json,sys,math
+ROOT=Path(__file__).resolve().parents[4];HOME=ROOT/'modules/media/native-equipment-500/reviews/B01-Q14';attempt=ROOT/(sys.argv[1]if len(sys.argv)>1 else '.work/native500-quality-20261025/b01q14/attempt-01');read=lambda p:json.loads(p.read_text(encoding='utf8'));write=lambda p,v:p.write_text(json.dumps(v,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
+run=read(attempt/'PAPER-QA.run.json');receipt=read(attempt/'host-receipt.json');s=read(HOME/'catalog.json')['equipment'][0];key=s['id'];rows=[];cases=[]
+assert len(run['jobs'])==7 and all(j['state']=='completed'for j in run['jobs'])and receipt['fresh_Host_save_reopen']and run['whole_window_computed']
+for condition in ['normal','missing','phase-wait','interrupted','output-wait','missing-auxiliary']:
+ dev=key+'--'+condition;job=next(j for j in run['jobs']if j['execution_ref']['data']['device_id']==dev);assert job['operation_ref']==dict(id=s['definition_id'],version=s['version'])
+ waits=[w for w in run['waits']if w['object_ref']['id']==job['id']];expected={'normal':None,'missing':('missing_material',0,8000),'missing-auxiliary':('missing_material',0,8000),'phase-wait':('calendar',6800,11800),'interrupted':('calendar',14960,19960),'output-wait':('output_capacity',34000,40000)}[condition]
+ if expected:
+  kind,a,b=expected;w=next(w for w in waits if any(r['kind']==kind for r in w['reasons']));assert w['interval']==dict(start_ms=a,end_ms=b)and w['end_cause']=='resolved'
+  if condition=='missing-auxiliary':assert any(r['blocking_object']['id']==dev+'-auxiliary'for r in w['reasons'])
+ else:assert not waits
+ finish={'normal':34000,'missing':42000,'missing-auxiliary':42000,'phase-wait':39000,'interrupted':39000,'output-wait':40000}[condition];assert job['finished_at_ms']==finish
+ assert sum(p['interval']['end_ms']-p['interval']['start_ms']for p in run['phase_work_intervals']if p['job_id']==job['id'])==34000
+ raw=next(i for i in run['final_items']if i['id']=='paper-'+dev);aux=next(i for i in run['final_items']if i['id']=='auxiliary-'+dev);out=[i for i in run['final_items']if i['holder']==dict(kind='location',id=dev+'-out')];assert len(out)==1 and raw['lifecycle']==aux['lifecycle']=='transformed'
+ o=out[0];assert set(o['composition_refs'])=={raw['id'],aux['id']}and o['id']not in[raw['id'],aux['id']]and o['quality']=='released'and o['quantity']==dict(unit='piece',value=dict(coefficient=1,decimal_places=0))
+ assert o['attributes']['presentation_state']['value']=='pre_glued_flat_auto_bottom_carton'and math.isclose(o['attributes']['developed_area_m2']['value'],raw['attributes']['area_m2']['value'],abs_tol=1e-12)and math.isclose(o['attributes']['adhesive_volume_m3']['value'],aux['attributes']['declared_dose_volume_m3']['value'],abs_tol=1e-15)
+ rows.append({'id':key,'condition':condition,'job_id':job['id'],'wait':expected,'started_ms':job['started_at_ms'],'finished_ms':finish,'effective_work_ms':34000,'passed':True})
+def capture(condition,label,at,lod='detailed'):
+ dev=key+'--'+condition;view={'kind':'line_canvas','canvas':'line_canvas','hall_id':'hall-'+dev,'object_ref':{'kind':'line','id':'line-'+dev},'project_revision':3,'run_id':run['id'],'view_time_ms':at,'lod':lod,'camera':{'coordinate_frame':'right_handed_z_up','unit':'meter','eye':dict(x=6.8,y=7.3,z=3.8),'target':dict(x=3,y=3.2,z=1.0),'zoom':1}}
+ cases.append({'name':dev+' / '+label,'scope':{'kind':'project'},'params':{'revision':3,'view':view,'object_id':{'kind':'line','id':'line-'+dev},'preview':None,'delivery':'capture_only'}})
+for condition,label,at in [('normal','held at processing midpoint',17000),('normal','loading',3000),('normal','unloading',30000),('normal','delivered',34001),('missing','waiting for arrival',4000),('phase-wait','holding before phase resource',9000),('interrupted','paused A',16000),('interrupted','paused B',19000),('interrupted','resumed',22000),('output-wait','holding while output blocked',36000),('output-wait','delivered after buffer clearance',40001),('missing-auxiliary','waiting for actual consumable',4000),('missing-auxiliary','recovered after actual consumable arrival',23000),('normal','bottom hooks folding',9248),('normal','diagonal ears folding',13940),('normal','bottom and side glue application',16286),('normal','left wall folding',19040),('normal','right wall folding',23936),('normal','seam pressing',26384)]:capture(condition,label,at)
+capture('normal','held simple LOD',17000,'simplified');assert len(cases)==20
+check={'id':key,'version':s['version'],'conditions':{r['condition']:{k:v for k,v in r.items()if k not in['id','condition']}for r in rows}}
+write(attempt/'behavior-checks.json',{'passed':True,'scope':'actual Host Run, Native still pending','run_id':run['id'],'checks':[check],'fresh_Host_save_reopen':True,'actual_device_conditions':6,'actual_jobs':7,'two_sources_new_lock_carton':True,'developed_area_and_glue_volume':True});write(attempt/'native-plan.json',{'preparations':[],'allow_view_control':False,'cases':cases});write(HOME/'host-checks.json',{'passed':True,'attempt':attempt.relative_to(ROOT).as_posix(),'jobs':7,'device_conditions':6,'two_sources_new_lock_carton':True,'Native':'pending'})
+print('B01-Q14 actual Host:7jobs/6conditions, new two-source lock carton, area/dose, holders and fresh Host reopen PASS;20 Native views planned.')

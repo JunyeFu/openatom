@@ -1,0 +1,121 @@
+{
+  "document_kind": "S07_actual_engineering_preparation_and_scoped_S08_entry_review",
+  "completed_at": "2026-10-15T18:39:39+08:00",
+  "status": "passed_engineering_preparation",
+  "authorization": "用户明确要求修复两项P2、完成S07工程准备与必要验证并复核S08准入。",
+  "operator_kind": "user_authorized_AI",
+  "actual_human_acceptance": null,
+  "scope": "实际工程壳、依赖锁、生成/构建/启动/测试及交接投影；不实现P任务业务。",
+  "verification_ref": "tools/s07/output/verification.json",
+  "dependencies_ref": "tools/s07/output/dependencies.json",
+  "verified_commands": {
+    "generate_types": "npm run generate:types",
+    "typecheck": "npm run typecheck",
+    "build": "npm run build",
+    "rust_tests": "npm run test:rust",
+    "engineering_tests": "npm test",
+    "desktop_start_smoke": ".\\target\\debug\\superfactory.exe --s07-smoke"
+  },
+  "configured_dev_start_not_executed": "npm start；127.0.0.1:8922已登记预留，本轮未启动TCP开发服务。",
+  "checkpoints": [
+    {
+      "id": "S07-01",
+      "status": "passed",
+      "result": "实际8个Rust工作区成员、2个npm工作区及宿主/桥/表现编译入口已建立。",
+      "evidence_refs": [
+        "Cargo.toml",
+        "package.json"
+      ]
+    },
+    {
+      "id": "S07-02",
+      "status": "passed",
+      "result": "Rust1.97.0/目标平台及Node24.15.0/npm12.0.1写入实际配置，本机版本查询和编译通过。",
+      "evidence_refs": [
+        "rust-toolchain.toml",
+        "package.json",
+        "apps/planner/tsconfig.json"
+      ]
+    },
+    {
+      "id": "S07-03",
+      "status": "passed",
+      "result": "所选22个直接依赖实际精确锁定；Cargo512个注册表依赖、npm95个锁条目已解析。依赖脚本按禁用策略处理。",
+      "evidence_refs": [
+        "Cargo.lock",
+        "package-lock.json",
+        "tools/s07/output/dependencies.json"
+      ]
+    },
+    {
+      "id": "S07-04",
+      "status": "passed",
+      "result": "真实MSVC/Tauri调试应用及桥进程构建成功；WebView2从打包本地资源启动并完成工程IPC握手。",
+      "evidence_refs": [
+        "apps/planner/src-tauri/tauri.conf.json",
+        "tools/s07/output/verification.json"
+      ]
+    },
+    {
+      "id": "S07-05",
+      "status": "passed",
+      "result": "Rust测试入口、同源类型生成、TS检查和3个实际工程烟测通过；尚无业务功能单测或业务验收通过。",
+      "evidence_refs": [
+        "tools/s07/verify.ps1",
+        "tests/engineering/smoke.test.mjs",
+        "tools/s07/output/verification.json"
+      ]
+    }
+  ],
+  "engineering_smoke": {
+    "total": 3,
+    "passed": 3,
+    "failed": 0,
+    "covers": [
+      "真实WebView2/本地React资源/Three版本和原生IPC往返",
+      "桥程序版本进程入口",
+      "业务桥未实现时明确退出且不伪装MCP服务"
+    ],
+    "business_acceptance": false
+  },
+  "Rust_business_unit_test_count": 0,
+  "S08_entry_assessment": {
+    "status": "ready_for_scoped_backend_dispatch",
+    "prepared_task": "P0-01",
+    "prepared_original_step": 1,
+    "prepared_slice_ref": "docs/04_开发与验收/编码任务包/任务包索引.json#/packages/0/prepared_slice",
+    "actual_dispatch_started": false,
+    "product_business_frontend_authorized": false,
+    "frontend_build_authorization": null,
+    "boundary": "S07工程关口已满足；原步骤1基础类型后端切片已准备，可在明确派发后开始。业务前端仍按其授权与设计帧范围落实。"
+  },
+  "closed_findings": [
+    "EFR-01",
+    "EFR-02"
+  ],
+  "product_tasks_completed": 0,
+  "selected_product_tasks_planned": 21,
+  "business_operations_implemented": 0,
+  "business_runtime_result": null,
+  "remaining_seven_groups_classification": "首版后续开发与验收工作；不是未解决设计缺陷，不删除已选功能。",
+  "observed_build_errors_resolved": [
+    "ts-rs12的decl需要显式Config，已按所选版本源码修正并真实生成TS。",
+    "Tauri CLI构建参数须经--透传Cargo的--locked，已修正并构建通过。"
+  ],
+  "build_kind": "Windows x64 debug engineering shell, no installer or signed release",
+  "icon_source": "复用DRF04_S05-desktop-proof中本项目自制工程图标；不是最终产品视觉认可。",
+  "overall_recheck": {
+    "status": "passed_current_source_and_actual_engineering",
+    "reviewed_at": "2026-10-15T18:51:06+08:00",
+    "mainline_ref": "docs/04_开发与验收/主线同步检查结果.json",
+    "files": 9526,
+    "local_references": 5082,
+    "matrix_passed": 12,
+    "errors": [],
+    "frozen_design_refs_valid": 617,
+    "S07_checkpoint_passed": 5,
+    "engineering_smoke_passed": 3,
+    "business_operations_implemented": 0,
+    "actual_S08_started": false
+  }
+}

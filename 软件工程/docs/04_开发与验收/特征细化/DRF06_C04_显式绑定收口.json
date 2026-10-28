@@ -1,0 +1,889 @@
+{
+  "document_kind": "DRF06_C04_explicit_binding_and_21_task_business_input_closure",
+  "date": "2026-10-14",
+  "status": "business_design_ready_all_21_inputs_classified_18_new_checks_and_current_canonical_19_matched",
+  "source_refs": [
+    "docs/04_开发与验收/特征细化/DRF03_C04_伴随材料消费契约.json",
+    "scenarios/九类模块采用/template-output/template.json",
+    "scenarios/九类模块采用/template-output/adoption-material.json",
+    "packages/domain/types.design.rs",
+    "packages/commands/api.design.rs",
+    "scenarios/九类模块采用/adoption-output/template.json",
+    "docs/04_开发与验收/特征细化/DRF03_C04_r4_公共增量.json",
+    "docs/03_架构与契约/全层类型与工程格式.json#/typed_template_adoption_contract"
+  ],
+  "layer_split": {
+    "definition": "不可变精确ModuleRef/规则/资源要求/默认日历/品质声明，不携运行库存或实际员工",
+    "instance": "Device/Resource/Calendar/Route/Preset绑定持久保存，原子remap，Run冻结",
+    "actual_choice": "用户明确实际资源/日历/产品/BOM/Route/用途及输入，未选择是采用义务而非虚造实例/路线"
+  },
+  "worker_mapping": [
+    {
+      "source_id": "W-B",
+      "requirement_index": 0,
+      "requirement_role": "legacy.worker.W-B",
+      "definition_capacity": {
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        },
+        "unit": "person"
+      },
+      "definition_calendar": [
+        {
+          "start_ms": 0,
+          "end_ms": 300000
+        }
+      ],
+      "actual_choice_required": true,
+      "fixture_resource_id": "TF.worker.B",
+      "calendar_id": "TF.calendar.W-B",
+      "calendar_ms": [
+        [
+          0,
+          300000
+        ]
+      ],
+      "remap_use_sites": [
+        "Inspection01",
+        "Packing01"
+      ]
+    },
+    {
+      "source_id": "W-C",
+      "requirement_index": 1,
+      "requirement_role": "legacy.worker.W-C",
+      "definition_capacity": {
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        },
+        "unit": "person"
+      },
+      "definition_calendar": [
+        {
+          "start_ms": 0,
+          "end_ms": 300000
+        }
+      ],
+      "actual_choice_required": true,
+      "fixture_resource_id": "TF.worker.C",
+      "calendar_id": "TF.calendar.W-C",
+      "calendar_ms": [
+        [
+          0,
+          300000
+        ]
+      ],
+      "remap_use_sites": [
+        "CNC01"
+      ]
+    },
+    {
+      "source_id": "W-A",
+      "requirement_index": 2,
+      "requirement_role": "legacy.worker.W-A",
+      "definition_capacity": {
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        },
+        "unit": "person"
+      },
+      "definition_calendar": [
+        {
+          "start_ms": 0,
+          "end_ms": 300000
+        }
+      ],
+      "actual_choice_required": true,
+      "fixture_resource_id": "TF.worker.A",
+      "calendar_id": "TF.calendar.W-A",
+      "calendar_ms": [
+        [
+          0,
+          300000
+        ]
+      ],
+      "remap_use_sites": [
+        "Assembly01"
+      ]
+    },
+    {
+      "source_id": "W-E",
+      "requirement_index": 3,
+      "requirement_role": "legacy.worker.W-E",
+      "definition_capacity": {
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        },
+        "unit": "person"
+      },
+      "definition_calendar": [
+        {
+          "start_ms": 0,
+          "end_ms": 300000
+        }
+      ],
+      "actual_choice_required": true,
+      "fixture_resource_id": "TF.worker.E",
+      "calendar_id": "TF.calendar.W-E",
+      "calendar_ms": [
+        [
+          0,
+          300000
+        ]
+      ],
+      "remap_use_sites": [
+        "Board01",
+        "board-preparation"
+      ]
+    }
+  ],
+  "execution_capacity_mapping": [
+    {
+      "source_device_id": "CNC01",
+      "selected_binding_path": "DeviceInstance.role_bindings.resources.execution_capacity",
+      "actual_selection": "required_existing_or_explicit_new_ResourceInstance_and_Calendar",
+      "source_note": "fixture mappings are not real choices"
+    },
+    {
+      "source_device_id": "Board01",
+      "selected_binding_path": "DeviceInstance.role_bindings.resources.execution_capacity",
+      "actual_selection": "required_existing_or_explicit_new_ResourceInstance_and_Calendar",
+      "source_note": "fixture mappings are not real choices"
+    },
+    {
+      "source_device_id": "BoardFinish01",
+      "selected_binding_path": "DeviceInstance.role_bindings.resources.execution_capacity",
+      "actual_selection": "required_existing_or_explicit_new_ResourceInstance_and_Calendar",
+      "source_note": "fixture mappings are not real choices"
+    },
+    {
+      "source_device_id": "Assembly01",
+      "selected_binding_path": "DeviceInstance.role_bindings.resources.execution_capacity",
+      "actual_selection": "required_existing_or_explicit_new_ResourceInstance_and_Calendar",
+      "source_note": "fixture mappings are not real choices"
+    },
+    {
+      "source_device_id": "Inspection01",
+      "selected_binding_path": "DeviceInstance.role_bindings.resources.execution_capacity",
+      "actual_selection": "required_existing_or_explicit_new_ResourceInstance_and_Calendar",
+      "source_note": "fixture mappings are not real choices"
+    },
+    {
+      "source_device_id": "Packing01",
+      "selected_binding_path": "DeviceInstance.role_bindings.resources.execution_capacity",
+      "actual_selection": "required_existing_or_explicit_new_ResourceInstance_and_Calendar",
+      "source_note": "fixture mappings are not real choices"
+    }
+  ],
+  "field_mapping": [
+    {
+      "id": "B-CAP",
+      "source": "C04 devices[].job_resources中的设备自身身份；无真实机位日历选择",
+      "definition": "DeviceDefinition选择有效行为；定义不产生ResourceInstance/日历或Claim",
+      "instance": "本轮选定使用既有RoleBindings.resources.execution_capacity显式映射真正ResourceInstance，kind=fixture、unit=station、capacity明确；该实例calendar_id→Calendar.intervals",
+      "choice": "用户在采用时明确绑定/创建实际机位和日历；禁止同设备容量又按Device又按Resource扣两次",
+      "freeze": "校验机位用途/容量单位/日历引用/权限；JobExecutionRef.execution_capacity_ref=该Resource；无明确选择拒绝该执行用途",
+      "producer_consumer": "采用候选→现行公共冻结编译约定→Job/ResourceClaim/timeline O；保留角色合法性与单一Claim现已纳入公共规范",
+      "status": "closed_current_public_reserved_role_and_freeze_norm"
+    },
+    {
+      "id": "B-WORK",
+      "source": "resource_requirement_source_ids与source_resources",
+      "definition": "TemplateSubset.resource_requirements按0..3分别legacy.worker.W-B/W-C/W-A/W-E，1 person，默认日历0—300000",
+      "instance": "Actual ResourceInstance.definition_ref/capacity/calendar_id；Device/Route/Task资源角色统一指新选实际ID",
+      "choice": "匹配已有员工或明确新建；原W-*是要求来源标签，不是假定现工程员工",
+      "freeze": "数组次序/role/source_id不丢；角色用途/单位/资格/日历/权限一致；旧配置全部资源引用一次重映射，不能只改resource_requirements；usage role如assembler/inspector/packer通过显式资源ID映射，允许同一实际员工服务多个usage role，按kind/person单位/容量/资格校验，不拿实例显示role字符串猜替换 TemplateResourceChoice.source_id/requirement_index保持来源，resource_id明确选择；TemplatePreparationBinding.worker_roles仍保留source_id，实际Device/Route/Task资源引用由选择表投影为实际ID。",
+      "producer_consumer": "伴随材料→采用绑定→共同资源账本→阶段/Job Claim",
+      "status": "defined"
+    },
+    {
+      "id": "B-PREP",
+      "source": "preparation_bindings[0]，精确Tasks ModuleRef local.template-parallel-electromechanical.preparation.board-preparation@0.1.0",
+      "definition": "TaskDefinition manual_preparation、target_role=target、resource_roles legacy.worker.W-E、duration=30000ms、equipment_access=exclusive、completion_effect.marker=board-preparation/produces_material=false",
+      "instance": "TemplateAdoption.preparation_bindings.task_ref/target_device_id/before_device_ids/worker_roles/route_refs保存要求；worker_roles值仍为source_id，由resource_choices显式解析实际员工；实际Route prepare step用Task ModuleRef并绑定采用后Board01，Device.targets.target同Board。",
+      "choice": "没有实际Product/BOM/Route时存采用义务；用户给合法路线后接prepare→Board工序，不生成虚构Route",
+      "freeze": "精确Task版本/目标/角色/容量/日历，readiness要求同Run同目标同选择配置；完成前不可满足",
+      "producer_consumer": "ImportDraft义务→用户实际Route→Preparation Job→readiness→Board work",
+      "status": "typed_public_carrier_and_current_adoption_candidate_aligned"
+    },
+    {
+      "id": "B-MARKER",
+      "source": "完成Task的ReadinessEffect",
+      "definition": "marker字符串board-preparation不是初始库存/模块全局状态",
+      "instance": "持久依据是该Run中完成Preparation Job及其JobExecutionRef、精确operation_ref和冻结目标/配置；Worker缓存可从该证据派生",
+      "choice": "同Run同目标/配置重复请求只引用已完成Job，不新增Job/工时；新Run从同起点不继承运行marker",
+      "freeze": "Completed且实际效果提交/资源释放后派生；不可用import成功、phase名或旧Run标记代完成",
+      "producer_consumer": "Job completion→Run-owned readiness→候选派工；保存旧Run保其证据，不能回写模板",
+      "status": "defined_no_new_clock_or_public_marker_table_required"
+    },
+    {
+      "id": "B-LIFE",
+      "source": "phase_material及local definitions inline",
+      "definition": "CNC 10000/45000/5000，Board 5000/20000/5000，duration=null、policy=pause_resume；Assembly/Inspect/Pack 40000/10000/20000单段资源全Job",
+      "instance": "执行机位整Job持有至成功输出/效果；CNC人员仅load/unload，Board人员仅load/unload；prepare W-E整任务，Assembly W-A、Inspect/Packing W-B整Job",
+      "choice": "保留同员工Inspection/Packing共享关系，不复制员工；原cycle_seconds为inactive源说明，不重复加总phase",
+      "freeze": "暂停释放仅phase-only人员，保机位/物品/进度；Job+phase同资源合并；输出等待不提前释放整Job",
+      "producer_consumer": "定义→Job/phase/Claim.interval_end_causes→等待/报告",
+      "status": "aligned_with_companion_pause_resume_supersedes_prior_C04_non_preemptive_selection"
+    },
+    {
+      "id": "B-PRESET",
+      "source": "quality_declarations.source_values PASS/PASS与id",
+      "definition": "InspectionRule.result_ref需解析实际ScenarioInput.quality_presets的InspectionPreset.id；精确inspection_module和ExactItem/Ancestor/Batch匹配范围",
+      "instance": "TemplateAdoption.inspection_presets保存声明和nullable匹配范围；来源局部result_ref由adoption.id限定并编译到实际ScenarioInput.quality_presets ID，不改不可变Inspection定义；本fixture显式祖先TF.blank.batch、PASS/PASS采用当前string TypedValue。",
+      "choice": "seed=null阶段只存质量绑定义务，不猜未来产品ID；多个preset匹配/范围含糊拒绝用途，不能随机取一个",
+      "freeze": "游标键为本Run+actual Scenario preset限定ID+精确inspection_module；同祖先两件共享序列，按现有稳定事件/派工顺序开检锁attempt ordinal。开始只增加started_count；完成读取锁定值/提交一次。暂停/计算取消不重领；新Run按初始声明重置。耗尽/null/错误类型UNKNOWN pending，错模块/范围或多匹配拒绝用途。",
+      "producer_consumer": "伴随声明→InspectorPreset映射→实际检查开始/完成→单出口、quality变化",
+      "status": "defined_existing_cursor_semantics_completion_consumption_not_start_PASS"
+    },
+    {
+      "id": "B-OUTQUAL",
+      "source": "BoardFinish01.output_quality.pcb=released，source=declared_preset_for_flow_only",
+      "definition": "输出品质效果独立于MaterialRoleQuantity.required_quality；后者是取得条件，不能用它当setter",
+      "instance": "BoardFinish01@0.2.0实际output行declared_output_quality=released；精确采用后设备/行为/port=output/item_type=pcb，在最后有效阶段完成创建唯一实际结果槽的同一提交应用一次，holder仍job待移交。",
+      "choice": "此值源已明确，不属缺用户质量数据；不能在import/start/读图时放行，也不影响其他PCB/装配体或生成HumanAcknowledgment",
+      "freeze": "现行Rust/Schema/TS和typed_template_adoption_contract已合入；input字段必须null，inspect仍QualityRule，不接受自定义attribute绕过；目的满重用原槽，取消/未完成不触发。",
+      "producer_consumer": "冻结声明effect→实际BoardFinish完成→RuntimeItem quality→后续领用/报告",
+      "status": "closed_public_field_and_actual_0_2_0_definition_observed"
+    },
+    {
+      "id": "B-ROUTE",
+      "source": "deferred_seed/seed=null、原产品BOM路线未给",
+      "definition": "固定输入配比/阶段属于模块定义，不能称其已经是用户实际ProductRevision/BomDefinition/RouteDefinition",
+      "instance": "采用义务记录产品/BOM/Route及prepare顺序、物料来源/角色、实际行为引用/检查preset/effect待绑定；不留dangling虚构ID 公共TemplateAdoption.deferred_seed含nullable Product/BOM/Route与initial quality；missing_inputs保存用途缺项。",
+      "choice": "用户实际选择/提供数据后转原PutObject候选；inline工序绑定需明确相同Device有效行为的真实身份，不造不存在的Operations ModuleRef",
+      "freeze": "本轮选定：同设备选inline时RouteStep.operation_ref可用该精确Device.module_ref作其有效inline来源身份，按device_id+selected inline解析；外部Operations/Tasks按C01解析，互斥且精确匹配；共同合同现已纳入",
+      "producer_consumer": "ImportDraft义务→实际用户选择→原子Commands→冻结Run；fixture可独立明确给Ops/Route不回填C04",
+      "status": "closed_typed_adoption_and_exact_source_norm_real_user_inputs_deferred"
+    }
+  ],
+  "required_still_missing": [],
+  "task_coverage": [
+    {
+      "P_id": "P0-01",
+      "required_still_missing": [],
+      "legal_user_input": [
+        "工程名称/保存路径/实际设备与员工选择，C04尚未给的真实机位/日历"
+      ],
+      "business_design_status": "business_design_ready_inputs_defined_or_legally_deferred",
+      "reopens_for_missing_Engine": false,
+      "changes_task_status": false,
+      "design_input_refs": [
+        "docs/03_架构与契约/首版类型格式与操作契约.md",
+        "packages/module-kit/category-contracts.design.json",
+        "packages/domain/factory-generation.design.json",
+        "docs/03_架构与契约/全层类型与工程格式.json",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json"
+      ],
+      "missing_referenced_files": [],
+      "closed_this_round": [
+        "M-C04-OBL"
+      ]
+    },
+    {
+      "P_id": "P0-02",
+      "required_still_missing": [],
+      "legal_user_input": [
+        "实际Product/BOM/Route及产品版本/数量/目标/用途选择"
+      ],
+      "business_design_status": "business_design_ready_inputs_defined_or_legally_deferred",
+      "reopens_for_missing_Engine": false,
+      "changes_task_status": false,
+      "design_input_refs": [
+        "docs/01_业务需求/订单工艺与物料分配.md",
+        "packages/domain/business-objects.design.json",
+        "scenarios/真实业务设计/business-inputs.design.json",
+        "docs/03_架构与契约/全层类型与工程格式.json",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json"
+      ],
+      "missing_referenced_files": [],
+      "closed_this_round": [
+        "M-C04-OBL",
+        "M-C04-QUAL",
+        "M-C04-COMPILE"
+      ]
+    },
+    {
+      "P_id": "P0-03",
+      "required_still_missing": [],
+      "legal_user_input": [
+        "实际专业Job/成果与可信人工用途认可"
+      ],
+      "business_design_status": "business_design_ready_inputs_defined_or_legally_deferred",
+      "reopens_for_missing_Engine": false,
+      "changes_task_status": false,
+      "design_input_refs": [
+        "packages/domain/professional-artifact-binding.design.json",
+        "docs/03_架构与契约/专业成果接入与软件在环.md",
+        "docs/03_架构与契约/全层类型与工程格式.json",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json",
+        "packages/packaging/consumer-device.design.json",
+        "docs/04_开发与验收/特征细化/DRF03_C02_专业绑定推导.json",
+        "docs/04_开发与验收/特征细化/DRF03_C02_实际工位定义与生成接入.json"
+      ],
+      "missing_referenced_files": [],
+      "closed_this_round": []
+    },
+    {
+      "P_id": "P1-01",
+      "required_still_missing": [],
+      "legal_user_input": [
+        "实货、BOM用料及实际可用资源"
+      ],
+      "business_design_status": "business_design_ready_inputs_defined_or_legally_deferred",
+      "reopens_for_missing_Engine": false,
+      "changes_task_status": false,
+      "design_input_refs": [
+        "scenarios/两厂房装配包装/project.design.json",
+        "docs/01_业务需求/订单工艺与物料分配.md",
+        "docs/03_架构与契约/调度与状态转换算法.json",
+        "docs/03_架构与契约/全层类型与工程格式.json",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json"
+      ],
+      "missing_referenced_files": [],
+      "closed_this_round": [
+        "M-C04-QUAL",
+        "M-C04-COMPILE"
+      ]
+    },
+    {
+      "P_id": "P1-02",
+      "required_still_missing": [],
+      "legal_user_input": [
+        "实际质量预设/范围及明确返工参数"
+      ],
+      "business_design_status": "business_design_ready_inputs_defined_or_legally_deferred",
+      "reopens_for_missing_Engine": false,
+      "changes_task_status": false,
+      "design_input_refs": [
+        "scenarios/并行汇合与返工/project.design.json",
+        "scenarios/并行汇合与返工/cases.design.json",
+        "docs/03_架构与契约/调度与状态转换算法.json",
+        "docs/03_架构与契约/全层类型与工程格式.json",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json"
+      ],
+      "missing_referenced_files": [],
+      "closed_this_round": [
+        "M-C04-COMPILE"
+      ]
+    },
+    {
+      "P_id": "P1-03",
+      "required_still_missing": [],
+      "legal_user_input": [
+        "实际资源日历/中断选择，已有C04伴随pause_resume不是待用户补"
+      ],
+      "business_design_status": "business_design_ready_inputs_defined_or_legally_deferred",
+      "reopens_for_missing_Engine": false,
+      "changes_task_status": false,
+      "design_input_refs": [
+        "scenarios/真实业务设计/business-inputs.design.json",
+        "scenarios/真实业务设计/expected-business.design.json",
+        "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+        "docs/03_架构与契约/调度与状态转换算法.json",
+        "docs/03_架构与契约/全层类型与工程格式.json",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json"
+      ],
+      "missing_referenced_files": [],
+      "closed_this_round": [
+        "M-C04-COMPILE"
+      ]
+    },
+    {
+      "P_id": "P1-04",
+      "required_still_missing": [],
+      "legal_user_input": [
+        "订单优先序、家族/首件输入与实际路线"
+      ],
+      "business_design_status": "business_design_ready_inputs_defined_or_legally_deferred",
+      "reopens_for_missing_Engine": false,
+      "changes_task_status": false,
+      "design_input_refs": [
+        "scenarios/真实业务设计/business-inputs.design.json",
+        "scenarios/真实业务设计/expected-business.design.json",
+        "docs/03_架构与契约/调度与状态转换算法.json",
+        "docs/03_架构与契约/全层类型与工程格式.json",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json"
+      ],
+      "missing_referenced_files": [],
+      "closed_this_round": [
+        "M-C04-OBL",
+        "M-C04-COMPILE"
+      ]
+    },
+    {
+      "P_id": "P1-05",
+      "required_still_missing": [],
+      "legal_user_input": [
+        "实际质量处置输入；源BoardFinish released已给，不能归为缺用户值"
+      ],
+      "business_design_status": "business_design_ready_inputs_defined_or_legally_deferred",
+      "reopens_for_missing_Engine": false,
+      "changes_task_status": false,
+      "design_input_refs": [
+        "scenarios/真实业务设计/business-inputs.design.json",
+        "scenarios/真实业务设计/expected-business.design.json",
+        "docs/01_业务需求/换单班次与质量处置.md",
+        "docs/03_架构与契约/调度与状态转换算法.json",
+        "docs/03_架构与契约/全层类型与工程格式.json",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json"
+      ],
+      "missing_referenced_files": [],
+      "closed_this_round": [
+        "M-C04-QUAL",
+        "M-C04-COMPILE"
+      ]
+    },
+    {
+      "P_id": "P2-01",
+      "required_still_missing": [],
+      "legal_user_input": [
+        "实际场地高度、设备包络/间距与布局参数"
+      ],
+      "business_design_status": "business_design_ready_inputs_defined_or_legally_deferred",
+      "reopens_for_missing_Engine": false,
+      "changes_task_status": false,
+      "design_input_refs": [
+        "docs/02_交互设计/完整操作流程与方案交付.md",
+        "docs/03_架构与契约/目标驱动厂房生成.md",
+        "../设计预览/当前交互规格.md",
+        "docs/03_架构与契约/全层类型与工程格式.json",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json"
+      ],
+      "missing_referenced_files": [],
+      "closed_this_round": []
+    },
+    {
+      "P_id": "P2-02",
+      "required_still_missing": [],
+      "legal_user_input": [
+        "实货/载具/装卸日历/固定耗时/接受目的"
+      ],
+      "business_design_status": "business_design_ready_inputs_defined_or_legally_deferred",
+      "reopens_for_missing_Engine": false,
+      "changes_task_status": false,
+      "design_input_refs": [
+        "scenarios/两厂房装配包装/project.design.json",
+        "scenarios/两厂房装配包装/expected-events.design.json",
+        "docs/01_业务需求/物流与布局业务.md",
+        "docs/03_架构与契约/调度与状态转换算法.json",
+        "docs/03_架构与契约/全层类型与工程格式.json",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json"
+      ],
+      "missing_referenced_files": [],
+      "closed_this_round": []
+    },
+    {
+      "P_id": "P2-03",
+      "required_still_missing": [],
+      "legal_user_input": [
+        "第二方案只在真实需要比较时选择，初案成功合法不比较"
+      ],
+      "business_design_status": "business_design_ready_inputs_defined_or_legally_deferred",
+      "reopens_for_missing_Engine": false,
+      "changes_task_status": false,
+      "design_input_refs": [
+        "scenarios/两厂房装配包装/variants.design.json",
+        "docs/03_架构与契约/工程交接与打开.md",
+        "scenarios/模板与交接/expected-template-handoff.design.json",
+        "docs/03_架构与契约/全层类型与工程格式.json",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json"
+      ],
+      "missing_referenced_files": [],
+      "closed_this_round": []
+    },
+    {
+      "P_id": "P2-04",
+      "required_still_missing": [],
+      "legal_user_input": [
+        "选定Run范围/观察窗和完整业务输入"
+      ],
+      "business_design_status": "business_design_ready_inputs_defined_or_legally_deferred",
+      "reopens_for_missing_Engine": false,
+      "changes_task_status": false,
+      "design_input_refs": [
+        "scenarios/从零搭建控制盒厂房/project.design.json",
+        "scenarios/从零搭建控制盒厂房/expected-timeline.design.json",
+        "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+        "docs/03_架构与契约/调度与状态转换算法.json",
+        "docs/03_架构与契约/全层类型与工程格式.json",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json"
+      ],
+      "missing_referenced_files": [],
+      "closed_this_round": [
+        "M-C04-COMPILE"
+      ]
+    },
+    {
+      "P_id": "P2-05",
+      "required_still_missing": [],
+      "legal_user_input": [
+        "用户创作参数/表现资产、有效行为选择"
+      ],
+      "business_design_status": "business_design_ready_inputs_defined_or_legally_deferred",
+      "reopens_for_missing_Engine": false,
+      "changes_task_status": false,
+      "design_input_refs": [
+        "docs/02_交互设计/业务界面与方案评审.md",
+        "scenarios/真实业务设计/business-inputs.design.json",
+        "docs/03_架构与契约/全层类型与工程格式.json",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json"
+      ],
+      "missing_referenced_files": [],
+      "closed_this_round": []
+    },
+    {
+      "P_id": "P2-06",
+      "required_still_missing": [],
+      "legal_user_input": [
+        "费率/币种/计价选择；未知合法显示null而非0"
+      ],
+      "business_design_status": "business_design_ready_inputs_defined_or_legally_deferred",
+      "reopens_for_missing_Engine": false,
+      "changes_task_status": false,
+      "design_input_refs": [
+        "packages/reporting/evaluation-report.contract.design.json",
+        "docs/01_业务需求/指标成本与决策口径.md",
+        "docs/03_架构与契约/评估报告与数据导出.md",
+        "docs/03_架构与契约/调度与状态转换算法.json",
+        "docs/03_架构与契约/全层类型与工程格式.json",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json"
+      ],
+      "missing_referenced_files": [],
+      "closed_this_round": []
+    },
+    {
+      "P_id": "P3-01",
+      "required_still_missing": [],
+      "legal_user_input": [
+        "实际模块/版本/用途/资源选择；许可/作者缺值保草稿"
+      ],
+      "business_design_status": "business_design_ready_inputs_defined_or_legally_deferred",
+      "reopens_for_missing_Engine": false,
+      "changes_task_status": false,
+      "design_input_refs": [
+        "packages/module-kit/category-contracts.design.json",
+        "scenarios/九类模块采用/expected-category-adoption.design.json",
+        "scenarios/设备创作与采用/inputs.design.json",
+        "docs/03_架构与契约/全层类型与工程格式.json",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json"
+      ],
+      "missing_referenced_files": [],
+      "closed_this_round": [
+        "M-C04-OBL",
+        "M-C04-QUAL",
+        "M-C04-COMPILE"
+      ]
+    },
+    {
+      "P_id": "P3-02",
+      "required_still_missing": [],
+      "legal_user_input": [
+        "合法创作素材/参数与用户明确选择"
+      ],
+      "business_design_status": "business_design_ready_inputs_defined_or_legally_deferred",
+      "reopens_for_missing_Engine": false,
+      "changes_task_status": false,
+      "design_input_refs": [
+        "docs/02_交互设计/设备时间轴与标签设计.md",
+        "scenarios/设备创作与采用/expected-authoring.design.json",
+        "docs/03_架构与契约/全层类型与工程格式.json",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json"
+      ],
+      "missing_referenced_files": [],
+      "closed_this_round": []
+    },
+    {
+      "P_id": "P3-03",
+      "required_still_missing": [],
+      "legal_user_input": [
+        "目标包/授权文件、未齐用途数据保ImportDraft"
+      ],
+      "business_design_status": "business_design_ready_inputs_defined_or_legally_deferred",
+      "reopens_for_missing_Engine": false,
+      "changes_task_status": false,
+      "design_input_refs": [
+        "modules/devices/manual-assembly/presentation/timeline.json",
+        "scenarios/设备创作与采用/inputs.design.json",
+        "scenarios/设备创作与采用/expected-authoring.design.json",
+        "docs/03_架构与契约/全层类型与工程格式.json",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json"
+      ],
+      "missing_referenced_files": [],
+      "closed_this_round": [
+        "M-C04-OBL"
+      ]
+    },
+    {
+      "P_id": "P3-04",
+      "required_still_missing": [],
+      "legal_user_input": [
+        "真实Agent会话与授权字段范围，不自造认可"
+      ],
+      "business_design_status": "business_design_ready_inputs_defined_or_legally_deferred",
+      "reopens_for_missing_Engine": false,
+      "changes_task_status": false,
+      "design_input_refs": [
+        "docs/03_架构与契约/通用Agent接入与专业软件连接器.md",
+        "docs/03_架构与契约/目标驱动厂房生成.md",
+        "scenarios/目标驱动建厂/acceptance.design.json",
+        "docs/03_架构与契约/全层类型与工程格式.json",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json",
+        "docs/04_开发与验收/特征细化/DRF04_Host授权合入.json",
+        "integrations/agent/stdio-connector.design.json"
+      ],
+      "missing_referenced_files": [],
+      "closed_this_round": []
+    },
+    {
+      "P_id": "P4-01",
+      "required_still_missing": [],
+      "legal_user_input": [
+        "实际生成目标、场地、产品/路线/资源选择"
+      ],
+      "business_design_status": "business_design_ready_inputs_defined_or_legally_deferred",
+      "reopens_for_missing_Engine": false,
+      "changes_task_status": false,
+      "design_input_refs": [
+        "modules/templates/machining-delivery/manifest.json",
+        "modules/templates/purchased-assembly/manifest.json",
+        "modules/templates/parallel-electromechanical/manifest.json",
+        "modules/templates/carton-factory/generation-profile.design.json",
+        "scenarios/模板与交接/expected-template-handoff.design.json",
+        "docs/03_架构与契约/全层类型与工程格式.json",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json",
+        "docs/04_开发与验收/特征细化/DRF04_Host授权合入.json",
+        "integrations/agent/stdio-connector.design.json"
+      ],
+      "missing_referenced_files": [],
+      "closed_this_round": [
+        "M-C04-OBL",
+        "M-C04-QUAL",
+        "M-C04-COMPILE"
+      ]
+    },
+    {
+      "P_id": "P4-02",
+      "required_still_missing": [],
+      "legal_user_input": [
+        "实际几何/机器输入、专业payload与可信认可"
+      ],
+      "business_design_status": "business_design_ready_inputs_defined_or_legally_deferred",
+      "reopens_for_missing_Engine": false,
+      "changes_task_status": false,
+      "design_input_refs": [
+        "docs/00_项目基线/技术与经济可行性.md",
+        "docs/03_架构与契约/专业成果接入与软件在环.md",
+        "packages/packaging/README.md",
+        "docs/03_架构与契约/全层类型与工程格式.json",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json",
+        "packages/packaging/consumer-device.design.json",
+        "docs/04_开发与验收/特征细化/DRF03_C02_专业绑定推导.json",
+        "docs/04_开发与验收/特征细化/DRF03_C03_过程样本语义.json"
+      ],
+      "missing_referenced_files": [],
+      "closed_this_round": []
+    },
+    {
+      "P_id": "P5-01",
+      "required_still_missing": [],
+      "legal_user_input": [
+        "真实项目运行/验收/接手证据和提交信息；原阶段条件保留"
+      ],
+      "business_design_status": "business_design_ready_inputs_defined_or_legally_deferred",
+      "reopens_for_missing_Engine": false,
+      "changes_task_status": false,
+      "design_input_refs": [
+        "docs/00_项目基线/首版需求与验收.md",
+        "docs/05_开源与参赛/比赛设计要求.md",
+        "community/CONTRIBUTING.md",
+        "community/GOVERNANCE.md",
+        "docs/03_架构与契约/全层类型与工程格式.json",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json"
+      ],
+      "missing_referenced_files": [],
+      "closed_this_round": []
+    }
+  ],
+  "fixture_ref": "docs/04_开发与验收/特征细化/DRF06_C04_type_fixture.json",
+  "verification_ref": "docs/04_开发与验收/特征细化/DRF06_C04_绑定有限核验.json",
+  "old_proofs_rerun": [],
+  "old_proofs_preserved": [
+    "35",
+    "25",
+    "20"
+  ],
+  "stage_gate_frozen": false,
+  "actual_Engine": null,
+  "actual_product_runtime": null,
+  "actual_result": null,
+  "source_reference_coverage": {
+    "tasks": 21,
+    "missing_refs": []
+  },
+  "closed_required_items": [
+    {
+      "id": "M-C04-OBL",
+      "owner": "窗口3最小义务delta/窗口1合入",
+      "required": "C04完整伴随材料进入公共ImportDraft/采用候选的有类型义务，保存/重开/明确解决才能启执行；不能把资料仅当explanation字符串而丢prepare/roles/preset/effect/route缺项",
+      "affected_P": [
+        "P0-01",
+        "P0-02",
+        "P1-04",
+        "P3-01",
+        "P3-03",
+        "P4-01"
+      ],
+      "status": "closed_current_Rust_Schema_TS_and_actual_adoption_candidate_observed",
+      "actual_carrier": "TemplateSubset.adoption + ProjectState.template_adoptions"
+    },
+    {
+      "id": "M-C04-QUAL",
+      "owner": "窗口3最小quality effect delta/窗口1合入",
+      "required": "BoardFinish候选pcb生成时的明确released setter可冻结序列化并由编译消费；不得以outputs.required_quality或自定义属性替代",
+      "affected_P": [
+        "P0-02",
+        "P1-01",
+        "P1-05",
+        "P3-01",
+        "P4-01"
+      ],
+      "status": "closed_current_Rust_Schema_TS_and_actual_adoption_candidate_observed",
+      "actual_carrier": "MaterialRoleQuantity.declared_output_quality; BoardFinish01@0.2.0 output only"
+    },
+    {
+      "id": "M-C04-COMPILE",
+      "owner": "窗口1公共规范/窗口6已写业务规则",
+      "required": "公共采用/冻结规范明确承认本轮两项既有载体语义：execution_capacity是保留系统角色，映射真实fixture Resource/Calendar且只扣一次；RouteStep.operation_ref可精确解析同device_id已选inline的Device.module_ref，外部Operations/Tasks路径仍互斥。本窗口公共算法已写；窗口1公共采用文字仍只列Tasks/Operations，须归一以免实现者拒绝合法来源。",
+      "affected_P": [
+        "P0-02",
+        "P1-01",
+        "P1-02",
+        "P1-03",
+        "P1-04",
+        "P1-05",
+        "P2-04",
+        "P3-01",
+        "P4-01"
+      ],
+      "status": "closed_public_API_and_type_contract_norms_observed_aligned_with_fixture",
+      "public_observed_ref": "docs/03_架构与契约/公开操作与宿主调用契约.json#/module_adoption_contract",
+      "minimal_delta": {
+        "execution_capacity": "DeviceInstance.role_bindings.resources[execution_capacity] is a reserved execution-slot mapping; validate actual fixture ResourceInstance/station/Calendar; one Resource Claim via JobExecutionRef; other roles retain normal requirement validation.",
+        "inline": "RouteStep.operation_ref == exact selected device.module_ref with selected inline resolves that same effective inline identity; otherwise exact selected external Operations/Tasks resolves by category. No implicit ModuleRef substitution or duplicate behavior."
+      },
+      "actual_carrier": "module_adoption_contract.tasks/reserved_execution_capacity_role + typed_template_adoption_contract.execution_capacity_binding/effective_operation_identity"
+    }
+  ],
+  "current_public_alignment": {
+    "template_version": "0.3.0",
+    "BoardFinish_version": "0.2.0",
+    "old_versions_untouched": true,
+    "adoption_carriers": [
+      "TemplateSubset.adoption",
+      "ProjectState.template_adoptions"
+    ],
+    "output_quality_carrier": "MaterialRoleQuantity.declared_output_quality",
+    "source_worker_keys_preserved": true,
+    "actual_resource_ids_explicit": true,
+    "inspection_result_key": "qualified by adoption.id; immutable module result_ref is resolved, not rewritten",
+    "readiness": "same Run/target/exact Task/config completed Job; once, no material",
+    "actual_C04_seed": null,
+    "nine_companion_rules": "all mapped to current typed carriers/current common algorithms; professional missing inputs remain imported_claim",
+    "window3_19_case_ref": "scenarios/九类模块采用/DRF03_C04_r4_独立预期.json",
+    "window3_proof_rerun": false,
+    "execution_capacity_and_inline_norms": "observed merged public two norms; same selected existing fields, no new DTO/operation"
+  },
+  "five_chain_joint_business_acceptance": [
+    {
+      "id": "VF-01",
+      "title": "空工程搭线/到料/等待/比较交付",
+      "business_design": "complete_existing_five_chain_inputs_transitions_reports_and_failure_return_preserved",
+      "current_conclusion": "业务侧设计ready，可参加全层联合设计冻结；后续实际输入和产品/专业验收按原用途与阶段。",
+      "real_input_entry": "真实产品版本/BOM/Route/物货与分配、员工与机位日历、preset明确范围、订单接受阶段",
+      "actual_UI_or_Engine_acceptance": null,
+      "closed_prior_proofs_rerun": false
+    },
+    {
+      "id": "VF-02",
+      "title": "设备渐进创作与同一行为采用",
+      "business_design": "complete_existing_five_chain_inputs_transitions_reports_and_failure_return_preserved",
+      "current_conclusion": "业务侧设计ready，可参加全层联合设计冻结；后续实际输入和产品/专业验收按原用途与阶段。",
+      "real_input_entry": "所选行为版本/表现资产、资源映射/许可作者；完整专业用途另给真实Job/成果和认可",
+      "actual_UI_or_Engine_acceptance": null,
+      "closed_prior_proofs_rerun": false
+    },
+    {
+      "id": "VF-03",
+      "title": "目标建厂初案直交与独立不足例",
+      "business_design": "complete_existing_five_chain_inputs_transitions_reports_and_failure_return_preserved",
+      "current_conclusion": "业务侧设计ready，可参加全层联合设计冻结；后续实际输入和产品/专业验收按原用途与阶段。",
+      "real_input_entry": "真实场地几何/包络净空、目标产品路线/资源/物流；初案满足可直交，不强制比较",
+      "actual_UI_or_Engine_acceptance": null,
+      "closed_prior_proofs_rerun": false
+    },
+    {
+      "id": "VF-04",
+      "title": "完整纸包装结构/过程/制造/绑定",
+      "business_design": "complete_existing_five_chain_inputs_transitions_reports_and_failure_return_preserved",
+      "current_conclusion": "业务侧设计ready，可参加全层联合设计冻结；后续实际输入和产品/专业验收按原用途与阶段。",
+      "real_input_entry": "真实纸材料厚度/结构/动作/制造Job、机器及payload/专业生产结果和可信认可",
+      "actual_UI_or_Engine_acceptance": null,
+      "closed_prior_proofs_rerun": false
+    },
+    {
+      "id": "VF-05",
+      "title": "跨厂/比较/接手/再修改",
+      "business_design": "complete_existing_five_chain_inputs_transitions_reports_and_failure_return_preserved",
+      "current_conclusion": "业务侧设计ready，可参加全层联合设计冻结；后续实际输入和产品/专业验收按原用途与阶段。",
+      "real_input_entry": "真实运输/载具/装卸与接受输入、对比Run选择、交接文件及授权；比较必须至少两条真实Run",
+      "actual_UI_or_Engine_acceptance": null,
+      "closed_prior_proofs_rerun": false
+    }
+  ],
+  "freeze_condition": {
+    "business_owner_ready": "业务设计ready：所有业务字段/阶段/Claim/等待/质量/准备义务与21任务入口明确，新18项通过，B01—B18/8手工业务预期/6原业务预期保留",
+    "joint_design": "两条公共采用/冻结文字已实际归一，窗口3当前canonical消费19项匹配；本窗口无尚存业务设计缺口，可参加全层联合设计冻结，其余窗口及全局预算/阶段按原负责人裁定",
+    "real_inputs_not_design_blockers": "未给真实几何、员工/机位/日历、Product/BOM/Route、initial quality/preset scope、费率或专业payload/认可，可持久typed draft并按用途显示缺项，不强制默认或伪造",
+    "execution_entry": "用户选择实际用途并补该用途必需值，经原子引用/权限/单位/资源和场景准入后冻结Run；Engine实现及产品验收按后续原阶段",
+    "global_stage_written": false
+  },
+  "verification_summary": {
+    "new_check_count": 18,
+    "all_matched": true,
+    "evidence_kind": "independent_business_type_fixture_math_and_current_public_field_mapping",
+    "window3_current_canonical_cases": 19,
+    "window3_receipt_readonly": true,
+    "native_source_schema_TS_receipt_readonly": true,
+    "old_35_25_20_rerun": [],
+    "actual_Host_or_Engine": null
+  },
+  "public_merge_evidence": {
+    "typed_contract_ref": "docs/03_架构与契约/全层类型与工程格式.json#/typed_template_adoption_contract",
+    "canonical_fields_observed": true,
+    "actual_native_receipt_ref": "tools/type-contract-proof/output/type-proof-result.json",
+    "actual_native_receipt_status": "passed_actual_native_type_compile_and_codegen",
+    "typescript_files": 421,
+    "api_fixture_roundtrips": 36,
+    "window3_receipt_ref": "docs/04_开发与验收/特征细化/DRF03_C04_r4_核验结果.json",
+    "window3_schema_kind": "actual_canonical",
+    "window3_all_19_matched": true,
+    "proofs_called_this_round": false,
+    "execution_capacity_and_inline_norms_aligned": true,
+    "normative_refs": [
+      "docs/03_架构与契约/公开操作与宿主调用契约.json#/module_adoption_contract",
+      "docs/03_架构与契约/全层类型与工程格式.json#/typed_template_adoption_contract"
+    ]
+  },
+  "preserved_original_inputs": {
+    "B01_B18_cases_unchanged": true,
+    "manual_8_business_expectations_unchanged": true,
+    "old_6_expected_business_cases_unchanged": true,
+    "comparison_basis": "existing pre-public-merge snapshot; only interval end causes moved from nested intervals to canonical parallel arrays before this round, business values unchanged",
+    "old_35_25_20_scripts_called": false
+  }
+}

@@ -1,0 +1,276 @@
+{
+  "quality_presets": [],
+  "id": "STOCK",
+  "revision": 1,
+  "project_revision": 2,
+  "title": "initial stock, future arrivals and plans stay separate",
+  "time_reference": {
+    "label": "self-built multi_order milliseconds",
+    "origin_iso8601": null,
+    "timezone": null
+  },
+  "window": {
+    "start_ms": 0,
+    "end_ms": 240000
+  },
+  "initial_conditions": {
+    "items": [
+      {
+        "id": "BATCH10",
+        "item_type_ref": {
+          "id": "RAW-STOCK",
+          "revision": "r1"
+        },
+        "quantity": {
+          "value": {
+            "coefficient": 10,
+            "decimal_places": 0
+          },
+          "unit": "piece"
+        },
+        "holder": {
+          "kind": "location",
+          "id": "S1"
+        },
+        "quality": "pending",
+        "components": [],
+        "contents": [],
+        "source": "user_provided"
+      }
+    ],
+    "initial_setup_families": {},
+    "declared_quality_decisions": [],
+    "material_allocations": [
+      {
+        "id": "HARD-A",
+        "demand_ref": "TASK-A",
+        "item_refs": [
+          "BATCH10"
+        ],
+        "quantity": {
+          "value": {
+            "coefficient": 4,
+            "decimal_places": 0
+          },
+          "unit": "piece"
+        },
+        "mode": "hard_reserved"
+      },
+      {
+        "id": "HARD-B",
+        "demand_ref": "TASK-B",
+        "item_refs": [
+          "BATCH10"
+        ],
+        "quantity": {
+          "value": {
+            "coefficient": 6,
+            "decimal_places": 0
+          },
+          "unit": "piece"
+        },
+        "mode": "hard_reserved"
+      },
+      {
+        "id": "SOFT-FUTURE",
+        "demand_ref": "ORDER-A",
+        "item_refs": [
+          "FUTURE5"
+        ],
+        "quantity": {
+          "value": {
+            "coefficient": 5,
+            "decimal_places": 0
+          },
+          "unit": "piece"
+        },
+        "mode": "soft_plan"
+      },
+      {
+        "id": "SOFT-EMPTY",
+        "demand_ref": "ORDER-B",
+        "item_refs": [],
+        "quantity": {
+          "value": {
+            "coefficient": 3,
+            "decimal_places": 0
+          },
+          "unit": "piece"
+        },
+        "mode": "soft_plan"
+      }
+    ]
+  },
+  "orders": [
+    {
+      "id": "ORDER-A",
+      "product_ref": {
+        "id": "A",
+        "revision": "r1"
+      },
+      "quantity": {
+        "value": {
+          "coefficient": 4,
+          "decimal_places": 0
+        },
+        "unit": "piece"
+      },
+      "release_at_ms": 0,
+      "due_at_ms": 160000,
+      "destination": "S2",
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": false,
+      "priority": 0
+    },
+    {
+      "id": "ORDER-B",
+      "product_ref": {
+        "id": "B",
+        "revision": "r1"
+      },
+      "quantity": {
+        "value": {
+          "coefficient": 4,
+          "decimal_places": 0
+        },
+        "unit": "piece"
+      },
+      "release_at_ms": 0,
+      "due_at_ms": 200000,
+      "destination": "S2",
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": false,
+      "priority": 0
+    }
+  ],
+  "production_tasks": [
+    {
+      "id": "TASK-A",
+      "routing_ref": {
+        "id": "ROUTE-AB",
+        "revision": "r1"
+      },
+      "order_allocations": [
+        {
+          "order_id": "ORDER-A",
+          "quantity": {
+            "value": {
+              "coefficient": 4,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          }
+        }
+      ],
+      "planned_quantity": {
+        "value": {
+          "coefficient": 4,
+          "decimal_places": 0
+        },
+        "unit": "piece"
+      },
+      "release_at_ms": 0,
+      "priority": 0
+    },
+    {
+      "id": "TASK-B",
+      "routing_ref": {
+        "id": "ROUTE-AB",
+        "revision": "r1"
+      },
+      "order_allocations": [
+        {
+          "order_id": "ORDER-B",
+          "quantity": {
+            "value": {
+              "coefficient": 4,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          }
+        }
+      ],
+      "planned_quantity": {
+        "value": {
+          "coefficient": 4,
+          "decimal_places": 0
+        },
+        "unit": "piece"
+      },
+      "release_at_ms": 0,
+      "priority": 0
+    }
+  ],
+  "arrivals": [
+    {
+      "id": "ARRIVAL5",
+      "at_ms": 100000,
+      "destination": "S1",
+      "items": [
+        {
+          "id": "FUTURE5",
+          "item_type_ref": {
+            "id": "RAW-STOCK",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 5,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "S1"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        }
+      ],
+      "release_policy": "unchecked_allowed"
+    }
+  ],
+  "supplies": [
+    {
+      "id": "SUPPLY20",
+      "source": "S1",
+      "destination": "S2",
+      "item_type_ref": {
+        "id": "RAW-STOCK",
+        "revision": "r1"
+      },
+      "target_quantity": {
+        "value": {
+          "coefficient": 20,
+          "decimal_places": 0
+        },
+        "unit": "piece"
+      },
+      "window": {
+        "start_ms": 0,
+        "end_ms": 240000
+      },
+      "transport_ref": {
+        "id": "demo.transport",
+        "version": "0.1.0"
+      },
+      "resources": {
+        "worker": "W1"
+      },
+      "departure_windows": [],
+      "allow_partial_load": true
+    }
+  ],
+  "parameter_overrides": [],
+  "scope": [
+    {
+      "kind": "device",
+      "id": "D1"
+    }
+  ],
+  "issues": [],
+  "cost_inputs": []
+}

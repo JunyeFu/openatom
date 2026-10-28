@@ -1,0 +1,243 @@
+{
+  "schema_version": "1.0",
+  "data": {
+    "definition": {
+      "id": "sf.native50.device.screw-assembly",
+      "version": "1.0.0",
+      "title": "四点螺钉装配台",
+      "definition_state": "runtime_candidate",
+      "contribution": {
+        "author": "Super Factory Native50 original modeling",
+        "license": "CC0-1.0",
+        "assets": []
+      },
+      "parameters": [],
+      "attribute_schema": [],
+      "payload": {
+        "category": "devices",
+        "data": {
+          "placement": "fixed_during_simulation",
+          "ports": [
+            {
+              "id": "shell",
+              "direction": "input",
+              "payload": {
+                "kind": "material",
+                "data": {
+                  "item_role": "shell",
+                  "unit": "piece",
+                  "quantity_rule": null
+                }
+              }
+            },
+            {
+              "id": "pcb",
+              "direction": "input",
+              "payload": {
+                "kind": "material",
+                "data": {
+                  "item_role": "pcb",
+                  "unit": "piece",
+                  "quantity_rule": null
+                }
+              }
+            },
+            {
+              "id": "fastener",
+              "direction": "input",
+              "payload": {
+                "kind": "material",
+                "data": {
+                  "item_role": "fastener",
+                  "unit": "piece",
+                  "quantity_rule": null
+                }
+              }
+            },
+            {
+              "id": "assembled",
+              "direction": "output",
+              "payload": {
+                "kind": "material",
+                "data": {
+                  "item_role": "assembled",
+                  "unit": "piece",
+                  "quantity_rule": null
+                }
+              }
+            }
+          ],
+          "behavior": {
+            "selected": "inline",
+            "inline": {
+              "builtin": "assemble",
+              "item_roles": [
+                "shell",
+                "pcb",
+                "fastener",
+                "assembled"
+              ],
+              "inputs": [
+                {
+                  "role": "shell",
+                  "port": "shell",
+                  "quantity": {
+                    "value": {
+                      "coefficient": 1,
+                      "decimal_places": 0
+                    },
+                    "unit": "piece"
+                  },
+                  "required_quality": [],
+                  "declared_output_quality": null
+                },
+                {
+                  "role": "pcb",
+                  "port": "pcb",
+                  "quantity": {
+                    "value": {
+                      "coefficient": 1,
+                      "decimal_places": 0
+                    },
+                    "unit": "piece"
+                  },
+                  "required_quality": [],
+                  "declared_output_quality": null
+                },
+                {
+                  "role": "fastener",
+                  "port": "fastener",
+                  "quantity": {
+                    "value": {
+                      "coefficient": 4,
+                      "decimal_places": 0
+                    },
+                    "unit": "piece"
+                  },
+                  "required_quality": [],
+                  "declared_output_quality": null
+                }
+              ],
+              "outputs": [
+                {
+                  "role": "assembled",
+                  "port": "assembled",
+                  "quantity": {
+                    "value": {
+                      "coefficient": 1,
+                      "decimal_places": 0
+                    },
+                    "unit": "piece"
+                  },
+                  "required_quality": [],
+                  "declared_output_quality": null
+                }
+              ],
+              "resource_roles": [],
+              "duration": null,
+              "phases": [
+                {
+                  "id": "load",
+                  "duration": {
+                    "value": 8000,
+                    "unit": "millisecond",
+                    "basis": "module_declared",
+                    "source_ref": null
+                  },
+                  "phase_resources": [],
+                  "interruption_policy": "pause_resume",
+                  "work_kind": "loading"
+                },
+                {
+                  "id": "auto",
+                  "duration": {
+                    "value": 24000,
+                    "unit": "millisecond",
+                    "basis": "module_declared",
+                    "source_ref": null
+                  },
+                  "phase_resources": [],
+                  "interruption_policy": "pause_resume",
+                  "work_kind": "processing"
+                },
+                {
+                  "id": "unload",
+                  "duration": {
+                    "value": 8000,
+                    "unit": "millisecond",
+                    "basis": "module_declared",
+                    "source_ref": null
+                  },
+                  "phase_resources": [],
+                  "interruption_policy": "pause_resume",
+                  "work_kind": "unloading"
+                }
+              ],
+              "hold_on_output_wait": [],
+              "quality_and_routes": null,
+              "identity_policy": "assembly_with_composition",
+              "family": "screw-assembly"
+            },
+            "operation_ref": null
+          },
+          "configuration": {},
+          "presentation": {
+            "kind": "model",
+            "source": {
+              "kind": "media_ref",
+              "data": {
+                "id": "p302.line-grade.assembly",
+                "version": "0.4.1"
+              }
+            },
+            "unit": "meter",
+            "coordinate_frame": "right_handed_y_up",
+            "scale": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            },
+            "nodes": [],
+            "poses": [],
+            "actions": [],
+            "timeline": [],
+            "tags": [],
+            "anchor_roles": {},
+            "port_anchors": {},
+            "lod": {
+              "detailed": null,
+              "simplified": {
+                "kind": "media_ref",
+                "data": {
+                  "id": "p302.line-grade.assembly.simple",
+                  "version": "0.4.1"
+                }
+              },
+              "region": "device_icons"
+            },
+            "production_effect": "none"
+          },
+          "operations": [
+            "configure",
+            "inspect",
+            "preview_cycle"
+          ]
+        }
+      }
+    },
+    "files": [],
+    "dependencies": [
+      {
+        "id": "p302.line-grade.assembly",
+        "version": "0.4.1"
+      },
+      {
+        "id": "p302.line-grade.assembly.simple",
+        "version": "0.4.1"
+      }
+    ],
+    "assets": [],
+    "rights": [],
+    "issues": []
+  }
+}

@@ -1,0 +1,1102 @@
+{
+  "document_kind": "P0_02_business_inputs_and_references_independent_review",
+  "task_id": "P0-02",
+  "within_original_step": 1,
+  "window": "实现窗口6",
+  "role": "独立只读实现复审",
+  "status": "passed_independent_implementation_review_for_P0_02_original_step1",
+  "authority_ref": "docs/04_开发与验收/P0-02_业务输入与引用切片.json#/parallel_dispatch",
+  "writable_files": [
+    "docs/04_开发与验收/P0-02_输入引用_窗口6.json"
+  ],
+  "expectations_fixed_before_implementation_results": true,
+  "baseline_refs": [
+    "docs/04_开发与验收/P0-02_业务输入与引用切片.json",
+    "docs/01_业务需求/订单工艺与物料分配.md",
+    "packages/domain/business-objects.design.json",
+    "scenarios/真实业务设计/business-inputs.design.json",
+    "docs/04_开发与验收/特征细化/DRF06_完整定义.json",
+    "docs/03_架构与契约/首版类型格式与操作契约.md",
+    "docs/03_架构与契约/全层类型与工程格式.json",
+    "docs/03_架构与契约/公开操作与宿主调用契约.json",
+    "packages/domain/src/models.rs",
+    "packages/commands/src/api.rs",
+    "docs/04_开发与验收/P0-01_保存历史_窗口6.json"
+  ],
+  "review_boundary": {
+    "current_phase": "只固定预期；Host/store/history在改，等根通知冻结+raw实际结果后再读实现增量并作接收。",
+    "implementation_sources_reviewed": true,
+    "cargo_executed": false,
+    "actual_IO_executed": false,
+    "reviewer_may_modify_implementation_or_other_windows": false,
+    "missing_implementation_is_not_a_bug": true,
+    "retained_baseline": "上片实际79 Rust、20 schemas/48cases、同managed Host31 native为历史基线；本轮代码变更后的实际回归必须保留，旧结果不能冒充新版本证据。",
+    "immutable_expectations": "不反写业务预期迎合实现，不通过丢Scenario、复活旧backing、默认升级版本或隐式造库存达标。",
+    "no_goals": [
+      "业务UI/Figma",
+      "Engine或库存/预留执行/时钟",
+      "订单取消/WIP干预",
+      "同ID多版本仓库",
+      "第19公开操作",
+      "提交/推送"
+    ]
+  },
+  "private_interfaces_ref": "docs/04_开发与验收/P0-02_业务输入与引用切片.json#/private_implementation_interfaces",
+  "revision_policy_review": {
+    "assessment": "当前读取的冻结类型/Scope语义未见实质冲突；按主切片明确的会话内高水位政策核验，实施不能扩展到旧冻结文档或渲染修订。",
+    "evidence": [
+      "ScenarioInput.revision/project_revision使用Revision，产品/物品/BOM/路线使用SubjectRevisionId或ModuleRef显式版本。",
+      "RunInputRef独立记录scenario_revision与frozen_scenario_file；旧冻结输入归属于原Run，不能重绑新草稿。",
+      "RenderedSceneRef.scene_revision属于渲染表现引用，不是本轮ScenarioInput结构修订字段。",
+      "现有编辑Scope仍为Project或DefinitionDraft；新增ProjectDraft仅Rust私有快照，不新增wire Scope或公开操作。"
+    ],
+    "required_rules": [
+      "Project和当前Scenario map在同一候选与一次Project新R中提交。",
+      "新Scenario Put输入revision=1；更新输入为当前Scenario结构修订；输入project_revision为本批base_revision；客户端不能挑Host元数据。",
+      "成功后当前Scenario绑定新Project R；其内容或绑定改变时按同会话该ID高水位+1分配，新身份从1起。",
+      "高水位不随Undo/删除退还；候选失败不先提交或消耗元数据；打开从当前归档初始化，切工程清旧上下文。",
+      "SubjectRevisionId r1/r2是业务显式输入，不被结构修订自动重写；旧订单及FrozenRunScenario不按最新版本升级。",
+      "若实现需改上述含义、混用Renderer.scene_revision或改公开字段，先报告具体合同与消费者冲突，不能静默变更。"
+    ],
+    "confirmed_contract_conflicts": [],
+    "retained_archive_high_water_clarification": {
+      "source": "统筹补充独立预期，当前未读在改实现/未看执行结果",
+      "rule": "重开时从已验证manifest中包内真实保留的所有Scenario文档取每ID结构revision最大值，包括当前/冻结/Supporting角色。",
+      "separation": "只初始化高水位，不将旧Frozen/Supporting内容加入当前map或project.scenario_refs，不选择最新内容替代当前Scenario。",
+      "fresh_identity": "仅本会话及所开包内均无已保留版本的新身份从1起；不建立跨包/全局版本仓库。",
+      "integrity": "参与max的manifest身份/revision须已与真实包含的Scenario文档验证；未解析引用、SubjectRevisionId或未验证声明不作为结构高水位。",
+      "unchanged_wire": "不新增wire、Archive字段或第19操作；仍使用原ScenarioInput结构字段。"
+    }
+  },
+  "fixture_conventions": {
+    "isolation": "每项独立Host/有效选定目录；案例内步骤连续。窗口6现阶段不创建文件、不执行Cargo。",
+    "real_identity": "P/R取真实Host结果；当前S1/S2以ScenarioId作为map key，结构revision与SubjectRevisionId区分。",
+    "typed_business_graph": "同一有效DTO图包含ItemType I:r1、Bom B:r1及带数量/消耗工序的行、Route T:r1、Product Pdt:r1、S1/S2订单/生产任务。合法Device/工序/资源/接受位置按已冻结输入显式映射。",
+    "forward_refs": "批次内先Put引用者Product/Scenario，再Put其BOM/Route/ItemType；完整候选最终可解析，不要求中间状态可执行。",
+    "unknown_fields": "OrderLine.quantity=null、due_at_ms=null保持可空；无订单场景保留旧目标/其他输入，不能填0或假交付结果。",
+    "no_stock_fill": "checker、派生Issue、版本切换、保存、历史和导入不新增initial_conditions.items、arrivals、supplies、库存或Run；显式已有输入数据原样保持。",
+    "archive_roles": "ProjectArchive.scenarios只含当前ScenarioInput角色；FrozenRunScenario和SupportingFile等旧文档保留原引用/字节，不成为当前Scenario兜底来源。",
+    "prior_frozen_pair": "准备与S1同ID旧修订的冻结Scenario及对应FrozenRunProject/Run/Evaluation；其精确文件引用与旧订单r1必须保留。",
+    "issues": "至少含一个无business_inputs.前缀的用户/其他来源Issue，另含可被重算替换的旧business_inputs.派生Issue。",
+    "state_snapshot": "真实ProjectDraft全量project+scenarios、Scene高水位可观察结果、Project/Scenario修订、history、grant.created_objects及已终态Task/磁盘。",
+    "error_boundary": "stale Project base先RevisionConflict；权限失败不披露未授权内容；有效但不齐的业务输入是有可定位Issue的草稿，不自动当事务错误或运行成功。",
+    "coverage": "20项是独立审查预期，不增加20次已执行测试计数；最终记录源码/单测/磁盘/原生实际覆盖与限制。"
+  },
+  "finite_expectations": [
+    {
+      "id": "W6-I01",
+      "focus": "完整前向引用同批原子提交",
+      "setup": "P/R；构造typed_business_graph，S1含订单和生产任务。",
+      "input": [
+        "单批先Put Product与Scenario引用者，再Put被引用BOM/Route/ItemType。",
+        "读取Project及各Product/Bom/Route/Scenario正式get_object结果。"
+      ],
+      "expected": [
+        "按最终完整候选校验，不因批次前缀暂缺引用而要求先提交残缺半批。",
+        "只提交一次Project新R；当前Scenario、工程索引与返回对象一致。",
+        "引用按精确ID/版本解析；无同名/最新替代，无库存或Run生成。"
+      ],
+      "required_evidence": [
+        "真实apply_commands/get_object链",
+        "一次revision与完整候选",
+        "前向引用测试"
+      ],
+      "status": "reviewed_against_final_frozen_source_and_actual_execution_evidence",
+      "actual_result": {
+        "evidence": [
+          "Host complete_forward_references_commit_once_and_get_exact_formal_business_objects",
+          "native business_forward_batch_is_one_project_commit/business_complete_positive_has_no_issues"
+        ],
+        "execution_ref": ".work/p0-02-inputs/verification/result.json",
+        "individually_reexecuted_by_window6": false,
+        "separately_counted_as_extra_test": false
+      }
+    },
+    {
+      "id": "W6-I02",
+      "focus": "r2不得升级r1订单或BOM引用",
+      "setup": "S1订单明确引用Product Pdt:r1；当前Project每类型ID唯一。",
+      "input": [
+        "同ID Product从r1明确改为r2，保持订单r1。",
+        "独立子场景改变被BOM引用的ItemType/Bom/Route业务版本。",
+        "读取、保存、undo/redo后继续核对精确ref。"
+      ],
+      "expected": [
+        "r2作为显式SubjectRevisionId保留；不额外建同ID多版本仓库。",
+        "旧ref不改为r2，无法解析的r1给可定位business_inputs.问题，允许明确缺口草稿。",
+        "名字相同、另有r2或结构revision增加均不授权静默升级。"
+      ],
+      "required_evidence": [
+        "业务版本正反例",
+        "Issue对象/字段定位",
+        "历史/保存后的ref"
+      ],
+      "status": "reviewed_against_final_frozen_source_and_actual_execution_evidence",
+      "actual_result": {
+        "evidence": [
+          "checker old_subject_revision_is_not_silently_upgraded incl ItemType.spec_ref and escaped attribute ID refs",
+          "Host subject_revision_updates_never_retarget_orders_and_removal_keeps_explicit_draft"
+        ],
+        "execution_ref": ".work/p0-02-inputs/verification/result.json",
+        "individually_reexecuted_by_window6": false,
+        "separately_counted_as_extra_test": false
+      },
+      "legacy_ItemType_reference_regression": {
+        "inputs": [
+          "ItemType.spec_ref指向缺失/错误SubjectRevisionId的Product",
+          "ItemType.attributes中TypedValue::ItemType引用不存在ID，属性名含part/a~b",
+          "补回精确目标后重复检查"
+        ],
+        "expected": [
+          "迁移后两类旧引用检查仍存在，给business_inputs.可定位Issue并保留缺口draft",
+          "spec_ref不按最新Product版本替代；自定义属性引用不静默忽略或创建目标物品",
+          "补齐后只移除对应派生问题，其他来源Issue和全部输入保持"
+        ],
+        "field_paths": [
+          "/spec_ref",
+          "/attributes/part~1a~0b/value"
+        ],
+        "source": "统筹发现旧Host检查迁移漏项后明确要求补回；保持现有9组checker分组补断言",
+        "implementation_or_execution_verified_by_window6": true,
+        "source_and_assertions_reviewed": true,
+        "current_execution_evidence_reviewed": true,
+        "source_recheck": {
+          "source_last_write": "2026-10-16T00:04:01+08:00",
+          "item_spec": "check_business_inputs用精确Product id+SubjectRevisionId解析spec_ref，未齐生成missing_item_spec_product且保留输入。",
+          "attribute": "TypedValue::ItemType按真实ItemType ID解析，missing_attribute_item定位RFC6901转义后的/attributes/key/value。",
+          "tests": "既有old_subject_revision_is_not_silently_upgraded等分组已加入缺失/有效ItemType引用及转义字段断言；本轮不额外计新测试组。",
+          "final_execution_pending": false
+        }
+      }
+    },
+    {
+      "id": "W6-I03",
+      "focus": "BOM与路线引用/单位/消耗工序",
+      "setup": "有效BOM、Route和已明确绑定的实例/模块版本。",
+      "input": [
+        "分别制造BOM物品版本/单位失配、consume_at_operation不属于对应路线、缺前置或前置环、设备/工序版本或绑定缺失。",
+        "使用有效精确inline来源及有效外部操作声明作对照。"
+      ],
+      "expected": [
+        "有效图无虚假缺口；失配准确定位对象和字段/用途，不按名称或最新模块补齐。",
+        "未实现或不齐工序保留明确缺口，不把声明当已可执行provider。",
+        "BOM需求不按良率隐式膨胀，不创建库存、工时或资源默认值。"
+      ],
+      "required_evidence": [
+        "check_business_inputs有限输入/Issue",
+        "冻结有效操作身份规则",
+        "无额外数据生成"
+      ],
+      "status": "reviewed_against_final_frozen_source_and_actual_execution_evidence",
+      "actual_result": {
+        "evidence": [
+          "checker bom_consumption_must_belong_to_the_selected_product_route",
+          "checker route_gaps_cycles_and_escaped_binding_pointers_are_located/units_and_piece_integrality_are_explicit"
+        ],
+        "execution_ref": ".work/p0-02-inputs/verification/result.json",
+        "individually_reexecuted_by_window6": false,
+        "separately_counted_as_extra_test": false
+      }
+    },
+    {
+      "id": "W6-I04",
+      "focus": "未知数量/交期与空orders保持语义",
+      "setup": "S1订单数量或交期可空；S2为空orders并带既有目标/其他输入。",
+      "input": [
+        "quantity=null；due_at_ms=null；orders=[]分别读/check/save/reopen。",
+        "对照显式离散piece数量及错误单位/非整数输入。"
+      ],
+      "expected": [
+        "quantity不变0；缺产品/数量保留草稿并定位，缺交期不伪造准时率。",
+        "空orders不抹去旧目标语义，也不自动创建等量订单。",
+        "离散量和单位规则按正式DTO，未知不是已生产/已接受。"
+      ],
+      "required_evidence": [
+        "null往返",
+        "输入检查分类",
+        "当前/保存数据一致"
+      ],
+      "status": "reviewed_against_final_frozen_source_and_actual_execution_evidence",
+      "actual_result": {
+        "evidence": [
+          "checker missing_quantity_due_and_legacy_orders_preserve_input",
+          "Host nullable_demand_and_missing_references_are_saved_as_located_drafts_while_legacy_orders_stay_empty"
+        ],
+        "execution_ref": ".work/p0-02-inputs/verification/result.json",
+        "individually_reexecuted_by_window6": false,
+        "separately_counted_as_extra_test": false
+      }
+    },
+    {
+      "id": "W6-I05",
+      "focus": "生产任务保留订单与路线分配",
+      "setup": "两条同产品订单及明确ProductionTask.order_allocations/routing_ref。",
+      "input": [
+        "有效拆分/合并计划；另造缺订单、错路线版本、数量/单位失配。",
+        "重复check和保存后读回原分配。"
+      ],
+      "expected": [
+        "任务保持每条订单关系和精确路线；缺口定位，不按名称猜订单。",
+        "计划分配不复制订单需求，不生成物品、预留、接受事件或完成结果。",
+        "重复检查不累加/重写计划数量。"
+      ],
+      "required_evidence": [
+        "正式DTO业务输入测试",
+        "分配与Issue读回",
+        "无运行状态副作用"
+      ],
+      "status": "reviewed_against_final_frozen_source_and_actual_execution_evidence",
+      "actual_result": {
+        "evidence": [
+          "checker task_allocation_references_and_demand_limits_are_checked/decimal_allocation_overrun_is_exact_below_float_resolution",
+          "native business_formal_order_and_task_roundtrip"
+        ],
+        "execution_ref": ".work/p0-02-inputs/verification/result.json",
+        "individually_reexecuted_by_window6": false,
+        "separately_counted_as_extra_test": false
+      }
+    },
+    {
+      "id": "W6-I06",
+      "focus": "多文档失败完全不提交",
+      "setup": "已有Project与S1/S2、history和授权账本。",
+      "input": [
+        "批次先合法改Product/Scenario，再含越权或不支持命令；另发stale Project base。",
+        "失败后用相同合法元数据重试。"
+      ],
+      "expected": [
+        "Project、所有当前Scenario、索引、history、ledger和现有Task均保持。",
+        "失败不提前分配/消耗Scenario高水位；重试分配只反映成功提交。",
+        "不接受部分命令，不以派生问题更新为由偷偷提交前缀。"
+      ],
+      "required_evidence": [
+        "完整前后状态对照",
+        "错误顺序",
+        "失败后合法重试"
+      ],
+      "status": "reviewed_against_final_frozen_source_and_actual_execution_evidence",
+      "actual_result": {
+        "evidence": [
+          "Host invalid_scenario_metadata_and_stale_batches_leave_documents_history_and_tasks_unchanged",
+          "Host external_authority_is_current_and_failed_batches_preserve_all_documents_history_and_creation_ledger"
+        ],
+        "execution_ref": ".work/p0-02-inputs/verification/result.json",
+        "individually_reexecuted_by_window6": false,
+        "separately_counted_as_extra_test": false
+      }
+    },
+    {
+      "id": "W6-I07",
+      "focus": "当前Scenario结构修订与绑定",
+      "setup": "P/R中当前S1/S2；没有旧冻结文档参与此map。",
+      "input": [
+        "新建Scenario按输入revision1/project_revision=base；读取实际Host结果。",
+        "只改Project字段，再只改S1业务内容，检查S1/S2元数据。",
+        "对照旧FrozenRunScenario和RenderedSceneRef。"
+      ],
+      "expected": [
+        "新身份结构revision从1起；每次成功Project新R后当前Scenario绑定新R。",
+        "内容或绑定变动按会话该ID高水位分配；其他业务字段不被自动改写。",
+        "冻结文档和渲染scene_revision不随当前草稿重绑。"
+      ],
+      "required_evidence": [
+        "修订轨迹有限例",
+        "所有当前Scenario绑定",
+        "冻结/表现引用保持"
+      ],
+      "status": "reviewed_against_final_frozen_source_and_actual_execution_evidence",
+      "actual_result": {
+        "evidence": [
+          "Host scenario_history_restores_whole_documents_with_monotonic_host_revision_high_water",
+          "finalize_draft and archive_scenario_highwater source"
+        ],
+        "execution_ref": ".work/p0-02-inputs/verification/result.json",
+        "individually_reexecuted_by_window6": false,
+        "separately_counted_as_extra_test": false
+      },
+      "retained_versions": "Scenario高水位在本会话不退还；重开时亦须覆盖包内所有已验证保留Scenario版本，而非只读取当前map。"
+    },
+    {
+      "id": "W6-I08",
+      "focus": "客户端不能指定Host结构元数据",
+      "setup": "S1有真实当前结构revision和Project base R。",
+      "input": [
+        "新Put伪造revision999、更新Put伪造旧/未来revision、project_revision不是base。",
+        "对照合法SubjectRevisionId r2输入。",
+        "外部窄业务字段授权请求不额外授予Scenario元数据字段。"
+      ],
+      "expected": [
+        "结构元数据不符明确拒绝并定位，不静默采纳或修正后当成功。",
+        "合法业务r2不被Host改为结构数字版本。",
+        "Host派生的结构绑定/修订不要求客户端字段授权；业务内容仍逐效应授权。"
+      ],
+      "required_evidence": [
+        "元数据正反例",
+        "结构/Subject版本区分",
+        "失败无副作用"
+      ],
+      "status": "reviewed_against_final_frozen_source_and_actual_execution_evidence",
+      "actual_result": {
+        "evidence": [
+          "Host invalid_scenario_metadata_and_stale_batches_leave_documents_history_and_tasks_unchanged",
+          "authorization_value removes only Host Scenario metadata"
+        ],
+        "execution_ref": ".work/p0-02-inputs/verification/result.json",
+        "individually_reexecuted_by_window6": false,
+        "separately_counted_as_extra_test": false
+      }
+    },
+    {
+      "id": "W6-I09",
+      "focus": "Scenario CRUD与Project索引同步",
+      "setup": "当前S1/S2及同ID旧冻结S1文档。",
+      "input": [
+        "创建、修改、删除当前S1；Draft get_object读取。",
+        "Undo/Redo删除；同时检查Project.scenario_refs。"
+      ],
+      "expected": [
+        "map与索引同一事务，无孤立当前Scenario或悬空索引。",
+        "删除后Draft读取不借旧冻结文件复活对象。",
+        "Undo恢复业务内容且用新高水位结构修订；Redo删除不退还高水位。"
+      ],
+      "required_evidence": [
+        "真实Scenario CRUD/history",
+        "索引/map对照",
+        "Draft缺失与冻结文件保持"
+      ],
+      "status": "reviewed_against_final_frozen_source_and_actual_execution_evidence",
+      "actual_result": {
+        "evidence": [
+          "Host put_remove_get_business_kinds_use_the_actual_host_and_sync_scenario_refs incl reported-missing preservation",
+          "store current-role isolation tests"
+        ],
+        "execution_ref": ".work/p0-02-inputs/verification/result.json",
+        "individually_reexecuted_by_window6": false,
+        "separately_counted_as_extra_test": false
+      },
+      "contract_clarification_before_source_review": {
+        "reason": "冻结合同允许resolved_refs_or_explicit_missing_draft_issues；合法reported missing Scenario声明不是应静默清除的错误索引。",
+        "scope": "原预期的索引/map同步与无悬空索引，指本次显式操作ID及未报告的意外悬空；不要求project.scenario_refs等于当前已加载map.keys。",
+        "added_inputs": [
+          "Project.scenario_refs另含有明确Issue的未解析S-missing；只Put/Remove S1或修改Product",
+          "保存/Undo/Redo后核对S-missing声明及Issue仍在"
+        ],
+        "expected": [
+          "Put只新增/更新显式Scenario ID；Remove只移除显式ID的引用；不从loaded map keys重建全部refs",
+          "其他合法未解析Scenario声明保持，checker可定位，不能静默删引用以取得无缺口"
+        ]
+      }
+    },
+    {
+      "id": "W6-I10",
+      "focus": "多对象当前字段授权与元数据豁免",
+      "setup": "E获特定Product引用/Scenario.title等当前支持业务叶授权；其他字段不授权。",
+      "input": [
+        "仅合法业务叶编辑；另在同一整对象/批次夹带其他业务内容变化。",
+        "Project成功后自动更新当前Scenario绑定和派生Issue。",
+        "尝试以旧caller、任意数组索引或更换对象ID扩大权限。"
+      ],
+      "expected": [
+        "合法支持字段可提交；未授权业务变化拒绝，不能靠整Scenario替换绕过。",
+        "仅Host派生元数据/Issue不产生额外用户授权要求，也不能成为业务越权通道。",
+        "授权取当前Host记录，失败不动任何文档/history/ledger。"
+      ],
+      "required_evidence": [
+        "当前grant正反例",
+        "完整业务effects归一化",
+        "元数据与业务diff分离"
+      ],
+      "status": "reviewed_against_final_frozen_source_and_actual_execution_evidence",
+      "actual_result": {
+        "evidence": [
+          "Host external_authority_is_current_and_failed_batches_preserve_all_documents_history_and_creation_ledger",
+          "Host external_bom_and_route_array_edits_stay_unsupported_but_ui_edits_real_lists",
+          "authorize_history shared business-object effects"
+        ],
+        "execution_ref": ".work/p0-02-inputs/verification/result.json",
+        "individually_reexecuted_by_window6": false,
+        "separately_counted_as_extra_test": false
+      }
+    },
+    {
+      "id": "W6-I11",
+      "focus": "新增类型创建预算与候选原子",
+      "setup": "为Product/Bom/Route/Scenario分别限定对象类型、字段和distinct-ID额度。",
+      "input": [
+        "额度内创建；跨批创建第二新ID或跨类型伪装。",
+        "含合法创建前缀的失败批次；Undo创建再Redo同ID。"
+      ],
+      "expected": [
+        "按每grant/类型累计distinct-ID，删除/Undo不退预算，恢复同ID不重复计数。",
+        "失败不先扣ledger或推进history/Scenario高水位。",
+        "不因其他类型有空余额而跨类型授权。"
+      ],
+      "required_evidence": [
+        "真实Host ledger",
+        "边界与恢复测试",
+        "多文档失败保持"
+      ],
+      "status": "reviewed_against_final_frozen_source_and_actual_execution_evidence",
+      "actual_result": {
+        "evidence": [
+          "Host external authority current-ledger negative cases",
+          "retained cumulative-ID/undo-redo budget regressions",
+          "all kind create/remove helpers and cloned ledger commit source"
+        ],
+        "execution_ref": ".work/p0-02-inputs/verification/result.json",
+        "individually_reexecuted_by_window6": false,
+        "separately_counted_as_extra_test": false
+      }
+    },
+    {
+      "id": "W6-I12",
+      "focus": "ProjectDraft多文档历史",
+      "setup": "一批同时改Project业务对象和S1/S2订单/生产任务。",
+      "input": [
+        "Undo一次、Redo一次；然后失败编辑与合法新编辑分支。",
+        "保存当前草稿再Undo。"
+      ],
+      "expected": [
+        "一个批次一个history单元，所有文档一起恢复/重做，不残留新订单配旧Product。",
+        "Project和当前Scenario结构修订产生新值，不回拨旧快照数字；Subject版本/null/业务值按历史恢复。",
+        "失败保留redo，合法新编辑清redo，保存不清正常history。"
+      ],
+      "required_evidence": [
+        "纯history新增Scenario例及旧6组",
+        "真实多文档Host历史",
+        "修订/业务内容对照"
+      ],
+      "status": "reviewed_against_final_frozen_source_and_actual_execution_evidence",
+      "actual_result": {
+        "evidence": [
+          "history8 incl whole-Scenario candidate tests",
+          "Host scenario_history_restores_whole_documents_with_monotonic_host_revision_high_water",
+          "native business Project+Scenario undo/redo chain"
+        ],
+        "execution_ref": ".work/p0-02-inputs/verification/result.json",
+        "individually_reexecuted_by_window6": false,
+        "separately_counted_as_extra_test": false
+      }
+    },
+    {
+      "id": "W6-I13",
+      "focus": "冻结保存R包含同代Scenario",
+      "setup": "当前Project及S1/S2在R；保存任务已冻结ProjectDraft。",
+      "input": [
+        "准入保存R后，将订单数量/引用改成R+1。",
+        "完成worker，读磁盘与TaskOutput.Save和当前Host。"
+      ],
+      "expected": [
+        "保存R的Project/当前Scenario来自同一冻结快照，全部绑定R；不能引用R+1或共享可变map。",
+        "当前R+1保留新订单且dirty，SavedProject保存/当前修订据实。",
+        "旧Task结果不跟随后续历史/编辑变化。"
+      ],
+      "required_evidence": [
+        "锁外实际保存交错",
+        "同代manifest/文档",
+        "R与R+1真实差异"
+      ],
+      "status": "reviewed_against_final_frozen_source_and_actual_execution_evidence",
+      "actual_result": {
+        "evidence": [
+          "Host frozen_project_and_scenarios_save_at_r_reopen_elsewhere_and_preserve_old_frozen_documents",
+          "native business_saved_scenario_is_same_generation_as_project/business_newer_orders_remain_current_and_dirty"
+        ],
+        "execution_ref": ".work/p0-02-inputs/verification/result.json",
+        "individually_reexecuted_by_window6": false,
+        "separately_counted_as_extra_test": false
+      }
+    },
+    {
+      "id": "W6-I14",
+      "focus": "保存不得回用旧backing订单",
+      "setup": "从D1打开S1数量9形成backing，再把当前数量改成5或改Product精确ref。",
+      "input": [
+        "保存至D1或D2，再read/stage/adopt读回。",
+        "对照archive.current scenarios和磁盘当前ScenarioInput角色。"
+      ],
+      "expected": [
+        "从当前draft写Scenario，读回5/新ref，不能复活backing中的9/旧ref。",
+        "active Project索引、Scenario结构revision/project_revision和manifest同代一致。",
+        "旧来源目录在异目录保存时保持。"
+      ],
+      "required_evidence": [
+        "实际Host保存/重开",
+        "当前Scenario字节与typed内容",
+        "backing与draft不同值"
+      ],
+      "status": "reviewed_against_final_frozen_source_and_actual_execution_evidence",
+      "actual_result": {
+        "evidence": [
+          "store changed_current_orders_survive_another_directory_without_reusing_backing_orders",
+          "native business_reopened_orders_and_tasks_are_exact_saved_values"
+        ],
+        "execution_ref": ".work/p0-02-inputs/verification/result.json",
+        "individually_reexecuted_by_window6": false,
+        "separately_counted_as_extra_test": false
+      }
+    },
+    {
+      "id": "W6-I15",
+      "focus": "当前/冻结Scenario同ID分开保留",
+      "setup": "当前S1及被旧Run/Evaluation精确文件引用的S1旧结构修订/旧订单r1。",
+      "input": [
+        "编辑当前S1及Product业务r2，保存/重开。",
+        "核对FrozenRunProject、FrozenRunScenario、RunInputRef、Evaluation依赖。"
+      ],
+      "expected": [
+        "当前map只来自ScenarioInput角色，不混FrozenRunScenario/SupportingFile。",
+        "当前S1更新；旧冻结文件仍保留原字节、版本和精确引用，不统一重绑到新Project。",
+        "保存不捏造新Run或新报告结论。"
+      ],
+      "required_evidence": [
+        "带同ID旧/新Scenario的真实archive",
+        "角色分类/闭包",
+        "旧文件逐字节对照"
+      ],
+      "status": "reviewed_against_final_frozen_source_and_actual_execution_evidence",
+      "actual_result": {
+        "evidence": [
+          "store deleting_current_scenario_preserves_old_run_and_evaluation_revision_without_reactivating_it",
+          "Host frozen document byte equality and native history archive equality"
+        ],
+        "execution_ref": ".work/p0-02-inputs/verification/result.json",
+        "individually_reexecuted_by_window6": false,
+        "separately_counted_as_extra_test": false
+      }
+    },
+    {
+      "id": "W6-I16",
+      "focus": "删除当前Scenario不被冻结/backing复活",
+      "setup": "当前S1被索引，backing另含仍被旧Run引用的旧S1。",
+      "input": [
+        "删除当前S1并保存；读回/重开。",
+        "对照失败保存，再合法重试；Undo恢复后再次保存。"
+      ],
+      "expected": [
+        "成功根中不再有当前S1，Project索引同步；仍被引用旧S1可保留为冻结/支持角色，不能成为当前兜底。",
+        "失败保存保持旧有效根和当前dirty，不谎称删除已写盘。",
+        "Undo恢复后保存真实新结构版本与业务内容，不从backing覆盖。"
+      ],
+      "required_evidence": [
+        "删除/失败/重试/Undo真实链",
+        "manifest角色与current map",
+        "旧冻结闭包保持"
+      ],
+      "status": "reviewed_against_final_frozen_source_and_actual_execution_evidence",
+      "actual_result": {
+        "evidence": [
+          "Host final frozen-document regression incl actual retained max and absent OPTIONAL max counterexample",
+          "store current Scenario deletion and role-retention tests"
+        ],
+        "execution_ref": ".work/p0-02-inputs/verification/result.json",
+        "individually_reexecuted_by_window6": false,
+        "separately_counted_as_extra_test": false
+      },
+      "reopen_recreate_same_id_counterexample": {
+        "setup": "当前S已删除且索引无S；包中旧Run/Evaluation仍引用Frozen S revision7，Supporting角色另保留同ID revision11，所有文件和manifest身份均有效。",
+        "inputs": [
+          "保存并重开该包；确认当前map/索引仍无S",
+          "按本切片不存在对象的Put输入规则重新创建S",
+          "对照另一个包内未出现过的全新Scenario ID"
+        ],
+        "expected": [
+          "重开高水位S=11；新S结构修订至少12，不能重用1或7/11",
+          "新S绑定本次Project新R；旧文件内容、结构revision与精确引用完全保持",
+          "全新ID从1，未增加全局版本库或持久化高水位文件",
+          "若没有当前S，只保留高水位，不把旧Scenario复活为当前对象"
+        ]
+      }
+    },
+    {
+      "id": "W6-I17",
+      "focus": "重新打开初始化当前map与完整提案",
+      "setup": "多当前Scenario及旧冻结文档工程，含明确缺口/null。",
+      "input": [
+        "import只stage后读取提案；空选择或精确完整确认adopt。",
+        "子集/增补/重复/remapping及未同意阻断缺口分别请求。",
+        "重开后继续编辑并观察新会话高水位。"
+      ],
+      "expected": [
+        "完整归档采用保留业务对象、所有当前Scenario及缺口；错误选择不部分替换。",
+        "只按当前归档初始化Scenario元数据，高水位在本会话继续；不从旧Run文档选最大/最新替代当前内容。",
+        "旧授权/选择/history按切换规则退出；原Workspace输入revision0规则不变。"
+      ],
+      "required_evidence": [
+        "多Scenario stage/adopt与重开",
+        "提案正负例",
+        "当前/冻结角色隔离"
+      ],
+      "status": "reviewed_against_final_frozen_source_and_actual_execution_evidence",
+      "actual_result": {
+        "evidence": [
+          "Host import preview/canonical missing acceptance/save/reopen direct branch",
+          "current-only archive.scenarios and archive highwater verified-file filter"
+        ],
+        "execution_ref": ".work/p0-02-inputs/verification/result.json",
+        "individually_reexecuted_by_window6": false,
+        "separately_counted_as_extra_test": false
+      },
+      "import_preview_clarification_before_source_review": {
+        "input": "读取业务输入有缺口但存储格式/必需闭包有效的归档，在AdoptImportedDraft前读取真实TaskOutput.Import。",
+        "expected": [
+          "stage预览已展示按当前check_business_inputs派生的问题，不到采用时才第一次出现门槛",
+          "需显式accept_missing_as_draft的同一组问题在预览和采用规则中一致",
+          "私有archive.files与manifest保留输入原字节/内容；派生预览不反写源目录或伪造原始归档事实"
+        ],
+        "evidence": [
+          "get_task ImportDraft/提案读取",
+          "拒绝/明确接受缺口的Host正反例",
+          "源文件与私有backing原始内容保持"
+        ]
+      },
+      "reopened_high_water_interpretation": "原文不从旧Run文档选最大/最新替代当前内容，不禁止用其已验证revision初始化高水位；必须区分当前内容选择与同ID已保留结构revision的max。"
+    },
+    {
+      "id": "W6-I18",
+      "focus": "派生Issue所有权及真实投影",
+      "setup": "含用户/其他来源Issue和旧business_inputs.派生问题。",
+      "input": [
+        "制造精确版本/单位缺口，读取EditCommit/get_context。",
+        "合法补齐当前缺口；另执行失败候选及undo/redo。",
+        "保存重开再检查Issue。"
+      ],
+      "expected": [
+        "只替换business_inputs.前缀派生Project.issues，用户/其他来源Issue原样保持。",
+        "问题随真实当前候选产生/消失，含对象/字段/用途；失败候选不污染当前Issue。",
+        "不清空所有issues，也不使用旧backing问题覆盖当前状态或把有缺口当运行通过。"
+      ],
+      "required_evidence": [
+        "checker纯函数与Host投影",
+        "Issue正反向变化",
+        "历史/保存后来源保持"
+      ],
+      "status": "reviewed_against_final_frozen_source_and_actual_execution_evidence",
+      "actual_result": {
+        "evidence": [
+          "Host preview/adopt/current Issue assertions and canonical missing save/reopen",
+          "checker pure non-mutation assertions",
+          "refresh_business_issues/import_preview_missing"
+        ],
+        "execution_ref": ".work/p0-02-inputs/verification/result.json",
+        "individually_reexecuted_by_window6": false,
+        "separately_counted_as_extra_test": false
+      },
+      "preview_consistency": "派生Issue覆盖已加载当前Scenario与合法未解析Scenario声明；stage、采用门槛、采用后的context采用同一检查语义，不先隐藏再临时加门槛。"
+    },
+    {
+      "id": "W6-I19",
+      "focus": "正式DTO与公开wire保持",
+      "setup": "用设计业务案例显式转换成当前Product/BOM/Route/OrderLine/ProductionTask DTO。",
+      "input": [
+        "提交正式DTO；独立尝试旧product_revision/release_at/due_at等别名或非法结构。",
+        "核对ApiRequest/EditableProjectObject/既有18操作与生成类型。"
+      ],
+      "expected": [
+        "正式DTO进入真实Commands；设计JSON和旧别名不当兼容请求接受。",
+        "不新增第19操作、库存DTO或第二套场景状态。",
+        "有效但未齐输入以Issue草稿表达；未知字段和类型错误仍严格拒绝。"
+      ],
+      "required_evidence": [
+        "显式映射fixture",
+        "真实Serde边界",
+        "生成/TS消费结果"
+      ],
+      "status": "reviewed_against_final_frozen_source_and_actual_execution_evidence",
+      "actual_result": {
+        "evidence": [
+          "official DTO Host/Native fixtures and strict VersionId fixture repair",
+          "retained wire/Schema/TS consumer tests; no public operation added"
+        ],
+        "execution_ref": ".work/p0-02-inputs/verification/result.json",
+        "individually_reexecuted_by_window6": false,
+        "separately_counted_as_extra_test": false
+      }
+    },
+    {
+      "id": "W6-I20",
+      "focus": "冻结后实际回归与同Host原生接入",
+      "setup": "根通知Host/store/history/检查器/测试冻结及raw结果后再接收。",
+      "input": [
+        "只读新实现增量、独立测试和集中验证原始日志。",
+        "核对同managed Host业务图编辑/历史/冻结保存/重开与原31项。",
+        "核对原79组完整保留及真实磁盘/原生新证据。"
+      ],
+      "expected": [
+        "测试直接调用正式ProjectDraft/Commands/checker，不能用复制模型或自报passed替代。",
+        "一次Host/单FIFO，I/O锁外；旧存储恢复、取消与history边界不回退。",
+        "按实际覆盖分别记录新/旧结果；未覆盖明确待办，不声称业务UI、人工picker或Engine。"
+      ],
+      "required_evidence": [
+        "源码与原始执行时间/退出码",
+        "旧79+新增真实测试",
+        "原生同Host和多文档磁盘结果"
+      ],
+      "status": "reviewed_against_final_frozen_source_and_actual_execution_evidence",
+      "actual_result": {
+        "evidence": [
+          "final107 Rust and20schemas48cases raw evidence",
+          "same managed desktop-host-70388 native56",
+          "old79 Rust and31 native names all retained"
+        ],
+        "execution_ref": ".work/p0-02-inputs/verification/result.json",
+        "individually_reexecuted_by_window6": false,
+        "separately_counted_as_extra_test": false
+      }
+    }
+  ],
+  "findings": [
+    {
+      "id": "W6-IN-F01",
+      "priority": "P2",
+      "category": "test_fixture_defect",
+      "status": "closed_after_strict_SemVer_fixture_fix_and_current_full_proof",
+      "title": "checker正式DTO测试fixture使用非法SemVer，业务断言尚未可执行",
+      "owner": "实现窗口2 / W00",
+      "file": "packages/domain/src/business_inputs.rs",
+      "lines": [
+        593,
+        597,
+        598,
+        600
+      ],
+      "evidence": "fixture中的device/module/operation ModuleRef.version使用字符串1；packages/domain/src/ids.rs的VersionId::try_from明确要求三个数字段的精确SemVer。serde_json::from_value::<ProjectState>(...).expect因此在构造fixture时失败。",
+      "reproduce": [
+        "运行纯checker任一调用fixture()的单测，例如complete_exact_business_references_have_no_input_issues",
+        "现有控制流在formal ProjectState business fixture的expect处失败，未进入业务引用断言"
+      ],
+      "expected": "测试输入使用正式SemVer（例如1.0.0/2.0.0）；保留VersionId严格合同，不为通过测试放宽公共版本解析。",
+      "runtime_executed_by_window6": false,
+      "related_expectations": [
+        "W6-I19",
+        "W6-I20"
+      ],
+      "fix_recheck": {
+        "source_rechecked": "ModuleRef fixtures now use1.0.0; public VersionId strict SemVer unchanged",
+        "actual_targeted_ref": ".work/p0-02-inputs/domain-recheck.stdout.txt",
+        "actual_targeted_result": "9 passed;0 failed",
+        "failure_history": "首轮workspace失败raw保留；不以旧失败或单独编译代替修后单测结果",
+        "current_full_proof_pending": false,
+        "final_closure": {
+          "test_ref": ".work/p0-02-inputs/verification/workspace-tests.stdout.txt",
+          "actual": "9 pure business tests passed in current full run, including old_subject_revision_is_not_silently_upgraded with restored ItemType checks",
+          "strict_contract": "VersionId unchanged; fixtures use1.0.0",
+          "prior_failed_raw": ".work/p0-02-inputs/pre-semver-fixture-verification/",
+          "current_proof_ref": ".work/p0-02-inputs/verification/result.json"
+        }
+      }
+    },
+    {
+      "id": "W6-IN-F02",
+      "priority": "P2",
+      "category": "implementation_defect",
+      "status": "closed_after_present_file_highwater_filter_and_direct_Host_regression",
+      "title": "高水位计入缺失可选文件的Scenario声明，非真实保留版本可阻断重建",
+      "owner": "W00 Host",
+      "file": "packages/commands/src/project_host.rs",
+      "lines": [
+        2270,
+        2276,
+        2282,
+        2288
+      ],
+      "secondary_source": "packages/commands/src/project_store.rs:550-557",
+      "evidence": "archive_scenario_highwater遍历所有manifest条目，不检查对应文件是否实际包含；store允许required=false且无文件的声明。因此仅可选缺失声明的revision也能进入max。",
+      "reproduce": [
+        "有效包中当前map/refs无S；加SupportingFile条目kind=scenario/object_ref=Scenario S/revision=9007199254740991/required=false，路径missing-s.json但无该文件；其他根与闭包有效。",
+        "read_project_archive允许未被引用的缺失可选文件，Open后Host高水位却记S为MAX_SAFE_UINT。",
+        "按新Put规则以revision1/project_revision=base创建真实S，finalize_draft因next_revision(max)耗尽而拒绝；该包并无真实保留的S版本。"
+      ],
+      "expected": "只将已实际包含且经身份/修订验证的Scenario文档计入包内保留版本高水位；真实Frozen/Supporting旧S仍必须计入，不能因此退回只看current map。",
+      "runtime_executed_by_window6": false,
+      "related_expectations": [
+        "W6-I07",
+        "W6-I16",
+        "W6-I17"
+      ],
+      "fix_recheck": {
+        "source": "packages/commands/src/project_host.rs#archive_scenario_highwater",
+        "lines": [
+          2276,
+          2279,
+          2283
+        ],
+        "change": "只处理对应archive.files确有内容、已由store验证身份/修订的Scenario文档；真实Frozen/Supporting旧版本仍计入每ID max",
+        "test": "frozen_project_and_scenarios_save_at_r_reopen_elsewhere_and_preserve_old_frozen_documents",
+        "direct_branches": [
+          "删除当前SC1后包内真实保留旧版本；重开再创建SC1修订高于maximum_retained，冻结字节不变",
+          "required=false且文件不存在的OPTIONAL声明revision=MAX_SAFE_UINT不计高水位；重开后真实新OPTIONAL创建成功revision1"
+        ],
+        "actual_test_result": "current full Rust log: test frozen_project_and_scenarios_save_at_r_reopen_elsewhere_and_preserve_old_frozen_documents ... ok",
+        "test_source": "packages/commands/tests/business_input_host.rs:1307-1392",
+        "execution_ref": ".work/p0-02-inputs/verification/workspace-tests.stdout.txt"
+      }
+    },
+    {
+      "id": "W6-IN-F03",
+      "priority": "P2",
+      "category": "implementation_defect",
+      "status": "closed_after_canonical_typed_missing_scenario_consumption_and_direct_save_reopen_regression",
+      "title": "重算missing_scenario后Issue归属与store识别规则不一致，已接受缺口草稿无法保存",
+      "owner": "实现窗口4 store / 实现窗口2 checker / W00集成",
+      "file": "packages/commands/src/project_store.rs",
+      "lines": [
+        609,
+        610,
+        649,
+        658,
+        659
+      ],
+      "source_anchors": [
+        "check_business_inputs missing_scenario: business_inputs.rs 263-272",
+        "refresh_business_issues: project_host.rs 2221-2227",
+        "write_project_archive validate_archive: project_store.rs 1250"
+      ],
+      "evidence": "checker将missing_scenario定位在Project对象的/scenario_refs/i；store.reported_missing对Scenario只接受object_ref=Scenario S的直接Issue，非Module立即false。Host重算会清掉旧business_inputs.直接Scenario Issue并改为当前Project归属Issue。",
+      "reproduce": [
+        "准备合法缺口包：Project.scenario_refs=[S]，当前S文件不存在，manifest.missing=[]；Project.issues中有business_inputs.legacy_missing，object_ref=Scenario S、message非空、blocks含Execution。原store直接Issue规则可读此包。",
+        "import stage重算后展示business_inputs.missing_scenario（object_ref=Project P，field_path=/scenario_refs/0）；显式accept_missing_as_draft=true采用。",
+        "任意正常Project编辑后保存。新的Project文档仅含当前canonical Project归属Issue，refs仍为S；validate_archive查reported_missing(Scenario,S)返回false，Task MissingReference而不能保存。"
+      ],
+      "expected": "store必须识别Host实际生成、指向该Scenario引用的精确派生Issue，使合法已接受缺口能继续保存；不删除refs、不保留过时派生Issue来绕过、不广泛豁免必需文件闭包。",
+      "runtime_executed_by_window6": false,
+      "related_expectations": [
+        "W6-I09",
+        "W6-I17",
+        "W6-I18"
+      ],
+      "fix_recheck": {
+        "source": "packages/commands/src/project_store.rs#reported_missing",
+        "lines": [
+          664,
+          679
+        ],
+        "change": "只接受business_inputs.missing_scenario、实际Project owner及/scenario_refs/单一数组元素路径；JSON typed pointer解析值必须匹配所求Scenario ID",
+        "preserved_boundary": "required文档缺失仍先失败；未删除refs，未保留过期派生Issue作为替代理由，未放宽任意Issue豁免",
+        "test": "put_remove_get_business_kinds_use_the_actual_host_and_sync_scenario_refs",
+        "direct_branch": "manifest.missing为空，旧Project.issues为business_inputs.legacy_missing direct Scenario；stage重算并显示canonical Project owner Issue；采用后编辑、保存、异目录重开均保持UNRESOLVED ref与同一canonical Issue",
+        "actual_test_result": "current full Rust log: test put_remove_get_business_kinds_use_the_actual_host_and_sync_scenario_refs ... ok",
+        "test_source": "packages/commands/tests/business_input_host.rs:675-785",
+        "execution_ref": ".work/p0-02-inputs/verification/workspace-tests.stdout.txt"
+      }
+    }
+  ],
+  "contract_issues": [],
+  "actual_result": {
+    "status": "passed_independent_scoped_implementation_review",
+    "implementation_passed": true,
+    "findings_closed": [
+      "W6-IN-F01",
+      "W6-IN-F02",
+      "W6-IN-F03"
+    ],
+    "open_confirmed_findings": 0,
+    "Rust_tests": 107,
+    "old79_retained_by_name": true,
+    "schemas": 20,
+    "schema_cases": 48,
+    "native_checks": 56,
+    "old31_native_retained_by_name": true,
+    "verification_ref": ".work/p0-02-inputs/verification/result.json",
+    "rerun_by_window6": false,
+    "whole_task_done": false,
+    "human_acceptance": null
+  },
+  "implementation_passed": true,
+  "whole_task_done": false,
+  "human_acceptance": null,
+  "next_condition": "本片独立复审结束；P0-02原步骤2/3及整项release由统筹另行明确派发/验收，窗口6不扩展实现范围。",
+  "pre_implementation_clarification": {
+    "source": "统筹源窄查通知；当前尚未源码冻结，窗口6未读在改实现/未看实际执行结果",
+    "changes": "补明I09对reported-missing的既有合同例外，以及I17/I18 stage预览/采用一致性；原20项预期正文保留",
+    "implementation_or_execution_verified": false
+  },
+  "source_pre_review": {
+    "phase": "superseded_by_final_independent_review",
+    "reviewed_sources": [
+      "packages/commands/src/project_draft.rs",
+      "packages/commands/src/project_host.rs",
+      "packages/commands/src/project_history.rs",
+      "packages/commands/src/project_store.rs",
+      "packages/domain/src/business_inputs.rs",
+      "packages/domain/src/ids.rs"
+    ],
+    "source_observed": [
+      {
+        "last_write": "2026-10-15T23:54:50.9960176+08:00",
+        "file": "packages/commands/src/project_host.rs"
+      },
+      {
+        "last_write": "2026-10-15T23:53:07.9748556+08:00",
+        "file": "packages/commands/src/project_store.rs"
+      },
+      {
+        "last_write": "2026-10-15T23:55:19.5186331+08:00",
+        "file": "packages/domain/src/business_inputs.rs"
+      }
+    ],
+    "positive_observations": [
+      "ProjectDraft持有Project及全部当前Scenario；Put/Remove在同一候选中逐项授权，最终一次验证/结构修订/history/ledger提交",
+      "Scenario授权值剔除Host-owned revision/project_revision，业务内容仍按真实effects校验；高水位为候选副本，失败前未提交",
+      "store.current scenarios仅取ScenarioInput角色，不混Frozen/Supporting；writer从当前draft写同代Scenario而非旧backing字节",
+      "stage会重算当前business_inputs问题并生成预览，原私有archive字节保留；采用复算同语义",
+      "精确subject匹配不使用latest；quantity=null与due未知保留，due未知不阻断Execution",
+      "history候选包含所有当前Scenario，提交时重新分配Host结构元数据，普通保存/旧Run文件不由history回退"
+    ],
+    "no_Cargo_or_IO_executed_by_window6": true,
+    "current_9_Host_result": "统筹报告9pass/0fail；尚未将其等同checker单测/完整新版本proof",
+    "final_execution_acceptance_pending": false,
+    "continuation_review": {
+      "reviewed": "更新后的纯checker legacy ItemType引用与断言，以及store.retained_paths和ProjectDraft history",
+      "positives": [
+        "store从当前draft写Project/Scenario新代，并按真实文件/Scenario版本闭包保留仍被旧Run/Evaluation使用的旧文档，旧当前角色转换为Supporting。",
+        "history条目为完整ProjectDraft快照，候选不移动栈；Host另行重分配Scenario结构修订，未把高水位塞进可回退历史。"
+      ],
+      "still_open": [
+        "W6-IN-F02",
+        "W6-IN-F03"
+      ],
+      "source_status": "Host/archive_scenario_highwater及store/reported_missing对应两条缺陷路径在本次读取版本中仍未变化",
+      "current_full_proof_not_received": true,
+      "no_Cargo_or_IO_executed": true
+    }
+  },
+  "final_review": {
+    "status": "passed_for_authorized_P0_02_step1_slice",
+    "scope": "Project及所有当前Scenario的业务输入/精确引用、原子编辑/历史/冻结目录保存；非整项P0-02接收",
+    "verification_ref": ".work/p0-02-inputs/verification/result.json",
+    "command_runs": [
+      {
+        "key": "format",
+        "exit_code": 0,
+        "started_at": "2026-10-16T00:10:03.9898223+08:00",
+        "finished_at": "2026-10-16T00:10:05.0444391+08:00",
+        "stdout_ref": ".work/p0-02-inputs/verification/format.stdout.txt",
+        "stderr_ref": ".work/p0-02-inputs/verification/format.stderr.txt"
+      },
+      {
+        "key": "workspace-tests",
+        "exit_code": 0,
+        "started_at": "2026-10-16T00:10:05.0789703+08:00",
+        "finished_at": "2026-10-16T00:10:37.6407114+08:00",
+        "stdout_ref": ".work/p0-02-inputs/verification/workspace-tests.stdout.txt",
+        "stderr_ref": ".work/p0-02-inputs/verification/workspace-tests.stderr.txt"
+      },
+      {
+        "key": "generate-contracts",
+        "exit_code": 0,
+        "started_at": "2026-10-16T00:10:37.7074135+08:00",
+        "finished_at": "2026-10-16T00:10:52.2512+08:00",
+        "stdout_ref": ".work/p0-02-inputs/verification/generate-contracts.stdout.txt",
+        "stderr_ref": ".work/p0-02-inputs/verification/generate-contracts.stderr.txt"
+      },
+      {
+        "key": "typecheck",
+        "exit_code": 0,
+        "started_at": "2026-10-16T00:10:52.2534504+08:00",
+        "finished_at": "2026-10-16T00:10:53.8319053+08:00",
+        "stdout_ref": ".work/p0-02-inputs/verification/typecheck.stdout.txt",
+        "stderr_ref": ".work/p0-02-inputs/verification/typecheck.stderr.txt"
+      },
+      {
+        "key": "schema-consumer",
+        "exit_code": 0,
+        "started_at": "2026-10-16T00:10:53.8338364+08:00",
+        "finished_at": "2026-10-16T00:10:56.3233709+08:00",
+        "stdout_ref": ".work/p0-02-inputs/verification/schema-consumer.stdout.txt",
+        "stderr_ref": ".work/p0-02-inputs/verification/schema-consumer.stderr.txt"
+      },
+      {
+        "key": "desktop-build",
+        "exit_code": 0,
+        "started_at": "2026-10-16T00:10:56.3255079+08:00",
+        "finished_at": "2026-10-16T00:11:09.8786727+08:00",
+        "stdout_ref": ".work/p0-02-inputs/verification/desktop-build.stdout.txt",
+        "stderr_ref": ".work/p0-02-inputs/verification/desktop-build.stderr.txt"
+      },
+      {
+        "key": "desktop-host-smoke",
+        "exit_code": 0,
+        "started_at": "2026-10-16T00:11:09.8810424+08:00",
+        "finished_at": "2026-10-16T00:11:11.8827272+08:00",
+        "stdout_ref": ".work/p0-02-inputs/verification/desktop-host-smoke.stdout.txt",
+        "stderr_ref": ".work/p0-02-inputs/verification/desktop-host-smoke.stderr.txt"
+      }
+    ],
+    "actual_execution": "W00集中执行；窗口6只读源码、直接回归及原始stdout/results，不重复Cargo",
+    "actual_results": {
+      "Rust_total": 107,
+      "Rust_failed": 0,
+      "pure_business": 9,
+      "history": 8,
+      "store": 20,
+      "independent_business_Host": 9,
+      "native_adapter": 8,
+      "schemas": 20,
+      "schema_cases": 48,
+      "typecheck_passed": true,
+      "desktop_build_passed": true,
+      "native_checks": 56,
+      "native_failed": 0,
+      "native_same_managed_Host": true,
+      "native_host_instance": "desktop-host-70388"
+    },
+    "retained_baseline": {
+      "old_Rust_names": 79,
+      "missing_old_Rust": [],
+      "old_native_names": 31,
+      "missing_old_native": [],
+      "method": "从旧79/31原始日志抽取逐名集合，与新107/56实际结果比较；两类missing均为空",
+      "baseline_ref": ".work/p0-01-persistence-history/verification/result.json"
+    },
+    "findings_closed": [
+      "W6-IN-F01",
+      "W6-IN-F02",
+      "W6-IN-F03"
+    ],
+    "open_confirmed_findings": [],
+    "key_acceptance": [
+      "业务DTO完整前向引用一次Project提交；r2不会重定向r1订单，缺数量/交期/引用保留真实null与可定位草稿，不造库存",
+      "ProjectDraft持有全部当前Scenario，业务effects按当前grant，Host元数据不作为客户端自由字段；失败不移动文档/history/ledger/highwater",
+      "当前Scenario修订按会话高水位递增；重开计入包内真实包含且已验证的旧Scenario结构版本，不计缺失可选声明",
+      "writer从当前draft写同代Project/Scenario，不从backing复活旧订单；仍被旧Run/Evaluation引用的冻结/支持文件原样保留",
+      "stage先展示当前派生Issue，采用按同语义明确同意；canonical reported-missing引用可保存与异目录重开，必需闭包不放宽",
+      "新Native业务图使用同一托管Host/FIFO完成编辑、history、冻结保存和重开；旧31检查仍在"
+    ],
+    "source_timestamps": [
+      {
+        "file": "packages/commands/src/project_host.rs",
+        "last_write": "2026-10-16T00:06:52.3361583+08:00"
+      },
+      {
+        "file": "packages/commands/src/project_store.rs",
+        "last_write": "2026-10-16T00:07:54.8956854+08:00"
+      },
+      {
+        "file": "packages/domain/src/business_inputs.rs",
+        "last_write": "2026-10-16T00:04:01.0810469+08:00"
+      },
+      {
+        "file": "packages/commands/tests/business_input_host.rs",
+        "last_write": "2026-10-16T00:08:25.0051225+08:00"
+      },
+      {
+        "file": "apps/planner/src-tauri/src/project_api.rs",
+        "last_write": "2026-10-15T23:58:22.5569171+08:00"
+      }
+    ],
+    "prior_evidence": [
+      ".work/p0-02-inputs/pre-semver-fixture-verification/",
+      ".work/p0-02-inputs/pre-review-fix-verification/"
+    ],
+    "limitations": [
+      "本片只接收P0-02原步骤1；订单取消、WIP干预和原步骤2/3未接收，整项whole_task_done保持false",
+      "未实施业务UI/Figma、WebView用户流程、人工目录picker、Engine运行或MCP外部进程认证",
+      "外部BOM/Route等数组编辑仍明确UnsupportedCapability；已测UI真实数组及当前支持的外部字段/预算边界，不声称完整Agent数组授权",
+      "未建立同ID多业务版本仓库；旧精确版本无法解析时以缺口保存，不隐式升级",
+      "20项为审查预期/覆盖映射，不另计20次独立执行；107/48/56只据真实当前raw计数"
+    ],
+    "implementation_passed": true,
+    "whole_task_done": false
+  }
+}

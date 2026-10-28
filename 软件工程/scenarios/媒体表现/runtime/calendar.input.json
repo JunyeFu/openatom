@@ -1,0 +1,866 @@
+{
+  "definitions": [
+    {
+      "attribute_schema": [],
+      "contribution": {
+        "assets": [],
+        "author": null,
+        "license": null
+      },
+      "definition_state": "runtime_candidate",
+      "id": "fixture.worker",
+      "parameters": [],
+      "payload": {
+        "category": "resources",
+        "data": {
+          "capacity": {
+            "unit": "person",
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            }
+          },
+          "default_calendar_ms": [
+            {
+              "end_ms": 240000,
+              "start_ms": 0
+            }
+          ],
+          "kind": "worker",
+          "presentation": null,
+          "qualifications": [],
+          "role": "worker"
+        }
+      },
+      "title": "fixture.worker",
+      "version": "0.1.0"
+    },
+    {
+      "attribute_schema": [],
+      "contribution": {
+        "assets": [],
+        "author": null,
+        "license": null
+      },
+      "definition_state": "runtime_candidate",
+      "id": "fixture.machine",
+      "parameters": [],
+      "payload": {
+        "category": "resources",
+        "data": {
+          "capacity": {
+            "unit": "slot",
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            }
+          },
+          "default_calendar_ms": [
+            {
+              "end_ms": 240000,
+              "start_ms": 0
+            }
+          ],
+          "kind": "fixture",
+          "presentation": null,
+          "qualifications": [],
+          "role": "execution_capacity"
+        }
+      },
+      "title": "fixture.machine",
+      "version": "0.1.0"
+    },
+    {
+      "attribute_schema": [],
+      "contribution": {
+        "assets": [],
+        "author": null,
+        "license": null
+      },
+      "definition_state": "runtime_candidate",
+      "id": "w5.op.phased",
+      "parameters": [],
+      "payload": {
+        "category": "operations",
+        "data": {
+          "builtin": "transform",
+          "duration": null,
+          "family": null,
+          "hold_on_output_wait": [],
+          "identity_policy": "transform_with_origin",
+          "inputs": [
+            {
+              "declared_output_quality": null,
+              "port": "input",
+              "quantity": {
+                "unit": "piece",
+                "value": {
+                  "coefficient": 1,
+                  "decimal_places": 0
+                }
+              },
+              "required_quality": [
+                "released"
+              ],
+              "role": "raw"
+            }
+          ],
+          "item_roles": [
+            "raw",
+            "product"
+          ],
+          "outputs": [
+            {
+              "declared_output_quality": "released",
+              "port": "output",
+              "quantity": {
+                "unit": "piece",
+                "value": {
+                  "coefficient": 1,
+                  "decimal_places": 0
+                }
+              },
+              "required_quality": [],
+              "role": "product"
+            }
+          ],
+          "pack_identity": null,
+          "phases": [
+            {
+              "duration": {
+                "basis": "user_provided",
+                "source_ref": null,
+                "unit": "millisecond",
+                "value": 5000
+              },
+              "id": "load",
+              "interruption_policy": "non_preemptive",
+              "phase_resources": [
+                {
+                  "qualifications": [],
+                  "quantity": {
+                    "unit": "slot",
+                    "value": {
+                      "coefficient": 1,
+                      "decimal_places": 0
+                    }
+                  },
+                  "role": "machine"
+                },
+                {
+                  "qualifications": [],
+                  "quantity": {
+                    "unit": "person",
+                    "value": {
+                      "coefficient": 1,
+                      "decimal_places": 0
+                    }
+                  },
+                  "role": "worker"
+                }
+              ],
+              "work_kind": "loading"
+            },
+            {
+              "duration": {
+                "basis": "user_provided",
+                "source_ref": null,
+                "unit": "millisecond",
+                "value": 30000
+              },
+              "id": "auto",
+              "interruption_policy": "non_preemptive",
+              "phase_resources": [
+                {
+                  "qualifications": [],
+                  "quantity": {
+                    "unit": "slot",
+                    "value": {
+                      "coefficient": 1,
+                      "decimal_places": 0
+                    }
+                  },
+                  "role": "machine"
+                }
+              ],
+              "work_kind": "processing"
+            },
+            {
+              "duration": {
+                "basis": "user_provided",
+                "source_ref": null,
+                "unit": "millisecond",
+                "value": 5000
+              },
+              "id": "unload",
+              "interruption_policy": "non_preemptive",
+              "phase_resources": [
+                {
+                  "qualifications": [],
+                  "quantity": {
+                    "unit": "slot",
+                    "value": {
+                      "coefficient": 1,
+                      "decimal_places": 0
+                    }
+                  },
+                  "role": "machine"
+                },
+                {
+                  "qualifications": [],
+                  "quantity": {
+                    "unit": "person",
+                    "value": {
+                      "coefficient": 1,
+                      "decimal_places": 0
+                    }
+                  },
+                  "role": "worker"
+                }
+              ],
+              "work_kind": "unloading"
+            }
+          ],
+          "quality_and_routes": null,
+          "resource_roles": [
+            {
+              "qualifications": [],
+              "quantity": {
+                "unit": "slot",
+                "value": {
+                  "coefficient": 1,
+                  "decimal_places": 0
+                }
+              },
+              "role": "machine"
+            }
+          ]
+        }
+      },
+      "title": "w5.op.phased",
+      "version": "0.1.0"
+    },
+    {
+      "attribute_schema": [],
+      "contribution": {
+        "assets": [],
+        "author": null,
+        "license": null
+      },
+      "definition_state": "runtime_candidate",
+      "id": "w5.station.CNC",
+      "parameters": [],
+      "payload": {
+        "category": "devices",
+        "data": {
+          "behavior": {
+            "inline": null,
+            "operation_ref": {
+              "id": "w5.op.phased",
+              "version": "0.1.0"
+            },
+            "selected": "operation_ref"
+          },
+          "configuration": {},
+          "operations": [],
+          "placement": "fixed_during_simulation",
+          "ports": [
+            {
+              "direction": "input",
+              "id": "input",
+              "payload": {
+                "data": {
+                  "item_role": "raw",
+                  "quantity_rule": null,
+                  "unit": "piece"
+                },
+                "kind": "material"
+              }
+            },
+            {
+              "direction": "output",
+              "id": "output",
+              "payload": {
+                "data": {
+                  "item_role": "product",
+                  "quantity_rule": null,
+                  "unit": "piece"
+                },
+                "kind": "material"
+              }
+            }
+          ],
+          "presentation": null
+        }
+      },
+      "title": "CNC",
+      "version": "0.1.0"
+    }
+  ],
+  "input_ref": {
+    "frozen_project_file": {
+      "kind": "project",
+      "path": "frozen/project.json"
+    },
+    "frozen_scenario_file": {
+      "kind": "scenario",
+      "path": "frozen/scenario.json"
+    },
+    "project_id": "P1",
+    "project_revision": 1,
+    "scenario_id": "PHASE",
+    "scenario_revision": 1
+  },
+  "project": {
+    "acknowledgments": [],
+    "artifact_refs": [],
+    "bindings": [],
+    "boms": [
+      {
+        "id": "BOM-LOCAL",
+        "revision": "r1",
+        "rows": [
+          {
+            "consume_at_operation": "step-cnc",
+            "item_type_ref": {
+              "id": "raw",
+              "revision": "r1"
+            },
+            "quantity": {
+              "unit": "piece",
+              "value": {
+                "coefficient": 1,
+                "decimal_places": 0
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "calendars": [
+      {
+        "id": "ALL",
+        "intervals": [
+          {
+            "end_ms": 100000,
+            "start_ms": 0
+          }
+        ],
+        "source": "user_provided",
+        "title": "explicit full observation calendar"
+      },
+      {
+        "id": "WORKER",
+        "intervals": [
+          {
+            "end_ms": 20000,
+            "start_ms": 0
+          },
+          {
+            "end_ms": 60000,
+            "start_ms": 40000
+          }
+        ],
+        "source": "user_provided",
+        "title": "declared non-continuous worker calendar"
+      }
+    ],
+    "connections": [
+      {
+        "data": {
+          "capacity_rule": null,
+          "destination": {
+            "data": {
+              "instance_id": "CNC",
+              "module_ref": {
+                "id": "w5.station.CNC",
+                "version": "0.1.0"
+              },
+              "port_id": "input"
+            },
+            "kind": "port"
+          },
+          "destination_store": "raw-store",
+          "id": "CNC-input-input",
+          "item_type": "raw",
+          "quantity_rule": null,
+          "source": {
+            "data": "raw-store",
+            "kind": "location"
+          },
+          "unit": "piece"
+        },
+        "kind": "material"
+      },
+      {
+        "data": {
+          "capacity_rule": null,
+          "destination": {
+            "data": "finished",
+            "kind": "location"
+          },
+          "destination_store": "finished",
+          "id": "CNC-output-output",
+          "item_type": "part",
+          "quantity_rule": null,
+          "source": {
+            "data": {
+              "instance_id": "CNC",
+              "module_ref": {
+                "id": "w5.station.CNC",
+                "version": "0.1.0"
+              },
+              "port_id": "output"
+            },
+            "kind": "port"
+          },
+          "unit": "piece"
+        },
+        "kind": "material"
+      }
+    ],
+    "devices": [
+      {
+        "configuration": {},
+        "footprint_m": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 1,
+            "y": 0
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "hall_id": "H-1",
+        "height_m": 1,
+        "id": "CNC",
+        "line_id": null,
+        "module_ref": {
+          "id": "w5.station.CNC",
+          "version": "0.1.0"
+        },
+        "operation_binding": {
+          "id": "w5.op.phased",
+          "version": "0.1.0"
+        },
+        "pose": {
+          "coordinate_frame": "right_handed_z_up",
+          "rotation": {
+            "w": 1.0,
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "scale": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          },
+          "translation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "unit": "meter"
+        },
+        "presentation_override": null,
+        "role_bindings": {
+          "item_types": {
+            "product": "part",
+            "raw": "raw"
+          },
+          "ports": {},
+          "resources": {
+            "execution_capacity": "CAP-CNC",
+            "machine": "CAP-CNC",
+            "worker": "W-C"
+          },
+          "targets": {}
+        },
+        "title": "CNC"
+      }
+    ],
+    "generation_context": null,
+    "halls": [
+      {
+        "depth_m": 10,
+        "height_m": 4,
+        "id": "H-1",
+        "input_locations": [
+          "raw-store"
+        ],
+        "origin": {
+          "coordinate_frame": "right_handed_z_up",
+          "rotation": {
+            "w": 1.0,
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "scale": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          },
+          "translation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "unit": "meter"
+        },
+        "output_locations": [
+          "finished"
+        ],
+        "title": "declared single hall",
+        "width_m": 20
+      }
+    ],
+    "id": "P1",
+    "issues": [],
+    "item_types": [
+      {
+        "attribute_schema": [],
+        "attributes": {},
+        "id": "raw",
+        "revision": "r1",
+        "spec_ref": null,
+        "title": "raw",
+        "tracking": "individual",
+        "unit": "piece"
+      },
+      {
+        "attribute_schema": [],
+        "attributes": {},
+        "id": "part",
+        "revision": "r1",
+        "spec_ref": null,
+        "title": "part",
+        "tracking": "individual",
+        "unit": "piece"
+      }
+    ],
+    "lines": [],
+    "locations": [
+      {
+        "accepted_item_types": [
+          "raw"
+        ],
+        "capacity": {
+          "unit": "piece",
+          "value": {
+            "coefficient": 1,
+            "decimal_places": 0
+          }
+        },
+        "hall_id": "H-1",
+        "id": "raw-store",
+        "ordinary_issue_enabled": true,
+        "position": {
+          "coordinate_frame": "right_handed_z_up",
+          "rotation": {
+            "w": 1.0,
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "scale": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          },
+          "translation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "unit": "meter"
+        },
+        "purpose": "input",
+        "title": "raw-store"
+      },
+      {
+        "accepted_item_types": [
+          "part"
+        ],
+        "capacity": {
+          "unit": "piece",
+          "value": {
+            "coefficient": 1,
+            "decimal_places": 0
+          }
+        },
+        "hall_id": "H-1",
+        "id": "finished",
+        "ordinary_issue_enabled": true,
+        "position": {
+          "coordinate_frame": "right_handed_z_up",
+          "rotation": {
+            "w": 1.0,
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "scale": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          },
+          "translation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "unit": "meter"
+        },
+        "purpose": "output",
+        "title": "finished"
+      }
+    ],
+    "module_refs": [
+      {
+        "id": "fixture.worker",
+        "version": "0.1.0"
+      },
+      {
+        "id": "fixture.machine",
+        "version": "0.1.0"
+      },
+      {
+        "id": "w5.op.phased",
+        "version": "0.1.0"
+      },
+      {
+        "id": "w5.station.CNC",
+        "version": "0.1.0"
+      }
+    ],
+    "products": [
+      {
+        "artifact_refs": [],
+        "bom_ref": {
+          "id": "BOM-LOCAL",
+          "revision": "r1"
+        },
+        "id": "PART",
+        "item_type_ref": {
+          "id": "part",
+          "revision": "r1"
+        },
+        "revision": "r1",
+        "routing_ref": {
+          "id": "ROUTE-LOCAL",
+          "revision": "r1"
+        }
+      }
+    ],
+    "resources": [
+      {
+        "calendar_id": "ALL",
+        "capacity": {
+          "unit": "slot",
+          "value": {
+            "coefficient": 1,
+            "decimal_places": 0
+          }
+        },
+        "definition_ref": {
+          "id": "fixture.machine",
+          "version": "0.1.0"
+        },
+        "home_location": null,
+        "id": "CAP-CNC",
+        "kind": "fixture",
+        "presentation": null,
+        "qualifications": [],
+        "role": "execution_capacity",
+        "title": "CAP-CNC"
+      },
+      {
+        "calendar_id": "WORKER",
+        "capacity": {
+          "unit": "person",
+          "value": {
+            "coefficient": 1,
+            "decimal_places": 0
+          }
+        },
+        "definition_ref": {
+          "id": "fixture.worker",
+          "version": "0.1.0"
+        },
+        "home_location": "raw-store",
+        "id": "W-C",
+        "kind": "worker",
+        "presentation": null,
+        "qualifications": [],
+        "role": "worker",
+        "title": "W-C"
+      }
+    ],
+    "revision": 1,
+    "routes": [
+      {
+        "id": "ROUTE-LOCAL",
+        "revision": "r1",
+        "steps": [
+          {
+            "device_id": "CNC",
+            "id": "step-cnc",
+            "item_bindings": {
+              "product": "part",
+              "raw": "raw"
+            },
+            "operation_ref": {
+              "id": "w5.op.phased",
+              "version": "0.1.0"
+            },
+            "predecessors": [],
+            "resource_bindings": {
+              "worker": "W-C"
+            }
+          }
+        ]
+      }
+    ],
+    "scenario_refs": [
+      "PHASE"
+    ],
+    "setup_policies": [],
+    "sources": [],
+    "template_adoptions": [],
+    "time_reference": {
+      "label": "self-built original seconds explicitly converted to milliseconds",
+      "origin_iso8601": null,
+      "timezone": null
+    },
+    "title": "W5 independent PHASE",
+    "views": {
+      "line_camera": {
+        "coordinate_frame": "right_handed_y_up",
+        "eye": {
+          "x": 5.0,
+          "y": -5.0,
+          "z": 5.0
+        },
+        "target": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "unit": "meter",
+        "zoom": 1.0
+      },
+      "lod": "detailed",
+      "multi_hall_camera": {
+        "coordinate_frame": "right_handed_y_up",
+        "eye": {
+          "x": 5.0,
+          "y": -5.0,
+          "z": 5.0
+        },
+        "target": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "unit": "meter",
+        "zoom": 1.0
+      },
+      "normal_canvas": "line_canvas",
+      "selected_hall": "H-A",
+      "selected_objects": []
+    }
+  },
+  "scenario": {
+    "arrivals": [],
+    "cost_inputs": [],
+    "id": "PHASE",
+    "initial_conditions": {
+      "declared_quality_decisions": [],
+      "initial_setup_families": {},
+      "items": [
+        {
+          "components": [],
+          "contents": [],
+          "holder": {
+            "id": "raw-store",
+            "kind": "location"
+          },
+          "id": "raw-1",
+          "item_type_ref": {
+            "id": "raw",
+            "revision": "r1"
+          },
+          "quality": "released",
+          "quantity": {
+            "unit": "piece",
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            }
+          },
+          "source": "user_provided"
+        }
+      ],
+      "material_allocations": []
+    },
+    "issues": [],
+    "orders": [],
+    "parameter_overrides": [],
+    "production_tasks": [
+      {
+        "id": "TASK-LOCAL",
+        "order_allocations": [],
+        "planned_quantity": {
+          "unit": "piece",
+          "value": {
+            "coefficient": 1,
+            "decimal_places": 0
+          }
+        },
+        "priority": 0,
+        "release_at_ms": 0,
+        "routing_ref": {
+          "id": "ROUTE-LOCAL",
+          "revision": "r1"
+        }
+      }
+    ],
+    "project_revision": 1,
+    "quality_presets": [],
+    "revision": 1,
+    "scope": [
+      {
+        "id": "CNC",
+        "kind": "device"
+      }
+    ],
+    "supplies": [],
+    "time_reference": {
+      "label": "self-built original seconds explicitly converted to milliseconds",
+      "origin_iso8601": null,
+      "timezone": null
+    },
+    "title": "independent PHASE",
+    "window": {
+      "end_ms": 100000,
+      "start_ms": 0
+    }
+  },
+  "source_mapping": {
+    "actual_result": null,
+    "explicit": "actual CNC station and W-C; machine repeated in job/phase is same CAP-CNC resource, no second capacity; original 5/30/5 and 0-20/40-60 worker calendar retained",
+    "legacy_scope": "Original phase example has no OrderLine. This input keeps orders empty and explicit task quantity1; cumulative legacy acceptance is tested separately with an explicit goal, never a synthetic order.",
+    "source": "scenarios/真实业务设计 phase_calendar/refinement"
+  }
+}

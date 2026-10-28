@@ -1,0 +1,206 @@
+{
+  "document_kind": "window6_NFR06_four_outlet_contract_and_consumer_independent_alignment",
+  "checks": [
+    {
+      "id": "NFR-actual-merge",
+      "matched": true,
+      "evidence": [
+        {
+          "op": "test",
+          "path": "/requirements/5/id",
+          "matched": true
+        },
+        {
+          "op": "replace",
+          "path": "/requirements/5/procedure/1",
+          "matched": true
+        },
+        {
+          "op": "replace",
+          "path": "/requirements/5/measurement/check",
+          "matched": true
+        },
+        {
+          "op": "replace",
+          "path": "/requirements/5/acceptance/rule",
+          "matched": true
+        },
+        {
+          "op": "add",
+          "path": "/requirements/5/failure_exit_criteria",
+          "matched": true
+        },
+        {
+          "op": "replace",
+          "path": "/test_execution_contract/required_check_groups/NFR-06/write_failure_retention",
+          "matched": true
+        },
+        {
+          "op": "replace",
+          "path": "/test_execution_contract/required_check_groups/NFR-06/commit_failure_retention",
+          "matched": true
+        }
+      ]
+    },
+    {
+      "id": "NFR-preserved-acceptance",
+      "matched": true,
+      "evidence": {
+        "requirements": 11,
+        "required_groups": 38,
+        "actual_result": null,
+        "runtime_status": "not_executed"
+      }
+    },
+    {
+      "id": "NFR-four-outlets",
+      "matched": true,
+      "evidence": {
+        "branch_ids": [
+          "NFR06-F01",
+          "NFR06-F02",
+          "NFR06-F03",
+          "NFR06-F04"
+        ],
+        "new_required_groups": 0,
+        "common_terminal": "四出口均为Failed/IoFailure；无本次SavedProject/TaskOutput；活动工程修改保留、dirty=true；旧磁盘修订不算新R保存成功。"
+      }
+    },
+    {
+      "id": "NFR-no-new-wire",
+      "matched": true,
+      "evidence": {
+        "runtime_wire_fields_added": 0,
+        "existing_fields": {
+          "condition_or_action": "仍属原组；在文本中标注本轮预定分支ID和失败阶段。",
+          "expected_outcome": "现有string：预先写分支ID、共同终态、打开位置及完整引用预期。",
+          "actual_outcome": "现有string/null：串写各独立判定和正常保存false；不得改为对象或新增运行字段。",
+          "evidence": "沿现有evidence.file_ref/missing_reason引用本轮详细检查材料；以下标签仅为材料内容。",
+          "attempt_status": "按branch_acceptance_status及原状态汇总规则；未开始仍not_executed。"
+        },
+        "evidence_labels": [
+          "branch_id",
+          "expected_old_identity",
+          "failure_stage_and_actual_error",
+          "original_root_open_evidence",
+          "retained_root_open_evidence",
+          "actual_relative_locations",
+          "old_files_preserved",
+          "fault_handling_status",
+          "old_content_retention_status",
+          "project_health_status",
+          "normal_save_succeeded",
+          "branch_acceptance_status"
+        ]
+      }
+    },
+    {
+      "id": "NFR-state-API-format-chain",
+      "matched": true,
+      "evidence": {
+        "OS17_ref": "docs/03_架构与契约/全层类型与工程格式.json#/storage/replacement_recovery",
+        "storage_criteria_ref": "docs/01_业务需求/非功能需求与测量验收.json#/requirements/5/failure_exit_criteria",
+        "API_conditions": "freeze R at admission; same resolved target commits in admission order; root manifest commit last; pre-commit cancellation preserves old; replacement failure verifies/restores actual old root or reports recoverable retained path and dirty IoFailure; no false intact/success claim; R+1 stays dirty; commit winner Completed"
+      }
+    },
+    {
+      "id": "NFR-actual-file-consumer",
+      "matched": true,
+      "evidence": {
+        "fixture_scope": "20 established JSON documents, nine module definitions, six nested FileRefs; no binary asset fixture or product editing/rerun",
+        "old_roots_F01_F03": true,
+        "F04_original": {
+          "status": "fail",
+          "candidate": "tools/design-quality-audit/window5/output/dq02-5o5dd093/NFR06-F04/project.json",
+          "path_base": "tools/design-quality-audit/window5/output/dq02-5o5dd093/NFR06-F04",
+          "error_type": "PermissionError",
+          "reason": "[Errno 13] Permission denied: 'D:\\\\Agent\\\\ICNSD-KEL\\\\大作业\\\\02_竞赛作品\\\\超级工厂\\\\软件工程\\\\tools\\\\design-quality-audit\\\\window5\\\\output\\\\dq02-5o5dd093\\\\NFR06-F04\\\\project.json'",
+          "product_open_executed": false
+        },
+        "F04_retained": {
+          "status": "pass",
+          "candidate": "tools/design-quality-audit/window5/output/dq02-5o5dd093/NFR06-F04/project.old-0001.json",
+          "path_base": "tools/design-quality-audit/window5/output/dq02-5o5dd093/NFR06-F04",
+          "identity": {
+            "project_id": "P1",
+            "generation": 1,
+            "project_revision": 1
+          },
+          "required_documents_opened": 20,
+          "nested_file_references_opened": 6,
+          "all_frozen_content_equal": true,
+          "isolated_reopen_root": "tools/design-quality-audit/window5/output/dq02-5o5dd093/open_checks/NFR06-F04-retained-after",
+          "active_revision": 1,
+          "product_open_executed": false
+        },
+        "F04_judgments": {
+          "terminal_status": "pass",
+          "fault_handling_status": "pass",
+          "old_content_retention_status": "pass",
+          "branch_acceptance_status": "pass",
+          "project_health_status": "fail",
+          "retained_content_status": "pass",
+          "normal_save_succeeded": false
+        },
+        "negative_cases": [
+          {
+            "case": "missing_required_document",
+            "backup_exists": true,
+            "status": "fail"
+          },
+          {
+            "case": "wrong_old_identity",
+            "backup_exists": true,
+            "status": "fail"
+          },
+          {
+            "case": "missing_nested_reference",
+            "backup_exists": true,
+            "status": "fail"
+          }
+        ],
+        "Windows_1176_1177_injected": false,
+        "actual_product_Save_Open_or_Host": false
+      }
+    },
+    {
+      "id": "NFR-no-false-negative-pass",
+      "matched": true,
+      "evidence": {
+        "missing_old_content": {
+          "terminal_status": "pass",
+          "fault_handling_status": "pass",
+          "old_content_retention_status": "fail",
+          "branch_acceptance_status": "fail",
+          "project_health_status": "fail",
+          "retained_content_status": "fail",
+          "normal_save_succeeded": false
+        },
+        "unproven_old_content": {
+          "terminal_status": "pass",
+          "fault_handling_status": "pass",
+          "old_content_retention_status": "not_evaluable",
+          "branch_acceptance_status": "not_evaluable",
+          "project_health_status": "fail",
+          "retained_content_status": "not_evaluable",
+          "normal_save_succeeded": false
+        },
+        "unexpected_restore_failure": {
+          "terminal_status": "pass",
+          "fault_handling_status": "pass",
+          "old_content_retention_status": "pass",
+          "branch_acceptance_status": "fail",
+          "project_health_status": "fail",
+          "retained_content_status": "pass",
+          "normal_save_succeeded": false
+        }
+      }
+    }
+  ],
+  "failed_ids": [],
+  "independent_reference_probe_ref": "tools/design-quality-audit/window6/save-independent-result.json",
+  "other_window_scripts_called": false,
+  "public_result_written": false,
+  "actual_Windows_recovery": null,
+  "actual_product_runtime": null
+}

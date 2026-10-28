@@ -1,0 +1,463 @@
+{
+  "document_kind": "P0_02_initial_material_and_allocation_input_slice",
+  "task_id": "P0-02",
+  "within_original_step": 2,
+  "status": "implemented_and_reviewed",
+  "dispatch": {
+    "authorized_at": "2026-10-16T00:19:29+08:00",
+    "authority": "发挥统筹作用自主往下推进，不设工作量上限",
+    "task_id": "P0-02",
+    "within_original_step": 2,
+    "role": "W00",
+    "thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+    "scope_ref": "docs/04_开发与验收/P0-02_初始物料与分配输入切片.json",
+    "business_frontend_authorized": false
+  },
+  "scope": {
+    "task_id": "P0-02",
+    "within_original_step": 2,
+    "scope": "P0-02原步骤2的输入校核切片：保持起点物品、未来到料、供货目标、需求、软计划/硬预留和唯一持有关系独立；同一实际Host派生具名用途问题，原子编辑/历史/冻结保存/异目录重开，不创建运行库存或执行预留。",
+    "planned_owner": "W00",
+    "actual_thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+    "actual_dispatch": {
+      "authorized_at": "2026-10-16T00:19:29+08:00",
+      "authority": "发挥统筹作用自主往下推进，不设工作量上限",
+      "task_id": "P0-02",
+      "within_original_step": 2,
+      "role": "W00",
+      "thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+      "scope_ref": "docs/04_开发与验收/P0-02_初始物料与分配输入切片.json",
+      "business_frontend_authorized": false
+    },
+    "preparation_status": "implemented_and_reviewed",
+    "business_frontend_changes": false,
+    "input_refs": [
+      "docs/01_业务需求/订单工艺与物料分配.md",
+      "packages/domain/business-objects.design.json",
+      "docs/04_开发与验收/特征细化/DRF06_公共字段合入delta.json",
+      "packages/domain/src/models.rs",
+      "docs/03_架构与契约/调度与状态转换算法.json"
+    ],
+    "actual_prerequisite_outputs": [
+      "docs/04_开发与验收/P0-02_业务输入与引用切片.json",
+      ".work/p0-02-inputs/verification/result.json",
+      "packages/commands/src/project_draft.rs",
+      "packages/commands/src/project_history.rs",
+      "packages/commands/src/project_store.rs"
+    ],
+    "implementation_dependencies": [
+      "P0-01"
+    ],
+    "dependency_interpretation": "共同类型/多文档Host/目录保存及业务输入步骤1已实际接收；运行库存、初始化拆批及执行准入留真实Engine接点，整项步骤2不因静态输入切片通过而全部完成。",
+    "allowed_modified_files": [
+      "packages/domain/src/lib.rs",
+      "packages/commands/src/project_host.rs",
+      "tools/p0-02-stock/verify.ps1",
+      "tools/检查主线同步.py",
+      "packages/domain/src/material_inputs.rs",
+      "packages/domain/src/business_inputs.rs",
+      "docs/04_开发与验收/P0-02_初始物料_窗口2.json",
+      "apps/planner/src-tauri/src/project_api.rs",
+      "docs/04_开发与验收/P0-02_初始物料_窗口3.json",
+      "packages/commands/src/project_store.rs",
+      "docs/04_开发与验收/P0-02_初始物料_窗口4.json",
+      "packages/commands/tests/business_input_host.rs",
+      "packages/commands/tests/fixtures/business-inputs/initial-stock.scenario.json",
+      "docs/04_开发与验收/P0-02_初始物料_窗口5.json",
+      "docs/04_开发与验收/P0-02_初始物料_窗口6.json",
+      "packages/domain/business-objects.design.json",
+      "docs/03_架构与契约/调度与状态转换算法.json",
+      "docs/03_架构与契约/调度与状态转换算法.md",
+      "docs/01_业务需求/订单工艺与物料分配.md"
+    ],
+    "allowed_new_files": [
+      "packages/domain/src/material_inputs.rs",
+      "packages/commands/tests/fixtures/business-inputs/initial-stock.scenario.json",
+      "tools/p0-02-stock/verify.ps1"
+    ],
+    "finite_expectations": [
+      "初始10、未来到料5、供货目标20、需求8各自保留；未来物品不能作起点硬预留源，不从计划制造实物或当前库存。",
+      "硬预留必须明确现存ProductionTask；同源10分别4+6合法、4+7具名阻断；同条重复源/重复allocation ID、多源部分量/单位或精确版本混用具名阻断。单源可部分，多源同类型版本单位全量求和；材料量不按成品订单量封顶。",
+      "soft_plan可现存Order/Task，可无item_refs；允许引用已声明未来Arrival物品作为规划，不排他不造库存。committed及运行holder恢复只保存具名不支持问题；pending可硬预留，不改质量为released，不宣称普通可领。",
+      "容器contents与holder双向一致，孩子唯一父容器、无自含/环；components为同一来源组的已转化组成来源，唯一父、同条不重复、无自含/环，不能跨初始/到料时间组。组成源不能同时作容器内容/holder.container或初始硬预留可用源；正常Location仅保留历史来源位置。保留有效同组组成关系，未解析来源具名缺证，不重建现货。",
+      "缺物品/位置/供应资源/运输模块及单位版本问题定位实际Scenario字段，保留原输入草稿且blocks Execution和CompleteConclusion；既有结构/身份/授权/修订拒绝保持整批不变。此规则限草稿编辑，将来实际运行Host须先阻断已知Execution缺项。",
+      "实际Scenario整体Put/Undo/Redo及冻结保存/异目录重开保持六类输入与Issue，旧Run字节及精确引用不动；原107 Rust与同Host56检查按名字保留。"
+    ],
+    "non_goals": [
+      "Engine/实际库存查询或齐套领用",
+      "Run起点拆批/RuntimeItem/预留账本",
+      "实时订单取消/WIP恢复/运输/质量执行",
+      "业务前端/Figma/外部数组权限扩大",
+      "新增DTO、公开操作或同ID多版本仓库",
+      "发布/推送"
+    ],
+    "verification_entries": [
+      "npm run test:rust",
+      "npm run generate:contracts",
+      "npm run typecheck",
+      "20 schemas/48既有案例",
+      "实际多文档Host物料输入/保存/重开与原生过程"
+    ]
+  },
+  "private_implementation_interfaces": {
+    "material_check": "sf_domain::check_material_inputs(project:&ProjectState,scenario:&ScenarioInput)->Vec<Issue>；由现有check_business_inputs逐一组合；business_inputs.material_*代码，owner实际Scenario且字段JSON pointer可定位；不返回/缓存库存或变更输入。",
+    "missing_transport_module": "唯一跨store新增Issue code=business_inputs.material_missing_transport_module，owner=实际当前Scenario，field_path=/supplies/i/transport_ref；typed ModuleRef的ID/版本来自该字段，缺模块是草稿问题，不豁免required文件。",
+    "draft_and_execution": "语义不完整保留输入并生成阻断Issue；既有结构/授权/修订ApiError全批不变。本轮run_scenario仍Unsupported，不用Unsupported冒充业务准入已执行；未来Host运行入口须先消费Execution阻断，Worker全部校核后才初始化。",
+    "soft_future_refs": "非空soft_plan.item_refs可引用同Scenario已声明未来Arrival物品，仅规划；任意不存在ID为缺口，不授予排他或现货资格。",
+    "components": "components只引用同一来源组（初始或同次Arrival）的真实唯一源；源唯一父、无重复/环，不能同时是contents/holder.container或起点硬预留源。组成源是transformed来源、保留历史Location；未来Engine初始化按此映射，不计现有/自由/空间量，不改冻结Scenario。本轮仅诊断，不造RuntimeItem。",
+    "private_store": "reported_missing可获同archive已验证的当前Scenario上下文，仅ScenarioInput角色且属当前Project refs；不得从旧Frozen/Supporting版本按ID误取，也不得按message绕过。",
+    "native_fixture": "窗口5提供initial-stock.scenario.json正式ScenarioInput，基于现有multi-order案例的精确ItemType/Task/库位ID；窗口3复用同真实Host/现有项目输入，不建第二Host。窗口5先交接字段身份后窗口3消费。"
+  },
+  "parallel_dispatch": [
+    {
+      "window_id": "W00",
+      "title": "实现窗口1",
+      "thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+      "task": "公共接线、Host接点复核、集中执行及主线接收",
+      "allowed_files": [
+        "packages/domain/src/lib.rs",
+        "packages/commands/src/project_host.rs",
+        "tools/p0-02-stock/verify.ps1",
+        "tools/检查主线同步.py",
+        "packages/domain/business-objects.design.json",
+        "docs/03_架构与契约/调度与状态转换算法.json",
+        "docs/03_架构与契约/调度与状态转换算法.md",
+        "docs/01_业务需求/订单工艺与物料分配.md"
+      ],
+      "status": "accepted_current_slice",
+      "coordinator_accepted": true,
+      "result_ref": "docs/04_开发与验收/P0-02_初始物料与分配输入切片.json"
+    },
+    {
+      "window_id": "W01",
+      "title": "实现窗口2",
+      "thread_id": "01a11f4e-f8a4-7a62-9d23-24834761b07e",
+      "task": "初始物料/到料/分配/持有关系纯检查与单测",
+      "allowed_files": [
+        "packages/domain/src/material_inputs.rs",
+        "packages/domain/src/business_inputs.rs",
+        "docs/04_开发与验收/P0-02_初始物料_窗口2.json"
+      ],
+      "status": "accepted_current_slice",
+      "coordinator_accepted": true,
+      "result_ref": "docs/04_开发与验收/P0-02_初始物料_窗口2.json"
+    },
+    {
+      "window_id": "W02",
+      "title": "实现窗口3",
+      "thread_id": "01a13589-e1b0-73d2-aaae-c69be89c5b0f",
+      "task": "实际同Host原生物料输入及历史/保存/重开检查",
+      "allowed_files": [
+        "apps/planner/src-tauri/src/project_api.rs",
+        "docs/04_开发与验收/P0-02_初始物料_窗口3.json"
+      ],
+      "status": "accepted_current_slice",
+      "coordinator_accepted": true,
+      "result_ref": "docs/04_开发与验收/P0-02_初始物料_窗口3.json"
+    },
+    {
+      "window_id": "W03",
+      "title": "实现窗口4",
+      "thread_id": "01a1396d-bb0e-7e93-8ad5-b3465048d09a",
+      "task": "精确Scenario运输模块Issue的保存闭包接点与物料保存测试",
+      "allowed_files": [
+        "packages/commands/src/project_store.rs",
+        "docs/04_开发与验收/P0-02_初始物料_窗口4.json"
+      ],
+      "status": "accepted_current_slice",
+      "coordinator_accepted": true,
+      "result_ref": "docs/04_开发与验收/P0-02_初始物料_窗口4.json"
+    },
+    {
+      "window_id": "W04",
+      "title": "实现窗口5",
+      "thread_id": "01a1396d-d905-75e2-a5c5-7db3cd9b36a2",
+      "task": "独立实际Host物料/预留/容器/历史与原子失败验证",
+      "allowed_files": [
+        "packages/commands/tests/business_input_host.rs",
+        "packages/commands/tests/fixtures/business-inputs/initial-stock.scenario.json",
+        "docs/04_开发与验收/P0-02_初始物料_窗口5.json"
+      ],
+      "status": "accepted_current_slice",
+      "coordinator_accepted": true,
+      "result_ref": "docs/04_开发与验收/P0-02_初始物料_窗口5.json"
+    },
+    {
+      "window_id": "W05",
+      "title": "实现窗口6",
+      "thread_id": "01a1396d-f9d8-7ac0-ae86-b93a5d28b7ac",
+      "task": "先冻结独立预期，再只读复审源码和真实结果",
+      "allowed_files": [
+        "docs/04_开发与验收/P0-02_初始物料_窗口6.json"
+      ],
+      "status": "accepted_current_slice",
+      "coordinator_accepted": true,
+      "result_ref": "docs/04_开发与验收/P0-02_初始物料_窗口6.json"
+    }
+  ],
+  "previous_accepted_result_ref": "docs/04_开发与验收/P0-02_业务输入与引用切片.json",
+  "actual_result": {
+    "implemented_operations": [
+      "describe_capabilities",
+      "get_context",
+      "get_object",
+      "apply_commands",
+      "get_task",
+      "cancel_task",
+      "import_package",
+      "save_project"
+    ],
+    "business_operations_implemented": 8,
+    "verification_commands": {
+      "all_checks": "./tools/p0-02-stock/verify.ps1",
+      "workspace_tests": "npm run test:rust",
+      "generate_contracts": "npm run generate:contracts",
+      "typecheck": "npm run typecheck",
+      "schema_validation": "python -B -X utf8 tools/检查工程与Command边界.py --output .work/p0-02-stock/schema-validation-result.json",
+      "desktop_build": "cargo build -p sf-desktop-host --bin superfactory --locked",
+      "native_host_smoke": ".\\target\\debug\\superfactory.exe --p0-01-host-smoke",
+      "format": "cargo fmt -p sf-domain -p sf-commands -p sf-desktop-host -- --check"
+    },
+    "command_runs": [
+      {
+        "key": "format",
+        "command": "cargo fmt -p sf-domain -p sf-commands -p sf-desktop-host -- --check",
+        "started_at": "2026-10-16T00:51:32.9405585+08:00",
+        "finished_at": "2026-10-16T00:51:33.4022506+08:00",
+        "exit_code": 0,
+        "stdout_ref": ".work/p0-02-stock/verification/format.stdout.txt",
+        "stderr_ref": ".work/p0-02-stock/verification/format.stderr.txt"
+      },
+      {
+        "key": "workspace-tests",
+        "command": "npm.cmd run test:rust",
+        "started_at": "2026-10-16T00:51:33.4201191+08:00",
+        "finished_at": "2026-10-16T00:52:10.1415174+08:00",
+        "exit_code": 0,
+        "stdout_ref": ".work/p0-02-stock/verification/workspace-tests.stdout.txt",
+        "stderr_ref": ".work/p0-02-stock/verification/workspace-tests.stderr.txt",
+        "distinct_tests_executed": 124
+      },
+      {
+        "key": "generate-contracts",
+        "command": "npm.cmd run generate:contracts",
+        "started_at": "2026-10-16T00:52:10.1543861+08:00",
+        "finished_at": "2026-10-16T00:52:28.5709624+08:00",
+        "exit_code": 0,
+        "stdout_ref": ".work/p0-02-stock/verification/generate-contracts.stdout.txt",
+        "stderr_ref": ".work/p0-02-stock/verification/generate-contracts.stderr.txt"
+      },
+      {
+        "key": "typecheck",
+        "command": "npm.cmd run typecheck",
+        "started_at": "2026-10-16T00:52:28.5726415+08:00",
+        "finished_at": "2026-10-16T00:52:29.5803074+08:00",
+        "exit_code": 0,
+        "stdout_ref": ".work/p0-02-stock/verification/typecheck.stdout.txt",
+        "stderr_ref": ".work/p0-02-stock/verification/typecheck.stderr.txt"
+      },
+      {
+        "key": "schema-consumer",
+        "command": "C:/Users/fujunye/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe -B -X utf8 tools/检查工程与Command边界.py --output .work/p0-02-stock/schema-validation-result.json",
+        "started_at": "2026-10-16T00:52:29.5816788+08:00",
+        "finished_at": "2026-10-16T00:52:31.3228207+08:00",
+        "exit_code": 0,
+        "stdout_ref": ".work/p0-02-stock/verification/schema-consumer.stdout.txt",
+        "stderr_ref": ".work/p0-02-stock/verification/schema-consumer.stderr.txt"
+      },
+      {
+        "key": "desktop-build",
+        "command": "cargo build -p sf-desktop-host --bin superfactory --locked",
+        "started_at": "2026-10-16T00:52:31.3244991+08:00",
+        "finished_at": "2026-10-16T00:52:49.7564332+08:00",
+        "exit_code": 0,
+        "stdout_ref": ".work/p0-02-stock/verification/desktop-build.stdout.txt",
+        "stderr_ref": ".work/p0-02-stock/verification/desktop-build.stderr.txt"
+      },
+      {
+        "key": "desktop-host-smoke",
+        "command": ".\\target\\debug\\superfactory.exe --p0-01-host-smoke",
+        "started_at": "2026-10-16T00:52:49.7580386+08:00",
+        "finished_at": "2026-10-16T00:52:50.9873068+08:00",
+        "exit_code": 0,
+        "stdout_ref": ".work/p0-02-stock/verification/desktop-host-smoke.stdout.txt",
+        "stderr_ref": ".work/p0-02-stock/verification/desktop-host-smoke.stderr.txt"
+      }
+    ],
+    "verification_ref": ".work/p0-02-stock/verification/result.json",
+    "schema_validation_ref": ".work/p0-02-stock/schema-validation-result.json",
+    "tests": {
+      "distinct_tests": 124,
+      "failed": 0,
+      "retained_previous_tests": 107,
+      "schema_finite_cases": 48,
+      "material_input_tests": 6,
+      "store_tests": 25,
+      "native_adapter_tests": 9
+    },
+    "native_Host": {
+      "real_desktop_process": true,
+      "same_managed_ProjectHost": true,
+      "checks": 82,
+      "retained_previous_checks": 56,
+      "passed": true,
+      "business_frontend_executed": false,
+      "actual_picker_human_interaction": false,
+      "MCP_peer_authentication_executed": false
+    },
+    "implemented_source_refs": [
+      "packages/domain/src/material_inputs.rs",
+      "packages/domain/src/business_inputs.rs",
+      "packages/domain/src/lib.rs",
+      "packages/commands/src/project_store.rs",
+      "apps/planner/src-tauri/src/project_api.rs"
+    ],
+    "consumer_source_refs": [
+      "packages/commands/src/project_host.rs",
+      "packages/commands/src/project_history.rs"
+    ],
+    "tests_source_refs": [
+      "packages/commands/tests/business_input_host.rs",
+      "packages/commands/tests/fixtures/business-inputs/initial-stock.scenario.json"
+    ],
+    "supported_objects": [
+      "Project",
+      "ItemType",
+      "Product",
+      "Bom",
+      "Route",
+      "Scenario"
+    ],
+    "completed_original_steps": [
+      1
+    ],
+    "partial_original_steps": [
+      2
+    ],
+    "remaining_original_steps": [
+      2,
+      3
+    ],
+    "full_original_step_2_acceptance_met": false,
+    "full_P0_02_acceptance_met": false,
+    "whole_task_done": false,
+    "limitations": [
+      "本切片校核输入并派生阻断Issue，不生成运行库存/RuntimeItem/子批/硬预留账本。",
+      "运行入口仍Unsupported；Host执行准入、Worker全部校核成功后的原子初始化/领用待Engine真实接点。",
+      "原步骤3输入取消与运行WIP保护、业务UI/外部数组权限、完整release验收仍开放。"
+    ]
+  },
+  "review": {
+    "independent_reviewer": true,
+    "review_kind": "independent_window_post_implementation_readonly_review",
+    "result_ref": "docs/04_开发与验收/P0-02_初始物料_窗口6.json",
+    "review_thread_id": "01a1396d-f9d8-7ac0-ae86-b93a5d28b7ac",
+    "status": "accepted_initial_material_input_slice_after_composition_fix",
+    "confirmed_defects": [],
+    "closed_findings": [
+      {
+        "id": "W6-M-F01",
+        "priority": "P2",
+        "status": "closed",
+        "owner": "W01检查器；W00冻结本片组成来源语义；相关Host回归由其owner维护",
+        "title": "组成来源仅凭ID存在即无阻断，未来来源及已组成来源的独立使用未表达",
+        "file": "packages/domain/src/material_inputs.rs",
+        "lines": "287-305",
+        "evidence": [
+          "同文件86-143把起点和全部未来到料建立同一ID索引；components只查unique存在及self。",
+          "同文件fixture:682-686声明future5在100ms到料；978令起点C1.components=[future5]，988断言检查结果为空；本次124 Rust raw包含该测试ok。",
+          "初始InitialItem定义models.rs:866-875只有components/holder等，无lifecycle或分次消耗信息；硬源509-553只查唯一身份、单位、group及source_valid，未排除组成来源。",
+          "冻结业务规则：business-objects.design.json:378-380 assembly投入组成件不再独立自由库存；订单工艺与物料分配.md:64,77,101组成转化与自由量互斥。"
+        ],
+        "current_counterexamples": [
+          {
+            "case": "起点装配体A.components=[仅未来Arrival的P]",
+            "evidence_kind": "已有pure测试实际通过且原始结果为ok",
+            "actual": "无material阻断；未来ID存在被当作充分来源证据。"
+          },
+          {
+            "case": "有效fixture清空分配并将初始物品改为同类型/单位的A1,A2,P各1piece；A1.components=[P]、A2.components=[P]，无容纳关系",
+            "evidence_kind": "源码定向推导，W6未单独执行",
+            "actual": "P唯一存在且不是自身；没有组成源独占/消耗诊断，两装配体共享单件仍不会产生相应material Issue。"
+          },
+          {
+            "case": "上述单个A和P各1piece，再把P作为现存ProductionTask的hard_reserved来源1piece",
+            "evidence_kind": "源码定向推导，W6未单独执行",
+            "actual": "P仍在起点有效硬源集合；没有已组成来源不能再独立使用的诊断。"
+          }
+        ],
+        "impact": "当前业务诊断将尚无转化/时间解释的输入判为无已知物料阻断。不是已观测的Engine库存重复；本片无Engine，run_scenario仍Unsupported。",
+        "minimal_fix": "采用W00回派的有限组成图解释：components引用同来源组真实唯一实物；边不重复，每个源唯一组成父、无自含/环。被引用源整体为转化来源，不得仍参与当前容纳关系或hard_reserved。保留原Location作为历史来源位置及有效同组组成，不改输入、不造RuntimeItem；未来Engine才按该身份映为transformed并排除现有量/自由量/空间双计。本片具名诊断不合法图，并保留草稿。",
+        "required_regression": "W01 pure与W04独立实际Host覆盖合法初始/同次到料组成、未来/跨组来源、重复/共享/self/cycle、组成源与容纳关系冲突、组成源hard_reserved；Host证明合法图保留、缺口输入原样提交且具名阻断。保留合法容器与soft规划既有语义。W00集中执行修后当前源码，新raw到齐后W6再复查，不用修前124/82关闭。",
+        "prior_minimal_fallback": "推荐本片保留非空components原输入并产生具名unsupported_initial_composition类material Issue，定位实际Scenario的components字段并阻断Execution及CompleteConclusion；既有未知来源/self诊断可保留。当前DTO不能表达来源转化/分用时，不据ID存在宣告可初始化，不改holder、不造RuntimeItem、不新增公开DTO。若owner选择精细支持，须先冻结消耗/时间语义；不能只排除future便声称共享或独立再用已解决。",
+        "resolution_design_review": {
+          "status": "contract_source_and_current_execution_verified",
+          "judgment": "与既有组成转化/不另计自由库存、单一实物身份及holder/lifecycle分轴规则相容；没有发现要求必须全盘Unsupported的冻结条款。",
+          "frozen_basis": [
+            "business-objects.design.json:72-83 holder/lifecycle/组成关系分轴；378-380 assembly组成投入不作为独立自由库存。",
+            "订单工艺与物料分配.md:64,77,99,101组成件转化与容纳持有不同，已转化不可普通领用、不得同时自由库存。",
+            "business-objects.design.json:228-233及需求.md:75完整源仅留来源、不得与执行实物双计，是历史位置不另计物理量的相关已有规则；不是声称本片已运行拆批。"
+          ],
+          "precise_scope": [
+            "初始组或同次Arrival组是新收敛的本片有限支持约定；旧冻结文档没有逐字规定此组限制，W00须在正文/切片JSON明确，不将跨组场景伪称物理上永远无效。",
+            "components没有每边用量或拆分身份；本片每边表示完整源已投入该父组成，单个源只能有一个直接组成父。不能用同一10件源同时解释成4+6两份；合法分用需要先有不同实物身份，本片不自动拆分。",
+            "源的普通Location是保留的历史位置，仍须解析有效Location；不据它计当前库存/空间，不要求历史Location等于装配体当前Location。",
+            "组成源不得作为其他物品contents中的当前实物、不得holder.container，也不得自身仍有当前contents；否则仍同时担当转化记录和当前容纳实物，须具名阻断。",
+            "多层组成可形成有向无环图；中间装配体成为更高父的完整源时也属于转化来源。父级最终实物可以有正常唯一holder；components不改成Container持有。",
+            "soft_plan保持纯规划语义，不因本修复自动实施预留或造库存；hard_reserved引用组成源必须阻断。",
+            "本片只诊断与保存输入；未来初始化按组成源身份推导transformed并排除现有/自由/重复空间量，目前无Engine/RuntimeItem执行证据。"
+          ],
+          "no_runtime_acceptance": true
+        },
+        "pre_fix_evidence_ref": ".work/p0-02-stock/pre-composition-fix-verification/result.json",
+        "repair_source_review": {
+          "status": "verified_by_current_central_proof",
+          "source": "packages/domain/src/material_inputs.rs",
+          "source_frozen_last_write": "2026-10-16T00:48:21.8614473+08:00",
+          "checks": [
+            "303-349：每个父去重复、自身拒绝、全局唯一真实源解析及同来源组约束，准确components指针。",
+            "391-443：源到唯一父索引，多父与有向环具名Issue；有缺口即可全局阻断，不构造运行状态。",
+            "148,189-203,241-278,406-414：物理容纳涉及父容器、子内容及非空contents均纳入冲突索引；组成源既不能仍是当前内容，也不能作为当前容器。",
+            "647-657：hard_reserved来源若在组成源集合内，则composed_hard_source阻断；soft_plan不被转成排他或现货。",
+            "1077-1203同原pure测试组：合法初始与同Arrival组成、跨初始/到料和不同Arrival组、重复/多父/self/环、两种容纳冲突、hard与soft、来源缺证及逐次输入只读。",
+            "Host组1736起新增1正5反；SOURCE2 Location S2原样保留且合法图assert_clean；所有反例经真实stock_put后原输入相同，当前Scenario Issue指针可解析且双用途阻断。容纳反例contents与holder本身一致，隔离本次新增规则。"
+          ],
+          "public_DTO_or_operations_changed": false,
+          "runtime_initialization_executed": false,
+          "execution_evidence": "2026-10-16T00:51:33至00:52:50第二轮集中执行exit0；修后pure container_closure_and_component_origins_are_separate及独立Host container_holder_and_composition_relations_are_input_graphs_without_duplicate_physical_ownership均在当前raw中实际ok。"
+        },
+        "closure": {
+          "proof_ref": ".work/p0-02-stock/verification/result.json",
+          "source_snapshot": "material_inputs.rs最后修改00:48:21.8614473；Host回归最后修改00:41:04.2221153；均早于本轮format及workspace-tests执行，复查未再变化。",
+          "result": "合法初始/同Arrival组成保留，未来/跨组来源、重复/多父/self/环、组成源与当前容纳及hard冲突均具名阻断；不重写Location或创建RuntimeItem。",
+          "tests": "原6个pure/14个Host组名保留，新增分支位于既有组内；124 Rust与82 native名称集合与修前全部一致，没有删除旧例换取通过。"
+        }
+      }
+    ],
+    "resolved_contract_issues": [
+      {
+        "id": "W6-M-C01",
+        "status": "closed",
+        "authority_ref": "docs/04_开发与验收/P0-02_初始物料与分配输入切片.json:102",
+        "issue": "本片私有约定只要求未列为初始或未来物品的组成来源缺证，过弱；ID存在只能证明引用可解析，不能证明已转化来源、发生时间或可独立使用性。",
+        "distinction": "代码遵循了本片较窄的存在性约定，但不足以满足上层已冻结的组成转化/自由库存互斥语义；属于当前输入设计与诊断缺口，不能转嫁成已完成的Engine初始化。",
+        "disposition": "修正契约已落于主切片、business-objects、ALG-03及两份正文；对应冻结源码与第二轮实际pure/Host结果均验证。闭合本片组成来源诊断，不声称Engine初始化已实现。"
+      }
+    ],
+    "reviewed_at": "2026-10-16T00:58:57+08:00"
+  },
+  "whole_task_done": false,
+  "human_acceptance": null,
+  "observed_composition_gap_repair": {
+    "status": "repaired_and_independently_verified",
+    "evidence_ref": ".work/p0-02-stock/pre-composition-fix-verification/result.json",
+    "prior_test_interpretation_corrected": "未复审的新测试将future5当初始组成来源合法；与组成转化/不能重复计自由库存的现行规则冲突，不沿用此错误正例。",
+    "source_owner": "W01",
+    "independent_regression_owner": "W04",
+    "review_owner": "W05",
+    "wire_changed": false,
+    "finding_id": "W6-M-F01",
+    "post_fix_verification_ref": ".work/p0-02-stock/verification/result.json",
+    "review_ref": "docs/04_开发与验收/P0-02_初始物料_窗口6.json"
+  }
+}

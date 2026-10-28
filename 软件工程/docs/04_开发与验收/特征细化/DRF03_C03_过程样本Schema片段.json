@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "document_kind": "selected_schema_fragment_not_canonical",
+  "source_definitions_ref": "tools/type-contract-proof/output/schemas/all-types.schema.json",
+  "$defs": {
+    "PackagingPanelPose": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "panel_id",
+        "pose"
+      ],
+      "properties": {
+        "panel_id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "pose": {
+          "$ref": "#/$defs/Pose"
+        }
+      }
+    },
+    "PackagingProcessSample": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "step_id",
+        "progress",
+        "panel_poses"
+      ],
+      "properties": {
+        "step_id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "progress": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "panel_poses": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/PackagingPanelPose"
+          }
+        }
+      }
+    }
+  },
+  "$ref": "#/$defs/PackagingProcessSample"
+}

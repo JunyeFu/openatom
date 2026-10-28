@@ -1,0 +1,962 @@
+{
+  "schema_version": "1.0",
+  "data": {
+    "evidence_origin": "actual_software",
+    "id": "whole-w5-host:run:1:3",
+    "input_ref": {
+      "project_id": "P1",
+      "project_revision": 5,
+      "scenario_id": "LOCAL",
+      "scenario_revision": 5,
+      "frozen_project_file": {
+        "path": "documents/run-00000003/project.json",
+        "kind": "project"
+      },
+      "frozen_scenario_file": {
+        "path": "documents/run-00000003/scenario.json",
+        "kind": "scenario"
+      }
+    },
+    "scope": [
+      {
+        "kind": "device",
+        "id": "ASM-01"
+      },
+      {
+        "kind": "device",
+        "id": "PACK-01"
+      }
+    ],
+    "window": {
+      "start_ms": 0,
+      "end_ms": 240000
+    },
+    "computed_until_ms": 240000,
+    "computation_status": "completed",
+    "whole_window_computed": true,
+    "goal_met": false,
+    "final_items": [
+      {
+        "id": "carton-001",
+        "item_type_ref": {
+          "id": "carton",
+          "revision": "r1"
+        },
+        "quantity": {
+          "value": {
+            "coefficient": 1,
+            "decimal_places": 0
+          },
+          "unit": "piece"
+        },
+        "holder": {
+          "kind": "job",
+          "id": "job:10:TASK-LOCAL1:09:step-pack"
+        },
+        "lifecycle": "transformed",
+        "quality": "released",
+        "allocation_refs": [],
+        "composition_refs": [],
+        "contents": [],
+        "completed_reworks": 0,
+        "split_from_ref": null
+      },
+      {
+        "id": "carton-002",
+        "item_type_ref": {
+          "id": "carton",
+          "revision": "r1"
+        },
+        "quantity": {
+          "value": {
+            "coefficient": 1,
+            "decimal_places": 0
+          },
+          "unit": "piece"
+        },
+        "holder": {
+          "kind": "location",
+          "id": "cartons-B"
+        },
+        "lifecycle": "available",
+        "quality": "released",
+        "allocation_refs": [],
+        "composition_refs": [],
+        "contents": [],
+        "completed_reworks": 0,
+        "split_from_ref": null
+      },
+      {
+        "id": "output:31:job:10:TASK-LOCAL1:09:step-pack6:packed1:0",
+        "item_type_ref": {
+          "id": "package",
+          "revision": "r1"
+        },
+        "quantity": {
+          "value": {
+            "coefficient": 1,
+            "decimal_places": 0
+          },
+          "unit": "piece"
+        },
+        "holder": {
+          "kind": "location",
+          "id": "packages-B"
+        },
+        "lifecycle": "available",
+        "quality": "released",
+        "allocation_refs": [],
+        "composition_refs": [
+          "carton-001"
+        ],
+        "contents": [
+          "output:36:job:10:TASK-LOCAL1:013:step-assembly9:assembled1:0"
+        ],
+        "completed_reworks": 0,
+        "split_from_ref": null
+      },
+      {
+        "id": "output:36:job:10:TASK-LOCAL1:013:step-assembly9:assembled1:0",
+        "item_type_ref": {
+          "id": "assembly",
+          "revision": "r1"
+        },
+        "quantity": {
+          "value": {
+            "coefficient": 1,
+            "decimal_places": 0
+          },
+          "unit": "piece"
+        },
+        "holder": {
+          "kind": "container",
+          "id": "output:31:job:10:TASK-LOCAL1:09:step-pack6:packed1:0"
+        },
+        "lifecycle": "available",
+        "quality": "released",
+        "allocation_refs": [],
+        "composition_refs": [
+          "pcb-001",
+          "shell-001"
+        ],
+        "contents": [],
+        "completed_reworks": 0,
+        "split_from_ref": null
+      },
+      {
+        "id": "pcb-001",
+        "item_type_ref": {
+          "id": "pcb",
+          "revision": "r1"
+        },
+        "quantity": {
+          "value": {
+            "coefficient": 1,
+            "decimal_places": 0
+          },
+          "unit": "piece"
+        },
+        "holder": {
+          "kind": "job",
+          "id": "job:10:TASK-LOCAL1:013:step-assembly"
+        },
+        "lifecycle": "transformed",
+        "quality": "released",
+        "allocation_refs": [],
+        "composition_refs": [],
+        "contents": [],
+        "completed_reworks": 0,
+        "split_from_ref": null
+      },
+      {
+        "id": "shell-001",
+        "item_type_ref": {
+          "id": "shell",
+          "revision": "r1"
+        },
+        "quantity": {
+          "value": {
+            "coefficient": 1,
+            "decimal_places": 0
+          },
+          "unit": "piece"
+        },
+        "holder": {
+          "kind": "job",
+          "id": "job:10:TASK-LOCAL1:013:step-assembly"
+        },
+        "lifecycle": "transformed",
+        "quality": "released",
+        "allocation_refs": [],
+        "composition_refs": [],
+        "contents": [],
+        "completed_reworks": 0,
+        "split_from_ref": null
+      },
+      {
+        "id": "shell-002",
+        "item_type_ref": {
+          "id": "shell",
+          "revision": "r1"
+        },
+        "quantity": {
+          "value": {
+            "coefficient": 1,
+            "decimal_places": 0
+          },
+          "unit": "piece"
+        },
+        "holder": {
+          "kind": "location",
+          "id": "shells-A"
+        },
+        "lifecycle": "available",
+        "quality": "released",
+        "allocation_refs": [],
+        "composition_refs": [],
+        "contents": [],
+        "completed_reworks": 0,
+        "split_from_ref": null
+      }
+    ],
+    "jobs": [
+      {
+        "id": "job:10:TASK-LOCAL1:013:step-assembly",
+        "task_ref": "TASK-LOCAL",
+        "operation_ref": {
+          "id": "fixture.assemble",
+          "version": "0.1.0"
+        },
+        "execution_ref": {
+          "kind": "project_device",
+          "data": {
+            "device_id": "ASM-01",
+            "route_step_id": "step-assembly",
+            "execution_capacity_ref": {
+              "kind": "resource",
+              "id": "machine-assembly"
+            }
+          }
+        },
+        "input_refs": [
+          "pcb-001",
+          "shell-001"
+        ],
+        "job_resources": [],
+        "phase_ref": null,
+        "phase_resources": [],
+        "effective_progress_ms": 0,
+        "started_at_ms": 0,
+        "finished_at_ms": 60000,
+        "state": "completed",
+        "pending_outputs": []
+      },
+      {
+        "id": "job:10:TASK-LOCAL1:09:step-pack",
+        "task_ref": "TASK-LOCAL",
+        "operation_ref": {
+          "id": "fixture.pack",
+          "version": "0.1.0"
+        },
+        "execution_ref": {
+          "kind": "project_device",
+          "data": {
+            "device_id": "PACK-01",
+            "route_step_id": "step-pack",
+            "execution_capacity_ref": {
+              "kind": "resource",
+              "id": "machine-packing"
+            }
+          }
+        },
+        "input_refs": [
+          "carton-001",
+          "output:36:job:10:TASK-LOCAL1:013:step-assembly9:assembled1:0"
+        ],
+        "job_resources": [],
+        "phase_ref": null,
+        "phase_resources": [],
+        "effective_progress_ms": 0,
+        "started_at_ms": 60000,
+        "finished_at_ms": 75000,
+        "state": "completed",
+        "pending_outputs": []
+      },
+      {
+        "id": "job:10:TASK-LOCAL1:113:step-assembly",
+        "task_ref": "TASK-LOCAL",
+        "operation_ref": {
+          "id": "fixture.assemble",
+          "version": "0.1.0"
+        },
+        "execution_ref": {
+          "kind": "project_device",
+          "data": {
+            "device_id": "ASM-01",
+            "route_step_id": "step-assembly",
+            "execution_capacity_ref": {
+              "kind": "resource",
+              "id": "machine-assembly"
+            }
+          }
+        },
+        "input_refs": [],
+        "job_resources": [],
+        "phase_ref": null,
+        "phase_resources": [],
+        "effective_progress_ms": 0,
+        "started_at_ms": null,
+        "finished_at_ms": null,
+        "state": "waiting_resource",
+        "pending_outputs": []
+      },
+      {
+        "id": "job:10:TASK-LOCAL1:19:step-pack",
+        "task_ref": "TASK-LOCAL",
+        "operation_ref": {
+          "id": "fixture.pack",
+          "version": "0.1.0"
+        },
+        "execution_ref": {
+          "kind": "project_device",
+          "data": {
+            "device_id": "PACK-01",
+            "route_step_id": "step-pack",
+            "execution_capacity_ref": {
+              "kind": "resource",
+              "id": "machine-packing"
+            }
+          }
+        },
+        "input_refs": [],
+        "job_resources": [],
+        "phase_ref": null,
+        "phase_resources": [],
+        "effective_progress_ms": 0,
+        "started_at_ms": null,
+        "finished_at_ms": null,
+        "state": "ready",
+        "pending_outputs": []
+      }
+    ],
+    "phase_work_intervals": [
+      {
+        "job_id": "job:10:TASK-LOCAL1:013:step-assembly",
+        "phase_id": "cycle",
+        "interval": {
+          "start_ms": 0,
+          "end_ms": 60000
+        },
+        "effective_progress_start_ms": 0,
+        "effective_progress_end_ms": 60000,
+        "end_cause": "phase_completed"
+      },
+      {
+        "job_id": "job:10:TASK-LOCAL1:09:step-pack",
+        "phase_id": "cycle",
+        "interval": {
+          "start_ms": 60000,
+          "end_ms": 75000
+        },
+        "effective_progress_start_ms": 0,
+        "effective_progress_end_ms": 15000,
+        "end_cause": "phase_completed"
+      }
+    ],
+    "transport": [],
+    "resource_claims": [
+      {
+        "id": "claim:36:job:10:TASK-LOCAL1:013:step-assembly16:machine-assembly0:",
+        "resource_id": "machine-assembly",
+        "job_id": "job:10:TASK-LOCAL1:013:step-assembly",
+        "units": 1,
+        "intervals": [
+          {
+            "start_ms": 0,
+            "end_ms": 60000
+          }
+        ],
+        "kind": "job",
+        "phase_ref": null,
+        "interval_end_causes": [
+          "released"
+        ]
+      },
+      {
+        "id": "claim:36:job:10:TASK-LOCAL1:013:step-assembly15:worker-assembly0:",
+        "resource_id": "worker-assembly",
+        "job_id": "job:10:TASK-LOCAL1:013:step-assembly",
+        "units": 1,
+        "intervals": [
+          {
+            "start_ms": 0,
+            "end_ms": 60000
+          }
+        ],
+        "kind": "job",
+        "phase_ref": null,
+        "interval_end_causes": [
+          "released"
+        ]
+      },
+      {
+        "id": "claim:31:job:10:TASK-LOCAL1:09:step-pack15:machine-packing0:",
+        "resource_id": "machine-packing",
+        "job_id": "job:10:TASK-LOCAL1:09:step-pack",
+        "units": 1,
+        "intervals": [
+          {
+            "start_ms": 60000,
+            "end_ms": 75000
+          }
+        ],
+        "kind": "job",
+        "phase_ref": null,
+        "interval_end_causes": [
+          "released"
+        ]
+      },
+      {
+        "id": "claim:31:job:10:TASK-LOCAL1:09:step-pack14:worker-packing0:",
+        "resource_id": "worker-packing",
+        "job_id": "job:10:TASK-LOCAL1:09:step-pack",
+        "units": 1,
+        "intervals": [
+          {
+            "start_ms": 60000,
+            "end_ms": 75000
+          }
+        ],
+        "kind": "job",
+        "phase_ref": null,
+        "interval_end_causes": [
+          "released"
+        ]
+      }
+    ],
+    "waits": [
+      {
+        "object_ref": {
+          "kind": "job",
+          "id": "job:10:TASK-LOCAL1:113:step-assembly"
+        },
+        "execution_ref": {
+          "kind": "project_device",
+          "data": {
+            "device_id": "ASM-01",
+            "route_step_id": "step-assembly",
+            "execution_capacity_ref": {
+              "kind": "resource",
+              "id": "machine-assembly"
+            }
+          }
+        },
+        "phase_ref": "cycle",
+        "interval": {
+          "start_ms": 0,
+          "end_ms": 60000
+        },
+        "reasons": [
+          {
+            "kind": "missing_material",
+            "blocking_object": {
+              "kind": "location",
+              "id": "pcbs-A"
+            },
+            "required": "1 piece of pcb@r1 for port pcb",
+            "next_known_boundary_ms": null
+          },
+          {
+            "kind": "resource_busy",
+            "blocking_object": {
+              "kind": "resource",
+              "id": "machine-assembly"
+            },
+            "required": "1 slot",
+            "next_known_boundary_ms": null
+          },
+          {
+            "kind": "resource_busy",
+            "blocking_object": {
+              "kind": "resource",
+              "id": "worker-assembly"
+            },
+            "required": "1 person",
+            "next_known_boundary_ms": null
+          }
+        ],
+        "end_cause": "condition_changed"
+      },
+      {
+        "object_ref": {
+          "kind": "job",
+          "id": "job:10:TASK-LOCAL1:113:step-assembly"
+        },
+        "execution_ref": {
+          "kind": "project_device",
+          "data": {
+            "device_id": "ASM-01",
+            "route_step_id": "step-assembly",
+            "execution_capacity_ref": {
+              "kind": "resource",
+              "id": "machine-assembly"
+            }
+          }
+        },
+        "phase_ref": "cycle",
+        "interval": {
+          "start_ms": 60000,
+          "end_ms": 240000
+        },
+        "reasons": [
+          {
+            "kind": "missing_material",
+            "blocking_object": {
+              "kind": "location",
+              "id": "pcbs-A"
+            },
+            "required": "1 piece of pcb@r1 for port pcb",
+            "next_known_boundary_ms": null
+          }
+        ],
+        "end_cause": "condition_changed"
+      }
+    ],
+    "allocations": [],
+    "events": [
+      {
+        "sequence": 0,
+        "at_ms": 0,
+        "subject": {
+          "kind": "item",
+          "id": "pcb-001"
+        },
+        "payload": {
+          "kind": "item_transferred",
+          "data": {
+            "item_ref": "pcb-001",
+            "from_holder": {
+              "kind": "location",
+              "id": "pcbs-A"
+            },
+            "to_holder": {
+              "kind": "job",
+              "id": "job:10:TASK-LOCAL1:013:step-assembly"
+            }
+          }
+        }
+      },
+      {
+        "sequence": 1,
+        "at_ms": 0,
+        "subject": {
+          "kind": "item",
+          "id": "shell-001"
+        },
+        "payload": {
+          "kind": "item_transferred",
+          "data": {
+            "item_ref": "shell-001",
+            "from_holder": {
+              "kind": "location",
+              "id": "shells-A"
+            },
+            "to_holder": {
+              "kind": "job",
+              "id": "job:10:TASK-LOCAL1:013:step-assembly"
+            }
+          }
+        }
+      },
+      {
+        "sequence": 2,
+        "at_ms": 0,
+        "subject": {
+          "kind": "job",
+          "id": "job:10:TASK-LOCAL1:013:step-assembly"
+        },
+        "payload": {
+          "kind": "job_started",
+          "data": "job:10:TASK-LOCAL1:013:step-assembly"
+        }
+      },
+      {
+        "sequence": 3,
+        "at_ms": 60000,
+        "subject": {
+          "kind": "job",
+          "id": "job:10:TASK-LOCAL1:013:step-assembly"
+        },
+        "payload": {
+          "kind": "phase_completed",
+          "data": "cycle"
+        }
+      },
+      {
+        "sequence": 4,
+        "at_ms": 60000,
+        "subject": {
+          "kind": "item",
+          "id": "output:36:job:10:TASK-LOCAL1:013:step-assembly9:assembled1:0"
+        },
+        "payload": {
+          "kind": "item_transferred",
+          "data": {
+            "item_ref": "output:36:job:10:TASK-LOCAL1:013:step-assembly9:assembled1:0",
+            "from_holder": {
+              "kind": "job",
+              "id": "job:10:TASK-LOCAL1:013:step-assembly"
+            },
+            "to_holder": {
+              "kind": "location",
+              "id": "assemblies-A"
+            }
+          }
+        }
+      },
+      {
+        "sequence": 5,
+        "at_ms": 60000,
+        "subject": {
+          "kind": "resource",
+          "id": "machine-assembly"
+        },
+        "payload": {
+          "kind": "resource_released",
+          "data": "machine-assembly"
+        }
+      },
+      {
+        "sequence": 6,
+        "at_ms": 60000,
+        "subject": {
+          "kind": "resource",
+          "id": "worker-assembly"
+        },
+        "payload": {
+          "kind": "resource_released",
+          "data": "worker-assembly"
+        }
+      },
+      {
+        "sequence": 7,
+        "at_ms": 60000,
+        "subject": {
+          "kind": "job",
+          "id": "job:10:TASK-LOCAL1:113:step-assembly"
+        },
+        "payload": {
+          "kind": "wait_changed",
+          "data": {
+            "object_ref": {
+              "kind": "job",
+              "id": "job:10:TASK-LOCAL1:113:step-assembly"
+            },
+            "execution_ref": {
+              "kind": "project_device",
+              "data": {
+                "device_id": "ASM-01",
+                "route_step_id": "step-assembly",
+                "execution_capacity_ref": {
+                  "kind": "resource",
+                  "id": "machine-assembly"
+                }
+              }
+            },
+            "phase_ref": "cycle",
+            "interval": {
+              "start_ms": 0,
+              "end_ms": 60000
+            },
+            "reasons": [
+              {
+                "kind": "missing_material",
+                "blocking_object": {
+                  "kind": "location",
+                  "id": "pcbs-A"
+                },
+                "required": "1 piece of pcb@r1 for port pcb",
+                "next_known_boundary_ms": null
+              },
+              {
+                "kind": "resource_busy",
+                "blocking_object": {
+                  "kind": "resource",
+                  "id": "machine-assembly"
+                },
+                "required": "1 slot",
+                "next_known_boundary_ms": null
+              },
+              {
+                "kind": "resource_busy",
+                "blocking_object": {
+                  "kind": "resource",
+                  "id": "worker-assembly"
+                },
+                "required": "1 person",
+                "next_known_boundary_ms": null
+              }
+            ],
+            "end_cause": "condition_changed"
+          }
+        }
+      },
+      {
+        "sequence": 8,
+        "at_ms": 60000,
+        "subject": {
+          "kind": "item",
+          "id": "carton-001"
+        },
+        "payload": {
+          "kind": "item_transferred",
+          "data": {
+            "item_ref": "carton-001",
+            "from_holder": {
+              "kind": "location",
+              "id": "cartons-B"
+            },
+            "to_holder": {
+              "kind": "job",
+              "id": "job:10:TASK-LOCAL1:09:step-pack"
+            }
+          }
+        }
+      },
+      {
+        "sequence": 9,
+        "at_ms": 60000,
+        "subject": {
+          "kind": "item",
+          "id": "output:36:job:10:TASK-LOCAL1:013:step-assembly9:assembled1:0"
+        },
+        "payload": {
+          "kind": "item_transferred",
+          "data": {
+            "item_ref": "output:36:job:10:TASK-LOCAL1:013:step-assembly9:assembled1:0",
+            "from_holder": {
+              "kind": "location",
+              "id": "assemblies-A"
+            },
+            "to_holder": {
+              "kind": "job",
+              "id": "job:10:TASK-LOCAL1:09:step-pack"
+            }
+          }
+        }
+      },
+      {
+        "sequence": 10,
+        "at_ms": 60000,
+        "subject": {
+          "kind": "job",
+          "id": "job:10:TASK-LOCAL1:09:step-pack"
+        },
+        "payload": {
+          "kind": "job_started",
+          "data": "job:10:TASK-LOCAL1:09:step-pack"
+        }
+      },
+      {
+        "sequence": 11,
+        "at_ms": 75000,
+        "subject": {
+          "kind": "job",
+          "id": "job:10:TASK-LOCAL1:09:step-pack"
+        },
+        "payload": {
+          "kind": "phase_completed",
+          "data": "cycle"
+        }
+      },
+      {
+        "sequence": 12,
+        "at_ms": 75000,
+        "subject": {
+          "kind": "item",
+          "id": "output:36:job:10:TASK-LOCAL1:013:step-assembly9:assembled1:0"
+        },
+        "payload": {
+          "kind": "item_transferred",
+          "data": {
+            "item_ref": "output:36:job:10:TASK-LOCAL1:013:step-assembly9:assembled1:0",
+            "from_holder": {
+              "kind": "job",
+              "id": "job:10:TASK-LOCAL1:09:step-pack"
+            },
+            "to_holder": {
+              "kind": "container",
+              "id": "output:31:job:10:TASK-LOCAL1:09:step-pack6:packed1:0"
+            }
+          }
+        }
+      },
+      {
+        "sequence": 13,
+        "at_ms": 75000,
+        "subject": {
+          "kind": "item",
+          "id": "output:31:job:10:TASK-LOCAL1:09:step-pack6:packed1:0"
+        },
+        "payload": {
+          "kind": "item_transferred",
+          "data": {
+            "item_ref": "output:31:job:10:TASK-LOCAL1:09:step-pack6:packed1:0",
+            "from_holder": {
+              "kind": "job",
+              "id": "job:10:TASK-LOCAL1:09:step-pack"
+            },
+            "to_holder": {
+              "kind": "location",
+              "id": "packages-B"
+            }
+          }
+        }
+      },
+      {
+        "sequence": 14,
+        "at_ms": 75000,
+        "subject": {
+          "kind": "resource",
+          "id": "machine-packing"
+        },
+        "payload": {
+          "kind": "resource_released",
+          "data": "machine-packing"
+        }
+      },
+      {
+        "sequence": 15,
+        "at_ms": 75000,
+        "subject": {
+          "kind": "resource",
+          "id": "worker-packing"
+        },
+        "payload": {
+          "kind": "resource_released",
+          "data": "worker-packing"
+        }
+      },
+      {
+        "sequence": 16,
+        "at_ms": 75000,
+        "subject": {
+          "kind": "order",
+          "id": "ORDER-01"
+        },
+        "payload": {
+          "kind": "order_accepted",
+          "data": {
+            "order_id": "ORDER-01",
+            "item_refs": [
+              "output:31:job:10:TASK-LOCAL1:09:step-pack6:packed1:0"
+            ],
+            "quantity": {
+              "value": {
+                "coefficient": 1,
+                "decimal_places": 0
+              },
+              "unit": "piece"
+            },
+            "destination": "packages-B",
+            "acceptance_stage": "factory_released",
+            "at_ms": 75000
+          }
+        }
+      },
+      {
+        "sequence": 17,
+        "at_ms": 240000,
+        "subject": {
+          "kind": "job",
+          "id": "job:10:TASK-LOCAL1:113:step-assembly"
+        },
+        "payload": {
+          "kind": "wait_changed",
+          "data": {
+            "object_ref": {
+              "kind": "job",
+              "id": "job:10:TASK-LOCAL1:113:step-assembly"
+            },
+            "execution_ref": {
+              "kind": "project_device",
+              "data": {
+                "device_id": "ASM-01",
+                "route_step_id": "step-assembly",
+                "execution_capacity_ref": {
+                  "kind": "resource",
+                  "id": "machine-assembly"
+                }
+              }
+            },
+            "phase_ref": "cycle",
+            "interval": {
+              "start_ms": 60000,
+              "end_ms": 240000
+            },
+            "reasons": [
+              {
+                "kind": "missing_material",
+                "blocking_object": {
+                  "kind": "location",
+                  "id": "pcbs-A"
+                },
+                "required": "1 piece of pcb@r1 for port pcb",
+                "next_known_boundary_ms": null
+              }
+            ],
+            "end_cause": "condition_changed"
+          }
+        }
+      }
+    ],
+    "acceptance_events": [
+      {
+        "order_id": "ORDER-01",
+        "item_refs": [
+          "output:31:job:10:TASK-LOCAL1:09:step-pack6:packed1:0"
+        ],
+        "quantity": {
+          "value": {
+            "coefficient": 1,
+            "decimal_places": 0
+          },
+          "unit": "piece"
+        },
+        "destination": "packages-B",
+        "acceptance_stage": "factory_released",
+        "at_ms": 75000
+      }
+    ],
+    "orders": [
+      {
+        "order_id": "ORDER-01",
+        "demand": {
+          "value": {
+            "coefficient": 2,
+            "decimal_places": 0
+          },
+          "unit": "piece"
+        },
+        "accepted": {
+          "value": {
+            "coefficient": 1,
+            "decimal_places": 0
+          },
+          "unit": "piece"
+        },
+        "outstanding": {
+          "value": {
+            "coefficient": 1,
+            "decimal_places": 0
+          },
+          "unit": "piece"
+        },
+        "completion_ms": null,
+        "due_at_ms": 240000,
+        "tardiness_ms": null
+      }
+    ],
+    "limitations": []
+  }
+}

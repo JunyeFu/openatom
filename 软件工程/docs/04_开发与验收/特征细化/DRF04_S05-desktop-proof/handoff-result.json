@@ -1,0 +1,176 @@
+{
+  "document_kind": "DRF04_S05_actual_desktop_contact_handoff_for_window1_public_review",
+  "status": "passed_isolated_desktop_contact",
+  "actual_end": "2026-10-14T23:55:37.4967977+08:00",
+  "working_directory": "D:\\Agent\\ICNSD-KEL\\大作业\\02_竞赛作品\\超级工厂\\软件工程\\docs\\04_开发与验收\\特征细化\\DRF04_S05-desktop-proof",
+  "actual_commands": [
+    "cargo build --locked > cargo-build.stdout.txt 2> cargo-build.stderr.txt",
+    "& './run-probe.ps1'",
+    "& 'C:/Users/fujunye/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe' -B -X utf8 './verify-pixels.py'"
+  ],
+  "actual_versions": {
+    "tauri": "2.12.3",
+    "tauri-build": "2.7.2",
+    "three": "0.186.1",
+    "rmcp": "3.5.1",
+    "tokio": "1.53.2",
+    "webview2_runtime": "155.0.4283.45"
+  },
+  "actual_webgl": {
+    "renderer": "WebKit WebGL",
+    "unmasked_renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 4080 SUPER (0x00002702) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "vendor": "WebKit",
+    "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)"
+  },
+  "actual_host_pid": 15600,
+  "actual_bridge_pid": 34052,
+  "actual_contacts": [
+    {
+      "id": "desktop-invoke",
+      "result": "passed",
+      "evidence": "output/desktop-result.json#/UI_report/steps",
+      "observed": "actual WebView2 JS Tauri invoke on one shared Rust fixture"
+    },
+    {
+      "id": "revision-race",
+      "result": "passed",
+      "observed": [
+        {
+          "ok": true,
+          "revision": 8,
+          "source": "actual_mcp_bridge",
+          "x_m": 8.0
+        },
+        {
+          "current_revision": 8,
+          "error": "RevisionConflict",
+          "ok": false,
+          "source": "actual_tauri_UI_invoke"
+        }
+      ],
+      "invariant": "one commit R7->R8; other RevisionConflict; actual UI and separate native MCP bridge"
+    },
+    {
+      "id": "frozen-pixels",
+      "result": "passed",
+      "evidence": "output/pixel-verification.json",
+      "observed": {
+        "frozen-r7.png": {
+          "actual_size": [
+            640,
+            360
+          ],
+          "blue_pixels": 4096,
+          "centroid_x": 127.5,
+          "centroid_y": 179.5,
+          "expected_x_from_fixed_camera_and_world_pose": 128
+        },
+        "current-r8.png": {
+          "actual_size": [
+            640,
+            360
+          ],
+          "blue_pixels": 4096,
+          "centroid_x": 511.5,
+          "centroid_y": 179.5,
+          "expected_x_from_fixed_camera_and_world_pose": 512
+        },
+        "mcp-r7.png": {
+          "actual_size": [
+            640,
+            360
+          ],
+          "blue_pixels": 4096,
+          "centroid_x": 127.5,
+          "centroid_y": 179.5,
+          "expected_x_from_fixed_camera_and_world_pose": 128
+        }
+      },
+      "invariant": "R7 x=2m frozen while currentR8 x=8m; separate canvas; current R8 actual PNG before/after unchanged"
+    },
+    {
+      "id": "real-MCP-image",
+      "result": "passed",
+      "evidence": "output/actual-mcp-capture.json",
+      "observed": "6017 actual PNG bytes via named pipe and rmcp image content, independently identical to frozen PNG"
+    },
+    {
+      "id": "wrong-scope-revision",
+      "result": "passed",
+      "observed": [
+        {
+          "error": "ScopeMismatch",
+          "ok": false
+        },
+        {
+          "error": "FrozenRevisionMismatch",
+          "ok": false
+        }
+      ],
+      "invariant": "Rust receive_capture also rejected scope/scene revision, no rejected image committed"
+    },
+    {
+      "id": "cancel-failure-preservation",
+      "result": "passed",
+      "evidence": "output/desktop-result.json#/UI_report/steps",
+      "observed": "worker advanced one step then CancelRequested->Cancelled; separate worker failed at step2 with one confirmed step; Rust R8/x8 preserved"
+    },
+    {
+      "id": "owned-cleanup",
+      "result": "passed",
+      "observed": {
+        "observed_at": "2026-10-14T23:58:48.0239487+08:00",
+        "actual_known_pids": [
+          15600,
+          34052,
+          50548
+        ],
+        "known_own_executable_processes_still_running": [],
+        "exclusive_profile_processes_still_running": [],
+        "PID_reuse_observed_not_owned": [],
+        "host_exit_code": 0,
+        "bridge_exit_code": 0,
+        "pipe_after_close_error": 6,
+        "own_only": true,
+        "other_processes_terminated": false
+      },
+      "invariant": "actual EOF; known pipe invalid handle6 after one10ms IO completion wait; Host/bridge exit0, no matching executable/profile helpers left"
+    }
+  ],
+  "outputs": {
+    "native_result": "output/desktop-result.json",
+    "pixel_result": "output/pixel-verification.json",
+    "actual_exit": "output/actual-exit.json",
+    "process_cleanup": "output/process-cleanup.json",
+    "frozen_frame": "output/frozen-r7.png",
+    "current_frame": "output/current-r8.png",
+    "MCP_frame": "output/mcp-r7.png",
+    "MCP_wire_result": "output/actual-mcp-capture.json",
+    "launch_S04_readback": "output/launch-preconditions.json",
+    "versions": "version-resolution.json"
+  },
+  "failure_history": [
+    {
+      "ref": "output/attempt-1/desktop-result.json",
+      "actual_exit_code": 2,
+      "cause": "GetHandleInformation immediately after Tokio/Mio Drop preceded pending overlapped IO release",
+      "fix": "bounded wait for known own handle IO completion; one10ms wait observed, no transport/tool retries"
+    },
+    {
+      "ref": "output/attempt-2/desktop-result.json",
+      "actual_exit_code": 0,
+      "limitation_found": "capture shared editor canvas; separated capture canvas and verified current actual PNG before/after equality in final run"
+    }
+  ],
+  "remaining_limits": [
+    "self-built box and two MCP lab tools; no18 product operations/Engine",
+    "small PNG uses base64 in private1MiB frame, then MCP image; canonical managed_assets/readonly DuplicateHandle product transport not wired",
+    "fixture state/edit/work is not product Commands authorization registry or full IpcHello/Welcome",
+    "no actual Codex/full factory/GF/report/export/second-machine/release acceptance"
+  ],
+  "public_S05_review_owner": "window1",
+  "public_review_files_modified": false,
+  "old40_24_7_14_11_and_stdio_handle_trials_replayed": false,
+  "product_apps_or_public_Rust_or_tools_3d_proof_modified": false,
+  "actual_product_runtime": null
+}

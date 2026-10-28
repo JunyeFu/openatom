@@ -1,0 +1,306 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Request",
+  "type": "object",
+  "properties": {
+    "api_version": {
+      "$ref": "#/$defs/ApiVersion"
+    },
+    "operation": {
+      "$ref": "#/$defs/QueryModuleLibraryTag"
+    },
+    "params": {
+      "$ref": "#/$defs/QueryModuleLibraryParams"
+    },
+    "project_id": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ProjectId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "request_id": {
+      "$ref": "#/$defs/ObjectId"
+    },
+    "scope": {
+      "$ref": "#/$defs/ApiScope"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "api_version",
+    "request_id",
+    "project_id",
+    "scope",
+    "operation",
+    "params"
+  ],
+  "$defs": {
+    "ApiCategory": {
+      "type": "string",
+      "enum": [
+        "items",
+        "devices",
+        "resources",
+        "tasks",
+        "operations",
+        "transport",
+        "templates",
+        "professional",
+        "media"
+      ]
+    },
+    "ApiScope": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "workspace"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "project"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "data": {
+              "$ref": "#/$defs/ModuleId"
+            },
+            "kind": {
+              "type": "string",
+              "const": "definition_draft"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "data"
+          ]
+        }
+      ]
+    },
+    "ApiVersion": {
+      "type": "string",
+      "enum": [
+        "0.1"
+      ]
+    },
+    "FiniteNumber": {
+      "type": "number",
+      "format": "double"
+    },
+    "LayoutRegion": {
+      "type": "object",
+      "properties": {
+        "clearance_m": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FiniteNumber"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "kind": {
+          "$ref": "#/$defs/LayoutRegionKind"
+        },
+        "polygon_m": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Vec2"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "polygon_m",
+        "kind"
+      ]
+    },
+    "LayoutRegionKind": {
+      "type": "string",
+      "enum": [
+        "usable",
+        "keep_out",
+        "static_lane"
+      ]
+    },
+    "LibrarySourceScope": {
+      "type": "string",
+      "enum": [
+        "bundled",
+        "project_packages",
+        "user_granted_libraries"
+      ]
+    },
+    "ModuleId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "ObjectId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "ProjectId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "QueryModuleLibraryParams": {
+      "type": "object",
+      "properties": {
+        "category_filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ApiCategory"
+          }
+        },
+        "industry": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "product_family": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "site_envelope": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SiteEnvelope"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source_scope": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/LibrarySourceScope"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "category_filters",
+        "source_scope"
+      ]
+    },
+    "QueryModuleLibraryTag": {
+      "type": "string",
+      "enum": [
+        "query_module_library"
+      ]
+    },
+    "SiteEnvelope": {
+      "type": "object",
+      "properties": {
+        "clearance_m": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FiniteNumber"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "height_m": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FiniteNumber"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "length_m": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FiniteNumber"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "regions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/LayoutRegion"
+          }
+        },
+        "usable_polygon_m": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Vec2"
+          }
+        },
+        "width_m": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FiniteNumber"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "regions",
+        "usable_polygon_m"
+      ]
+    },
+    "Vec2": {
+      "type": "object",
+      "properties": {
+        "x": {
+          "$ref": "#/$defs/FiniteNumber"
+        },
+        "y": {
+          "$ref": "#/$defs/FiniteNumber"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y"
+      ]
+    }
+  }
+}

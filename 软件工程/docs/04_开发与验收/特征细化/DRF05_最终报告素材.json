@@ -1,0 +1,286 @@
+{
+  "document_kind": "DRF05_final_topic_report_materials_not_final_report_or_product_acceptance",
+  "date": "2026-10-14T23:36:27.578474+08:00",
+  "owner": "复审窗口5",
+  "status": "scoped_materials_consumed_by_final_design_report",
+  "claims": [
+    {
+      "id": "DRF05-M01",
+      "topic": "整体报告与交接定位",
+      "evidence_layer": "written_design_and_current_contract",
+      "report_text": "超级工厂把方案输入、生产结果与评估交付连接在同一工程中。设计中的评估报告携带目标、输入身份、接受范围、等待与资源区间、成本缺项和方案比较；可编辑工程另行交付，供接手者修改新方案后从初始输入运行。",
+      "source_refs": [
+        "docs/03_架构与契约/评估报告与数据导出.md",
+        "docs/03_架构与契约/工程交接与打开.md"
+      ],
+      "product_implemented": false
+    },
+    {
+      "id": "DRF05-M02",
+      "topic": "四格式同源",
+      "evidence_layer": "actual_isolated_type_fixture_file_export_readback",
+      "report_text": "已用一个人工构造的EvaluationReport实际写出并读回JSON、CSV、HTML及四页PDF。69行共享投影一致，PDF中文与分页已图像检查；HTML在实际浏览器核对窄窗口、滚动、放大及比较尾行，并修复单位断行与表头丢失。该试做验证文件与呈现，不产生生产运行或工业改善结论。",
+      "source_refs": [
+        "docs/04_开发与验收/特征细化/DRF05_四格式试做/projection-result.json",
+        "docs/04_开发与验收/特征细化/DRF05_四格式试做/html-browser-result.json"
+      ],
+      "rows": 69,
+      "PDF_pages": 4,
+      "product_implemented": false
+    },
+    {
+      "id": "DRF05-M03",
+      "topic": "冻结输入、单位与未知",
+      "evidence_layer": "canonical_contract_plus_isolated_type_fixture",
+      "report_text": "报告逐Run保存输入身份、计算范围、冻结费率和缺项。导出时工程修订为R8，TF-A/B/C仍分别属于输入修订3/4/5；36/72的人工费率不被当前方案覆写。CNY与USD分列，未知值保持null，明确零价保持0。TF-C只计算到50000ms，前缀接受量不替代全窗结果；这些数值均是类型样例。",
+      "source_refs": [
+        "docs/03_架构与契约/全层类型与工程格式.json#/reporting_and_comparison_contract",
+        "packages/reporting/evaluation-report.contract.design.json",
+        "docs/04_开发与验收/特征细化/DRF05_四格式试做/output/evaluation.type_fixture.json"
+      ],
+      "standalone_report_input_identity": [
+        "project_id",
+        "project_revision",
+        "scenario_id",
+        "scenario_revision"
+      ],
+      "engineering_package_frozen_inputs": [
+        "frozen_run_project",
+        "frozen_run_scenario",
+        "run_result"
+      ],
+      "product_implemented": false
+    },
+    {
+      "id": "DRF05-M04",
+      "topic": "比较限制",
+      "evidence_layer": "actual_isolated_type_fixture_projection",
+      "report_text": "比较先说明两方案的输入变化与可比范围。样例TF-A→TF-B可显示绝对数量差2piece，基值为0时百分比为null；TF-A→TF-C的接受阶段及计算范围不同，只并列展示，差值和百分比都为空，不生成改善判断。",
+      "source_refs": [
+        "docs/04_开发与验收/特征细化/DRF05_四格式试做/output/evaluation.type_fixture.json",
+        "docs/04_开发与验收/特征细化/DRF05_四格式试做/html-browser/default-comparison.jpg"
+      ],
+      "product_implemented": false
+    },
+    {
+      "id": "DRF05-M05",
+      "topic": "保存真实文件接点",
+      "evidence_layer": "two_real_isolated_Windows_file_contacts",
+      "report_text": "另在自建临时工程验证两个Windows文件接点：R8文件先准备，仍按R7→R8实际替换根清单并重开，最终为R8；不分享DELETE的真实句柄占用造成替换错误32，旧R7根完整保留。六项逻辑参考和既有十二项I/O实试分别记录，不合并成产品Save/Open验收。",
+      "source_refs": [
+        "docs/04_开发与验收/特征细化/DRF05_四格式试做/save-contact-result.json",
+        "docs/04_开发与验收/特征细化/DRF05_四格式试做/save-reference-result.json",
+        "tools/type-contract-proof/output/persistence-proof-result.json"
+      ],
+      "unexecuted": [
+        "Host实际目录对象/文件名队列键",
+        "1176/1177等更名/根缺失后的恢复",
+        "产品TaskState/UI保存",
+        "跨机软件打开修改重跑"
+      ],
+      "product_implemented": false
+    },
+    {
+      "id": "DRF05-M06",
+      "topic": "工程与社区交接",
+      "evidence_layer": "written_design_and_scenario_definitions",
+      "report_text": "设计将评估报告、可编辑工程及模块贡献分为三个交付入口。工程以Versioned<PackageManifest>根清单明确列出活动工程、精确模块、相对资源及所选旧Run的完整冻结输入，导入先形成私有草稿再明确采用；接手后新运行从新方案初始输入开始。许可和版本采用按现行契约处理。十六个软件交接情景尚待产品执行。",
+      "source_refs": [
+        "docs/03_架构与契约/工程交接与打开.md",
+        "community/CONTRIBUTING.md",
+        "scenarios/模板与交接/expected-template-handoff.design.json"
+      ],
+      "handoff_actual_results": "all null",
+      "product_implemented": false
+    }
+  ],
+  "assets": [
+    {
+      "id": "DRF05-IMG01",
+      "project_relative_path": "docs/04_开发与验收/特征细化/DRF05_四格式试做/html-browser/default-prefix-C.jpg",
+      "absolute_path": "D:\\Agent\\ICNSD-KEL\\大作业\\02_竞赛作品\\超级工厂\\软件工程\\docs\\04_开发与验收\\特征细化\\DRF05_四格式试做\\html-browser\\default-prefix-C.jpg",
+      "kind": "jpg",
+      "evidence_layer": "actual_isolated_report_render",
+      "caption": "实际浏览器中的人工类型样例：TF-C只覆盖50000ms前缀，whole_window与接受范围分列。",
+      "data_origin": "type_fixture TF-A/B/C",
+      "product_screenshot": false,
+      "suggested_for_final_report": true
+    },
+    {
+      "id": "DRF05-IMG02",
+      "project_relative_path": "docs/04_开发与验收/特征细化/DRF05_四格式试做/html-browser/default-comparison.jpg",
+      "absolute_path": "D:\\Agent\\ICNSD-KEL\\大作业\\02_竞赛作品\\超级工厂\\软件工程\\docs\\04_开发与验收\\特征细化\\DRF05_四格式试做\\html-browser\\default-comparison.jpg",
+      "kind": "jpg",
+      "evidence_layer": "actual_isolated_report_render",
+      "caption": "实际浏览器中的人工类型样例：零基数百分比为空，接受范围不一致的两Run仅并列。",
+      "data_origin": "type_fixture TF-A/B/C",
+      "product_screenshot": false,
+      "suggested_for_final_report": true
+    },
+    {
+      "id": "DRF05-IMG03",
+      "project_relative_path": "docs/04_开发与验收/特征细化/DRF05_四格式试做/html-browser/fixed-narrow-values-units.jpg",
+      "absolute_path": "D:\\Agent\\ICNSD-KEL\\大作业\\02_竞赛作品\\超级工厂\\软件工程\\docs\\04_开发与验收\\特征细化\\DRF05_四格式试做\\html-browser\\fixed-narrow-values-units.jpg",
+      "kind": "jpg",
+      "evidence_layer": "actual_isolated_report_render",
+      "caption": "640px窗口实际滚动截图：row_id/Run保持可见，数值、person_ms和CNY/USD不拆行。",
+      "data_origin": "type_fixture TF-A/B/C",
+      "product_screenshot": false,
+      "suggested_for_final_report": true
+    },
+    {
+      "id": "DRF05-IMG04",
+      "project_relative_path": "docs/04_开发与验收/特征细化/DRF05_四格式试做/output/preview/page-1.png",
+      "absolute_path": "D:\\Agent\\ICNSD-KEL\\大作业\\02_竞赛作品\\超级工厂\\软件工程\\docs\\04_开发与验收\\特征细化\\DRF05_四格式试做\\output\\preview\\page-1.png",
+      "kind": "png",
+      "evidence_layer": "actual_isolated_report_render",
+      "caption": "人工类型样例PDF第1页，实际PDFium渲染；可用于说明中文报告文件版式。",
+      "data_origin": "type_fixture TF-A/B/C",
+      "product_screenshot": false,
+      "suggested_for_final_report": true
+    },
+    {
+      "id": "DRF05-UI01",
+      "project_relative_path": "docs/02_交互设计/S04_可操作设计原型/output/playwright/VP22.png",
+      "absolute_path": "D:\\Agent\\ICNSD-KEL\\大作业\\02_竞赛作品\\超级工厂\\软件工程\\docs\\02_交互设计\\S04_可操作设计原型\\output\\playwright\\VP22.png",
+      "kind": "png",
+      "evidence_layer": "actual_browser_design_prototype",
+      "caption": "S04可操作设计原型的四格式预览，画面使用手工L03样例，产品Engine/Host/Agent尚未实现。",
+      "data_origin": "manual_or_type_fixture, independent from DRF05 69-row report",
+      "product_screenshot": false,
+      "suggested_for_final_report": true
+    },
+    {
+      "id": "DRF05-UI02",
+      "project_relative_path": "docs/02_交互设计/S04_可操作设计原型/output/playwright/VP23.png",
+      "absolute_path": "D:\\Agent\\ICNSD-KEL\\大作业\\02_竞赛作品\\超级工厂\\软件工程\\docs\\02_交互设计\\S04_可操作设计原型\\output\\playwright\\VP23.png",
+      "kind": "png",
+      "evidence_layer": "actual_browser_design_prototype",
+      "caption": "S04可操作设计原型的可编辑原型快照交接，快照是原型状态JSON，正式ProjectState/工程包产品接点待实现。",
+      "data_origin": "manual_or_type_fixture, independent from DRF05 69-row report",
+      "product_screenshot": false,
+      "suggested_for_final_report": true
+    },
+    {
+      "id": "DRF05-UI03",
+      "project_relative_path": "docs/02_交互设计/S04_可操作设计原型/output/playwright/VP24.png",
+      "absolute_path": "D:\\Agent\\ICNSD-KEL\\大作业\\02_竞赛作品\\超级工厂\\软件工程\\docs\\02_交互设计\\S04_可操作设计原型\\output\\playwright\\VP24.png",
+      "kind": "png",
+      "evidence_layer": "actual_browser_design_prototype",
+      "caption": "S04可操作设计原型的冲突、撤销和未保存离开画面；保存失败是原型分支，不能当Windows故障实测。",
+      "data_origin": "manual_or_type_fixture, independent from DRF05 69-row report",
+      "product_screenshot": false,
+      "suggested_for_final_report": true
+    }
+  ],
+  "actual_four_format_outputs": [
+    {
+      "format": "json",
+      "project_relative_path": "docs/04_开发与验收/特征细化/DRF05_四格式试做/output/evaluation.type_fixture.json",
+      "absolute_path": "D:\\Agent\\ICNSD-KEL\\大作业\\02_竞赛作品\\超级工厂\\软件工程\\docs\\04_开发与验收\\特征细化\\DRF05_四格式试做\\output\\evaluation.type_fixture.json",
+      "evidence_origin": "type_fixture",
+      "regenerated_for_this_materials_step": false
+    },
+    {
+      "format": "csv",
+      "project_relative_path": "docs/04_开发与验收/特征细化/DRF05_四格式试做/output/evaluation.type_fixture.csv",
+      "absolute_path": "D:\\Agent\\ICNSD-KEL\\大作业\\02_竞赛作品\\超级工厂\\软件工程\\docs\\04_开发与验收\\特征细化\\DRF05_四格式试做\\output\\evaluation.type_fixture.csv",
+      "evidence_origin": "type_fixture",
+      "regenerated_for_this_materials_step": false
+    },
+    {
+      "format": "html",
+      "project_relative_path": "docs/04_开发与验收/特征细化/DRF05_四格式试做/output/evaluation.type_fixture.html",
+      "absolute_path": "D:\\Agent\\ICNSD-KEL\\大作业\\02_竞赛作品\\超级工厂\\软件工程\\docs\\04_开发与验收\\特征细化\\DRF05_四格式试做\\output\\evaluation.type_fixture.html",
+      "evidence_origin": "type_fixture",
+      "regenerated_for_this_materials_step": false
+    },
+    {
+      "format": "pdf",
+      "project_relative_path": "docs/04_开发与验收/特征细化/DRF05_四格式试做/output/pdf/evaluation.type_fixture.pdf",
+      "absolute_path": "D:\\Agent\\ICNSD-KEL\\大作业\\02_竞赛作品\\超级工厂\\软件工程\\docs\\04_开发与验收\\特征细化\\DRF05_四格式试做\\output\\pdf\\evaluation.type_fixture.pdf",
+      "evidence_origin": "type_fixture",
+      "regenerated_for_this_materials_step": false
+    }
+  ],
+  "separate_source_sets": [
+    {
+      "source": "DRF05 type_fixture",
+      "rows": 69,
+      "PDF_pages": 4,
+      "identity": "TF-A/B/C; export R8; frozen input revisions3/4/5"
+    },
+    {
+      "source": "S05-05 Rust architecture fixture",
+      "rows": 48,
+      "PDF_pages": 2,
+      "reference": "docs/04_开发与验收/S05-05_关键架构实际试做.json",
+      "not_reexecuted_here": true
+    },
+    {
+      "source": "S04 browser design prototype",
+      "identity": "manual L03 and E04 inputs",
+      "reference": "docs/02_交互设计/S04_可操作设计原型/output/playwright/frames.json",
+      "not_same_report_as_DRF05": true
+    }
+  ],
+  "current_global_evidence_snapshot": {
+    "authority": "docs/04_开发与验收/完整设计与执行准入.json",
+    "design_freeze_status": "passed",
+    "final_topic_pdf_status": "actual_final_report_exported29pages_QA_passed_waiting_coordinator_receipt",
+    "S04_scoped_results": {
+      "S04-04": {
+        "status": "passed_design_prototype_user_authorized_AI_walkthrough",
+        "passed_scoped_checkpoint": true,
+        "public_projection_status": "formally_merged_in_public_30_of_30",
+        "actual_user_walkthrough": null
+      },
+      "S04-05": {
+        "status": "passed_user_authorized_AI_design_walkthrough",
+        "passed_scoped_checkpoint": true,
+        "public_projection_status": "formally_merged_in_public_30_of_30",
+        "actual_user_walkthrough": null
+      }
+    },
+    "interpretation": "S01—S06全部30项设计冻结；本窗口最终DOCX/PDF已生成并完成逐页QA，公共S06出口/MS04由拥有者据收件更新。",
+    "design_reviews_passed": 30,
+    "currently_pending_design_reviews": []
+  },
+  "current_visual_basis": {
+    "source": "docs/02_交互设计/工业工作台母版与字段细化.json",
+    "editable": "docs/02_交互设计/S04-02_drawio母版_20261014/industrial-workbench-master.drawio",
+    "Figma": "paused; historical files not final visual proof"
+  },
+  "publication_text_boundaries": [
+    "本文稿以设计为定位；不得把type_fixture数字写成真实工厂结果或收益",
+    "原型截图注明实际浏览器设计原型及手工/类型样例来源",
+    "ReportRunInputRef为独立报告身份投影，工程交接另带完整冻结文件",
+    "ReportLab参考不取代所选printpdf产品路径；S05另有独立Rust fixture，不合并成69行来源",
+    "AI代走查记录真实操作者；真人字段为空不抹去授权AI设计证据，S10独立目标用户试用另验"
+  ],
+  "pending_product_work": [
+    "完整printpdf/桌面报告产品导出接点及真实生产Run",
+    "Host目录键/保存恢复与产品TaskState",
+    "十六个软件交接情景、另一目标机器修改重跑",
+    "S10独立目标用户与工业正确性/性能"
+  ],
+  "final_topic_PDF_generated": true,
+  "existing_PDF_rebuilt": false,
+  "product_apps_entry_created": false,
+  "common_Rust_API_generated_or_modified": false,
+  "docs02_or_other_window_evidence_modified": false,
+  "actual_product_runtime": null,
+  "actual_user_walkthrough": null,
+  "actual_cross_machine": null,
+  "exclusive_report_draft_ref": "../模块研究/输出/报告/超级工厂_最终选题报告.md",
+  "source_list_ref": "../模块研究/输出/报告/超级工厂_最终选题报告_配图/正文来源与成稿条件.json",
+  "final_report_outputs": {
+    "DOCX_absolute_path": "D:\\Agent\\ICNSD-KEL\\大作业\\02_竞赛作品\\超级工厂\\模块研究\\输出\\报告\\超级工厂_最终选题报告.docx",
+    "PDF_absolute_path": "D:\\Agent\\ICNSD-KEL\\大作业\\02_竞赛作品\\超级工厂\\模块研究\\输出\\报告\\超级工厂_最终选题报告.pdf",
+    "actual_pages": 29,
+    "PDF_bookmarks": 60,
+    "TOC_items": 14,
+    "QA_ref": "D:\\Agent\\ICNSD-KEL\\大作业\\02_竞赛作品\\超级工厂\\模块研究\\输出\\报告\\超级工厂_最终选题报告_配图\\逐页视觉QA.json",
+    "author": "待填写"
+  }
+}

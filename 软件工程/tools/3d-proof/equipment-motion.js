@@ -2,10 +2,12 @@ import * as THREE from './vendor/three.module.js';
 
 export function rigRobot(root) {
   const positions = [[0, .18, 0], [0, .65, 0], [-.28, 1.40, 0], [.52, 1.58, 0], [.89, 1.33, 0], [.89, 1.17, 0]];
+  const rollLength = Math.hypot(.8, .18);
+  const axes = [[0, 1, 0], [0, 0, 1], [0, 0, 1], [.8 / rollLength, .18 / rollLength, 0], [0, 0, 1], [0, 1, 0]];
   const parts = [...root.children];
   const joints = positions.map((p, i) => {
     const group = new THREE.Group(); group.name = 'joint-' + (i + 1); group.position.set(...p);
-    group.userData = { motion: 'robot_joint', joint_index: i + 1, axis: [i === 0 || i === 5 ? 0 : i === 3 ? 1 : 0, i === 0 || i === 5 ? 1 : 0, i === 1 || i === 2 || i === 4 ? 1 : 0],
+    group.userData = { motion: 'robot_joint', joint_index: i + 1, axis: axes[i],
       nominal_limits_radian: [-Math.PI, Math.PI] };
     root.add(group); return group;
   });
@@ -21,6 +23,10 @@ export function rigRobot(root) {
     if (n === 'bolt-head' || n === 'hex-socket' || n.startsWith('dress-pack-')) {
       index = [1, 2, 3, 4].reduce((best, i) => part.position.distanceTo(new THREE.Vector3(...positions[i])) < part.position.distanceTo(new THREE.Vector3(...positions[best])) ? i : best, 1);
       if (part.position.y < .2) continue;
+    }
+    if (n.startsWith('dress-pack-')) {
+      part.userData.cable_order = part.position.x < 0 ? 0 : part.position.x < .6 ? 1 : 2;
+      index = part.userData.cable_order + 1;
     }
     joints[index].attach(part);
   }
@@ -80,11 +86,15 @@ export function robotPose(root, target, closed) {
   }
   root.updateMatrixWorld(true);
   const wire = root.getObjectByName('robot-dress-pack');
-  const offsets = [[0, .14, -.14], [0, .1, -.17], [0, .06, -.17], [0, .02, -.17], [0, .08, -.11], [0, .03, -.10]];
-  const points = j.map((joint, i) => root.worldToLocal(joint.localToWorld(new THREE.Vector3(...offsets[i]))));
+  const clamps = [];
+  root.traverse(part => { if (part.name === 'dress-pack-clamp') clamps.push(part); });
+  clamps.sort((a, b) => a.userData.cable_order - b.userData.cable_order);
+  const points = [root.worldToLocal(j[0].localToWorld(new THREE.Vector3(0, .14, -.14))),
+    ...clamps.map(part => root.worldToLocal(part.getWorldPosition(new THREE.Vector3()))),
+    root.worldToLocal(j[5].localToWorld(new THREE.Vector3(0, .03, -.10)))];
   if (wire) { // The simplified asset intentionally omits the cable.
     if (wire.userData.live_geometry) wire.geometry.dispose();
-    wire.geometry = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points), 48, .018, 8, false);
+    wire.geometry = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points), 96, .018, 8, false);
     wire.userData.live_geometry = true;
   }
   return j[5].localToWorld(new THREE.Vector3(0, -.235, 0));
@@ -97,7 +107,9 @@ export function assemblyPose(root, progress, working, operation) {
   if (!working || operation === 'pack') { xy.position.set(0, 0, 0); z.position.y = 0; return; }
   const fastening = THREE.MathUtils.clamp((progress - .2) / .6, 0, 1);
   const index = Math.min(3, Math.floor(fastening * 4)), local = fastening * 4 - index;
-  const targets = [[0, 0], [-.24, 0], [-.24, -.16], [0, -.16]];
+  // The adopted control-box asset is 1:1; a fixture adapter raises its screw
+  // heads to the existing 83mm Z-stroke. The old 1.35x sample is hidden.
+  const targets = [[-.042, -.028], [-.282, -.028], [-.282, -.188], [-.042, -.188]];
   const previous = targets[Math.max(0, index - 1)], target = targets[index];
   const transition = THREE.MathUtils.smoothstep(local, 0, .18);
   xy.position.set(THREE.MathUtils.lerp(previous[0], target[0], transition), 0, THREE.MathUtils.lerp(previous[1], target[1], transition));

@@ -1,0 +1,87 @@
+{
+  "spec": {
+    "index": 25,
+    "id": "vision-carton-inspector",
+    "title": "纸箱视觉检验机（合格、返工与隔离）",
+    "family": "inspection",
+    "rule": "inspect",
+    "cycle_seconds": 12,
+    "flow": {
+      "input": "1件待检包件，含6个真实内装物",
+      "output": "同一包件按合格、返工、隔离分流，待判定保持占用"
+    },
+    "focus_node": "OpticalHead",
+    "group": "paper",
+    "definition_id": "sf.native50.device.vision-carton-inspector",
+    "media_id": "sf.native50.media.vision-carton-inspector",
+    "version": "1.1.0",
+    "basis": "原创示例尺寸、参数与声明工时；机构路径参考常见纸箱工艺，不代表厂家额定性能或物理求解。",
+    "first_release_role": "Inspection01",
+    "suffix": "detailed",
+    "module_id": "sf.native50.media.vision-carton-inspector",
+    "directory": "../native-equipment-50/installable/vision-carton-inspector",
+    "asset": {
+      "id": "sf.native50.media.vision-carton-inspector.glb",
+      "path": "vision-carton-inspector.glb",
+      "kind": "glb"
+    },
+    "bytes": 1158720,
+    "nodes": 143,
+    "triangles": 13278,
+    "animations": [
+      {
+        "index": 0,
+        "name": "load"
+      },
+      {
+        "index": 1,
+        "name": "auto"
+      },
+      {
+        "index": 2,
+        "name": "unload"
+      }
+    ],
+    "phase_ids": [
+      "load",
+      "auto",
+      "unload"
+    ],
+    "primary_phase": "auto",
+    "bounds": {
+      "min": [
+        -1.0750000476837158,
+        3.3527612630646075e-10,
+        -0.7925000000745058
+      ],
+      "max": [
+        1.0750000476837158,
+        1.7150000017881393,
+        0.631499999858439
+      ]
+    },
+    "batch": "B01",
+    "initial": "sealed_pack",
+    "final": "sealed_pack",
+    "auxiliary": null,
+    "extra_outputs": [
+      {
+        "role": "isolation"
+      }
+    ],
+    "acceptance_conditions": [
+      "rejected",
+      "pending-recovery",
+      "rework",
+      "reject-wait"
+    ],
+    "mechanisms": [
+      "top-and-side-optical-inspection",
+      "manual-positioning-and-sliding-access-doors",
+      "three-result-destinations"
+    ],
+    "media_version": "1.1.0",
+    "review_batch": "B01-Q18"
+  },
+  "simple": false
+}

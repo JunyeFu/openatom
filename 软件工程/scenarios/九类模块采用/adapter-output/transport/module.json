@@ -1,0 +1,177 @@
+{
+  "schema_version": "1.0",
+  "data": {
+    "definition": {
+      "id": "community.batch-transport",
+      "version": "0.1.0",
+      "title": "单批次跨厂搬运与返程",
+      "definition_state": "design",
+      "contribution": {
+        "author": null,
+        "license": null,
+        "assets": []
+      },
+      "parameters": [
+        {
+          "id": "loading_seconds",
+          "label": null,
+          "value_type": "duration",
+          "unit": "millisecond",
+          "binding": "/payload/data/times/loading",
+          "minimum": null,
+          "maximum": null,
+          "integer": false,
+          "options": [],
+          "basis": "template_declared_example"
+        },
+        {
+          "id": "outbound_seconds",
+          "label": null,
+          "value_type": "duration",
+          "unit": "millisecond",
+          "binding": "/payload/data/times/outbound",
+          "minimum": null,
+          "maximum": null,
+          "integer": false,
+          "options": [],
+          "basis": "template_declared_example"
+        },
+        {
+          "id": "unloading_seconds",
+          "label": null,
+          "value_type": "duration",
+          "unit": "millisecond",
+          "binding": "/payload/data/times/unloading",
+          "minimum": null,
+          "maximum": null,
+          "integer": false,
+          "options": [],
+          "basis": "template_declared_example"
+        },
+        {
+          "id": "returning_seconds",
+          "label": null,
+          "value_type": "duration",
+          "unit": "millisecond",
+          "binding": "/payload/data/times/returning",
+          "minimum": null,
+          "maximum": null,
+          "integer": false,
+          "options": [],
+          "basis": "template_declared_example"
+        }
+      ],
+      "attribute_schema": [],
+      "payload": {
+        "category": "transport",
+        "data": {
+          "ports": [
+            {
+              "id": "source",
+              "direction": "input",
+              "payload": {
+                "kind": "material",
+                "data": {
+                  "item_role": "assembly",
+                  "unit": "piece",
+                  "quantity_rule": null
+                }
+              }
+            },
+            {
+              "id": "destination",
+              "direction": "output",
+              "payload": {
+                "kind": "material",
+                "data": {
+                  "item_role": "assembly",
+                  "unit": "piece",
+                  "quantity_rule": null
+                }
+              }
+            }
+          ],
+          "builtin": "transport",
+          "batch_capacity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "resources": [
+            {
+              "role": "carrier",
+              "quantity": {
+                "value": {
+                  "coefficient": 1,
+                  "decimal_places": 0
+                },
+                "unit": "vehicle"
+              },
+              "qualifications": []
+            }
+          ],
+          "times": {
+            "loading": {
+              "value": 10000,
+              "unit": "millisecond",
+              "basis": "template_declared_example",
+              "source_ref": null
+            },
+            "outbound": {
+              "value": 30000,
+              "unit": "millisecond",
+              "basis": "template_declared_example",
+              "source_ref": null
+            },
+            "unloading": {
+              "value": 10000,
+              "unit": "millisecond",
+              "basis": "template_declared_example",
+              "source_ref": null
+            },
+            "returning": {
+              "value": 30000,
+              "unit": "millisecond",
+              "basis": "template_declared_example",
+              "source_ref": null
+            }
+          },
+          "acceptance_conditions": [],
+          "identity_policy": "preserve_cargo_ids",
+          "presentation": null
+        }
+      }
+    },
+    "files": [
+      {
+        "path": "sources/manifest.design.json",
+        "kind": "asset"
+      }
+    ],
+    "dependencies": [],
+    "rights": [],
+    "assets": [],
+    "issues": [
+      {
+        "code": "missing_media_path",
+        "field_path": "/definition/payload/data/presentation",
+        "message": "No actual source media path; optional presentation remains null.",
+        "blocks": [
+          "preview"
+        ],
+        "object_ref": null
+      },
+      {
+        "code": "legacy_rights_unresolved",
+        "field_path": "/definition/contribution",
+        "message": "Original author/license placeholders preserved in archived manifest; no redistribution approval was created.",
+        "blocks": [
+          "redistribution"
+        ],
+        "object_ref": null
+      }
+    ]
+  }
+}

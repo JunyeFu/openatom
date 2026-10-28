@@ -1,0 +1,546 @@
+{
+  "document_kind": "DRF05_independent_positive_negative_delta_design_cases",
+  "date": "2026-10-14 Asia/Shanghai",
+  "delta_ref": "packages/reporting/public-delta.design.json",
+  "cases": [
+    {
+      "id": "DRF05-D01",
+      "kind": "wait_end",
+      "positive": {
+        "end_ms": 100000,
+        "cause": "resolved",
+        "whole_window_computed": true
+      },
+      "negative": {
+        "end_ms": 100000,
+        "cause": "observation_end",
+        "whole_window_computed": false
+      },
+      "independent_expected": {
+        "positive_end_known": true,
+        "negative": "InvalidInput:前缀必须computed_boundary",
+        "same_end_does_not_determine_cause": true,
+        "legacy_alias_rejected": "conditions_satisfied"
+      },
+      "actual_result": null
+    },
+    {
+      "id": "DRF05-D02",
+      "kind": "claim_interval",
+      "positive": {
+        "intervals": [
+          {
+            "start_ms": 0,
+            "end_ms": 100000
+          }
+        ],
+        "interval_end_causes": [
+          "released"
+        ],
+        "whole_window_computed": true
+      },
+      "negative": {
+        "intervals": [
+          {
+            "start_ms": 0,
+            "end_ms": 100000
+          },
+          {
+            "start_ms": 110000,
+            "end_ms": 120000
+          }
+        ],
+        "interval_end_causes": [
+          "released"
+        ]
+      },
+      "independent_expected": {
+        "positive_end_known": true,
+        "negative": "InvalidInput:结束原因向量长度不一致",
+        "terminal_released_not_observation_end": true
+      },
+      "actual_result": null
+    },
+    {
+      "id": "DRF05-D03",
+      "kind": "run_grouping",
+      "positive": {
+        "export_revision": 8,
+        "runs": [
+          {
+            "run_id": "fixture-A",
+            "input_revision": 3,
+            "order_id": "O-01"
+          },
+          {
+            "run_id": "fixture-B",
+            "input_revision": 4,
+            "order_id": "O-01"
+          }
+        ]
+      },
+      "negative": {
+        "export_revision": 8,
+        "runs": [
+          {
+            "run_id": "fixture-A",
+            "input_revision": 8,
+            "order_id": "O-01"
+          },
+          {
+            "run_id": "fixture-B",
+            "input_revision": 8,
+            "order_id": "O-01"
+          }
+        ]
+      },
+      "independent_expected": {
+        "row_keys": [
+          "fixture-A/O-01",
+          "fixture-B/O-01"
+        ],
+        "input_revisions": [
+          3,
+          4
+        ],
+        "negative": "不得以导出工程R8重写旧Run输入R3/R4"
+      },
+      "actual_result": null
+    },
+    {
+      "id": "DRF05-D04",
+      "kind": "typed_change",
+      "positive": {
+        "target": {
+          "kind": "scenario",
+          "id": "S-01"
+        },
+        "path": "/parameter_overrides/0/value",
+        "kind": "changed",
+        "before": {
+          "kind": "scalar",
+          "data": {
+            "value": {
+              "kind": "integer",
+              "value": 30000
+            },
+            "unit": "ms"
+          }
+        },
+        "after": {
+          "kind": "scalar",
+          "data": {
+            "value": {
+              "kind": "integer",
+              "value": 90000
+            },
+            "unit": "ms"
+          }
+        },
+        "basis": null,
+        "reason": null
+      },
+      "negative": {
+        "target": {
+          "kind": "scenario",
+          "id": "S-01"
+        },
+        "path": "/parameter_overrides/0/value",
+        "kind": "changed",
+        "before": null,
+        "after": {
+          "kind": "scalar",
+          "data": {
+            "value": {
+              "kind": "integer",
+              "value": 90000
+            },
+            "unit": "ms"
+          }
+        },
+        "basis": null,
+        "reason": null
+      },
+      "independent_expected": {
+        "change_delta_ms": 60000,
+        "negative": "InvalidInput:changed两侧均须存在",
+        "absent_vs_null": "None为不存在；InputChangeValue null变体为实际字段空"
+      },
+      "actual_result": null
+    },
+    {
+      "id": "DRF05-D05",
+      "kind": "controlled_stock",
+      "positive": {
+        "same_initial": false,
+        "stock_change_typed": true,
+        "context_matches": true
+      },
+      "negative": {
+        "same_initial": false,
+        "stock_change_typed": false,
+        "context_matches": true
+      },
+      "independent_expected": {
+        "positive_status": "controlled_changes",
+        "negative_status": "side_by_side_only",
+        "strict_initial_remains_false": true
+      },
+      "actual_result": null
+    },
+    {
+      "id": "DRF05-D06",
+      "kind": "acceptance_condition",
+      "positive": {
+        "A": "received",
+        "B": "received",
+        "known_values": [
+          0,
+          2
+        ]
+      },
+      "negative": {
+        "A": "received",
+        "B": "unloaded_and_released",
+        "known_values": [
+          0,
+          2
+        ]
+      },
+      "independent_expected": {
+        "positive_difference": {
+          "kind": "quantity",
+          "data": {
+            "negative": false,
+            "magnitude": {
+              "value": {
+                "coefficient": 2,
+                "decimal_places": 0
+              },
+              "unit": "piece"
+            }
+          }
+        },
+        "positive_percent": null,
+        "negative_difference": null,
+        "negative_percent": null
+      },
+      "actual_result": null
+    },
+    {
+      "id": "DRF05-D07",
+      "kind": "signed_quantity",
+      "positive": {
+        "A": 3,
+        "B": 2,
+        "unit": "piece"
+      },
+      "negative": {
+        "A": 3,
+        "B": 2,
+        "unit_A": "piece",
+        "unit_B": "kg"
+      },
+      "independent_expected": {
+        "difference": {
+          "kind": "quantity",
+          "data": {
+            "negative": true,
+            "magnitude": {
+              "value": {
+                "coefficient": 1,
+                "decimal_places": 0
+              },
+              "unit": "piece"
+            }
+          }
+        },
+        "negative_difference": null,
+        "zero_sign_negative": false
+      },
+      "actual_result": null
+    },
+    {
+      "id": "DRF05-D08",
+      "kind": "capacity_unknown",
+      "positive": {
+        "held_unit_ms": 80000,
+        "open_unit_ms": 60000,
+        "closed_unit_ms": 20000,
+        "available_unit_ms": 160000
+      },
+      "negative": {
+        "held_unit_ms": 80000,
+        "open_unit_ms": null,
+        "closed_unit_ms": null,
+        "available_unit_ms": null
+      },
+      "independent_expected": {
+        "positive_utilization": 0.375,
+        "negative_utilization": null,
+        "negative_reason": "缺冻结日历，不能用全部持有积分除虚构分母",
+        "zero_denominator_utilization": null
+      },
+      "actual_result": null
+    },
+    {
+      "id": "DRF05-D09",
+      "kind": "cost_zero_missing",
+      "positive": {
+        "rate": {
+          "coefficient": 0,
+          "decimal_places": 0
+        },
+        "currency": "CNY",
+        "measured_unit_ms": 135000,
+        "rate_per_unit_ms": 3600000
+      },
+      "negative": {
+        "rate": null,
+        "currency": "CNY",
+        "measured_unit_ms": 135000,
+        "rate_per_unit_ms": 3600000
+      },
+      "independent_expected": {
+        "positive_amount": 0,
+        "negative_amount": null,
+        "unknown_not_zero": true
+      },
+      "actual_result": null
+    },
+    {
+      "id": "DRF05-D10",
+      "kind": "cost_rate_unit",
+      "positive": {
+        "rate": {
+          "coefficient": 36,
+          "decimal_places": 0
+        },
+        "currency": "CNY",
+        "measured": {
+          "coefficient": 135000,
+          "decimal_places": 0,
+          "unit": "person_ms"
+        },
+        "rate_quantity": {
+          "coefficient": 3600000,
+          "decimal_places": 0,
+          "unit": "person_ms"
+        }
+      },
+      "negative": {
+        "rate": {
+          "coefficient": 36,
+          "decimal_places": 0
+        },
+        "currency": "CNY",
+        "measured": {
+          "coefficient": 135000,
+          "decimal_places": 0,
+          "unit": "person_ms"
+        },
+        "rate_quantity": {
+          "coefficient": 1,
+          "decimal_places": 0,
+          "unit": "hour"
+        }
+      },
+      "independent_expected": {
+        "positive_amount": "1.35",
+        "negative_amount": null,
+        "negative_reason": "未声明单位换算；person_ms与hour不能直接相除"
+      },
+      "actual_result": null
+    },
+    {
+      "id": "DRF05-D11",
+      "kind": "complete_and_unknown_cost",
+      "positive": {
+        "lines": [
+          {
+            "currency": "CNY",
+            "amount": "1.35"
+          },
+          {
+            "currency": "CNY",
+            "amount": "10"
+          },
+          {
+            "currency": "CNY",
+            "amount": "0"
+          }
+        ],
+        "whole_window_computed": true,
+        "accepted": 2
+      },
+      "negative": {
+        "lines": [
+          {
+            "currency": "CNY",
+            "amount": "1.35"
+          },
+          {
+            "currency": "CNY",
+            "amount": "10"
+          },
+          {
+            "currency": null,
+            "amount": null
+          }
+        ],
+        "whole_window_computed": true,
+        "accepted": 2
+      },
+      "independent_expected": {
+        "positive_known_subtotal": "11.35",
+        "positive_complete_total": "11.35",
+        "positive_unit_cost": "5.675",
+        "negative_known_subtotal": "11.35",
+        "negative_complete_total": null,
+        "negative_unit_cost": null,
+        "unassigned_input_count": 1
+      },
+      "actual_result": null
+    },
+    {
+      "id": "DRF05-D12",
+      "kind": "currency_and_prefix",
+      "positive": {
+        "lines": [
+          {
+            "currency": "CNY",
+            "amount": "11.35"
+          },
+          {
+            "currency": "USD",
+            "amount": "2"
+          }
+        ],
+        "whole_window_computed": true
+      },
+      "negative": {
+        "lines": [
+          {
+            "currency": "CNY",
+            "amount": "11.35"
+          }
+        ],
+        "whole_window_computed": false
+      },
+      "independent_expected": {
+        "currency_subtotals": {
+          "CNY": "11.35",
+          "USD": "2"
+        },
+        "cross_currency_total": null,
+        "prefix_known_subtotal": "11.35",
+        "prefix_complete_total": null,
+        "prefix_unit_cost": null
+      },
+      "actual_result": null
+    },
+    {
+      "id": "DRF05-D13",
+      "kind": "duplicate_labor_bases",
+      "positive": {
+        "object": "W-A",
+        "component": "labor",
+        "bases": [
+          "occupied_time"
+        ]
+      },
+      "negative": {
+        "object": "W-A",
+        "component": "labor",
+        "bases": [
+          "occupied_time",
+          "paid_calendar"
+        ]
+      },
+      "independent_expected": {
+        "positive": "allowed",
+        "negative": "InvalidInput:同对象同费项重复计价"
+      },
+      "actual_result": null
+    },
+    {
+      "id": "DRF05-D14",
+      "kind": "report_evidence_gate",
+      "positive": {
+        "mode": "simulation_evaluation",
+        "stored_origin": "actual_software",
+        "computed_until_ms": 50000,
+        "caller_claim_does_not_override": true
+      },
+      "negative": {
+        "mode": "simulation_evaluation",
+        "stored_origin": "type_fixture",
+        "computed_until_ms": 50000,
+        "caller_claim": "actual_software"
+      },
+      "independent_expected": {
+        "positive": "仅是假设实际源已满足的准入例，非本轮实际Run",
+        "negative": "InvalidInput:所选存储结果不是可评估ActualSoftware；外来声明不改变证据归属",
+        "actual_result": null
+      },
+      "actual_result": null
+    },
+    {
+      "id": "DRF05-D15",
+      "kind": "file_queue_and_restore",
+      "positive": {
+        "queue": {
+          "admission_order": [
+            7,
+            8
+          ],
+          "worker_finish_order": [
+            8,
+            7
+          ],
+          "commit_order": [
+            7,
+            8
+          ]
+        },
+        "separate_recovery_trial": {
+          "replacement_failed": true,
+          "restore_succeeded": true
+        }
+      },
+      "negative": {
+        "queue": {
+          "admission_order": [
+            7,
+            8
+          ],
+          "worker_finish_order": [
+            8,
+            7
+          ],
+          "commit_order": [
+            8,
+            7
+          ]
+        },
+        "separate_recovery_trial": {
+          "replacement_failed": true,
+          "restore_succeeded": false
+        }
+      },
+      "independent_expected": {
+        "queue_last_committed_revision": 8,
+        "illegal_order_last_revision": 7,
+        "restore_success_task": "failed",
+        "restored_old_root": true,
+        "restore_failure_task": "failed",
+        "restore_failure_old_root_intact_claim": false,
+        "all_failures_dirty": true,
+        "actual_Windows_result": null
+      },
+      "actual_result": null
+    }
+  ],
+  "rule": "所有payload为假设输入与独立预期；不是已执行Run/Windows/导出器输出；原E01-E12数值与HFC01-HFC14保持",
+  "actual_runtime": null
+}

@@ -1,0 +1,188 @@
+{
+  "document_kind": "bounded_backend_integration_implementation_review",
+  "task_id": "P0-01",
+  "within_original_step": 2,
+  "status": "implemented_and_reviewed",
+  "dispatch": {
+    "authorized_at": "2026-10-16T01:02:19+08:00",
+    "authority": "发挥统筹作用自主按设计好的开发顺序往下推进，不设工作量上限。分发任务时分发整个任务包而不是几个要点",
+    "task_id": "P0-01",
+    "within_original_step": 1,
+    "dispatch_mode": "whole_task_package",
+    "role": "W00",
+    "thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+    "scope_ref": "docs/04_开发与验收/整包派发/P0-01_整包执行.json",
+    "business_frontend_authorized": false
+  },
+  "scope": {
+    "task_ids": [
+      "P0-01",
+      "P0-02",
+      "P0-03",
+      "P1-01",
+      "P4-02",
+      "P1-02",
+      "P1-03",
+      "P4-01",
+      "P1-04",
+      "P2-02"
+    ],
+    "bounded_task": "实际Host最小创建/读取/编辑及共同Engine/专业消费者接线",
+    "business_frontend_changes": false
+  },
+  "previous_accepted_result_ref": "docs/04_开发与验收/P0-02_初始物料与分配输入切片.json",
+  "actual_result": {
+    "implemented_operations": [
+      "describe_capabilities",
+      "get_context",
+      "get_object",
+      "apply_commands",
+      "run_scenario",
+      "get_run",
+      "compute_packaging",
+      "get_task",
+      "cancel_task",
+      "adopt_artifact",
+      "import_package",
+      "save_project",
+      "query_module_library"
+    ],
+    "fully_implemented_public_operations": 0,
+    "tests": {
+      "distinct_tests": 348,
+      "failed": 0,
+      "previous216_test_names_retained": true
+    },
+    "command_runs": [
+      {
+        "key": "format",
+        "command": "cargo fmt --all -- --check",
+        "started_at": "2026-10-16T03:38:29.6244712+08:00",
+        "finished_at": "2026-10-16T03:38:30.7690371+08:00",
+        "exit_code": 0,
+        "stdout_ref": ".work/whole-packages/verification-with-packaging/format.stdout.txt",
+        "stderr_ref": ".work/whole-packages/verification-with-packaging/format.stderr.txt"
+      },
+      {
+        "key": "workspace-tests",
+        "command": "cargo test --workspace --locked",
+        "started_at": "2026-10-16T03:38:30.7874211+08:00",
+        "finished_at": "2026-10-16T03:40:50.5671601+08:00",
+        "exit_code": 0,
+        "stdout_ref": ".work/whole-packages/verification-with-packaging/workspace-tests.stdout.txt",
+        "stderr_ref": ".work/whole-packages/verification-with-packaging/workspace-tests.stderr.txt",
+        "distinct_tests_executed": 348
+      },
+      {
+        "key": "generate-contracts",
+        "command": "npm.cmd run generate:contracts",
+        "started_at": "2026-10-16T03:40:50.5840599+08:00",
+        "finished_at": "2026-10-16T03:40:58.6997963+08:00",
+        "exit_code": 0,
+        "stdout_ref": ".work/whole-packages/verification-with-packaging/generate-contracts.stdout.txt",
+        "stderr_ref": ".work/whole-packages/verification-with-packaging/generate-contracts.stderr.txt"
+      },
+      {
+        "key": "typecheck",
+        "command": "npm.cmd run typecheck",
+        "started_at": "2026-10-16T03:40:58.7013176+08:00",
+        "finished_at": "2026-10-16T03:40:59.7259814+08:00",
+        "exit_code": 0,
+        "stdout_ref": ".work/whole-packages/verification-with-packaging/typecheck.stdout.txt",
+        "stderr_ref": ".work/whole-packages/verification-with-packaging/typecheck.stderr.txt"
+      },
+      {
+        "key": "schema-consumer",
+        "command": "C:/Users/fujunye/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe -B -X utf8 tools/检查工程与Command边界.py --output .work/whole-packages/schema-validation-result.json",
+        "started_at": "2026-10-16T03:40:59.7279014+08:00",
+        "finished_at": "2026-10-16T03:41:02.5555664+08:00",
+        "exit_code": 0,
+        "stdout_ref": ".work/whole-packages/verification-with-packaging/schema-consumer.stdout.txt",
+        "stderr_ref": ".work/whole-packages/verification-with-packaging/schema-consumer.stderr.txt"
+      },
+      {
+        "key": "desktop-build",
+        "command": "cargo build -p sf-desktop-host --bin superfactory --locked",
+        "started_at": "2026-10-16T03:41:02.5573409+08:00",
+        "finished_at": "2026-10-16T03:41:25.2900873+08:00",
+        "exit_code": 0,
+        "stdout_ref": ".work/whole-packages/verification-with-packaging/desktop-build.stdout.txt",
+        "stderr_ref": ".work/whole-packages/verification-with-packaging/desktop-build.stderr.txt"
+      },
+      {
+        "key": "desktop-host-smoke",
+        "command": ".\\target\\debug\\superfactory.exe --p0-01-host-smoke",
+        "started_at": "2026-10-16T03:41:25.2917225+08:00",
+        "finished_at": "2026-10-16T03:41:30.5847959+08:00",
+        "exit_code": 0,
+        "stdout_ref": ".work/whole-packages/verification-with-packaging/desktop-host-smoke.stdout.txt",
+        "stderr_ref": ".work/whole-packages/verification-with-packaging/desktop-host-smoke.stderr.txt"
+      }
+    ],
+    "verification_ref": ".work/whole-packages/verification-with-packaging/result.json",
+    "schema_validation_ref": ".work/whole-packages/schema-validation-result.json",
+    "schema": {
+      "documents": 40,
+      "cases": 71
+    },
+    "native_Host": {
+      "checks": 143,
+      "passed": true,
+      "previous104_check_names_retained": true,
+      "actual_same_app_manage_Host": true,
+      "stdout_ref": ".work/whole-packages/verification-with-packaging/desktop-host-smoke.stdout.txt"
+    },
+    "operation_limitations": {
+      "describe_capabilities": "实际共同Host的已测Project/Scenario/精确版本定义草稿、Scope/修订/字段授权/原子提交及会话历史，目录保存搬移重开与真实任务；完整业务UI、外部MCP进程认证、渲染、比较、ZIP/评估导出和库采用未据本片验收。",
+      "get_context": "实际共同Host的已测Project/Scenario/精确版本定义草稿、Scope/修订/字段授权/原子提交及会话历史，目录保存搬移重开与真实任务；完整业务UI、外部MCP进程认证、渲染、比较、ZIP/评估导出和库采用未据本片验收。",
+      "get_object": "实际共同Host的已测Project/Scenario/精确版本定义草稿、Scope/修订/字段授权/原子提交及会话历史，目录保存搬移重开与真实任务；完整业务UI、外部MCP进程认证、渲染、比较、ZIP/评估导出和库采用未据本片验收。",
+      "apply_commands": "实际共同Host的已测Project/Scenario/精确版本定义草稿、Scope/修订/字段授权/原子提交及会话历史，目录保存搬移重开与真实任务；完整业务UI、外部MCP进程认证、渲染、比较、ZIP/评估导出和库采用未据本片验收。",
+      "run_scenario": "唯一Engine的已测生产/齐套/检验/保ID返工/阶段日历及factory_released接受；明确Scenario目标与冻结Run。P1-04家族准备与P2-02真实物流正在实施，未据本片验收。",
+      "get_run": "当前实际Run的Full/Summary/Events/ObjectsAt与已计算历史边界；不以本片证明外部客户端大结果传输、报告或完整时间轴界面。",
+      "compute_packaging": "实际内置三机制/三变化有限输入、预算/取消与真实刀折胶文件；结果三态独立于任务完成，不增加库存或模拟工时。",
+      "get_task": "实际共同Host的已测Project/Scenario/精确版本定义草稿、Scope/修订/字段授权/原子提交及会话历史，目录保存搬移重开与真实任务；完整业务UI、外部MCP进程认证、渲染、比较、ZIP/评估导出和库采用未据本片验收。",
+      "cancel_task": "实际共同Host的已测Project/Scenario/精确版本定义草稿、Scope/修订/字段授权/原子提交及会话历史，目录保存搬移重开与真实任务；完整业务UI、外部MCP进程认证、渲染、比较、ZIP/评估导出和库采用未据本片验收。",
+      "adopt_artifact": "真实生产/明确UI测试用途认可/精确消费者当前输入及专用授权门；历史重选须新明确事实，同进程精确receipt受限恢复；导入标签、新Host或内容变化不授信。",
+      "import_package": "实际共同Host的已测Project/Scenario/精确版本定义草稿、Scope/修订/字段授权/原子提交及会话历史，目录保存搬移重开与真实任务；完整业务UI、外部MCP进程认证、渲染、比较、ZIP/评估导出和库采用未据本片验收。",
+      "save_project": "实际共同Host的已测Project/Scenario/精确版本定义草稿、Scope/修订/字段授权/原子提交及会话历史，目录保存搬移重开与真实任务；完整业务UI、外部MCP进程认证、渲染、比较、ZIP/评估导出和库采用未据本片验收。",
+      "query_module_library": "当前Host已加载的精确版本定义只读查询；P3-01完整文件库/社区采用和P4-01模板实例化仍待真实接线。"
+    },
+    "supported_source_refs": [
+      "packages/commands/src/project_host.rs",
+      "packages/commands/src/project_store.rs",
+      "packages/commands/src/host_definitions.rs",
+      "packages/domain/src/models.rs",
+      "packages/domain/src/professional_inputs.rs",
+      "packages/commands/src/project_professional.rs",
+      "packages/simulation/src/",
+      "packages/packaging/src/",
+      "apps/planner/src-tauri/src/project_api.rs"
+    ],
+    "independent_consumer_ref": "docs/04_开发与验收/整包派发/整包验收_窗口5.json#/next_full_batch",
+    "limitations": [
+      "实际共同Host的已测Project/Scenario/精确版本定义草稿、Scope/修订/字段授权/原子提交及会话历史，目录保存搬移重开与真实任务；完整业务UI、外部MCP进程认证、渲染、比较、ZIP/评估导出和库采用未据本片验收。",
+      "143项原生为受控测试UI适配器与明确有限输入，不是人工走查、日产外推、目标机/NFR或release接收。"
+    ],
+    "whole_task_done": false
+  },
+  "review": {
+    "status": "accepted_bounded_348_143_backend_slice",
+    "confirmed_defects": [],
+    "reviewer_thread_id": "01a1396d-f9d8-7ac0-ae86-b93a5d28b7ac",
+    "result_ref": "docs/04_开发与验收/整包派发/整包复审_窗口6.json",
+    "reviewed_at": "2026-10-16T03:52:59.065483+08:00",
+    "acceptance_exclusions": [
+      "完整业务UI/人工走查",
+      "外部MCP/IPC进程认证与大结果传输",
+      "比较/渲染/评估报告/导出",
+      "完整库/社区/新模板InstantiateTemplate及F06",
+      "新P1-04/P2-02真实物流/订单联合与IX01/02",
+      "完整IX03/目标机/NFR/release/人工接收"
+    ],
+    "outside_slice_confirmed_findings": [
+      "W6-WP-F06"
+    ]
+  },
+  "whole_task_done": false,
+  "human_acceptance": null
+}

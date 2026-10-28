@@ -1,0 +1,149 @@
+{
+  "document_kind": "P0_01_Host_authorization_atomicity_independent_tests",
+  "window": "实现窗口4",
+  "task_id": "P0-01",
+  "within_original_step": 2,
+  "date": "2026-10-15",
+  "status": "assigned_independent_tests_passed_awaiting_coordinator_acceptance",
+  "scope_ref": "docs/04_开发与验收/P0-01_Host最小创建读取编辑切片.json",
+  "frozen_contract_refs": [
+    "packages/commands/src/api.rs#HostCallContext",
+    "packages/commands/src/api.rs#HostFieldGrant",
+    "packages/commands/src/api.rs#HostCreateAllowance",
+    "packages/commands/src/api.rs#HostEditGrant",
+    "packages/domain/src/models.rs#ItemType",
+    "docs/03_架构与契约/公开操作与宿主调用契约.json#/edit_contract/host_private_authorization"
+  ],
+  "allowed_written_files": [
+    "packages/commands/tests/host_authorization_atomicity.rs",
+    "docs/04_开发与验收/P0-01_Host切片_窗口4.json"
+  ],
+  "test_entry": "cargo test -p sf-commands --test host_authorization_atomicity --locked",
+  "expected_before_execution": true,
+  "test_functions": 13,
+  "finite_branches": 14,
+  "expectations": [
+    {
+      "id": "HA01",
+      "input": "Host真实注册ExternalAgent且有Workspace CreateProject branch",
+      "expected": "PermissionDenied；账本不变；随后真正UI首次创建仍为revision1"
+    },
+    {
+      "id": "HA02",
+      "input": "register_external_session尝试InteractiveUi身份",
+      "expected": "PermissionDenied且未登记；以该session提交仍拒绝，真实UI可正常编辑"
+    },
+    {
+      "id": "HA03",
+      "input": "报文附caller或edit_grants，随后以无grant外部会话提交合法结构编辑",
+      "expected": "伪造报文在ApiRequest边界拒绝；真实dispatch仍PermissionDenied；保存身份为ExternalAgent"
+    },
+    {
+      "id": "HA04",
+      "input": "Project target仅/title叶授权",
+      "expected": "只改title成功且一次递增；同一完整settings携带time_reference差异拒绝且全部不变"
+    },
+    {
+      "id": "HA05",
+      "input": "同批先合法title再未授权time_reference",
+      "expected": "PermissionDenied；完整Project、读取上下文及创建账本不变"
+    },
+    {
+      "id": "HA06",
+      "input": "PutObject branch存在但无HostCreateAllowance",
+      "expected": "不能创建ItemType；PermissionDenied且无提交"
+    },
+    {
+      "id": "HA07",
+      "input": "创建预算存在但仅/title授权，实际对象含revision/unit/tracking",
+      "expected": "PermissionDenied；预算账本与工程不变"
+    },
+    {
+      "id": "HA08",
+      "input": "create-only授权upsert已有ItemType，随后创建新ID",
+      "expected": "已有对象更新PermissionDenied；新ID创建成功且账本仅记录新ID"
+    },
+    {
+      "id": "HA09",
+      "input": "max_new_objects2：创建A、授权更新A、创建B、尝试创建C",
+      "expected": "同ID更新不重复计数；跨批预算累计A/B；C拒绝，工程revision保持4"
+    },
+    {
+      "id": "HA10",
+      "input": "预算1：创建A、授权删除A、尝试创建B",
+      "expected": "删除成功但不退款；账本仍A，B拒绝且revision保持3"
+    },
+    {
+      "id": "HA11",
+      "input": "预算1的一批创建A/B，随后单独创建A",
+      "expected": "超预算整批零提交/零账本消耗；随后A成功且revision2"
+    },
+    {
+      "id": "HA12a",
+      "input": "先合法创建A再未授权SetProjectSettings",
+      "expected": "PermissionDenied；Project/revision/created_objects全部保持旧值；后续单独A成功"
+    },
+    {
+      "id": "HA12b",
+      "input": "先合法创建A再本片尚不支持Undo（Host branch登记但不能凭grant实现能力）",
+      "expected": "UnsupportedCapability；Project/revision/created_objects全部保持旧值；后续单独A成功"
+    },
+    {
+      "id": "HA13",
+      "input": "外部仅/attribute_schema/0/name且无稳定element_id的复杂数组编辑",
+      "expected": "本片UnsupportedCapability；数字索引不得变成稳定字段授权，零提交"
+    }
+  ],
+  "actual_method": "实际ProjectHost::new/register_external_session/dispatch/caller_context；项目和上下文通过真实dispatch读取；无复制Host、无测试替身、无模拟成功响应",
+  "item_fixture": "ItemType明确id、SubjectRevisionId r1、unit piece、Individual tracking；spec_ref显式None，空attributes与attribute_schema；数组用例有明确Enum及UserProvided声明",
+  "scope": "TaskScope::Edit(EditScope::Project(真实创建返回的ProjectId))；Project字段target使用同一ProjectId转换的ObjectId",
+  "validation": {
+    "format": "rustfmt --edition 2024 on assigned test file only; completed",
+    "cargo_execution": {
+      "command": "cargo test -p sf-commands --test host_authorization_atomicity --locked",
+      "exit_code": 0,
+      "build_elapsed_seconds": 17.74,
+      "test_binary": "target/debug/deps/host_authorization_atomicity-222513f6011a4d5d.exe",
+      "tests_passed": 13,
+      "tests_failed": 0,
+      "tests_ignored": 0,
+      "tests_filtered_out": 0,
+      "result_line": "test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "actual_Host_dispatch": true,
+      "test_double_used": false,
+      "core_implementation_modified_by_this_window": false
+    },
+    "actual_result": {
+      "status": "passed",
+      "finite_branches_passed": 14,
+      "each_expectation_ids": [
+        "HA01",
+        "HA02",
+        "HA03",
+        "HA04",
+        "HA05",
+        "HA06",
+        "HA07",
+        "HA08",
+        "HA09",
+        "HA10",
+        "HA11",
+        "HA12a",
+        "HA12b",
+        "HA13"
+      ],
+      "project_and_context_and_creation_ledger_snapshot_assertions": "passed",
+      "new_defects_found": [],
+      "scope": "P0-01原步骤2的Host字段授权/累计distinct创建预算/原子提交；不替代其他窗口或整项验收"
+    },
+    "core_ready_notice_received": true,
+    "known_defects": [],
+    "failure_policy": "实际失败保留测试与预期，报告统筹；不修改Host实现或删除失败测试",
+    "pre_execution_review": "13 test functions / 14 finite branches matched against frozen grant scope, leaf identity, distinct cumulative budget and atomicity; no cargo run before core-ready notice",
+    "scoped_diff_check": "passed; assigned two paths only"
+  },
+  "other_windows_or_public_files_modified": false,
+  "whole_P0_01_done_claimed": false,
+  "business_frontend_or_Figma_modified": false,
+  "persistence_undo_redo_or_other_P_tasks_implemented": false
+}

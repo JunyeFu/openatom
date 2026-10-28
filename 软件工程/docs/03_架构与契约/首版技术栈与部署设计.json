@@ -1,0 +1,1656 @@
+{
+  "document_kind": "S05_04_selected_technical_deployment_design_not_product_environment_ready",
+  "checkpoint": "S05-04",
+  "date": "2026-10-14 Asia/Shanghai",
+  "spec_md_ref": "docs/03_架构与契约/首版技术栈与部署设计.md",
+  "review_ref": "docs/04_开发与验收/S05-04_技术栈与部署复审.json",
+  "registry_metadata_ref": "docs/03_架构与契约/依赖版本来源.design.json",
+  "user_stack_choice": "Tauri/Rust/React/TypeScript/Three.js，Windows11 x64；首版一个真实专业纸包装，真实外部Agent。",
+  "toolchain": {
+    "rust": "1.97.0",
+    "target": "x86_64-pc-windows-msvc",
+    "node": "24.15.0",
+    "npm": "12.0.1",
+    "product_toolchain_file": "S07创建rust-toolchain.toml/package engines及真实lockfiles",
+    "actual_product_build": null
+  },
+  "current_environment_observation": {
+    "observation_date": "2026-10-14",
+    "rustc": "1.97.0 x86_64-pc-windows-msvc",
+    "cargo": "1.97.0",
+    "node": "v24.15.0",
+    "npm": "12.0.1",
+    "VS_Cpp_component_instances": [
+      "E:/Applications/Microsoft Visual Studio/18/Community",
+      "C:/Program Files (x86)/Microsoft Visual Studio/2022/BuildTools"
+    ],
+    "WebView2_registry_version": "155.0.4283.45",
+    "meaning": "原CLI/注册表信息为环境发现；后续独立设计目录已实际编译Tauri2.12.3并由WebView2/Three0.186.1在本机GPU渲染，见actual_desktop_design_trial_ref。没有产品工程/发布构建或完整NFR结果。",
+    "actual_desktop_design_trial": "Tauri2.12.3/MSVC/WebView2 GPU+Three0.186.1 compiled and executed in isolated design proof, actual exit0; no product build"
+  },
+  "packages": [
+    {
+      "ecosystem": "npm",
+      "name": "react",
+      "version": "19.3.0",
+      "license": "MIT",
+      "engines": {
+        "node": ">=0.10.0"
+      },
+      "source": "https://registry.npmjs.org/react/latest",
+      "role": "批准Figma后界面组件；W02/03/04/05",
+      "selection_state": "selected_for_design_trial_not_product_lock_or_compile_verified",
+      "version_policy": "实施时精确版本并提交实际lockfile；当前只选型，不把注册表信息当编译或许可清单。"
+    },
+    {
+      "ecosystem": "npm",
+      "name": "react-dom",
+      "version": "19.3.0",
+      "license": "MIT",
+      "engines": null,
+      "source": "https://registry.npmjs.org/react-dom/latest",
+      "role": "批准Figma后界面挂载；W00/W02",
+      "selection_state": "selected_for_design_trial_not_product_lock_or_compile_verified",
+      "version_policy": "实施时精确版本并提交实际lockfile；当前只选型，不把注册表信息当编译或许可清单。"
+    },
+    {
+      "ecosystem": "npm",
+      "name": "typescript",
+      "version": "7.0.2",
+      "license": "Apache-2.0",
+      "engines": {
+        "node": ">=16.20.0"
+      },
+      "source": "https://registry.npmjs.org/typescript/latest",
+      "role": "同源DTO类型检查；W00",
+      "selection_state": "selected_for_design_trial_not_product_lock_or_compile_verified",
+      "version_policy": "实施时精确版本并提交实际lockfile；当前只选型，不把注册表信息当编译或许可清单。"
+    },
+    {
+      "ecosystem": "npm",
+      "name": "three",
+      "version": "0.186.1",
+      "license": "MIT",
+      "engines": null,
+      "source": "https://registry.npmjs.org/three/latest",
+      "role": "真实3D对象/节点/射线选中/LOD/动作；W02/W03",
+      "selection_state": "exact_version_built_and_executed_in_isolated_S05_trial_not_product",
+      "version_policy": "实施时精确版本并提交实际lockfile；当前只选型，不把注册表信息当编译或许可清单。",
+      "actual_trial_ref": "docs/04_开发与验收/特征细化/DRF04_S05-desktop-proof/output/desktop-result.json"
+    },
+    {
+      "ecosystem": "npm",
+      "name": "vite",
+      "version": "8.3.4",
+      "license": "MIT",
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      },
+      "source": "https://registry.npmjs.org/vite/latest",
+      "role": "批准前端后构建本地静态资源；W00",
+      "selection_state": "selected_for_design_trial_not_product_lock_or_compile_verified",
+      "version_policy": "实施时精确版本并提交实际lockfile；当前只选型，不把注册表信息当编译或许可清单。"
+    },
+    {
+      "ecosystem": "npm",
+      "name": "@vitejs/plugin-react",
+      "version": "6.1.2",
+      "license": "MIT",
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      },
+      "source": "https://registry.npmjs.org/%40vitejs%2Fplugin-react/latest",
+      "role": "React构建；W00",
+      "selection_state": "selected_for_design_trial_not_product_lock_or_compile_verified",
+      "version_policy": "实施时精确版本并提交实际lockfile；当前只选型，不把注册表信息当编译或许可清单。"
+    },
+    {
+      "ecosystem": "npm",
+      "name": "@tauri-apps/api",
+      "version": "2.12.3",
+      "license": "Apache-2.0 OR MIT",
+      "engines": null,
+      "source": "https://registry.npmjs.org/%40tauri-apps%2Fapi/latest",
+      "role": "前端共同invoke/任务事件；W00",
+      "selection_state": "selected_for_design_trial_not_product_lock_or_compile_verified",
+      "version_policy": "实施时精确版本并提交实际lockfile；当前只选型，不把注册表信息当编译或许可清单。"
+    },
+    {
+      "ecosystem": "npm",
+      "name": "@tauri-apps/cli",
+      "version": "2.12.2",
+      "license": "Apache-2.0 OR MIT",
+      "engines": {
+        "node": ">= 10"
+      },
+      "source": "https://registry.npmjs.org/%40tauri-apps%2Fcli/latest",
+      "role": "Tauri构建/打包；W00",
+      "selection_state": "selected_for_design_trial_not_product_lock_or_compile_verified",
+      "version_policy": "实施时精确版本并提交实际lockfile；当前只选型，不把注册表信息当编译或许可清单。"
+    },
+    {
+      "ecosystem": "npm",
+      "name": "@tauri-apps/plugin-dialog",
+      "version": "2.8.2",
+      "license": "MIT OR Apache-2.0",
+      "engines": null,
+      "source": "https://registry.npmjs.org/%40tauri-apps%2Fplugin-dialog/latest",
+      "role": "前端选路径，经宿主文件范围处理；W00",
+      "selection_state": "selected_for_design_trial_not_product_lock_or_compile_verified",
+      "version_policy": "实施时精确版本并提交实际lockfile；当前只选型，不把注册表信息当编译或许可清单。"
+    },
+    {
+      "ecosystem": "crates",
+      "name": "tauri",
+      "version": "2.12.3",
+      "license": "Apache-2.0 OR MIT",
+      "rust_version": "1.90",
+      "source": "https://crates.io/api/v1/crates/tauri",
+      "role": "Windows Rust宿主/WebView/前端invoke；W00",
+      "selection_state": "exact_version_built_and_executed_in_isolated_S05_trial_not_product",
+      "version_policy": "实施时精确版本并提交实际lockfile；当前只选型，不把注册表信息当编译或许可清单。",
+      "actual_trial_ref": "docs/04_开发与验收/特征细化/DRF04_S05-desktop-proof/output/desktop-result.json"
+    },
+    {
+      "ecosystem": "crates",
+      "name": "tauri-build",
+      "version": "2.7.2",
+      "license": "Apache-2.0 OR MIT",
+      "rust_version": "1.90",
+      "source": "https://crates.io/api/v1/crates/tauri-build",
+      "role": "Windows宿主构建；W00",
+      "selection_state": "selected_for_design_trial_not_product_lock_or_compile_verified",
+      "version_policy": "实施时精确版本并提交实际lockfile；当前只选型，不把注册表信息当编译或许可清单。"
+    },
+    {
+      "ecosystem": "crates",
+      "name": "tauri-plugin-dialog",
+      "version": "2.8.2",
+      "license": "Apache-2.0 OR MIT",
+      "rust_version": "1.90",
+      "source": "https://crates.io/api/v1/crates/tauri-plugin-dialog",
+      "role": "用户明确选文件/目录；W00",
+      "selection_state": "selected_for_design_trial_not_product_lock_or_compile_verified",
+      "version_policy": "实施时精确版本并提交实际lockfile；当前只选型，不把注册表信息当编译或许可清单。"
+    },
+    {
+      "ecosystem": "crates",
+      "name": "rmcp",
+      "version": "3.5.1",
+      "license": "Apache-2.0",
+      "rust_version": "1.88",
+      "source": "https://crates.io/api/v1/crates/rmcp",
+      "role": "Rust原生MCP stdio桥；W05",
+      "selection_state": "selected_for_design_trial_not_product_lock_or_compile_verified",
+      "version_policy": "实施时精确版本并提交实际lockfile；当前只选型，不把注册表信息当编译或许可清单。",
+      "available_features": {
+        "__reqwest": [
+          "dep:reqwest"
+        ],
+        "auth": [
+          "dep:async-trait",
+          "dep:oauth2",
+          "__reqwest",
+          "dep:url"
+        ],
+        "auth-client-credentials-jwt": [
+          "auth",
+          "dep:jsonwebtoken",
+          "uuid"
+        ],
+        "auth-enterprise-managed": [
+          "auth",
+          "base64"
+        ],
+        "client": [
+          "dep:tokio-stream"
+        ],
+        "client-side-sse": [
+          "dep:sse-stream",
+          "dep:http",
+          "dep:bytes",
+          "base64"
+        ],
+        "default": [
+          "base64",
+          "macros",
+          "server"
+        ],
+        "elicitation": [
+          "dep:url"
+        ],
+        "local": [
+          "rmcp-macros?/local"
+        ],
+        "macros": [
+          "dep:rmcp-macros",
+          "dep:pastey"
+        ],
+        "request-state": [
+          "dep:hmac",
+          "dep:sha2",
+          "dep:zeroize",
+          "base64"
+        ],
+        "reqwest": [
+          "__reqwest",
+          "reqwest?/rustls"
+        ],
+        "reqwest-native-tls": [
+          "__reqwest",
+          "reqwest?/native-tls"
+        ],
+        "reqwest-tls-no-provider": [
+          "__reqwest",
+          "reqwest?/rustls-no-provider"
+        ],
+        "schemars": [
+          "dep:schemars"
+        ],
+        "server": [
+          "transport-async-rw",
+          "schemars",
+          "dep:pastey",
+          "uuid"
+        ],
+        "server-side-http": [
+          "uuid",
+          "dep:rand",
+          "dep:tokio-stream",
+          "dep:http",
+          "dep:http-body",
+          "dep:http-body-util",
+          "dep:bytes",
+          "dep:sse-stream",
+          "tower",
+          "base64"
+        ],
+        "tower": [
+          "dep:tower-service"
+        ],
+        "transport-async-rw": [
+          "tokio/io-util",
+          "tokio-util/codec"
+        ],
+        "transport-child-process": [
+          "transport-async-rw",
+          "tokio/process",
+          "dep:process-wrap"
+        ],
+        "transport-io": [
+          "transport-async-rw",
+          "tokio/io-std"
+        ],
+        "transport-streamable-http-client": [
+          "client-side-sse",
+          "transport-worker"
+        ],
+        "transport-streamable-http-client-reqwest": [
+          "transport-streamable-http-client",
+          "__reqwest"
+        ],
+        "transport-streamable-http-client-unix-socket": [
+          "transport-streamable-http-client",
+          "dep:hyper",
+          "dep:hyper-util",
+          "dep:http-body-util",
+          "dep:http",
+          "dep:bytes",
+          "tokio/net"
+        ],
+        "transport-streamable-http-server": [
+          "transport-streamable-http-server-session",
+          "server-side-http",
+          "transport-worker"
+        ],
+        "transport-streamable-http-server-session": [
+          "transport-async-rw",
+          "dep:async-trait",
+          "dep:tokio-stream"
+        ],
+        "transport-worker": [
+          "dep:tokio-stream"
+        ],
+        "which-command": [
+          "transport-child-process",
+          "dep:which"
+        ]
+      }
+    },
+    {
+      "ecosystem": "crates",
+      "name": "tokio",
+      "version": "1.53.2",
+      "license": "MIT",
+      "rust_version": "1.71",
+      "source": "https://crates.io/api/v1/crates/tokio",
+      "role": "IPC/任务通知；长CPU任务用spawn_blocking；W00/W05",
+      "selection_state": "selected_for_design_trial_not_product_lock_or_compile_verified",
+      "version_policy": "实施时精确版本并提交实际lockfile；当前只选型，不把注册表信息当编译或许可清单。",
+      "available_features": {
+        "default": [],
+        "fs": [],
+        "full": [
+          "fs",
+          "io-util",
+          "io-std",
+          "macros",
+          "net",
+          "parking_lot",
+          "process",
+          "rt",
+          "rt-multi-thread",
+          "signal",
+          "sync",
+          "time"
+        ],
+        "io-std": [],
+        "io-uring": [
+          "dep:io-uring",
+          "libc",
+          "mio/os-poll",
+          "mio/os-ext",
+          "dep:slab"
+        ],
+        "io-util": [
+          "bytes"
+        ],
+        "macros": [
+          "tokio-macros"
+        ],
+        "net": [
+          "libc",
+          "mio/os-poll",
+          "mio/os-ext",
+          "mio/net",
+          "socket2",
+          "windows-sys/Win32_Foundation",
+          "windows-sys/Win32_Security",
+          "windows-sys/Win32_Storage_FileSystem",
+          "windows-sys/Win32_System_Pipes",
+          "windows-sys/Win32_System_SystemServices"
+        ],
+        "process": [
+          "bytes",
+          "libc",
+          "mio/os-poll",
+          "mio/os-ext",
+          "mio/net",
+          "signal-hook-registry",
+          "windows-sys/Win32_Foundation",
+          "windows-sys/Win32_System_Threading",
+          "windows-sys/Win32_System_WindowsProgramming"
+        ],
+        "rt": [],
+        "rt-multi-thread": [
+          "rt"
+        ],
+        "schedule-latency": [],
+        "signal": [
+          "libc",
+          "mio/os-poll",
+          "mio/net",
+          "mio/os-ext",
+          "signal-hook-registry",
+          "windows-sys/Win32_Foundation",
+          "windows-sys/Win32_System_Console"
+        ],
+        "sync": [],
+        "taskdump": [
+          "dep:backtrace"
+        ],
+        "test-util": [
+          "rt",
+          "sync",
+          "time"
+        ],
+        "time": []
+      }
+    },
+    {
+      "ecosystem": "crates",
+      "name": "serde",
+      "version": "1.0.229",
+      "license": "MIT OR Apache-2.0",
+      "rust_version": "1.56",
+      "source": "https://crates.io/api/v1/crates/serde",
+      "role": "同源类型序列化；W00",
+      "selection_state": "selected_for_design_trial_not_product_lock_or_compile_verified",
+      "version_policy": "实施时精确版本并提交实际lockfile；当前只选型，不把注册表信息当编译或许可清单。"
+    },
+    {
+      "ecosystem": "crates",
+      "name": "serde_json",
+      "version": "1.0.154",
+      "license": "MIT OR Apache-2.0",
+      "rust_version": "1.71",
+      "source": "https://crates.io/api/v1/crates/serde_json",
+      "role": "工程/消息/JSON导出；W00/W05",
+      "selection_state": "selected_for_design_trial_not_product_lock_or_compile_verified",
+      "version_policy": "实施时精确版本并提交实际lockfile；当前只选型，不把注册表信息当编译或许可清单。"
+    },
+    {
+      "ecosystem": "crates",
+      "name": "ts-rs",
+      "version": "12.0.1",
+      "license": "MIT",
+      "rust_version": "1.78.0",
+      "source": "https://crates.io/api/v1/crates/ts-rs",
+      "role": "从Rust生成TypeScript类型；W00",
+      "selection_state": "selected_for_design_trial_not_product_lock_or_compile_verified",
+      "version_policy": "实施时精确版本并提交实际lockfile；当前只选型，不把注册表信息当编译或许可清单。",
+      "available_features": {
+        "arrayvec-impl": [
+          "arrayvec"
+        ],
+        "bigdecimal-impl": [
+          "bigdecimal"
+        ],
+        "bson-uuid-impl": [
+          "bson"
+        ],
+        "bytes-impl": [
+          "bytes"
+        ],
+        "chrono-impl": [
+          "chrono"
+        ],
+        "default": [
+          "serde-compat"
+        ],
+        "format": [
+          "dprint-plugin-typescript"
+        ],
+        "heapless-impl": [
+          "heapless"
+        ],
+        "indexmap-impl": [
+          "indexmap"
+        ],
+        "jiff-impl": [
+          "jiff"
+        ],
+        "no-serde-warnings": [
+          "ts-rs-macros/no-serde-warnings"
+        ],
+        "ordered-float-impl": [
+          "ordered-float"
+        ],
+        "semver-impl": [
+          "semver"
+        ],
+        "serde-compat": [
+          "ts-rs-macros/serde-compat"
+        ],
+        "serde-json-impl": [
+          "serde_json"
+        ],
+        "smol_str-impl": [
+          "smol_str"
+        ],
+        "tokio-impl": [
+          "tokio"
+        ],
+        "url-impl": [
+          "url"
+        ],
+        "uuid-impl": [
+          "uuid"
+        ]
+      }
+    },
+    {
+      "ecosystem": "crates",
+      "name": "schemars",
+      "version": "1.2.3",
+      "license": "MIT",
+      "rust_version": "1.74",
+      "source": "https://crates.io/api/v1/crates/schemars",
+      "role": "从Rust生成工具/导入schema；W00",
+      "selection_state": "selected_for_design_trial_not_product_lock_or_compile_verified",
+      "version_policy": "实施时精确版本并提交实际lockfile；当前只选型，不把注册表信息当编译或许可清单。",
+      "available_features": {
+        "_ui_test": [],
+        "default": [
+          "derive",
+          "std"
+        ],
+        "derive": [
+          "schemars_derive"
+        ],
+        "preserve_order": [
+          "serde_json/preserve_order"
+        ],
+        "raw_value": [
+          "serde_json/raw_value"
+        ],
+        "std": []
+      }
+    },
+    {
+      "ecosystem": "crates",
+      "name": "parry3d-f64",
+      "version": "0.31.1",
+      "license": "Apache-2.0",
+      "rust_version": null,
+      "source": "https://crates.io/api/v1/crates/parry3d-f64",
+      "role": "几何距离/相交候选；完整纸包装算法仍由S06-04；W04",
+      "selection_state": "selected_for_design_trial_not_product_lock_or_compile_verified",
+      "version_policy": "实施时精确版本并提交实际lockfile；当前只选型，不把注册表信息当编译或许可清单。",
+      "available_features": {
+        "alloc": [
+          "hashbrown"
+        ],
+        "bytemuck-serialize": [
+          "bytemuck",
+          "glamx/bytemuck"
+        ],
+        "default": [
+          "required-features",
+          "std",
+          "spade"
+        ],
+        "dim3": [],
+        "enhanced-determinism": [
+          "simba/libm_force",
+          "indexmap",
+          "glamx/libm",
+          "glamx/scalar-math"
+        ],
+        "f64": [],
+        "improved_fixed_point_support": [],
+        "parallel": [
+          "rayon"
+        ],
+        "required-features": [
+          "dim3",
+          "f64"
+        ],
+        "rkyv": [
+          "dep:rkyv",
+          "glamx/rkyv"
+        ],
+        "serde-serialize": [
+          "serde",
+          "serde_arrays",
+          "glamx/serde",
+          "bitflags/serde",
+          "hashbrown?/serde",
+          "spade?/serde"
+        ],
+        "simd8": [],
+        "spade": [
+          "dep:spade",
+          "alloc"
+        ],
+        "std": [
+          "glamx/std",
+          "slab",
+          "simba/std",
+          "arrayvec/std",
+          "spade?/std",
+          "thiserror/std",
+          "ena"
+        ],
+        "wavefront": [
+          "obj"
+        ]
+      }
+    },
+    {
+      "ecosystem": "crates",
+      "name": "printpdf",
+      "version": "0.12.8",
+      "license": "MIT",
+      "rust_version": "1.88",
+      "source": "https://crates.io/api/v1/crates/printpdf",
+      "role": "Rust PDF排版/图片/字体，HTML/CSV/JSON同一ReportDocument；W05",
+      "selection_state": "selected_for_design_trial_not_product_lock_or_compile_verified",
+      "version_policy": "实施时精确版本并提交实际lockfile；当前只选型，不把注册表信息当编译或许可清单。",
+      "available_features": {
+        "bmp": [
+          "images",
+          "image/bmp"
+        ],
+        "dds": [
+          "images",
+          "image/dds"
+        ],
+        "default": [
+          "html"
+        ],
+        "gif": [
+          "images",
+          "image/gif"
+        ],
+        "hdr": [
+          "images",
+          "image/hdr"
+        ],
+        "html": [
+          "text_layout_hyphenation",
+          "dep:xmlparser",
+          "dep:rust-fontconfig",
+          "azul-layout/xml",
+          "azul-layout/pdf"
+        ],
+        "html_multithreaded": [
+          "html",
+          "rust-fontconfig/multithreading",
+          "azul-layout/font_loading_multithreaded"
+        ],
+        "ico": [
+          "images",
+          "image/ico"
+        ],
+        "images": [
+          "dep:image"
+        ],
+        "jpeg": [
+          "images",
+          "image/jpeg"
+        ],
+        "js-sys": [
+          "dep:js-sys",
+          "web-sys",
+          "wasm-bindgen-futures"
+        ],
+        "png": [
+          "images",
+          "image/png"
+        ],
+        "pnm": [
+          "images",
+          "image/pnm"
+        ],
+        "rayon": [
+          "images",
+          "image/rayon"
+        ],
+        "svg": [
+          "html",
+          "dep:svg2pdf",
+          "azul-layout/svg",
+          "azul-layout/cpurender"
+        ],
+        "text_layout": [
+          "dep:azul-css",
+          "dep:azul-core",
+          "dep:azul-layout",
+          "dep:rust-fontconfig",
+          "azul-layout/std",
+          "azul-layout/text_layout",
+          "azul-layout/font_loading"
+        ],
+        "text_layout_hyphenation": [
+          "text_layout",
+          "azul-layout/text_layout_hyphenation"
+        ],
+        "tga": [
+          "images",
+          "image/tga"
+        ],
+        "tiff": [
+          "images",
+          "image/tiff"
+        ],
+        "webp": [
+          "images",
+          "image/webp"
+        ]
+      }
+    },
+    {
+      "ecosystem": "crates",
+      "name": "csv",
+      "version": "1.4.0",
+      "license": "Unlicense/MIT",
+      "rust_version": "1.73",
+      "source": "https://crates.io/api/v1/crates/csv",
+      "role": "CSV转义与导出；W05",
+      "selection_state": "selected_for_design_trial_not_product_lock_or_compile_verified",
+      "version_policy": "实施时精确版本并提交实际lockfile；当前只选型，不把注册表信息当编译或许可清单。"
+    },
+    {
+      "ecosystem": "crates",
+      "name": "windows-sys",
+      "version": "0.61.2",
+      "license": "MIT OR Apache-2.0",
+      "rust_version": "1.71",
+      "source": "https://crates.io/api/v1/crates/windows-sys",
+      "role": "Windows命名管道ACL/本地文件提交所需Win32调用；W00/W05",
+      "selection_state": "selected_for_design_trial_not_product_lock_or_compile_verified",
+      "version_policy": "实施时精确版本并提交实际lockfile；当前只选型，不把注册表信息当编译或许可清单。",
+      "available_features": {
+        "Wdk": [
+          "Win32_Foundation"
+        ],
+        "Wdk_Devices": [
+          "Wdk"
+        ],
+        "Wdk_Devices_Bluetooth": [
+          "Wdk_Devices"
+        ],
+        "Wdk_Devices_HumanInterfaceDevice": [
+          "Wdk_Devices"
+        ],
+        "Wdk_Foundation": [
+          "Wdk"
+        ],
+        "Wdk_Graphics": [
+          "Wdk"
+        ],
+        "Wdk_Graphics_Direct3D": [
+          "Wdk_Graphics"
+        ],
+        "Wdk_NetworkManagement": [
+          "Wdk"
+        ],
+        "Wdk_NetworkManagement_Ndis": [
+          "Wdk_NetworkManagement"
+        ],
+        "Wdk_NetworkManagement_WindowsFilteringPlatform": [
+          "Wdk_NetworkManagement"
+        ],
+        "Wdk_Storage": [
+          "Wdk"
+        ],
+        "Wdk_Storage_FileSystem": [
+          "Wdk_Storage"
+        ],
+        "Wdk_Storage_FileSystem_Minifilters": [
+          "Wdk_Storage_FileSystem"
+        ],
+        "Wdk_System": [
+          "Wdk"
+        ],
+        "Wdk_System_IO": [
+          "Wdk_System"
+        ],
+        "Wdk_System_Memory": [
+          "Wdk_System"
+        ],
+        "Wdk_System_OfflineRegistry": [
+          "Wdk_System"
+        ],
+        "Wdk_System_Registry": [
+          "Wdk_System"
+        ],
+        "Wdk_System_SystemInformation": [
+          "Wdk_System"
+        ],
+        "Wdk_System_SystemServices": [
+          "Wdk_System"
+        ],
+        "Wdk_System_Threading": [
+          "Wdk_System"
+        ],
+        "Win32": [
+          "Win32_Foundation"
+        ],
+        "Win32_Data": [
+          "Win32"
+        ],
+        "Win32_Data_HtmlHelp": [
+          "Win32_Data"
+        ],
+        "Win32_Data_RightsManagement": [
+          "Win32_Data"
+        ],
+        "Win32_Devices": [
+          "Win32"
+        ],
+        "Win32_Devices_AllJoyn": [
+          "Win32_Devices"
+        ],
+        "Win32_Devices_Beep": [
+          "Win32_Devices"
+        ],
+        "Win32_Devices_BiometricFramework": [
+          "Win32_Devices"
+        ],
+        "Win32_Devices_Bluetooth": [
+          "Win32_Devices"
+        ],
+        "Win32_Devices_Cdrom": [
+          "Win32_Devices"
+        ],
+        "Win32_Devices_Communication": [
+          "Win32_Devices"
+        ],
+        "Win32_Devices_DeviceAndDriverInstallation": [
+          "Win32_Devices"
+        ],
+        "Win32_Devices_DeviceQuery": [
+          "Win32_Devices"
+        ],
+        "Win32_Devices_Display": [
+          "Win32_Devices"
+        ],
+        "Win32_Devices_Dvd": [
+          "Win32_Devices"
+        ],
+        "Win32_Devices_Enumeration": [
+          "Win32_Devices"
+        ],
+        "Win32_Devices_Enumeration_Pnp": [
+          "Win32_Devices_Enumeration"
+        ],
+        "Win32_Devices_Fax": [
+          "Win32_Devices"
+        ],
+        "Win32_Devices_HumanInterfaceDevice": [
+          "Win32_Devices"
+        ],
+        "Win32_Devices_Nfc": [
+          "Win32_Devices"
+        ],
+        "Win32_Devices_Nfp": [
+          "Win32_Devices"
+        ],
+        "Win32_Devices_PortableDevices": [
+          "Win32_Devices"
+        ],
+        "Win32_Devices_Properties": [
+          "Win32_Devices"
+        ],
+        "Win32_Devices_Pwm": [
+          "Win32_Devices"
+        ],
+        "Win32_Devices_Sensors": [
+          "Win32_Devices"
+        ],
+        "Win32_Devices_SerialCommunication": [
+          "Win32_Devices"
+        ],
+        "Win32_Devices_Tapi": [
+          "Win32_Devices"
+        ],
+        "Win32_Devices_Usb": [
+          "Win32_Devices"
+        ],
+        "Win32_Devices_WebServicesOnDevices": [
+          "Win32_Devices"
+        ],
+        "Win32_Foundation": [
+          "Win32"
+        ],
+        "Win32_Gaming": [
+          "Win32"
+        ],
+        "Win32_Globalization": [
+          "Win32"
+        ],
+        "Win32_Graphics": [
+          "Win32"
+        ],
+        "Win32_Graphics_Dwm": [
+          "Win32_Graphics"
+        ],
+        "Win32_Graphics_Gdi": [
+          "Win32_Graphics"
+        ],
+        "Win32_Graphics_GdiPlus": [
+          "Win32_Graphics"
+        ],
+        "Win32_Graphics_Hlsl": [
+          "Win32_Graphics"
+        ],
+        "Win32_Graphics_OpenGL": [
+          "Win32_Graphics"
+        ],
+        "Win32_Graphics_Printing": [
+          "Win32_Graphics"
+        ],
+        "Win32_Graphics_Printing_PrintTicket": [
+          "Win32_Graphics_Printing"
+        ],
+        "Win32_Management": [
+          "Win32"
+        ],
+        "Win32_Management_MobileDeviceManagementRegistration": [
+          "Win32_Management"
+        ],
+        "Win32_Media": [
+          "Win32"
+        ],
+        "Win32_Media_Audio": [
+          "Win32_Media"
+        ],
+        "Win32_Media_DxMediaObjects": [
+          "Win32_Media"
+        ],
+        "Win32_Media_KernelStreaming": [
+          "Win32_Media"
+        ],
+        "Win32_Media_Multimedia": [
+          "Win32_Media"
+        ],
+        "Win32_Media_Streaming": [
+          "Win32_Media"
+        ],
+        "Win32_Media_WindowsMediaFormat": [
+          "Win32_Media"
+        ],
+        "Win32_NetworkManagement": [
+          "Win32"
+        ],
+        "Win32_NetworkManagement_Dhcp": [
+          "Win32_NetworkManagement"
+        ],
+        "Win32_NetworkManagement_Dns": [
+          "Win32_NetworkManagement"
+        ],
+        "Win32_NetworkManagement_InternetConnectionWizard": [
+          "Win32_NetworkManagement"
+        ],
+        "Win32_NetworkManagement_IpHelper": [
+          "Win32_NetworkManagement"
+        ],
+        "Win32_NetworkManagement_Multicast": [
+          "Win32_NetworkManagement"
+        ],
+        "Win32_NetworkManagement_Ndis": [
+          "Win32_NetworkManagement"
+        ],
+        "Win32_NetworkManagement_NetBios": [
+          "Win32_NetworkManagement"
+        ],
+        "Win32_NetworkManagement_NetManagement": [
+          "Win32_NetworkManagement"
+        ],
+        "Win32_NetworkManagement_NetShell": [
+          "Win32_NetworkManagement"
+        ],
+        "Win32_NetworkManagement_NetworkDiagnosticsFramework": [
+          "Win32_NetworkManagement"
+        ],
+        "Win32_NetworkManagement_P2P": [
+          "Win32_NetworkManagement"
+        ],
+        "Win32_NetworkManagement_QoS": [
+          "Win32_NetworkManagement"
+        ],
+        "Win32_NetworkManagement_Rras": [
+          "Win32_NetworkManagement"
+        ],
+        "Win32_NetworkManagement_Snmp": [
+          "Win32_NetworkManagement"
+        ],
+        "Win32_NetworkManagement_WNet": [
+          "Win32_NetworkManagement"
+        ],
+        "Win32_NetworkManagement_WebDav": [
+          "Win32_NetworkManagement"
+        ],
+        "Win32_NetworkManagement_WiFi": [
+          "Win32_NetworkManagement"
+        ],
+        "Win32_NetworkManagement_WindowsConnectionManager": [
+          "Win32_NetworkManagement"
+        ],
+        "Win32_NetworkManagement_WindowsFilteringPlatform": [
+          "Win32_NetworkManagement"
+        ],
+        "Win32_NetworkManagement_WindowsFirewall": [
+          "Win32_NetworkManagement"
+        ],
+        "Win32_NetworkManagement_WindowsNetworkVirtualization": [
+          "Win32_NetworkManagement"
+        ],
+        "Win32_Networking": [
+          "Win32"
+        ],
+        "Win32_Networking_ActiveDirectory": [
+          "Win32_Networking"
+        ],
+        "Win32_Networking_Clustering": [
+          "Win32_Networking"
+        ],
+        "Win32_Networking_HttpServer": [
+          "Win32_Networking"
+        ],
+        "Win32_Networking_Ldap": [
+          "Win32_Networking"
+        ],
+        "Win32_Networking_WebSocket": [
+          "Win32_Networking"
+        ],
+        "Win32_Networking_WinHttp": [
+          "Win32_Networking"
+        ],
+        "Win32_Networking_WinInet": [
+          "Win32_Networking"
+        ],
+        "Win32_Networking_WinSock": [
+          "Win32_Networking"
+        ],
+        "Win32_Networking_WindowsWebServices": [
+          "Win32_Networking"
+        ],
+        "Win32_Security": [
+          "Win32"
+        ],
+        "Win32_Security_AppLocker": [
+          "Win32_Security"
+        ],
+        "Win32_Security_Authentication": [
+          "Win32_Security"
+        ],
+        "Win32_Security_Authentication_Identity": [
+          "Win32_Security_Authentication"
+        ],
+        "Win32_Security_Authorization": [
+          "Win32_Security"
+        ],
+        "Win32_Security_Credentials": [
+          "Win32_Security"
+        ],
+        "Win32_Security_Cryptography": [
+          "Win32_Security"
+        ],
+        "Win32_Security_Cryptography_Catalog": [
+          "Win32_Security_Cryptography"
+        ],
+        "Win32_Security_Cryptography_Certificates": [
+          "Win32_Security_Cryptography"
+        ],
+        "Win32_Security_Cryptography_Sip": [
+          "Win32_Security_Cryptography"
+        ],
+        "Win32_Security_Cryptography_UI": [
+          "Win32_Security_Cryptography"
+        ],
+        "Win32_Security_DiagnosticDataQuery": [
+          "Win32_Security"
+        ],
+        "Win32_Security_DirectoryServices": [
+          "Win32_Security"
+        ],
+        "Win32_Security_EnterpriseData": [
+          "Win32_Security"
+        ],
+        "Win32_Security_ExtensibleAuthenticationProtocol": [
+          "Win32_Security"
+        ],
+        "Win32_Security_Isolation": [
+          "Win32_Security"
+        ],
+        "Win32_Security_LicenseProtection": [
+          "Win32_Security"
+        ],
+        "Win32_Security_NetworkAccessProtection": [
+          "Win32_Security"
+        ],
+        "Win32_Security_WinTrust": [
+          "Win32_Security"
+        ],
+        "Win32_Security_WinWlx": [
+          "Win32_Security"
+        ],
+        "Win32_Storage": [
+          "Win32"
+        ],
+        "Win32_Storage_Cabinets": [
+          "Win32_Storage"
+        ],
+        "Win32_Storage_CloudFilters": [
+          "Win32_Storage"
+        ],
+        "Win32_Storage_Compression": [
+          "Win32_Storage"
+        ],
+        "Win32_Storage_DistributedFileSystem": [
+          "Win32_Storage"
+        ],
+        "Win32_Storage_FileHistory": [
+          "Win32_Storage"
+        ],
+        "Win32_Storage_FileSystem": [
+          "Win32_Storage"
+        ],
+        "Win32_Storage_Imapi": [
+          "Win32_Storage"
+        ],
+        "Win32_Storage_IndexServer": [
+          "Win32_Storage"
+        ],
+        "Win32_Storage_InstallableFileSystems": [
+          "Win32_Storage"
+        ],
+        "Win32_Storage_IscsiDisc": [
+          "Win32_Storage"
+        ],
+        "Win32_Storage_Jet": [
+          "Win32_Storage"
+        ],
+        "Win32_Storage_Nvme": [
+          "Win32_Storage"
+        ],
+        "Win32_Storage_OfflineFiles": [
+          "Win32_Storage"
+        ],
+        "Win32_Storage_OperationRecorder": [
+          "Win32_Storage"
+        ],
+        "Win32_Storage_Packaging": [
+          "Win32_Storage"
+        ],
+        "Win32_Storage_Packaging_Appx": [
+          "Win32_Storage_Packaging"
+        ],
+        "Win32_Storage_ProjectedFileSystem": [
+          "Win32_Storage"
+        ],
+        "Win32_Storage_StructuredStorage": [
+          "Win32_Storage"
+        ],
+        "Win32_Storage_Vhd": [
+          "Win32_Storage"
+        ],
+        "Win32_Storage_Xps": [
+          "Win32_Storage"
+        ],
+        "Win32_System": [
+          "Win32"
+        ],
+        "Win32_System_AddressBook": [
+          "Win32_System"
+        ],
+        "Win32_System_Antimalware": [
+          "Win32_System"
+        ],
+        "Win32_System_ApplicationInstallationAndServicing": [
+          "Win32_System"
+        ],
+        "Win32_System_ApplicationVerifier": [
+          "Win32_System"
+        ],
+        "Win32_System_ClrHosting": [
+          "Win32_System"
+        ],
+        "Win32_System_Com": [
+          "Win32_System"
+        ],
+        "Win32_System_Com_Marshal": [
+          "Win32_System_Com"
+        ],
+        "Win32_System_Com_StructuredStorage": [
+          "Win32_System_Com"
+        ],
+        "Win32_System_Com_Urlmon": [
+          "Win32_System_Com"
+        ],
+        "Win32_System_ComponentServices": [
+          "Win32_System"
+        ],
+        "Win32_System_Console": [
+          "Win32_System"
+        ],
+        "Win32_System_CorrelationVector": [
+          "Win32_System"
+        ],
+        "Win32_System_DataExchange": [
+          "Win32_System"
+        ],
+        "Win32_System_DeploymentServices": [
+          "Win32_System"
+        ],
+        "Win32_System_DeveloperLicensing": [
+          "Win32_System"
+        ],
+        "Win32_System_Diagnostics": [
+          "Win32_System"
+        ],
+        "Win32_System_Diagnostics_Ceip": [
+          "Win32_System_Diagnostics"
+        ],
+        "Win32_System_Diagnostics_Debug": [
+          "Win32_System_Diagnostics"
+        ],
+        "Win32_System_Diagnostics_Debug_Extensions": [
+          "Win32_System_Diagnostics_Debug"
+        ],
+        "Win32_System_Diagnostics_Etw": [
+          "Win32_System_Diagnostics"
+        ],
+        "Win32_System_Diagnostics_ProcessSnapshotting": [
+          "Win32_System_Diagnostics"
+        ],
+        "Win32_System_Diagnostics_ToolHelp": [
+          "Win32_System_Diagnostics"
+        ],
+        "Win32_System_Diagnostics_TraceLogging": [
+          "Win32_System_Diagnostics"
+        ],
+        "Win32_System_DistributedTransactionCoordinator": [
+          "Win32_System"
+        ],
+        "Win32_System_Environment": [
+          "Win32_System"
+        ],
+        "Win32_System_ErrorReporting": [
+          "Win32_System"
+        ],
+        "Win32_System_EventCollector": [
+          "Win32_System"
+        ],
+        "Win32_System_EventLog": [
+          "Win32_System"
+        ],
+        "Win32_System_EventNotificationService": [
+          "Win32_System"
+        ],
+        "Win32_System_GroupPolicy": [
+          "Win32_System"
+        ],
+        "Win32_System_HostCompute": [
+          "Win32_System"
+        ],
+        "Win32_System_HostComputeNetwork": [
+          "Win32_System"
+        ],
+        "Win32_System_HostComputeSystem": [
+          "Win32_System"
+        ],
+        "Win32_System_Hypervisor": [
+          "Win32_System"
+        ],
+        "Win32_System_IO": [
+          "Win32_System"
+        ],
+        "Win32_System_Iis": [
+          "Win32_System"
+        ],
+        "Win32_System_Ioctl": [
+          "Win32_System"
+        ],
+        "Win32_System_JobObjects": [
+          "Win32_System"
+        ],
+        "Win32_System_Js": [
+          "Win32_System"
+        ],
+        "Win32_System_Kernel": [
+          "Win32_System"
+        ],
+        "Win32_System_LibraryLoader": [
+          "Win32_System"
+        ],
+        "Win32_System_Mailslots": [
+          "Win32_System"
+        ],
+        "Win32_System_Mapi": [
+          "Win32_System"
+        ],
+        "Win32_System_Memory": [
+          "Win32_System"
+        ],
+        "Win32_System_Memory_NonVolatile": [
+          "Win32_System_Memory"
+        ],
+        "Win32_System_MessageQueuing": [
+          "Win32_System"
+        ],
+        "Win32_System_MixedReality": [
+          "Win32_System"
+        ],
+        "Win32_System_Ole": [
+          "Win32_System"
+        ],
+        "Win32_System_PasswordManagement": [
+          "Win32_System"
+        ],
+        "Win32_System_Performance": [
+          "Win32_System"
+        ],
+        "Win32_System_Performance_HardwareCounterProfiling": [
+          "Win32_System_Performance"
+        ],
+        "Win32_System_Pipes": [
+          "Win32_System"
+        ],
+        "Win32_System_Power": [
+          "Win32_System"
+        ],
+        "Win32_System_ProcessStatus": [
+          "Win32_System"
+        ],
+        "Win32_System_Recovery": [
+          "Win32_System"
+        ],
+        "Win32_System_Registry": [
+          "Win32_System"
+        ],
+        "Win32_System_RemoteDesktop": [
+          "Win32_System"
+        ],
+        "Win32_System_RemoteManagement": [
+          "Win32_System"
+        ],
+        "Win32_System_RestartManager": [
+          "Win32_System"
+        ],
+        "Win32_System_Restore": [
+          "Win32_System"
+        ],
+        "Win32_System_Rpc": [
+          "Win32_System"
+        ],
+        "Win32_System_Search": [
+          "Win32_System"
+        ],
+        "Win32_System_Search_Common": [
+          "Win32_System_Search"
+        ],
+        "Win32_System_SecurityCenter": [
+          "Win32_System"
+        ],
+        "Win32_System_Services": [
+          "Win32_System"
+        ],
+        "Win32_System_SetupAndMigration": [
+          "Win32_System"
+        ],
+        "Win32_System_Shutdown": [
+          "Win32_System"
+        ],
+        "Win32_System_StationsAndDesktops": [
+          "Win32_System"
+        ],
+        "Win32_System_SubsystemForLinux": [
+          "Win32_System"
+        ],
+        "Win32_System_SystemInformation": [
+          "Win32_System"
+        ],
+        "Win32_System_SystemServices": [
+          "Win32_System"
+        ],
+        "Win32_System_Threading": [
+          "Win32_System"
+        ],
+        "Win32_System_Time": [
+          "Win32_System"
+        ],
+        "Win32_System_TpmBaseServices": [
+          "Win32_System"
+        ],
+        "Win32_System_UserAccessLogging": [
+          "Win32_System"
+        ],
+        "Win32_System_Variant": [
+          "Win32_System"
+        ],
+        "Win32_System_VirtualDosMachines": [
+          "Win32_System"
+        ],
+        "Win32_System_WindowsProgramming": [
+          "Win32_System"
+        ],
+        "Win32_System_Wmi": [
+          "Win32_System"
+        ],
+        "Win32_UI": [
+          "Win32"
+        ],
+        "Win32_UI_Accessibility": [
+          "Win32_UI"
+        ],
+        "Win32_UI_ColorSystem": [
+          "Win32_UI"
+        ],
+        "Win32_UI_Controls": [
+          "Win32_UI"
+        ],
+        "Win32_UI_Controls_Dialogs": [
+          "Win32_UI_Controls"
+        ],
+        "Win32_UI_HiDpi": [
+          "Win32_UI"
+        ],
+        "Win32_UI_Input": [
+          "Win32_UI"
+        ],
+        "Win32_UI_Input_Ime": [
+          "Win32_UI_Input"
+        ],
+        "Win32_UI_Input_KeyboardAndMouse": [
+          "Win32_UI_Input"
+        ],
+        "Win32_UI_Input_Pointer": [
+          "Win32_UI_Input"
+        ],
+        "Win32_UI_Input_Touch": [
+          "Win32_UI_Input"
+        ],
+        "Win32_UI_Input_XboxController": [
+          "Win32_UI_Input"
+        ],
+        "Win32_UI_InteractionContext": [
+          "Win32_UI"
+        ],
+        "Win32_UI_Magnification": [
+          "Win32_UI"
+        ],
+        "Win32_UI_Shell": [
+          "Win32_UI"
+        ],
+        "Win32_UI_Shell_Common": [
+          "Win32_UI_Shell"
+        ],
+        "Win32_UI_Shell_PropertiesSystem": [
+          "Win32_UI_Shell"
+        ],
+        "Win32_UI_TabletPC": [
+          "Win32_UI"
+        ],
+        "Win32_UI_TextServices": [
+          "Win32_UI"
+        ],
+        "Win32_UI_WindowsAndMessaging": [
+          "Win32_UI"
+        ],
+        "Win32_Web": [
+          "Win32"
+        ],
+        "Win32_Web_InternetExplorer": [
+          "Win32_Web"
+        ],
+        "default": [],
+        "docs": []
+      }
+    }
+  ],
+  "feature_design": {
+    "rmcp": [
+      "server",
+      "macros",
+      "transport-io"
+    ],
+    "tokio": [
+      "rt-multi-thread",
+      "macros",
+      "io-util",
+      "io-std",
+      "net",
+      "sync",
+      "process"
+    ],
+    "serde": [
+      "derive"
+    ],
+    "ts-rs": [
+      "serde-compat"
+    ],
+    "schemars": [
+      "derive"
+    ],
+    "printpdf": [
+      "png",
+      "jpeg"
+    ],
+    "windows-sys": [
+      "Win32_Foundation",
+      "Win32_Security",
+      "Win32_Storage_FileSystem",
+      "Win32_System_Pipes",
+      "Win32_System_Threading",
+      "Win32_Security_Authorization",
+      "Win32_System_Memory",
+      "Win32_System_IO"
+    ],
+    "printpdf_default_features": false,
+    "parry3d-f64": [
+      "enhanced-determinism"
+    ]
+  },
+  "layer_routes": [
+    {
+      "layer": "UI/3D",
+      "decision": "React/TS管理UI，Three.js命令式Scene适配接收同源快照；不把3000事件逐条复制到React状态，也不借动画驱动Engine。",
+      "owner": "W02/W03",
+      "trial": "批准Figma后的真实桌面invoke→编辑→渲染/截图与NFR采样。"
+    },
+    {
+      "layer": "native_commands",
+      "decision": "Tauri invoke和Windows管道解码到同一Rust Commands；Host是活动工程唯一拥有者，短锁提交，长计算脱锁冻结输入。",
+      "owner": "W00",
+      "trial": "两调用源同R竞争、旧Run/新草稿隔离、取消竞争与主线程可响应。"
+    },
+    {
+      "layer": "module/domain",
+      "decision": "serde＋ts-rs＋schemars同源类型/公开schema；module-kit按S05-03九类载荷解析/准备采用，Host明确提交。",
+      "owner": "W00/W03",
+      "trial": "同一带tag枚举/可空/单位/嵌套结构实际JSON往返、TS/schema生成并检查一致。"
+    },
+    {
+      "layer": "simulation",
+      "decision": "Rust确定性离散事件，自建队列/稳定排序/唯一物品归属；不引入外部优化器、数据库服务或物理引擎替代实际业务。",
+      "owner": "W01",
+      "trial": "有限手算事件、同输入稳定结果、阶段/运输/齐套；完整业务由S06-01落实。"
+    },
+    {
+      "layer": "packaging",
+      "decision": "parry3d-f64作为几何原语候选；当前0.31.1依赖glamx（非旧nalgebra API），使用其当前math/query接口。厚度/约束/运动区间/三态及制造输出自实现，不以通用碰撞库代完整专业。",
+      "owner": "W04",
+      "trial": "盒体距离/相交/固定姿态直线shape-cast实际输出；完整旋转区间和三机制/三变化S06-04。"
+    },
+    {
+      "layer": "reporting/handoff",
+      "decision": "Rust同一ReportDocument输出分页PDF、离线HTML、CSV、JSON；printpdf直接文本/表格/本地帧图片，HTML显式转义和相对资源。不从Rust导入TS renderer：冻结渲染请求经Host取真实帧。",
+      "owner": "W05/W00/W02/W03",
+      "trial": "带中文字体/图像/跨页表及同一输入/Run口径四格式实导出；另一目录重开许可资产和工程。"
+    },
+    {
+      "layer": "Agent",
+      "decision": "rmcp3.5.1原生Rust stdio exe，连接已开Host命名管道；SDK做协议，业务能力来自同源实际Commands；首先验证当前Codex客户端。",
+      "owner": "W05",
+      "trial": "原生stdio initialize/tools/list/tools/call→命名管道→同一个Hostfixture，真实读写/冲突/失联；实际Codex/SF-17留S08/09。"
+    }
+  ],
+  "mcp_bridge_change": {
+    "before": "S05-01架构JSON暂写Node/TypeScript，apps/mcp-bridge README原已写Rust，存在冲突。",
+    "selected": "Rust rmcp native binary",
+    "reason": "复用同源Rust DTO/Windows IPC，避免发布时附带Node解释器和额外JS执行环境；保留stdio语义与W05职责。",
+    "transport": "stdio to current-session named pipe; no TCP/HTTP listener",
+    "state_owner": "existing desktop_host only",
+    "capabilities": "实际实现的Commands/tools及提供者能力；released/设计目录不授予运行能力",
+    "client_configuration": "项目内真实验证后写clients样例；不更改用户全局MCP配置。"
+  },
+  "windows_pipe_boundary": {
+    "name": "Host确定当前用户/登录会话/实例标识，具体Envelope和命名字段S06-03冻结",
+    "ACL": "CreateNamedPipe明确DACL，使用当前登录SID并限制所需读写权限，禁止远程客户；不能依赖默认ACL。",
+    "grant": "Host内当前Project/DefinitionScope显式授权；切工程/关宿主后失效；Agent不能把自己写的UI来源当人工认可。",
+    "failure": "无宿主/未选工程/范围无权/旧修订/实际不支持分别返回现有错误族具体原因；不启动第二引擎或选择其他工程。",
+    "actual_authorization_test": null
+  },
+  "deployment": {
+    "primary": "Windows11 x64可运行离线目录包，Tauri静态前端随exe/资源；另带原生mcp-bridge.exe、合法原生模块/字体/样例/许可和运行文档。",
+    "runtime_dependency": "系统Evergreen WebView2，启动/第二机实查；普通流程不下载/CDN。无Runtime则明确安装前置，不能宣称该机器离线可运行。",
+    "installer": "Q59安装包后于实际可运行包；若制作NSIS，配置offlineInstaller并实测断网安装，不能默认downloadBootstrapper后声称离线安装。固定Runtime不在本轮默认重复捆绑。",
+    "signing": "代码签名尚无证书，不虚构签名/SmartScreen消失；真实出现阻碍再说明实际操作。",
+    "storage": "资源目录只读，用户选的工程目录可写；运行缓存/会话状态在该应用用户目录。真实路径/保存清单/失效规则S06-02。",
+    "config": "只保存本平台明确非敏感配置；工程/贡献包不携带用户账户/密钥/全局MCP设置。",
+    "verification": "本机完整NFR与第二Win11机器启动/重开/离线闭环；Q58/S03-04，不用已安装工具证明发布。",
+    "actual_release": null
+  },
+  "licenses": {
+    "own_code": "Q60 MIT候选，真实作者权利/发布清单确认后才形成有效LICENSE；当前不是已合法发布结论。",
+    "dependencies": "表内许可是官方registry元数据，实际Cargo/npm锁的传递依赖和所用features在S07/P5核对，并随实际发布保留所需notice/LICENSE。",
+    "font": "中文UI/PDF拟选未修改Source Han Sans CN官方字体、OFL1.1；保留原notice/LICENSE，嵌入文档不把字体改MIT。实际文件/版本/字形和PDF分页由试做确认。",
+    "models_and_images": "自建/允许再分发的真实资产；原厂文献/新闻/AI预览不自动成为可再分发生产素材。",
+    "windows_runtime": "Evergreen由目标机系统提供；若NSIS附offline installer按微软实际分发条款和取得的文件核对，不把Runtime当本项目MIT。",
+    "actual_inventory": null
+  },
+  "source_records": [
+    {
+      "title": "Tauri Windows prerequisites",
+      "url": "https://v2.tauri.app/start/prerequisites/",
+      "read_scope": "Windows Build Tools/WebView2 section",
+      "use": "Windows开发需要C++工具链和WebView2；CLI/注册表可见不代应用试做。"
+    },
+    {
+      "title": "Tauri Windows installer",
+      "url": "https://v2.tauri.app/distribute/windows-installer/",
+      "read_scope": "WebView2 installation options/offlineInstaller",
+      "use": "默认bootstrapper需联网，离线安装须实际选择并测试离线方案。"
+    },
+    {
+      "title": "Official Rust MCP SDK",
+      "url": "https://github.com/modelcontextprotocol/rust-sdk",
+      "read_scope": "Server example/stdio transport/features table",
+      "use": "官方rmcp支持stdio原生server；实际本项目工具能力仍须实现。"
+    },
+    {
+      "title": "Tokio shared state",
+      "url": "https://tokio.rs/tokio/tutorial/shared-state",
+      "read_scope": "Mutex/await guidance",
+      "use": "短共享状态保护，耗时工作不能长期占编辑提交锁。"
+    },
+    {
+      "title": "Win32 named pipe security",
+      "url": "https://learn.microsoft.com/en-us/windows/win32/ipc/named-pipe-security-and-access-rights",
+      "read_scope": "DACL/default ACL/logon SID",
+      "use": "默认ACL包含额外读取权限，明确当前登录SID和读写权限。"
+    },
+    {
+      "title": "printpdf upstream",
+      "url": "https://github.com/fschutt/printpdf",
+      "read_scope": "text/images/fonts license and examples",
+      "use": "本地PDF选择原语排版路径；中文/分页质量必须试做。"
+    },
+    {
+      "title": "Source Han Sans license",
+      "url": "https://github.com/adobe-fonts/source-han-sans/blob/master/LICENSE.txt",
+      "read_scope": "OFL1.1 conditions",
+      "use": "字体可随软件/文档嵌入，保留字体许可/notice，不能改成项目代码许可。"
+    }
+  ],
+  "actual_install_or_product_build": null,
+  "actual_runtime": null,
+  "frontend_authorization": "未开始Figma/产品前端；技术元数据与文字设计不授予开始权限。",
+  "next_proof_checkpoint": "S05-05",
+  "actual_proof_ref": null,
+  "font_release": {
+    "tag": "2.005R",
+    "url": "https://github.com/adobe-fonts/source-han-sans/releases/tag/2.005R",
+    "published_at": "2025-06-18T21:21:40Z",
+    "license": "OFL-1.1",
+    "actual_font_file": null
+  },
+  "actual_lab_trial_ref": "docs/04_开发与验收/S05-05_关键架构实际试做.json",
+  "actual_native_subset_packages": [
+    "rmcp",
+    "tokio",
+    "serde",
+    "serde_json",
+    "schemars",
+    "ts-rs",
+    "windows-sys"
+  ],
+  "actual_desktop_design_trial_ref": "docs/04_开发与验收/特征细化/DRF04_S05-desktop-proof/output/desktop-result.json",
+  "actual_desktop_trial_pixel_ref": "docs/04_开发与验收/特征细化/DRF04_S05-desktop-proof/output/pixel-verification.json",
+  "actual_design_dependency_preparation_ref": "docs/04_开发与验收/特征细化/DRF04_S05-desktop-proof/version-resolution.json",
+  "equipment_model_quality_ref": "docs/02_交互设计/设备建模精度与表现验收规范.json"
+}

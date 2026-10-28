@@ -1,0 +1,268 @@
+{
+  "updated_at": "2026-10-23T08:02:36.137Z",
+  "status": "passed_bounded_exact_105_waits_and_C12_persistence",
+  "module_ref": "p201.b60.station@1.0.5",
+  "ordinary_Native": true,
+  "cases": [
+    {
+      "case": "execution-resource",
+      "candidate": "C11",
+      "run_id": "B60-105-execution-resource-50488:run:1:2",
+      "job": "job:7:L1-TASK1:111:L1-D01-step",
+      "item": "L1-ITEM-0002",
+      "checks": [
+        "1000ms queued, no CAP, item SOURCE",
+        "3000ms cycle50%, CAP and item held by selected job",
+        "4000ms complete, CAP released, item D02",
+        "reverse1000 and simple1000 preserve selected job waiting"
+      ]
+    },
+    {
+      "case": "calendar-nonpreemptive",
+      "candidate": "C11",
+      "run_id": "B60-105-calendar-nonpreemptive-46836:run:1:2",
+      "job": "job:7:L1-TASK1:011:L1-D01-step",
+      "checks": [
+        "500ms open but remaining continuous window insufficient; 0%, no CAP",
+        "1500ms calendar closed; no hold",
+        "4000ms cycle50%, item held and contact",
+        "5000ms complete and item handoff D02",
+        "reverse1500 restores raised no-hold pose"
+      ]
+    },
+    {
+      "case": "output-capacity",
+      "candidate": "C11",
+      "run_id": "B60-105-output-capacity-44736:run:1:2",
+      "job": "job:7:L1-TASK1:011:L1-D01-step",
+      "checks": [
+        "2000ms phase100%, output blocked, CAP and item remain held",
+        "7000ms still held",
+        "reverse1000ms cycle50% contact",
+        "10000ms observation end: held, no invented release/handoff",
+        "simple10000 preserves job and hold"
+      ]
+    }
+  ],
+  "calendar_label_fix": {
+    "file": "apps/planner/src/features/timeline/projection.ts",
+    "label": "日历条件未满足",
+    "candidate": "C12",
+    "native_verified": true,
+    "screenshot": "C12-calendar-label-fixed.jpg"
+  },
+  "save_move_reopen_ref": "C12-save-move-reopen.json",
+  "input_files_preserved": [
+    {
+      "path": "execution-resource/assets/b60-station-1.0.5.glb",
+      "bytes": 1238432,
+      "equal": true
+    },
+    {
+      "path": "execution-resource/data/g000001/project-state.json",
+      "bytes": 375343,
+      "equal": true
+    },
+    {
+      "path": "execution-resource/data/g000001/scenario-0001.json",
+      "bytes": 7529,
+      "equal": true
+    },
+    {
+      "path": "execution-resource/documents/run-00000001/item-history.json",
+      "bytes": 77289,
+      "equal": true
+    },
+    {
+      "path": "execution-resource/documents/run-00000001/project.json",
+      "bytes": 375343,
+      "equal": true
+    },
+    {
+      "path": "execution-resource/documents/run-00000001/result.json",
+      "bytes": 46260,
+      "equal": true
+    },
+    {
+      "path": "execution-resource/documents/run-00000001/scenario.json",
+      "bytes": 7529,
+      "equal": true
+    },
+    {
+      "path": "execution-resource/module-0.json",
+      "bytes": 306789,
+      "equal": true
+    },
+    {
+      "path": "execution-resource/module-1.json",
+      "bytes": 31930,
+      "equal": true
+    },
+    {
+      "path": "execution-resource/module-2.json",
+      "bytes": 1035,
+      "equal": true
+    },
+    {
+      "path": "execution-resource/module-3.json",
+      "bytes": 3181,
+      "equal": true
+    },
+    {
+      "path": "execution-resource/project.json",
+      "bytes": 5093,
+      "equal": true
+    },
+    {
+      "path": "calendar-nonpreemptive/assets/b60-station-1.0.5.glb",
+      "bytes": 1238432,
+      "equal": true
+    },
+    {
+      "path": "calendar-nonpreemptive/data/g000001/project-state.json",
+      "bytes": 375695,
+      "equal": true
+    },
+    {
+      "path": "calendar-nonpreemptive/data/g000001/scenario-0001.json",
+      "bytes": 6985,
+      "equal": true
+    },
+    {
+      "path": "calendar-nonpreemptive/documents/run-00000001/item-history.json",
+      "bytes": 30200,
+      "equal": true
+    },
+    {
+      "path": "calendar-nonpreemptive/documents/run-00000001/project.json",
+      "bytes": 375695,
+      "equal": true
+    },
+    {
+      "path": "calendar-nonpreemptive/documents/run-00000001/result.json",
+      "bytes": 23588,
+      "equal": true
+    },
+    {
+      "path": "calendar-nonpreemptive/documents/run-00000001/scenario.json",
+      "bytes": 6985,
+      "equal": true
+    },
+    {
+      "path": "calendar-nonpreemptive/module-0.json",
+      "bytes": 306789,
+      "equal": true
+    },
+    {
+      "path": "calendar-nonpreemptive/module-1.json",
+      "bytes": 31930,
+      "equal": true
+    },
+    {
+      "path": "calendar-nonpreemptive/module-2.json",
+      "bytes": 1035,
+      "equal": true
+    },
+    {
+      "path": "calendar-nonpreemptive/module-3.json",
+      "bytes": 3181,
+      "equal": true
+    },
+    {
+      "path": "calendar-nonpreemptive/project.json",
+      "bytes": 5125,
+      "equal": true
+    },
+    {
+      "path": "output-capacity/assets/b60-station-1.0.5.glb",
+      "bytes": 1238432,
+      "equal": true
+    },
+    {
+      "path": "output-capacity/data/g000001/project-state.json",
+      "bytes": 375332,
+      "equal": true
+    },
+    {
+      "path": "output-capacity/data/g000001/scenario-0001.json",
+      "bytes": 7526,
+      "equal": true
+    },
+    {
+      "path": "output-capacity/documents/run-00000001/item-history.json",
+      "bytes": 13900,
+      "equal": true
+    },
+    {
+      "path": "output-capacity/documents/run-00000001/project.json",
+      "bytes": 375332,
+      "equal": true
+    },
+    {
+      "path": "output-capacity/documents/run-00000001/result.json",
+      "bytes": 13265,
+      "equal": true
+    },
+    {
+      "path": "output-capacity/documents/run-00000001/scenario.json",
+      "bytes": 7526,
+      "equal": true
+    },
+    {
+      "path": "output-capacity/module-0.json",
+      "bytes": 306789,
+      "equal": true
+    },
+    {
+      "path": "output-capacity/module-1.json",
+      "bytes": 31930,
+      "equal": true
+    },
+    {
+      "path": "output-capacity/module-2.json",
+      "bytes": 1035,
+      "equal": true
+    },
+    {
+      "path": "output-capacity/module-3.json",
+      "bytes": 3181,
+      "equal": true
+    },
+    {
+      "path": "output-capacity/project.json",
+      "bytes": 5069,
+      "equal": true
+    }
+  ],
+  "evidence_screenshots": [
+    "C12-calendar-label-fixed.jpg",
+    "C12-native-saved-r6.jpg",
+    "C12-reopened-1500-wait.jpg",
+    "C12-reopened-4000-contact.jpg",
+    "calendar-1500-closed.jpg",
+    "calendar-1500-reverse.jpg",
+    "calendar-4000-contact.jpg",
+    "calendar-4000-resumed.jpg",
+    "calendar-500-continuous-window.jpg",
+    "calendar-5000-handoff.jpg",
+    "output-1000-reverse-contact.jpg",
+    "output-10000-observation-end-held.jpg",
+    "output-10000-simple-held.jpg",
+    "output-2000-blocked-boundary.jpg",
+    "output-7000-held.jpg",
+    "resource-1000-queued.jpg",
+    "resource-1000-reverse.jpg",
+    "resource-1000-simple.jpg",
+    "resource-3000-contact.jpg",
+    "resource-3000-resumed-timeline.jpg",
+    "resource-4000-handoff.jpg"
+  ],
+  "not_applicable_to_exact_definition": [
+    "mid-phase calendar interruption: cycle is nonpreemptive",
+    "interphase wait: single cycle",
+    "auxiliary resource/role wait: no phase_resources or roles declared"
+  ],
+  "full_MQ_acceptance": false,
+  "formal_NFR_acceptance": false,
+  "whole_task_done": false
+}

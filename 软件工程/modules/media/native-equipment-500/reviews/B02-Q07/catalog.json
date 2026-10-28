@@ -1,0 +1,167 @@
+{
+  "review_batch": "B02-Q07",
+  "modeling_profile": "simulation-efficient-v1",
+  "status": "accepted_by_AI",
+  "version": "1.1.0",
+  "equipment": [
+    {
+      "index": 75,
+      "batch": "B02",
+      "id": "honeycomb-laminator",
+      "title": "蜂窝板复合机（蜂窝芯与双面纸压合）",
+      "mechanisms": [
+        "supported-open-cell-core",
+        "face-placement-glue-traverse-and-sliding-platen"
+      ],
+      "flow": {
+        "input": "1件蜂窝芯+2片面纸批+2mL计量胶",
+        "output": "1件600×400×22mm新蜂窝复合板"
+      },
+      "rule": "assemble",
+      "auxiliary": "metered_glue_2ml",
+      "cycle_seconds": 24,
+      "definition_id": "sf.native500.device.honeycomb-laminator",
+      "media_id": "sf.native500.media.honeycomb-laminator",
+      "version": "1.1.0",
+      "basis": "原创尺寸与声明工时；蜂窝芯双面纸复合、四片同规格纸带折弯压合及端切示例，不含连续卷材/材料力学或工业精度标定。",
+      "suffix": "detailed",
+      "module_id": "sf.native500.media.honeycomb-laminator",
+      "directory": "installable/honeycomb-laminator",
+      "asset": {
+        "id": "sf.native500.media.honeycomb-laminator.glb",
+        "path": "honeycomb-laminator.glb",
+        "kind": "glb"
+      },
+      "bytes": 1265332,
+      "nodes": 402,
+      "triangles": 12534,
+      "phase_ids": [
+        "load",
+        "auto",
+        "unload"
+      ],
+      "primary_phase": "auto",
+      "focus_node": "CompositePress",
+      "bounds": {
+        "min": [
+          -1.5749999997019768,
+          -1.0430812810713341e-10,
+          -0.8999999761581421
+        ],
+        "max": [
+          1.6400000214576722,
+          1.8700000007450581,
+          1.0500000002980232
+        ]
+      },
+      "moving_names": [
+        "PaperSeat",
+        "VacuumXCarriage",
+        "FaceVacuumHead",
+        "VacuumLiftRod",
+        "VacuumZCarriage",
+        "CompositePress",
+        "PressRam_-0.22",
+        "PressCylinder_-0.22",
+        "PressRam_0.22",
+        "PressCylinder_0.22",
+        "PressCarriage",
+        "CoreGlueTraverse"
+      ],
+      "initial": "open_honeycomb_core",
+      "final": "bonded_honeycomb_panel",
+      "extra_outputs": [],
+      "acceptance_conditions": [
+        "missing-component"
+      ],
+      "input_quantity": 1,
+      "component_quantity": 2,
+      "media_version": "1.1.0",
+      "review_batch": "B02-Q07",
+      "service_circuits": [
+        {
+          "name": "electrical, vacuum and adhesive supply",
+          "entry": "AirRegulator",
+          "boundary": "visible trunks and closed internal distribution"
+        }
+      ]
+    },
+    {
+      "index": 76,
+      "batch": "B02",
+      "id": "corner-board-former",
+      "title": "纸护角成型机（四层折弯压合与端切）",
+      "mechanisms": [
+        "nested-four-ply-bend",
+        "hinged-forming-shoe-mandrel-and-guarded-end-saw"
+      ],
+      "flow": {
+        "input": "4片604×80×1mm纸带批+1.5mL计量胶",
+        "output": "1根600mm四层护角+1份4mm端切废料"
+      },
+      "rule": "transform",
+      "auxiliary": "metered_glue_1p5ml",
+      "cycle_seconds": 30,
+      "definition_id": "sf.native500.device.corner-board-former",
+      "media_id": "sf.native500.media.corner-board-former",
+      "version": "1.1.0",
+      "basis": "原创尺寸与声明工时；蜂窝芯双面纸复合、四片同规格纸带折弯压合及端切示例，不含连续卷材/材料力学或工业精度标定。",
+      "suffix": "detailed",
+      "module_id": "sf.native500.media.corner-board-former",
+      "directory": "installable/corner-board-former",
+      "asset": {
+        "id": "sf.native500.media.corner-board-former.glb",
+        "path": "corner-board-former.glb",
+        "kind": "glb"
+      },
+      "bytes": 1559164,
+      "nodes": 391,
+      "triangles": 15710,
+      "phase_ids": [
+        "load",
+        "auto",
+        "unload"
+      ],
+      "primary_phase": "auto",
+      "focus_node": "AngleFormingShoe",
+      "bounds": {
+        "min": [
+          -1.5749999997019768,
+          -1.0430812810713341e-10,
+          -1.0306000000237487
+        ],
+        "max": [
+          1.6400000214576722,
+          1.6749999996647238,
+          1.0500000002980232
+        ]
+      },
+      "moving_names": [
+        "PaperSeat",
+        "AngleFormingShoe",
+        "EndTrimSaw",
+        "SawRotor"
+      ],
+      "initial": "four_registered_flat_plies",
+      "final": "bonded_L_angle",
+      "extra_outputs": [
+        {
+          "role": "waste"
+        }
+      ],
+      "acceptance_conditions": [
+        "waste-wait"
+      ],
+      "input_quantity": 4,
+      "media_version": "1.1.0",
+      "review_batch": "B02-Q07",
+      "service_circuits": [
+        {
+          "name": "electrical, vacuum and adhesive supply",
+          "entry": "AirRegulator",
+          "boundary": "visible trunks and closed internal distribution"
+        }
+      ]
+    }
+  ]
+}

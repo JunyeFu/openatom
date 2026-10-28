@@ -1,0 +1,95 @@
+{
+  "document_kind": "DRF03_C01_selected_business_semantics_for_existing_commands",
+  "status": "public_contract_merged_and_owned_consumer_rechecked_not_Engine",
+  "public_owner": "复审窗口1",
+  "api_operations_added": 0,
+  "categories": [
+    {
+      "category": "items",
+      "commands": "AdoptModule + PutObject(ItemType)",
+      "persisted_effect": "ItemType id和spec_ref；不创建InitialItem/RuntimeItem",
+      "actual_consumer": "Project.item_types；ScenarioInput只在显式新方案种子取初始物品",
+      "upgrade_effect": "兼容时仅替所选规格引用；同ID不兼容单位拒绝整体升级"
+    },
+    {
+      "category": "devices",
+      "commands": "AdoptModule + PutObject(Device)",
+      "persisted_effect": "DeviceInstance.module_ref/operation_binding/configuration/role_bindings；ID保留",
+      "actual_consumer": "RouteStep.device_id→共同Engine；表现读presentation_override",
+      "upgrade_effect": "更新所选A的精确module_ref，B不变；实例覆盖按同参数ID/单位校核后保留"
+    },
+    {
+      "category": "resources",
+      "commands": "AdoptModule + PutObject(Resource/Calendar)",
+      "persisted_effect": "ResourceInstance.definition_ref及实际capacity/calendar_id；不复制claim",
+      "actual_consumer": "RouteStep.resource_bindings或SupplyRelation.resources→共同资源账本",
+      "upgrade_effect": "只换所选定义引用；已建实例capacity/日历保留，改变须在同批PutObject明确提出"
+    },
+    {
+      "category": "tasks",
+      "commands": "AdoptModule + PutObject(Route/Device)",
+      "persisted_effect": "RouteStep.operation_ref解析为ModulePayload::Tasks；device_id及resource_bindings和Device.role_bindings.targets给实际目标",
+      "actual_consumer": "ProductionTask.routing_ref→RouteStep→TaskDefinition；编译为work_kind=preparation的共同Job/Phase",
+      "upgrade_effect": "精确替换所选RouteStep.operation_ref，既有任务目标/资源映射校核；不新增Task实例变体"
+    },
+    {
+      "category": "operations",
+      "commands": "AdoptModule + PutObject(Device/Route)",
+      "persisted_effect": "Device.operation_binding或RouteStep.operation_ref，显式物品/端口/资源角色",
+      "actual_consumer": "ModulePayload::Operations→共同Job/Phase/物料提交",
+      "upgrade_effect": "只更新明确引用；inline与operation_ref selected只执行一处"
+    },
+    {
+      "category": "transport",
+      "commands": "AdoptModule + PutObject(Scenario)",
+      "persisted_effect": "ScenarioInput.supplies[i].transport_ref/resources/source/destination；不是独立PutObject(Supply)",
+      "actual_consumer": "ProductionTask/需求边界→SupplyRelation→TransportDefinition→共同TransportState/Job",
+      "upgrade_effect": "在整个ScenarioInput副本中替换所选Supply.transport_ref；其他supplies/初始库存/需求不变"
+    },
+    {
+      "category": "templates",
+      "commands": "InstantiateTemplate + PutObject(Location等已支持对象)",
+      "persisted_effect": "proposed_objects/mapped_bindings及明确seed；内部ID重映射",
+      "actual_consumer": "Project厂房/线组/设备/连接和现有Scenario",
+      "upgrade_effect": "模板实例无整体自动热升级；对明确选中对象做新版本差异计划，保留外部复用"
+    },
+    {
+      "category": "professional",
+      "commands": "AdoptModule登记契约；adopt_artifact独立绑定",
+      "persisted_effect": "ModuleRef定义与Host ProviderCapability分开；Artifact/Ack/Binding不由导入创建",
+      "actual_consumer": "首版packaging；工位通过指定Job与实际成果门消费",
+      "upgrade_effect": "提供者库升级不改旧artifact；输入改变需新Job/结果/明确认可"
+    },
+    {
+      "category": "media",
+      "commands": "AdoptModule + PutObject(Device)或显式定义草稿变更",
+      "persisted_effect": "Device.presentation_override或定义默认Presentation；不改footprint/BOM",
+      "actual_consumer": "presentation读取同Run冻结对象/phase_work_intervals",
+      "upgrade_effect": "只替所选表现，保持生产/专业条件；旧Run表现不回填"
+    }
+  ],
+  "atomic_algorithm": [
+    "先在Project/Scenario副本解析所有精确定义和目标；验证base_revision、命名空间、单位、角色、资源/端口及capability。",
+    "AdoptModule只登记与计划关联的精确ModuleRef；new_instances只接纳EditableProjectObject现有变体，targets仅校核明确作用对象。",
+    "同批PutObject应用所有已审阅目标，仍在临时副本；不边处理边登记到活工程或启动Job。",
+    "全批成功才交换一个新Project修订及其所需Scenario修订；任一错误丢弃全部副本，新版本登记也不残留。",
+    "相同已发布id/version内容冲突拒绝；旧RunInputRef/在制Job继续原输入，不热替换。"
+  ],
+  "task_lowering": {
+    "source": "RouteStep.operation_ref在本轮选定语义中允许Tasks或Operations，按payload.category分派，不改公共枚举。",
+    "target": "device_id定位真实执行设备；TaskDefinition.target_role及ReadinessRef.target_role由该设备RoleBindings.targets显式解析，等于执行设备时也需明确映射。",
+    "resources": "RouteStep.resource_bindings先映射资源角色；TaskStep.resources/TaskDefinition.resource_roles按共同日历/原子齐套；equipment_access=exclusive时执行容量也进入同一claim。",
+    "phases": "有TaskStep逐步编译，否则duration是一阶段；PhaseWorkKind::Preparation，JobState.operation_ref保留任务ModuleRef，task_ref是实际ProductionTask；input_refs/pending_outputs均不凭空加入物品。",
+    "readiness": "仅在本Run针对相同目标/选定作业配置的准备完成后派生marker，保留已完成Job引用；不同目标/配置不能复用。marker不写库定义，不新增库存/全局时钟。",
+    "repeat": "同一目标/选定作业配置已完成准备时以已有marker满足就绪，不重复领取资源/追加工作段或伪造completed Job；配置变更重新判定。",
+    "deferred": "维修/建设TaskKind仍后置；未支持的Task类别拒绝执行，不用生产转换代替。"
+  },
+  "transport_lowering": {
+    "source": "ScenarioInput.supplies的SupplyRelation.transport_ref解析ModulePayload::Transport；resources显式绑定载具/工人。",
+    "cargo": "source实际物品/同货物ID进入既有loading→outbound→unloading/acceptance→returning，目标数量仅需求。",
+    "commit": "Supply嵌在PutObject(Scenario)里；不能把SupplyRelation塞入new_instances或新增EditableProjectObject变体。"
+  },
+  "case_source": "scenarios/九类模块采用/DRF03_第二轮独立预期.json",
+  "version_registration_scope": "本事务只登记Project.module_refs及目标引用；先前独立成功的库导入/CommitDefinitionVersion不因后续工程采用失败回滚。不得在同一个Project Scope批次混入Definition Scope写入。",
+  "consumer_recheck_ref": "docs/04_开发与验收/特征细化/DRF03_公共合入消费者复核.json"
+}

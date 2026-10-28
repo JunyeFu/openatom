@@ -1,0 +1,1008 @@
+{
+  "document_kind": "P0_01_directory_persistence_and_session_history_independent_review",
+  "task_id": "P0-01",
+  "within_original_step": 3,
+  "covered_original_steps": [
+    3,
+    4
+  ],
+  "window": "实现窗口6",
+  "role": "独立只读复审",
+  "status": "passed_independent_implementation_review_for_authorized_steps_3_4",
+  "authority_ref": "docs/04_开发与验收/P0-01_保存重开与会话历史切片.json#/parallel_dispatch",
+  "writable_files": [
+    "docs/04_开发与验收/P0-01_保存历史_窗口6.json"
+  ],
+  "fixed_before_implementation_results": true,
+  "source_refs": [
+    "docs/04_开发与验收/P0-01_保存重开与会话历史切片.json",
+    "docs/03_架构与契约/全层类型与工程格式.json#/storage",
+    "docs/03_架构与契约/全层类型与工程格式.json#/contextual_validation",
+    "docs/03_架构与契约/共享状态与所有权.json",
+    "docs/03_架构与契约/共享状态与生命周期.md",
+    "docs/03_架构与契约/公开操作与宿主调用契约.json#/long_task_contract",
+    "docs/03_架构与契约/公开操作与宿主调用契约.json#/file_authority",
+    "docs/04_开发与验收/特征细化/DRF04_Host授权合入.json",
+    "packages/domain/src/models.rs",
+    "packages/domain/src/value_types.rs",
+    "packages/commands/src/api.rs",
+    "docs/04_开发与验收/P0-01_Host切片_窗口6.json"
+  ],
+  "review_boundary": {
+    "phase": "先固定预期；统筹通知实现就绪后，再只读核对真实增量、测试及Windows/桌面执行证据。",
+    "reviewer_may_modify_implementation": false,
+    "reviewer_may_modify_other_windows_or_public_state": false,
+    "cargo_executed": false,
+    "actual_IO_executed": false,
+    "actual_implementation_reviewed": true,
+    "missing_implementation_is_not_a_bug": true,
+    "previous_49_tests": "原最小Host切片49组是必须保留的回归基线，不能代替本轮新增存储/历史实现证据。",
+    "not_dispatched": [
+      "业务前端/Figma",
+      "Engine实现",
+      "完整专业求解或模块创作",
+      "提交/推送",
+      "其他P任务"
+    ],
+    "do_not_relax": "不通过丢弃未编辑文档、跳过真实ReplaceFileW、把取消回执当终态、隐藏历史/授权失败或反写预期收口。",
+    "review_scope_now": "仅Host/history初版源预审；store/native仍在写入，未作正式接收",
+    "formally_reviewed_sources": [
+      "packages/commands/src/project_host.rs",
+      "packages/commands/src/project_history.rs",
+      "packages/commands/src/project_store.rs",
+      "packages/commands/tests/project_persistence_history.rs",
+      "apps/planner/src-tauri/src/project_api.rs",
+      "apps/planner/src-tauri/src/lib.rs"
+    ]
+  },
+  "interface_refs": {
+    "canonical_private_interfaces": "docs/04_开发与验收/P0-01_保存重开与会话历史切片.json#/private_implementation_interfaces",
+    "history": "ProjectHistory candidate方法只提出候选；Host验证scope/base/head和当前grant后，工程+新修订+history+creation ledger共同提交。",
+    "store": "ProjectArchive持有完整project/manifest/files；read_project_archive和write_project_archive执行真实目录IO；backing不可被静默缩减成仅ProjectState。",
+    "work": "drain_io_work -> ProjectIoWork::run（无Host锁） -> finish_io；Work/Completion为宿主私有，不接受wire伪造。",
+    "native": "同一Arc<Mutex<ProjectHost>>；准入和FIFO入队顺序受同一Host控制；真实目录picker只接purpose，不从wire收机器路径。"
+  },
+  "workspace_input_revision_review": {
+    "requested_convention": "Workspace文件任务TaskHandle.input_revision=Revision(0)，代表选定文件任务的输入命名空间；TaskScope.Workspace(真实session)。",
+    "type_evidence": "packages/domain/src/value_types.rs的Revision(SafeUint)允许0；TaskHandle带独立TaskScope。公开长任务合同明确Workspace不伪造ProjectId。",
+    "assessment": "现有类型与Scope结构未见冲突；本轮仅按私有接口中明确约定的Workspace含义核验，不改公共字段。",
+    "expectations": [
+      "Workspace没有Project时不能制造ProjectId/Project revision=0。",
+      "Project保存/编辑仍用真实P/R，不能用Workspace的0绕过base_revision。",
+      "get_task/cancel_task仍按真实session、TaskId和TaskScope隔离；不同文件任务靠TaskId区分。"
+    ]
+  },
+  "fixture_conventions": {
+    "isolation": "除明确连续步骤，每个案例独立Host和授权测试目录；窗口6现阶段不创建目录或运行IO。",
+    "identities": "P/Q取真实Host创建/导入结果；R取真实修订；U为真实UI，E为可信Host登记ExternalAgent，X为未授权会话。",
+    "directories": "D1/D2是不同真实目录；D1Alias是Host解析到同一实际目标的另一选定入口。由授权测试/宿主选择产生token，不把字符串路径当权限。",
+    "rich_archive": "使用冻结类型的有效完整工程：有单位、连接/对象/精确版本引用；九类各1个有效ModulePackage；manifest声明的其他角色文档、素材及其必要闭包均在场。仅保留本片能编辑的Project/ItemType，不等于只保留它们的文件。",
+    "declared_document_roles": [
+      "active_project",
+      "scenario_input",
+      "module_definition",
+      "template_data",
+      "generation_profile",
+      "professional_input",
+      "professional_result",
+      "artifact_metadata",
+      "frozen_run_project",
+      "frozen_run_scenario",
+      "run_result",
+      "evaluation",
+      "asset"
+    ],
+    "opaque_id": "至少一个合法非空ID含冒号或斜杠，例如module:设备/1；用内部安全编号分配文件名，ID不得被拼成路径。",
+    "payload_preservation": "比较工程及已声明文档的有类型内容、引用、单位、版本和权限事实，二进制素材逐字节比较；允许规范序列化，不新增checksum。",
+    "real_failure": "Windows失败案例须实际调用ReplaceFileW并使OS返回失败，例如真实文件共享锁；仅mock返回错误不算所要求的Windows提交/恢复证据。",
+    "state_snapshot": "观察真实Host工程、当前/saved修订、dirty、TaskState/result、history可用性和Host-owned created_objects。磁盘事实以已提交manifest及可解析闭包为准。",
+    "rejected_invariant": "失败不提交部分工程/新修订/history/creation ledger；不伪清dirty，不将暂存文档或备份文件名当成功提交。",
+    "evidence_policy": "复用仍匹配当前源码的真实结果；新增修改、失败或缺证才要求对应最小重验。不把22项审查预期额外计作22个已执行测试。"
+  },
+  "finite_expectations": [
+    {
+      "id": "W6-S01",
+      "focus": "根manifest身份与唯一active_project",
+      "setup": "有效D1包含Versioned<PackageManifest>及唯一active_project文档。",
+      "input": [
+        "读取有效根；分别将根错误编码为裸ProjectState、移除active_project、加入第二active_project、使ProjectState.id或revision与manifest不一致。"
+      ],
+      "expected": [
+        "有效根解析为同一P/R及正确DocumentRole/document_kind。",
+        "各无效变体明确拒绝；不能靠文件名猜身份或任挑一个active_project。",
+        "Host导入失败保持原活动工程。"
+      ],
+      "required_evidence": [
+        "实际目录读取结果",
+        "typed manifest/active Project对照",
+        "Host失败前后状态"
+      ],
+      "status": "reviewed_against_frozen_source_and_available_actual_execution",
+      "actual_result": {
+        "evidence": [
+          "store: typed_root_required_fields_versions_roles_and_revision_are_enforced",
+          "validate_archive/parse_document"
+        ],
+        "execution_ref": ".work/p0-01-persistence-history/verification/result.json",
+        "exact_case_separately_reexecuted_by_window6": false,
+        "separately_counted_as_new_test": false
+      }
+    },
+    {
+      "id": "W6-S02",
+      "focus": "相对路径、碰撞与根边界",
+      "setup": "从有效manifest派生独立坏输入；ID保持合法但不作为路径。",
+      "input": [
+        "分别引入../、./、绝对盘符、UNC、反斜杠、冒号、NUL、Windows保留名/尾点或空格、大小写折叠冲突。",
+        "声明文件通过目录内reparse/symlink跳出选定根；若支持ZIP，另测ZIP symlink。",
+        "有效opaque_id工程正常保存。"
+      ],
+      "expected": [
+        "不安全路径/碰撞/逃逸被拒绝，不能读取或覆盖授权根外内容。",
+        "合法ID中路径字符不影响内部安全文件名分配。",
+        "新文件路径相对当前包根；内嵌模块素材引用显式按包根解析。"
+      ],
+      "required_evidence": [
+        "路径边界有限输入/结果",
+        "安全路径生成与读取代码",
+        "外部目标保持不变"
+      ],
+      "status": "reviewed_against_frozen_source_and_available_actual_execution",
+      "actual_result": {
+        "evidence": [
+          "store: windows_path_components_casefold_and_file_directory_collisions_are_rejected",
+          "store: junction_escape_is_rejected_by_actual_directory_handles",
+          "Directory handles and checked_path"
+        ],
+        "execution_ref": ".work/p0-01-persistence-history/verification/result.json",
+        "exact_case_separately_reexecuted_by_window6": false,
+        "separately_counted_as_new_test": false
+      }
+    },
+    {
+      "id": "W6-S03",
+      "focus": "必需闭包及精确类型/版本",
+      "setup": "rich_archive的manifest、模块版本、素材及required文档闭包完整。",
+      "input": [
+        "删除required文档或必需引用素材；令module_ref版本与文档不一致；令category与typed payload不一致。",
+        "另给允许作为草稿报告的非必需缺项。"
+      ],
+      "expected": [
+        "必需闭包/身份/类型错误不能成功打开或保存为完整工程。",
+        "可保留的缺项必须在ImportDraft.missing/conflicts/required_human_choices中真实列出，只有明确accept_missing_as_draft后才可采用有效草稿。",
+        "不把缺文件变成空对象、默认模块或新授权。"
+      ],
+      "required_evidence": [
+        "store读取与引用校验",
+        "stage/adopt两阶段结果",
+        "坏包保持当前工程"
+      ],
+      "status": "reviewed_against_frozen_source_and_available_actual_execution",
+      "actual_result": {
+        "evidence": [
+          "store: explicitly_reported_draft_gaps_do_not_excuse_missing_required_documents",
+          "validate_archive/validate_closure",
+          "Host invalid-import tests"
+        ],
+        "execution_ref": ".work/p0-01-persistence-history/verification/result.json",
+        "exact_case_separately_reexecuted_by_window6": false,
+        "separately_counted_as_new_test": false
+      }
+    },
+    {
+      "id": "W6-S04",
+      "focus": "九类及全部已携带文档保存无损",
+      "setup": "加载rich_archive，含上述13类声明角色、九类模块、二进制素材及来源/权限事实。",
+      "input": [
+        "只改受支持的Project.title或ItemType.title，保存至D2并重新读取。",
+        "对照manifest声明文件及引用闭包和全部既有模块内容。"
+      ],
+      "expected": [
+        "九类模块和其他已携带文档均保留，非编辑对象不能被丢弃。",
+        "单位、连接、版本引用、资产索引、权利/来源、旧Run与专业结果文档保留原含义；二进制字节不变。",
+        "不能将文件保存或导入声明提升为本地Run成功、人工认可或实际provider能力。"
+      ],
+      "required_evidence": [
+        "丰富archive真实往返清单",
+        "有类型内容与二进制对照",
+        "丢失文件/字段数=0的实际结果"
+      ],
+      "status": "reviewed_against_frozen_source_and_available_actual_execution",
+      "actual_result": {
+        "evidence": [
+          "store: all_roles_nine_modules_and_related_bytes_survive_another_directory",
+          "complete_archive typed/byte comparisons"
+        ],
+        "execution_ref": ".work/p0-01-persistence-history/verification/result.json",
+        "exact_case_separately_reexecuted_by_window6": false,
+        "separately_counted_as_new_test": false
+      }
+    },
+    {
+      "id": "W6-S05",
+      "focus": "目录token由真实Host授权",
+      "setup": "UI与E登记；真实目录选择产生SelectedFileRef。",
+      "input": [
+        "用伪造selection_id、自报路径、错误purpose、其他session的token、切工程后旧token请求保存/导入。",
+        "通过真实picker取得对应purpose token后正常请求。"
+      ],
+      "expected": [
+        "伪造或过期权限明确拒绝，不探测未授权目录内容。",
+        "wire只有selection_id/purpose；目录路径和Work/Completion不从客户端反序列化。",
+        "真实picker只接purpose、使用同一Host登记选择。"
+      ],
+      "required_evidence": [
+        "Tauri command签名/原生picker调用",
+        "Host私有选择表",
+        "权限负例与有效请求"
+      ],
+      "status": "reviewed_against_frozen_source_and_available_actual_execution",
+      "actual_result": {
+        "evidence": [
+          "Host: selected_directories_cannot_be_forged_repurposed_or_used_by_another_session",
+          "Native: project_directory_picker_gates_purpose_and_preserves_cancelled_state",
+          "native picker and Host private token source"
+        ],
+        "execution_ref": ".work/p0-01-persistence-history/verification/result.json",
+        "exact_case_separately_reexecuted_by_window6": false,
+        "separately_counted_as_new_test": false
+      }
+    },
+    {
+      "id": "W6-S06",
+      "focus": "真实长任务、冻结输入与结果时点",
+      "setup": "P/R有dirty编辑；D1为有效授权保存目录。",
+      "input": [
+        "save_project(revision=R)准入后读取TaskHandle/TaskState，尚不执行worker。",
+        "执行真实work.run并finish_io，再读取get_task。",
+        "X或其他Scope读取/取消此任务。"
+      ],
+      "expected": [
+        "准入返回真实TaskId、正确TaskScope/Edit(P)和input_revision=R；未完成时没有SavedProject结果。",
+        "实际根提交后才Completed及TaskOutput.Save；originating_operation、result_ref与真实输出匹配。",
+        "状态/进度来自实际阶段；跨session/Scope请求拒绝，不伪造终态。"
+      ],
+      "required_evidence": [
+        "真实TaskState时序",
+        "worker真实输出",
+        "任务所有权测试"
+      ],
+      "status": "reviewed_against_frozen_source_and_available_actual_execution",
+      "actual_result": {
+        "evidence": [
+          "enqueue_io/ProjectIoWork::run/current_task_state/finish_io",
+          "real Host queued/result tests",
+          "native save_returns_real_task_handle"
+        ],
+        "execution_ref": ".work/p0-01-persistence-history/verification/result.json",
+        "exact_case_separately_reexecuted_by_window6": false,
+        "separately_counted_as_new_test": false
+      }
+    },
+    {
+      "id": "W6-S07",
+      "focus": "锁外IO与保存R时继续编辑",
+      "setup": "P/R，保存任务已冻结输入并进入实际worker。",
+      "input": [
+        "worker执行IO期间UI get_context并编辑为R+1。",
+        "保存R完成并由finish_io登记，读磁盘和TaskOutput.Save。"
+      ],
+      "expected": [
+        "IO实际在Host锁外；UI短命令可以继续。",
+        "磁盘仅含冻结R；SavedProject.saved_revision=R、current_revision=R+1、still_dirty=true；当前工程仍R+1。",
+        "完成不能把当前R+1覆盖成R，也不把任务冻结结果跟随以后的undo/编辑改写。"
+      ],
+      "required_evidence": [
+        "native worker与Mutex作用域源",
+        "实际交错执行",
+        "磁盘R与Host R+1的真实读回"
+      ],
+      "status": "reviewed_against_frozen_source_and_available_actual_execution",
+      "actual_result": {
+        "evidence": [
+          "Host: frozen_save_finishes_at_r_while_r_plus_one_stays_dirty_and_save_keeps_undo",
+          "native edit_does_not_wait_for_disk_task/completed_save_contains_frozen_revision/newer_current_revision_remains_dirty"
+        ],
+        "execution_ref": ".work/p0-01-persistence-history/verification/result.json",
+        "exact_case_separately_reexecuted_by_window6": false,
+        "separately_counted_as_new_test": false
+      }
+    },
+    {
+      "id": "W6-S08",
+      "focus": "同目标FIFO、别名与失败释放",
+      "setup": "D1/D1Alias经Host解析为同一实际目标；已有已提交根。",
+      "input": [
+        "依次准入保存R、编辑后保存R+1，使用两份指向同目标的合法token。",
+        "另一个子场景令前任务实际失败，再执行后任务。"
+      ],
+      "expected": [
+        "按准入顺序提交；不按调用者路径字符串分出两个独立锁键。",
+        "每轮旧根在轮到该任务时确定，不能将准入时旧backing当永远当前；最后成功任务是磁盘根。",
+        "失败释放轮次；后任务可以成功，不覆盖前轮仍引用的数据。"
+      ],
+      "required_evidence": [
+        "FIFO入队/worker源",
+        "两个任务与磁盘generation/revision时序",
+        "失败后下一轮结果"
+      ],
+      "status": "reviewed_against_frozen_source_and_available_actual_execution",
+      "actual_result": {
+        "evidence": [
+          "Native: project_api_fifo_commits_same_directory_in_admission_order",
+          "store: stale_backing_does_not_reuse_a_committed_or_orphan_generation",
+          "single receiver/admission-lock enqueue and actual root-at-turn source"
+        ],
+        "execution_ref": ".work/p0-01-persistence-history/verification/result.json",
+        "exact_case_separately_reexecuted_by_window6": false,
+        "separately_counted_as_new_test": false
+      }
+    },
+    {
+      "id": "W6-S09",
+      "focus": "真实ReplaceFileW失败与旧根验证",
+      "setup": "D1已有有效旧P/R/generation及引用文件；新保存输入有变化。",
+      "input": [
+        "真实创建并关闭新代文件；用Windows文件共享锁等触发ReplaceFileW失败。",
+        "观察GetLastError后对实际根、旧保留文件和临时文件的处理。"
+      ],
+      "expected": [
+        "调用ReplaceFileW且传内部唯一lpBackupFileName；不使用IGNORE_ACL_ERRORS/IGNORE_MERGE_ERRORS掩盖失败。",
+        "旧根引用数据不原位覆盖；按已解析project_id+generation+revision确认哪个文件真是旧根。",
+        "确认旧根仍有效则保持；只有有效保留根才允许恢复；Task不生成SavedProject，保持dirty并报告IoFailure。"
+      ],
+      "required_evidence": [
+        "真实Windows失败调用和错误码",
+        "实际根/保留根解析结果",
+        "旧数据/Host状态保持"
+      ],
+      "status": "reviewed_against_frozen_source_and_available_actual_execution",
+      "actual_result": {
+        "evidence": [
+          "store: actual_replacefile_sharing_failure_parses_and_preserves_the_old_root",
+          "ReplaceFileW flags=0, retained filename and parsed root identity source"
+        ],
+        "execution_ref": ".work/p0-01-persistence-history/verification/result.json",
+        "exact_case_separately_reexecuted_by_window6": false,
+        "separately_counted_as_new_test": false
+      }
+    },
+    {
+      "id": "W6-S10",
+      "focus": "恢复成功与恢复失败分开据实",
+      "setup": "已触发实际替换失败并存在可恢复旧根的子场景。",
+      "input": [
+        "一个子场景实际同卷恢复成功并重新解析根。",
+        "另一个子场景实际阻止恢复，检查保留文件及错误内容。"
+      ],
+      "expected": [
+        "成功恢复后才声称旧根完整，身份/修订与旧根匹配。",
+        "恢复失败保留可恢复文件，IoFailure说明授权目录内实际相对位置及dirty，不能误称旧根完好或新工程成功。",
+        "不自动删除旧数据；后续由明确恢复/新目标选择处理，不用静默重试隐藏结果。"
+      ],
+      "required_evidence": [
+        "真实恢复动作及结果",
+        "恢复失败保留文件",
+        "结构化IoFailure与路径边界"
+      ],
+      "status": "reviewed_against_frozen_source_and_available_actual_execution",
+      "actual_result": {
+        "evidence": [
+          "store: actual_retained_root_is_restored_when_root_was_moved",
+          "store: restoration_failure_retains_recoverable_files_and_does_not_claim_intact_root",
+          "store: a_retained_filename_without_the_old_identity_is_not_a_recovery_source"
+        ],
+        "execution_ref": ".work/p0-01-persistence-history/verification/result.json",
+        "exact_case_separately_reexecuted_by_window6": false,
+        "separately_counted_as_new_test": false
+      }
+    },
+    {
+      "id": "W6-S11",
+      "focus": "初次提交及取消与提交竞争",
+      "setup": "分别准备空目标和已有有效根目标；使用真实worker与取消标志。",
+      "input": [
+        "初次保存完整关闭文件后同卷rename提交。",
+        "提交前取消；另在根已替换但finish_io尚未登记时发cancel_task。",
+        "已Completed后再取消。"
+      ],
+      "expected": [
+        "初次目标走同卷rename，无旧有效工程时不声称恢复了旧根。",
+        "取消先赢则保留旧有效根、实际终态Cancelled且无SavedProject。",
+        "根提交先赢即Completed，后到取消或finish_io登记时序不能把真实已保存结果改成Cancelled；取消回执与终态分开。"
+      ],
+      "required_evidence": [
+        "实际根提交点前后受控交错",
+        "CancellationState.terminal_won/TaskState",
+        "磁盘与结果一致"
+      ],
+      "status": "reviewed_against_frozen_source_and_available_actual_execution",
+      "actual_result": {
+        "evidence": [
+          "store: cancellation_before_commit_keeps_old_root_and_old_generation",
+          "Host: cancel_before_io_preserves_old_root_but_committed_work_wins_late_cancel",
+          "initial same-volume rename source"
+        ],
+        "execution_ref": ".work/p0-01-persistence-history/verification/result.json",
+        "exact_case_separately_reexecuted_by_window6": false,
+        "separately_counted_as_new_test": false
+      }
+    },
+    {
+      "id": "W6-S12",
+      "focus": "Workspace导入先stage与input_revision=0",
+      "setup": "无活动工程，U通过真实选择获得ImportPackage token。",
+      "input": [
+        "Workspace import_package(OpenProject, base_revision=null)，读取TaskHandle和完成后的ImportDraft。",
+        "完成导入但不执行AdoptImportedDraft，再读get_context。",
+        "另一session查询/取消同TaskId；尝试把0作为Project修订使用。"
+      ],
+      "expected": [
+        "TaskScope.Workspace(U)、input_revision=0，不制造ProjectId或活动工程。",
+        "真实私有解析结束只产生stage/ImportDraft，活动工程仍空。",
+        "任务归真实session；0只属Workspace输入命名空间，不绕过Project revision检查。"
+      ],
+      "required_evidence": [
+        "真实stage任务结果",
+        "Workspace上下文与session隔离",
+        "0命名空间与Project并发门"
+      ],
+      "status": "reviewed_against_frozen_source_and_available_actual_execution",
+      "actual_result": {
+        "evidence": [
+          "import TaskScope.Workspace/input_revision0 and owned_task source",
+          "native import_returns_real_workspace_task/completed_import_contains_staged_draft/import_does_not_implicitly_replace_project"
+        ],
+        "execution_ref": ".work/p0-01-persistence-history/verification/result.json",
+        "exact_case_separately_reexecuted_by_window6": false,
+        "separately_counted_as_new_test": false
+      }
+    },
+    {
+      "id": "W6-S13",
+      "focus": "显式采用、dirty/活动任务及旧授权",
+      "setup": "当前P dirty且有旧E会话/文件token，已有有效OpenProject staged task。",
+      "input": [
+        "未完成或其他session的TaskId直接adopt；错误chosen_policy或不明确所需选择。",
+        "有效task在departure=Stay/假称AlreadySaved时adopt。",
+        "仍有活动文件任务时请求切换；终态及明确discard处理完后再合法adopt。"
+      ],
+      "expected": [
+        "前述不适用条件拒绝，P及历史/授权保持。",
+        "实际终态与未保存决策未处理完成前不得接入Q，不能只接受取消请求就切工程。",
+        "合法采用后才切入stage内容；旧Project Scope、外部会话、选择token退出，新的工程不继承旧权限。"
+      ],
+      "required_evidence": [
+        "Host采用事务源",
+        "dirty/活动任务真实组合测试",
+        "采用前后scope/grant/token/history"
+      ],
+      "status": "reviewed_against_frozen_source_and_available_actual_execution",
+      "actual_result": {
+        "evidence": [
+          "Host: copied_directory_import_is_staged_until_explicit_open_then_can_edit_and_save",
+          "adopt_open complete proposal, accept_missing, epoch and check_departure source",
+          "native explicit_adoption_opens_relocated_project"
+        ],
+        "execution_ref": ".work/p0-01-persistence-history/verification/result.json",
+        "exact_case_separately_reexecuted_by_window6": false,
+        "separately_counted_as_new_test": false
+      }
+    },
+    {
+      "id": "W6-S14",
+      "focus": "坏工程/缺必需文件保持当前工程",
+      "setup": "P含已编辑对象和正常history；选择坏manifest/缺required文件目录。",
+      "input": [
+        "实际import worker读取并失败。",
+        "尝试对失败/无有效stage结果TaskId AdoptImportedDraft。"
+      ],
+      "expected": [
+        "Task Failed有原错误，不制造可采用的成功ImportDraft。",
+        "P内容、修订、dirty、history和授权不被坏输入部分替换。",
+        "不得靠accept_missing_as_draft绕过错误格式或必需身份/闭包。"
+      ],
+      "required_evidence": [
+        "实际坏目录输入",
+        "失败TaskState与adopt拒绝",
+        "完整当前工程保持"
+      ],
+      "status": "reviewed_against_frozen_source_and_available_actual_execution",
+      "actual_result": {
+        "evidence": [
+          "Host: corrupt_or_missing_required_documents_leave_project_revision_and_history_intact",
+          "store required-doc rejection tests"
+        ],
+        "execution_ref": ".work/p0-01-persistence-history/verification/result.json",
+        "exact_case_separately_reexecuted_by_window6": false,
+        "separately_counted_as_new_test": false
+      }
+    },
+    {
+      "id": "W6-S15",
+      "focus": "异目录重开、修改再保存的完整链",
+      "setup": "P/R包含rich_archive；从D1保存，导入/明确采用到实际Host，并另存D2。",
+      "input": [
+        "在D2来源工程中改title/ItemType，save至D2，再次实际读回。",
+        "核对对象、单位、连接、引用和manifest声明闭包。"
+      ],
+      "expected": [
+        "真实异目录路径可继续编辑和保存，引用基准为新包根。",
+        "保持完整工程和九类文件；不恢复成仅空Project+ItemType示例。",
+        "本轮通过不回退原49组Host/边界/适配测试。"
+      ],
+      "required_evidence": [
+        "真实磁盘D1→stage/adopt→D2往返",
+        "有类型闭包对照",
+        "新增与既有测试结果分别计数"
+      ],
+      "status": "reviewed_against_frozen_source_and_available_actual_execution",
+      "actual_result": {
+        "evidence": [
+          "Host copied-directory continuation/save test",
+          "store all_roles_nine_modules rich archive relocation",
+          "native relocation/edit/save chain"
+        ],
+        "execution_ref": ".work/p0-01-persistence-history/verification/result.json",
+        "exact_case_separately_reexecuted_by_window6": false,
+        "separately_counted_as_new_test": false
+      }
+    },
+    {
+      "id": "W6-S16",
+      "focus": "History candidate纯函数与scope/base/head",
+      "setup": "历史reset到当前P；先提交一个含title+创建A的成功批次。",
+      "input": [
+        "调用undo_candidate/redo_candidate但不commit。",
+        "使用错Project/Scope、stale base_revision或与history head不一致的current尝试历史操作。",
+        "随后执行正确当前undo。"
+      ],
+      "expected": [
+        "candidate不动栈，不回拨revision；失败也不改变可撤销/重做可用性。",
+        "Host验证真实Scope、当前base和history head；拒绝路径不动工程/账本/历史。",
+        "一个成功批次是一个历史单元，正确undo仍可执行，不因此前失败丢失。"
+      ],
+      "required_evidence": [
+        "ProjectHistory源与纯模块测试",
+        "真实Host错误路径与随后成功",
+        "候选/commit分离"
+      ],
+      "status": "reviewed_against_frozen_source_and_available_actual_execution",
+      "actual_result": {
+        "evidence": [
+          "history six pure tests: candidate/head/project/reset",
+          "Host revision gate and history transaction source"
+        ],
+        "execution_ref": ".work/p0-01-persistence-history/verification/result.json",
+        "exact_case_separately_reexecuted_by_window6": false,
+        "separately_counted_as_new_test": false
+      }
+    },
+    {
+      "id": "W6-S17",
+      "focus": "Undo/Redo经Commands产生新修订",
+      "setup": "P/R成功批次同时改title、创建A；有真实旧任务/结果文档作为不变参照。",
+      "input": [
+        "当前base_revision执行Undo，再以新base执行Redo。",
+        "读工程、EditCommit/history和不变参照。"
+      ],
+      "expected": [
+        "Undo一次恢复该批草稿变化，Redo一次重做；各只增加一次修订，不把当前revision改回旧快照数字。",
+        "返回的previous/new_revision和availability与当前Scope一致。",
+        "人工认可、旧Run、专业结果、真实文件与Task终态不随普通history倒退。"
+      ],
+      "required_evidence": [
+        "实际Host undo/redo链",
+        "history头及新修订",
+        "不可逆记录/磁盘/Task对照"
+      ],
+      "status": "reviewed_against_frozen_source_and_available_actual_execution",
+      "actual_result": {
+        "evidence": [
+          "Host: undo_redo_replays_batches_with_monotonic_revisions_and_new_edits_clear_redo",
+          "native undo/redo new revision/title and history_never_rewrites_disk_archives"
+        ],
+        "execution_ref": ".work/p0-01-persistence-history/verification/result.json",
+        "exact_case_separately_reexecuted_by_window6": false,
+        "separately_counted_as_new_test": false
+      }
+    },
+    {
+      "id": "W6-S18",
+      "focus": "历史按当前授权重验且失败原子",
+      "setup": "E参与一段实际历史；另准备仅授权title或仅授权Undo/Redo分支而缺必要对象/effects的当前会话。",
+      "input": [
+        "Undo/Redo将恢复含其他字段、删除或创建的候选，当前grant不足。",
+        "同一候选依次使用stale base和当前base。",
+        "授权充分的独立子场景执行相同历史。"
+      ],
+      "expected": [
+        "stale已知Scope先RevisionConflict；当前base下完整候选越权PermissionDenied，不沿用历史作者旧授权。",
+        "拒绝不移动history栈，不动revision或created_objects。",
+        "有权限时按真实候选effects一次原子提交；不因换成Undo工具名绕过授权。"
+      ],
+      "required_evidence": [
+        "当前grant读取/候选归一化源",
+        "错误顺序与无副作用结果",
+        "正反例实际Host路径"
+      ],
+      "status": "reviewed_against_frozen_source_and_available_actual_execution",
+      "actual_result": {
+        "evidence": [
+          "Host: history_uses_current_undo_redo_branches_and_fields_not_original_edit_authority",
+          "authorize_history/apply_history candidate ledger and commit source"
+        ],
+        "execution_ref": ".work/p0-01-persistence-history/verification/result.json",
+        "exact_case_separately_reexecuted_by_window6": false,
+        "separately_counted_as_new_test": false
+      }
+    },
+    {
+      "id": "W6-S19",
+      "focus": "撤销/重做与累计创建预算",
+      "setup": "E的grant max_new_objects=1，授权创建A及对A相应历史effects。",
+      "input": [
+        "创建A，Undo移除A，核对ledger；Redo恢复A。",
+        "尝试创建新B；另造失败的混合history/effects候选。"
+      ],
+      "expected": [
+        "Undo不退还预算，ledger仍只记A；Redo同ID不新增一次预算计数。",
+        "B因累计distinct-ID预算拒绝；候选失败不消耗或回退ledger。",
+        "工程+新修订+history+ledger一并提交，不能只先移动栈或先扣预算。"
+      ],
+      "required_evidence": [
+        "真实grant.created_objects与history链",
+        "新B拒绝",
+        "失败后仍可进行合法操作"
+      ],
+      "status": "reviewed_against_frozen_source_and_available_actual_execution",
+      "actual_result": {
+        "evidence": [
+          "Host: undoing_creation_never_refunds_budget_and_redo_same_id_does_not_charge_twice",
+          "current grant creation ledger transaction"
+        ],
+        "execution_ref": ".work/p0-01-persistence-history/verification/result.json",
+        "exact_case_separately_reexecuted_by_window6": false,
+        "separately_counted_as_new_test": false
+      }
+    },
+    {
+      "id": "W6-S20",
+      "focus": "新编辑清redo、失败保留、保存保留history",
+      "setup": "成功编辑后Undo，当前有redo。",
+      "input": [
+        "先提交一个必然失败的普通编辑，再读取redo。",
+        "执行合法普通编辑，读取redo并尝试Redo。",
+        "独立子场景保存当前草稿并完成，再Undo/Redo。"
+      ],
+      "expected": [
+        "失败编辑不破坏redo；成功新编辑清redo，旧分支不能再重做。",
+        "保存本身不清正常可逆history，不成为可undo磁盘动作。",
+        "保存后Undo产生新修订并dirty；重做到语义相同内容也不能回拨到旧saved_revision数字。"
+      ],
+      "required_evidence": [
+        "真实失败/成功分支与availability",
+        "save后历史仍可用",
+        "磁盘根不随Undo改变"
+      ],
+      "status": "reviewed_against_frozen_source_and_available_actual_execution",
+      "actual_result": {
+        "evidence": [
+          "history ordinary-branch/failed-candidate tests",
+          "Host frozen-save preserves undo/new edit clears redo",
+          "save/undo/redo source"
+        ],
+        "execution_ref": ".work/p0-01-persistence-history/verification/result.json",
+        "exact_case_separately_reexecuted_by_window6": false,
+        "separately_counted_as_new_test": false
+      }
+    },
+    {
+      "id": "W6-S21",
+      "focus": "切工程清history且旧结果不倒退",
+      "setup": "P有history、完成保存及Task结果；准备Q或同ID工程重新打开。",
+      "input": [
+        "明确完成未保存/活动任务处理后切工程或采用打开。",
+        "新工程尝试Undo旧P历史；查看仍可合法访问的已终态任务与磁盘。",
+        "旧Scope晚到completion尝试登记。"
+      ],
+      "expected": [
+        "切工程/会话不串history，即使重开同ID也不能拿旧内存历史当新会话历史。",
+        "旧Task/磁盘保存事实保持原归属和终态，不能被普通Undo或新工程状态覆盖。",
+        "late completion按真实task/scope登记或拒绝，不写错新活动工程；旧授权不复活。"
+      ],
+      "required_evidence": [
+        "真实切换与history reset",
+        "任务/文件保持",
+        "completion绑定与Scope检查"
+      ],
+      "status": "reviewed_against_frozen_source_and_available_actual_execution",
+      "actual_result": {
+        "evidence": [
+          "history project/head reset tests",
+          "Host copied-directory adopt resets history",
+          "check_departure/switch_epoch/finish_io source",
+          "native disk unchanged after history"
+        ],
+        "execution_ref": ".work/p0-01-persistence-history/verification/result.json",
+        "exact_case_separately_reexecuted_by_window6": false,
+        "separately_counted_as_new_test": false
+      }
+    },
+    {
+      "id": "W6-S22",
+      "focus": "实际Tauri接入和Windows完整证据",
+      "setup": "统筹通知源码/测试/原生结果已就绪后才审查执行证据。",
+      "input": [
+        "只读检查ProjectApiState/worker/目录picker、lib.manage/commands注册和相同托管Host。",
+        "核对真实桌面保存→任务完成→stage→明确采用→修改→另目录保存及Undo/Redo结果。",
+        "核对Windows真实失败/取消/FIFO用例与本片/原49组测试。"
+      ],
+      "expected": [
+        "worker实际run无Host锁，FIFO按准入顺序，finish_io在短锁内；不启动第二Host。",
+        "原生目录授权来自实际宿主，非前端传路径；原生烟测不能只写固定passed。",
+        "已执行/未覆盖、静态/单测/原生/真实ReplaceFileW分别记录；缺实现或缺证先pending，不能提前implementation_passed。"
+      ],
+      "required_evidence": [
+        "真实源码增量",
+        "原始命令/退出码/结构化结果",
+        "真实Windows与同managedHost收据"
+      ],
+      "status": "reviewed_against_frozen_source_and_available_actual_execution",
+      "actual_result": {
+        "evidence": [
+          "Tauri managed Arc<Mutex<ProjectHost>>, real picker command, single FIFO worker source",
+          "current seven Native tests",
+          "actual desktop same managed Host31 checks"
+        ],
+        "execution_ref": ".work/p0-01-persistence-history/verification/result.json",
+        "exact_case_separately_reexecuted_by_window6": false,
+        "separately_counted_as_new_test": false
+      }
+    }
+  ],
+  "findings": [
+    {
+      "id": "W6-ST-F01",
+      "priority": "P2",
+      "status": "closed_after_UI_only_admission_projection_fix_and_real_Host_regression",
+      "title": "Workspace OpenProject导入未拒绝ExternalAgent且能力目录同时宣称可用",
+      "file": "packages/commands/src/project_host.rs",
+      "source_anchors": [
+        "ProjectHost::admit Workspace",
+        "ProjectHost::import",
+        "ProjectHost::capabilities"
+      ],
+      "observed_lines": [
+        466,
+        498,
+        665,
+        674,
+        827
+      ],
+      "observed_source_last_write": "2026-10-15T23:16:34+08:00",
+      "evidence": "Workspace admission只对ExternalAgent+ApplyCommands拒绝；import只验证Workspace/OpenProject与base_revision=null，不检查origin。可信select_directory可为已登记且allowed_operations含ImportPackage的E产生token，因此外部会话可实际排入仅UI允许的Workspace Open任务。能力目录也把ImportPackage无来源过滤地列为Workspace。",
+      "contract_ref": "docs/03_架构与契约/公开操作与宿主调用契约.json#/operations/import_package/allowed_scopes",
+      "frozen_scope": "workspace_UI_open_only",
+      "reproduce": [
+        "创建Host但不创建活动工程；可信登记ExternalAgent E，allowed_operations含ImportPackage/GetTask，granted_project=None。",
+        "可信select_directory(E, FilePurpose::ImportPackage, 有效工程目录D1)取得真实token；不伪造路径或caller。",
+        "E调用Workspace import_package，project_id=null，import_policy=OpenProject，base_revision=null并携该token。",
+        "现有控制流返回真实Queued TaskHandle，随后可run并stage完整工程；冻结Scope应在准入时PermissionDenied。",
+        "若E另获DescribeCapabilities，当前目录还会将仅UI支持的OpenProject导入列为该连接可用。"
+      ],
+      "expected": "保留ExternalAgent的其他正式授权边界，但本片Workspace OpenProject必须真实UI；目录和实际准入一致。UI同请求仍正常，不能通过删除ImportPackage能力或改正式Scope规避。",
+      "runtime_executed_by_window6": false,
+      "fix_owner": "W00",
+      "reviewer_changed_implementation": false,
+      "related_expectations": [
+        "W6-S05",
+        "W6-S12",
+        "W6-S13",
+        "W6-S22"
+      ],
+      "fix_recheck": {
+        "source_ref": "packages/commands/src/project_host.rs",
+        "source_anchors": [
+          "admit Workspace ExternalAgent ImportPackage denial",
+          "capabilities ImportPackage origin filter",
+          "context authorized_operations ImportPackage origin filter"
+        ],
+        "observed_lines": [
+          666,
+          676,
+          808,
+          811,
+          1084,
+          1087
+        ],
+        "regression": "selected_directories_cannot_be_forged_repurposed_or_used_by_another_session",
+        "actual_counterexample_executed": "E has allowed ImportPackage and a real Host-issued matching token; Workspace OpenProject returns PermissionDenied, no work is enqueued, current project unchanged; context excludes ImportPackage",
+        "actual_test_result": "test selected_directories_cannot_be_forged_repurposed_or_used_by_another_session ... ok",
+        "execution_ref": ".work/p0-01-persistence-history/verification/workspace-tests.stdout.txt",
+        "caps_code_rechecked": true,
+        "no_implementation_changes_by_window6": true
+      }
+    }
+  ],
+  "contract_issues": [],
+  "actual_result": {
+    "status": "passed_independent_scoped_review",
+    "implementation_passed": true,
+    "findings_closed": [
+      "W6-ST-F01"
+    ],
+    "open_confirmed_findings": 0,
+    "Rust_tests": 79,
+    "old49_retained": true,
+    "schemas": 20,
+    "schema_cases": 48,
+    "native_checks": 31,
+    "verification_ref": ".work/p0-01-persistence-history/verification/result.json",
+    "source_and_raw_execution_reviewed": true,
+    "rerun_by_window6": false,
+    "whole_task_done": false,
+    "human_acceptance": null
+  },
+  "implementation_passed": true,
+  "whole_task_done": false,
+  "human_acceptance": null,
+  "next_condition": "本轮原步骤3/4的独立实施复审结束。完整P0-01 release/UI验收及下一切片由统筹据实际准入派发；本窗不扩展范围。",
+  "source_pre_review": {
+    "status": "superseded_by_final_independent_review",
+    "reviewed_sources": [
+      "packages/commands/src/project_host.rs",
+      "packages/commands/src/project_history.rs"
+    ],
+    "implementation_is_still_moving": true,
+    "observations": [
+      "ProjectHistory.undo/redo_candidate只读取堆栈，沿用current revision；commit callback才移动栈并更新head。",
+      "Host先校验base_revision，再取得history候选并按当前grant归一化settings/ItemType的修改/删除/创建effects；ledger为候选克隆，验证失败前未移动栈。",
+      "普通编辑成功record会清redo；保存完成路径不reset history，切工程/打开会reset并清选择及旧外部session。",
+      "Queued任务只在Work.run设置started后投影Running；ProjectContext和get_task均用此实际状态投影。",
+      "取消请求保持CancelRequested；finish_io依据真实work结果决定Completed/Cancelled/Failed，实际提交胜负仍须store真实Windows证据。",
+      "当前IOWork和completion不从wire反序列化；旧epoch finish不会覆盖新工程的backing/dirty。"
+    ],
+    "pending": [],
+    "tests_executed_by_window6": false,
+    "final_implementation_passed": true
+  },
+  "final_review": {
+    "status": "passed_for_authorized_slice",
+    "findings_closed": [
+      "W6-ST-F01"
+    ],
+    "open_confirmed_findings": [],
+    "verification_ref": ".work/p0-01-persistence-history/verification/result.json",
+    "commands": [
+      {
+        "key": "format",
+        "exit_code": 0,
+        "started_at": "2026-10-15T23:28:21.1755188+08:00",
+        "finished_at": "2026-10-15T23:28:21.7056317+08:00",
+        "stdout_ref": ".work/p0-01-persistence-history/verification/format.stdout.txt",
+        "stderr_ref": ".work/p0-01-persistence-history/verification/format.stderr.txt"
+      },
+      {
+        "key": "workspace-tests",
+        "exit_code": 0,
+        "started_at": "2026-10-15T23:28:21.7305122+08:00",
+        "finished_at": "2026-10-15T23:28:34.5595405+08:00",
+        "stdout_ref": ".work/p0-01-persistence-history/verification/workspace-tests.stdout.txt",
+        "stderr_ref": ".work/p0-01-persistence-history/verification/workspace-tests.stderr.txt"
+      },
+      {
+        "key": "generate-contracts",
+        "exit_code": 0,
+        "started_at": "2026-10-15T23:28:34.5782347+08:00",
+        "finished_at": "2026-10-15T23:28:58.897308+08:00",
+        "stdout_ref": ".work/p0-01-persistence-history/verification/generate-contracts.stdout.txt",
+        "stderr_ref": ".work/p0-01-persistence-history/verification/generate-contracts.stderr.txt"
+      },
+      {
+        "key": "typecheck",
+        "exit_code": 0,
+        "started_at": "2026-10-15T23:28:58.8995881+08:00",
+        "finished_at": "2026-10-15T23:29:00.5262816+08:00",
+        "stdout_ref": ".work/p0-01-persistence-history/verification/typecheck.stdout.txt",
+        "stderr_ref": ".work/p0-01-persistence-history/verification/typecheck.stderr.txt"
+      },
+      {
+        "key": "schema-consumer",
+        "exit_code": 0,
+        "started_at": "2026-10-15T23:29:00.5283082+08:00",
+        "finished_at": "2026-10-15T23:29:03.0062948+08:00",
+        "stdout_ref": ".work/p0-01-persistence-history/verification/schema-consumer.stdout.txt",
+        "stderr_ref": ".work/p0-01-persistence-history/verification/schema-consumer.stderr.txt"
+      },
+      {
+        "key": "desktop-build",
+        "exit_code": 0,
+        "started_at": "2026-10-15T23:29:03.0081607+08:00",
+        "finished_at": "2026-10-15T23:29:34.5706664+08:00",
+        "stdout_ref": ".work/p0-01-persistence-history/verification/desktop-build.stdout.txt",
+        "stderr_ref": ".work/p0-01-persistence-history/verification/desktop-build.stderr.txt"
+      },
+      {
+        "key": "desktop-host-smoke",
+        "exit_code": 0,
+        "started_at": "2026-10-15T23:29:34.5726964+08:00",
+        "finished_at": "2026-10-15T23:29:35.8721168+08:00",
+        "stdout_ref": ".work/p0-01-persistence-history/verification/desktop-host-smoke.stdout.txt",
+        "stderr_ref": ".work/p0-01-persistence-history/verification/desktop-host-smoke.stderr.txt"
+      }
+    ],
+    "actual_executor": "W00集中运行；窗口6只读独立核对真实源码、回归和原始日志，未重复测试",
+    "actual_results": {
+      "Rust_total": 79,
+      "Rust_failed": 0,
+      "old_49_retained": true,
+      "added_history": 6,
+      "added_store": 13,
+      "added_independent_Host": 8,
+      "added_Native": 3,
+      "current_Native_total": 7,
+      "schemas": 20,
+      "schema_cases": 48,
+      "typecheck_passed": true,
+      "desktop_build_passed": true,
+      "native_checks": 31,
+      "native_failed": 0
+    },
+    "native_host_identity": "desktop-host-63548",
+    "native_observations": [
+      "save冻结修订2，返回真实Queued task；当前编辑为3后Completed Save(saved_revision2,current_revision3,still_dirty=true)",
+      "Workspace导入task input_revision=0、TaskScope.Workspace(desktop-main-ui)，未制造Project revision0",
+      "先stage再明确adopt同一Project身份，重开后修改、Undo/Redo形成新修订，另目录保存真实完成",
+      "普通history前后两个磁盘目录字节对照不变，另目录后续保存不改原目录"
+    ],
+    "storage_observations": [
+      "根Versioned<PackageManifest>唯一required active_project，identity/revision匹配；已声明文件typed闭包、模块/资产索引与权利校验",
+      "九类模块及相关声明文档/素材/支持文件跨目录字节保留，Project修改后单位/连接保持",
+      "新代不覆盖旧根引用路径；轮到任务时读取实际根决定generation，孤儿代不复用",
+      "真实ReplaceFileW flags0和backup参数；共享锁真实触发os error32并解析确认旧根",
+      "部分失败后的文件状态由实际文件移动布置，恢复/恢复失败/伪保留身份三种分支执行；不把构造1177当OS真实错误"
+    ],
+    "history_observations": [
+      "candidate不动栈；base/head/Scope、当前grant和完整支持effects验证后，revision/工程/history/ledger在Host事务内提交",
+      "Undo/Redo单调新修订，失败不移动栈，成功普通编辑清redo；保存保留history，切工程reset",
+      "累计distinct-ID预算不因Undo退还，Redo同ID不重复计数；磁盘、Task终态和非可逆结果不倒退"
+    ],
+    "integration_observations": [
+      "lib.manage和实际commands使用同一ProjectApiState/Host；真实picker入口只接purpose",
+      "准入锁内按顺序送channel，单worker无Host锁执行work.run，短锁finish_io；无第二Host",
+      "Open空选择代表完整归档，非空须精确完整提案且无重复/重绑定，缺口采用须显式同意；UI-only权限与能力/context投影一致"
+    ],
+    "source_timestamps": [
+      {
+        "last_write": "2026-10-15T23:23:29.3987621+08:00",
+        "file": "packages/commands/src/project_host.rs"
+      },
+      {
+        "last_write": "2026-10-15T23:24:26.7186953+08:00",
+        "file": "packages/commands/src/project_store.rs"
+      },
+      {
+        "last_write": "2026-10-15T23:13:01.5242585+08:00",
+        "file": "packages/commands/src/project_history.rs"
+      },
+      {
+        "last_write": "2026-10-15T23:17:27.2464614+08:00",
+        "file": "apps/planner/src-tauri/src/project_api.rs"
+      },
+      {
+        "last_write": "2026-10-15T23:17:44.8659973+08:00",
+        "file": "apps/planner/src-tauri/src/lib.rs"
+      }
+    ],
+    "limitations": [
+      "只接收本片Project/ItemType草稿历史与目录save/OpenProject/Task路径，不代表完整18操作或其他导入策略",
+      "真实ReplaceFileW共享冲突已执行；1177部分失败后的状态为测试构造，真实恢复文件操作已执行，未验证自然触发所有Win32失败码",
+      "原生目录对话框人工交互未执行；业务前端/Figma、MCP外部进程认证、Engine运行均无本轮声称",
+      "普通草稿history不回滚保存/Task/认可/旧Run；非可逆领域提交新增实现仍须自己的验收",
+      "22项是独立预期与覆盖映射，不额外算22次独立运行；P0-01完整release/界面验收和human_acceptance不据此完成"
+    ],
+    "implementation_passed": true,
+    "whole_task_done": false
+  }
+}

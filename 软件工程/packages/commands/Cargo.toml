@@ -1,0 +1,31 @@
+[package]
+name = "sf-commands"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+
+[features]
+# Explicit fault-test candidate only; absent from ordinary release builds.
+nfr06-save-faults = []
+
+[dependencies]
+flate2.workspace = true
+serde = { workspace = true, features = ["rc"] }
+serde_json.workspace = true
+base64.workspace = true
+roxmltree.workspace = true
+schemars.workspace = true
+ts-rs.workspace = true
+sf-domain.workspace = true
+sf-simulation.workspace = true
+sf-module-kit.workspace = true
+sf-packaging.workspace = true
+sf-reporting.workspace = true
+zip.workspace = true
+windows-sys.workspace = true
+reqwest.workspace = true
+
+[[test]]
+name = "manufacturing_export_host"
+path = "../../scenarios/专业桌面/runtime-manufacturing-rights/manufacturing_export_host.rs"

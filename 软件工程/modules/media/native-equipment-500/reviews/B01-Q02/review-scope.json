@@ -1,0 +1,57 @@
+{
+  "review_batch": "B01-Q02",
+  "device_ids": [
+    "flexo-printer"
+  ],
+  "definition": "sf.native50.device.flexo-printer@1.1.0",
+  "source_process_reference": {
+    "url": "https://www.bobst.com/cuen/products/flexo-printing-rotary-die-cutting/process/",
+    "use": "Anilox -> raised plate -> sheet against impression cylinder; separate print units. No imported geometry or manufacturer performance."
+  },
+  "primary": {
+    "type": "one flat paperboard sheet",
+    "dimensions_m": [
+      0.5,
+      0.0008,
+      0.4
+    ],
+    "area_m2": 0.2,
+    "identity_policy": "preserve",
+    "state_before": "flat",
+    "state_after": "two_color_printed"
+  },
+  "auxiliaries": [
+    {
+      "role": "auxiliary",
+      "color": "blue",
+      "tracking": "batch",
+      "quantity_piece": 1,
+      "declared_volume_ml": 0.2,
+      "mark_dimensions_m": [
+        0.1,
+        2e-05,
+        0.1
+      ]
+    },
+    {
+      "role": "auxiliary_red",
+      "color": "red",
+      "tracking": "batch",
+      "quantity_piece": 1,
+      "declared_volume_ml": 0.2,
+      "mark_dimensions_m": [
+        0.1,
+        2e-05,
+        0.1
+      ]
+    }
+  ],
+  "mechanism": "Two independent plate/anilox/impression units; single doctor blades and gravity-fed metered dose cups; three closed feed-belt sections leave impression-roll clearance.",
+  "cycle_ms": 25000,
+  "phases_ms": {
+    "load": 5000,
+    "auto": 15000,
+    "unload": 5000
+  },
+  "boundaries": "Concrete two-mark recipe, not arbitrary raster/RIP, dot gain, viscosity, recirculation, drying or fluid/contact-force physics. One dose piece means0.2mL, not1mL. Both ink types are independent runtime Items."
+}

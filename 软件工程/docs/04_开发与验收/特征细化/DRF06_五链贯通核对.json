@@ -1,0 +1,2106 @@
+{
+  "document_kind": "DRF06_S06_05_existing_five_chain_business_design_walkthrough",
+  "date": "2026-10-14",
+  "revision": "DRF06-FIVE-1",
+  "status": "passed_five_chain_business_design_and_25_finite_checks_not_gate_freeze",
+  "authority": "本轮五链业务侧核验及C04日历/预留/端点消费者修正授权；公共Rust/API与UI只读",
+  "basis": {
+    "flows": "docs/02_交互设计/连续任务与原型制作依据.json#/continuous_flows",
+    "selected": "docs/00_项目基线/首版任务选择.json",
+    "stage": "docs/04_开发与验收/阶段实现计划.json",
+    "requirements": "docs/04_开发与验收/首版需求验收追踪.json",
+    "algorithm": "docs/03_架构与契约/调度与状态转换算法.json",
+    "types": "packages/domain/types.design.rs",
+    "API": "packages/commands/api.design.rs",
+    "report": "packages/reporting/evaluation-report.contract.design.json",
+    "C01": "docs/04_开发与验收/特征细化/DRF03_C01_逐类原子采用.json",
+    "C04": "docs/04_开发与验收/特征细化/DRF03_C04_适配试做与内层模板交接.json"
+  },
+  "coverage": {
+    "P_refs": [
+      "P0-01",
+      "P0-02",
+      "P0-03",
+      "P1-01",
+      "P1-02",
+      "P1-03",
+      "P1-04",
+      "P1-05",
+      "P2-01",
+      "P2-02",
+      "P2-03",
+      "P2-04",
+      "P2-05",
+      "P2-06",
+      "P3-01",
+      "P3-02",
+      "P3-03",
+      "P3-04",
+      "P4-01",
+      "P4-02",
+      "P5-01"
+    ],
+    "SF_refs": [
+      "SF-01",
+      "SF-02",
+      "SF-03",
+      "SF-04",
+      "SF-05",
+      "SF-06",
+      "SF-07",
+      "SF-08",
+      "SF-09",
+      "SF-10",
+      "SF-11",
+      "SF-12",
+      "SF-13",
+      "SF-14",
+      "SF-15",
+      "SF-16",
+      "SF-17"
+    ],
+    "NFR_refs": [
+      "NFR-01",
+      "NFR-02",
+      "NFR-03",
+      "NFR-04",
+      "NFR-05",
+      "NFR-06",
+      "NFR-07",
+      "NFR-08",
+      "NFR-09",
+      "NFR-10",
+      "NFR-11"
+    ],
+    "IX": [
+      {
+        "id": "IX-01",
+        "owner_task": "P2-04"
+      },
+      {
+        "id": "IX-02",
+        "owner_task": "P1-04"
+      },
+      {
+        "id": "IX-03",
+        "owner_task": "P4-02"
+      }
+    ],
+    "original_counts": {
+      "P": 21,
+      "SF": 17,
+      "NFR": 11,
+      "IX": 3,
+      "S": 60
+    },
+    "meaning": "原编号消费/约束映射，不是实际验收完成数；P5-01为全证据交付收口"
+  },
+  "flows": [
+    {
+      "id": "VF-01",
+      "P_refs": [
+        "P0-01",
+        "P0-02",
+        "P1-01",
+        "P1-02",
+        "P1-03",
+        "P1-04",
+        "P1-05",
+        "P2-01",
+        "P2-03",
+        "P2-04",
+        "P5-01"
+      ],
+      "steps": [
+        {
+          "operation": "apply_commands",
+          "request_type": "Request<ApplyCommandsParams> / EditCommand.CreateProject, PutObject",
+          "minimum_inputs": "NewProject.time_reference；显式Hall/Location/Device/Route/BOM/Product和ScenarioInput含初始实物/软硬分配/日历/质量预设/订单接受口径；base_revision匹配",
+          "result_type": "EditCommit",
+          "owned_state": "Host草稿唯一修订；库存未运行前仅初始声明",
+          "algorithm_refs": [
+            "ALG-03",
+            "ALG-14"
+          ],
+          "called_this_round": false
+        },
+        {
+          "operation": "check_factory_draft",
+          "request_type": "CheckFactoryDraftParams / FactoryCheckScope",
+          "minimum_inputs": "当前revision、实际引用、支持规则、显式设备/人员日历与阶段策略；几何未知保留Issue",
+          "result_type": "FactoryDraftCheckResult",
+          "owned_state": "草稿检查结果不等产能",
+          "algorithm_refs": [
+            "ALG-03",
+            "ALG-04",
+            "ALG-14"
+          ],
+          "called_this_round": false
+        },
+        {
+          "operation": "run_scenario → get_task → get_run",
+          "request_type": "RunScenarioParams / TaskState / RunQuery.FullResult",
+          "minimum_inputs": "scenario_id/input_revision/window/ProjectScenario；只取支持且齐输入scope",
+          "result_type": "TaskHandle → RunSummary → RunResult",
+          "owned_state": "单Worker冻结输入；pending预留不可领；齐套、阶段、等待、结果槽",
+          "algorithm_refs": [
+            "ALG-01",
+            "ALG-03",
+            "ALG-04",
+            "ALG-07",
+            "ALG-08",
+            "ALG-12"
+          ],
+          "called_this_round": false
+        },
+        {
+          "operation": "compare_runs (optional) → export_evaluation → save_project",
+          "request_type": "CompareRunsParams / ExportEvaluationParams / SaveProjectParams",
+          "minimum_inputs": "比较时至少两个真实同口径Run；单Run可直接评估；报告窗口、接受Scope、冻结CostInput；选定目录",
+          "result_type": "RunComparison / ExportEvaluation / SavedProject",
+          "owned_state": "旧Run冻结，4格式同EvaluationReport，保存不改变物料",
+          "algorithm_refs": [
+            "ALG-10",
+            "ALG-13"
+          ],
+          "called_this_round": false
+        }
+      ],
+      "phase_wait_claim": "T01/T02及X01：pending等质量，phase日历中断，MC整Job/WC仅phase；输出23—40等待后Job完成；Claim两数组逐项同序",
+      "output_report": "AcceptanceEvent/OrderOutcome、RunEvaluation.requested_window/computed_until_ms/ResourceMetric/CostEvaluation；前缀0接受已知仅到边界，C/单位成本未知，不按完整窗口填0",
+      "cancel_failure_return": "Pause/Cancel仅计算Task，当前闭包后封口，原物料/已投入不回滚；输入缺项/RevisionConflict保草稿，ComputationFailed保已知一致结果；返回同Run已确认时点/原表单",
+      "case_refs": [
+        "X01",
+        "scenarios/从零搭建控制盒厂房/expected-timeline.design.json#baseline/delayed_pcb"
+      ],
+      "not_claimed": "X01是独立跨特征有限例，不替换原440/570秒IX-01",
+      "title": "空工程搭线/到料/等待/比较交付",
+      "original_frames": [
+        "VP01",
+        "VP02",
+        "VP03",
+        "VP05",
+        "VP09",
+        "VP10",
+        "VP11",
+        "VP12",
+        "VP13",
+        "VP21",
+        "VP22",
+        "VP23"
+      ],
+      "source_refs": [
+        "scenarios/从零搭建控制盒厂房/project.design.json",
+        "scenarios/从零搭建控制盒厂房/expected-timeline.design.json"
+      ],
+      "feature_SF_refs": [
+        "SF-01",
+        "SF-03",
+        "SF-04",
+        "SF-05",
+        "SF-06",
+        "SF-07",
+        "SF-08",
+        "SF-09",
+        "SF-10",
+        "SF-14",
+        "SF-17"
+      ],
+      "NFR_overlay_refs": [
+        "NFR-01",
+        "NFR-02",
+        "NFR-03",
+        "NFR-04",
+        "NFR-05",
+        "NFR-06",
+        "NFR-07",
+        "NFR-08",
+        "NFR-09",
+        "NFR-11"
+      ],
+      "actual_result": null,
+      "design_status": "public_DTO_algorithm_return_paths_defined_not_runtime"
+    },
+    {
+      "id": "VF-02",
+      "P_refs": [
+        "P0-03",
+        "P2-05",
+        "P3-01",
+        "P3-02",
+        "P3-03"
+      ],
+      "steps": [
+        {
+          "operation": "apply_commands / render_view",
+          "request_type": "CreateDefinitionDraft, PutDefinition, SetDeclaredParameter / RenderViewParams",
+          "minimum_inputs": "精确ModuleDefinition类别/版本；DeviceDefinition选择inline或operation_ref一种；外观/行为/资源/参数来源分开",
+          "result_type": "EditCommit / TaskHandle→RenderOutput",
+          "owned_state": "定义草稿不携RuntimeItem或当前库存，渲染只读同工程",
+          "algorithm_refs": [
+            "ALG-14"
+          ],
+          "called_this_round": false
+        },
+        {
+          "operation": "run_scenario (DefinitionCycle) → get_run",
+          "request_type": "RunIntent.DefinitionCycle / RunQuery.FullResult",
+          "minimum_inputs": "明确隔离ScenarioInput seed、definition_revision、阶段/资源/目标绑定；使用共同Engine",
+          "result_type": "TaskHandle / RunResult",
+          "owned_state": "JobExecutionRef.definition_cycle，无正式DeviceInstance假身份；量/工作由规则决定",
+          "algorithm_refs": [
+            "ALG-01",
+            "ALG-03",
+            "ALG-04",
+            "ALG-14"
+          ],
+          "called_this_round": false
+        },
+        {
+          "operation": "apply_commands / export_package / import_package",
+          "request_type": "AdoptModule, PutObject(Device/Route), InstantiateTemplate / ExportPackageParams / ImportPackageParams",
+          "minimum_inputs": "准确版本、角色/资源/目标映射、范围、来源与权利；当前修订；不自动替换未选实例",
+          "result_type": "EditCommit / ExportPackage / ImportDraft",
+          "owned_state": "同一行为版本进入真实所选实例，升级不热换旧Run；模型循环不领料",
+          "algorithm_refs": [
+            "ALG-14"
+          ],
+          "called_this_round": false
+        }
+      ],
+      "phase_wait_claim": "Tasks按C01编Preparation；同Run同目标/配置只完成一次，marker留完成Job引用；phase/执行容量Claims实际绑目标，准备不计产品",
+      "output_report": "隔离结果与正式Run分源；升级/采用变化列清，item/claim始终由真实Run产；外观仅展示",
+      "cancel_failure_return": "取消渲染/隔离计算保定义草稿和已知结果，不撤采用文件；规则未支持拒绝用途；缺目标/资源映射定位RoleBindings；返回当前定义/采用预览",
+      "case_refs": [
+        "X02",
+        "docs/04_开发与验收/特征细化/DRF03_C01_逐类原子采用.json"
+      ],
+      "title": "设备渐进创作与同一行为采用",
+      "original_frames": [
+        "VP03",
+        "VP04",
+        "VP06",
+        "VP05",
+        "VP07",
+        "VP08",
+        "VP24"
+      ],
+      "source_refs": [
+        "docs/02_交互设计/自定义设备创作与采用.md",
+        "docs/02_交互设计/设备时间轴与标签设计.md"
+      ],
+      "feature_SF_refs": [
+        "SF-03",
+        "SF-04",
+        "SF-05",
+        "SF-06",
+        "SF-09",
+        "SF-10",
+        "SF-11",
+        "SF-12",
+        "SF-13",
+        "SF-15"
+      ],
+      "NFR_overlay_refs": [
+        "NFR-01",
+        "NFR-02",
+        "NFR-03",
+        "NFR-04",
+        "NFR-11"
+      ],
+      "actual_result": null,
+      "design_status": "public_DTO_algorithm_return_paths_defined_not_runtime"
+    },
+    {
+      "id": "VF-03",
+      "P_refs": [
+        "P1-03",
+        "P1-04",
+        "P2-01",
+        "P2-02",
+        "P2-03",
+        "P2-04",
+        "P3-01",
+        "P3-04",
+        "P4-01",
+        "P5-01"
+      ],
+      "steps": [
+        {
+          "operation": "describe_capabilities / get_context / query_module_library",
+          "request_type": "CapabilityCatalog / ProjectContext / QueryModuleLibraryParams",
+          "minimum_inputs": "真实授权库、当前工程/草稿字段范围，精确模板/定义版本；目标/场地/接受Scope/观察窗/来源明确",
+          "result_type": "CapabilityCatalog / ModuleTemplateCandidates",
+          "owned_state": "声明目录不产生实际能力/库存；Agent不自造认可",
+          "algorithm_refs": [
+            "ALG-14"
+          ],
+          "called_this_round": false
+        },
+        {
+          "operation": "apply_commands → check_factory_draft",
+          "request_type": "InstantiateTemplate / TemplateSubset / proposed_objects / CheckFactoryDraftParams",
+          "minimum_inputs": "ID全量映射、locations/connections/资源日历、显式seed选择；FactoryGenerationGoal和范围齐全",
+          "result_type": "EditCommit / FactoryDraftCheckResult",
+          "owned_state": "模板参数和目标只形成草稿/明确初始输入；unknown height不site Pass",
+          "algorithm_refs": [
+            "ALG-03",
+            "ALG-04",
+            "ALG-14"
+          ],
+          "called_this_round": false
+        },
+        {
+          "operation": "run_scenario → get_run",
+          "request_type": "RunScenarioParams / RunQuery.FullResult",
+          "minimum_inputs": "支持规则、真正物料、固定运输日历/容量、订单目的阶段；一条正式冻结Run",
+          "result_type": "TaskHandle / RunResult",
+          "owned_state": "实际cargo同ID、接收与返回分开；接受只计指定Scope",
+          "algorithm_refs": [
+            "ALG-09",
+            "ALG-10",
+            "ALG-12"
+          ],
+          "called_this_round": false
+        },
+        {
+          "operation": "initial_success: export_evaluation/save_project; shortfall: authorized edit/new run then optional compare_runs",
+          "request_type": "EvaluationReport.scenario_comparison optional / CompareRunsParams",
+          "minimum_inputs": "初案已达目标直接单Run报告；不足才有获授权有效改动，最多3次修正；初案不计修正轮",
+          "result_type": "ExportEvaluation / SavedProject or explicitly scoped draft",
+          "owned_state": "无有效变化/关键缺参停止；旧Run/目标/价格基准不被覆盖",
+          "algorithm_refs": [
+            "ALG-13",
+            "ALG-14"
+          ],
+          "called_this_round": false
+        }
+      ],
+      "phase_wait_claim": "X02准备一次；运输load/outbound/unload/return按声明时间，carrier全程，货物接收前不进目的库存；到期接受端点包含同刻",
+      "output_report": "初案成功scenario_comparison=None；不强制生成比较或第二Run；前缀/未达分别注明",
+      "cancel_failure_return": "PermissionDenied/RevisionConflict不部分写；budget/缺关键输入保Undetermined草案，不改目标凑成功；取消长计算保持已知事实；返回目标/缺项/授权变更预览",
+      "case_refs": [
+        "X02",
+        "scenarios/目标驱动建厂/acceptance.design.json"
+      ],
+      "path_rule": "source VF-03 frames coverage_only_not_required_linear_sequence",
+      "title": "目标建厂初案直交与独立不足例",
+      "original_frames": [
+        "VP14",
+        "VP15",
+        "VP05",
+        "VP10",
+        "VP11",
+        "VP16",
+        "VP17",
+        "VP21",
+        "VP22",
+        "VP23"
+      ],
+      "source_refs": [
+        "scenarios/目标驱动建厂/acceptance.design.json",
+        "docs/04_开发与验收/首版需求验收追踪.json"
+      ],
+      "feature_SF_refs": [
+        "SF-01",
+        "SF-02",
+        "SF-03",
+        "SF-04",
+        "SF-05",
+        "SF-07",
+        "SF-08",
+        "SF-09",
+        "SF-10",
+        "SF-11",
+        "SF-14",
+        "SF-15",
+        "SF-16",
+        "SF-17"
+      ],
+      "NFR_overlay_refs": [
+        "NFR-01",
+        "NFR-02",
+        "NFR-03",
+        "NFR-04",
+        "NFR-05",
+        "NFR-06",
+        "NFR-07",
+        "NFR-08",
+        "NFR-09",
+        "NFR-11"
+      ],
+      "actual_result": null,
+      "design_status": "public_DTO_algorithm_return_paths_defined_not_runtime"
+    },
+    {
+      "id": "VF-04",
+      "P_refs": [
+        "P0-03",
+        "P2-06",
+        "P3-01",
+        "P4-02"
+      ],
+      "steps": [
+        {
+          "operation": "compute_packaging → get_task",
+          "request_type": "ComputePackagingParams / PackageStructureJob / PackagingResult",
+          "minimum_inputs": "实际产品/Job版本、几何/单位/坐标/姿态/三机制与制造/预算；缺输入对应用途Undetermined",
+          "result_type": "TaskHandle → PackagingResult",
+          "owned_state": "专业计算不改变生产库存，Fail/Undetermined为业务判定",
+          "algorithm_refs": [
+            "ALG-14"
+          ],
+          "called_this_round": false
+        },
+        {
+          "operation": "apply_commands → adopt_artifact",
+          "request_type": "RecordArtifactAcknowledgment / AdoptArtifactParams / ConsumerBinding",
+          "minimum_inputs": "Host持有实际成果、可信人的用途认可、匹配版本/payload/scope/consumer/job；Agent不能代造ack",
+          "result_type": "EditCommit / BindingCommit",
+          "owned_state": "成果/认可/绑定/工序Run四对象分开，改版待复核",
+          "algorithm_refs": [
+            "ALG-14"
+          ],
+          "called_this_round": false
+        },
+        {
+          "operation": "run_scenario → export_evaluation",
+          "request_type": "RunScenarioParams / RunEvaluation / EvaluationReport",
+          "minimum_inputs": "相应用途binding已有效，生产工序/BOM/节拍/资源独立声明，不能从几何Pass推节拍",
+          "result_type": "TaskHandle → RunResult → ExportEvaluation",
+          "owned_state": "接受与物料由Engine；专业制造输出和4格式不增加库存",
+          "algorithm_refs": [
+            "ALG-03",
+            "ALG-07",
+            "ALG-10",
+            "ALG-13"
+          ],
+          "called_this_round": false
+        }
+      ],
+      "phase_wait_claim": "缺/失效binding是相应用途准入缺项，不伪造已工作阶段；支持scope按已给节拍/资源执行；专业准备或运输仍同C01账本",
+      "output_report": "产品/Job/成果版本、用途和专业Outcome明确；未有实际Run只design_description，不生成模拟产量",
+      "cancel_failure_return": "取消专业Task不产假Artifact；若已完成先胜保真实结果；缺ack/错版本拒绝adopt，返回专业输入/认可/消费者定位；正常Fail/Undetermined非API执行错误",
+      "case_refs": [
+        "X03",
+        "docs/04_开发与验收/S06-04_纸包装算法与数值方法复审.json"
+      ],
+      "real_input_block": "缺真实几何/机器frame/payload/认可时给具体字段与用途，不借旧截图/文档代Pass",
+      "title": "完整纸包装结构/过程/制造/绑定",
+      "original_frames": [
+        "VP18",
+        "VP19",
+        "VP20",
+        "VP05",
+        "VP22"
+      ],
+      "source_refs": [
+        "packages/packaging/README.md",
+        "docs/03_架构与契约/专业作业与模块接口.md"
+      ],
+      "feature_SF_refs": [
+        "SF-02",
+        "SF-04",
+        "SF-09",
+        "SF-10",
+        "SF-11",
+        "SF-12",
+        "SF-13",
+        "SF-15",
+        "SF-16",
+        "SF-17"
+      ],
+      "NFR_overlay_refs": [
+        "NFR-03",
+        "NFR-04",
+        "NFR-06",
+        "NFR-07",
+        "NFR-10",
+        "NFR-11"
+      ],
+      "actual_result": null,
+      "design_status": "public_DTO_algorithm_return_paths_defined_not_runtime"
+    },
+    {
+      "id": "VF-05",
+      "P_refs": [
+        "P0-01",
+        "P0-02",
+        "P2-01",
+        "P2-02",
+        "P2-03",
+        "P2-04",
+        "P3-03",
+        "P5-01"
+      ],
+      "steps": [
+        {
+          "operation": "apply_commands → run_scenario → get_run",
+          "request_type": "PutObject(Scenario) with SupplyRelation / TransportState / RunResult",
+          "minimum_inputs": "两厂同工程时间/初始库存、真实source cargo、固定装卸/去返时长/日历/接收容量、目的接受单位",
+          "result_type": "EditCommit / TaskHandle / RunResult",
+          "owned_state": "source预留→depart→arrival→receive→return，原cargo/container保持ID",
+          "algorithm_refs": [
+            "ALG-09",
+            "ALG-10"
+          ],
+          "called_this_round": false
+        },
+        {
+          "operation": "compare_runs → export_evaluation",
+          "request_type": "CompareRunsParams / RunComparison / ExportEvaluationParams",
+          "minimum_inputs": "已有至少两实际Run，同基准/窗口/接受/价格可比；差异与不可比条件明示",
+          "result_type": "RunComparison / ExportEvaluation",
+          "owned_state": "同实际snapshot四格式，不由UI页补全",
+          "algorithm_refs": [
+            "ALG-13"
+          ],
+          "called_this_round": false
+        },
+        {
+          "operation": "save_project/export_package → import_package → apply_commands → run_scenario",
+          "request_type": "SaveProjectParams / ImportDraft / adopted typed project / new Scenario revision",
+          "minimum_inputs": "Host选目录/文件；原工程输入/资源相对引用/权利/结果；打开前处理dirty/任务；修改后新Run",
+          "result_type": "SavedProject / ExportPackage / ImportDraft / EditCommit / TaskHandle",
+          "owned_state": "跨机接手设计输入，不把old final_items当新初始库存；模板插入不叠demo seed",
+          "algorithm_refs": [
+            "ALG-12",
+            "ALG-14"
+          ],
+          "called_this_round": false
+        }
+      ],
+      "phase_wait_claim": "原两厂例货物110秒接收可用、140秒carrier返回；X02的3500接收/4000返回同义；接收满/日历未开仍车上，Claim开放端明确",
+      "output_report": "比较/保存/重开/修改完整引用路径；重跑仍同initial input，旧结果与新工程rev分开",
+      "cancel_failure_return": "保存pre-commit取消保旧有效root、replacement失败按实际恢复/IoFailure不谎称成功；进口缺ref/权利留ImportDraft，不部分采用；返回原工程/差异/缺项",
+      "case_refs": [
+        "X02",
+        "X03",
+        "scenarios/两厂房装配包装/expected-events.design.json",
+        "docs/03_架构与契约/工程交接与打开.md"
+      ],
+      "title": "跨厂/比较/接手/再修改",
+      "original_frames": [
+        "VP09",
+        "VP11",
+        "VP12",
+        "VP21",
+        "VP22",
+        "VP23",
+        "VP24"
+      ],
+      "source_refs": [
+        "scenarios/两厂房装配包装/project.design.json",
+        "docs/03_架构与契约/工程交接与打开.md"
+      ],
+      "feature_SF_refs": [
+        "SF-01",
+        "SF-03",
+        "SF-04",
+        "SF-05",
+        "SF-06",
+        "SF-07",
+        "SF-08",
+        "SF-09",
+        "SF-10",
+        "SF-11",
+        "SF-14",
+        "SF-17"
+      ],
+      "NFR_overlay_refs": [
+        "NFR-01",
+        "NFR-02",
+        "NFR-03",
+        "NFR-04",
+        "NFR-05",
+        "NFR-06",
+        "NFR-07",
+        "NFR-08",
+        "NFR-09",
+        "NFR-11"
+      ],
+      "actual_result": null,
+      "design_status": "public_DTO_algorithm_return_paths_defined_not_runtime"
+    }
+  ],
+  "finite_cross_feature_scenarios": [
+    {
+      "id": "X01",
+      "kind": "hard_pending_calendar_output_prefix_cost",
+      "source_kind": "manual_expected",
+      "reuses": [
+        "B01",
+        "B09",
+        "B10",
+        "B12",
+        "DRF06-T07.output_wait_job"
+      ],
+      "supports_flows": [
+        "VF-01",
+        "VF-02"
+      ],
+      "input": {
+        "window_ms": [
+          0,
+          50000
+        ],
+        "material_ids": [
+          "p1",
+          "p2",
+          "p3",
+          "p4"
+        ],
+        "quantity_each_piece": 1,
+        "quality_initial": "pending",
+        "hard_reserved_for": "T",
+        "declared_quality_release_ms": 5000,
+        "required_input_piece": 4,
+        "declared_output_piece": 1,
+        "machine_calendar_ms": [
+          [
+            0,
+            30000
+          ]
+        ],
+        "worker_calendar_ms": [
+          [
+            0,
+            10000
+          ],
+          [
+            20000,
+            30000
+          ]
+        ],
+        "policy": "pause_resume",
+        "duration_ms": 8000,
+        "destination_capacity_piece": 1,
+        "destination_occupied_until_ms": 40000,
+        "due_ms": 40000,
+        "prefix_pause_at_ms": 10000,
+        "prices": {
+          "machine": {
+            "rate": 1,
+            "rate_denominator": 1000,
+            "unit": "machine_ms",
+            "currency": "CNY",
+            "basis": "occupied_time"
+          },
+          "worker": {
+            "rate": 2,
+            "rate_denominator": 1000,
+            "unit": "person_ms",
+            "currency": "CNY",
+            "basis": "occupied_time"
+          },
+          "material": {
+            "rate": null,
+            "rate_denominator": 1,
+            "unit": "piece",
+            "currency": "CNY",
+            "basis": "consumed_material"
+          }
+        }
+      },
+      "expected": {
+        "ordinary_issuable_before_release_piece": 0,
+        "no_partial_acquisition_before_release": true,
+        "start_ms": 5000,
+        "work_intervals_ms": [
+          [
+            5000,
+            10000
+          ],
+          [
+            20000,
+            23000
+          ]
+        ],
+        "calendar_wait_ms": [
+          10000,
+          20000
+        ],
+        "output_wait_ms": [
+          23000,
+          40000
+        ],
+        "phase_completed_ms": 23000,
+        "job_finished_ms": 40000,
+        "accepted_piece": 1,
+        "acceptance_at_ms": 40000,
+        "tardiness_ms": 0,
+        "machine_claim_ms": [
+          5000,
+          40000
+        ],
+        "worker_claims_ms": [
+          [
+            5000,
+            10000
+          ],
+          [
+            20000,
+            23000
+          ]
+        ],
+        "claim_end_causes": [
+          "released",
+          "released",
+          "released"
+        ],
+        "machine_total_capacity_ms": 35000,
+        "machine_open_calendar_capacity_ms": 25000,
+        "machine_closed_held_capacity_ms": 10000,
+        "machine_available_capacity_ms": 30000,
+        "machine_utilization_fraction": [
+          5,
+          6
+        ],
+        "worker_capacity_ms": 8000,
+        "known_cost_subtotal_CNY": 51,
+        "complete_cost_CNY": null,
+        "unit_cost": null,
+        "prefix": {
+          "computed_until_ms": 10000,
+          "accepted_piece": 0,
+          "accepted_state": "known_prefix_zero_not_full_window",
+          "goal_met": null,
+          "completion_ms": null,
+          "effective_progress_ms": 5000,
+          "machine_claim_ms": [
+            5000,
+            10000
+          ],
+          "machine_claim_end": "computed_boundary",
+          "worker_claim_ms": [
+            5000,
+            10000
+          ],
+          "worker_claim_end": "released",
+          "waiting_begins_at_ms": 10000,
+          "positive_calendar_wait_interval_yet": false,
+          "known_cost_subtotal_CNY": 15,
+          "complete_cost_CNY": null,
+          "unit_cost": null,
+          "material_rate_unknown_amount": null,
+          "explicit_zero_material_rate_if_selected_amount": 0
+        },
+        "cancel_at_prefix": "compute cancelled, preserve committed p1-p4/job holder, no business order rollback"
+      },
+      "run_id": null,
+      "actual_result": null
+    },
+    {
+      "id": "X02",
+      "kind": "prepare_once_real_cargo_endpoint_initial_success",
+      "source_kind": "manual_expected",
+      "reuses": [
+        "D06-C07",
+        "D06-C08",
+        "ALG-05",
+        "ALG-09",
+        "ALG-10",
+        "ALG-14"
+      ],
+      "supports_flows": [
+        "VF-02",
+        "VF-03",
+        "VF-05"
+      ],
+      "input": {
+        "window_ms": [
+          0,
+          5000
+        ],
+        "target_device": "D1",
+        "selected_configuration": "cfg-r1",
+        "preparation_ms": 2000,
+        "same_configuration_requests": 2,
+        "source_released_cargo_ids": [
+          "c1",
+          "c2",
+          "c3"
+        ],
+        "declared_target_piece": 3,
+        "carrier_capacity_piece": 4,
+        "allow_partial_load": true,
+        "order_allow_partial": false,
+        "departure_start_ms": 2000,
+        "travel_ms": 1000,
+        "unload_ms": 500,
+        "return_ms": 500,
+        "destination_capacity_piece": 3,
+        "due_ms": 3500,
+        "cost_inputs_selected": []
+      },
+      "expected": {
+        "prepared_job_count": 1,
+        "prepared_work_ms": 2000,
+        "prepared_claims_repeated": 0,
+        "prepared_creates_items": 0,
+        "cargo_ids_all_stages": [
+          "c1",
+          "c2",
+          "c3"
+        ],
+        "departure_ms": 2000,
+        "arrival_ms": 3000,
+        "receive_and_accept_ms": 3500,
+        "return_complete_ms": 4000,
+        "accepted_piece": 3,
+        "carrier_claim_ms": [
+          2000,
+          4000
+        ],
+        "destination_occupied_after_accept_piece": 3,
+        "end_point_query_ms": [
+          0,
+          3500
+        ],
+        "end_point_query_accepts_piece": 3,
+        "full_goal_met": true,
+        "repair_rounds": 0,
+        "formal_run_count": 1,
+        "compare_runs_calls": 0,
+        "report_scenario_comparison": null,
+        "cost_selection": "not_selected_not_complete_zero",
+        "complete_cost": null,
+        "unit_cost": null
+      },
+      "run_id": null,
+      "actual_result": null
+    },
+    {
+      "id": "X03",
+      "kind": "C04_template_atomicity_binding_handoff_counter_cases",
+      "source_kind": "manual_expected",
+      "supports_flows": [
+        "VF-02",
+        "VF-03",
+        "VF-04",
+        "VF-05"
+      ],
+      "input": {
+        "template_source": "modules/templates/parallel-electromechanical/project.design.json",
+        "existing_project_selected_seed": false,
+        "existing_stock_example": {
+          "pcb": 7
+        },
+        "unknown_height_m": null,
+        "artifact_outcomes": [
+          "Pass",
+          "Undetermined",
+          "Pass",
+          "Pass"
+        ],
+        "ack_trusted": [
+          true,
+          true,
+          false,
+          true
+        ],
+        "subject_version_matches": [
+          true,
+          true,
+          true,
+          false
+        ],
+        "geometry_input_complete": false,
+        "declared_process_scope": "declared_process_only",
+        "binding_checks_independent_from_C04_missing_geometry": true,
+        "consumer_job_complete_for_binding": true,
+        "binding_payload_scope_matches": true,
+        "binding_predicate_note": "独立有限认可/版本条件输入；不从C04缺失几何分支借Pass，不生成实际认可"
+      },
+      "expected": {
+        "locations_preserved": 12,
+        "material_connections_preserved": 18,
+        "insertion_created_demo_stock": 0,
+        "existing_stock_after_insertion": {
+          "pcb": 7
+        },
+        "site_height_pass": false,
+        "declared_process_is_not_actual_machining_or_placement": true,
+        "binding_admitted": [
+          true,
+          false,
+          false,
+          false
+        ],
+        "missing_receiver_binding_admitted": false,
+        "wrong_direction_admitted": false,
+        "destination_location_store_mismatch_admitted": false,
+        "out_of_scope_adoption_admitted": false,
+        "isolated_ordinary_issue": false,
+        "max_reworks_source": 0,
+        "no_implicit_rework_loop": true,
+        "multisource_ambiguous_partial_reservation_admitted": false,
+        "missing_machine_calendar_admitted": false,
+        "real_geometry_path": "field/use-specific missing input -> no site/professional Pass; supported complete scope may proceed explicitly"
+      },
+      "run_id": null,
+      "actual_result": null
+    }
+  ],
+  "C04": {
+    "public_carrier_status": "actual_Rust_Schema_TS_merged_receipt_readonly",
+    "types": {
+      "HallDesign_height_m": "Option<FiniteNumber>",
+      "TemplateSubset_locations": "Vec<StockLocation>",
+      "MaterialEndpoint": "port(PortRef)|location(ObjectId)",
+      "MaterialConnection_destination_store": "ObjectId；终点location同ID，终点port明确绑定"
+    },
+    "source_height_m": null,
+    "locations": [
+      {
+        "id": "store-blank",
+        "item_type": "blank",
+        "unit": "piece",
+        "capacity_piece": 4,
+        "selected_purpose": "input",
+        "ordinary_issue_enabled": true,
+        "quality_requirement": "per_operation",
+        "source_layout_m": [
+          2,
+          2
+        ],
+        "runtime_inventory_owner": "RuntimeItem.holder=location in one Worker",
+        "actual_result": null
+      },
+      {
+        "id": "store-shell",
+        "item_type": "shell",
+        "unit": "piece",
+        "capacity_piece": 4,
+        "selected_purpose": "buffer",
+        "ordinary_issue_enabled": true,
+        "quality_requirement": "per_operation",
+        "source_layout_m": [
+          5,
+          2
+        ],
+        "runtime_inventory_owner": "RuntimeItem.holder=location in one Worker",
+        "actual_result": null
+      },
+      {
+        "id": "store-bare_pcb",
+        "item_type": "bare_pcb",
+        "unit": "piece",
+        "capacity_piece": 4,
+        "selected_purpose": "input",
+        "ordinary_issue_enabled": true,
+        "quality_requirement": "per_operation",
+        "source_layout_m": [
+          8,
+          2
+        ],
+        "runtime_inventory_owner": "RuntimeItem.holder=location in one Worker",
+        "actual_result": null
+      },
+      {
+        "id": "store-component",
+        "item_type": "component",
+        "unit": "piece",
+        "capacity_piece": 16,
+        "selected_purpose": "input",
+        "ordinary_issue_enabled": true,
+        "quality_requirement": "per_operation",
+        "source_layout_m": [
+          11,
+          2
+        ],
+        "runtime_inventory_owner": "RuntimeItem.holder=location in one Worker",
+        "actual_result": null
+      },
+      {
+        "id": "store-mounted_pcb",
+        "item_type": "mounted_pcb",
+        "unit": "piece",
+        "capacity_piece": 4,
+        "selected_purpose": "buffer",
+        "ordinary_issue_enabled": true,
+        "quality_requirement": "per_operation",
+        "source_layout_m": [
+          14,
+          2
+        ],
+        "runtime_inventory_owner": "RuntimeItem.holder=location in one Worker",
+        "actual_result": null
+      },
+      {
+        "id": "store-pcb",
+        "item_type": "pcb",
+        "unit": "piece",
+        "capacity_piece": 4,
+        "selected_purpose": "buffer",
+        "ordinary_issue_enabled": true,
+        "quality_requirement": "per_operation",
+        "source_layout_m": [
+          17,
+          2
+        ],
+        "runtime_inventory_owner": "RuntimeItem.holder=location in one Worker",
+        "actual_result": null
+      },
+      {
+        "id": "store-fastener",
+        "item_type": "fastener",
+        "unit": "piece",
+        "capacity_piece": 16,
+        "selected_purpose": "input",
+        "ordinary_issue_enabled": true,
+        "quality_requirement": "per_operation",
+        "source_layout_m": [
+          2,
+          4
+        ],
+        "runtime_inventory_owner": "RuntimeItem.holder=location in one Worker",
+        "actual_result": null
+      },
+      {
+        "id": "store-assembly",
+        "item_type": "assembly",
+        "unit": "piece",
+        "capacity_piece": 4,
+        "selected_purpose": "buffer",
+        "ordinary_issue_enabled": true,
+        "quality_requirement": "per_operation",
+        "source_layout_m": [
+          5,
+          4
+        ],
+        "runtime_inventory_owner": "RuntimeItem.holder=location in one Worker",
+        "actual_result": null
+      },
+      {
+        "id": "store-carton",
+        "item_type": "carton",
+        "unit": "piece",
+        "capacity_piece": 4,
+        "selected_purpose": "input",
+        "ordinary_issue_enabled": true,
+        "quality_requirement": "per_operation",
+        "source_layout_m": [
+          8,
+          4
+        ],
+        "runtime_inventory_owner": "RuntimeItem.holder=location in one Worker",
+        "actual_result": null
+      },
+      {
+        "id": "store-package",
+        "item_type": "package",
+        "unit": "piece",
+        "capacity_piece": 4,
+        "selected_purpose": "output",
+        "ordinary_issue_enabled": true,
+        "quality_requirement": "per_operation",
+        "source_layout_m": [
+          11,
+          4
+        ],
+        "runtime_inventory_owner": "RuntimeItem.holder=location in one Worker",
+        "actual_result": null
+      },
+      {
+        "id": "store-released",
+        "item_type": "assembly",
+        "unit": "piece",
+        "capacity_piece": 2,
+        "selected_purpose": "buffer",
+        "ordinary_issue_enabled": true,
+        "quality_requirement": "released",
+        "source_layout_m": [
+          14,
+          4
+        ],
+        "runtime_inventory_owner": "RuntimeItem.holder=location in one Worker",
+        "actual_result": null
+      },
+      {
+        "id": "store-isolate",
+        "item_type": "assembly",
+        "unit": "piece",
+        "capacity_piece": 2,
+        "selected_purpose": "isolation",
+        "ordinary_issue_enabled": false,
+        "quality_requirement": "per_operation",
+        "source_layout_m": [
+          17,
+          4
+        ],
+        "runtime_inventory_owner": "RuntimeItem.holder=location in one Worker",
+        "actual_result": null
+      }
+    ],
+    "connections": [
+      {
+        "source_ordinal": 1,
+        "source_text": "store-blank",
+        "destination_text": "CNC01.input",
+        "item_type": "blank",
+        "unit": "piece",
+        "canonical_source": {
+          "kind": "location",
+          "data": "store-blank"
+        },
+        "canonical_destination": {
+          "kind": "port",
+          "data": {
+            "module_ref": {
+              "id": "community.fixed-transform",
+              "version": "0.1.0"
+            },
+            "instance_id": "CNC01",
+            "port_id": "input"
+          }
+        },
+        "destination_store": "store-blank",
+        "capacity_piece": 4,
+        "direction_verified": true,
+        "item_and_unit_verified": true,
+        "inventory_effect": "input_store_selected_only_at_atomic_start",
+        "initial_stock_created": 0,
+        "authorization_refs": [
+          {
+            "kind": "location",
+            "id": "store-blank"
+          },
+          {
+            "kind": "device",
+            "id": "CNC01"
+          },
+          {
+            "kind": "location",
+            "id": "store-blank"
+          }
+        ],
+        "actual_result": null
+      },
+      {
+        "source_ordinal": 2,
+        "source_text": "CNC01.output",
+        "destination_text": "store-shell",
+        "item_type": "shell",
+        "unit": "piece",
+        "canonical_source": {
+          "kind": "port",
+          "data": {
+            "module_ref": {
+              "id": "community.fixed-transform",
+              "version": "0.1.0"
+            },
+            "instance_id": "CNC01",
+            "port_id": "output"
+          }
+        },
+        "canonical_destination": {
+          "kind": "location",
+          "data": "store-shell"
+        },
+        "destination_store": "store-shell",
+        "capacity_piece": 4,
+        "direction_verified": true,
+        "item_and_unit_verified": true,
+        "inventory_effect": "job_output_slot_transfers_once_to_destination_store",
+        "initial_stock_created": 0,
+        "authorization_refs": [
+          {
+            "kind": "device",
+            "id": "CNC01"
+          },
+          {
+            "kind": "location",
+            "id": "store-shell"
+          },
+          {
+            "kind": "location",
+            "id": "store-shell"
+          }
+        ],
+        "actual_result": null
+      },
+      {
+        "source_ordinal": 3,
+        "source_text": "store-bare_pcb",
+        "destination_text": "Board01.bare_board",
+        "item_type": "bare_pcb",
+        "unit": "piece",
+        "canonical_source": {
+          "kind": "location",
+          "data": "store-bare_pcb"
+        },
+        "canonical_destination": {
+          "kind": "port",
+          "data": {
+            "module_ref": {
+              "id": "community.declared-board-assembly",
+              "version": "0.1.0"
+            },
+            "instance_id": "Board01",
+            "port_id": "bare_board"
+          }
+        },
+        "destination_store": "store-bare_pcb",
+        "capacity_piece": 4,
+        "direction_verified": true,
+        "item_and_unit_verified": true,
+        "inventory_effect": "input_store_selected_only_at_atomic_start",
+        "initial_stock_created": 0,
+        "authorization_refs": [
+          {
+            "kind": "location",
+            "id": "store-bare_pcb"
+          },
+          {
+            "kind": "device",
+            "id": "Board01"
+          },
+          {
+            "kind": "location",
+            "id": "store-bare_pcb"
+          }
+        ],
+        "actual_result": null
+      },
+      {
+        "source_ordinal": 4,
+        "source_text": "store-component",
+        "destination_text": "Board01.component",
+        "item_type": "component",
+        "unit": "piece",
+        "canonical_source": {
+          "kind": "location",
+          "data": "store-component"
+        },
+        "canonical_destination": {
+          "kind": "port",
+          "data": {
+            "module_ref": {
+              "id": "community.declared-board-assembly",
+              "version": "0.1.0"
+            },
+            "instance_id": "Board01",
+            "port_id": "component"
+          }
+        },
+        "destination_store": "store-component",
+        "capacity_piece": 16,
+        "direction_verified": true,
+        "item_and_unit_verified": true,
+        "inventory_effect": "input_store_selected_only_at_atomic_start",
+        "initial_stock_created": 0,
+        "authorization_refs": [
+          {
+            "kind": "location",
+            "id": "store-component"
+          },
+          {
+            "kind": "device",
+            "id": "Board01"
+          },
+          {
+            "kind": "location",
+            "id": "store-component"
+          }
+        ],
+        "actual_result": null
+      },
+      {
+        "source_ordinal": 5,
+        "source_text": "Board01.mounted",
+        "destination_text": "store-mounted_pcb",
+        "item_type": "mounted_pcb",
+        "unit": "piece",
+        "canonical_source": {
+          "kind": "port",
+          "data": {
+            "module_ref": {
+              "id": "community.declared-board-assembly",
+              "version": "0.1.0"
+            },
+            "instance_id": "Board01",
+            "port_id": "mounted"
+          }
+        },
+        "canonical_destination": {
+          "kind": "location",
+          "data": "store-mounted_pcb"
+        },
+        "destination_store": "store-mounted_pcb",
+        "capacity_piece": 4,
+        "direction_verified": true,
+        "item_and_unit_verified": true,
+        "inventory_effect": "job_output_slot_transfers_once_to_destination_store",
+        "initial_stock_created": 0,
+        "authorization_refs": [
+          {
+            "kind": "device",
+            "id": "Board01"
+          },
+          {
+            "kind": "location",
+            "id": "store-mounted_pcb"
+          },
+          {
+            "kind": "location",
+            "id": "store-mounted_pcb"
+          }
+        ],
+        "actual_result": null
+      },
+      {
+        "source_ordinal": 6,
+        "source_text": "store-mounted_pcb",
+        "destination_text": "BoardFinish01.input",
+        "item_type": "mounted_pcb",
+        "unit": "piece",
+        "canonical_source": {
+          "kind": "location",
+          "data": "store-mounted_pcb"
+        },
+        "canonical_destination": {
+          "kind": "port",
+          "data": {
+            "module_ref": {
+              "id": "community.fixed-transform",
+              "version": "0.1.0"
+            },
+            "instance_id": "BoardFinish01",
+            "port_id": "input"
+          }
+        },
+        "destination_store": "store-mounted_pcb",
+        "capacity_piece": 4,
+        "direction_verified": true,
+        "item_and_unit_verified": true,
+        "inventory_effect": "input_store_selected_only_at_atomic_start",
+        "initial_stock_created": 0,
+        "authorization_refs": [
+          {
+            "kind": "location",
+            "id": "store-mounted_pcb"
+          },
+          {
+            "kind": "device",
+            "id": "BoardFinish01"
+          },
+          {
+            "kind": "location",
+            "id": "store-mounted_pcb"
+          }
+        ],
+        "actual_result": null
+      },
+      {
+        "source_ordinal": 7,
+        "source_text": "BoardFinish01.output",
+        "destination_text": "store-pcb",
+        "item_type": "pcb",
+        "unit": "piece",
+        "canonical_source": {
+          "kind": "port",
+          "data": {
+            "module_ref": {
+              "id": "community.fixed-transform",
+              "version": "0.1.0"
+            },
+            "instance_id": "BoardFinish01",
+            "port_id": "output"
+          }
+        },
+        "canonical_destination": {
+          "kind": "location",
+          "data": "store-pcb"
+        },
+        "destination_store": "store-pcb",
+        "capacity_piece": 4,
+        "direction_verified": true,
+        "item_and_unit_verified": true,
+        "inventory_effect": "job_output_slot_transfers_once_to_destination_store",
+        "initial_stock_created": 0,
+        "authorization_refs": [
+          {
+            "kind": "device",
+            "id": "BoardFinish01"
+          },
+          {
+            "kind": "location",
+            "id": "store-pcb"
+          },
+          {
+            "kind": "location",
+            "id": "store-pcb"
+          }
+        ],
+        "actual_result": null
+      },
+      {
+        "source_ordinal": 8,
+        "source_text": "store-shell",
+        "destination_text": "Assembly01.shell",
+        "item_type": "shell",
+        "unit": "piece",
+        "canonical_source": {
+          "kind": "location",
+          "data": "store-shell"
+        },
+        "canonical_destination": {
+          "kind": "port",
+          "data": {
+            "module_ref": {
+              "id": "community.control-box-assembly",
+              "version": "0.1.0"
+            },
+            "instance_id": "Assembly01",
+            "port_id": "shell"
+          }
+        },
+        "destination_store": "store-shell",
+        "capacity_piece": 4,
+        "direction_verified": true,
+        "item_and_unit_verified": true,
+        "inventory_effect": "input_store_selected_only_at_atomic_start",
+        "initial_stock_created": 0,
+        "authorization_refs": [
+          {
+            "kind": "location",
+            "id": "store-shell"
+          },
+          {
+            "kind": "device",
+            "id": "Assembly01"
+          },
+          {
+            "kind": "location",
+            "id": "store-shell"
+          }
+        ],
+        "actual_result": null
+      },
+      {
+        "source_ordinal": 9,
+        "source_text": "store-pcb",
+        "destination_text": "Assembly01.pcb",
+        "item_type": "pcb",
+        "unit": "piece",
+        "canonical_source": {
+          "kind": "location",
+          "data": "store-pcb"
+        },
+        "canonical_destination": {
+          "kind": "port",
+          "data": {
+            "module_ref": {
+              "id": "community.control-box-assembly",
+              "version": "0.1.0"
+            },
+            "instance_id": "Assembly01",
+            "port_id": "pcb"
+          }
+        },
+        "destination_store": "store-pcb",
+        "capacity_piece": 4,
+        "direction_verified": true,
+        "item_and_unit_verified": true,
+        "inventory_effect": "input_store_selected_only_at_atomic_start",
+        "initial_stock_created": 0,
+        "authorization_refs": [
+          {
+            "kind": "location",
+            "id": "store-pcb"
+          },
+          {
+            "kind": "device",
+            "id": "Assembly01"
+          },
+          {
+            "kind": "location",
+            "id": "store-pcb"
+          }
+        ],
+        "actual_result": null
+      },
+      {
+        "source_ordinal": 10,
+        "source_text": "store-fastener",
+        "destination_text": "Assembly01.fastener",
+        "item_type": "fastener",
+        "unit": "piece",
+        "canonical_source": {
+          "kind": "location",
+          "data": "store-fastener"
+        },
+        "canonical_destination": {
+          "kind": "port",
+          "data": {
+            "module_ref": {
+              "id": "community.control-box-assembly",
+              "version": "0.1.0"
+            },
+            "instance_id": "Assembly01",
+            "port_id": "fastener"
+          }
+        },
+        "destination_store": "store-fastener",
+        "capacity_piece": 16,
+        "direction_verified": true,
+        "item_and_unit_verified": true,
+        "inventory_effect": "input_store_selected_only_at_atomic_start",
+        "initial_stock_created": 0,
+        "authorization_refs": [
+          {
+            "kind": "location",
+            "id": "store-fastener"
+          },
+          {
+            "kind": "device",
+            "id": "Assembly01"
+          },
+          {
+            "kind": "location",
+            "id": "store-fastener"
+          }
+        ],
+        "actual_result": null
+      },
+      {
+        "source_ordinal": 11,
+        "source_text": "Assembly01.assembled",
+        "destination_text": "store-assembly",
+        "item_type": "assembly",
+        "unit": "piece",
+        "canonical_source": {
+          "kind": "port",
+          "data": {
+            "module_ref": {
+              "id": "community.control-box-assembly",
+              "version": "0.1.0"
+            },
+            "instance_id": "Assembly01",
+            "port_id": "assembled"
+          }
+        },
+        "canonical_destination": {
+          "kind": "location",
+          "data": "store-assembly"
+        },
+        "destination_store": "store-assembly",
+        "capacity_piece": 4,
+        "direction_verified": true,
+        "item_and_unit_verified": true,
+        "inventory_effect": "job_output_slot_transfers_once_to_destination_store",
+        "initial_stock_created": 0,
+        "authorization_refs": [
+          {
+            "kind": "device",
+            "id": "Assembly01"
+          },
+          {
+            "kind": "location",
+            "id": "store-assembly"
+          },
+          {
+            "kind": "location",
+            "id": "store-assembly"
+          }
+        ],
+        "actual_result": null
+      },
+      {
+        "source_ordinal": 12,
+        "source_text": "store-assembly",
+        "destination_text": "Inspection01.input",
+        "item_type": "assembly",
+        "unit": "piece",
+        "canonical_source": {
+          "kind": "location",
+          "data": "store-assembly"
+        },
+        "canonical_destination": {
+          "kind": "port",
+          "data": {
+            "module_ref": {
+              "id": "community.parameterized-inspect",
+              "version": "0.1.0"
+            },
+            "instance_id": "Inspection01",
+            "port_id": "input"
+          }
+        },
+        "destination_store": "store-assembly",
+        "capacity_piece": 4,
+        "direction_verified": true,
+        "item_and_unit_verified": true,
+        "inventory_effect": "input_store_selected_only_at_atomic_start",
+        "initial_stock_created": 0,
+        "authorization_refs": [
+          {
+            "kind": "location",
+            "id": "store-assembly"
+          },
+          {
+            "kind": "device",
+            "id": "Inspection01"
+          },
+          {
+            "kind": "location",
+            "id": "store-assembly"
+          }
+        ],
+        "actual_result": null
+      },
+      {
+        "source_ordinal": 13,
+        "source_text": "Inspection01.passed",
+        "destination_text": "store-released",
+        "item_type": "assembly",
+        "unit": "piece",
+        "canonical_source": {
+          "kind": "port",
+          "data": {
+            "module_ref": {
+              "id": "community.parameterized-inspect",
+              "version": "0.1.0"
+            },
+            "instance_id": "Inspection01",
+            "port_id": "passed"
+          }
+        },
+        "canonical_destination": {
+          "kind": "location",
+          "data": "store-released"
+        },
+        "destination_store": "store-released",
+        "capacity_piece": 2,
+        "direction_verified": true,
+        "item_and_unit_verified": true,
+        "inventory_effect": "job_output_slot_transfers_once_to_destination_store",
+        "initial_stock_created": 0,
+        "authorization_refs": [
+          {
+            "kind": "device",
+            "id": "Inspection01"
+          },
+          {
+            "kind": "location",
+            "id": "store-released"
+          },
+          {
+            "kind": "location",
+            "id": "store-released"
+          }
+        ],
+        "actual_result": null
+      },
+      {
+        "source_ordinal": 14,
+        "source_text": "Inspection01.rework",
+        "destination_text": "store-isolate",
+        "item_type": "assembly",
+        "unit": "piece",
+        "canonical_source": {
+          "kind": "port",
+          "data": {
+            "module_ref": {
+              "id": "community.parameterized-inspect",
+              "version": "0.1.0"
+            },
+            "instance_id": "Inspection01",
+            "port_id": "rework"
+          }
+        },
+        "canonical_destination": {
+          "kind": "location",
+          "data": "store-isolate"
+        },
+        "destination_store": "store-isolate",
+        "capacity_piece": 2,
+        "direction_verified": true,
+        "item_and_unit_verified": true,
+        "inventory_effect": "job_output_slot_transfers_once_to_destination_store",
+        "initial_stock_created": 0,
+        "authorization_refs": [
+          {
+            "kind": "device",
+            "id": "Inspection01"
+          },
+          {
+            "kind": "location",
+            "id": "store-isolate"
+          },
+          {
+            "kind": "location",
+            "id": "store-isolate"
+          }
+        ],
+        "actual_result": null
+      },
+      {
+        "source_ordinal": 15,
+        "source_text": "Inspection01.quarantine",
+        "destination_text": "store-isolate",
+        "item_type": "assembly",
+        "unit": "piece",
+        "canonical_source": {
+          "kind": "port",
+          "data": {
+            "module_ref": {
+              "id": "community.parameterized-inspect",
+              "version": "0.1.0"
+            },
+            "instance_id": "Inspection01",
+            "port_id": "quarantine"
+          }
+        },
+        "canonical_destination": {
+          "kind": "location",
+          "data": "store-isolate"
+        },
+        "destination_store": "store-isolate",
+        "capacity_piece": 2,
+        "direction_verified": true,
+        "item_and_unit_verified": true,
+        "inventory_effect": "job_output_slot_transfers_once_to_destination_store",
+        "initial_stock_created": 0,
+        "authorization_refs": [
+          {
+            "kind": "device",
+            "id": "Inspection01"
+          },
+          {
+            "kind": "location",
+            "id": "store-isolate"
+          },
+          {
+            "kind": "location",
+            "id": "store-isolate"
+          }
+        ],
+        "actual_result": null
+      },
+      {
+        "source_ordinal": 16,
+        "source_text": "store-released",
+        "destination_text": "Packing01.product",
+        "item_type": "assembly",
+        "unit": "piece",
+        "canonical_source": {
+          "kind": "location",
+          "data": "store-released"
+        },
+        "canonical_destination": {
+          "kind": "port",
+          "data": {
+            "module_ref": {
+              "id": "community.parameterized-pack",
+              "version": "0.1.0"
+            },
+            "instance_id": "Packing01",
+            "port_id": "product"
+          }
+        },
+        "destination_store": "store-released",
+        "capacity_piece": 2,
+        "direction_verified": true,
+        "item_and_unit_verified": true,
+        "inventory_effect": "input_store_selected_only_at_atomic_start",
+        "initial_stock_created": 0,
+        "authorization_refs": [
+          {
+            "kind": "location",
+            "id": "store-released"
+          },
+          {
+            "kind": "device",
+            "id": "Packing01"
+          },
+          {
+            "kind": "location",
+            "id": "store-released"
+          }
+        ],
+        "actual_result": null
+      },
+      {
+        "source_ordinal": 17,
+        "source_text": "store-carton",
+        "destination_text": "Packing01.carton",
+        "item_type": "carton",
+        "unit": "piece",
+        "canonical_source": {
+          "kind": "location",
+          "data": "store-carton"
+        },
+        "canonical_destination": {
+          "kind": "port",
+          "data": {
+            "module_ref": {
+              "id": "community.parameterized-pack",
+              "version": "0.1.0"
+            },
+            "instance_id": "Packing01",
+            "port_id": "carton"
+          }
+        },
+        "destination_store": "store-carton",
+        "capacity_piece": 4,
+        "direction_verified": true,
+        "item_and_unit_verified": true,
+        "inventory_effect": "input_store_selected_only_at_atomic_start",
+        "initial_stock_created": 0,
+        "authorization_refs": [
+          {
+            "kind": "location",
+            "id": "store-carton"
+          },
+          {
+            "kind": "device",
+            "id": "Packing01"
+          },
+          {
+            "kind": "location",
+            "id": "store-carton"
+          }
+        ],
+        "actual_result": null
+      },
+      {
+        "source_ordinal": 18,
+        "source_text": "Packing01.packed",
+        "destination_text": "store-package",
+        "item_type": "package",
+        "unit": "piece",
+        "canonical_source": {
+          "kind": "port",
+          "data": {
+            "module_ref": {
+              "id": "community.parameterized-pack",
+              "version": "0.1.0"
+            },
+            "instance_id": "Packing01",
+            "port_id": "packed"
+          }
+        },
+        "canonical_destination": {
+          "kind": "location",
+          "data": "store-package"
+        },
+        "destination_store": "store-package",
+        "capacity_piece": 4,
+        "direction_verified": true,
+        "item_and_unit_verified": true,
+        "inventory_effect": "job_output_slot_transfers_once_to_destination_store",
+        "initial_stock_created": 0,
+        "authorization_refs": [
+          {
+            "kind": "device",
+            "id": "Packing01"
+          },
+          {
+            "kind": "location",
+            "id": "store-package"
+          },
+          {
+            "kind": "location",
+            "id": "store-package"
+          }
+        ],
+        "actual_result": null
+      }
+    ],
+    "source_worker_calendars": [
+      {
+        "id": "W-B",
+        "capacity": 1,
+        "calendar_ms": [
+          [
+            0,
+            300000
+          ]
+        ]
+      },
+      {
+        "id": "W-C",
+        "capacity": 1,
+        "calendar_ms": [
+          [
+            0,
+            300000
+          ]
+        ]
+      },
+      {
+        "id": "W-A",
+        "capacity": 1,
+        "calendar_ms": [
+          [
+            0,
+            300000
+          ]
+        ]
+      },
+      {
+        "id": "W-E",
+        "capacity": 1,
+        "calendar_ms": [
+          [
+            0,
+            300000
+          ]
+        ]
+      }
+    ],
+    "source_preparation": [
+      {
+        "id": "board-preparation",
+        "target": "Board01",
+        "duration_ms": 30000,
+        "resources": [
+          "W-E"
+        ],
+        "basis": "自建准备任务，仅做一次"
+      }
+    ],
+    "source_inspection_max_reworks": 0,
+    "preserved_stock_seed": [
+      {
+        "store": "store-blank",
+        "item_type": "blank",
+        "quantity": 2,
+        "unit": "piece"
+      },
+      {
+        "store": "store-bare_pcb",
+        "item_type": "bare_pcb",
+        "quantity": 2,
+        "unit": "piece"
+      },
+      {
+        "store": "store-component",
+        "item_type": "component",
+        "quantity": 16,
+        "unit": "piece"
+      },
+      {
+        "store": "store-fastener",
+        "item_type": "fastener",
+        "quantity": 8,
+        "unit": "piece"
+      },
+      {
+        "store": "store-carton",
+        "item_type": "carton",
+        "quantity": 2,
+        "unit": "piece"
+      }
+    ],
+    "source_modified": false,
+    "exact_business_decisions": [
+      "Location→in Port只是领料声明，齐套开工才从原库位一次取得；out Port→Location实际输出槽一次移交",
+      "destination_store是明确绑定，位置/方向/类型单位/已有port_bindings不一致或缺失就报缺项",
+      "无quantity_rule不默认一件，配比取BOM/OperationDefinition；容量从真实库位与显式约束，不创建Port库存",
+      "源Inspection.max_reworks=0，rework端仍保留但不启用回路，FAIL按隔离，store-isolate ordinary_issue_enabled=false",
+      "C04采用窗口3伴随pause_resume，保持10/45/5与5/20/5；先前本窗non_preemptive选择已由此特定模板政策替换",
+      "人日历源已给，机器执行日历/机位绑定仍须明确；使用现有ResourceInstance.calendar_id承接显式机位，不在运行补全天",
+      "全引用同授权scope，ID全量映射，原子采用；existing project seed未选不加旧样例库存/需求",
+      "height_m=null只保未知，site/高度净空不Pass；缺完整几何/实际专业资料不代造成果/认可"
+    ]
+  },
+  "public_owner_delta": [
+    {
+      "id": "F06-D01",
+      "owner": "复审窗口1",
+      "file": "docs/03_架构与契约/公开操作与宿主调用契约.json",
+      "path": "operations[apply_commands/check_factory_draft/run_scenario].conditions",
+      "expected": "引用DRF06 ALG-03/04/07/14及本C04矩阵；端点/绑定/方向/物料单位/容量/全部授权引用在原子准入前检查，缺receiver/calendar可定位，不默认缓存/全天",
+      "Rust_API_change_required": false,
+      "status": "owned_business_rule_written_public_contract_consumer_reference_requested"
+    },
+    {
+      "id": "F06-D02",
+      "owner": "复审窗口1",
+      "file": "docs/03_架构与契约/全层类型与工程格式.json",
+      "path": "MaterialEndpoint/TemplateSubset.locations/HallDesign.height_m consumer semantics",
+      "expected": "当前载体已合入，不再改DTO；locations无运行库存，destination_store是显式接收绑定，null高度不可site Pass，seed选择与全量remap不丢12/18",
+      "Rust_API_change_required": false,
+      "status": "owned_business_rule_written_public_contract_consumer_reference_requested"
+    },
+    {
+      "id": "F06-D03",
+      "owner": "复审窗口1协调窗口3",
+      "file": "modules/templates/parallel-electromechanical/project.design.json -> adapted typed candidate",
+      "path": "devices[CNC01/Board01/...].execution_capacity/calendar binding; phase interruption policy; preparation_tasks[board-preparation] persisted Tasks reference",
+      "expected": "适配预览明确实际机位Resource/Calendar绑定和Tasks ModuleRef/RouteStep；worker源日历保0—300000；原30秒准备和phase数值不变；无映射保ImportDraft缺项，不运行阶段补值",
+      "new_public_field_required": false,
+      "status": "owned_business_rule_written_public_contract_consumer_reference_requested"
+    }
+  ],
+  "remaining": [
+    {
+      "kind": "source_input_missing",
+      "path": "C04.halls[H1].height_m; devices[*].footprint_m/clearance",
+      "impact": "完整site/布局结论及目标初案检查不能Pass；可保存nullable draft",
+      "owner": "用户实际输入/窗口3适配",
+      "resolved_by_this_document": false
+    },
+    {
+      "kind": "explicit_binding_missing",
+      "path": "C04设备执行日历/机位、board-preparation持久Tasks引用、完整产品/BOM/Route/采用后的版本绑定",
+      "impact": "受影响用途的Engine冻结准入需明确映射；本轮规则已定，不留运行时猜",
+      "owner": "窗口3适配+窗口1接点",
+      "resolved_by_this_document": false
+    },
+    {
+      "kind": "actual_professional_inputs_missing",
+      "path": "machining-job.required_fields/result; placement-job.component_library_ref/native_job_ref/supported_machine_profile; actual acknowledgment",
+      "impact": "仅declared_process声明路径；不能冒充真实机加工/贴装或专业认可",
+      "owner": "原专业提供者/用户",
+      "resolved_by_this_document": false
+    },
+    {
+      "kind": "stage_evidence",
+      "path": "原S04/05/06关口与Engine/Host/用户实际证据",
+      "impact": "本轮设计与有限算术不冻结S06-05、不关闭21任务/17SF/11NFR/3IX",
+      "owner": "原阶段归属",
+      "resolved_by_this_document": false
+    }
+  ],
+  "preservation": {
+    "B01_B18": "unchanged",
+    "manual_expected_eight": "unchanged",
+    "existing_six_business_expectations": "unchanged",
+    "global_task_state_modified": false,
+    "public_Rust_API_modified": false,
+    "UI_modified": false,
+    "new_inventory_clock_or_backlog_created": false
+  },
+  "verification_ref": "docs/04_开发与验收/特征细化/DRF06_五链有限核验.json",
+  "actual_Engine": null,
+  "actual_Host": null,
+  "actual_product_runtime": null,
+  "actual_user_walkthrough": null,
+  "actual_result": null,
+  "stage_gate_frozen": false,
+  "business_verification": {
+    "status": "passed",
+    "check_count": 25,
+    "coverage": {
+      "flows": 5,
+      "P": 21,
+      "SF": 17,
+      "NFR": 11,
+      "IX": 3
+    },
+    "cross_feature_cases": 3,
+    "C04": {
+      "locations": 12,
+      "connections": 18
+    },
+    "evidence_ref": "docs/04_开发与验收/特征细化/DRF06_五链有限核验.json",
+    "actual_Engine": null,
+    "actual_Host": null,
+    "actual_result": null
+  },
+  "current_C04_binding_ref": "docs/04_开发与验收/特征细化/DRF06_C04_显式绑定收口.json"
+}

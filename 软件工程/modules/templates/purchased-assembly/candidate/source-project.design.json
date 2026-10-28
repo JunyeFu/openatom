@@ -1,0 +1,431 @@
+{
+  "document_kind": "factory_template_project_design_not_runtime",
+  "schema_revision": "draft-3-template",
+  "id": "template-purchased-assembly",
+  "title": "外购件齐套总装与包装",
+  "status": "design",
+  "actual_result": null,
+  "assumptions": [
+    "工时、尺寸、容量、物料与质量预设均为自行设计输入",
+    "工位间移交在本例为瞬时，不计算未声明走动/运输",
+    "专业完整输入与实际结果分开；当前仅声明流转，不计算名义几何/贴装/焊接或现场质量"
+  ],
+  "time": {
+    "unit": "millisecond",
+    "origin": "scenario_start",
+    "observation_end": 300000
+  },
+  "demand": {
+    "item_type": "package",
+    "quantity": 2,
+    "unit": "piece",
+    "destination": "store-package",
+    "acceptance_scope": "factory_store_not_customer"
+  },
+  "item_types": [
+    {
+      "id": "shell",
+      "unit": "piece",
+      "spec_ref": "self-shell-r1"
+    },
+    {
+      "id": "pcb",
+      "unit": "piece",
+      "spec_ref": "self-pcb-r1"
+    },
+    {
+      "id": "fastener",
+      "unit": "piece",
+      "spec_ref": "self-fastener-r1"
+    },
+    {
+      "id": "assembly",
+      "unit": "piece",
+      "spec_ref": "self-assembly-r1"
+    },
+    {
+      "id": "carton",
+      "unit": "piece",
+      "spec_ref": "self-carton-r1"
+    },
+    {
+      "id": "package",
+      "unit": "piece",
+      "spec_ref": "self-package-r1"
+    }
+  ],
+  "halls": [
+    {
+      "id": "H1",
+      "width_m": 24,
+      "depth_m": 16,
+      "height_m": null
+    }
+  ],
+  "layout_scope": "self_declared_plan_positions_not_clearance_or_safety_validation",
+  "resources": [
+    {
+      "id": "W-B",
+      "kind": "worker",
+      "capacity": 1,
+      "calendar_ms": [
+        [
+          0,
+          300000
+        ]
+      ]
+    },
+    {
+      "id": "W-A",
+      "kind": "worker",
+      "capacity": 1,
+      "calendar_ms": [
+        [
+          0,
+          300000
+        ]
+      ]
+    }
+  ],
+  "stores": [
+    {
+      "id": "store-shell",
+      "hall": "H1",
+      "item_type": "shell",
+      "capacity": 4,
+      "unit": "piece",
+      "layout_m": [
+        2,
+        2
+      ]
+    },
+    {
+      "id": "store-pcb",
+      "hall": "H1",
+      "item_type": "pcb",
+      "capacity": 4,
+      "unit": "piece",
+      "layout_m": [
+        5,
+        2
+      ]
+    },
+    {
+      "id": "store-fastener",
+      "hall": "H1",
+      "item_type": "fastener",
+      "capacity": 16,
+      "unit": "piece",
+      "layout_m": [
+        8,
+        2
+      ]
+    },
+    {
+      "id": "store-assembly",
+      "hall": "H1",
+      "item_type": "assembly",
+      "capacity": 4,
+      "unit": "piece",
+      "layout_m": [
+        11,
+        2
+      ]
+    },
+    {
+      "id": "store-carton",
+      "hall": "H1",
+      "item_type": "carton",
+      "capacity": 4,
+      "unit": "piece",
+      "layout_m": [
+        14,
+        2
+      ]
+    },
+    {
+      "id": "store-package",
+      "hall": "H1",
+      "item_type": "package",
+      "capacity": 4,
+      "unit": "piece",
+      "layout_m": [
+        17,
+        2
+      ]
+    },
+    {
+      "id": "store-released",
+      "hall": "H1",
+      "item_type": "assembly",
+      "capacity": 2,
+      "unit": "piece",
+      "layout_m": [
+        2,
+        4
+      ]
+    },
+    {
+      "id": "store-isolate",
+      "hall": "H1",
+      "item_type": "assembly",
+      "capacity": 2,
+      "unit": "piece",
+      "layout_m": [
+        5,
+        4
+      ]
+    }
+  ],
+  "initial_stock": [
+    {
+      "store": "store-shell",
+      "item_type": "shell",
+      "quantity": 2,
+      "unit": "piece"
+    },
+    {
+      "store": "store-pcb",
+      "item_type": "pcb",
+      "quantity": 2,
+      "unit": "piece"
+    },
+    {
+      "store": "store-fastener",
+      "item_type": "fastener",
+      "quantity": 8,
+      "unit": "piece"
+    },
+    {
+      "store": "store-carton",
+      "item_type": "carton",
+      "quantity": 2,
+      "unit": "piece"
+    }
+  ],
+  "module_refs": [
+    {
+      "id": "community.control-box-assembly",
+      "version": "0.1.0",
+      "manifest": "../../devices/control-box-assembly/manifest.json",
+      "status": "declaration_design"
+    },
+    {
+      "id": "community.parameterized-inspect",
+      "version": "0.1.0",
+      "manifest": "../../devices/parameterized-inspect/manifest.json",
+      "status": "declaration_design"
+    },
+    {
+      "id": "community.parameterized-pack",
+      "version": "0.1.0",
+      "manifest": "../../devices/parameterized-pack/manifest.json",
+      "status": "declaration_design"
+    }
+  ],
+  "devices": [
+    {
+      "id": "Assembly01",
+      "kind": "fixed",
+      "module": "community.control-box-assembly",
+      "process_mode": "declared_process",
+      "parameters": {
+        "cycle_seconds": 40
+      },
+      "port_bindings": {
+        "shell": "store-shell",
+        "pcb": "store-pcb",
+        "fastener": "store-fastener",
+        "assembled": "store-assembly"
+      },
+      "job_resources": [
+        "Assembly01",
+        "W-A"
+      ],
+      "resource_bindings": {
+        "assembler": "W-A"
+      },
+      "layout_m": [
+        12,
+        8
+      ]
+    },
+    {
+      "id": "Inspection01",
+      "kind": "fixed",
+      "module": "community.parameterized-inspect",
+      "process_mode": "declared_process",
+      "parameters": {
+        "product_item": "assembly",
+        "cycle_seconds": 10,
+        "max_reworks": 0
+      },
+      "port_bindings": {
+        "input": "store-assembly",
+        "passed": "store-released",
+        "rework": "store-isolate",
+        "quarantine": "store-isolate"
+      },
+      "job_resources": [
+        "Inspection01",
+        "W-B"
+      ],
+      "resource_bindings": {
+        "inspector": "W-B"
+      },
+      "quality_source": "preset_PASS_for_nominal_demo_not_field_inspection",
+      "layout_m": [
+        15,
+        8
+      ]
+    },
+    {
+      "id": "Packing01",
+      "kind": "fixed",
+      "module": "community.parameterized-pack",
+      "process_mode": "declared_process",
+      "parameters": {
+        "product_item": "assembly",
+        "cycle_seconds": 20
+      },
+      "port_bindings": {
+        "product": "store-released",
+        "carton": "store-carton",
+        "packed": "store-package"
+      },
+      "job_resources": [
+        "Packing01",
+        "W-B"
+      ],
+      "resource_bindings": {
+        "packer": "W-B"
+      },
+      "input_quality": {
+        "assembly": "released"
+      },
+      "layout_m": [
+        18,
+        8
+      ]
+    }
+  ],
+  "preparation_tasks": [],
+  "professional_artifacts": [],
+  "lines": [
+    {
+      "id": "L1",
+      "hall": "H1",
+      "members": [
+        "Assembly01",
+        "Inspection01",
+        "Packing01"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "kind": "material",
+      "item_type": "shell",
+      "from": "store-shell",
+      "to": "Assembly01.shell"
+    },
+    {
+      "kind": "material",
+      "item_type": "pcb",
+      "from": "store-pcb",
+      "to": "Assembly01.pcb"
+    },
+    {
+      "kind": "material",
+      "item_type": "fastener",
+      "from": "store-fastener",
+      "to": "Assembly01.fastener"
+    },
+    {
+      "kind": "material",
+      "item_type": "assembly",
+      "from": "Assembly01.assembled",
+      "to": "store-assembly"
+    },
+    {
+      "kind": "material",
+      "item_type": "assembly",
+      "from": "store-assembly",
+      "to": "Inspection01.input"
+    },
+    {
+      "kind": "material",
+      "item_type": "assembly",
+      "from": "Inspection01.passed",
+      "to": "store-released"
+    },
+    {
+      "kind": "material",
+      "item_type": "assembly",
+      "from": "Inspection01.rework",
+      "to": "store-isolate"
+    },
+    {
+      "kind": "material",
+      "item_type": "assembly",
+      "from": "Inspection01.quarantine",
+      "to": "store-isolate"
+    },
+    {
+      "kind": "material",
+      "item_type": "assembly",
+      "from": "store-released",
+      "to": "Packing01.product"
+    },
+    {
+      "kind": "material",
+      "item_type": "carton",
+      "from": "store-carton",
+      "to": "Packing01.carton"
+    },
+    {
+      "kind": "material",
+      "item_type": "package",
+      "from": "Packing01.packed",
+      "to": "store-package"
+    }
+  ],
+  "quality_inputs": [
+    "PASS",
+    "PASS"
+  ],
+  "quality_source": "preset",
+  "import_policy": {
+    "new_project": "use_explicit_demo_seed",
+    "into_existing_project": "preserve_existing_stock_and_demand_import_new_layout_and_definitions_without_sample_stock_or_demand_seed_requires_explicit_choice_in_new_scenario",
+    "object_ids": "new_namespace_and_rewrite_references",
+    "item_types": "explicit_match_of_id_unit_spec_not_display_name"
+  },
+  "entry_exit": {
+    "input_types": [
+      "shell",
+      "pcb",
+      "fastener",
+      "carton"
+    ],
+    "output_type": "package",
+    "track_start": "any_named_material_endpoint",
+    "track_end": "declared_legal_store_or_operation"
+  },
+  "professional_modes": {
+    "selected": "declared_process",
+    "calculated_nominal": "requires_actual_supported_producer_result",
+    "software_in_loop": "requires_actual_software_target_and_event_contract",
+    "silent_downgrade": false
+  },
+  "instantiation_contract_ref": "modules/templates/instantiation.design.json",
+  "canonical_file_conversion": "explicit design-to-domain mapping required; this design JSON is not Project file format 1.0",
+  "adoption_preview": {
+    "exact_module_versions": true,
+    "new_object_ids_and_references": true,
+    "explicit_existing_resource_bindings": true,
+    "supply_and_order_choices_separate": true,
+    "default_explicit_new_scenario_seed": null
+  },
+  "unresolved_geometry_rule": "absent height/footprint/clearance stays unresolved; existing XY plan alone is not site Pass"
+}

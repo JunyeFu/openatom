@@ -1,0 +1,6 @@
+import {readFile,writeFile,mkdir} from 'node:fs/promises';import {stripTypeScriptTypes} from 'node:module';import {root,out} from './core.mjs';
+export const compiled=new URL('compiled/',out);await mkdir(compiled,{recursive:true});
+for(const [name,path]of [['presentationHost','apps/planner/src/services/presentationHost.ts'],['frozenProcess','apps/planner/src/services/frozenProcess.ts'],['model','apps/planner/src/features/node-inspector/model.ts'],['read','apps/planner/src/features/node-inspector/read.ts']]){
+ let source=stripTypeScriptTypes(await readFile(new URL(path,root),'utf8'),{mode:'transform'}).replace(/import \{ dispatch \} from '(?:\.\/projectHost|\.\.\/\.\.\/services\/projectHost)';/,"const dispatch=()=>{throw new Error('Explicit fixed SDK port required; Native forbidden')};").replace(/import \{ readMediaAsset[^\n]*from '.\/mediaAssets';/,"const readMediaAsset=()=>{throw new Error('Explicit actual private byte port required')};").replaceAll("from '../../services/presentationHost'","from './presentationHost.mjs'").replaceAll("from './frozenProcess'","from './frozenProcess.mjs'").replace("from './model'","from './model.mjs'");await writeFile(new URL(name+'.mjs',compiled),source);
+}
+export const host=await import(new URL('presentationHost.mjs',compiled)),node=await import(new URL('read.mjs',compiled));

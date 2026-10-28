@@ -36,6 +36,1047 @@
   ],
   "baseline": {
     "scope": "L03_executed_local_business_simulation_not_Rust_product_acceptance",
+    "input": {
+      "document_kind": "L03_local_executable_proof_input_not_product_project",
+      "project_id": "E01",
+      "hall_id": "H01",
+      "line_id": "L03",
+      "source_seed": "packages/module-kit/demo-equipment/definitions.design.json",
+      "stations": [
+        {
+          "id": "ASM01",
+          "title": "四螺钉控制盒装配台",
+          "kind": "assembly",
+          "definition_ref": {
+            "id": "community.control-box-assembly",
+            "version": "0.1.0"
+          },
+          "operation": "assemble",
+          "duration_ms": 40000,
+          "behavior": {
+            "builtin": "assemble",
+            "repeat_mode": "continuous_when_ready",
+            "inputs": [
+              {
+                "port": "shell",
+                "quantity": 1
+              },
+              {
+                "port": "pcb",
+                "quantity": 1
+              },
+              {
+                "port": "fastener",
+                "quantity": 4
+              }
+            ],
+            "outputs": [
+              {
+                "port": "assembled",
+                "quantity": 1
+              }
+            ],
+            "duration": {
+              "value": 40,
+              "unit": "second",
+              "basis": "自建演示假设"
+            },
+            "resources": [
+              {
+                "role": "assembler",
+                "quantity": 1
+              }
+            ],
+            "start": "inputs_ready_and_worker_available",
+            "finish": "duration_elapsed",
+            "blocked": "output_capacity_unavailable"
+          },
+          "ports": [
+            {
+              "id": "shell",
+              "kind": "material",
+              "direction": "in",
+              "item": "shell",
+              "unit": "piece"
+            },
+            {
+              "id": "pcb",
+              "kind": "material",
+              "direction": "in",
+              "item": "pcb",
+              "unit": "piece"
+            },
+            {
+              "id": "fastener",
+              "kind": "material",
+              "direction": "in",
+              "item": "fastener",
+              "unit": "piece"
+            },
+            {
+              "id": "assembled",
+              "kind": "material",
+              "direction": "out",
+              "item": "assembly",
+              "unit": "piece"
+            }
+          ],
+          "resources": [
+            "assembler"
+          ],
+          "placement": [
+            0,
+            0
+          ]
+        },
+        {
+          "id": "R01",
+          "title": "单件夹爪搬运机器人",
+          "kind": "robot",
+          "definition_ref": {
+            "id": "superfactory.demo.robot-transfer",
+            "version": "0.1.0"
+          },
+          "operation": "robot",
+          "duration_ms": 12000,
+          "behavior": {
+            "declaration": "pick_and_place",
+            "implementation_status": "local_proof_only_not_product_runtime",
+            "concurrency": 1,
+            "repeat_mode": "continuous_when_ready",
+            "inputs": [
+              {
+                "port": "pickup",
+                "quantity": 1
+              }
+            ],
+            "outputs": [
+              {
+                "port": "place",
+                "quantity": 1
+              }
+            ],
+            "duration": {
+              "value": 12,
+              "unit": "second",
+              "basis": "自建演示假设，非真实机器节拍"
+            },
+            "capacity": {
+              "value": 1,
+              "unit": "piece"
+            },
+            "resources": [],
+            "identity_policy": "same_item_id_type_quality_and_composition",
+            "start": "source_item_available_and_robot_idle",
+            "stages": [
+              {
+                "id": "approach",
+                "ratio": 0.16666666666666666,
+                "effect": "reserve_source_item_without_changing_holder"
+              },
+              {
+                "id": "grip",
+                "ratio": 0.08333333333333333,
+                "effect": "on_finish_transfer_same_item_from_source_to_robot_holder"
+              },
+              {
+                "id": "loaded_move",
+                "ratio": 0.4166666666666667,
+                "effect": "keep_item_held_by_robot"
+              },
+              {
+                "id": "release",
+                "ratio": 0.08333333333333333,
+                "effect": "on_start_reserve_destination_capacity_if_available; on_finish_transfer_same_item_once_and_commit_reserved_capacity"
+              },
+              {
+                "id": "return",
+                "ratio": 0.25,
+                "effect": "robot_becomes_available_only_on_finish"
+              }
+            ],
+            "blocked": "wait_before_release_with_gripper_closed_and_same_cargo_held; freeze_effective_progress",
+            "finish": "return_completed; delivery_occurs_at_release_completion"
+          },
+          "ports": [
+            {
+              "id": "pickup",
+              "kind": "material",
+              "direction": "in",
+              "item_parameter": "cargo_item",
+              "unit": "piece"
+            },
+            {
+              "id": "place",
+              "kind": "material",
+              "direction": "out",
+              "item_parameter": "cargo_item",
+              "unit": "piece"
+            }
+          ],
+          "resources": [],
+          "placement": [
+            1.7,
+            -0.9
+          ]
+        },
+        {
+          "id": "CV01",
+          "title": "检查前输送机",
+          "kind": "conveyor",
+          "definition_ref": {
+            "id": "superfactory.demo.belt-transfer",
+            "version": "0.1.0"
+          },
+          "operation": "conveyor",
+          "duration_ms": 4000,
+          "behavior": {
+            "declaration": "fixed_device_transfer",
+            "implementation_status": "local_proof_only_not_product_runtime",
+            "concurrency": 1,
+            "repeat_mode": "continuous_when_ready",
+            "inputs": [
+              {
+                "port": "input",
+                "quantity": 1
+              }
+            ],
+            "outputs": [
+              {
+                "port": "output",
+                "quantity": 1
+              }
+            ],
+            "duration": {
+              "value": 4,
+              "unit": "second",
+              "basis": "自建演示假设，非真实带速测量"
+            },
+            "capacity": {
+              "value": 1,
+              "unit": "piece"
+            },
+            "resources": [],
+            "identity_policy": "same_item_id_type_quality_and_composition",
+            "start": "source_available_and_device_idle; atomically_transfer_same_item_to_device_holder",
+            "finish": "travel_elapsed_and_destination_accepts; transfer_same_item_once",
+            "blocked": "hold_same_item_at_output_and_stop_belt_until_destination_accepts"
+          },
+          "ports": [
+            {
+              "id": "input",
+              "kind": "material",
+              "direction": "in",
+              "item_parameter": "cargo_item",
+              "unit": "piece"
+            },
+            {
+              "id": "output",
+              "kind": "material",
+              "direction": "out",
+              "item_parameter": "cargo_item",
+              "unit": "piece"
+            }
+          ],
+          "resources": [],
+          "placement": [
+            3.3,
+            0
+          ]
+        },
+        {
+          "id": "V01",
+          "title": "检验与分流台",
+          "kind": "inspection",
+          "definition_ref": {
+            "id": "community.inspect-route",
+            "version": "0.1.0"
+          },
+          "operation": "inspect",
+          "duration_ms": 10000,
+          "behavior": {
+            "builtin": "inspect_and_route",
+            "concurrency": 1,
+            "duration": {
+              "value": 10,
+              "unit": "second",
+              "basis": "演示假设"
+            },
+            "resources": [
+              {
+                "role": "inspector",
+                "quantity": 1
+              }
+            ],
+            "identity_policy": "preserve_item",
+            "result_source": "scenario.quality_inputs",
+            "max_reworks": 1,
+            "routes": [
+              {
+                "when": "pass",
+                "port": "passed"
+              },
+              {
+                "when": "fail_and_completed_reworks_below_limit",
+                "port": "rework"
+              },
+              {
+                "when": "fail_and_completed_reworks_at_limit",
+                "port": "quarantine"
+              },
+              {
+                "when": "unknown_or_missing",
+                "action": "hold_item_and_resources"
+              }
+            ],
+            "queue_policy": "arrival_time_then_stable_id",
+            "full_destination": "hold_result_until_space",
+            "repeat_mode": "continuous_when_ready",
+            "inputs": [
+              {
+                "port": "input",
+                "quantity": 1
+              }
+            ]
+          },
+          "ports": [
+            {
+              "id": "input",
+              "kind": "material",
+              "direction": "in",
+              "item": "assembly",
+              "unit": "piece"
+            },
+            {
+              "id": "passed",
+              "kind": "material",
+              "direction": "out",
+              "item": "assembly",
+              "unit": "piece"
+            },
+            {
+              "id": "rework",
+              "kind": "material",
+              "direction": "out",
+              "item": "assembly",
+              "unit": "piece"
+            },
+            {
+              "id": "quarantine",
+              "kind": "material",
+              "direction": "out",
+              "item": "assembly",
+              "unit": "piece"
+            }
+          ],
+          "resources": [
+            "inspector"
+          ],
+          "placement": [
+            5.6,
+            0
+          ]
+        },
+        {
+          "id": "RW01",
+          "title": "保留身份返工台",
+          "kind": "assembly",
+          "definition_ref": {
+            "id": "community.identity-rework",
+            "version": "0.1.0"
+          },
+          "operation": "rework",
+          "duration_ms": 20000,
+          "behavior": {
+            "builtin": "rework",
+            "concurrency": 1,
+            "duration": {
+              "value": 20,
+              "unit": "second",
+              "basis": "演示假设"
+            },
+            "resources": [
+              {
+                "role": "repairer",
+                "quantity": 1
+              }
+            ],
+            "identity_policy": "preserve_item",
+            "on_complete": "increment_completed_reworks_and_require_reinspection",
+            "automatic_quality_pass": false,
+            "repeat_mode": "continuous_when_ready",
+            "inputs": [
+              {
+                "port": "input",
+                "quantity": 1
+              }
+            ],
+            "outputs": [
+              {
+                "port": "output",
+                "quantity": 1
+              }
+            ]
+          },
+          "ports": [
+            {
+              "id": "input",
+              "kind": "material",
+              "direction": "in",
+              "item": "assembly",
+              "unit": "piece"
+            },
+            {
+              "id": "output",
+              "kind": "material",
+              "direction": "out",
+              "item": "assembly",
+              "unit": "piece"
+            }
+          ],
+          "resources": [
+            "repairer"
+          ],
+          "placement": [
+            5.6,
+            2.6
+          ]
+        },
+        {
+          "id": "CV02",
+          "title": "装箱前输送机",
+          "kind": "conveyor",
+          "definition_ref": {
+            "id": "superfactory.demo.belt-transfer",
+            "version": "0.1.0"
+          },
+          "operation": "conveyor",
+          "duration_ms": 4000,
+          "behavior": {
+            "declaration": "fixed_device_transfer",
+            "implementation_status": "local_proof_only_not_product_runtime",
+            "concurrency": 1,
+            "repeat_mode": "continuous_when_ready",
+            "inputs": [
+              {
+                "port": "input",
+                "quantity": 1
+              }
+            ],
+            "outputs": [
+              {
+                "port": "output",
+                "quantity": 1
+              }
+            ],
+            "duration": {
+              "value": 4,
+              "unit": "second",
+              "basis": "自建演示假设，非真实带速测量"
+            },
+            "capacity": {
+              "value": 1,
+              "unit": "piece"
+            },
+            "resources": [],
+            "identity_policy": "same_item_id_type_quality_and_composition",
+            "start": "source_available_and_device_idle; atomically_transfer_same_item_to_device_holder",
+            "finish": "travel_elapsed_and_destination_accepts; transfer_same_item_once",
+            "blocked": "hold_same_item_at_output_and_stop_belt_until_destination_accepts"
+          },
+          "ports": [
+            {
+              "id": "input",
+              "kind": "material",
+              "direction": "in",
+              "item_parameter": "cargo_item",
+              "unit": "piece"
+            },
+            {
+              "id": "output",
+              "kind": "material",
+              "direction": "out",
+              "item_parameter": "cargo_item",
+              "unit": "piece"
+            }
+          ],
+          "resources": [],
+          "placement": [
+            7.9,
+            0
+          ]
+        },
+        {
+          "id": "PK01",
+          "title": "单件装箱工位",
+          "kind": "assembly",
+          "definition_ref": {
+            "id": "community.carton-pack",
+            "version": "0.1.0"
+          },
+          "operation": "pack",
+          "duration_ms": 15000,
+          "behavior": {
+            "builtin": "pack",
+            "repeat_mode": "continuous_when_ready",
+            "inputs": [
+              {
+                "port": "product",
+                "quantity": 1
+              },
+              {
+                "port": "carton",
+                "quantity": 1
+              }
+            ],
+            "outputs": [
+              {
+                "port": "packed",
+                "quantity": 1
+              }
+            ],
+            "duration": {
+              "value": 15,
+              "unit": "second",
+              "basis": "自建演示假设，非实际包装工时"
+            },
+            "resources": [
+              {
+                "role": "packer",
+                "quantity": 1
+              }
+            ],
+            "identity_policy": {
+              "contents_from": "product",
+              "container_material_from": "carton",
+              "result": "new_package_with_existing_content_ids"
+            },
+            "start": "inputs_ready_and_packer_available",
+            "finish": "duration_elapsed_and_output_has_space"
+          },
+          "ports": [
+            {
+              "id": "product",
+              "kind": "material",
+              "direction": "in",
+              "item": "assembly",
+              "unit": "piece"
+            },
+            {
+              "id": "carton",
+              "kind": "material",
+              "direction": "in",
+              "item": "carton",
+              "unit": "piece"
+            },
+            {
+              "id": "packed",
+              "kind": "material",
+              "direction": "out",
+              "item": "package",
+              "unit": "piece"
+            }
+          ],
+          "resources": [
+            "packer"
+          ],
+          "placement": [
+            10.3,
+            0
+          ]
+        },
+        {
+          "id": "CASE01",
+          "title": "胶带封箱机",
+          "kind": "sealer",
+          "definition_ref": {
+            "id": "superfactory.demo.carton-sealer",
+            "version": "0.1.0"
+          },
+          "operation": "seal",
+          "duration_ms": 8000,
+          "behavior": {
+            "declaration": "seal_existing_package",
+            "implementation_status": "local_proof_only_not_product_runtime",
+            "concurrency": 1,
+            "repeat_mode": "continuous_when_ready",
+            "inputs": [
+              {
+                "port": "loaded",
+                "quantity": 1
+              },
+              {
+                "port": "tape",
+                "quantity": 0.6
+              }
+            ],
+            "outputs": [
+              {
+                "port": "sealed",
+                "quantity": 1
+              }
+            ],
+            "duration": {
+              "value": 8,
+              "unit": "second",
+              "basis": "自建演示假设；胶带0.6m也是演示输入"
+            },
+            "resources": [],
+            "identity_policy": "preserve_package_id_and_all_content_ids",
+            "start": "open_loaded_package_and_configured_tape_quantity_available; reserve_package_and_required_tape",
+            "stages": [
+              {
+                "id": "infeed",
+                "ratio": 0.25,
+                "effect": "on_start_transfer_package_to_device_holder"
+              },
+              {
+                "id": "seal",
+                "ratio": 0.5,
+                "effect": "on_finish_consume_reserved_tape_once_and_set_same_package_closure_sealed"
+              },
+              {
+                "id": "outfeed",
+                "ratio": 0.25,
+                "effect": "on_finish_transfer_same_package_to_destination_if_accepted"
+              }
+            ],
+            "blocked": "hold_sealed_package_at_output; no_second_tape_consumption_or_new_package",
+            "finish": "outfeed_elapsed_and_destination_accepts",
+            "professional_scope": "声明封箱与胶带用量；不计算纸箱展开、折叠、成型或胶带受力"
+          },
+          "ports": [
+            {
+              "id": "loaded",
+              "kind": "material",
+              "direction": "in",
+              "item": "package",
+              "unit": "piece",
+              "required_attribute": {
+                "closure": "open"
+              }
+            },
+            {
+              "id": "tape",
+              "kind": "material",
+              "direction": "in",
+              "item": "sealing_tape",
+              "unit": "meter"
+            },
+            {
+              "id": "sealed",
+              "kind": "material",
+              "direction": "out",
+              "item": "package",
+              "unit": "piece",
+              "result_attribute": {
+                "closure": "sealed"
+              }
+            }
+          ],
+          "resources": [],
+          "placement": [
+            12.7,
+            0
+          ]
+        }
+      ],
+      "item_definitions": [
+        {
+          "alias": "shell",
+          "id": "superfactory.demo.item.shell",
+          "version": "0.1.0",
+          "category": "items",
+          "title": "控制盒壳体",
+          "definition_state": "design",
+          "contribution": {
+            "author": "本项目自建演示输入",
+            "license": "待项目许可确认",
+            "status": "local_proof_only"
+          },
+          "item_definition": {
+            "unit": "piece",
+            "tracking": "individual",
+            "quantity_is_instance_state": true,
+            "specification_basis": "自建演示规格；不采用另一壳体样例的100mm规格"
+          }
+        },
+        {
+          "alias": "pcb",
+          "id": "superfactory.demo.item.pcb",
+          "version": "0.1.0",
+          "category": "items",
+          "title": "控制板",
+          "definition_state": "design",
+          "contribution": {
+            "author": "本项目自建演示输入",
+            "license": "待项目许可确认",
+            "status": "local_proof_only"
+          },
+          "item_definition": {
+            "unit": "piece",
+            "tracking": "individual",
+            "quantity_is_instance_state": true,
+            "specification_basis": "自建演示规格；不采用另一壳体样例的100mm规格"
+          }
+        },
+        {
+          "alias": "fastener",
+          "id": "superfactory.demo.item.fastener",
+          "version": "0.1.0",
+          "category": "items",
+          "title": "PCB紧固件",
+          "definition_state": "design",
+          "contribution": {
+            "author": "本项目自建演示输入",
+            "license": "待项目许可确认",
+            "status": "local_proof_only"
+          },
+          "item_definition": {
+            "unit": "piece",
+            "tracking": "individual",
+            "quantity_is_instance_state": true,
+            "specification_basis": "自建演示规格；不采用另一壳体样例的100mm规格"
+          }
+        },
+        {
+          "alias": "carton",
+          "id": "superfactory.demo.item.carton",
+          "version": "0.1.0",
+          "category": "items",
+          "title": "控制盒包装纸箱",
+          "definition_state": "design",
+          "contribution": {
+            "author": "本项目自建演示输入",
+            "license": "待项目许可确认",
+            "status": "local_proof_only"
+          },
+          "item_definition": {
+            "unit": "piece",
+            "tracking": "individual",
+            "quantity_is_instance_state": true,
+            "specification_basis": "自建演示规格；不采用另一壳体样例的100mm规格"
+          }
+        },
+        {
+          "alias": "assembly",
+          "id": "superfactory.demo.item.assembly",
+          "version": "0.1.0",
+          "category": "items",
+          "title": "已装配控制盒",
+          "definition_state": "design",
+          "contribution": {
+            "author": "本项目自建演示输入",
+            "license": "待项目许可确认",
+            "status": "local_proof_only"
+          },
+          "item_definition": {
+            "unit": "piece",
+            "tracking": "individual",
+            "quantity_is_instance_state": true,
+            "specification_basis": "自建演示规格；不采用另一壳体样例的100mm规格",
+            "recipe": {
+              "shell": 1,
+              "pcb": 1,
+              "fastener": 4
+            },
+            "visual": "shared_control_box_geometry_1_to_1"
+          }
+        },
+        {
+          "alias": "package",
+          "id": "superfactory.demo.item.package",
+          "version": "0.1.0",
+          "category": "items",
+          "title": "控制盒包件",
+          "definition_state": "design",
+          "contribution": {
+            "author": "本项目自建演示输入",
+            "license": "待项目许可确认",
+            "status": "local_proof_only"
+          },
+          "item_definition": {
+            "unit": "piece",
+            "tracking": "individual",
+            "quantity_is_instance_state": true,
+            "specification_basis": "自建演示规格；不采用另一壳体样例的100mm规格",
+            "container": "carton",
+            "contents": "assembly",
+            "supported_closure_values": [
+              "open",
+              "sealed"
+            ],
+            "envelope_meter": [
+              0.49,
+              0.34,
+              0.36
+            ]
+          }
+        },
+        {
+          "alias": "sealing_tape",
+          "id": "superfactory.demo.item.sealing_tape",
+          "version": "0.1.0",
+          "category": "items",
+          "title": "封箱胶带",
+          "definition_state": "design",
+          "contribution": {
+            "author": "本项目自建演示输入",
+            "license": "待项目许可确认",
+            "status": "local_proof_only"
+          },
+          "item_definition": {
+            "unit": "meter",
+            "tracking": "quantity",
+            "quantity_is_instance_state": true,
+            "specification_basis": "自建演示规格；不采用另一壳体样例的100mm规格",
+            "quantity_resolution_meter": 0.001
+          }
+        }
+      ],
+      "resource_definitions": [
+        {
+          "document_kind": "typed_module_declaration_design_not_runtime",
+          "id": "community.operator-role",
+          "version": "0.1.0",
+          "category": "resources",
+          "title": "可共享操作人员角色",
+          "definition_state": "design",
+          "contribution": {
+            "author": "待填写",
+            "license": "待声明",
+            "assets": [],
+            "status": "design"
+          },
+          "resource_definition": {
+            "kind": "worker",
+            "role": "assembler",
+            "capacity": {
+              "value": 1,
+              "unit": "person"
+            },
+            "default_calendar_ms": [
+              [
+                0,
+                300000
+              ]
+            ],
+            "current_occupation_is_instance_state": true
+          }
+        },
+        {
+          "id": "superfactory.demo.role.inspector",
+          "version": "0.1.0",
+          "category": "resources",
+          "title": "检查人员",
+          "definition_state": "design",
+          "contribution": {
+            "author": "本项目自建演示输入",
+            "license": "待项目许可确认",
+            "status": "local_proof_only"
+          },
+          "resource_definition": {
+            "kind": "worker",
+            "role": "inspector",
+            "capacity": {
+              "value": 1,
+              "unit": "person"
+            },
+            "current_occupation_is_instance_state": true
+          }
+        },
+        {
+          "id": "superfactory.demo.role.repairer",
+          "version": "0.1.0",
+          "category": "resources",
+          "title": "返工人员",
+          "definition_state": "design",
+          "contribution": {
+            "author": "本项目自建演示输入",
+            "license": "待项目许可确认",
+            "status": "local_proof_only"
+          },
+          "resource_definition": {
+            "kind": "worker",
+            "role": "repairer",
+            "capacity": {
+              "value": 1,
+              "unit": "person"
+            },
+            "current_occupation_is_instance_state": true
+          }
+        },
+        {
+          "id": "superfactory.demo.role.packer",
+          "version": "0.1.0",
+          "category": "resources",
+          "title": "包装人员",
+          "definition_state": "design",
+          "contribution": {
+            "author": "本项目自建演示输入",
+            "license": "待项目许可确认",
+            "status": "local_proof_only"
+          },
+          "resource_definition": {
+            "kind": "worker",
+            "role": "packer",
+            "capacity": {
+              "value": 1,
+              "unit": "person"
+            },
+            "current_occupation_is_instance_state": true
+          }
+        }
+      ],
+      "resource_instances": [
+        {
+          "id": "W-ASSEMBLER-01",
+          "role": "assembler",
+          "definition_ref": {
+            "id": "community.operator-role",
+            "version": "0.1.0"
+          },
+          "capacity": 1,
+          "availability": "always_available_in_this_local_proof",
+          "calendar_adoption": "explicit_override_of_definition_default"
+        },
+        {
+          "id": "W-INSPECTOR-01",
+          "role": "inspector",
+          "definition_ref": {
+            "id": "superfactory.demo.role.inspector",
+            "version": "0.1.0"
+          },
+          "capacity": 1,
+          "availability": "always_available_in_this_local_proof",
+          "calendar_adoption": "explicit_override_of_definition_default"
+        },
+        {
+          "id": "W-REPAIRER-01",
+          "role": "repairer",
+          "definition_ref": {
+            "id": "superfactory.demo.role.repairer",
+            "version": "0.1.0"
+          },
+          "capacity": 1,
+          "availability": "always_available_in_this_local_proof",
+          "calendar_adoption": "explicit_override_of_definition_default"
+        },
+        {
+          "id": "W-PACKER-01",
+          "role": "packer",
+          "definition_ref": {
+            "id": "superfactory.demo.role.packer",
+            "version": "0.1.0"
+          },
+          "capacity": 1,
+          "availability": "always_available_in_this_local_proof",
+          "calendar_adoption": "explicit_override_of_definition_default"
+        }
+      ],
+      "item_bindings": {
+        "shell": {
+          "id": "superfactory.demo.item.shell",
+          "version": "0.1.0"
+        },
+        "pcb": {
+          "id": "superfactory.demo.item.pcb",
+          "version": "0.1.0"
+        },
+        "fastener": {
+          "id": "superfactory.demo.item.fastener",
+          "version": "0.1.0"
+        },
+        "carton": {
+          "id": "superfactory.demo.item.carton",
+          "version": "0.1.0"
+        },
+        "assembly": {
+          "id": "superfactory.demo.item.assembly",
+          "version": "0.1.0"
+        },
+        "package": {
+          "id": "superfactory.demo.item.package",
+          "version": "0.1.0"
+        },
+        "sealing_tape": {
+          "id": "superfactory.demo.item.sealing_tape",
+          "version": "0.1.0"
+        }
+      },
+      "pallet": {
+        "id": "PAL01",
+        "category": "resources",
+        "definition_ref": {
+          "id": "superfactory.demo.pallet12",
+          "version": "0.1.0"
+        },
+        "capacity": 12,
+        "placement": [
+          14.9,
+          0
+        ]
+      },
+      "order": {
+        "id": "ORDER-001",
+        "quantity": 6,
+        "accepted_unit": "sealed_package_at_PAL01"
+      },
+      "supplies": {
+        "shell": 6,
+        "pcb": 2,
+        "fastener": 24,
+        "carton": 6,
+        "tape_meter": 3.6
+      },
+      "arrivals": [
+        {
+          "id": "ARR-PCB-001",
+          "at_ms": 120000,
+          "item": "pcb",
+          "quantity": 4
+        }
+      ],
+      "quality_inputs": {
+        "A-003": [
+          "fail",
+          "pass"
+        ]
+      },
+      "default_quality": "pass",
+      "max_reworks": 1,
+      "queue_capacity": 1,
+      "timing_basis": "沿用声明工时与自建演示输入，不是实测工业节拍",
+      "flow": [
+        "ASM01",
+        "R01",
+        "CV01",
+        "V01",
+        "CV02",
+        "PK01",
+        "CASE01",
+        "PAL01"
+      ],
+      "rework_flow": [
+        "V01",
+        "RW01",
+        "V01"
+      ],
+      "item_visual_spec": {
+        "assembly": "shared_control_box_geometry",
+        "package_dimensions_meter": [
+          0.49,
+          0.34,
+          0.36
+        ],
+        "pallet_grid": [
+          2,
+          2,
+          3
+        ]
+      },
+      "actual_product_result": null
+    },
     "input_variant": "baseline",
     "snapshot": {
       "now_ms": 350000,
@@ -166,6 +1207,11 @@
         "A-001": {
           "id": "A-001",
           "type": "assembly",
+          "definition_ref": {
+            "id": "superfactory.demo.item.assembly",
+            "version": "0.1.0"
+          },
+          "unit": "piece",
           "holder": "PK-001",
           "completed_reworks": 0,
           "quality": "pass",
@@ -182,6 +1228,11 @@
         "A-002": {
           "id": "A-002",
           "type": "assembly",
+          "definition_ref": {
+            "id": "superfactory.demo.item.assembly",
+            "version": "0.1.0"
+          },
+          "unit": "piece",
           "holder": "PK-002",
           "completed_reworks": 0,
           "quality": "pass",
@@ -198,6 +1249,11 @@
         "PK-001": {
           "id": "PK-001",
           "type": "package",
+          "definition_ref": {
+            "id": "superfactory.demo.item.package",
+            "version": "0.1.0"
+          },
+          "unit": "piece",
           "holder": "PAL01",
           "closure": "sealed",
           "contents": [
@@ -209,6 +1265,11 @@
         "PK-002": {
           "id": "PK-002",
           "type": "package",
+          "definition_ref": {
+            "id": "superfactory.demo.item.package",
+            "version": "0.1.0"
+          },
+          "unit": "piece",
           "holder": "PAL01",
           "closure": "sealed",
           "contents": [
@@ -220,6 +1281,11 @@
         "A-003": {
           "id": "A-003",
           "type": "assembly",
+          "definition_ref": {
+            "id": "superfactory.demo.item.assembly",
+            "version": "0.1.0"
+          },
+          "unit": "piece",
           "holder": "PK-003",
           "completed_reworks": 1,
           "quality": "pass",
@@ -236,6 +1302,11 @@
         "A-004": {
           "id": "A-004",
           "type": "assembly",
+          "definition_ref": {
+            "id": "superfactory.demo.item.assembly",
+            "version": "0.1.0"
+          },
+          "unit": "piece",
           "holder": "PK-004",
           "completed_reworks": 0,
           "quality": "pass",
@@ -252,6 +1323,11 @@
         "PK-003": {
           "id": "PK-003",
           "type": "package",
+          "definition_ref": {
+            "id": "superfactory.demo.item.package",
+            "version": "0.1.0"
+          },
+          "unit": "piece",
           "holder": "PAL01",
           "closure": "sealed",
           "contents": [
@@ -263,6 +1339,11 @@
         "A-005": {
           "id": "A-005",
           "type": "assembly",
+          "definition_ref": {
+            "id": "superfactory.demo.item.assembly",
+            "version": "0.1.0"
+          },
+          "unit": "piece",
           "holder": "PK-005",
           "completed_reworks": 0,
           "quality": "pass",
@@ -279,6 +1360,11 @@
         "PK-004": {
           "id": "PK-004",
           "type": "package",
+          "definition_ref": {
+            "id": "superfactory.demo.item.package",
+            "version": "0.1.0"
+          },
+          "unit": "piece",
           "holder": "PAL01",
           "closure": "sealed",
           "contents": [
@@ -290,6 +1376,11 @@
         "A-006": {
           "id": "A-006",
           "type": "assembly",
+          "definition_ref": {
+            "id": "superfactory.demo.item.assembly",
+            "version": "0.1.0"
+          },
+          "unit": "piece",
           "holder": "PK-006",
           "completed_reworks": 0,
           "quality": "pass",
@@ -306,6 +1397,11 @@
         "PK-005": {
           "id": "PK-005",
           "type": "package",
+          "definition_ref": {
+            "id": "superfactory.demo.item.package",
+            "version": "0.1.0"
+          },
+          "unit": "piece",
           "holder": "PAL01",
           "closure": "sealed",
           "contents": [
@@ -317,6 +1413,11 @@
         "PK-006": {
           "id": "PK-006",
           "type": "package",
+          "definition_ref": {
+            "id": "superfactory.demo.item.package",
+            "version": "0.1.0"
+          },
+          "unit": "piece",
           "holder": "PAL01",
           "closure": "sealed",
           "contents": [

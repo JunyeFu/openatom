@@ -1,0 +1,221 @@
+{
+  "document_kind": "P0_01_Host_slice_window3_independent_scope_revision_tests",
+  "task_id": "P0-01",
+  "within_original_step": 2,
+  "window": "实现窗口3",
+  "window_role": "W02",
+  "dispatch_ref": "docs/04_开发与验收/P0-01_Host最小创建读取编辑切片.json#/parallel_dispatch/2",
+  "authority": "本轮P0-01原步骤2实际Host最小创建读取编辑委托；统筹已确认独立错误预期与未授权信息不泄漏。",
+  "status": "independent_scope_revision_tests_passed",
+  "test_ref": "packages/commands/tests/host_scope_revision.rs",
+  "specification_before_results": true,
+  "spec_refs": [
+    "packages/commands/src/api.rs",
+    "packages/domain/src/models.rs",
+    "docs/03_架构与契约/公开操作与宿主调用契约.json#/edit_contract/host_private_authorization/error_order",
+    "docs/03_架构与契约/公开操作与宿主调用契约.json#/error_contract/disclosure"
+  ],
+  "stable_Host_API": [
+    "ProjectHost::new(ObjectId,ObjectId)",
+    "dispatch(&session_id,ApiRequest)->serde_json::Value",
+    "register_external_session(HostCallContext)->Result<(),ApiError>",
+    "caller_context(&session_id)->Option<&HostCallContext>"
+  ],
+  "cases": [
+    {
+      "id": "HSR-01",
+      "test": "no_active_project_read_is_not_a_fabricated_project_or_revision",
+      "expected": "UI Project get_object无活动工程为NoActiveProject且无项目/修订；Workspace get_context独立返回空上下文。",
+      "actual": {
+        "executed": true,
+        "result": "passed"
+      }
+    },
+    {
+      "id": "HSR-02",
+      "test": "unregistered_session_and_wrong_active_project_precede_stale_revision",
+      "expected": "未登记会话/错误活动工程加stale base0均PermissionDenied，不泄漏当前修订，完整工程保持。",
+      "actual": {
+        "executed": true,
+        "result": "passed"
+      }
+    },
+    {
+      "id": "HSR-03",
+      "test": "foreign_project_grant_and_disabled_operation_do_not_disclose_or_mutate",
+      "expected": "Host登记的ExternalAgent授权另一工程读取当前物品拒绝；禁用apply_commands即使stale也先PermissionDenied；工程/对象/创建账本不变。",
+      "actual": {
+        "executed": true,
+        "result": "passed"
+      }
+    },
+    {
+      "id": "HSR-04",
+      "test": "unsupported_definition_draft_never_borrows_project_revision",
+      "expected": "DefinitionDraft本片UnsupportedCapability而非借Project revision2返回冲突；错误无项目/Scope修订，Project不变。",
+      "actual": {
+        "executed": true,
+        "result": "passed"
+      }
+    },
+    {
+      "id": "HSR-05",
+      "test": "multiple_edits_commit_exactly_one_new_project_revision",
+      "expected": "两个PutObject(ItemType)+SetProjectSettings同批由revision1只增为2，三个实际修改均可读。",
+      "actual": {
+        "executed": true,
+        "result": "passed"
+      }
+    },
+    {
+      "id": "HSR-06",
+      "test": "stale_edit_preserves_current_values_and_reports_the_resolved_project_scope",
+      "expected": "当前revision2时base1返回RevisionConflict(expected1/actual2/context为当前Project2)，完整数据不变；同批改base2后成功一次到3。",
+      "actual": {
+        "executed": true,
+        "result": "passed"
+      }
+    }
+  ],
+  "coverage_boundary": "通过真正ProjectHost.dispatch读取/编辑；每个真实返回报文必须符合冻结Response。解析仅用于构造类型及读报文，不能单独计Host通过。",
+  "core_read_boundary": "独立预期先从冻结契约确定；未依照初稿实现或结果放宽。",
+  "expected_error_policy": {
+    "NoActiveProject": "Project get_object；不混Workspace空上下文",
+    "PermissionDenied": "未登记会话、非活动工程、授权工程不匹配、禁operation先于stale；期望/实际修订不泄漏",
+    "UnsupportedCapability": "DefinitionDraft本片未实现；不与Project混修订",
+    "RevisionConflict": "已登记且当前Project scope合法后比较base，保留请求expected与当前actual及正确context"
+  },
+  "verification_command": "cargo test -p sf-commands --locked --test host_scope_revision",
+  "format_command": "rustfmt --edition 2024 packages/commands/tests/host_scope_revision.rs",
+  "actual_execution": {
+    "command": "cargo test -p sf-commands --locked --test host_scope_revision",
+    "executed_at": "2026-10-15T13:48:14.684149+00:00",
+    "exit_code": 0,
+    "stdout": "\nrunning 6 tests\ntest no_active_project_read_is_not_a_fabricated_project_or_revision ... ok\ntest multiple_edits_commit_exactly_one_new_project_revision ... ok\ntest unsupported_definition_draft_never_borrows_project_revision ... ok\ntest foreign_project_grant_and_disabled_operation_do_not_disclose_or_mutate ... ok\ntest stale_edit_preserves_current_values_and_reports_the_resolved_project_scope ... ok\ntest unregistered_session_and_wrong_active_project_precede_stale_revision ... ok\n\ntest result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n",
+    "stderr": "warning: failed to parse serde attribute\n  | \n  | try_from =\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | into = \"String\"\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | try_from =\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | into = \"String\"\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | try_from =\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | into = \"String\"\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | try_from =\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | into = \"String\"\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | try_from =\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | into = \"String\"\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | try_from =\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | into = \"String\"\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | try_from =\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | into = \"String\"\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | try_from =\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | into = \"String\"\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | try_from =\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | into = \"String\"\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | try_from =\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | into = \"String\"\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | try_from =\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | into = \"String\"\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | try_from =\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | into = \"String\"\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | try_from =\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | into = \"String\"\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | try_from =\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | into = \"String\"\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | try_from =\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | into = \"u8\"\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | try_from =\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | into = \"u64\"\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | try_from =\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | into = \"f64\"\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | try_from =\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | into = \"String\"\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | transparent \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | transparent \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | transparent \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deserialize_with = \"present_nullable\"\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.56s\n     Running tests\\host_scope_revision.rs (target\\debug\\deps\\host_scope_revision-21936033bb4e4fb4.exe)\n",
+    "source_before": {
+      "packages/commands/src/project_host.rs": {
+        "bytes": 46815,
+        "mtime_ns": 1792072064398504100
+      },
+      "packages/commands/src/api.rs": {
+        "bytes": 28783,
+        "mtime_ns": 1792070716657368900
+      },
+      "packages/commands/tests/host_scope_revision.rs": {
+        "bytes": 13227,
+        "mtime_ns": 1792071963383808300
+      }
+    },
+    "source_after": {
+      "packages/commands/src/project_host.rs": {
+        "bytes": 46815,
+        "mtime_ns": 1792072064398504100
+      },
+      "packages/commands/src/api.rs": {
+        "bytes": 28783,
+        "mtime_ns": 1792070716657368900
+      },
+      "packages/commands/tests/host_scope_revision.rs": {
+        "bytes": 13227,
+        "mtime_ns": 1792071963383808300
+      }
+    },
+    "sources_unchanged": true,
+    "actual_Rust_ProjectHost_dispatch": true,
+    "assertions_relaxed": false,
+    "executed": 6,
+    "passed": 6,
+    "failed": 0
+  },
+  "actual_result": {
+    "passed": 6,
+    "failed": 0,
+    "complete": true
+  },
+  "failed_cases": [],
+  "core_changes_written": false,
+  "shared_JSON_task_config_lock_written": false,
+  "allowed_write_files": [
+    "packages/commands/tests/host_scope_revision.rs",
+    "docs/04_开发与验收/P0-01_Host切片_窗口3.json"
+  ],
+  "non_goals": [
+    "旧17类型测试",
+    "其他对象/Engine",
+    "保存重开/undo/redo",
+    "Tauri窗口或业务前端/Figma",
+    "P0-01整项完成和公共进度修改"
+  ],
+  "execution_history": [
+    {
+      "command": "cargo test -p sf-commands --locked --test host_scope_revision",
+      "exit_code": 1,
+      "compiled": true,
+      "executed": 6,
+      "passed": 5,
+      "failed": 1,
+      "raw_result": "test result: FAILED. 5 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "failed_test": "unsupported_definition_draft_never_borrows_project_revision",
+      "panic_file": "packages/commands/tests/host_scope_revision.rs",
+      "panic_line": 312,
+      "raw_panic": "assertion failed: response[\"context\"][\"project_revision\"].is_null()",
+      "observed": "UnsupportedCapability和expected/actual null断言已通过；context.project_revision却非null。",
+      "setup": "CreateProject真实返回ID/revision1；UI PutObject(ItemType)提交到revision2；DefinitionDraft(W3-DRAFT)的apply_commands base0。",
+      "expected": "本片DefinitionDraft明确UnsupportedCapability；不可借当前Project修订建立错误context。",
+      "spec_changed_to_match_implementation": false,
+      "core_writer_notified": true
+    },
+    {
+      "command": "cargo test -p sf-commands --locked --test host_scope_revision",
+      "executed_at": "2026-10-15T13:48:14.684149+00:00",
+      "exit_code": 0,
+      "stdout": "\nrunning 6 tests\ntest no_active_project_read_is_not_a_fabricated_project_or_revision ... ok\ntest multiple_edits_commit_exactly_one_new_project_revision ... ok\ntest unsupported_definition_draft_never_borrows_project_revision ... ok\ntest foreign_project_grant_and_disabled_operation_do_not_disclose_or_mutate ... ok\ntest stale_edit_preserves_current_values_and_reports_the_resolved_project_scope ... ok\ntest unregistered_session_and_wrong_active_project_precede_stale_revision ... ok\n\ntest result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n",
+      "stderr": "warning: failed to parse serde attribute\n  | \n  | try_from =\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | into = \"String\"\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | try_from =\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | into = \"String\"\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | try_from =\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | into = \"String\"\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | try_from =\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | into = \"String\"\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | try_from =\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | into = \"String\"\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | try_from =\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | into = \"String\"\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | try_from =\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | into = \"String\"\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | try_from =\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | into = \"String\"\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | try_from =\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | into = \"String\"\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | try_from =\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | into = \"String\"\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | try_from =\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | into = \"String\"\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | try_from =\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | into = \"String\"\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | try_from =\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | into = \"String\"\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | try_from =\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | into = \"String\"\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | try_from =\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | into = \"u8\"\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | try_from =\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | into = \"u64\"\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | try_from =\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | into = \"f64\"\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | try_from =\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | into = \"String\"\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | transparent \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | transparent \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | transparent \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deserialize_with = \"present_nullable\"\n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\nwarning: failed to parse serde attribute\n  | \n  | deny_unknown_fields \n  | \n  = note: ts-rs failed to parse this attribute. It will be ignored.\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.56s\n     Running tests\\host_scope_revision.rs (target\\debug\\deps\\host_scope_revision-21936033bb4e4fb4.exe)\n",
+      "source_before": {
+        "packages/commands/src/project_host.rs": {
+          "bytes": 46815,
+          "mtime_ns": 1792072064398504100
+        },
+        "packages/commands/src/api.rs": {
+          "bytes": 28783,
+          "mtime_ns": 1792070716657368900
+        },
+        "packages/commands/tests/host_scope_revision.rs": {
+          "bytes": 13227,
+          "mtime_ns": 1792071963383808300
+        }
+      },
+      "source_after": {
+        "packages/commands/src/project_host.rs": {
+          "bytes": 46815,
+          "mtime_ns": 1792072064398504100
+        },
+        "packages/commands/src/api.rs": {
+          "bytes": 28783,
+          "mtime_ns": 1792070716657368900
+        },
+        "packages/commands/tests/host_scope_revision.rs": {
+          "bytes": 13227,
+          "mtime_ns": 1792071963383808300
+        }
+      },
+      "sources_unchanged": true,
+      "actual_Rust_ProjectHost_dispatch": true,
+      "assertions_relaxed": false,
+      "executed": 6,
+      "passed": 6,
+      "failed": 0
+    }
+  ],
+  "known_failure": {
+    "id": "HOST-W3-01",
+    "case_id": "HSR-04",
+    "status": "fixed_in_W00_core_and_independently_reverified",
+    "title": "未解析DefinitionDraft错误响应上下文回填Project锚点，可能被消费者误用",
+    "closure": "同一6条原断言对修后核心全部通过，Scope context不伪造",
+    "precision": "ResponseContext.project_revision本为Project锚点，与scope_revision独立；本轮收口未解析Scope错误上下文，不将已授权UI看到Project锚点描述为越权泄露。"
+  },
+  "actual_execution_layer": "真实sf-commands ProjectHost内存创建/读取/编辑；本窗未运行Tauri适配、Engine或保存重开。",
+  "shared_state_or_whole_task_completed": false
+}

@@ -1,0 +1,229 @@
+{
+  "document_kind": "P0_01_project_types_and_command_boundary_execution_and_review",
+  "task_id": "P0-01",
+  "within_original_step": 1,
+  "status": "implemented_and_reviewed",
+  "dispatch": {
+    "authorized_at": "2026-10-15T21:22:42+08:00",
+    "authority": "按推荐继续执行P0-01下一后端切片，补齐创建、读取、编辑所需的共同工程类型和Command边界，完成实现、必要测试与复审，并同步对应文件和JSON。",
+    "task_id": "P0-01",
+    "within_original_step": 1,
+    "role": "W00",
+    "thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+    "scope_ref": "docs/04_开发与验收/P0-01_工程类型与Command边界切片.json",
+    "business_frontend_authorized": false
+  },
+  "scope": {
+    "task_id": "P0-01",
+    "within_original_step": 1,
+    "original_step": "落实该步所需共同字段/schema与命令边界，生成同源前端类型",
+    "scope": "补齐冻结ProjectState及其传递依赖、完整有类型Command/API边界；正式Rust生成TS和Schema并用创建/读取/编辑报文链消费。这里只实现边界，不实现Host业务提交。",
+    "planned_owner": "W00",
+    "actual_thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+    "actual_dispatch": {
+      "authorized_at": "2026-10-15T21:22:42+08:00",
+      "authority": "按推荐继续执行P0-01下一后端切片，补齐创建、读取、编辑所需的共同工程类型和Command边界，完成实现、必要测试与复审，并同步对应文件和JSON。",
+      "task_id": "P0-01",
+      "within_original_step": 1,
+      "role": "W00",
+      "thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+      "scope_ref": "docs/04_开发与验收/P0-01_工程类型与Command边界切片.json",
+      "business_frontend_authorized": false
+    },
+    "preparation_status": "implemented_and_reviewed",
+    "input_refs": [
+      "packages/domain/types.design.rs",
+      "packages/commands/api.design.rs",
+      "docs/03_架构与契约/全层类型与工程格式.json",
+      "docs/03_架构与契约/公开操作与宿主调用契约.json",
+      "docs/04_开发与验收/P0-01_首个后端切片.json"
+    ],
+    "actual_prerequisite_outputs": [
+      "Cargo.toml",
+      "Cargo.lock",
+      "package.json",
+      "package-lock.json",
+      "tools/s07/output/verification.json",
+      "packages/domain/src/lib.rs"
+    ],
+    "implementation_dependencies": [],
+    "allowed_modified_files": [
+      "packages/domain/src/lib.rs",
+      "packages/commands/src/lib.rs",
+      "packages/commands/Cargo.toml",
+      "Cargo.lock",
+      "package.json"
+    ],
+    "allowed_new_files": [
+      "packages/domain/src/models.rs",
+      "packages/domain/tests/project_contracts.rs",
+      "packages/commands/src/api.rs",
+      "packages/commands/src/bin/export-contracts.rs",
+      "packages/commands/tests/project_command_contracts.rs",
+      "packages/commands/generated",
+      "tools/检查工程与Command边界.py"
+    ],
+    "public_contract": "逐字段保留冻结设计；复用已落地的20基础类型。API完整声明不宣称18项已可调用；Host授权对象不进入wire/schema/TS。",
+    "finite_expectations": [
+      "冻结工程、Scenario、Module例子由正式sf-domain反序列化并无损往返；额外/缺失必需字段与非法数字被拒绝。",
+      "真实sf-commands解析workspace创建、project读取、设置编辑三类请求，保留Scope、null project_id及数值base_revision；拒绝未知字段/错operation及参数。",
+      "Command15分支、API18操作、Project/DefinitionDraft两个编辑Scope保持冻结形状；HostCallContext与授权结构不被导出。",
+      "RevisionConflict响应保留期望/实际修订及工程上下文；边界序列化不冒充实际Host拒绝。",
+      "正式Rust导出TS与JSON Schema，经真实TS正例和负例编译消费；原9组基础测试保持通过。"
+    ],
+    "verification_entries": [
+      "cargo test -p sf-domain -p sf-commands --locked",
+      "npm run test:rust",
+      "npm run typecheck",
+      "npm run generate:contracts"
+    ],
+    "non_goals": [
+      "Host CRUD/授权/原子提交实现",
+      "Engine/库存/时钟",
+      "保存重开",
+      "撤销重做",
+      "业务前端/Figma"
+    ],
+    "business_frontend_changes": false,
+    "actual_implementation_result_ref": "docs/04_开发与验收/P0-01_工程类型与Command边界切片.json",
+    "reason_for_starting_with_step_1": "接续首个基础类型切片，补齐原步骤1；实际Host CRUD按原步骤2另行派发。"
+  },
+  "actual_result": {
+    "implemented_source_refs": [
+      "packages/domain/src/lib.rs",
+      "packages/domain/src/models.rs",
+      "packages/commands/src/lib.rs",
+      "packages/commands/src/api.rs",
+      "packages/commands/src/bin/export-contracts.rs"
+    ],
+    "tests_source_refs": [
+      "packages/domain/tests/project_contracts.rs",
+      "packages/commands/tests/project_command_contracts.rs",
+      "tools/检查工程与Command边界.py"
+    ],
+    "generated_TS_ref": "packages/commands/generated/typescript/ApiRequest.ts",
+    "generated_project_TS_ref": "packages/commands/generated/typescript/ProjectState.ts",
+    "generated_project_schema_ref": "packages/commands/generated/schemas/project.schema.json",
+    "generated_command_schema_ref": "packages/commands/generated/schemas/apply_commands.request.schema.json",
+    "TS_declaration_files": 423,
+    "generated_schemas": 9,
+    "verification_commands": {
+      "contract_tests": "cargo test -p sf-domain -p sf-commands --locked",
+      "workspace_tests": "npm run test:rust",
+      "typecheck": "npm run typecheck",
+      "generate_contracts": "npm run generate:contracts",
+      "schema_validation": "python -B -X utf8 tools/检查工程与Command边界.py",
+      "format": "cargo fmt -p sf-domain -p sf-commands -- --check"
+    },
+    "command_runs": [
+      {
+        "stdout_ref": ".work/p0-01-project-command/contract-tests.stdout.txt",
+        "exit_code": 0,
+        "finished_at": "2026-10-15T21:25:57.2318882+08:00",
+        "started_at": "2026-10-15T21:25:25.0369489+08:00",
+        "command": "cargo test -p sf-domain -p sf-commands --locked",
+        "stderr_ref": ".work/p0-01-project-command/contract-tests.stderr.txt"
+      },
+      {
+        "command": "npm run test:rust",
+        "exit_code": 0,
+        "stderr_ref": ".work/p0-01-project-command/workspace-tests.stderr.txt",
+        "started_at": "2026-10-15T21:26:14.7761087+08:00",
+        "finished_at": "2026-10-15T21:26:53.5645431+08:00",
+        "stdout_ref": ".work/p0-01-project-command/workspace-tests.stdout.txt"
+      },
+      {
+        "finished_at": "2026-10-15T21:25:27.1334650+08:00",
+        "stderr_ref": ".work/p0-01-project-command/typecheck.stderr.txt",
+        "stdout_ref": ".work/p0-01-project-command/typecheck.stdout.txt",
+        "exit_code": 0,
+        "command": "npm run typecheck",
+        "started_at": "2026-10-15T21:25:25.0151331+08:00"
+      },
+      {
+        "command": "npm run generate:contracts",
+        "finished_at": "2026-10-15T21:27:40.3701514+08:00",
+        "exit_code": 0,
+        "started_at": "2026-10-15T21:27:37.2612202+08:00",
+        "stderr_ref": ".work/p0-01-project-command/generate.stderr.txt",
+        "stdout_ref": ".work/p0-01-project-command/generate.stdout.txt"
+      }
+    ],
+    "schema_validation_ref": ".work/p0-01-project-command/schema-validation-result.json",
+    "readonly_review_ref": ".work/p0-01-project-command/readonly-review.json",
+    "tests": {
+      "distinct_tests": 17,
+      "new_tests_this_slice": 8,
+      "retained_value_tests": 9,
+      "failed": 0,
+      "workspace_run_same_tests": 17,
+      "schema_finite_cases": 32
+    },
+    "consumer_scope": "正式sf-domain与sf-commands公开库编译接入；创建/读取/编辑typed报文往返、Rust派生TS真实编译及标准Schema消费者。未调用Host业务处理器。",
+    "completed_original_steps": [
+      1
+    ],
+    "remaining_original_step_1": null,
+    "remaining_original_steps": [
+      2,
+      3,
+      4
+    ],
+    "full_P0_01_acceptance_met": false,
+    "business_operations_implemented": 0,
+    "next_recommended_slice": "原步骤2：基于本次Request/Command/ProjectState接通Host最小创建/读取/编辑，实际核验Scope、修订冲突、授权及原子提交。"
+  },
+  "review": {
+    "status": "passed_scoped_readonly_self_review",
+    "review_kind": "same_window_post_implementation_readonly_review",
+    "reviewed_at": "2026-10-15T21:28:39+08:00",
+    "independent_reviewer": false,
+    "source_changed_during_review": false,
+    "source_checks": [
+      {
+        "source_ref": "packages/domain/src/models.rs",
+        "frozen_body_parity": true
+      },
+      {
+        "source_ref": "packages/commands/src/api.rs",
+        "frozen_body_parity": true
+      }
+    ],
+    "confirmed_defects": [],
+    "actual_typed_contract_chain_verified": true,
+    "actual_Host_CRUD_verified": false,
+    "TS_declarations": 423,
+    "schema_cases": 32,
+    "limitations": [
+      "完整API声明不提供实际18操作能力；未实现Host/dispatcher/授权与原子提交。",
+      "ts-rs对冻结serde try_from/into/transparent属性仍有工具警告；Rust、Schema及真实TS消费均已验证。"
+    ]
+  },
+  "whole_task_done": false,
+  "actual_business_operations": 0,
+  "human_acceptance": null,
+  "overall_sync_review": {
+    "status": "passed",
+    "mainline_ref": "docs/04_开发与验收/主线同步检查结果.json",
+    "matrix_passed": 12,
+    "checked_files": 10023,
+    "checked_local_refs": 5127,
+    "errors": [],
+    "P0_01_whole_status": "in_progress",
+    "other_selected_tasks_planned": 20,
+    "business_operations_implemented": 0
+  },
+  "synchronized_records": [
+    "docs/00_项目基线/首版任务选择.json",
+    "docs/04_开发与验收/tasks.json",
+    "docs/04_开发与验收/编码任务包/任务包索引.json",
+    "docs/04_开发与验收/本机并行窗口计划.json",
+    "docs/04_开发与验收/完整设计与执行准入.json",
+    "docs/04_开发与验收/阶段实现计划.json",
+    "docs/04_开发与验收/软件开发流程与当前成熟度评估.json",
+    "docs/04_开发与验收/窗口启动提示词/启动提示词索引.json",
+    "docs/03_架构与契约/全层类型与工程格式.json",
+    "docs/03_架构与契约/公开操作与宿主调用契约.json",
+    "packages/commands/command-catalog.design.json"
+  ]
+}

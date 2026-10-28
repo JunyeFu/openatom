@@ -1,0 +1,225 @@
+{
+  "schema_version": "1.0",
+  "data": {
+    "definition": {
+      "id": "sf.native50.device.six-axis-robot",
+      "version": "1.0.0",
+      "title": "六轴夹爪搬运机器人",
+      "definition_state": "runtime_candidate",
+      "contribution": {
+        "author": "Super Factory Native50 original modeling",
+        "license": "CC0-1.0",
+        "assets": []
+      },
+      "parameters": [],
+      "attribute_schema": [],
+      "payload": {
+        "category": "devices",
+        "data": {
+          "placement": "fixed_during_simulation",
+          "ports": [
+            {
+              "id": "pickup",
+              "direction": "input",
+              "payload": {
+                "kind": "material",
+                "data": {
+                  "item_role": "pickup",
+                  "unit": "piece",
+                  "quantity_rule": null
+                }
+              }
+            },
+            {
+              "id": "place",
+              "direction": "output",
+              "payload": {
+                "kind": "material",
+                "data": {
+                  "item_role": "place",
+                  "unit": "piece",
+                  "quantity_rule": null
+                }
+              }
+            }
+          ],
+          "behavior": {
+            "selected": "inline",
+            "inline": {
+              "builtin": "transform",
+              "item_roles": [
+                "pickup",
+                "place"
+              ],
+              "inputs": [
+                {
+                  "role": "pickup",
+                  "port": "pickup",
+                  "quantity": {
+                    "value": {
+                      "coefficient": 1,
+                      "decimal_places": 0
+                    },
+                    "unit": "piece"
+                  },
+                  "required_quality": [],
+                  "declared_output_quality": null
+                }
+              ],
+              "outputs": [
+                {
+                  "role": "place",
+                  "port": "place",
+                  "quantity": {
+                    "value": {
+                      "coefficient": 1,
+                      "decimal_places": 0
+                    },
+                    "unit": "piece"
+                  },
+                  "required_quality": [],
+                  "declared_output_quality": null
+                }
+              ],
+              "resource_roles": [],
+              "duration": null,
+              "phases": [
+                {
+                  "id": "approach",
+                  "duration": {
+                    "value": 2000,
+                    "unit": "millisecond",
+                    "basis": "module_declared",
+                    "source_ref": null
+                  },
+                  "phase_resources": [],
+                  "interruption_policy": "pause_resume",
+                  "work_kind": "loading"
+                },
+                {
+                  "id": "grip",
+                  "duration": {
+                    "value": 1000,
+                    "unit": "millisecond",
+                    "basis": "module_declared",
+                    "source_ref": null
+                  },
+                  "phase_resources": [],
+                  "interruption_policy": "pause_resume",
+                  "work_kind": "loading"
+                },
+                {
+                  "id": "loaded_move",
+                  "duration": {
+                    "value": 5000,
+                    "unit": "millisecond",
+                    "basis": "module_declared",
+                    "source_ref": null
+                  },
+                  "phase_resources": [],
+                  "interruption_policy": "pause_resume",
+                  "work_kind": "transport"
+                },
+                {
+                  "id": "release",
+                  "duration": {
+                    "value": 1000,
+                    "unit": "millisecond",
+                    "basis": "module_declared",
+                    "source_ref": null
+                  },
+                  "phase_resources": [],
+                  "interruption_policy": "pause_resume",
+                  "work_kind": "transport"
+                },
+                {
+                  "id": "return",
+                  "duration": {
+                    "value": 3000,
+                    "unit": "millisecond",
+                    "basis": "module_declared",
+                    "source_ref": null
+                  },
+                  "phase_resources": [],
+                  "interruption_policy": "pause_resume",
+                  "work_kind": "unloading"
+                }
+              ],
+              "hold_on_output_wait": [],
+              "quality_and_routes": null,
+              "identity_policy": "preserve",
+              "family": "six-axis-robot",
+              "material_flow": {
+                "primary_role": "pickup",
+                "auxiliary_roles": [],
+                "acquire_after_phase": "grip",
+                "consume_after_phase": "grip",
+                "reserve_before_phase": "loaded_move",
+                "deliver_after_phase": "release",
+                "required_primary_attributes": {},
+                "attributes_after_consume": {}
+              }
+            },
+            "operation_ref": null
+          },
+          "configuration": {},
+          "presentation": {
+            "kind": "model",
+            "source": {
+              "kind": "media_ref",
+              "data": {
+                "id": "p302.line-grade.robot",
+                "version": "0.4.0"
+              }
+            },
+            "unit": "meter",
+            "coordinate_frame": "right_handed_y_up",
+            "scale": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            },
+            "nodes": [],
+            "poses": [],
+            "actions": [],
+            "timeline": [],
+            "tags": [],
+            "anchor_roles": {},
+            "port_anchors": {},
+            "lod": {
+              "detailed": null,
+              "simplified": {
+                "kind": "media_ref",
+                "data": {
+                  "id": "p302.line-grade.robot.simple",
+                  "version": "0.4.0"
+                }
+              },
+              "region": "device_icons"
+            },
+            "production_effect": "none"
+          },
+          "operations": [
+            "configure",
+            "inspect",
+            "preview_cycle"
+          ]
+        }
+      }
+    },
+    "files": [],
+    "dependencies": [
+      {
+        "id": "p302.line-grade.robot",
+        "version": "0.4.0"
+      },
+      {
+        "id": "p302.line-grade.robot.simple",
+        "version": "0.4.0"
+      }
+    ],
+    "assets": [],
+    "rights": [],
+    "issues": []
+  }
+}

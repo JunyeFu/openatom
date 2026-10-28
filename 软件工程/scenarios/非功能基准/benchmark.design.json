@@ -1559,7 +1559,8 @@
     "identity_rule": "L{1..6}-ITEM-{0001..0500}",
     "holder_rule": "initially corresponding SOURCE queue",
     "identity_behavior": "pass-through handling retains identity; no material conversion or new stock",
-    "complete_tracking_not_virtual_counter": true
+    "complete_tracking_not_virtual_counter": true,
+    "quality_and_order_intent": "initially available qualified benchmark-item-v1; no reservations/orders/containers; no active run copied"
   },
   "variants": [
     {
@@ -1593,36 +1594,112 @@
     "expected_last_accept_s": 1018,
     "expected_accepted_count_at_1200_s": 3000,
     "expected_accepted_count_at_600_s": 1746,
-    "online_observation_speed_virtual_s_per_wall_s": 10,
     "scene_observation": "one current hall line canvas plus multi-hall canvas; other halls continue on the same Engine",
-    "animation_policy": "at most one representative work item per occupied station, up to60; all3000 identities/events remain actual Engine objects; LOD/view/playback do not alter counts"
+    "animation_policy": "at most one representative work item per occupied station, up to60; all3000 identities/events remain actual Engine objects; LOD/view/playback do not alter counts",
+    "result_playback_virtual_s_per_wall_s": 10,
+    "real_engine_before_playback": "execute the actual Engine to1200virtual seconds, retain real events; replay these for scene observation without changing Engine/inventory or claiming ongoing native computation",
+    "simultaneous_events": "completed holding/transfer is applied before next starts at the same virtual timestamp; stable line/device/item ordering follows the frozen Engine rules"
   },
   "asset_freeze": {
     "required_before_runtime_test": [
       "same bundled detailed/simplified/region asset manifest and module versions",
       "triangles, texture sizes, asset bytes and draw calls for each variant/LOD",
-      "detailed native models meet P3-02 visual/geometry criteria, including back/bottom; no image cards or hidden device deletion to meet FPS",
+      "detailed native models meet the shared L03 eight-device quality requirement: complete back/bottom, mechanisms, assembly details, materials and phase-bound motion; no image cards, boxes, simplified substitution or hidden device deletion to meet FPS",
       "all required local assets resolved; no third-party large media in the 3-second save/open baseline"
     ],
     "asset_manifest_status": "not_implemented",
     "actual_manifest_ref": null,
     "actual_geometry_statistics": null,
-    "size_or_visual_downgrade_not_auto_authorized": true
+    "size_or_visual_downgrade_not_auto_authorized": true,
+    "equipment_model_quality_ref": "docs/02_交互设计/设备建模精度与表现验收规范.json",
+    "current_candidate_repair_ref": "scenarios/非功能基准/station/surface-repair.json",
+    "candidate_quality_status": "1.0.3 production motion/static connection checks and both balanced/dense actual Host Run/save/move/new-process reopen passed; Native materials/seven views/MQ remain pending, not frozen",
+    "previous_candidate_repair_ref": "scenarios/非功能基准/station/repair.json"
   },
-  "adapter_requirement": "S07/S08 map this explicit load profile into the S06-frozen real Project types; preserve counts, route, identity, timing and variants. Neither this file nor tools/3d-proof counts as an executed benchmark.",
+  "adapter_requirement": "S07/S08 map this explicit load profile into the S06-frozen real Project types; preserve counts, route, identity, timing and variants. Neither this file nor tools/3d-proof counts as an executed benchmark. Position tuples follow coordinate_contract; they must not be copied as canonical Project Pose.",
   "actual_project_ref": null,
   "actual_execution": null,
   "view_protocol": {
     "camera_baseline": "reset to the product approved default oblique view and fit current hall complete object bounds with5% margin; record actual camera/render settings before test",
     "paused_camera_script": "60 wall seconds, repeat4 cycles: first7.5s yaw from baseline to+15degrees, next7.5s return; keep elevation/zoom/target fixed, use same elapsed-time trajectory in all runs",
-    "running_camera": "reset fixed baseline; run10virtual seconds/wall second so the first60sec sample remains actual ongoing production",
-    "multi_hall_script": "use menu to multi-hall canvas showing all3 halls and their actual state; same60sec/3rounds, no additional normal view invented",
+    "running_camera": "reset fixed baseline; advance view_time through actual completed-Run events at10virtual seconds/wall second; explicitly label result playback; native-calculation interaction is measured separately under NFR-04",
+    "multi_hall_script": "多厂房菜单显示3厂房：回放按同一真实事件更新聚合状态；暂停时60秒4个15秒往返，前7.5秒平移+2%画布宽度、后7.5秒返回，缩放固定且所有厂房仍可见。两模式各3轮，不对静止待机要求主动FPS。",
     "device_visual_envelope_m": [
       2,
       2,
       3
     ],
     "station_spacing_m": 3,
-    "envelope_rule": "the fixed bundled benchmark station fits this stated envelope and retains approved detailed geometry; arbitrary other native machines are not substituted into this fixed load"
+    "envelope_rule": "the fixed bundled benchmark station fits this stated envelope and retains approved detailed geometry; arbitrary other native machines are not substituted into this fixed load",
+    "sampling_start": "每轮预热10秒后重置；回放view_time=0至600秒，暂停运动view_time=600秒，真实Run已完整计算到1200秒。"
+  },
+  "measurement_matrix": {
+    "fps_conditions_per_round": 16,
+    "fps_rounds": 3,
+    "fps_observation_windows": 48,
+    "editor_variants": 2,
+    "editor_actions": 3,
+    "editor_rounds": 3,
+    "attempts_per_editor_group": 100,
+    "editor_attempts_total": 1800,
+    "save_open_variants": 4,
+    "attempts_per_save_open_variant_per_load": 5,
+    "save_open_attempts_total": 40
+  },
+  "coordinate_contract": {
+    "source_fields": [
+      "balanced_position_m",
+      "dense_position_m"
+    ],
+    "source_tuple_slots": [
+      "width_x",
+      "height_z",
+      "depth_y"
+    ],
+    "source_role": "legacy load tuple, not a canonical Pose or Three.js world position",
+    "unit": "m",
+    "factory_axes": {
+      "X": "width_m",
+      "Y": "depth_m",
+      "Z": "height_m"
+    },
+    "load_tuple_to_factory_position": "[a,b,c] -> [a,c,b]",
+    "factory_to_renderer_position": "[x,y,z] -> [x,z,-y]",
+    "renderer_to_factory_position": "[x,y,z] -> [x,-z,y]",
+    "factory_to_renderer_rotation_matrix": [
+      [
+        1,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        1
+      ],
+      [
+        0,
+        -1,
+        0
+      ]
+    ],
+    "visual_envelope_slots": [
+      "width_x",
+      "depth_y",
+      "height_z"
+    ],
+    "origin": "each hall uses its local floor origin; positions identify station floor anchors",
+    "admission_rule": "PREP-RUNTIME maps legacy tuples once into factory Pose, then rendering converts factory Pose once; same transformation applies to ports, bounds, paths, vectors and camera references. No duplicate axis swap and no changes to IDs/counts/routing/timing.",
+    "source_ref": "docs/03_架构与契约/目标驱动厂房生成.md"
+  },
+  "equipment_model_quality_ref": "docs/02_交互设计/设备建模精度与表现验收规范.json",
+  "item_display_layout": {
+    "source_ref": "tests/planner/p201-whole/b60-item-layout.mjs",
+    "scope": "新派生工程的明确时点展示布局；旧r6工程及冻结Run保留原样",
+    "assignment": "item_id_order",
+    "endpoint_layout": "每个SOURCE/SINK声明10×10×5共500槽；XY间距0.22m、Z层距0.12m、基面中心高0.05m",
+    "buffer_layout": "每个中间BUFFER声明1个基面中心高0.05m的槽；只适用于原全开、等速、无积压的B60输入",
+    "production_effect": "none；不改变容量、实际holder、路径、接触或运输时长，不生成连续运动",
+    "measurement_rule": "实际身份数与当前几何视锥可见数分别记录；模型已绘制不等于无遮挡可见，不以标签计数代替渲染计数"
   }
 }

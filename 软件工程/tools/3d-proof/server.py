@@ -11,10 +11,15 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 KINDS = {"assembly", "robot", "conveyor", "inspection", "sealer", "pallet"}
 VIDEO_FRAMES = 24 * 30
+VIDEO_PROFILES = {
+    "device": {"stem": "device-motion", "frames": VIDEO_FRAMES, "duration": 24},
+    "line": {"stem": "L03-full-run", "frames": 143 * 30, "duration": 143},
+}
 video_lock = threading.Lock()
 video_process = None
 video_frames = 0
 video_log = None
+video_profile = VIDEO_PROFILES["device"]
 ffmpeg_path = None
 
 
@@ -78,45 +83,62 @@ class Handler(SimpleHTTPRequestHandler):
         self.wfile.write(response)
 
     def record_video(self):
-        global video_process, video_frames, video_log
+        global video_process, video_frames, video_log, video_profile
         with video_lock:
             if self.path == "/record-start":
                 if video_process is not None:
                     self.send_error(409, "A recording is already active")
                     return
+                length = int(self.headers.get("Content-Length", "0"))
+                request = json.loads(self.rfile.read(length)) if length else {}
+                profile = request.get("profile", "device")
+                if profile not in VIDEO_PROFILES:
+                    self.send_error(400, "Unknown recording profile")
+                    return
+                video_profile = VIDEO_PROFILES[profile]
                 output = ROOT / "output"
                 output.mkdir(exist_ok=True)
-                video_log = (output / "video-encode.log").open("wb")
+                video_log = (output / f'{video_profile["stem"]}-encode.log').open("wb")
                 video_process = subprocess.Popen([
                     ffmpeg_path, "-hide_banner", "-loglevel", "warning", "-y",
                     "-f", "image2pipe", "-framerate", "30", "-vcodec", "png", "-i", "pipe:0",
                     "-an", "-c:v", "libx264", "-preset", "veryfast", "-crf", "18",
-                    "-pix_fmt", "yuv420p", "-movflags", "+faststart", str(output / "device-motion.mp4"),
+                    "-pix_fmt", "yuv420p", "-movflags", "+faststart", str(output / f'{video_profile["stem"]}.mp4'),
                 ], stdin=subprocess.PIPE, stdout=subprocess.DEVNULL, stderr=video_log,
                     creationflags=subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0)
                 video_frames = 0
-                result = {"frames_expected": VIDEO_FRAMES}
+                result = {"frames_expected": video_profile["frames"]}
             elif self.path == "/record-frame":
                 length = int(self.headers.get("Content-Length", "0"))
-                if video_process is None or video_frames >= VIDEO_FRAMES or not 0 < length <= 8_000_000 or int(self.headers.get("X-Frame-Index", "-1")) != video_frames:
+                if video_process is None or video_frames >= video_profile["frames"] or not 0 < length <= 8_000_000 or int(self.headers.get("X-Frame-Index", "-1")) != video_frames:
                     self.send_error(400, "Unexpected frame")
                     return
-                video_process.stdin.write(self.rfile.read(length))
+                frame = self.rfile.read(length)
+                video_process.stdin.write(frame)
+                if video_profile["stem"] == "L03-full-run" and video_frames in {0, video_profile["frames"] - 1}:
+                    label = "poster" if video_frames == 0 else "final"
+                    (ROOT / "output" / f'L03-full-run.{label}.png').write_bytes(frame)
                 video_frames += 1
                 result = {"frames_received": video_frames}
             elif self.path == "/record-finish":
-                if video_process is None or video_frames != VIDEO_FRAMES:
+                if video_process is None or video_frames != video_profile["frames"]:
                     self.send_error(400, "Recording has incomplete frames")
                     return
+                length = int(self.headers.get("Content-Length", "0"))
+                request = json.loads(self.rfile.read(length)) if length else {}
                 video_process.stdin.close()
                 exit_code = video_process.wait()
                 video_log.close()
                 video_process = None
                 if exit_code:
-                    self.send_error(500, "Video encoder failed; see output/video-encode.log")
+                    self.send_error(500, "Video encoder failed; see output/*-encode.log")
                     return
-                result = {"file": "device-motion.mp4", "frames": video_frames, "fps": 30, "duration_seconds": 24, "size": [1920, 1080], "scope": "GLB_part_motion_preview_no_business_simulation", "source_assets": ["assembly.glb", "robot.glb"], "shots": ["assembly_overview", "assembly_spindle_closeup", "robot_overview_gripper", "robot_gripper_closeup"]}
-                (ROOT / "output" / "device-motion.json").write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
+                result = {"file": video_profile["stem"] + ".mp4", "frames": video_frames, "fps": 30, "duration_seconds": video_profile["duration"], "size": [1920, 1080]}
+                if video_profile["stem"] == "device-motion":
+                    result.update(scope="GLB_part_motion_preview_no_business_simulation", source_assets=["assembly.glb", "robot.glb"], shots=["assembly_overview", "assembly_spindle_closeup", "robot_overview_gripper", "robot_gripper_closeup"])
+                else:
+                    result.update(scope="L03_executed_local_business_simulation", source_assets=[kind + ".glb" for kind in sorted(KINDS)], shots=request["shots"], business_result=request["business_result"], coverage=request["coverage"])
+                (ROOT / "output" / (video_profile["stem"] + ".json")).write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
             else:
                 if video_process is not None:
                     video_process.stdin.close()

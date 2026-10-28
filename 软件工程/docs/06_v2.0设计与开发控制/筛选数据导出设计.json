@@ -1,0 +1,241 @@
+{
+  "document_kind": "v2_design_only",
+  "date": "2026-10-26",
+  "implementation_allowed": true,
+  "runtime_verified": false,
+  "contract_version": "sf.execution/2.0-draft11",
+  "decision": "V2-A15",
+  "requirement": "原需求2.2数据服务工作区：导出当前筛选结果；T8-F04/Q03，未被速成范围删除",
+  "markdown_ref": "docs/06_v2.0设计与开发控制/筛选数据导出设计.md",
+  "schema_ref": "docs/06_v2.0设计与开发控制/接口契约.schema.design.json",
+  "views": {
+    "task_interaction": "数据页有效查询后导出此筛选全部结果，选真实目录，跟随原异步Task；不是当前页下载",
+    "structure_data": "H11 export_cloud_data、固定选择、CSV和typed JSON Lines记录、紧凑文件回执",
+    "state_behavior": "固定数据前沿/实际设备集合或精确执行revision；逐页写入；完整结束才发布目录",
+    "interface_collaboration": "复用C08/TX07及现有Task/SelectedFileRef权限；无新云端点或表",
+    "ui_consumer": "一个导出按钮/目录选择及Task状态；修改筛选不改变已启动任务，不控制生产",
+    "deployment_verification": "DE01..08及百万完整流式导出，实际运行均未执行"
+  },
+  "host_operation": {
+    "id": "H11",
+    "name": "export_cloud_data",
+    "request": "HostExportCloudDataRequest",
+    "response": "ExportingTaskHandle -> get_task/CloudDataExportTaskState -> ExportCloudDataResult",
+    "principal": "actual authorized Project exporter, cloud read scope and caller-owned SelectedFileRef purpose export_cloud_data",
+    "input": "revision, immutable DaaS query(page.cursor=null,limit=200), selected fixed result and actual directory selection; no caller path/URL/token/rows",
+    "effects": "Host Task registration + authorized cloud read + new local directory; no production/Engine/cloud write",
+    "lookup": "H09 original request index adds fourth registered branch; same id same params returns original task, different params conflict",
+    "shared_handle": "H10/H11 both exporting; rename design-only ExecutionReportTaskHandle to ExportingTaskHandle, use one HostOkData handle branch rather than duplicate identical oneOf members",
+    "task": "LongTaskKind.Exporting; TaskOutput.CloudDataExport; same get_task ownership, request/context and managed response checks"
+  },
+  "selection": {
+    "ui": "button captures actual displayed query and first selection. No valid result -> query first. Current input changes invalidate displayed export selection; selected old result never relabelled as new filter",
+    "telemetry": "pin cloud_project/dataset/F/selected_device_ids from actual first result; original source may be empty or final page. Directory frontier does not substitute for this selection",
+    "device_membership": "C08 each telemetry page returns selected_device_ids. [] resolves sorted authorized device refs present at fixed F; explicit authorized ids retained even without rows. Cursor carries resolved typed ids; changed authorization producing different membership conflicts rather than silently changing grouping",
+    "replay": "export query canonical limit200/cursor=null; use selected explicit device ids; if pinned selected ids empty, query must still return same empty resolved set or fail. Pins never grant authorization",
+    "start_cursor": "raw telemetry: same fixed F and normalized query, after_ingress_id=0. Minute aggregate: same fixed F/query, after_row_index=null means before first index0; later cursors numeric. Client cannot treat null as last index0",
+    "execution": "query selection must be exact revision equal pinned execution revision/identity; C08 first cursor=null reads that immutable snapshot. No second latest/cutoff resolution during export",
+    "scope": "each page actual authorization and dataset/F/device-set or execution identity/revision match; wrong row kind, repeated/nonprogress page or missing page fails export",
+    "page_boundary": "page limit200; last next_cursor=null; exports from canonical beginning through final page; original UI page size/position are not a result-row filter",
+    "descriptor": "telemetry reads actual scoped C12 descriptor for same dataset/purpose/source_mode, stored in header/receipt; descriptor frontier is discovery metadata, not exported F. Execution projection descriptor=null, no guessed physical/source mode"
+  },
+  "streaming": {
+    "files": [
+      "data.csv",
+      "data.jsonl"
+    ],
+    "directory": "new cloud-data-<export_id> child of actual selected directory; existing name conflicts, no overwrite",
+    "work": "one current typed page plus buffered writers and counters; network/file IO outside Host mutex; no all-row Vec, PDF producer, ProjectArchive or browser download",
+    "jsonl": "UTF-8 one JSON value per line: exactly1 header, >=1 page records with1-based contiguous page_index, exactly1 footer complete=true. Every page contains original DaaSQueryResult including quality issues and selection; no loss of page issues",
+    "csv": "one header chosen by query kind; one row per original typed query row in original order; export_row_index starts0; UTF-8 and ordinary CSV quoting",
+    "csv_cell_encoding": "json_value: every data cell is complete JSON text for its typed value, then CSV-escaped; strings include JSON quotes, nested row remains JSON object, null is literal null. Independent reader uses csv then json.loads per cell; no float conversion or silent empty-to-zero",
+    "footer": "row_count=sum actual page rows; page_count includes empty terminal result; quality_issue_occurrence_count=sum issues over pages (not unique issue count)",
+    "empty": "still write CSV header and JSONL header/one empty page/footer row_count0, preserving selection and issues",
+    "independent_clients": "authorized clients may stream C08 themselves; H11 is desktop/Agent selected-file delivery, not a new public cloud download endpoint"
+  },
+  "csv": {
+    "common_rule": "metadata is in JSONL header; CSV keys below are concrete per-query columns and json_value cells",
+    "telemetry_rows": [
+      "export_row_index",
+      "row_kind",
+      "ingress_id",
+      "dataset_id",
+      "cloud_received_at_utc",
+      "device_ref",
+      "device_sequence",
+      "source_mode",
+      "payload_json"
+    ],
+    "telemetry_row_sources": "TelemetryRow -> observation.device_id/device_sequence; GeneratedLoadRow -> event.device_ref/device_sequence; source_mode comes from actual authorized C12 DatasetDescriptor, never guessed from telemetry purpose; payload_json preserves whole typed row",
+    "count_by_device_minute": [
+      "export_row_index",
+      "row_kind",
+      "device_id",
+      "source_mode",
+      "bucket_start_utc",
+      "count"
+    ],
+    "execution_rows": [
+      "export_row_index",
+      "row_kind",
+      "session_id",
+      "execution_epoch_id",
+      "execution_revision",
+      "source_row_index",
+      "payload_json"
+    ],
+    "accepted_quantity": [
+      "export_row_index",
+      "row_kind",
+      "session_id",
+      "execution_epoch_id",
+      "execution_revision",
+      "host_from_ms",
+      "host_until_ms",
+      "quantity_coefficient",
+      "quantity_decimal_places",
+      "quantity_unit"
+    ],
+    "command_counts": [
+      "export_row_index",
+      "row_kind",
+      "session_id",
+      "execution_epoch_id",
+      "execution_revision",
+      "state",
+      "count"
+    ],
+    "waiting_time": [
+      "export_row_index",
+      "row_kind",
+      "session_id",
+      "execution_epoch_id",
+      "execution_revision",
+      "logical_job_id",
+      "reason",
+      "known_host_ms",
+      "missing_conditions_json"
+    ],
+    "exact_fields": "Quantity uses quantity.value.coefficient/decimal_places and quantity.unit; source_row_index is original row.row_index, never export index or dataset ingress; UTC fields preserve original microsecond string"
+  },
+  "publication": {
+    "existing_source": "project_store.rs:1529 write_evaluation_directory stages then MoveFileW, refuses existing destination; currently takes in-memory files and ProjectArchive",
+    "needed_change": "L22 add data-specific fixed two-file staging handles and non-overwriting commit using existing Directory primitives/Windows rename semantics; old evaluation function not used as a million-row memory wrapper",
+    "commit": "write all pages, footer, flush and close handles; apply original Task/caller/selection rules, check cancellation immediately before directory publication; rename is commit point",
+    "cancel_before": "cancel only export, no final directory/FileRef success; original hidden stage may remain under existing policy, no partial candidate presented as completed",
+    "cancel_after": "committed directory wins; racing cancellation cannot undo actual success or delete it",
+    "error": "page/auth/disk/rename failure -> failed task, no claimed completed export; never touch old effective files or alter production",
+    "receipt": "actual export_id/query/selection/counts and2 real FileRefs; original request, scope, exporting kind and cloud_data_export output must match; no whole data body in get_task"
+  },
+  "source_locations": [
+    {
+      "id": "L06",
+      "change": "OperationName/tag/params; FilePurpose.ExportCloudData; TaskOutput.CloudDataExport and actual request/result mappings"
+    },
+    {
+      "id": "L16",
+      "change": "directory purpose title/actual Native dispatch, existing project_select_directory path"
+    },
+    {
+      "id": "L22",
+      "change": "sibling bounded two-file staging/commit near write_evaluation_directory:1529"
+    },
+    {
+      "id": "L25",
+      "change": "register H11 dispatch and original request index; delegate actual work"
+    },
+    {
+      "id": "L27",
+      "change": "C08 selected device membership, fixed cursor start and <=200 rows"
+    },
+    {
+      "id": "L30",
+      "change": "capture displayed query/result selection and actual directory, H11 task/output correlation"
+    },
+    {
+      "id": "L37",
+      "change": "11 operation generation, shared exporting handle, fourth request branch and JSONL record root; no manual generated edits"
+    },
+    {
+      "id": "L56",
+      "change": "finite H11 observation and real file receipt, no looped model-context data accumulation"
+    },
+    {
+      "id": "L68",
+      "change": "proposed packages/commands/src/host_cloud_data_export.rs: fixed-selection C08 loop, typed CSV/JSONL page encoding and staged publication; not created"
+    }
+  ],
+  "design_cases": [
+    {
+      "id": "DE01",
+      "trigger": "百万原始导出期间继续写入",
+      "expected": "从原F起点导出全部匹配行，后续写入不混入；只持当前页/缓冲，计数及两格式逐行对照",
+      "runtime_result": null
+    },
+    {
+      "id": "DE02",
+      "trigger": "分钟聚合从头导出及空结果",
+      "expected": "null起始位置保留index0；空结果有CSV头和JSONL完整0行记录；不跳首行或只取当前页",
+      "runtime_result": null
+    },
+    {
+      "id": "DE03",
+      "trigger": "执行latest在导出时更新",
+      "expected": "请求先固定已选revision且全程相同；导出原始/数量/命令/等待行及未知原因，不跟随新head",
+      "runtime_result": null
+    },
+    {
+      "id": "DE04",
+      "trigger": "改筛选/页大小/页面、设备权限变化或伪造pin",
+      "expected": "导出原捕获语义筛选和实际设备集合；所有页授权；选择不匹配失败，不默默导另一集合或用pin授权",
+      "runtime_result": null
+    },
+    {
+      "id": "DE05",
+      "trigger": "取消、下一页失败、磁盘或rename故障及提交竞态",
+      "expected": "提交前无最终成功目录；旧有效数据不变；提交后真实成功胜出，生产状态不受影响",
+      "runtime_result": null
+    },
+    {
+      "id": "DE06",
+      "trigger": "目录purpose/owner/Project或请求身份不符",
+      "expected": "实际Host拒绝；不借H10目录选择、不收任意路径/URL；原请求查询精确关联H11",
+      "runtime_result": null
+    },
+    {
+      "id": "DE07",
+      "trigger": "CSV引号/逗号/换行/特殊开头字符串、精确数量和null",
+      "expected": "csv+JSON值格往返保持原typed值，微秒/数量不舍入，null不是0；JSONL全部原页/issue保留",
+      "runtime_result": null
+    },
+    {
+      "id": "DE08",
+      "trigger": "H10/H11同为exporting，大结果或回执选源不符",
+      "expected": "共享handle不造oneOf歧义；按原operation/request和特定TaskOutput核对；不截断、错认报告或伪报文件完成",
+      "runtime_result": null
+    }
+  ],
+  "pending": [
+    "full standard schema validation and real Rust/generated/typed consumers",
+    "v1 final source and actual cloud/selection identities",
+    "actual streaming memory/CSV JSONL/all-page correctness, cancellation/IO/Native/Agent checks"
+  ],
+  "design_checks": {
+    "runtime_result": null,
+    "schema_local_refs": "pass_pointer_closure_only",
+    "csv_column_mapping": "pass_document_schema_field_mapping_and_finite_stdlib_roundtrip_only",
+    "product_implementation_started": false
+  },
+  "historical_design_implementation_flags": {
+    "date": "2026-10-26",
+    "implementation_allowed": false,
+    "runtime_verified": false
+  },
+  "implementation_status_ref": "docs/06_v2.0设计与开发控制/开发控制计划.json#/packages",
+  "current_implementation_packages": [
+    "V2-08",
+    "V2-09"
+  ],
+  "status_projection_updated_at_utc": "2026-10-27T01:45:48.535491+00:00",
+  "runtime_verification_scope": "runtime_verified仅为本文全部设计用例通过声明；当前局部真实证据和剩余动作取主计划，不把设计期禁止实施作为现行限制。"
+}

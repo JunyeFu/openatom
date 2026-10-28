@@ -1,0 +1,102 @@
+{
+  "document_kind": "DQ03_DQ04_independent_interaction_and_session_repair_review",
+  "observed_at": "2026-10-15T02:16:44.831Z",
+  "status": "completed_DQ03_DQ04_closed_in_isolated_actual_prototype_execution",
+  "authorized_scope": [
+    "DQ-03",
+    "DQ-04"
+  ],
+  "skill_ref": "C:/Users/fujunye/.codex/skills/superfactory-design-quality-audit/SKILL.md",
+  "contract_refs": [
+    "docs/02_交互设计/交互流程与视图导航.json#/editing_policy/close_dirty_form",
+    "docs/02_交互设计/交互流程与视图导航.json#/editing_policy/revision_conflict",
+    "docs/02_交互设计/交互流程与视图导航.json#/editing_policy/active_project",
+    "docs/02_交互设计/交互流程与视图导航.json#/editing_policy/undo",
+    "docs/03_架构与契约/共享状态与所有权.json#/states/0",
+    "docs/03_架构与契约/共享状态与所有权.json#/states/2",
+    "docs/03_架构与契约/共享状态与所有权.json#/states/7",
+    "docs/03_架构与契约/共享状态与所有权.json#/states/11"
+  ],
+  "actual_command": "node tools/design-quality-audit/window4/probe-interaction-session.cjs",
+  "actual_source_last_modified": "2026-10-15T02:11:50.204Z",
+  "source_changed_during_execution": false,
+  "execution": "Node VM evaluates original workbench declarations, original select callback, action/apply/save/undo/open functions and registered file/input/change/click callbacks. No state-transition function is replaced.",
+  "passed": 22,
+  "total": 22,
+  "case_result_ref": "tools/design-quality-audit/window4/output/probe-result.json",
+  "consumed_original_source_ref": "tools/design-quality-audit/window4/output/consumed-workbench.js",
+  "findings": [
+    {
+      "id": "DQ-03",
+      "status": "closed_in_isolated_prototype_sequence_scope"
+    },
+    {
+      "id": "DQ-04",
+      "status": "closed_in_isolated_prototype_sequence_scope"
+    }
+  ],
+  "prior_failure_evidence": [
+    "tools/design-quality-audit/window4/output/pre-fix-result.json",
+    "tools/design-quality-audit/window4/output/pre-fix-workbench.js"
+  ],
+  "owner_next_action": "Independent DQ03/DQ04 repair review completed; coordinator may consume this bounded evidence for the public quality-audit record. No additional prototype/product/Figma action by this window.",
+  "actual_browser_execution": false,
+  "actual_product_runtime": null,
+  "service_started": false,
+  "Figma_operated": false,
+  "public_source_or_acceptance_modified": false,
+  "remaining_blockers": [],
+  "closed_residual_counterexamples": [
+    {
+      "case_id": "D04-13",
+      "parent_id": "DQ-04",
+      "prior_counterexample": "A loads actual baseline manual Run, original unit-picker callback selects package005. A has native undo and redo plus unsaved edits. Original file callback reads C; discard opens C and clears Run/history, but selectedUnit remains005 from A.",
+      "prior_source_line": 145,
+      "status": "closed_after_original_source_repair",
+      "actual_recheck": {
+        "selectedUnit": null,
+        "definitionDraft": null
+      },
+      "evidence_ref": "tools/design-quality-audit/window4/output/probe-result.json#/cases/19"
+    },
+    {
+      "case_id": "D04-15",
+      "parent_id": "DQ-04",
+      "prior_counterexample": "Original definition input callbacks set A_ONLY_DEFINITION@1.0.0 in A authoring session. Open C via file callback and discard A. Old definitionDraft survives; invoking the registered definition-confirm click callback publishes A_ONLY_DEFINITION in C and creates CUSTOM-2.",
+      "prior_source_line": 145,
+      "status": "closed_after_original_source_repair",
+      "actual_recheck": {
+        "C_title": "C-imported",
+        "definitions": [],
+        "C_selected": "C_ONLY"
+      },
+      "evidence_ref": "tools/design-quality-audit/window4/output/probe-result.json#/cases/21"
+    }
+  ],
+  "verified_sequences": {
+    "DQ-03": [
+      "actual SceneView callback offers three branches",
+      "apply edits only old selected A01 then binds ROB01 configuration/media",
+      "discard switches without commit",
+      "stay retains original form/object",
+      "missing input, out-of-site input, revision conflict each retain fields/base/history/identity"
+    ],
+    "DQ-04": [
+      "unapplied A apply/discard/stay then unsaved A save/discard/stay",
+      "save records A before C replacement; discard does not save",
+      "read rejection, malformed JSON and wrong document kind preserve A/form/session and available undo/redo",
+      "apply conflict before open preserves A and fields",
+      "C starts without A undo/redo; new C edit/undo/redo remains C",
+      "old Run/professional/proposal/gesture/primary and Run-unit selections/definition draft do not enter C",
+      "late original seek/completion and definition-confirm callbacks do not restore or publish A in C"
+    ]
+  },
+  "evidence_limits": [
+    "Node executes current original implementation and registered callbacks with presentation stubs; no browser DOM layout/real pointer dispatch or Three rendering tested here.",
+    "localStorage is an in-memory Map, file.text success/failure is a controlled external-input fixture, download is an observed Blob; no real browser disk persistence tested.",
+    "No product Host/Engine/Commands or actual Figma operation; no public types/manifests/admission changes."
+  ],
+  "current_source_followup": "Final ordinary paper commit preserves current acknowledgment and binding; re-executed existing DQ03/DQ04 cases on final source. Assertions and scope unchanged; no browser/product suite or source edits.",
+  "final_current_source_acceptance_ref": "tools/design-quality-audit/window4/output/current-source-result.json",
+  "current_source_equals_consumed_source": true
+}

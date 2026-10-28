@@ -1,0 +1,291 @@
+{
+  "document_kind": "PL2_window5_report_save_handoff_review",
+  "date": "2026-10-15",
+  "status": "completed_all_selected_sequences_and_three_findings_independently_closed",
+  "authority_evidence": {
+    "thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+    "human_user_message_id": "01a13d71-d8d1-7173-a17e-590530753005",
+    "instruction": "统筹任务并完整分派到各闲置窗口并完整完成修复"
+  },
+  "source_write_scope": "read_only; S04 owner window2",
+  "browser": "one Codex IAB tab on existing 127.0.0.1:8921; no service change",
+  "findings": [
+    {
+      "id": "PL2-W5-01",
+      "priority": "P2",
+      "status": "closed_after_independent_final_source_browser_recheck",
+      "title": "单侧B切截断例后伪补完整A，且当前前缀未入逐样例报告",
+      "actions": [
+        "VP01无样例→仿真载入到料延迟→VP21选择B→VP22 JSON，只有B且comparison=null",
+        "VP21→载入部分计算标签例→报告预览→JSON导出"
+      ],
+      "source_locations": [
+        {
+          "path": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+          "line": 233,
+          "symbol": "sample-partial calls loadSchedule() before changing identity/frontier, without registerSample after mutation"
+        },
+        {
+          "path": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+          "line": 131,
+          "symbol": "reportData consumes stale sampleRuns"
+        }
+      ],
+      "actual": {
+        "sample": "样例-UI-PREFIX",
+        "computed_until_ms": 20000,
+        "top_accepted": null,
+        "rows": [
+          {
+            "id": "样例-L03-delayed_pcb",
+            "computed_until_ms": 600000,
+            "accepted": 6,
+            "whole": true
+          },
+          {
+            "id": "样例-L03-baseline",
+            "computed_until_ms": 600000,
+            "accepted": 6,
+            "whole": true
+          }
+        ],
+        "comparison_exists": true
+      },
+      "expected": "20s前缀必须以自身身份进入同源逐样例数据，整窗量/完成未知；不得因内部构造样例而登记未显式载入的完整A或形成虚假比较。",
+      "minimum_fix": "构造截断例时不要经带登记副作用的loadSchedule()；先完整设定前缀身份/输入/partial/边界后只registerSample一次，续算保留同一前缀身份及未知整窗量。",
+      "evidence_ref": "tools/design-quality-audit/prototype-parallel/window5/before/B_then_prefix.json",
+      "owner": "复审窗口2",
+      "recheck_required": true,
+      "public_id": "PR-08",
+      "closure": {
+        "case_id": "W5-C01",
+        "result_ref": "tools/design-quality-audit/prototype-parallel/window5/final/result.json",
+        "passed": true,
+        "source_stable": true
+      }
+    },
+    {
+      "id": "PL2-W5-02",
+      "priority": "P2",
+      "status": "closed_after_independent_final_source_browser_recheck",
+      "title": "已应用未保存工程可直接被空工程替换，无离开决定",
+      "actions": [
+        "VP24 X=8.25应用→文件/新建空工程→创建空厂房"
+      ],
+      "source_locations": [
+        {
+          "path": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+          "lines": [
+            201,
+            202
+          ]
+        }
+      ],
+      "actual": {
+        "before": {
+          "revision": 2,
+          "x": 8.25
+        },
+        "after": {
+          "frame": "VP02",
+          "revision": 1,
+          "devices": 0
+        },
+        "decision_dialog": false
+      },
+      "expected": "当前已应用未保存的旧工程切换前必须有保存/明确放弃/留在；创建新工程不能默默抹去旧草稿。",
+      "minimum_fix": "将新空工程的实际替换动作纳入现有未保存工程离开决定；先保留待执行动作，保存失败或留在不替换；沿用现有对话框，不另建恢复系统。",
+      "evidence_ref": "tools/design-quality-audit/prototype-parallel/window5/before-extended/new-unsaved.json",
+      "owner": "复审窗口2",
+      "recheck_required": true,
+      "public_id": "PR-15",
+      "closure": {
+        "case_id": "W5-C03",
+        "result_ref": "tools/design-quality-audit/prototype-parallel/window5/final/result.json",
+        "passed": true,
+        "source_stable": true
+      }
+    },
+    {
+      "id": "PL2-W5-03",
+      "priority": "P2",
+      "status": "closed_after_independent_final_source_browser_recheck",
+      "title": "实际localStorage配额保存失败无可见报告",
+      "actions": [
+        "先真实保存旧快照→VP24 X=8.5应用",
+        "在本轮独立browser context填满实际localStorage配额（未mock save/setItem）→保存"
+      ],
+      "source_locations": [
+        {
+          "path": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+          "lines": [
+            153,
+            154
+          ]
+        }
+      ],
+      "actual": {
+        "filled_code_units": 5237926,
+        "actual_page_errors": [
+          "QuotaExceededError: Failed to execute 'setItem' on 'Storage': Setting the value of 'superfactory.S04.prototype.snapshot' exceeded the quota."
+        ],
+        "visible": " 已应用到原型草稿；尚未保存",
+        "unchanged_project": true,
+        "old_snapshot_unchanged": true,
+        "save_indicator": " · 未保存"
+      },
+      "expected": "保存失败应向用户显示具体原因，保留旧快照、当前修改、dirty状态和原工程；打开候选快照的保存当前分支不得误继续。",
+      "minimum_fix": "save的setItem边界仅捕获已观测QuotaExceededError，显示保存失败及配额原因并返回失败；不提前改savedRevision、不下载成功快照、不自动重试，其他未知异常保持可诊断。",
+      "evidence_ref": "tools/design-quality-audit/prototype-parallel/window5/before-extended/quota-failure.json",
+      "owner": "复审窗口2",
+      "recheck_required": true,
+      "public_id": "PR-16",
+      "closure": {
+        "case_id": "W5-C05",
+        "result_ref": "tools/design-quality-audit/prototype-parallel/window5/final/result.json",
+        "passed": true,
+        "source_stable": true
+      }
+    }
+  ],
+  "actual_product_runtime": null,
+  "product_coding_authorized": false,
+  "scope_converged": "只完成已选7个报告/保存/快照接手组合及三问题原断言修后复验，不扩新增产品场景。",
+  "browser_routing": {
+    "initial": "one CUA IAB tab",
+    "tooling_limitation": "CDP PDF print timed out; not treated as prototype defect",
+    "cleanup": "IAB tab closed before launching bundled Playwright Chrome",
+    "fallback": "existing dedicated Playwright runtime; one isolated context, each run closes browser and discards its storage",
+    "dependencies_installed": false,
+    "services_changed": false
+  },
+  "coverage_evidence": {
+    "initial_prefix_actual_failure": "tools/design-quality-audit/prototype-parallel/window5/before/B_then_prefix.json",
+    "extended_first_attempt": "tools/design-quality-audit/prototype-parallel/window5/before-extended/result.json",
+    "editable_target_roundtrip": "tools/design-quality-audit/prototype-parallel/window5/target-roundtrip/result.json",
+    "four_format_PDF_readback": "tools/design-quality-audit/prototype-parallel/window5/before-extended/pdf-readback.json"
+  },
+  "harness_correction": "首轮W5-C06因探针误用字段名盒宽而超时，且同期S04源变化；保留原结果，不计为产品缺陷。按真实标签长度更正后，单独C06在稳定源上通过。",
+  "target_roundtrip_observed": {
+    "order_quantity": 9,
+    "NEW1_A01_x": 8.6,
+    "paper_width": 180,
+    "selected_existing_target": "NEW1-P01",
+    "target_ref_survived_reopen": true,
+    "approval_and_binding_invalidated_on_reopen": true,
+    "further_pose_edit_x": 8.8,
+    "explicit_recheck_ack_rebind_succeeded": true,
+    "industrial_provider_or_product_runtime": false
+  },
+  "completed_at": "2026-10-15T11:08:22+08:00",
+  "source_consumed": {
+    "path": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+    "mtime_ms": 1792033408790.3506,
+    "entire_batch_stable": true,
+    "current_symbol_lines": {
+      "prefix_creation": [
+        242
+      ],
+      "report_source": [
+        135
+      ],
+      "save_boundary": [
+        157
+      ],
+      "new_project_guard": [
+        183
+      ],
+      "editable_snapshot": [
+        156
+      ],
+      "snapshot_adoption": [
+        159
+      ]
+    },
+    "owner_handoff_ref": "docs/04_开发与验收/特征细化/PL2_窗口2_原型修复交接.json"
+  },
+  "final_verification": {
+    "result_ref": "tools/design-quality-audit/prototype-parallel/window5/final/result.json",
+    "passed": 7,
+    "failed": 0,
+    "cases": [
+      {
+        "id": "W5-C01",
+        "title": "仅B→前缀→续算，四格式同源及未知量",
+        "passed": true,
+        "evidence_screenshot": "tools/design-quality-audit/prototype-parallel/window5/final/W5-C01.png"
+      },
+      {
+        "id": "W5-C02",
+        "title": "双样例→显示裁窗→切A/B，报告业务窗不变",
+        "passed": true,
+        "evidence_screenshot": "tools/design-quality-audit/prototype-parallel/window5/final/W5-C02.png"
+      },
+      {
+        "id": "W5-C03",
+        "title": "已应用未保存→新建入口→创建空工程，离开决定",
+        "passed": true,
+        "evidence_screenshot": "tools/design-quality-audit/prototype-parallel/window5/final/W5-C03.png"
+      },
+      {
+        "id": "W5-C04",
+        "title": "未应用字段→保存失败示例→保存拒绝→快照打开留在",
+        "passed": true,
+        "evidence_screenshot": "tools/design-quality-audit/prototype-parallel/window5/final/W5-C04.png"
+      },
+      {
+        "id": "W5-C05",
+        "title": "真实浏览器存储配额失败→可见错误与草稿保留",
+        "passed": true,
+        "evidence_screenshot": "tools/design-quality-audit/prototype-parallel/window5/final/W5-C05.png"
+      },
+      {
+        "id": "W5-C06",
+        "title": "可编辑数据+所选NEW包装工位→保存→空工程→重开再编辑",
+        "passed": true,
+        "evidence_screenshot": "tools/design-quality-audit/prototype-parallel/window5/final/W5-C06.png"
+      },
+      {
+        "id": "W5-C07",
+        "title": "本轮格式坏JSON/无效选择拒绝，当前未保存工程保持",
+        "passed": true,
+        "evidence_screenshot": "tools/design-quality-audit/prototype-parallel/window5/final/W5-C07.png"
+      }
+    ],
+    "four_format_readback_ref": "tools/design-quality-audit/prototype-parallel/window5/final/four-format-readback.json",
+    "PDF_pages": 2,
+    "page_errors": [],
+    "console_health": {
+      "app_error_observed": false,
+      "single_non_application_404": "http://127.0.0.1:8921/favicon.ico",
+      "diagnosis_ref": "tools/design-quality-audit/prototype-parallel/window5/final/console-resource-check.json"
+    },
+    "browser_closed": true,
+    "isolated_storage_context_discarded": true,
+    "source_modified_here": false,
+    "other_outputs_or_services_modified": false
+  },
+  "scope_and_limits": [
+    "本轮为当前首版设计原型的实际浏览器交互和文件读回；manual_expected标签保留，不冒称真实模拟。",
+    "PDF来自Chrome打印当前报告DOM；不声称操作了原生打印对话框。",
+    "真实localStorage配额仅填充本轮隔离context，测试后移除该键并关闭/丢弃context；未清其他窗口存储。",
+    "正式Versioned工程目录/ZIP、ReplaceFileW恢复、Engine/Host、真实专业提供者与跨机交接均未由本轮验证。",
+    "本窗只交付独立复核材料；公共PR总清单和S04/Figma源仍由其拥有者更新。"
+  ],
+  "coordinator_acceptance": "PR-08/PR-15/PR-16已在同一稳定S04源码按原断言复验通过，可由统筹据本证据关闭；不得推广为全产品运行验收。",
+  "test_fixture_naming_correction": {
+    "date": "2026-10-15",
+    "physical_samples": [
+      "tools/design-quality-audit/prototype-parallel/window5/before-extended/invalid-json.txt",
+      "tools/design-quality-audit/prototype-parallel/window5/final/invalid-json.txt"
+    ],
+    "contents_preserved_exactly": "single byte 0x7B, still deliberately invalid JSON",
+    "browser_upload_name": "invalid-json.json",
+    "browser_upload_mime_type": "application/json",
+    "subsequent_probe_upload": "Playwright file payload built from unchanged .txt bytes",
+    "business_assertions_changed": false,
+    "seven_browser_sequences_rerun": false,
+    "prior_actual_results_preserved": true,
+    "owned_JSON_files_parse_after_rename": true
+  }
+}

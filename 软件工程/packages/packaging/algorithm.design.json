@@ -1,0 +1,224 @@
+{
+  "document_kind": "S06_04_owned_algorithm_specification_not_product_runtime",
+  "checkpoint": "S06-04",
+  "revision": "algorithm-2",
+  "public_type_source": "packages/domain/types.design.rs",
+  "api_source": "docs/03_架构与契约/公开操作与宿主调用契约.json",
+  "spec_ref": "docs/03_架构与契约/纸包装结构与过程算法.md",
+  "numeric_spec_ref": "docs/03_架构与契约/纸包装数值与制造规则.md",
+  "contact_spec_ref": "docs/03_架构与契约/纸包装局部接触与连接契约.json",
+  "structure_program_source_ref": "tools/packaging-algorithm-proof/construct_seeds.py",
+  "structure_expansion_evidence_ref": "tools/packaging-algorithm-proof/output/structure-expansion-result.json",
+  "scope": {
+    "mechanisms": [
+      "restricted_folded_container",
+      "outer_box_and_inner_liner",
+      "cover_or_sliding_sleeve",
+      "blank_restricted_structure"
+    ],
+    "change_classes": [
+      "product_function",
+      "material_approved",
+      "part_relations_or_repeat_order"
+    ],
+    "processes": [
+      "forming",
+      "opening",
+      "fixed_orientation_linear_extraction",
+      "net_space",
+      "manufacturing"
+    ],
+    "panel_model": "有限厚度简单平面多边形棱柱；单板不含洞；非凸板剖分为凸单元，不取会填入凹口的整体凸包",
+    "fold_model": "显式折带轴/宽度/范围和板片偏置的受限运动学模型；板片是碰撞实体，折带是声明的关节与展开压痕带，不声称计算纸纤维弯曲实体/应力",
+    "industrial_physics": "不求材料变形、强度、防护、摩擦、胶固化或现场工时；需要这些结论时不得以几何Pass代替"
+  },
+  "input_semantics": {
+    "units": "Job、板片/折带/接触/过程为mm和right_handed_z_up；Pose在边界显式换单位/坐标一次；几何scale必须为1，尺寸改实际顶点/厚度",
+    "flat_pose": "panel局部XYZ到所属part展开坐标；板片中面为局部Z=0，front/back为+/-thickness/2",
+    "part_placement": "part展开坐标到Job世界坐标；在q=0时T_panel=placement*flat_pose",
+    "fold_axis": "axis_start_mm/axis_end_mm在panel_a局部坐标；panel_a为父，panel_b为子；width_mm是认可的平面压痕带宽，不由厚度猜",
+    "fold_rest_transform": "T_ab(0)=inverse(flat_pose_a)*flat_pose_b；T_ab(q)=translate(axis_start)*rotate(unit_axis,q)*translate(-axis_start)*T_ab(0)",
+    "step_order": "先检查prerequisites无环，按输入steps顺序的稳定拓扑序；一个动作完成后才开始下一个，不隐含同时折叠",
+    "fold_interpolation": "q(s)=from+(to-from)*s，s∈[0,1]；from须匹配前一步角；上下界及每个祖先变换在整个区间传播",
+    "rigid_translation": "目标part；start_pose须匹配其当前根姿态，沿世界displacement_mm作固定姿态直线运动",
+    "rigid_rotation": "目标part；pivot_mm/axis在Job世界坐标，插值from/to角；其他part固定；作用于整个目标part树",
+    "fixed_pose": "FixedPoseMotion { part_id, pose }显式选择Job内part；按现行距离/角阈值校核当前根Pose并保持，未知目标按InvalidInput拒绝；合法输入的明确姿态不匹配为专业Fail，不瞬移；保持当前关节角/树变换，仍对其他构件/解析产品做全区间实体检查及生效连接闭合检查；数值未定保持Undetermined。",
+    "envelope": "vertices_mm表示产品认可的保守凸包，不把包络失败外推为真实产品任意姿态均不可取；产品版本及认可姿态明确",
+    "extraction": "conditions.extraction.part_ref定位被打开的包装构件，product_pose固定、方向单位化、距离非负；产品沿该路径相对Job全部相关包装实体检查，不能只查part_ref而漏内衬/罩"
+  },
+  "contact_algorithm": {
+    "allowance_volume": "两指定板面局部polygon各向本体内部延伸批准normal_overlap_limit_mm；要求0≤d<min(t_a,t_b)，不静默截成t。前面Z∈[t/2-d,t/2]，后面Z∈[-t/2,-t/2+d]。每个pair/active step的区域联合后，两板都必须留有正体积未许可残余，不能变相豁免整对。",
+    "partition": "按全部许可多边形边界及Z层分割板片棱柱；凸单元附所属许可ID集合。几何裁剪不确定则本对Undetermined，不扩大许可区",
+    "permitted_cell_pair": "两单元属于同一个有效许可ID，且该ID覆盖当前step时，单元交集才可许可；匹配的是同一条双面声明，不任意拼接A/B不同许可",
+    "ordinary_cell_pair": "其余单元对必须在全区间证明分离；相邻板ID、allow_contact或连接存在都不能跳过",
+    "interval_safety": "有证实的分离轴投影gap_lower > (required_clearance+comparison_distance_mm)*axis_norm_upper才可跳过整个区间；或可信距离下界d_lower > delta_a+delta_b+clearance+comparison_distance_mm",
+    "failure_witness": "找到同一时刻、严格位于两个禁止单元内部且离各边界超过数值死区的点；或证实许可区之外/法向深度超限的交集。不从distance=0作穿透结论",
+    "uncertain_boundary": "仅切触、区域边界、阈值重叠或未定裁剪均细分；预算结束仍Undetermined"
+  },
+  "continuous_algorithm": {
+    "parameter_interval": [
+      0,
+      1
+    ],
+    "transforms": "区间矩阵逐级乘法传播真实关节树；刚体平移/旋转使用同一逻辑；不把子板当独立线性刚体",
+    "subtree_radius_bound": "R_ie由局部顶点范数上界加该区间路径上各固定偏置/平移幅度之和给出，不用初始包围盒半径替全区间上界",
+    "displacement_bound": "delta_i(I)≤sum_e R_ie(I)*max|q_e(s)-q_e(s0)| + 全部祖先/本体平移位移上界；需要时改用直接区间顶点包围",
+    "queue": "确定性的左区间优先二分；同时按稳定step/panel/cell ID顺序；每次真实单元对区间查询计1，二分计1",
+    "pass": "初始、每段完整闭区间、连接激活端点、最终净空间、开合/取物及制造等所有请求检查已覆盖且无未定项",
+    "fail": "给定完整候选内存在有证据的硬条件违反；输出step/对象/时间区间/点证据；不是全局不存在其他结构",
+    "undetermined": "能力不支持、输入待补、数值包围未分离、候选或区间/细分预算结束；保留已知部分，不把空搜索标Fail或Pass"
+  },
+  "connection_activation": {
+    "initial": "engage_after_step_id=null只用于初始已连接；初态先证明连接帧位置/方向闭合和局部许可有效",
+    "at_step_end": "对应step整个过程通过后，单独检查端点两frame世界位置/方向闭合；通过才加入有效固定连接",
+    "after_activation": "根/树路径仍计算板姿态，但所有后续区间额外检查T_a*frame_a与T_b*frame_b恒定闭合。禁止继续任意自由折动后被标Pass",
+    "cycles": "闭合连接不变成第二个自由树父节点；已给动作的闭合约束逐区间验证，未给闭合运动解不补造解",
+    "glue": "胶层必须来自生效端点同一有效双面局部区域的实际共同投影，不从连接帧或两ID猜面积"
+  },
+  "structural_operations": [
+    {
+      "id": "add_panel",
+      "input": "认可的material/厚度、简单polygon、part及flat_pose",
+      "effect": "新增稳定ID板片，数量/实体均在Job中显式出现"
+    },
+    {
+      "id": "add_fold_band",
+      "input": "父/子板、父局部轴/宽度/角范围、对应局部许可与步骤",
+      "effect": "新增有向关节，child不可有第二自由父；未声明许可不自动豁免"
+    },
+    {
+      "id": "add_fixed_connection",
+      "input": "两实际板、两连接帧、材料kind、局部许可引用、生效step",
+      "effect": "加入闭合要求与制造来源，不自动吸附/扭曲板片"
+    },
+    {
+      "id": "add_or_clone_part",
+      "input": "明确选择的部件及复制数量、placement/新ID映射",
+      "effect": "复制为显式part/panel/band/connection/step记录；不把未入Job的重复数量计进材料"
+    },
+    {
+      "id": "edit_dimension_or_condition",
+      "input": "白名单field_path/值与已有要求",
+      "effect": "仅修改对应现有字段，重新检查依赖参数/许可区，不靠顶点数组下标猜对象"
+    },
+    {
+      "id": "reorder_independent_steps",
+      "input": "原动作及prerequisites",
+      "effect": "仅枚举许可的稳定拓扑顺序；不增加未声明动作或反转胶接"
+    }
+  ],
+  "mechanism_construction": {
+    "restricted_folded_container": "已声明底/壁/翼板种子；add_panel与add_fold_band形成有根树，用户认可偏置/压痕带/局部接触；任选已支持开口壁/翼的反向opening动作，余连接显式保持",
+    "outer_box_and_inner_liner": "外盒与内衬分别生成受限板树，内衬为独立part；显式placement及插入translation，必要固定连接单独激活；检查跨part板对/产品包络，不能因分part漏碰撞",
+    "cover_or_sliding_sleeve": "罩的受限折叠树或四壁滑套，闭缝按已声明胶接生效；开合由独立罩/套rigid_translation/rotation，产品取物仍固定姿态直线",
+    "blank_restricted_structure": "不偷偷注入盒型；逐操作建立同类可编辑Job。缺必需结构/动作/材料时明确输入未齐，不缩成只改长宽高"
+  },
+  "variable_binding": {
+    "paths": [
+      "panels/{id}/polygon_mm/{vertex_index}/x",
+      "panels/{id}/polygon_mm/{vertex_index}/y",
+      "panels/{id}/thickness_mm",
+      "fold_bands/{id}/width_mm",
+      "fold_bands/{id}/target_angle_rad",
+      "parts/{id}/placement/translation/{x|y|z}",
+      "conditions/product_envelope/clearance_mm",
+      "conditions/extraction/distance_mm"
+    ],
+    "rule": "ID定位后检查存在、唯一、单位mm/rad、integer及minimum≤maximum；只绑定白名单数值叶子。顶点下标只在已冻结数组内解释；结构编辑后重绑，不访问任意JSON路径",
+    "materials": "改厚度先明确改材料声明/对应板及认可来源；生成器不得仅为达标自行减薄/换材料；所有受影响板/接触/展开重新核对",
+    "template_parameter_binding": "L/W/H/t/f等是显式种子程序输入，在冻结Job前重编对应全部板/折带/位姿；不是随意塞进StructuralVariable.field_path的不存在字段。Job内每条StructuralVariable只绑定其已有数值叶子；多个联动字段由程序显式生成/重编，不能在求解器里猜关系",
+    "relations": "ComparisonOperator应用于已解析变量且单位一致；批准目标是硬条件，未知值不以0替代"
+  },
+  "finite_search": {
+    "continuous_candidate_values": "当前合法种子值、min、max、中点、每条约束target、nextafter(target,+/-infinity)分别检查落区间及关系后去重；这些是有限候选，绝非整个连续区间穷尽",
+    "integer_values": "范围内全部整数按升序，生成用迭代器；预算未容纳整个集合时保留未完成，不截断后宣称穷尽",
+    "structural_candidates": "已选种子/显式结构操作形成的有限Job集合及原prerequisites的合法拓扑顺序；不自加胶、材料或自由工程含义",
+    "order": "种子输入顺序→稳定结构签名/步骤顺序→变量ID字典序→数值升序；笛卡尔积懒生成，不分配无界候选表",
+    "each_candidate": "应用变量→材料/区域/轴合法→尺寸硬条件→初态/成型→连接端点→净空间→开合→固定姿态取物→制造；有明确违反可剪掉此候选",
+    "completion": "找到所有请求条件通过的候选即可交付其具体模型，附搜索范围；全部有限完整候选均有证明的违反，只能称这些候选失败。尚有未知或连续范围未覆盖时为Undetermined，不称全局无解",
+    "empty": "零候选为Undetermined，并说明无合法种子/候选；不返回几何Fail"
+  },
+  "numerics": {
+    "scale_L_mm": "max(1,全部顶点/位姿/路径/有效关节半径的绝对坐标界)；每个Job按此实际输入固定，不是包络的某个展示缩放值",
+    "comparison_distance_mm": "max(1e-6,1e-9*L)",
+    "comparison_angle_rad": "max(1e-9,comparison_distance_mm/L)",
+    "constraint_mm": "4*comparison_distance_mm",
+    "basis": "本版模型比较死区/闭合阈值，随尺度给定；不是纸材公差、允许穿透量、物理余量或对Parry误差的假定",
+    "enclosure": "基本运算向外舍入，sin/cos带Taylor余项和参数范围；整段物理变化范围不是舍入误差。全区间分离证书可直接用保守范围，临界闭合/尺寸的定点数值包围才以相应阈值/8为收紧目标；不收紧则Undetermined。",
+    "reference_proof": "Python Fraction exact rational interval/Taylor remainder，仅隔离有限几何证明；不冒充Rust f64内核已完成",
+    "default_budget_profile": {
+      "candidate_limit": 1,
+      "interval_query_limit": 2048,
+      "subdivision_limit": 512,
+      "basis": "AQ-04实际18组有理参考成本试做覆盖的单候选参考档；不是Rust产品30秒保证，不静默补默认。"
+    },
+    "null_policy": "None不静默填数。compute_packaging请求的显式budget按既有API冻结入执行输入；tolerance需在Job中明确或先呈现本版建议由调用方采用",
+    "experience_target_seconds": 30,
+    "hard_wall_clock_timeout": null,
+    "native_primitive_proof_ref": "tools/packaging-algorithm-proof/output/float-interval-result.json",
+    "exploration_budget_profile": {
+      "candidate_limit": 64,
+      "interval_query_limit": 50000,
+      "subdivision_limit": 8192,
+      "basis": "原首次配置保留为显式探索档；未标定完整三机制Rust耗时，采用前必须展示范围与成本未知。"
+    }
+  },
+  "manufacturing": {
+    "flat_geometry": "逐part，所有板及折带的实际flat_pose投影到同一展开平面；非共面/同blank实体相互覆盖/未给有效展开关系不得制造Pass",
+    "cut": "板材polygon与明确压痕带的平面布尔并集边界；内部共有边不重复切割，多闭环以实际轮廓输出，保留来源ID",
+    "fold": "每个FoldBand实际轴在展开平面上的有限段，标对应band/父子板/宽度/方向；轴必须位于实际压痕带，不导出猜想的全长线",
+    "glue": "对kind=glue且生效闭合的FixedConnection：在生效姿态将双面局部patch映射到panel_a面，取实际共同投影并映回其flat_pose；只在panel_a标一次应用胶层，partner/allowance/step随SVG属性保留。缺/空/斜交未能可靠求区域则制造Undetermined",
+    "area": "逐实际展开连通blank计算并集面积，凹口/内环扣除；胶面积不加成纸材用量；用mm²",
+    "quantity": "Job中每个显式part一份，不从订单产量推导份数。明确复制的part分别给quantity=1，汇总实际份数；没有复制数量输入不虚报重复件",
+    "SVG": "viewBox实际展开毫米坐标、width/height为mm，cut/fold/glue三个具名层；路径带panel/band/connection/allowance/step来源；源版本随实际artifact/job_ref保存",
+    "outcome": "请求的制造图/材料表缺一必需来源则本项Undetermined，部分层仍可保存且标缺项；动画与空胶层不能冒充完整制造成功"
+  },
+  "library_boundary": {
+    "exact_cached_crate": "parry3d-f64 0.31.1",
+    "distance_zero": "可能切触也可能重叠，无符号深度；不据此允许穿透",
+    "linear_shape_cast": "仅已支持的固定姿态平移；始终纳入初态和终态及所有障碍，输出状态非Converged不升级结论",
+    "nonlinear_shape_cast": "单个NonlinearRigidMotion，不是铰接树；不作完整成型认证",
+    "status_mapping": "Unsupported/Failed/OutOfIterations→未判定；即使Converged仍须本算法的局部区域/数值和全过程证据；Parry只提供候选查询，不给本项目数值证书"
+  },
+  "owned_proof_ref": "tools/packaging-algorithm-proof/output/proof-result.json",
+  "public_handoff_ref": "docs/04_开发与验收/S06-04_公共契约交接.md",
+  "actual_product_runtime": null,
+  "actual_complete_professional_trial": null,
+  "fixed_pose_evidence_ref": "tools/packaging-algorithm-proof/output/fixed-pose-result.json",
+  "artifact_lifecycle_ref": "packages/packaging/adoption-lifecycle.design.json",
+  "process_preview_boundary": "实际过程样本为PackagingProcessSample，按父job_ref、step_id/progress/panel_id-Pose读取；NamedPose仅属表现。样本不证明区间碰撞，duration_hint_ms不当Run时间。",
+  "result_aggregation": {
+    "scope": "single_candidate_or_selected_structure",
+    "required_purposes": "冻结Job条件、明确所请求范围和目标工艺要求的并集；公共required_payload推导待DRF03-C02，不凭空省略必需项。",
+    "Fail": "任一所需硬条件证实违反，保留其他未完成项。",
+    "Undetermined": "无已证Fail但缺目的覆盖、内容、精度或预算；空checks不Pass。",
+    "Pass": "全部非空所需目的覆盖且所需内容齐备；不等于人工认可/工厂运行。",
+    "multi_candidate": "一个候选Fail不否定其他候选；找到完整Pass候选交付该候选，未完成或未覆盖域不声明全局无解。"
+  },
+  "cost_and_scaling_contract": {
+    "proof_ref": "tools/packaging-algorithm-proof/output/aq04-cost-result.json",
+    "reference_scope": "矩形单元局部许可/旋转/祖先关节/取物/临界边界；15组复制规模+3预算边界",
+    "actual_max_queries": 576,
+    "actual_max_reference_ms": 1387.978,
+    "preflight": "列每候选/步骤的面板数、凸单元数、最大顶点数、关节深度及禁止单元对数量；全Job预算累计。参考成本只对应矩形8顶点单元，不能按查询数外推高顶点/深树耗时；超覆盖可保留已证Fail或Undetermined。",
+    "implementation": "稳定panel/cell顺序；每候选/步骤/区间只计算一次同板变换与顶点包围并在该次判定复用，区间外不保留缓存；保守空间分离可提前给证书，不丢临界板对。",
+    "cancel_checkpoints": "每次单元对区间查询、顶点/轴遍历、候选边界及二分前后检查取消；不能等整个大步骤结束；不把传输取消当专业Fail。",
+    "product_calibration_exit": "S07/S08实际Rust内核须在同输入及三机制完整Job记录查询/细分/耗时/取消和结果，并保持S03-04的30秒体验试做及三态正确性；不得从参考毫秒外推产品上限。",
+    "counter_limits_unchanged_semantics": "预算耗尽保留Undetermined及未覆盖条件，已证反例保留；不自动扩预算、删检查或改容差。"
+  },
+  "report_linked_actual_followup": {
+    "review_ref": "docs/04_开发与验收/特征细化/RR_窗口3_报告关联核验.json",
+    "actual_polygon_source": "tools/packaging-algorithm-proof/polygon_cells.py",
+    "polygon_adapter_scope": "精确有理简单无洞多边形耳切/边界直线分割和真实深度层；局部两板/一平移Job适配，不是任意全Job或完整制造",
+    "fixed_counterexample": "同包围框三角形许可外严格穿透原错误Pass；现11查询Fail，点(28,28,0.45)经过严格区间内部核验。",
+    "same_subtree_rigid_cancellation": "一个Fold中其余关节固定；同活动子树内的两个板共享同一刚体变换，可在共同参考系一次检查并覆盖全区间。跨子树、产品或独立运动不得取消。",
+    "sleeve_current_job": "tools/packaging-algorithm-proof/output/sliding-sleeve-job.json",
+    "sleeve_current_job_revision": 2,
+    "sleeve_combined_evidence": "tools/design-quality-audit/report-linked/window3/sliding-sleeve-combined.json",
+    "front_lap_counterexample": "旧上搭缝端点闭合但第四折u=.875在(3.5,15,0)穿底板，实际Fail。负例原Job及修前输出独立保留。",
+    "under_lap_explicit_candidate": "下搭缝f1=f2=2,f3=f4=2.9，底板back与tab.front匹配，帧Z=-.45/+.45，穿透深度仍.15；四折实际Pass242查询27细分。",
+    "current_whole_job": "Undetermined",
+    "remaining": "整套制造/任意Job调度/Rust可靠数值及预算取消进度/三机制三变化全组合/Host→认可绑定→Engine接入仍待原P4-02/P0-03/P1",
+    "no_product_or_industrial_completion_claim": true
+  }
+}

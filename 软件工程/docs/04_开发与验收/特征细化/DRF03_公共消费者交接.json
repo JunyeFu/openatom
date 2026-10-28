@@ -1,0 +1,172 @@
+{
+  "document_kind": "DRF03_cross_window_requests_not_applied_public_changes",
+  "requests": [
+    {
+      "id": "DRF03-C01",
+      "owner": "复审窗口1；UI消费者复审窗口2",
+      "status": "public_contract_merged_consumer_rechecked",
+      "kind": "existing_command_semantics",
+      "files": [
+        "packages/commands/api.design.rs",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json",
+        "tools/type-contract-proof"
+      ],
+      "observed": "ModuleAdoption.targets/bindings/new_instances已有形状，未冻结九类目标及旧实例升级原子效果；Task/Transport逻辑instantiate_as不等于EditableProjectObject变体。",
+      "fields": [
+        "ModuleAdoption.module_ref",
+        "ModuleAdoption.targets",
+        "ModuleAdoption.bindings",
+        "ModuleAdoption.new_instances",
+        "DeviceInstance.module_ref",
+        "DeviceInstance.operation_binding",
+        "ResourceInstance.definition_ref",
+        "RouteStep.operation_ref"
+      ],
+      "recommended": "不增操作。AdoptModule登记精确版本；已有实例升级由同一apply_commands批次PutObject更新明确所选目标，保留实例ID/覆盖/显式映射。设备改module_ref/operation_binding、资源改definition_ref、路线改operation_ref。tasks/transport列实际绑定消费者与字段；targets不隐式建库存或新调度器。W00收口业务语义与真实TS/API消费者。",
+      "consumers": [
+        "module-kit采用计划",
+        "F01—10升级差异",
+        "Agent",
+        "Host",
+        "simulation冻结工程"
+      ],
+      "expected": [
+        "R11单位不相容时整个事务不提交",
+        "R12冲突时不先登记版本/半建实例",
+        "只升级A，B及旧Run精确版本不变",
+        "任务/运输采用不生成库存"
+      ],
+      "resolution_material_ref": "docs/04_开发与验收/特征细化/DRF03_C01_逐类原子采用.json",
+      "consumer_recheck_ref": "docs/04_开发与验收/特征细化/DRF03_公共合入消费者复核.json"
+    },
+    {
+      "id": "DRF03-C02",
+      "owner": "复审窗口1；UI消费者复审窗口2",
+      "status": "closed_public_contract_native_parse_actual_generator_and_task_projection_rechecked",
+      "kind": "artifact_gate_and_exact_payload_derivation",
+      "files": [
+        "packages/commands/api.design.rs",
+        "packages/domain/professional-artifact-binding.design.json",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json",
+        "tools/type-contract-proof"
+      ],
+      "observed": "AdoptArtifactParams不含required_payload/expected_subject_revision，这些在ConsumerBinding中；从consumer/operation到这些值及当前材料条件的推导尚未逐项定义。旧逻辑artifact草稿也不等于canonical ArtifactRecord。",
+      "fields": [
+        "AdoptArtifactParams.operation_ref",
+        "AdoptArtifactParams.requested_scope",
+        "ConsumerBinding.required_payload",
+        "ConsumerBinding.expected_subject_revision",
+        "ArtifactRecord.input_ref",
+        "ArtifactRecord.result_ref",
+        "ArtifactRecord.actual_outcome",
+        "ArtifactAcknowledgment.accepted_scope"
+      ],
+      "recommended": "完整推导已写DRF03_C02_专业绑定推导.json：独立工位Job选择、完整profile/实际内容/可信人工认可；公共语义与声明参数由窗口1合入，不能从artifact倒推期望。",
+      "consumers": [
+        "adopt_artifact",
+        "run_scenario",
+        "专业F19",
+        "Agent",
+        "reporting"
+      ],
+      "expected": [
+        "R01—R08与R22；r2/错成果认可/缺范围/Fail/未知/缺制造/假实际/Agent认可/厚度变更均不得合格绑定",
+        "R21同一真实输入及完整认可范围才可绑定"
+      ],
+      "resolution_material_ref": "docs/04_开发与验收/特征细化/DRF03_C02_专业绑定推导.json",
+      "consumer_recheck_ref": "scenarios/九类模块采用/DRF03_第三轮核验结果.json",
+      "actual_merge": "Actual select_packaging_branch reads owned0.2.0; explicit/missing/boolean/declared cases checked. Native Module/Device request roundtrip and narrow P0-03/P4-02 package projections observed. No provider registration or full binding claim."
+    },
+    {
+      "id": "DRF03-C03",
+      "owner": "复审窗口1；UI消费者复审窗口2",
+      "status": "public_contract_merged_consumer_rechecked",
+      "kind": "observed_process_pose_identity_gap",
+      "files": [
+        "packages/domain/types.design.rs",
+        "tools/type-contract-proof",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json",
+        "docs/02_交互设计/时间轴主轴与子轴完整定义.json"
+      ],
+      "fields": [
+        "PackagingResult.process_poses",
+        "NamedPose.id/node_transforms",
+        "NodePoseTransform.node_index/pose",
+        "PackageStructureJob.steps[].id",
+        "PackagingStep.duration_hint_ms"
+      ],
+      "observed": "process_poses是Vec<NamedPose>，只有id及节点索引变换，无step_id、u或panel_id到node_index映射；不能猜数组序号等于板片/步骤身份。",
+      "recommended": "最小推荐明确专业样本step_id、progress∈[0,1]及panel_id/Pose，关联既有job_ref；W00选择复用合适载体或补PackagingProcessSample并同步Rust/Schema/TS/生产者/get_task/预览/Agent。合入前仅从冻结Job的明确step/u按算法做模型预览，不宣称无身份NamedPose是已验证全过程。",
+      "consumers": [
+        "packaging",
+        "F19预览/描述",
+        "presentation",
+        "Agent",
+        "reporting"
+      ],
+      "expected": [
+        "R19无映射不可猜板",
+        "不同step和同step的u=0/1可区分",
+        "板片重排仍按ID正确",
+        "R18 12000ms预览提示不改30秒生产阶段或Run毫秒轴"
+      ],
+      "resolution_material_ref": "docs/04_开发与验收/特征细化/DRF03_C03_过程样本语义.json",
+      "consumer_recheck_ref": "docs/04_开发与验收/特征细化/DRF03_公共合入消费者复核.json"
+    },
+    {
+      "id": "DRF03-C04",
+      "owner": "复审窗口1；UI消费者复审窗口2",
+      "status": "closed_public_typed_adoption_output_quality_and_canonical_consumers_rechecked",
+      "kind": "legacy_adapter_and_field_UI_handoff",
+      "files": [
+        "packages/domain/module-field-bindings.design.json",
+        "tools/type-contract-proof",
+        "docs/02_交互设计/首版表单与反馈.json",
+        "docs/04_开发与验收/编码任务包"
+      ],
+      "fields": [
+        "/data/definition/payload/category",
+        "/data/definition/payload/data",
+        "ParameterDeclaration.binding",
+        "DurationValue.value",
+        "SubjectRevisionRef",
+        "ProviderCapability.available_modes"
+      ],
+      "observed": "Nullable hall height, locations and tagged endpoints are actually merged. New inner draft preserves12 locations/18 connections,7 local definitions and492 source leaf dispositions. Existing nine outer baseline and71 UI mappings remain. Missing actual geometry/Product/BOM/Route are input gaps; mandatory companion semantics are a distinct public integration gap.",
+      "recommended": "按r4 Rust片段新增MaterialRoleQuantity.declared_output_quality、TemplateSubset.adoption、ProjectState.template_adoptions；其余使用现有FileRef/ImportDraft.proposed_data/模板事务。Phase/Task/InspectionPreset/延后seed及保存重映射的具体规则已给。正式Schema后由拥有者复核，未代写共享源。",
+      "consumers": [
+        "旧包适配",
+        "九类Schema",
+        "UI表单",
+        "Agent参数描述",
+        "导出重开"
+      ],
+      "expected": [
+        "九canonical形状通过、九旧平铺manifest不可冒称直接加载",
+        "R15非整数ms拒绝；R16 1.25s=1250ms",
+        "运行参数RFC6901，不eval",
+        "原21登记、15预期actual_result=null保留"
+      ],
+      "resolution_material_ref": "docs/04_开发与验收/特征细化/DRF03_C04_r4_公共增量.json",
+      "consumer_recheck_ref": "docs/04_开发与验收/特征细化/DRF03_C04_r4_核验结果.json",
+      "actual_merge_ref": "docs/04_开发与验收/特征细化/DRF03_C04_r4_公共增量.json#/actual_canonical_merge",
+      "remaining": "Actual geometry/spec/Product/BOM/Route/resources/inspection match/professional inputs remain typed user-input gaps; actual Host/Engine remains product-stage gate."
+    }
+  ],
+  "actual_public_merge": null,
+  "second_round_evidence_ref": "scenarios/九类模块采用/DRF03_第二轮核验结果.json",
+  "current_public_owner": "复审窗口1",
+  "UI_owner": "复审窗口2",
+  "form_71_mapping_status": "already_connected_no_repeat",
+  "status": "C01_C02_C03_C04_owned_design_deltas_publicly_merged_and_canonical_consumers_rechecked_real_inputs_and_runtime_gates_retained",
+  "actual_public_merge_ref": "docs/04_开发与验收/特征细化/DRF03_公共合入消费者复核.json",
+  "third_round_ref": "docs/04_开发与验收/特征细化/DRF03_第三轮具体增量.md",
+  "latest_verification_ref": "docs/04_开发与验收/特征细化/DRF03_C04_r4_核验结果.json",
+  "fourth_round_delta_ref": "docs/04_开发与验收/特征细化/DRF03_C04_r4_公共增量.json",
+  "fourth_round_proof_ref": "docs/04_开发与验收/特征细化/DRF03_C04_r4_核验结果.json",
+  "current_report_ref": "docs/04_开发与验收/特征细化/DRF03_C04_r4_交接.md",
+  "owned_six_view_freeze_ref": "docs/04_开发与验收/特征细化/DRF03_六类设计视图与冻结交接.json",
+  "remaining_design_gaps": [],
+  "remaining_input_obligations": "See typed adoption fields and six-view handoff; user-input draft conditions, not missing design or synthetic data request.",
+  "owned_design_freeze_recommendation": "本范围设计可以归集至S06-05，公共投影与全项目冻结由窗口1；未代填产品/完整专业/其他窗口证据。"
+}

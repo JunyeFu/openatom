@@ -1,0 +1,662 @@
+{
+  "document_kind": "execution_methods_for_existing_remaining_work_not_new_task_queue",
+  "updated_at": "2026-10-25T01:00:09.619Z",
+  "authority": "用户明确要求将全部剩余项改为不使用Computer Use；本轮明确恢复项目自有Playwright/真实WebView2自动化。",
+  "computer_use_required": false,
+  "computer_use_execution": false,
+  "Playwright_project_acceptance_authorized": true,
+  "scope": {
+    "original_packages": 21,
+    "original_steps": 68,
+    "deferred": 7,
+    "remaining_gap_mappings": 46,
+    "method_assignments": 46,
+    "acceptance_closed_by_method_change": 0
+  },
+  "reading_rule": "原执行JSON remaining_work仍是唯一活动任务源；本表仅给出工具与证据方法，后续以原包当前gap是否仍存在为准，不另排第二队列。",
+  "preserved": [
+    "原业务输入、单位、独立预期、负向范围、同候选条件和原阈值",
+    "原48 FPS/1800反馈/40 I/O以及其他适用NFR完整要求",
+    "真实Host、真实Native/浏览器/播放器、正式计量、人工和发布的证据层次",
+    "既有有效completed_reuse；用户工程、旧Run、草稿及原始失败证据"
+  ],
+  "route_pilot": {
+    "receipt_ref": "output/playwright/20261025-no-cu-method-pilot/receipt.json",
+    "candidate": "C36",
+    "host_instance_id": "desktop-host-100016",
+    "passed_scope": "isolated actual Native CDP connection, real Host read, DOM File menu, empty safe normal close",
+    "formal_acceptance": false
+  },
+  "routes": {
+    "native_ui": {
+      "title": "真实Native自动化",
+      "tool": "Playwright CLI → 隔离Windows WebView2/CDP → 实际Tauri/ProjectHost",
+      "readiness": "base_connection_menu_and_actual_Host_verified; original_case_scripts_pending",
+      "requirements": [
+        "用真实DOM鼠标/键盘/表单事件驱动生产界面，读回实际Host/Run/修订；不mock invoke、不构造替代Engine。",
+        "沿原输入、负向和字段矩阵补未覆盖项，状态/单位/错误定位及图像分别观察。"
+      ],
+      "entrypoints": [
+        "tests/planner/acceptance/native_ui_consumer.mjs",
+        "tests/planner/acceptance/native_p001_business_consumer.mjs",
+        "tests/planner/acceptance/native_repaired_business_consumer.mjs"
+      ]
+    },
+    "real_host": {
+      "title": "真实Host与引擎",
+      "tool": "现有Rust/Node/Python专用入口及真实子进程",
+      "readiness": "existing_affected_checks_and_receipts_reused",
+      "requirements": [
+        "直接调用生产Commands/ProjectHost/Engine，以原冻结输入和独立预期核对；已有未变结果不重跑。",
+        "与Native UI共享真实结果，不把Host通过当界面或正确呈现帧通过。"
+      ],
+      "entrypoints": [
+        "tools/dev/verify.mjs",
+        "packages/commands/tests",
+        "tests/planner/acceptance"
+      ]
+    },
+    "filesystem_process": {
+      "title": "实际文件与新进程",
+      "tool": "真实ProjectHost目录存取/故障注入/OS子进程 + Native UI驱动",
+      "readiness": "Host_and_relocation_probes_exist; restricted_path_fixture_and_formal_caller_markers_pending",
+      "requirements": [
+        "实际写文件、原子提交、搬移独立副本及新应用进程读回；原工程、旧Run和合法产物保留。",
+        "原生选目录的机械点击可用仅测试构建的受限最终路径夹具替代；夹具必须经生产路径登记/SelectedFileRef授权，不伪造令牌、不mock文件系统或保存结果。",
+        "计时从调用方取得最终路径首次开始请求起，包含登记/检查、IPC、序列化、I/O和成功反馈或正确资产首帧；保留40次全部样本，每次≤3000ms。",
+        "F01—F04及未知格式/缺引用按原六组真实故障/拒绝接收，不用预制成功返回。"
+      ],
+      "entrypoints": [
+        "apps/planner/src/services/projectHost.ts",
+        "apps/planner/src-tauri/src/project_api.rs",
+        "packages/commands/src/project_store.rs",
+        "tools/p0-01-host/check-native-saved.py"
+      ]
+    },
+    "native_lifecycle": {
+      "title": "历史、并发与真实窗口生命周期",
+      "tool": "Playwright真实Native UI + 生产Host并发通道 + Tauri窗口事件",
+      "readiness": "existing_boundaries_reused; original_current_candidate_combinations_pending",
+      "requirements": [
+        "原同R同字段合法对抗，核对胜者新R、败者RevisionConflict和原输入保留；undo/redo/new-edit/跨工程归属保持。",
+        "通过真实Tauri关闭请求/窗口生命周期触发生产关闭保护；留在/保存/测试副本丢弃/任务在途按原范围执行，不能直接调用最终销毁来冒充关闭保护。",
+        "测试结束只正常关闭本轮确认已保存或为空且无任务的窗口；原有窗口和草稿保留。"
+      ],
+      "entrypoints": [
+        "apps/planner/src/services/windowClose.ts",
+        "tests/planner/native-close/window-close.test.mjs",
+        "tests/planner/workspace-refresh/refresh-order.test.mjs",
+        "tests/planner/acceptance/native_context_policy_consumer.mjs"
+      ]
+    },
+    "native_frames": {
+      "title": "真实呈现与正式计量",
+      "tool": "实际可见Native/WebView2 + CDP Trace/UserTiming/Screenshots + 已交付归约器",
+      "readiness": "reducer_delivered; original_complete_valid_samples_pending",
+      "requirements": [
+        "正式采样使用真实可见候选、原硬件/1920×1080/DPR1/详细模型和原运动/负载脚本，不能用本轮隐藏空窗试做替代。",
+        "实际输入/Host提交与正确目标画面的呈现事件按同一时钟关联；保留身份、首尾覆盖和掉帧，rAF/提交次数/截图张数不当FPS。",
+        "48个FPS窗口、1800次反馈及NFR04各原任务/重叠/取消样本和阈值保持；不删失败或混候选拼组。"
+      ],
+      "entrypoints": [
+        "tests/planner/p201-whole/native-trace.mjs",
+        ".work/parallel-closeout-20261024/measurements/reduce_measurements.py",
+        ".work/parallel-closeout-20261024/measurements/traceio.py"
+      ]
+    },
+    "gpu_visual": {
+      "title": "实际GPU画面与几何/过程",
+      "tool": "真实Native或公开渲染消费者的帧截图 + 结构/坐标/锚点/接触断言",
+      "readiness": "existing_geometry_and_frames_reused; remaining_exact_assets_and_visual_cells_pending",
+      "requirements": [
+        "精确版本/登记资产/实际Run与时点的姿态、物品持有、接触和交接分别核对；截图观察与几何断言结合。",
+        "原MQ尚缺维度、各机制负向/预算/旧非Pass输入完整保留；不把代表设备外推全部，不用像素相同代替业务或专业判断。",
+        "画面可以离线查看实际截图，不需要Computer Use控制桌面；人工用途签认仍另列。"
+      ],
+      "entrypoints": [
+        "apps/planner/src/scene/FactoryScene.tsx",
+        "packages/presentation/src/phase.ts",
+        ".work/parallel-closeout-20261024/models/receipt.json",
+        ".work/parallel-closeout-20261024/professional/receipt.json"
+      ]
+    },
+    "offline_process": {
+      "title": "真实进程离线链",
+      "tool": "隔离测试进程/网络环境 + 真实Native自动化 + 该进程请求记录",
+      "readiness": "process_level_network_isolation_entry_pending",
+      "requirements": [
+        "实际无网络条件下新进程、本地资产、编辑、真实Run、保存/重开与四格式完整执行。",
+        "仅WebView2 Network offline不足以证明Rust/外部进程断网；若只做到前端离线，明确限层并保持原NFR07未验。",
+        "优先使用独立测试运行环境，不改用户全局隐私/安全设置，不接入现有浏览器，不通过禁用浏览器保护绕过原限制。"
+      ],
+      "entrypoints": [
+        "docs/01_业务需求/非功能需求与测量验收.json#/requirements/6",
+        "apps/planner/src/features/agent/AgentWorkspace.tsx",
+        "apps/planner/src/services/mediaAssets.ts"
+      ]
+    },
+    "browser_artifacts": {
+      "title": "真实浏览器离线报告",
+      "tool": "Playwright隔离浏览器 → 原已导出并搬移HTML/本地受限只读源",
+      "readiness": "CLI_available; original_artifact_runtime_cases_pending",
+      "requirements": [
+        "实际执行HTML脚本并读取中文、图像、导航、关键指标及请求结果；读取现有文件，不重复生成已过报告。",
+        "使用已知URL和独立profile，保留浏览器安全配置；不接管原受限Chrome，不关闭安全检查。",
+        "静态文件/链接检查单列；与NFR07共享已满足层次的离线结果。"
+      ],
+      "entrypoints": [
+        ".work/parallel-closeout-20261024/native/html-relocation.json",
+        ".work/parallel-closeout-20261024/reporting/receipt.json"
+      ]
+    },
+    "media_player": {
+      "title": "实际媒体播放器",
+      "tool": "隔离浏览器标准HTML5 video或可脚本控制的真实播放器 + 实际解码/画面/时点记录",
+      "readiness": "player_route_assigned_actual_playback_pending",
+      "requirements": [
+        "播放既有215秒成片，核对实际duration、playback状态、时间推进、seek及开头/核心流程/保存重开/结尾画面。",
+        "ffprobe、离线抽帧与文件存在只复用为文件证据，不替代真实播放；默认正常播放速度，失败保留。",
+        "保留C16录制身份，不把播放器接收写成最终新版实录。"
+      ],
+      "entrypoints": [
+        "docs/04_开发与验收/官方提交物交付口径.json",
+        "docs/05_开源与参赛/release-preparation/C17材料与文档对应.json"
+      ]
+    },
+    "reconcile": {
+      "title": "原包与最终材料归并",
+      "tool": "原回执/候选/版本及文件消费结果的程序核对与人工阅读",
+      "readiness": "can_execute_on_available_evidence; missing_required_exits_remain_open",
+      "requirements": [
+        "按原21包/68步/7后置、原scope、release依赖和SF/IX/NFR/MQ取证；仅接收正确层次结果。",
+        "最终候选冻结后窄改三材料差额；原50/30/20和21包等权保持，改方法不增加分数。",
+        "人工签认与外部发布另列；不恢复已取消第二机/指定真实客户端/逐素材权利确认。"
+      ],
+      "entrypoints": [
+        "docs/04_开发与验收/实现阶段完成度.json",
+        "docs/04_开发与验收/官方提交物交付口径.json",
+        "docs/05_开源与参赛/release-preparation/候选差额_20261024.md"
+      ]
+    }
+  },
+  "coverage": [
+    {
+      "task_id": "P0-01",
+      "remaining_index_at_change": 0,
+      "within_original_step": 2,
+      "gap": "P0适用的编辑可见反馈与无颜色/键盘/文字缩放覆盖尚未按原协议收齐；不是已证实缺CRUD功能。",
+      "routes": [
+        "native_ui",
+        "native_frames"
+      ]
+    },
+    {
+      "task_id": "P0-01",
+      "remaining_index_at_change": 1,
+      "within_original_step": 3,
+      "gap": "功能性保存/搬移/新进程重开已完成；缺原NFR-05的40次完整操作计时。",
+      "routes": [
+        "filesystem_process",
+        "native_frames"
+      ]
+    },
+    {
+      "task_id": "P0-01",
+      "remaining_index_at_change": 2,
+      "within_original_step": 3,
+      "gap": "NFR-06六组都有历史分层证据，尚缺原同候选条件的最终接收归并。",
+      "routes": [
+        "filesystem_process",
+        "native_ui"
+      ]
+    },
+    {
+      "task_id": "P0-01",
+      "remaining_index_at_change": 3,
+      "within_original_step": 3,
+      "gap": "真实离线新进程编辑/运行/保存/重开及四格式链尚未取证。",
+      "routes": [
+        "offline_process",
+        "browser_artifacts"
+      ]
+    },
+    {
+      "task_id": "P0-01",
+      "remaining_index_at_change": 4,
+      "within_original_step": 4,
+      "gap": "当前候选同字段并发、离开三分支及在途归属的普通Native最终联验未齐。",
+      "routes": [
+        "native_lifecycle",
+        "native_ui"
+      ]
+    },
+    {
+      "task_id": "P0-02",
+      "remaining_index_at_change": 0,
+      "within_original_step": 1,
+      "gap": "原产品/订单/BOM/路线已接通；只补尚无普通Native证据的精确类型/实例引用字段。",
+      "routes": [
+        "native_ui",
+        "real_host"
+      ]
+    },
+    {
+      "task_id": "P0-02",
+      "remaining_index_at_change": 1,
+      "within_original_step": 2,
+      "gap": "物品唯一持有、预留/质量/容器分离已有Host证据，Native尚缺预留冲突与容器输入的实际拒绝/读取链。",
+      "routes": [
+        "native_ui",
+        "real_host"
+      ]
+    },
+    {
+      "task_id": "P0-02",
+      "remaining_index_at_change": 2,
+      "within_original_step": 3,
+      "gap": "取消业务需求后的实际Native新方案/WIP/旧Run对照尚未完整记录。",
+      "routes": [
+        "native_ui",
+        "real_host"
+      ]
+    },
+    {
+      "task_id": "P1-01",
+      "remaining_index_at_change": 0,
+      "within_original_step": 2,
+      "gap": "原固定工序齐套/独占和B60资源代表查询的Native覆盖仍缺部分消费者记录。",
+      "routes": [
+        "native_ui",
+        "real_host"
+      ]
+    },
+    {
+      "task_id": "P1-01",
+      "remaining_index_at_change": 1,
+      "within_original_step": 3,
+      "gap": "回看暂停/恢复/循环不改变生产事实的Native核对与共享正式性能仍未关闭。",
+      "routes": [
+        "native_ui",
+        "native_frames"
+      ]
+    },
+    {
+      "task_id": "P2-01",
+      "remaining_index_at_change": 0,
+      "within_original_step": 1,
+      "gap": "两画布/三档LOD的相机、对象选择与键盘组合尚缺原矩阵对应的最终覆盖记录。",
+      "routes": [
+        "native_ui",
+        "gpu_visual"
+      ]
+    },
+    {
+      "task_id": "P2-01",
+      "remaining_index_at_change": 1,
+      "within_original_step": 2,
+      "gap": "实际移动/旋转/框选中的取消与异常捕获丢失未完成普通Native核对。",
+      "routes": [
+        "native_ui",
+        "native_lifecycle"
+      ]
+    },
+    {
+      "task_id": "P2-01",
+      "remaining_index_at_change": 2,
+      "within_original_step": 3,
+      "gap": "NFR-02正式48窗口仍为0；接收P0公共Host修复后执行原FPS矩阵，修复不在本包重复实施。",
+      "routes": [
+        "native_frames",
+        "gpu_visual"
+      ]
+    },
+    {
+      "task_id": "P2-01",
+      "remaining_index_at_change": 3,
+      "within_original_step": 4,
+      "gap": "取消修复后的布局/连接操作仍缺原历史、冲突与跨工程负向组合的普通Native闭环。",
+      "routes": [
+        "native_lifecycle",
+        "native_ui"
+      ]
+    },
+    {
+      "task_id": "P1-03",
+      "remaining_index_at_change": 0,
+      "within_original_step": 1,
+      "gap": "未来到料的剩余原边界/接收受阻消费者需补读，已过120秒与初始库存分离不重做。",
+      "routes": [
+        "native_ui",
+        "real_host"
+      ]
+    },
+    {
+      "task_id": "P1-03",
+      "remaining_index_at_change": 1,
+      "within_original_step": 2,
+      "gap": "阶段/日历矩阵剩余Native消费者与有详细声明的动画独立性尚未完整覆盖。",
+      "routes": [
+        "native_ui",
+        "gpu_visual"
+      ]
+    },
+    {
+      "task_id": "P1-04",
+      "remaining_index_at_change": 0,
+      "within_original_step": 1,
+      "gap": "订单释放/优先序与家族组合尚缺Native冻结输入覆盖，A/B已填字段复用。",
+      "routes": [
+        "native_ui",
+        "real_host"
+      ]
+    },
+    {
+      "task_id": "P1-04",
+      "remaining_index_at_change": 1,
+      "within_original_step": 2,
+      "gap": "共料不可双分配、首件门槛与预留的Native投影需在原局部输入补验。",
+      "routes": [
+        "native_ui",
+        "real_host"
+      ]
+    },
+    {
+      "task_id": "P2-03",
+      "remaining_index_at_change": 0,
+      "within_original_step": 1,
+      "gap": "比较面板未覆盖不可比、取消/失败前缀及缺失指标的实际消费者。",
+      "routes": [
+        "native_ui",
+        "real_host"
+      ]
+    },
+    {
+      "task_id": "P2-03",
+      "remaining_index_at_change": 1,
+      "within_original_step": 2,
+      "gap": "工程接手正例已过，原保存/打开失败和离线完整组仍缺正式收口。",
+      "routes": [
+        "filesystem_process",
+        "offline_process"
+      ]
+    },
+    {
+      "task_id": "P2-04",
+      "remaining_index_at_change": 0,
+      "within_original_step": 2,
+      "gap": "时间尺/范围/输入拖动在异常capture丢失、Escape及Alt去吸附时的桌面负向结果尚未全部接收。",
+      "routes": [
+        "native_ui",
+        "native_lifecycle"
+      ]
+    },
+    {
+      "task_id": "P2-04",
+      "remaining_index_at_change": 1,
+      "within_original_step": 2,
+      "gap": "回看暂停、循环与物品跟随对真实生产结果独立性的原NFR-09组仍未闭合。",
+      "routes": [
+        "native_ui",
+        "real_host"
+      ]
+    },
+    {
+      "task_id": "P3-01",
+      "remaining_index_at_change": 0,
+      "within_original_step": 1,
+      "gap": "原13条首版预期中缺字段级消费者覆盖的有限项仍需接收；已过资源/任务/工艺/运输/纸包装/表现/模板完整链不再重做。",
+      "routes": [
+        "native_ui",
+        "real_host"
+      ]
+    },
+    {
+      "task_id": "P3-01",
+      "remaining_index_at_change": 1,
+      "within_original_step": 3,
+      "gap": "设备native65.device.p301@0.1.1贡献消费者的输出端点、独立保存和新进程读回未完成。",
+      "routes": [
+        "filesystem_process",
+        "native_ui"
+      ]
+    },
+    {
+      "task_id": "P3-01",
+      "remaining_index_at_change": 2,
+      "within_original_step": 4,
+      "gap": "受影响九类草稿/采用的历史、同字段冲突与来源切换仍需普通Native联合接收。",
+      "routes": [
+        "native_lifecycle",
+        "native_ui"
+      ]
+    },
+    {
+      "task_id": "P2-05",
+      "remaining_index_at_change": 0,
+      "within_original_step": 1,
+      "gap": "20分区剩余字段填值、单位/精确引用及边界缺普通Native证据。",
+      "routes": [
+        "native_ui",
+        "real_host"
+      ]
+    },
+    {
+      "task_id": "P2-05",
+      "remaining_index_at_change": 1,
+      "within_original_step": 2,
+      "gap": "剩余字段的表单—时间轴双入口、取消及新Run消费者需一次合验。",
+      "routes": [
+        "native_ui",
+        "real_host"
+      ]
+    },
+    {
+      "task_id": "P2-05",
+      "remaining_index_at_change": 2,
+      "within_original_step": 4,
+      "gap": "未覆盖字段的显式离开、重基、提交在途与历史归属尚待Native汇合。",
+      "routes": [
+        "native_lifecycle",
+        "native_ui"
+      ]
+    },
+    {
+      "task_id": "P3-02",
+      "remaining_index_at_change": 0,
+      "within_original_step": 1,
+      "gap": "最终登记模型的MQ-07/08联合效果及platform_reopen gate仍未逐项闭合。",
+      "routes": [
+        "gpu_visual",
+        "filesystem_process"
+      ]
+    },
+    {
+      "task_id": "P3-02",
+      "remaining_index_at_change": 1,
+      "within_original_step": 2,
+      "gap": "其余最终适用设备/附属件真实阶段随动未覆盖，代表1.0.5及四等待不重做。",
+      "routes": [
+        "gpu_visual",
+        "native_ui"
+      ]
+    },
+    {
+      "task_id": "P3-02",
+      "remaining_index_at_change": 2,
+      "within_original_step": 3,
+      "gap": "图片/GIF/GLB同一行为的跨素材实际对照仍缺完整接收。",
+      "routes": [
+        "native_ui",
+        "gpu_visual",
+        "real_host"
+      ]
+    },
+    {
+      "task_id": "P3-02",
+      "remaining_index_at_change": 3,
+      "within_original_step": 3,
+      "gap": "NFR-11实际大素材加载状态/耗时/失败/取消尚缺；正式FPS消费共享矩阵。",
+      "routes": [
+        "native_frames",
+        "gpu_visual"
+      ]
+    },
+    {
+      "task_id": "P3-03",
+      "remaining_index_at_change": 0,
+      "within_original_step": 1,
+      "gap": "插图/批量插图、区间边界及已支持过渡保存重开后的普通Native画面尚未完整覆盖。",
+      "routes": [
+        "native_ui",
+        "filesystem_process",
+        "gpu_visual"
+      ]
+    },
+    {
+      "task_id": "P3-03",
+      "remaining_index_at_change": 1,
+      "within_original_step": 2,
+      "gap": "真实交接后已移交量增长的标签消费者及未覆盖字段/热点组合仍需接收。",
+      "routes": [
+        "native_ui",
+        "real_host"
+      ]
+    },
+    {
+      "task_id": "P3-03",
+      "remaining_index_at_change": 2,
+      "within_original_step": 3,
+      "gap": "观看循环/暂停/查询的原NFR-09独立性与长媒体组仍需共享接收。",
+      "routes": [
+        "native_ui",
+        "native_frames"
+      ]
+    },
+    {
+      "task_id": "P4-01",
+      "remaining_index_at_change": 0,
+      "within_original_step": 3,
+      "gap": "本包四模板生命周期已通过；仅剩原P3-01/P1-04/P1-05关联消费者和release证据归并。",
+      "routes": [
+        "reconcile"
+      ]
+    },
+    {
+      "task_id": "P2-06",
+      "remaining_index_at_change": 0,
+      "within_original_step": 1,
+      "gap": "专业IX-03改版绑定与其余原负向口径的报告消费者尚缺最终整链核对。",
+      "routes": [
+        "native_ui",
+        "real_host"
+      ]
+    },
+    {
+      "task_id": "P2-06",
+      "remaining_index_at_change": 1,
+      "within_original_step": 2,
+      "gap": "报告长任务取消/重叠/原子提交的适用完整组尚未被普通Native正式接收。",
+      "routes": [
+        "native_frames",
+        "filesystem_process"
+      ]
+    },
+    {
+      "task_id": "P2-06",
+      "remaining_index_at_change": 2,
+      "within_original_step": 3,
+      "gap": "已导出离线HTML仍缺搬移后真实浏览器执行与阅读记录。",
+      "routes": [
+        "browser_artifacts",
+        "offline_process"
+      ]
+    },
+    {
+      "task_id": "P3-04",
+      "remaining_index_at_change": 0,
+      "within_original_step": 2,
+      "gap": "最终生成工程九类声明、设备实例、时间轴/标签与实际采用之间尚缺逐项普通Native接收归并。",
+      "routes": [
+        "native_ui",
+        "gpu_visual"
+      ]
+    },
+    {
+      "task_id": "P3-04",
+      "remaining_index_at_change": 1,
+      "within_original_step": 3,
+      "gap": "适用NFR-04/07/08与原release依赖尚未完整接收；GF已过直交/修正/报告不重跑。",
+      "routes": [
+        "offline_process",
+        "native_lifecycle",
+        "native_frames",
+        "reconcile"
+      ]
+    },
+    {
+      "task_id": "P4-02",
+      "remaining_index_at_change": 0,
+      "within_original_step": 2,
+      "gap": "原3机制×3变化及补充套筒的普通Native可编辑输入、三态结果和过程显示尚未完整接收。",
+      "routes": [
+        "native_ui",
+        "gpu_visual"
+      ]
+    },
+    {
+      "task_id": "P4-02",
+      "remaining_index_at_change": 1,
+      "within_original_step": 2,
+      "gap": "NFR-10每个冻结有效输入3次完整检查体验及专业长任务NFR-04缺正式可见样本。",
+      "routes": [
+        "native_frames",
+        "native_ui"
+      ]
+    },
+    {
+      "task_id": "P5-01",
+      "remaining_index_at_change": 0,
+      "within_original_step": 2,
+      "gap": "17SF/3IX/适用NFR/MQ最终技术出口仍缺样本；本包仅汇总主责有效结果。",
+      "routes": [
+        "reconcile"
+      ]
+    },
+    {
+      "task_id": "P5-01",
+      "remaining_index_at_change": 1,
+      "within_original_step": 3,
+      "gap": "215秒本地影片尚缺普通播放器实际播放走查。",
+      "routes": [
+        "media_player"
+      ]
+    },
+    {
+      "task_id": "P5-01",
+      "remaining_index_at_change": 2,
+      "within_original_step": 3,
+      "gap": "最终技术候选未冻结，冻结时需一次核对C17三材料与后续修复差异。",
+      "routes": [
+        "reconcile"
+      ]
+    }
+  ],
+  "known_entry_gaps": [
+    "真实Native文件路径选择的受限夹具及保存/打开调用方同钟标记",
+    "按原正确目标帧身份采集的完整正式矩阵",
+    "覆盖Rust/外部进程的真实离线隔离入口",
+    "尚未写成驱动脚本的原字段/组合/MQ/专业负向和播放器场景"
+  ],
+  "sources": [
+    {
+      "title": "Playwright WebView2",
+      "url": "https://playwright.dev/docs/webview2"
+    },
+    {
+      "title": "Tauri WebDriver",
+      "url": "https://v2.tauri.app/develop/tests/webdriver/"
+    }
+  ],
+  "formal_result_changed": false,
+  "numeric_completion_changed": false
+}

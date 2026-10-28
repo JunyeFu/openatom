@@ -1,0 +1,23 @@
+{
+  "frozen_before_execution": true,
+  "variant_change": "only device Presentation image/GIF/GLB; same EngineInput behavior and run identity",
+  "identical_fields": ["events","final_items","acceptance_events","orders","resource_claims","waits","phase_work_intervals","jobs","computed_until_ms"],
+  "cases": {
+    "calendar": {"finished_at_ms":45000,"state":"completed"},
+    "busy": {"finished_at_ms":55000,"state":"completed"},
+    "output": {"finished_at_ms":null,"state":"waiting_output"},
+    "interrupt": {"finished_at_ms":60000,"state":"completed"},
+    "missing": {"finished_at_ms":null,"state":"waiting_resource"},
+    "cycle": {"finished_at_ms":40000,"state":"completed"},
+    "zero": {"finished_at_ms":0,"state":"completed"}
+  },
+  "projection": [
+    "calendar at35000: display auto progress1 while waiting for unload",
+    "calendar at40000: actual unload progress0; same-tick dispatch takes precedence",
+    "interrupt at20000: auto effective15000 progress0.5, keep pose through calendar gap",
+    "output at100000: unload terminal1; do not reset idle",
+    "seek and rate never call Engine mutation; frames are read-only",
+    "unknown beyond computed_until: known false",
+    "missing precise assets never create fallback model"
+  ]
+}

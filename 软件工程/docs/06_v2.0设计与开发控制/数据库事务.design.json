@@ -1,0 +1,1036 @@
+{
+  "document_kind": "v2_design_only_host_cloud_api_and_database_transactions",
+  "date": "2026-10-26",
+  "implementation_allowed": true,
+  "runtime_verified": false,
+  "contract_version": "sf.execution/2.0-draft11",
+  "schema_ref": "docs/06_v2.0设计与开发控制/接口契约.schema.design.json",
+  "markdown_ref": "docs/06_v2.0设计与开发控制/接口与数据库事务设计.md",
+  "database_direction": "参考Render托管PostgreSQL18、10GB；15业务表＋1迁移元数据表。实际账号/资源/小版本/TLS连接与账单仍未取得或部署",
+  "principals": [
+    "scoped_reader",
+    "operator",
+    "host_gateway",
+    "device",
+    "generated_load_producer"
+  ],
+  "authority_rules": [
+    "HostCallContext/执行授权由实际认证Host注入，不从请求解析",
+    "普通Agent不获网关回执/观测接纳入口",
+    "人工允许接单与设备报告允许接单分开；有效资格还需新鲜度及模型约束",
+    "云存储ack不是Host业务提交",
+    "不存在公网任意修改库存/完成作业的端点",
+    "read_cloud_production仅为明确只读选择；Renderer/MCP请求不能注入云凭据、URL或方法；读授权不导出网关权限",
+    "网关为Native内部受管actor，真实私有Gateway上下文由Native注册；不经普通Agent管道冒充UI",
+    "telemetry_only与generated_load分数据集，不能进入执行会话或增加接受量",
+    "观测probe由原活跃Host创建并在实际H07接纳时核对；普通Agent/云端/device不能填写Host发起/接纳时刻或续期",
+    "原始/过期/重复遥测保留云查询；只有收到probe后新采样且在原Host期限内接纳的回应，才能更新Host设备资格；失效不释放原生产义务"
+  ],
+  "consistency_boundary": {
+    "host_owner": "single Engine",
+    "cloud_owner": "原始数据、命令及只读投影持久化",
+    "cross_process_exactly_once_claim": false,
+    "live_epoch_effects": "同回执在存活epoch内只有一次Engine效果及稳定接纳结果",
+    "crash": "未知epoch保留slot与原命令，等待明确核对",
+    "publication_delivery_state": "位于业务Snapshot之外；本地确认/云同步待完成可并存；最终三材料演示需核对已发布修订"
+  },
+  "host_operations": [
+    {
+      "id": "H01",
+      "name": "start_execution_session",
+      "request": "HostStartRequest",
+      "response": "StartupTaskHandle -> get_task/ExecutionPreparationTaskState",
+      "principal": "operator",
+      "semantics": "冻结输入并登记准备Task；云占位和准备在Host锁外；成功仅得到prepared会话，准备期不派工"
+    },
+    {
+      "id": "H02",
+      "name": "get_execution_snapshot",
+      "request": "HostReadRequest",
+      "response": "ExecutionReadEnvelope",
+      "principal": "reader/operator",
+      "semantics": "读取本机实际持有的latest/revision/cutoff快照（含只读执行归档）；原Engine所有权另判，缺失不退回云旧快照"
+    },
+    {
+      "id": "H03",
+      "name": "control_execution_session",
+      "request": "HostControlRequest",
+      "response": "ControlAck",
+      "principal": "operator exact session/device/action",
+      "semantics": "比较expected_execution_revision；人工允许接单与设备报告接单状态分开"
+    },
+    {
+      "id": "H04",
+      "name": "apply_device_receipt",
+      "request": "HostApplyReceiptRequest",
+      "response": "ReceiptAdmission",
+      "principal": "authenticated gateway exact epoch/device",
+      "semantics": "Host赋接纳序号及时间；云存储成功不等于生产提交；普通Agent不获此入口"
+    },
+    {
+      "id": "H05",
+      "name": "get_execution_cloud_work",
+      "request": "HostGetCloudWorkRequest",
+      "response": "CloudWorkBatch",
+      "principal": "registered gateway",
+      "semantics": "只读待发布指令、快照和撤回；读取不产生第二次工作"
+    },
+    {
+      "id": "H06",
+      "name": "acknowledge_execution_cloud_work",
+      "request": "HostAckCloudWorkRequest",
+      "response": "CloudEffectAck",
+      "principal": "same registered gateway",
+      "semantics": "按work_id核对原云提交；只确认同步状态，不生成生产事实"
+    },
+    {
+      "id": "H07",
+      "name": "apply_device_observation",
+      "request": "HostObservationRequest",
+      "response": "ReceiptAdmission",
+      "principal": "authenticated gateway exact device",
+      "semantics": "仅在run启动时钟后的可观察会话接纳有效新设备观测及新鲜度；prepared不伪造运行接纳；不直接完成作业或释放资源"
+    },
+    {
+      "id": "H08",
+      "name": "read_cloud_production",
+      "request": "HostCloudReadRequest",
+      "response": "CloudReadTaskHandle -> get_task/CloudReadTaskState",
+      "principal": "scoped reader/operator, selection and project authorized by Host",
+      "semantics": "本机配置只返回脱敏绑定；其余只读选择经凭据保管的Host worker访问C07/C08/C12/C13/C14/C15，不在Host锁内网络I/O；不接受任意URL/方法/凭据"
+    },
+    {
+      "id": "H09",
+      "name": "read_execution_view",
+      "request": "HostExecutionViewRequest",
+      "response": "ExecutionViewRead inputs/observations",
+      "principal": "scoped reader/operator exact local execution data",
+      "semantics": "只读本机inputs、固定R/F/T观察、固定history、本调用者原请求Task或真实本机catalog；无云I/O/生产效果"
+    },
+    {
+      "id": "H10",
+      "name": "export_execution_report",
+      "request": "HostExportExecutionReportRequest",
+      "response": "ExportingTaskHandle -> get_task/ExecutionReportTaskState",
+      "principal": "authorized exporter exact Project and SelectedFileRef purpose",
+      "semantics": "固定1或2个源的R/F与冻结输入/连续历史，构造同一ExecutionReport供PDF/HTML/CSV/JSON；真实Task原子写选定目录，取消不停止生产"
+    },
+    {
+      "id": "H11",
+      "name": "export_cloud_data",
+      "request": "HostExportCloudDataRequest",
+      "response": "ExportingTaskHandle -> get_task/CloudDataExportTaskState",
+      "principal": "authorized Project exporter + cloud read scope + own SelectedFileRef purpose",
+      "semantics": "固定查询F/设备集合或执行revision，从头逐页CSV/JSONL写入新目录；真实Task提交后返文件；取消只作用于导出"
+    }
+  ],
+  "cloud_operations": [
+    {
+      "id": "C01",
+      "method": "PUT",
+      "path": "/v2/projects/{project_id}/sessions/{session_id}",
+      "request": "CloudSessionCreate",
+      "response": "session_stored",
+      "principal": "host_gateway",
+      "transaction": "TX01"
+    },
+    {
+      "id": "C02",
+      "method": "PUT",
+      "path": "/v2/sessions/{session_id}/commands/{command_id}",
+      "request": "Command",
+      "response": "command_stored",
+      "principal": "host_gateway",
+      "transaction": "TX02"
+    },
+    {
+      "id": "C03",
+      "method": "POST",
+      "path": "/v2/devices/{device_id}/poll",
+      "request": "DevicePollRequest",
+      "response": "device_poll",
+      "principal": "bound device",
+      "transaction": "TX03"
+    },
+    {
+      "id": "C04",
+      "method": "POST",
+      "path": "/v2/devices/{device_id}/events",
+      "request": "CloudReceiptRequest|TelemetryObservation",
+      "response": "event_stored",
+      "principal": "bound device",
+      "transaction": "TX04"
+    },
+    {
+      "id": "C05",
+      "method": "GET",
+      "path": "/v2/sessions/{session_id}/events?after_ingress_id",
+      "request": "session/epoch/cursor; limit<=200",
+      "response": "events_page",
+      "principal": "host_gateway",
+      "transaction": "TX05"
+    },
+    {
+      "id": "C06",
+      "method": "PUT",
+      "path": "/v2/sessions/{session_id}/snapshots/{revision}",
+      "request": "SnapshotPublication",
+      "response": "snapshot_published",
+      "principal": "host_gateway",
+      "transaction": "TX06"
+    },
+    {
+      "id": "C07",
+      "method": "GET",
+      "path": "/v2/sessions/{session_id}/snapshots/{latest|revision|cutoff}",
+      "request": "explicit selector",
+      "response": "snapshot",
+      "principal": "scoped reader/gateway",
+      "transaction": "TX07"
+    },
+    {
+      "id": "C08",
+      "method": "POST",
+      "path": "/v2/data/query",
+      "request": "DaaSQuery",
+      "response": "query_result",
+      "principal": "scoped reader/gateway",
+      "transaction": "TX07"
+    },
+    {
+      "id": "C09",
+      "method": "POST",
+      "path": "/v2/commands/{command_id}/withdraw",
+      "request": "CloudWithdrawRequest",
+      "response": "withdrawal",
+      "principal": "host_gateway",
+      "transaction": "TX08"
+    },
+    {
+      "id": "C10",
+      "method": "POST",
+      "path": "/v2/sessions/{session_id}/release-slot",
+      "request": "CloudReleaseRequest",
+      "response": "slot_released",
+      "principal": "host_gateway",
+      "transaction": "TX09"
+    },
+    {
+      "id": "C11",
+      "method": "POST",
+      "path": "/v2/datasets/{dataset_id}/load-batches",
+      "request": "LoadBatch",
+      "response": "load_ingested",
+      "principal": "generated-only load producer",
+      "transaction": "TX10"
+    },
+    {
+      "id": "C12",
+      "method": "GET",
+      "path": "/v2/projects/{project_id}/datasets",
+      "request": "authorized project path",
+      "response": "dataset_catalog",
+      "principal": "scoped reader/gateway",
+      "transaction": "TX07"
+    },
+    {
+      "id": "C13",
+      "method": "GET",
+      "path": "/v2/projects/{project_id}/active-execution",
+      "request": "authorized project path",
+      "response": "active_execution",
+      "principal": "scoped reader/operator/gateway exact project",
+      "transaction": "TX07"
+    },
+    {
+      "id": "C14",
+      "method": "GET",
+      "path": "/v2/commands/{command_id}",
+      "request": "exact command path and authorized session/device",
+      "response": "command",
+      "principal": "scoped reader/device/operator/gateway exact command/session",
+      "transaction": "TX07"
+    },
+    {
+      "id": "C15",
+      "method": "GET",
+      "path": "/v2/commands/{command_id}/receipts",
+      "request": "CommandReceiptsQuery",
+      "response": "command_receipts",
+      "principal": "scoped reader/gateway exact command/session",
+      "transaction": "TX05"
+    },
+    {
+      "id": "C16",
+      "method": "GET",
+      "path": "/v2/sessions/{session_id}/inputs",
+      "request": "authorized identity path/epoch",
+      "response": "inputs",
+      "principal": "scoped reader/gateway exact session",
+      "transaction": "TX07"
+    },
+    {
+      "id": "C17",
+      "method": "POST",
+      "path": "/v2/sessions/{session_id}/observations/query",
+      "request": "ExecutionObservationQuery",
+      "response": "observations",
+      "principal": "scoped reader/gateway exact session",
+      "transaction": "TX07"
+    },
+    {
+      "id": "C18",
+      "method": "POST",
+      "path": "/v2/sessions/{session_id}/history/query",
+      "request": "ExecutionHistoryQuery",
+      "response": "history",
+      "principal": "scoped reader/gateway exact session",
+      "transaction": "TX07"
+    },
+    {
+      "id": "C19",
+      "method": "POST",
+      "path": "/v2/devices/{device_id}/boots/register",
+      "request": "DeviceBootRegisterRequest",
+      "response": "device_boot",
+      "principal": "bound execution device",
+      "transaction": "TX11"
+    },
+    {
+      "id": "C20",
+      "method": "POST",
+      "path": "/v2/devices/{device_id}/boots/{device_boot_id}/retire",
+      "request": "DeviceBootRetireRequest",
+      "response": "device_boot",
+      "principal": "host_gateway exact binding/session/boot",
+      "transaction": "TX12"
+    }
+  ],
+  "tables": [
+    {
+      "id": "DB01",
+      "name": "cloud_projects",
+      "key": [
+        "project_id"
+      ],
+      "columns": [
+        "local_project_id:text",
+        "owner_scope_ref:text",
+        "created_at:timestamptz"
+      ],
+      "constraints": [
+        "ProjectId不是认证依据；云项目范围由服务端身份解析"
+      ]
+    },
+    {
+      "id": "DB02",
+      "name": "project_execution_slots",
+      "key": [
+        "project_id"
+      ],
+      "columns": [
+        "session_id FK execution_sessions",
+        "execution_epoch_id:text",
+        "state:active|needs_resolution"
+      ],
+      "constraints": [
+        "同云项目最多一个活动/待核对占位",
+        "不能只因超时释放"
+      ]
+    },
+    {
+      "id": "DB03",
+      "name": "execution_sessions",
+      "key": [
+        "session_id"
+      ],
+      "columns": [
+        "project_id FK cloud_projects",
+        "execution_epoch_id:text",
+        "owner_host_context:text",
+        "source_input_ref:jsonb",
+        "policy:jsonb",
+        "created_at:timestamptz"
+      ],
+      "constraints": [
+        "会话/epoch/输入及策略不可改写；live dataset反向引用本行避免循环FK"
+      ]
+    },
+    {
+      "id": "DB04",
+      "name": "datasets",
+      "key": [
+        "dataset_id"
+      ],
+      "columns": [
+        "project_id FK cloud_projects",
+        "source_mode:software_in_loop|physical_device|generated_load",
+        "purpose:execution|telemetry_only|generated_load",
+        "session_id nullable FK execution_sessions",
+        "next_ingress_sequence:bigint",
+        "visible_frontier:bigint"
+      ],
+      "constraints": [
+        "purpose=execution时session非null且每会话唯一；telemetry_only/generated_load时session为null；purpose与source_mode组合由部署配置固定",
+        "普通事务字段计数器与事件一起提交；不得把bigserial当提交前沿"
+      ]
+    },
+    {
+      "id": "DB05",
+      "name": "device_bindings",
+      "key": [
+        "binding_id"
+      ],
+      "columns": [
+        "project_id FK cloud_projects",
+        "device_id:text",
+        "principal_scope_ref:text",
+        "definition_ref:jsonb",
+        "capability_map:jsonb"
+      ],
+      "constraints": [
+        "unique(project_id,device_id)",
+        "映射与Host冻结模型一致；项目数据不保存明文凭据"
+      ]
+    },
+    {
+      "id": "DB06",
+      "name": "commands",
+      "key": [
+        "command_id"
+      ],
+      "columns": [
+        "session_id FK execution_sessions",
+        "execution_epoch_id:text",
+        "logical_job_id:text",
+        "phase_id:text",
+        "attempt_ordinal:bigint",
+        "device_binding_id FK device_bindings",
+        "immutable_payload:jsonb",
+        "target_device_boot_id:text; FK(device_binding_id,target_device_boot_id) -> device_boots",
+        "delivery_state:queued|claimed|withdrawn",
+        "cancel_requested:boolean",
+        "closed_by_host_at:timestamptz nullable"
+      ],
+      "constraints": [
+        "unique(session_id,logical_job_id,phase_id,attempt_ordinal)",
+        "partial unique(session_id,logical_job_id,phase_id) WHERE closed_by_host_at IS NULL",
+        "同CommandId不同typed payload冲突，不做覆盖式UPSERT",
+        "发布及领取须命中同会话/epoch的active boot；原command的目标boot不可更换"
+      ]
+    },
+    {
+      "id": "DB07",
+      "name": "device_poll_requests",
+      "key": [
+        "binding_id",
+        "device_boot_id",
+        "poll_request_id"
+      ],
+      "columns": [
+        "session_id:text",
+        "execution_epoch_id:text",
+        "command_id nullable FK commands",
+        "outcome:command|empty",
+        "immutable_request:jsonb (including accept_commands)",
+        "observation_probe:jsonb nullable; original poll response copy"
+      ],
+      "constraints": [
+        "包括empty/command及probe在内的原响应不可变；同poll身份不同typed请求冲突",
+        "accept_commands=false只返回观测probe及empty，不领取命令；同poll不能刷新probe",
+        "probe取当时同session/epoch/boot的已发布精确快照，不由云端时间生成或续期；退役boot仅可读原poll结果"
+      ]
+    },
+    {
+      "id": "DB08",
+      "name": "device_events",
+      "key": [
+        "receipt_id"
+      ],
+      "columns": [
+        "dataset_id FK datasets",
+        "ingress_id:bigint",
+        "device_ref:text",
+        "device_binding_id nullable FK device_bindings",
+        "device_boot_id:text nullable",
+        "device_sequence:bigint",
+        "session_id:text nullable",
+        "execution_epoch_id:text nullable",
+        "event_kind:receipt|telemetry|generated_load",
+        "typed_payload:jsonb",
+        "cloud_received_at:timestamptz",
+        "batch_id:text nullable",
+        "batch_ordinal:bigint nullable",
+        "command_id:text nullable; receipt payload only, matching typed payload"
+      ],
+      "constraints": [
+        "unique(dataset_id,ingress_id)",
+        "live partial unique(device_binding_id,device_boot_id,device_sequence)；telemetry_only同样去重但不产生Host接纳",
+        "load unique(dataset_id,batch_id,batch_ordinal)及unique(dataset_id,device_ref,device_sequence)",
+        "原始存储本身不增加生产接受量",
+        "receipt rows command_id matches immutable typed command identity; telemetry has null command_id"
+      ]
+    },
+    {
+      "id": "DB09",
+      "name": "receipt_admissions",
+      "key": [
+        "receipt_id",
+        "execution_revision"
+      ],
+      "columns": [
+        "session_id:text",
+        "execution_epoch_id:text",
+        "decision:applied|duplicate|rejected|pending_dependency",
+        "host_admission_sequence:bigint",
+        "host_received_elapsed_ms:bigint",
+        "business_effect_committed:boolean",
+        "reason:text nullable"
+      ],
+      "constraints": [
+        "引用已存live event；同revision结果不可变",
+        "解决先前依赖产生新的执行修订；与对应快照同时发布"
+      ]
+    },
+    {
+      "id": "DB10",
+      "name": "execution_snapshots",
+      "key": [
+        "session_id",
+        "execution_epoch_id",
+        "execution_revision"
+      ],
+      "columns": [
+        "snapshot_payload:jsonb",
+        "host_observed_until_ms:bigint",
+        "created_at:timestamptz",
+        "observation_frontier:bigint"
+      ],
+      "constraints": [
+        "不可变完整Host投影，含attempt/接纳前缀；不混入generated负载"
+      ]
+    },
+    {
+      "id": "DB11",
+      "name": "execution_heads",
+      "key": [
+        "session_id"
+      ],
+      "columns": [
+        "execution_epoch_id:text",
+        "published_revision:bigint"
+      ],
+      "constraints": [
+        "组合FK指向精确快照；CAS比较expected_published_revision",
+        "可跳到较新revision，但必须携带完整自洽投影"
+      ]
+    },
+    {
+      "id": "DB12",
+      "name": "execution_cutoffs",
+      "key": [
+        "session_id",
+        "cutoff_ms"
+      ],
+      "columns": [
+        "execution_epoch_id:text",
+        "snapshot_revision:bigint"
+      ],
+      "constraints": [
+        "组合FK指向不可变截止快照；迟到回执不改该引用"
+      ]
+    },
+    {
+      "id": "DB13",
+      "name": "execution_inputs",
+      "key": [
+        "session_id",
+        "execution_epoch_id"
+      ],
+      "columns": [
+        "session_id FK execution_sessions",
+        "frozen_inputs:jsonb"
+      ],
+      "constraints": [
+        "immutable typed input documents and asset manifest; no credentials or Engine checkpoint",
+        "C01 top identity/input/policy/candidate fields must match frozen bundle and actual Engine capture"
+      ]
+    },
+    {
+      "id": "DB14",
+      "name": "execution_observations",
+      "key": [
+        "session_id",
+        "execution_epoch_id",
+        "record_sequence"
+      ],
+      "columns": [
+        "session_id FK execution_sessions",
+        "execution_revision:bigint",
+        "at_host_ms:bigint",
+        "object_kind:item|job|device|logical_work|attempt",
+        "object_id:text",
+        "typed_state:jsonb"
+      ],
+      "constraints": [
+        "typed payload identity matches indexed kind/id",
+        "record identity immutable; identical replay accepted, differing payload conflicts",
+        "record_sequence is gap-free through published snapshot observation_frontier",
+        "no FK to each intermediate snapshot revision; coalesced publication may skip snapshot rows while preserving all observation records"
+      ]
+    },
+    {
+      "id": "DB15",
+      "name": "device_boots",
+      "key": [
+        "device_binding_id",
+        "device_boot_id"
+      ],
+      "columns": [
+        "device_binding_id FK device_bindings",
+        "device_boot_id:text",
+        "session_id FK execution_sessions",
+        "execution_epoch_id:text",
+        "state:active|retired",
+        "retired_at_published_revision:bigint nullable"
+      ],
+      "constraints": [
+        "partial unique(device_binding_id) WHERE state=active",
+        "同boot的会话/epoch不可变；retired不复活，不按TTL替换active",
+        "retire仅在对应已发布终态/命令结清下由gateway请求；退役修订固定"
+      ]
+    },
+    {
+      "id": "DB16",
+      "name": "schema_migrations",
+      "key": [
+        "version:integer"
+      ],
+      "columns": [
+        "applied_at:timestamptz"
+      ],
+      "constraints": [
+        "只在TX13成功完成15业务表/约束/种子后同事务写version1",
+        "仅部署元数据，不是业务事件/Host修订；不增加checksum或通用迁移框架"
+      ]
+    }
+  ],
+  "transactions": [
+    {
+      "id": "TX01",
+      "purpose": "会话准备与工程占位",
+      "steps": [
+        "解析身份/项目范围并锁project",
+        "同session存在时比较完整不可变typed payload",
+        "拒绝其他活动/待核对slot",
+        "同事务插入session、不可变execution_inputs、live dataset及slot；输入/引用/绑定一致",
+        "提交后返回stored，准备期不发设备命令"
+      ]
+    },
+    {
+      "id": "TX02",
+      "purpose": "发布已预留命令",
+      "steps": [
+        "按session→binding→boot→command/attempt顺序锁定",
+        "核对epoch、固定设备映射和Host发布身份",
+        "核对DB15 active boot与Command.target_device_boot_id，拒绝未注册或目标boot漂移",
+        "同CommandId同payload返回原状态，不同payload冲突",
+        "无live attempt冲突才插入并提交",
+        "失败不释放Engine预留；查询原命令"
+      ]
+    },
+    {
+      "id": "TX03",
+      "purpose": "设备取令",
+      "steps": [
+        "按session→binding顺序锁定并核对固定认证范围",
+        "已存在poll身份时核对完整immutable_request，直接返回原command/empty及原probe；不同请求冲突",
+        "新poll须匹配active boot；单次一致读取同session/epoch的已发布head/snapshot，选择该boot的pending_observation_probe",
+        "accept_commands=true时锁最早合法queued且target_device_boot_id匹配的命令；false时不claim，仍返回probe",
+        "同事务插入不可变请求/结果/probe副本并更新实际被取命令claimed；提交后返回；云端不比较Host单调期限",
+        "事务中不调用设备或Host；没有新探测端点、第二轮询游标或库存写入"
+      ]
+    },
+    {
+      "id": "TX04",
+      "purpose": "保存execution或telemetry_only设备消息",
+      "steps": [
+        "按purpose分支：execution锁session→binding→dataset；telemetry_only无session，锁binding→dataset",
+        "认证主体、dataset purpose与路径设备必须一致；execution receipt还须匹配原command目标boot/epoch；非重复新消息须active boot",
+        "先核对同binding/boot/sequence原payload；相同返回原receipt，不同冲突；telemetry_only不允许receipt/active_command",
+        "去重后持有dataset锁，只取一次DB clock_timestamp()作首次cloud_received_at；分配事务计数、插入事件并更新frontier；原消息重试保留原接收时间/身份且不推进frontier",
+        "execution存储确认pending；telemetry_only为not_applicable，永不进入C05/H04/H07或生产快照"
+      ]
+    },
+    {
+      "id": "TX05",
+      "purpose": "安全游标读取",
+      "steps": [
+        "解析当前session/epoch唯一live dataset",
+        "固定visible_frontier",
+        "按cursor<ingress_id<=frontier顺序读",
+        "后续页保持dataset/filter/frontier，不作为权限凭据"
+      ]
+    },
+    {
+      "id": "TX06",
+      "purpose": "发布Host快照、接纳结果与观察前缀",
+      "steps": [
+        "锁session/head并校验epoch和expected published revision",
+        "同snapshot revision只比较不可变snapshot；重复观察record逐身份比较typed内容",
+        "新增记录必须从已确认观察前沿连续延伸到snapshot.observation_frontier，记录修订/时间不得超过本快照",
+        "同事务插入观察记录、完整不可变Snapshot及receipt_admissions；需要时插入不可变cutoff引用",
+        "同事务更新head后提交；未知发布响应查询原revision/frontier；不得宣称与Host是分布式原子事务"
+      ]
+    },
+    {
+      "id": "TX07",
+      "purpose": "一致DaaS读取",
+      "steps": [
+        "用一次head JOIN exact snapshot或精确revision读取",
+        "执行行/聚合使用同一投影前缀",
+        "telemetry固定dataset/frontier/规范filter；只读telemetry和generated_load，排除receipt；cloud_received_at使用UTC半开区间，分钟按UTC分组；原始行按ingress，聚合按bucket/device/source稳定排序",
+        "telemetry每页含dataset_id及selected_visible_frontier，包括空/末页；执行结果仍返回原epoch/revision；客户端核对整次查询前沿和全部页",
+        "C17固定精确快照R及观察前沿F，仅从seq<=F且at_host_ms<=T的记录取每对象最后状态；T不得超出该快照覆盖，固定筛选/排序翻页",
+        "C18固定R/F及闭区间时点范围，按record_sequence读取原状态记录；空对象选择返回该前缀所有类别，连续完整报告读取不能丢页",
+        "telemetry固定F后解析实际设备集合；selected_device_ids各页必返；游标内规范筛选保存该集合，授权后集合冲突拒绝；分组起始null不跳index0，rows<=200"
+      ]
+    },
+    {
+      "id": "TX08",
+      "purpose": "撤回与领取竞态",
+      "steps": [
+        "锁session→command",
+        "仍queued未claim则标withdrawn，返回withdrawn_before_delivery",
+        "已claim仅记录可支持的设备撤回请求，返回device_confirmation_required",
+        "只有真实未投递证明或设备cancelled_not_started才允许Host释放预留"
+      ]
+    },
+    {
+      "id": "TX09",
+      "purpose": "释放已结清会话占位",
+      "steps": [
+        "锁project slot→session/head",
+        "比较epoch和expected published revision",
+        "要求已发布的终态及命令/预留/处置结清",
+        "要求本session全部已注册execution boots已退役；遥测负载不占生产slot",
+        "仅释放匹配slot；Host丢失或未知执行不按超时解锁"
+      ]
+    },
+    {
+      "id": "TX10",
+      "purpose": "generated批量写入",
+      "steps": [
+        "仅接受generated dataset及专用权限；一次非空1..1000行，批内(device_ref,sequence)不可重复",
+        "锁dataset，查询同batch全部行并按batch_ordinal排序；同batch须N、顺序和完整规范typed payload一致",
+        "精确重试返回inserted_count=0/reused_count=N，保留原cloud_received_at；缩短、追加、重排或改内容均冲突",
+        "新batch若撞任何既有(dataset,device_ref,sequence)即整批冲突，即使内容相同；不能跨batch返回全reused却不存batch身份",
+        "去重后只取一次DB clock_timestamp()，本批共用；原子分配连续ingress及ordinal0..N-1，插入整批事件",
+        "同事务更新frontier后提交；失败整批回滚；无额外批次表，不增加生产数量"
+      ]
+    },
+    {
+      "id": "TX11",
+      "purpose": "注册执行设备启动身份",
+      "steps": [
+        "锁session→device binding；核对固定认证映射、当前slot/epoch和冻结候选绑定",
+        "同binding/boot存在时比较原session/epoch；返回原active或retired，不能复活",
+        "存在其他active boot时device_boot_conflict，不按超时踢出",
+        "插入active boot并提交；注册本身不证明进程存活或设备新鲜"
+      ]
+    },
+    {
+      "id": "TX12",
+      "purpose": "退役已结清设备启动身份",
+      "steps": [
+        "锁project slot→session→binding→boot及命令/head",
+        "同boot已retired且原退役修订一致返回原结果；不同身份/修订冲突",
+        "比较expected published revision，要求已发布终态、该boot无未结清命令/预留/处置",
+        "Native仅在自有子进程正常退出且本地出站义务结清后调用；服务端只信明确gateway身份并核对云端条件",
+        "写retired及固定退役修订；不删除原命令/消息；之后C10方可释放slot"
+      ]
+    },
+    {
+      "id": "TX13",
+      "purpose": "新云库初始schema及固定种子迁移",
+      "steps": [
+        "migrate模式begin并pg_advisory_xact_lock(53023001)",
+        "创建/读取schema_migrations；已为1则返回原已应用结果，未知版本停止",
+        "空版本时执行001_initial.sql的15业务表/必要约束索引及固定project/device/独立dataset种子",
+        "同事务写version1、applied_at并commit；中途失败全部回滚",
+        "响应未知重查原version；不DROP/覆盖既有业务数据，不自动处理未来不兼容迁移"
+      ]
+    }
+  ],
+  "cursor_rule": "ingress_id是dataset作用域内按事务提交的前缀，不是PostgreSQL序列/bigserial顺序；cursor携带dataset/filter/frontier选择，不承担授权",
+  "read_rule": "一次JOIN精确快照或指定不可变revision；不把Read Committed下多次变化的head读取拼为同一快照；命令云投递状态与已发布Host接纳状态分别标源，Host确认缺失不证明设备未执行; C15原始回执页具有独立提交前沿；它不是同修订Host业务事实，不直接合计接受量",
+  "lock_order": [
+    "project/slot when needed",
+    "session",
+    "device binding when needed",
+    "dataset/command as applicable; no reverse acquisition in same flow",
+    "snapshot/head publication"
+  ],
+  "http_errors": {
+    "401": "unauthenticated",
+    "403": "permission_denied",
+    "409": "revision/immutable-payload/active-session/epoch conflict; device_boot_conflict/device_boot_mismatch",
+    "422": "invalid typed input, capability or reference",
+    "503": "storage unavailable; no successful persisted acknowledgement"
+  },
+  "minimal_indexes": [
+    "所列主键/唯一键",
+    "device_events(dataset_id,ingress_id)",
+    "device_events(dataset_id,device_ref,cloud_received_at,ingress_id)支撑本次设备时间窗查询",
+    "commands(session_id,device_binding_id,delivery_state)",
+    "receipt_admissions(session_id,execution_epoch_id,execution_revision)",
+    "无真实查询计划需求不加JSONB GIN索引",
+    "device_events(dataset_id,command_id,ingress_id) for scoped command receipt pages",
+    "execution_observations(session_id,execution_epoch_id,object_kind,object_id,at_host_ms,record_sequence) for fixed-prefix as-of reads",
+    "device_boots(device_binding_id) partial unique WHERE state=active"
+  ],
+  "source_references": [
+    {
+      "url": "https://www.postgresql.org/docs/current/transaction-iso.html",
+      "used_for": "Read Committed逐语句快照及sequence不按事务回滚；当前查阅页面标为PostgreSQL 18"
+    },
+    {
+      "url": "https://www.postgresql.org/docs/current/sql-insert.html",
+      "used_for": "单条INSERT/UPDATE原子结果不等于设备跨进程exactly-once或可覆盖不可变payload"
+    },
+    {
+      "url": "https://www.postgresql.org/docs/current/indexes-partial.html",
+      "used_for": "partial unique限制未关闭尝试"
+    }
+  ],
+  "code_generation_after_v1": [
+    "Rust领域/API类型先成为权威，再生成TS/schema",
+    "LongTaskKind增加execution_preparation/cloud_read，TaskOutput增加execution_session/cloud_read；两个Task均不是生产会话本身",
+    "ContractTypeBundle/ApiContractBundle纳入新DTO",
+    "实际实施准入后才运行原export-contracts；不得手写generated目录",
+    "冻结输入/时点观察/归档类型及H09从实际Rust导出；私有Native资产请求仅供真实主窗受权入口，不因此注册Agent可写工具",
+    "H10/FilePurpose.ExportExecutionReport/TaskOutput.ExecutionReport与新报告类型生成；TaskState新增可选originating_request_id，新v2任务必须填，旧任务保持省略",
+    "154定义的归属、必填可空/const、任务严格wire视图及11操作的生成映射见V2-TYPE-CONTRACT-09；TaskState统一存储，不复制任务系统",
+    "设计文档已用Draft2020-12及date-time断言完成3元schema/26正反例检查；实际生成契约与Rust/Host仍待验"
+  ],
+  "design_cases": [
+    {
+      "id": "API01",
+      "trigger": "伪造caller/grant/Host时间",
+      "expected": "拒绝未知字段；权限和Host接纳时间不由请求注入",
+      "runtime_result": null
+    },
+    {
+      "id": "API02",
+      "trigger": "准备会话遇到云I/O",
+      "expected": "返回真实准备Task，网络在Host锁外；prepared前不派工",
+      "runtime_result": null
+    },
+    {
+      "id": "API03",
+      "trigger": "准备Task成功",
+      "expected": "仅得到prepared会话；Task成功不是生产目标完成",
+      "runtime_result": null
+    },
+    {
+      "id": "API04",
+      "trigger": "设备事件stored确认",
+      "expected": "Host接纳仍pending，不增加产出",
+      "runtime_result": null
+    },
+    {
+      "id": "API05",
+      "trigger": "Host已接纳、云发布响应丢失",
+      "expected": "查询同epoch/revision；相同发布返回原ack，不重复生产",
+      "runtime_result": null
+    },
+    {
+      "id": "API06",
+      "trigger": "同CommandId不同payload",
+      "expected": "冲突且保留原命令",
+      "runtime_result": null
+    },
+    {
+      "id": "API07",
+      "trigger": "poll响应丢失或empty结果重复",
+      "expected": "同poll身份返回原结果，不领取另一命令",
+      "runtime_result": null
+    },
+    {
+      "id": "API08",
+      "trigger": "poll与撤回竞态",
+      "expected": "原子确定队列结果；已claim需设备确认",
+      "runtime_result": null
+    },
+    {
+      "id": "API09",
+      "trigger": "并发事件事务调度乱序",
+      "expected": "dataset事务计数器保证可见游标前缀，不漏掉后提交旧序号",
+      "runtime_result": null
+    },
+    {
+      "id": "API10",
+      "trigger": "同boot/sequence不同内容",
+      "expected": "不可变身份冲突，不覆盖",
+      "runtime_result": null
+    },
+    {
+      "id": "API11",
+      "trigger": "两次快照发布竞争",
+      "expected": "CAS和不可变行防混代；精确重复幂等",
+      "runtime_result": null
+    },
+    {
+      "id": "API12",
+      "trigger": "截止引用已存",
+      "expected": "迟到事件不重写原快照",
+      "runtime_result": null
+    },
+    {
+      "id": "API13",
+      "trigger": "Reader/device冒充Host发布",
+      "expected": "服务端授权拒绝；origin字段不是权限",
+      "runtime_result": null
+    },
+    {
+      "id": "API14",
+      "trigger": "generated负载和生产数据",
+      "expected": "按来源/dataset隔离，不以写入条数当生产接受量",
+      "runtime_result": null
+    },
+    {
+      "id": "API15",
+      "trigger": "分页cursor换项目/数据集/revision",
+      "expected": "选择不匹配拒绝，重新校验权限",
+      "runtime_result": null
+    },
+    {
+      "id": "API16",
+      "trigger": "Host丢失且slot未结清",
+      "expected": "保留待核对和原身份，不自动重入同一工作",
+      "runtime_result": null
+    },
+    {
+      "id": "API17",
+      "trigger": "超SafeUint/缺引用",
+      "expected": "明确边界错误，不截断或猜绑定",
+      "runtime_result": null
+    },
+    {
+      "id": "API18",
+      "trigger": "原v1 API与生成器",
+      "expected": "旧操作不变；设计阶段不写运行类型或派生文件",
+      "runtime_result": null
+    }
+  ],
+  "pending": [
+    "托管参考配置/版本/TLS/预算已列V2-DEPLOYMENT-08；实际账号/资源、基础镜像metadata、依赖解析/编译及真实账单仍待落实",
+    "文档元schema/26正反例已标准校验并记录回执；实施后仍需真实生成契约/Rust/Host消费核对",
+    "所选托管数据库的实际事务、查询性能及约束运行核对",
+    "执行冻结输入/观察/媒体设计的实际类型生成和v1最终接点验证；设计在冻结输入与执行观察设计.md"
+  ],
+  "cursor_design": {
+    "encoding": "base64url UTF-8 JSON, cursor_version=1",
+    "telemetry": "rows: fixed dataset/normalized UTC filter/frontier + after_ingress_id; aggregate: fixed grouping over same frontier + after_row_index; each page including empty/last stamps dataset_id and selected_visible_frontier; aggregate after_row_index=null is before first row0; raw start after_ingress_id=0; normalized query devices resolve at F and each result echoes selected_device_ids",
+    "execution": "identity/query with page.cursor=null + fixed snapshot revision + after_row_index",
+    "selection": "server compares normalized typed filter and identity, then rechecks authorization; cursor is untrusted data and never a grant; telemetry requires F<=current committed frontier and valid positional bounds; unsigned cursor cannot attest its original issuing query, only an authorized prefix; consumer compares original response selection",
+    "ordering": "raw telemetry uses committed dataset ingress; grouped telemetry uses bucket/device/source-mode order; execution uses fixed snapshot typed row vector",
+    "canonical_rows": "kind order then stable identity/phase/attempt or fixed snapshot event ordinal; row_index is stable for this fixed selection",
+    "signature_required": false,
+    "command_receipts": "CommandReceiptsCursor binds authorized identity/command and fixed dataset committed frontier; ordered ingress_id, limit<=200; never broad gateway event read permission",
+    "execution_observations": "ExecutionObservationCursor pins exact revision, time, object selection and observation_frontier; stable item/job/device/logical_work/attempt + object-id rows, limit<=200",
+    "execution_history": "fixed identity/R/F/range/object selection; original record_sequence order, inclusive point-time endpoints, limit<=200; no cursor or request id as authorization"
+  },
+  "device_registration": "固定部署配置保存binding/主体/动作；C19登记每次执行boot，C13给原slot boot目录，C20结清退役。无通用注册UI；不同active boot不可抢占。",
+  "identity_mapping": "Native project_id为本地ProjectId；HTTP路径project_id为云项目身份；服务端显式映射并校验owner_scope/local_project_id，禁止仅凭字符串相同授权",
+  "design_checks": {
+    "json_parse": "pass",
+    "local_reference_closure": "pass",
+    "references_checked": 3075,
+    "required_names_and_operation_catalog_mapping": "pass",
+    "readonly_selection_catalog": "pass",
+    "agent_effect_catalog_and_csv_columns": "pass",
+    "markdown_links_and_table_columns": "pass",
+    "design_case_results": "all null",
+    "proposed_product_paths_created": false,
+    "full_schema_meta_and_instance_validation": true,
+    "runtime_verified": false,
+    "reference_scope": "unique design schema and two transitively referenced existing generated documents; local pointer closure only",
+    "device_boot_and_telemetry_catalog": "pass",
+    "markdown_tables_checked": 64,
+    "markdown_local_links_checked": 327,
+    "design_cases_all_unrun": 160,
+    "source_location_bounds_checked": 68,
+    "observation_probe_poll_and_deadline_consumer_mapping": "pass",
+    "finite_deadline_example_arithmetic": "pass_design_arithmetic_only",
+    "deployment_catalog_budget_and_gitroot_mapping": "pass_design_only",
+    "type_ownership_and_cloud_data_graph": "pass_design_reference_mapping_only",
+    "schema_example_targets_checked": 26,
+    "schema_examples_standard_validation": "26 match_expected",
+    "data_query_scale_formula_and_time_selection": "pass_design_arithmetic_and_mapping_only",
+    "data_query_consumer_mapping": "pass_document_mapping_only; selection-specific identity, page coverage, finite observation and distinct frontier namespaces; runtime unrun",
+    "prediction_execution_requirement_alignment": "draft9 source and per-metric comparability designed in V2-PREDICTION-REPORT-11; actual validation and consumers remain unverified",
+    "prediction_report_source_wire_csv_and_finite_arithmetic": "pass_design_mapping_and_arithmetic_only",
+    "data_export_fixed_selection_csv_jsonl_and_shared_handle": "pass_document_mapping_and_finite_stdlib_encoding_examples_only",
+    "schema_validation_scope": "design draft +2 referenced existing generated documents meta-valid;26 precise positive/negative examples match with explicit date-time; actual v2 generated/Rust/Host runtime unrun",
+    "schema_validation_receipt_ref": ".work/v2-design-schema-validation/receipt.json",
+    "requirement_matrix_mapping": "32 rows exact IDs, references, locations and case IDs verified;30 design drafted,2 need v1 frame binding; no runtime pass"
+  },
+  "recovery_boundary": "同存活Host重连后查询原身份；不持有原epoch的Host仅只读。原Engine丢失不承诺跨进程续跑，不提供人工标完成/清slot；未知状态保留，后续实际恢复需单独设计",
+  "ui_consumer_design_ref": "docs/06_v2.0设计与开发控制/界面字段状态与恢复边界设计.md",
+  "input_storage": "C01原子保存冻结文档JSON；媒体字节保存在Native受管执行归档并随工程交接，云不冒充媒体分发或Engine检查点",
+  "prepare_ready": "H01经Native受管后端完成冻结归档、C01、两自有子进程存活及C19/C13精确boot确认、r0观察/快照发布后才prepared；prepared仍无运行时钟/派工。部分启动取消按stopped前缀→空闲子进程退出→C20→C10结清；未知结果保留原占位。",
+  "request_lookup": "H01/H08/H10/H11登记Task与原request_id索引同一Host短事务完成；键为实际Host/调用者/Project/request_id。H09只读原调用者登记；同身份同typed params返回原Task，不同params冲突。索引不声称跨Host重启幂等；not_found不授权重新生产；H11同原Host/调用者/Project/request_id索引；第四registered操作分支，实际get_task输出cloud_data_export",
+  "agent_report_design_ref": "docs/06_v2.0设计与开发控制/Agent与执行报告消费设计.md",
+  "device_gateway_design_ref": "docs/06_v2.0设计与开发控制/设备进程网关与部署设计.md",
+  "observation_freshness": {
+    "decision": "V2-A10",
+    "transport": "Host rN ExecutionDeviceView.pending_observation_probe -> C06/TX06 -> C03/TX03 immutable poll result -> fresh C04 sample -> H07",
+    "endpoints_added": 0,
+    "tables_added": 0,
+    "max_age_ms_demo": 3000,
+    "probe_interval_ms_demo": 1000,
+    "host_authority": "live original session/epoch/boot outstanding probe registry; no reconstruction from cloud/archive",
+    "acceptance": "strict host_now_ms < probe.expires_at_host_ms and exact not-yet-consumed probe; duplicate original response returns original admission and original deadline",
+    "publication": "probe.issued_at<=snapshot observed time; issued revision<=published revision; expiry may be future declared deadline, not an observed event",
+    "unknown_or_rejected": "raw receipt remains queryable; cannot reset latest qualified proof, eligibility or expiry"
+  },
+  "operational_endpoints": [
+    {
+      "id": "OP01",
+      "method": "GET",
+      "path": "/healthz",
+      "response": "204 empty when schema1/config/pool SELECT1 ready; otherwise503 empty",
+      "principal": "public/platform readiness probe, no project data",
+      "transaction": "read-only readiness, no business mutation"
+    }
+  ],
+  "managed_deployment_design_ref": "docs/06_v2.0设计与开发控制/托管部署配置与交付闭包设计.md",
+  "type_mapping_design_ref": "docs/06_v2.0设计与开发控制/类型归属与契约样例设计.md",
+  "data_query_scale_design_ref": "docs/06_v2.0设计与开发控制/数据查询与规模验收设计.json",
+  "cloud_time_rule": {
+    "storage": "timestamptz(6); DB clock_timestamp sampled once after dataset lock and dedup for each new TX04 event/TX10 batch",
+    "retry": "exact retry retains first timestamp; ingress is commit order, timestamps are not guaranteed monotonic",
+    "query": "received_from <= cloud_received_at < received_until; equal is empty; inverted is422; timestamps normalized to UTC",
+    "aggregate": "only telemetry/generated_load; UTC minute; emit nonempty groups; stable bucket/device/source order; row_index starts0",
+    "filter": "device_ids sorted/deduplicated; [] means all authorized devices in selected dataset; explicit out-of-scope403; authorized no matching rows is empty",
+    "source_time": "GeneratedLoadEvent.observed_at is synthetic sender time; never overwrite DB time or Host monotonic time",
+    "device_membership": "[] resolves authorized device refs present in telemetry/generated_load at fixed F, sorted; explicit authorized ids retained without matching rows; every result returns resolved selected_device_ids, cursor normalized selection binds set; scope change cannot silently change pages"
+  },
+  "prediction_report_design_ref": "docs/06_v2.0设计与开发控制/预测与执行比较设计.json",
+  "data_export_design_ref": "docs/06_v2.0设计与开发控制/筛选数据导出设计.json",
+  "historical_design_implementation_flags": {
+    "date": "2026-10-26",
+    "implementation_allowed": false,
+    "runtime_verified": false
+  },
+  "implementation_status_ref": "docs/06_v2.0设计与开发控制/开发控制计划.json#/packages",
+  "current_implementation_packages": [
+    "V2-01",
+    "V2-02",
+    "V2-04",
+    "V2-09"
+  ],
+  "status_projection_updated_at_utc": "2026-10-27T01:45:48.535491+00:00",
+  "runtime_verification_scope": "runtime_verified仅为本文全部设计用例通过声明；当前局部真实证据和剩余动作取主计划，不把设计期禁止实施作为现行限制。"
+}

@@ -1,0 +1,156 @@
+{
+  "kind": "three_case_pallet_and_wrapping",
+  "version": "1.0.0",
+  "package": "V2-05-G01",
+  "source": "logistics-host02 actual project, scenario and frozen modules; template1.5.0",
+  "target_template": "1.6.0",
+  "hall_geometry_changed": false,
+  "AI_views_reused": true,
+  "devices": [
+    "manual-packing",
+    "pallet-stretch-wrapper"
+  ],
+  "flow": "Actual three cases from vacuum placement -> manual floor pallet loading -> stretch wrapping -> shipping",
+  "pallet": {
+    "length_m": 1.2,
+    "width_m": 0.8,
+    "height_m": 0.12,
+    "count": 1,
+    "case_count": 3,
+    "case_type": "PF-packed-case",
+    "case_m": [
+      0.32,
+      0.24,
+      0.24
+    ],
+    "contents_per_case": 6,
+    "case_bottom_centers_m": [
+      [
+        -0.34,
+        0,
+        0.12
+      ],
+      [
+        0,
+        0,
+        0.12
+      ],
+      [
+        0.34,
+        0,
+        0.12
+      ]
+    ],
+    "loaded_extent_m": [
+      1.2,
+      0.8,
+      0.36
+    ]
+  },
+  "operation": {
+    "builtin": "pack",
+    "identity_policy": "container_with_contents",
+    "input_cases": 3,
+    "input_empty_pallet": 1,
+    "output_loaded_pallet": 1,
+    "manual_cycle_ms": {
+      "load": 5000,
+      "auto": 15000,
+      "unload": 5000
+    },
+    "resource": "Existing manual station operator and execution capacity; no concurrent double use",
+    "presentation": "Floor loading beside the existing manual station; never place a 1.2m pallet on the small case-folding table"
+  },
+  "wrapping": {
+    "operation": "Existing canonical preserve operation",
+    "film_length_m": 9,
+    "film_width_m": 0.5,
+    "film_thickness_m": 2.3e-05,
+    "required_state": "unwrapped",
+    "final_state": "wrapped",
+    "identity": "Same loaded pallet ID and same nested three case/eighteen item IDs"
+  },
+  "visual": {
+    "policy": "Use actual nested case geometry, not six decorative example boxes",
+    "film_envelope": "Fit to actual one-layer case stack; retain pallet dimensions and device geometry",
+    "lod": "Simplified default, only nearby primary selection detailed; both variants must show the same payload and state"
+  },
+  "station_fixture": {
+    "manual_floor_anchor": "Named floor_loading scene_node0 in both exact LODs",
+    "manual_floor_offset_m": [
+      2.425,
+      0,
+      0
+    ],
+    "case_buffer_m": [
+      34.8,
+      72.3,
+      0
+    ],
+    "empty_buffer_m": [
+      34.8,
+      76,
+      0
+    ],
+    "loaded_buffer_m": [
+      34.8,
+      73.5,
+      0
+    ],
+    "wrapper_carriage_y_m": 0.18,
+    "film_center_y_m": 0.46,
+    "film_vertical_extent_m": [
+      0.21,
+      0.71
+    ],
+    "box_on_turntable_vertical_extent_m": [
+      0.34,
+      0.58
+    ],
+    "reason": "Observed missing manual holder anchors and loaded buffer collision; canonical carriage climbed above the one-layer load. Add exact anchors, separate buffer and use the low-load setting without resizing machine geometry.",
+    "film_material_adaptation": "MeteredFilmRoll follows low spindle; LiveFilmWeb center0.46m; partial wrap0.24m height; preserve9m length and500mm roll width"
+  },
+  "stock_policy": "Remove isolated wrapper load and its six example contents; keep one metered film supply. Supply one empty pallet at loading station. No preloaded replacement pallet.",
+  "order_policy": "Replace PF-ORDER-CASE with PF-ORDER-PALLET=1. Keep the three-case upstream production task without a direct shipping order. Other seven orders unchanged.",
+  "expected": {
+    "manufacturing_jobs": 162,
+    "transport_trips": 119,
+    "accepted_orders": {
+      "PF-ORDER-PALLET": 1,
+      "PF-ORDER-SLEEVE": 3,
+      "PF-ORDER-TUBE": 6,
+      "PF-ORDER-LABEL": 18,
+      "PF-ORDER-BAG": 3,
+      "PF-ORDER-SHEETS": 60,
+      "PF-ORDER-BOARDS": 6,
+      "PF-ORDER-CURED": 3
+    },
+    "connected_devices": 31,
+    "independent_cells": 61
+  },
+  "expected_derivation": "161 - 1 isolated wrapping + 1 actual wrapping + 1 loading =162; redirect final three case trips to loading and add two pallet trips =119. The manual station was already connected; wrapper adds one connected device.",
+  "display_units": "99 other products plus 1 pallet containing 3 cases and 18 inner items; do not compare mixed-unit sum100 with former102 as a yield loss.",
+  "negative_cases": {
+    "six_inner_items_missing": {
+      "accepted_pallets": 0,
+      "reason": "Only two upstream cases; three required"
+    },
+    "film_missing": {
+      "accepted_pallets": 0,
+      "reason": "Loaded pallet remains unwrapped"
+    },
+    "empty_pallet_missing": {
+      "accepted_pallets": 0,
+      "reason": "No container material for packing"
+    }
+  },
+  "acceptance": [
+    "Three actual cases and eighteen inner identities retained after packing and wrapping",
+    "One metered film consumed only by actual wrapping",
+    "Exact eight order quantities and full return trips",
+    "Short case, missing film and missing empty pallet cannot produce a shipped pallet",
+    "Exact Host save and fresh reopen",
+    "Native floor loading, wrapped film, nested cargo motion, no overlaps and both LODs",
+    "Ordinary template adoption and saved-project reopen before promoting1.6.0"
+  ]
+}

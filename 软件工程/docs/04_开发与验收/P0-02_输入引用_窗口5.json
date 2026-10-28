@@ -1,0 +1,193 @@
+{
+  "document_kind": "P0_02_window5_independent_actual_host_business_input_tests",
+  "owner": "实现窗口5",
+  "date": "2026-10-15 Asia/Shanghai",
+  "task_id": "P0-02",
+  "within_original_step": 1,
+  "status": "nine_groups_passed_final_workspace_including_F02_F03_regressions",
+  "dispatch_ref": "docs/04_开发与验收/P0-02_业务输入与引用切片.json",
+  "owned_files": [
+    "packages/commands/tests/business_input_host.rs",
+    "packages/commands/tests/fixtures/business-inputs/",
+    "docs/04_开发与验收/P0-02_输入引用_窗口5.json"
+  ],
+  "independent_expectations_fixed_before_implementation_execution": true,
+  "cases": [
+    {
+      "id": "W5-BI-01",
+      "test": "complete_forward_references_commit_once_and_get_exact_formal_business_objects",
+      "expected": "基于真实归档导入的精确模块/设备输入；同批Scenario先于产品/BOM/路线/物品，完整候选只提交Project R2及新Scenario S1，绑定R2；两订单各2piece、交期160000/200000ms、4行BOM和2步路线完整可读，无business_inputs缺项。",
+      "actual_result": {
+        "target_run": "passed",
+        "final_workspace_run": "passed_after_F02_F03_fixes"
+      }
+    },
+    {
+      "id": "W5-BI-02",
+      "test": "subject_revision_updates_never_retarget_orders_and_removal_keeps_explicit_draft",
+      "expected": "A从r1改r2后订单仍精确A/r1；不存在同ID多版本仓库，不跟随最新；缺项可定位。移除/补回产品、BOM、路线保持明确引用。",
+      "actual_result": {
+        "target_run": "passed",
+        "final_workspace_run": "passed_after_F02_F03_fixes"
+      }
+    },
+    {
+      "id": "W5-BI-03",
+      "test": "nullable_demand_and_missing_references_are_saved_as_located_drafts_while_legacy_orders_stay_empty",
+      "expected": "quantity/null与due/null保持，缺产品/单位失配/未实现工序分别形成可定位业务Issue；旧无订单输入仍空orders且其他目标/初始输入原样，不造订单或库存。 另以归档自带无business_inputs Issue、实际订单quantity=null的目录导入：ImportDraft.missing与proposed_data先显示同一派生问题；未接受拒绝且当前文档不动，显式接受后context保持相同问题及null。",
+      "actual_result": {
+        "target_run": "passed",
+        "final_workspace_run": "passed_after_F02_F03_fixes"
+      }
+    },
+    {
+      "id": "W5-BI-04",
+      "test": "put_remove_get_business_kinds_use_the_actual_host_and_sync_scenario_refs",
+      "expected": "Product/Bom/Route/Scenario均经正式Put/Get/Remove；Project.scenario_refs与Scenario当前文档同步，删除后Get返回MissingReference。 另以合法归档明确reported missing的UNRESOLVED Scenario引用：无关title编辑保留该未解析引用及已加载SC1；显式Put补该目标ID不重复索引，显式Remove仅移除目标引用。 F03回归：旧business_inputs.legacy_missing放在Project.issues且manifest.missing为空，必须重算为Project P1归属/scenario_refs/1的canonical missing_scenario；旧派生Issue消失。仅用新Issue仍实际Save成功、复制到异目录Import/Open后保留缺失声明及canonical Issue。",
+      "actual_result": {
+        "target_run": "passed",
+        "final_workspace_run": "passed_after_F02_F03_fixes",
+        "F02_F03_added_source_run": "passed_in_final_workspace"
+      }
+    },
+    {
+      "id": "W5-BI-05",
+      "test": "invalid_scenario_metadata_and_stale_batches_leave_documents_history_and_tasks_unchanged",
+      "expected": "新Scenario revision必须1、更新须当前S、project_revision须baseR；错误元数据全批拒绝，先行有效对象不泄漏；stale批次不改任何文档/history/tasks。",
+      "actual_result": {
+        "target_run": "passed",
+        "final_workspace_run": "passed_after_F02_F03_fixes"
+      }
+    },
+    {
+      "id": "W5-BI-06",
+      "test": "external_authority_is_current_and_failed_batches_preserve_all_documents_history_and_creation_ledger",
+      "expected": "外部当前分支/精确字段/创建预算合并验证；含合法新产品+越权Scenario改动的整批失败，Project和所有Scenario/history/tasks/ledger不动，后续真实创建仍可用同额度。",
+      "actual_result": {
+        "target_run": "passed",
+        "final_workspace_run": "passed_after_F02_F03_fixes"
+      }
+    },
+    {
+      "id": "W5-BI-07",
+      "test": "external_bom_and_route_array_edits_stay_unsupported_but_ui_edits_real_lists",
+      "expected": "外部即有对应精确叶子及元素授权也不绕过当前数组Unsupported边界；UI实际修改多行BOM/路线数组应成功，不能把UI实现缺口改预期Unsupported。",
+      "actual_result": {
+        "target_run": "passed",
+        "final_workspace_run": "passed_after_F02_F03_fixes"
+      }
+    },
+    {
+      "id": "W5-BI-08",
+      "test": "scenario_history_restores_whole_documents_with_monotonic_host_revision_high_water",
+      "expected": "Scenario整体创建/更新/移除/Undo/Redo同步工程引用；Project与Scenario结构修订单调新分配，内容准确、project_revision绑定新R，高水位不因删除/历史回退。",
+      "actual_result": {
+        "target_run": "passed",
+        "final_workspace_run": "passed_after_F02_F03_fixes"
+      }
+    },
+    {
+      "id": "W5-BI-09",
+      "test": "frozen_project_and_scenarios_save_at_r_reopen_elsewhere_and_preserve_old_frozen_documents",
+      "expected": "真实保存冻结R的Project+Scenario同代；工作执行前改R+1保持dirty；复制到异目录后stage不替换，显式Open恢复精确旧业务输入并能续改保存。旧FrozenRunProject/FrozenRunScenario/RunResult/Evaluation原字节不动。 删除当前SC1后实际保存并保留旧Run/Evaluation及冻结SC1；从实际manifest逐个核对保留Scenario文档修订并取max，真实重开后以新Put输入revision=1再建同ID，Host分配S必须大于该包真实保留max，不与旧冻结引用碰撞。 F02回归：单独真实导入required=false但文件未包含的SupportingFile Scenario声明，revision=9007199254740991且当前refs/map无该ID；实际Open后新Put同ID应成功S1。原真实Frozen高水位正例不变。",
+      "actual_result": {
+        "target_run": "passed",
+        "final_workspace_run": "passed_after_F02_F03_fixes",
+        "F02_F03_added_source_run": "passed_in_final_workspace"
+      }
+    }
+  ],
+  "fixture_mapping": {
+    "design_source": "scenarios/真实业务设计/business-inputs.design.json#cases.multi_order",
+    "canonical_source": "packages/domain/src/models.rs",
+    "fixture": "packages/commands/tests/fixtures/business-inputs/multi-order.dto.json",
+    "explicit_aliases": {
+      "product_revision A/r1": "OrderLine.product_ref {id:A,revision:r1}",
+      "quantity:2 + unit:piece": "Quantity {value:{coefficient:2,decimal_places:0},unit:piece}",
+      "release_ms": "release_at_ms",
+      "due_ms": "due_at_ms",
+      "destination customer": "existing actual imported StockLocation S2",
+      "recipe / assembly / packing design maps": "explicit ProductRevision/BomDefinition rows and RouteDefinition steps; not request aliases"
+    },
+    "scope": "保持A/r1 B/r1各2piece、240000ms窗及160000/200000ms交期；使用已声明的demo.operations/D1/W1作为引用完整的输入子集。未映射到料、动态库存、换单、质量执行、运输或宣称整multi_order仿真。",
+    "real_archive_seed": "tools/type-contract-proof/fixtures manifest/project/scenario/nine module definitions/template/generation-profile plus frozen run/evaluation inputs; staged and explicitly adopted through actual Host; D1 selects exact demo.operations 0.1.0 via operation_binding."
+  },
+  "scenario_revision_policy": "新Put输入S=1；更新输入当前S；project_revision=baseR；成功Host分配新R并同步当前Scenario绑定，内容/绑定变化的S使用会话高水位+1；删除/Undo不退高水位。 打开时高水位取当前包已验证manifest中各ID所有Scenario文档的最大结构修订，含保留Frozen/Supporting角色，不建立跨目录全局版本库。",
+  "execution_instruction": "本窗只格式检查；源码固定后由统筹集中Cargo，不修改原79组。",
+  "actual_result": {
+    "local_static_check": {
+      "command": "rustfmt --edition 2024 packages/commands/tests/business_input_host.rs",
+      "exit_code": 0
+    },
+    "central_compile_and_execution": {
+      "runner": "实现窗口1集中执行，本窗只读取原始结果",
+      "command": "cargo test -p sf-commands --test business_input_host --locked",
+      "passed": 9,
+      "failed": 0,
+      "stdout": ".work/p0-02-inputs/independent-host.stdout.txt",
+      "stderr": ".work/p0-02-inputs/independent-host.stderr.txt",
+      "source_scope": "包含九组最终源及追加的Import预览/采用一致性、reported-missing Scenario索引保留、保存删除后重开同ID的包内修订高水位断言。",
+      "evidence_scope": "真实Rust ProjectHost dispatch与实际临时归档读写；不是业务仿真、Tauri进程或人工验收。",
+      "coverage_note": "先前最终九组源9pass；此后新增窗口6 F02/F03真实回归，新增源的实际执行待统筹回传，旧通过不代替新断言。"
+    },
+    "supplemental_static_check": {
+      "command": "rustfmt --edition 2024 packages/commands/tests/business_input_host.rs",
+      "exit_code": 0,
+      "coverage": "现有W5-BI-03/04追加Import缺口预览一致性及reported-missing Scenario引用保留；仍9组，不改原79组。 BI-09追加删除当前SC1后保存/重开/再Put的包内修订高水位边界。"
+    },
+    "final_workspace_run": {
+      "runner": "实现窗口1集中执行；本窗核读修后proof及raw，不重复运行Cargo",
+      "proof_ref": ".work/p0-02-inputs/verification/result.json",
+      "status": "passed",
+      "command": "npm.cmd run test:rust",
+      "exit_code": 0,
+      "started_at": "2026-10-16T00:10:05.0789703+08:00",
+      "finished_at": "2026-10-16T00:10:37.6407114+08:00",
+      "stdout": ".work/p0-02-inputs/verification/workspace-tests.stdout.txt",
+      "stderr": ".work/p0-02-inputs/verification/workspace-tests.stderr.txt",
+      "window5_passed": 9,
+      "window5_failed": 0,
+      "workspace_passed": 107,
+      "workspace_failed": 0,
+      "old_79_rust_tests_preserved_by_exact_name": true,
+      "includes_frozen_source_with_F02_F03_branches": true,
+      "other_central_checks": {
+        "all_seven_exit_codes_zero": true,
+        "schema_count": 20,
+        "schema_cases": 48,
+        "native_host_checks_passed": 56,
+        "native_host_checks_failed": 0,
+        "old_31_native_checks_preserved_by_exact_name": true,
+        "native_stdout": ".work/p0-02-inputs/verification/desktop-host-smoke.stdout.txt",
+        "typecheck": "passed",
+        "contract_generation": "passed"
+      },
+      "evidence_scope": "九组真实Host/目录集成；同时核读统筹实际desktop同Host进程结果，不冒称WebView、人工picker、业务仿真或整项验收。"
+    },
+    "F02_F03_static_check": {
+      "command": "rustfmt --edition 2024 packages/commands/tests/business_input_host.rs",
+      "exit_code": 0,
+      "group_count": 9,
+      "actual_runtime": "passed_in_final_workspace"
+    },
+    "defect_regressions": [
+      {
+        "id": "W6-IN-F02",
+        "test": "frozen_project_and_scenarios_save_at_r_reopen_elsewhere_and_preserve_old_frozen_documents",
+        "result": "passed",
+        "actual_boundary": "未包含文件的optional Supporting Scenario MAX_SAFE_UINT声明不阻断新Put，同ID实际创建S1；真实Frozen高水位仍高于已包含最大S。"
+      },
+      {
+        "id": "W6-IN-F03",
+        "test": "put_remove_get_business_kinds_use_the_actual_host_and_sync_scenario_refs",
+        "result": "passed",
+        "actual_boundary": "legacy直接Scenario Issue从Project.issues重算为canonical Project owner指针，manifest.missing原为空；无旧Issue兜底仍实际保存成功，复制异目录重开后缺失引用及canonical Issue保留。"
+      }
+    ],
+    "pre_review_fix_proof_retained_at": ".work/p0-02-inputs/pre-review-fix-verification/"
+  },
+  "whole_P0_02_done": false,
+  "actual_Tauri_startup": false,
+  "human_acceptance": null,
+  "updated_date": "2026-10-16 Asia/Shanghai"
+}

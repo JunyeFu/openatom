@@ -105,6 +105,11 @@ add('declared_snapshot_continuation',dict(snapshot=snapshot,job_finish_at_ms=sna
 add('non_resumable_professional_state',dict(can_read=True,can_resume=False,permitted_next='from_start_or_actual_supported_state',
     restarting_half_job_silently=False))
 assert len(cases)==10 and all(x['actual_result'] is None for x in cases)
-(BASE/'expected-template-handoff.design.json').write_text(json.dumps(dict(document_kind='finite_design_checks_not_product_acceptance',
-    templates=validated,cases=cases),ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+output=BASE/'expected-template-handoff.design.json'
+previous=json.loads(output.read_text(encoding='utf-8-sig')) if output.exists() else {}
+generated=dict(document_kind='finite_design_checks_not_product_acceptance',templates=validated,cases=cases)
+for key in ['refinement_ref','drf05_handoff_cases','refinement_generation_note']:
+    if key in previous:
+        generated[key]=previous[key]
+output.write_text(json.dumps(generated,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 print('3 template declarations match referenced ports/types/parameters; 10 finite time/handoff expectations. No product open/resume or professional execution.')

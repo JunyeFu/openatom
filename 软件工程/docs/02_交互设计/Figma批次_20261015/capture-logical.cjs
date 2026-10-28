@@ -1,0 +1,10 @@
+const fs=require('node:fs'),path=require('node:path'),{extract}=require('./capture-design.cjs');
+const {chromium}=require('C:/Users/fujunye/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');
+(async()=>{const b=await chromium.launch({headless:true,channel:'chrome'}),p=await b.newPage({viewport:{width:1920,height:1080}}),rows=[];const fresh=async id=>{await p.goto('http://127.0.0.1:8921/?frame='+id);await p.waitForFunction(()=>window.S04_READY);},click=a=>p.locator(`[data-action="${a}"]:visible`).first().click();
+await fresh('VP01');await click('create-empty');rows.push(await extract(p,'VP02','新建空工程 / 订单与到料输入'));
+await fresh('VP03');rows.push(await extract(p,'VP03','设备定义身份 / 独立行为规则与参数'));await p.screenshot({path:path.join(__dirname,'logical-source-VP03.png')});await fresh('VP20');rows.push(await extract(p,'VP20','制造层 / 当前真实包装工位选择'));
+await fresh('VP19');await click('paper-check');await click('frame-VP20');await p.locator('#paper-ack').check();rows.push(await extract(p,'PKGACK','当前输入匹配 / 已认可 / 尚未绑定'));await click('paper-bind');await p.locator('#task-workspace').evaluate(el=>el.scrollTop=el.scrollHeight);rows.push(await extract(p,'PKGBOUND','当前输入匹配 / 显式工位绑定'));await click('frame-VP18');await p.locator('[data-field="width"]').fill('200');await click('apply');await click('frame-VP20');rows.push(await extract(p,'PKGREVIEW','同版本几何改变 / 用途失配'));
+await fresh('VP12');await click('sample-delayed');await click('locate-wait');await p.waitForFunction(()=>window.S04_STATE.viewTime===370);rows.push(await extract(p,'VP12','实际等待资源 / 未映射不误定位'));
+const f=path.join(__dirname,'capture-index.json'),idx=JSON.parse(fs.readFileSync(f)),m=new Map(idx.map(x=>[x.id,x]));for(const r of rows)m.set(r.id,r);fs.writeFileSync(f,JSON.stringify([...m.values()],null,2));await p.screenshot({path:path.join(__dirname,'logical-source-review.png')});await b.close();console.log(JSON.stringify({updated:rows,total:m.size}));})().catch(e=>{console.error(e);process.exit(1)});
+
+

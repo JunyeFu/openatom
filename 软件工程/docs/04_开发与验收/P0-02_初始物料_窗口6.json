@@ -1,0 +1,766 @@
+{
+  "document_kind": "P0_02_initial_material_input_checks_independent_review",
+  "task_id": "P0-02",
+  "within_original_step": 2,
+  "slice_kind": "initial_material_input_validation_only",
+  "window": "实现窗口6",
+  "dispatch_role": "W05",
+  "role": "独立只读实施复审",
+  "status": "accepted_initial_material_input_slice_after_composition_fix",
+  "authority_ref": "docs/04_开发与验收/P0-02_初始物料与分配输入切片.json#/parallel_dispatch",
+  "writable_files": [
+    "docs/04_开发与验收/P0-02_初始物料_窗口6.json"
+  ],
+  "expectations_fixed_before_reading_implementation": true,
+  "source_refs": [
+    "docs/04_开发与验收/P0-02_初始物料与分配输入切片.json",
+    "docs/01_业务需求/订单工艺与物料分配.md",
+    "packages/domain/business-objects.design.json",
+    "docs/04_开发与验收/特征细化/DRF06_公共字段合入delta.json",
+    "docs/03_架构与契约/调度与状态转换算法.json",
+    "packages/domain/src/models.rs",
+    "docs/04_开发与验收/P0-02_输入引用_窗口6.json",
+    ".work/p0-02-inputs/verification/result.json"
+  ],
+  "review_boundary": {
+    "current_phase": "修后冻结源码、修正契约、pure/独立实际Host及第二轮集中raw复审完成；F01/C01关闭，仅接收原步骤2输入校核切片。",
+    "implementation_sources_reviewed": true,
+    "cargo_executed": false,
+    "installation_performed": false,
+    "actual_IO_executed": false,
+    "missing_implementation_is_not_a_bug": true,
+    "no_cross_window_source_or_state_writes": true,
+    "previous_baseline": "已接收107 Rust/56 native；本轮须逐名保留，不将旧proof当新源码验证。",
+    "do_not_claim": [
+      "真实库存查询",
+      "起点Worker拆批或预留账本",
+      "运行Host准入已接通",
+      "Engine已执行",
+      "实时订单取消/WIP恢复",
+      "业务UI/Figma/人工picker或MCP进程认证"
+    ],
+    "implementation_pass_is_slice_only": true
+  },
+  "layer_boundary": {
+    "draft_write": "正式DTO语义不齐可保存原输入，check_material_inputs产生business_inputs.material_*，并经check_business_inputs投影到当前Host；问题阻断Execution与CompleteConclusion。既有结构/身份/授权/修订失败仍ApiError且整批不变。",
+    "future_execution_Host": "冻结算法明确Host准入核对引用/单位/版本；未来实际运行入口须先挡住已知Execution问题，不能全部延后给Worker。",
+    "future_Worker": "全部初始分配校验成功才初始化/拆批，失败保原冻结输入并不部分创建运行状态；此层本片未实现。",
+    "current_run_scenario": "仍UnsupportedCapability；这不是对物料业务准入/Worker执行做过验证。",
+    "exact_frozen_evidence": [
+      "DRF06_公共字段合入delta.json:121-127：soft/hard范围、单源/多源、逐源总量、pending及Host冻结后Worker初始化",
+      "调度与状态转换算法.json:96-100：Host核对、原子初始化、输入不改写及pending不等普通可领"
+    ]
+  },
+  "private_interfaces": {
+    "ref": "docs/04_开发与验收/P0-02_初始物料与分配输入切片.json#/private_implementation_interfaces",
+    "checker": "sf_domain::check_material_inputs(&ProjectState,&ScenarioInput)->Vec<Issue>，现有check_business_inputs组合；只输出诊断，不建立可查询/持久的运行库存。",
+    "issue_identity": "business_inputs.material_*；object_ref为实际Scenario，field_path为该Scenario内正式字段RFC6901路径。",
+    "sole_new_store_bridge": "business_inputs.material_missing_transport_module；实际当前Scenario.owner及/supplies/i/transport_ref中的typed ModuleRef解析，不依message、不借旧Frozen/Supporting版本、不豁免required文件。",
+    "fixture_handoff": "窗口5提供正式initial-stock.scenario.json及真实ID映射，窗口3消费同一Host，不复制运行服务。",
+    "transport_bridge_version_requirement": "新增Scenario transport桥必须取得所求精确ModuleRef；旧kind/id签名的信息不足不能作为v1豁免v2的理由。当前场景typed字段也必须与所求ID+version相等。"
+  },
+  "fixture_conventions": {
+    "isolation": "每项独立有效Project/Scenario与真实Host；现阶段仅文字/JSON预期，不创建测试目录或运行Cargo。",
+    "quantities": "起点I1=10、未来到料I2=5、供货目标=20、成品需求=8，各自保留。全部Quantity使用正式DecimalAmount及显式单位，不能用显示名或浮点近似替代。",
+    "identities": "使用已声明ItemType精确SubjectRevisionId、ProductionTask、Order、StockLocation、Resource与Transport ModuleRef；ID从窗口5正式映射取得。",
+    "allocation_ids": "不同allocation的稳定ID区分合法单源份额；同源跨allocation的4+6合法，不能因同源出现两次就拒绝。单条item_refs重复则是不明确输入。",
+    "future": "Arrival.at_ms明确晚于起点；不依赖at_ms等于起点的边界猜测。未来声明可被soft规划引用，不能作起点hard源。",
+    "containers": "有效容器以box计、内容以piece计；child.holder=Container(parent)且parent.contents包含child，顶层holder为有效Location。",
+    "provenance": "components是来源/组成引用，不产生第二holder；未解析来源保留ID与具名缺证，不凭空创建物品。",
+    "failure_snapshot": "比较真实ProjectDraft、Scenario所有输入、Project/Scenario修订、history、grant ledger、既有Task及已冻结文件；结构/授权失败不部分更新。",
+    "stored_gap": "使用存储格式与required闭包有效的缺口草稿；无替代manifest.missing或其他Issue可以掩盖所测运输模块桥接失败。",
+    "coverage": "20项为独立预期/覆盖映射，不额外计为20次执行；最终分别记录纯检查、Host、目录和原生证据。"
+  },
+  "finite_expectations": [
+    {
+      "id": "W6-M01",
+      "focus": "四种数量独立且不造库存",
+      "setup": "正式Scenario有起点10、未来到料5、供货目标20、需求8。",
+      "inputs": [
+        "重复调用纯checker、正式Host Put与get_context，再保存/读回。"
+      ],
+      "expected": [
+        "四个原始数量、时点、精确版本与来源不变；不把目标或未来到料加进起点。",
+        "不创建RuntimeItem、实际接受、运行预留或库存查询结果；不缓存另一套Host库存。"
+      ],
+      "required_evidence": [
+        "纯函数前后深比较",
+        "真实Scenario读回",
+        "无新增运行状态"
+      ],
+      "status": "passed_within_input_slice",
+      "actual_result": "pure six_input_kinds、实际Host initial_stock_future_supply_demand及Native：起点10/未来5/供货20/需求8分开，未建立运行库存。"
+    },
+    {
+      "id": "W6-M02",
+      "focus": "实物声明身份、精确版本与单位",
+      "setup": "有效起点及未来InitialItem使用现存ItemType/Location。",
+      "inputs": [
+        "分别制造缺物品版本、错数量单位、缺Location、重复实物声明身份。",
+        "用同名不同ID/不同SubjectRevisionId作对照。"
+      ],
+      "expected": [
+        "语义缺口定位实际Scenario字段，不按名称/最新版本修复；保留原字段和数量。",
+        "稳定身份冲突遵守现有结构门；纯checker诊断不能通过任选一个或删重复数据处理。",
+        "不把起点与未来的相同身份当两份无冲突实物。"
+      ],
+      "required_evidence": [
+        "typed输入正反例",
+        "Issue owner/path/purposes",
+        "Host结构失败原子"
+      ],
+      "status": "passed_within_input_slice",
+      "actual_result": "material_inputs.rs身份索引、精确item_type_ref及Quantity单位检查；Host语义缺口保留与重复物品结构失败用例。"
+    },
+    {
+      "id": "W6-M03",
+      "focus": "hard需求对象与声明唯一性",
+      "setup": "hard_reserved使用现存ProductionTask T，allocation.id独立。",
+      "inputs": [
+        "hard指Order而非Task、缺Task；同条item_refs重复；重复allocation.id。",
+        "合法同源两个不同allocation给同一或不同现存Task。"
+      ],
+      "expected": [
+        "hard明确解析Task，不按同名Order或最新对象替代。",
+        "不明确/重复分配具名阻断，不能静默去重或合并后当通过。",
+        "合法不同allocation不因共享源ID自动被判重；后续以逐源总量判断。"
+      ],
+      "required_evidence": [
+        "hard/soft需求区分",
+        "重复与合法共享源对照",
+        "原输入保持"
+      ],
+      "status": "passed_within_input_slice",
+      "actual_result": "material_inputs.rs hard需求限定ProductionTask、分配ID及同条源去重；Host material_allocation_semantic_gaps反例。"
+    },
+    {
+      "id": "W6-M04",
+      "focus": "同源4+6合法、4+7超量",
+      "setup": "起点源I1=10，合法ProductionTask/单位/版本。",
+      "inputs": [
+        "两个hard allocation数量4和6；再将6改成7。",
+        "成品计划需求仍为8；重复检查。"
+      ],
+      "expected": [
+        "4+6合法，不把材料预留量封顶为成品需求8。",
+        "4+7生成具名超量阻断，保留11的原声明与源10，不裁剪、不增补源量。",
+        "不实际拆出4/6子批、占位或写预留账本。"
+      ],
+      "required_evidence": [
+        "精确逐源合计",
+        "材料/成品量分离",
+        "无初始化副作用"
+      ],
+      "status": "passed_within_input_slice",
+      "actual_result": "pure partial_hard_claims、Host分配语义用例：4+6合法、4+7阻断；材料量不按成品需求上限截断。"
+    },
+    {
+      "id": "W6-M05",
+      "focus": "单源部分与多源整量",
+      "setup": "单源10；多源为同类型/版本/单位的10与5。",
+      "inputs": [
+        "单源部分4；多源完整总量15；多源声明14。",
+        "多源混物品类型、业务版本或单位；互换item_refs顺序。"
+      ],
+      "expected": [
+        "单源部分允许；多源仅同类型/版本/单位全量且总量相等。",
+        "多源部分/混用生成可定位阻断，不按列表顺序猜逐源份额。",
+        "检查不改变各源数量/holder；顺序变化不把无效配置变合法。"
+      ],
+      "required_evidence": [
+        "全部边界数量",
+        "混版本/单位负例",
+        "输入不变"
+      ],
+      "status": "passed_within_input_slice",
+      "actual_result": "pure multiple_hard_sources与Host：单源部分允许，多源须整量同类型/版本/单位，精确和量；不实施运行拆批。"
+    },
+    {
+      "id": "W6-M06",
+      "focus": "未来源hard禁止、soft允许规划",
+      "setup": "未来Arrival I2=5，起点没有I2。",
+      "inputs": [
+        "hard.item_refs=[I2]；独立soft.item_refs=[I2]。",
+        "把I2改成任何未声明ID；对照起点I1。"
+      ],
+      "expected": [
+        "hard不能用未来源满足起点预留，具名Execution/CompleteConclusion阻断。",
+        "soft可引用明确未来Arrival物品，仅规划；任意不存在ID仍是缺口。",
+        "不为了hard通过把I2复制入起点或改到料时点。"
+      ],
+      "required_evidence": [
+        "起点/未来源分类",
+        "soft/hard正反例",
+        "原数量/时点保持"
+      ],
+      "status": "passed_within_input_slice",
+      "actual_result": "pure soft_future_plans及Host future_arrival：未来硬源具名阻断，软引用保留规划。"
+    },
+    {
+      "id": "W6-M07",
+      "focus": "soft_plan非排他、可空来源",
+      "setup": "存在Order O和Task T。",
+      "inputs": [
+        "soft分别指O/T且item_refs为空；合法引用起点/未来源。",
+        "多个soft复用同源，规划量大于现有源；另给缺失demand_ref。"
+      ],
+      "expected": [
+        "允许明确Order/Task及空item_refs，soft复用不占用排他份额、不减少自由量。",
+        "不以hard超量规则限制纯规划，不从soft生成现货。",
+        "缺需求或非法引用具名定位，不能猜需求。"
+      ],
+      "required_evidence": [
+        "soft空/共享/未来正例",
+        "缺需求负例",
+        "无排他状态"
+      ],
+      "status": "passed_within_input_slice",
+      "actual_result": "pure soft_future_plans与源码：软计划现存Order/Task、可空来源，不消耗临时硬分配余额。"
+    },
+    {
+      "id": "W6-M08",
+      "focus": "pending与不支持初始恢复",
+      "setup": "源质量pending且数量/Task等引用完整。",
+      "inputs": [
+        "pending源合法hard预留；committed mode；Job/Transport运行holder恢复声明。"
+      ],
+      "expected": [
+        "pending本身不使合法预留非法，也不提升为released或宣称普通可领。",
+        "committed/WIP恢复作为本片具名不支持问题保留草稿，阻断Execution/CompleteConclusion。",
+        "不创建Runtime Job/Transport/已投入库存来解释输入。"
+      ],
+      "required_evidence": [
+        "质量原值保持",
+        "不支持用途Issue",
+        "无运行恢复"
+      ],
+      "status": "passed_within_input_slice",
+      "actual_result": "pending保留且可硬预留；committed、Job/Transport holder具名不支持。未宣称已放行、可普通领用或恢复WIP。"
+    },
+    {
+      "id": "W6-M09",
+      "focus": "容器双向一致与不同单位",
+      "setup": "有效容器C以box计，child A/B以piece计；顶层Location有效。",
+      "inputs": [
+        "完整contents与child.holder；删去一侧关系、缺child或缺parent容器。",
+        "容器数量1、内容数量2+3作正例。"
+      ],
+      "expected": [
+        "双向关系一致时通过，不把box和piece相加为6或混作同一物品。",
+        "不一致/缺引用定位到contents或holder，不静默移动、补对象或重写关系。",
+        "容器与内装保持各自唯一holder和数量。"
+      ],
+      "required_evidence": [
+        "有效多单位容器图",
+        "双向负例",
+        "不变数据"
+      ],
+      "status": "passed_within_input_slice",
+      "actual_result": "pure container_closure及Host container_holder：contents/holder双向检查，容器与物品分别检查显式单位，不相加库存。"
+    },
+    {
+      "id": "W6-M10",
+      "focus": "唯一父容器、自含与环",
+      "setup": "同一时间输入组内的容器与物品ID有效。",
+      "inputs": [
+        "child被两个容器列入contents；同容器重复child；自包含；A→B→A环。",
+        "起点容器仅依赖未来才出现的child作对照。"
+      ],
+      "expected": [
+        "重复父/自含/环具名阻断，不能任选父级或删边修复。",
+        "不能将未来声明误算为起点容器已存在的实物；可用性与规划引用分开。",
+        "不进入运行遍历死循环，不生成额外持有关系。"
+      ],
+      "required_evidence": [
+        "有限容器图反例",
+        "起点/未来边界",
+        "原图保持"
+      ],
+      "status": "passed_within_input_slice",
+      "actual_result": "pure/Host容器关系反例：唯一父、自含、环、未知容器及跨起点/到料来源；不据此批准components语义。"
+    },
+    {
+      "id": "W6-M11",
+      "focus": "components来源不是holder",
+      "setup": "A.components引用明确来源ID，A与该来源各有声明的holder。",
+      "inputs": [
+        "有效来源关系；未知来源ID；components与contents分别变化。"
+      ],
+      "expected": [
+        "components不要求来源改为Container(A)，不增加第二holder或重复计算物品。",
+        "未解析组成来源具名缺证，保留原ID，不重建现货或推断已完成装配。",
+        "contents的双向/唯一父规则不被components替代。"
+      ],
+      "required_evidence": [
+        "组成/容纳关系对照",
+        "未知来源Issue",
+        "不造来源物品"
+      ],
+      "status": "passed_within_input_slice",
+      "actual_result": "F01/C01已关闭。修正契约及material_inputs.rs:148-149,189-203,241-278,303-349,391-443,647-657一致；pure同组初始/到料正例及来源/唯一父/去重复/环/容纳/hard/soft分支实际ok；独立Host新增1正5反实际ok，原稿保留且Issue指向实际Scenario、路径可解析并双用途阻断。来源Location历史保留；没有Engine运行初始化。"
+    },
+    {
+      "id": "W6-M12",
+      "focus": "未来到料与供货输入定位",
+      "setup": "Arrival/Supply使用明确物品版本、目的地、运输模块、资源和单位。",
+      "inputs": [
+        "分别移除位置/物品/供应资源/运输模块；改变精确版本或数量单位。",
+        "保持供货目标20和未来量5不变。"
+      ],
+      "expected": [
+        "问题owner为实际Scenario，字段路径对应arrivals/supplies中的真实位置。",
+        "缺失运输模块使用约定business_inputs.material_missing_transport_module及/supplies/i/transport_ref。",
+        "供货目标、到料计划和订单均不变成当前库存或实际运输。"
+      ],
+      "required_evidence": [
+        "每类引用负例",
+        "固定运输Issue协议",
+        "输入保持"
+      ],
+      "status": "passed_within_input_slice",
+      "actual_result": "arrival/supply位置、物品版本、数量/单位、运输ModuleRef及资源引用检查；Host future_arrival与Native实际草稿链。"
+    },
+    {
+      "id": "W6-M13",
+      "focus": "Issue用途与stage/adopt一致",
+      "setup": "有效格式但含hard超量/未来hard/不支持恢复等语义缺口。",
+      "inputs": [
+        "Host Put后读EditCommit/get_context；导入相同输入时先读stage预览，再明确adopt。",
+        "修正缺口或Undo/Redo，保留用户/其他来源Issue。"
+      ],
+      "expected": [
+        "material_*问题具名且blocks Execution和CompleteConclusion，预览与采用门槛一致。",
+        "草稿输入保持；仅重算派生business_inputs.问题，不清用户Issue或等采用时才隐藏加门槛。",
+        "补齐后相关问题消失，不制造执行通过。"
+      ],
+      "required_evidence": [
+        "Issue投影正反变化",
+        "stage/adopt缺口同意",
+        "来源问题保持"
+      ],
+      "status": "passed_within_input_slice",
+      "actual_result": "check_business_inputs组合派生问题；Host/native实际Issue包含Execution/CompleteConclusion；stage/adopt显式缺口同意与修正/history重算。组成来源漏诊另列F01。"
+    },
+    {
+      "id": "W6-M14",
+      "focus": "运输缺口保存桥只消费当前typed字段",
+      "setup": "当前S supplies.transport_ref缺精确模块，旧Frozen/Supporting同ID S另有不同transport_ref。",
+      "inputs": [
+        "正确Issue owner=S、code固定、pointer=/supplies/0/transport_ref，保存/重开。",
+        "独立错误code/owner/路径/索引/typed字段、仅message含ID、仅旧冻结S提供匹配。",
+        "required文件缺失但附正确Issue。"
+      ],
+      "expected": [
+        "合法当前运输缺口可保存并原样重开；精确ID/版本仍是原字段值。",
+        "错误或旧文档不能被用作豁免；只解析同archive已验证当前Scenario且属于当前Project refs。",
+        "required闭包仍直接失败，不因Issue保存语义而放宽。"
+      ],
+      "required_evidence": [
+        "store typed桥正反例",
+        "同ID当前/冻结隔离",
+        "required失败保持"
+      ],
+      "status": "passed_within_input_slice",
+      "actual_result": "project_store.rs:643-768新桥独立解析当前Scenario typed /supplies/i/transport_ref，严格ModuleRef ID+version；五个新store测试覆盖错误owner/code/pointer、其他版本/current/Frozen/Supporting及required文件缺失。",
+      "exact_transport_version_counterexample": {
+        "source": "W00补充：旧reported_missing(kind,id)不能代表新增运输桥接的完整版本判定。",
+        "setup": "manifest.missing与其他direct Module缺项均空；仅有当前S1的material_missing_transport_module，/supplies/0/transport_ref=M@1.0.0。",
+        "negative_cases": [
+          "同一包另一待解析引用为M@2.0.0，未提供该版本且无对应缺口；只有v1当前Issue不能豁免v2。",
+          "M@2.0.0仅出现在同ID旧Frozen/Supporting Scenario中；不得从旧内容按ID匹配，也不得用当前v1 Issue放过旧引用。",
+          "Issue指针落在当前v1字段，实际检查调用所求为v2；即使ID相同仍不匹配。"
+        ],
+        "positives": [
+          "调用所求M@1.0.0与实际当前S1 typed字段完全一致时，可按已有草稿缺口保存约定消费。",
+          "若另一个当前S2真实引用M@2.0.0并有自己的精确owner/pointer Issue，仅该v2桥接独立匹配，不从S1复用。"
+        ],
+        "expected": "新增桥接同时校验所求ModuleRef.id/version、当前Scenario身份/Project refs/角色、精确Issue code与typed pointer；不能在进入桥接前已丢失调用所求version。",
+        "old_contract_boundary": "不依message匹配，不改变旧direct缺项和旧Route/Device分支的既有合同，不豁免required文件；本轮仅对新增Scenario运输Issue落实精确版本。"
+      }
+    },
+    {
+      "id": "W6-M15",
+      "focus": "真实Host草稿与失败原子",
+      "setup": "当前ProjectDraft有所有物料输入、history与grant ledger。",
+      "inputs": [
+        "UI提交语义超量但结构有效输入；另给stale base、越权或非法结构混合批次。",
+        "外部尝试扩大数组字段权限或伪造结构元数据。"
+      ],
+      "expected": [
+        "语义问题可作为原始草稿提交并有阻断Issue；结构/授权/修订失败不部分改任何文档/history/ledger/Task。",
+        "既有外部数组Unsupported边界不放宽，不借物料功能授予任意Scenario替换。",
+        "不以生成Issue为由偷偷提交失败批次前缀。"
+      ],
+      "required_evidence": [
+        "真实Commands正反例",
+        "全部状态对照",
+        "旧权限/元数据门"
+      ],
+      "status": "passed_within_input_slice",
+      "actual_result": "五个新增实际Host测试覆盖语义草稿新修订；重复物品结构、身份/权限/修订失败整批保持，非复制Host。"
+    },
+    {
+      "id": "W6-M16",
+      "focus": "物料多文档历史不执行预留",
+      "setup": "一次真实批次修改Scenario起点/到料/供货/分配及相关输入。",
+      "inputs": [
+        "Undo/Redo，失败候选与普通新编辑，保存后再Undo。",
+        "核对物料数量、holder/quality、Issue及结构修订。"
+      ],
+      "expected": [
+        "业务输入整批恢复，Project/Scenario生成新结构修订，不回拨高水位。",
+        "失败不移动history；合法新编辑清redo；保存保留history。",
+        "不实际分拆批次、释放/恢复运行预留、回退Task结果或旧Run文件。"
+      ],
+      "required_evidence": [
+        "实际Host history链",
+        "原107历史回归",
+        "文件/Task保持"
+      ],
+      "status": "passed_within_input_slice",
+      "actual_result": "Host material_scenario_history及Native真实编辑/Undo/Redo；只还原输入/Issue/修订，不解释为运行预留或拆批。"
+    },
+    {
+      "id": "W6-M17",
+      "focus": "冻结保存与异目录重开无损",
+      "setup": "冻结R包含完整六类输入及阻断Issue，旧Run/引用存在。",
+      "inputs": [
+        "准入保存后将当前输入改为R+1；完成保存并异目录stage/adopt。",
+        "重开后再次修改/保存。"
+      ],
+      "expected": [
+        "R的Project与当前Scenario同代，R+1保持dirty；不从旧backing复活数量/holder/分配。",
+        "数量10/5/20/8、null、来源关系、精确版本、Issue与原输入保持对应。",
+        "旧冻结Run/Scenario及素材文件字节和引用不动，不因检查自动生成新运行。"
+      ],
+      "required_evidence": [
+        "真实磁盘/Host交错",
+        "异目录往返",
+        "旧文件对照"
+      ],
+      "status": "passed_within_input_slice",
+      "actual_result": "实际Host/store/native冻结R保存、当前R+1编辑、异目录重开、历史切换及旧文件保持；读取当前raw，W6未执行IO。"
+    },
+    {
+      "id": "W6-M18",
+      "focus": "纯检查精确、可重复且只读",
+      "setup": "使用合法及超量的正式DecimalAmount、转义ID/属性路径和多个Scenario。",
+      "inputs": [
+        "重复调用check_material_inputs并由check_business_inputs组合。",
+        "较大精确量、不同小数尺度但同单位的总量边界。"
+      ],
+      "expected": [
+        "只输出material_*且定位实际Scenario字段，无输入变更或跨Scenario聚合预留。",
+        "数值比较保持精确，不以浮点近似隐藏超量；不缓存运行库存。",
+        "组合不会重复放大输入量或无条件追加历史Issue。"
+      ],
+      "required_evidence": [
+        "纯函数深比较",
+        "精确边界",
+        "独立Scenario诊断"
+      ],
+      "status": "passed_within_input_slice",
+      "actual_result": "material_inputs.rs只读诊断；u128按固定9位精确数量归一、临时余额检查，未建库存缓存/持久账本；pure只读及组合诊断测试。"
+    },
+    {
+      "id": "W6-M19",
+      "focus": "草稿/执行Host/Worker三层接收边界",
+      "setup": "本片仅输入诊断，run_scenario仍未实现。",
+      "inputs": [
+        "保存结构有效的失配草稿；请求当前run_scenario；检查实现与交付声明。",
+        "只读核对未来执行入口/初始化的保留契约。"
+      ],
+      "expected": [
+        "保存+Issue通过仅说明可编辑缺口草稿；run_scenario仍明确UnsupportedCapability。",
+        "不能将Unsupported或静态Issue测试称作实际执行准入/Worker初始化通过。",
+        "未来Host须消费Execution阻断，Worker全部检查通过才原子初始化；本片实际库存/拆批/实时取消继续未实现。"
+      ],
+      "required_evidence": [
+        "当前公开能力/实际拒绝",
+        "实现范围声明",
+        "冻结合同准确引用"
+      ],
+      "status": "passed_within_input_slice",
+      "actual_result": "当前run_scenario仍UnsupportedCapability；只接收草稿诊断层。未来Host消费Execution问题和Worker全校验后原子初始化均未在本片实现/验证。"
+    },
+    {
+      "id": "W6-M20",
+      "focus": "集中proof与同Host原生物料链",
+      "setup": "W00通知源码冻结并提供当前集中raw后才复审。",
+      "inputs": [
+        "核对pure检查、Host/store/history及Native源和原始结果。",
+        "比较旧107 Rust与56 Native名称集合；核对正式fixture由窗口5交接，原生消费同Host。",
+        "核对保存/重开/history物料用例及未覆盖项。"
+      ],
+      "expected": [
+        "旧107/56不削减，旧proof不冒充新源码；新增实际计数与复审预期分开。",
+        "Native保持单managed Host/单FIFO，I/O锁外，不用固定passed或复制模型代替。",
+        "只能implementation_passed本输入切片，原步骤2整体/Engine/运行预留不据此完成。"
+      ],
+      "required_evidence": [
+        "真实命令/退出码/时间",
+        "逐名基线比较",
+        "同Host原始结果"
+      ],
+      "status": "passed_within_input_slice",
+      "actual_result": "修后第二轮proof七条命令exit0：124 Rust，20 schema/48案例，82同managed Host native全过；旧107/56逐名无缺失，修前124/82全部名称也保留；实际两组成回归组均ok。新增分支在既有组内，20项仍为复审映射而非20次另计执行。"
+    }
+  ],
+  "findings": [
+    {
+      "id": "W6-M-F01",
+      "priority": "P2",
+      "status": "closed",
+      "owner": "W01检查器；W00冻结本片组成来源语义；相关Host回归由其owner维护",
+      "title": "组成来源仅凭ID存在即无阻断，未来来源及已组成来源的独立使用未表达",
+      "file": "packages/domain/src/material_inputs.rs",
+      "lines": "287-305",
+      "evidence": [
+        "同文件86-143把起点和全部未来到料建立同一ID索引；components只查unique存在及self。",
+        "同文件fixture:682-686声明future5在100ms到料；978令起点C1.components=[future5]，988断言检查结果为空；本次124 Rust raw包含该测试ok。",
+        "初始InitialItem定义models.rs:866-875只有components/holder等，无lifecycle或分次消耗信息；硬源509-553只查唯一身份、单位、group及source_valid，未排除组成来源。",
+        "冻结业务规则：business-objects.design.json:378-380 assembly投入组成件不再独立自由库存；订单工艺与物料分配.md:64,77,101组成转化与自由量互斥。"
+      ],
+      "current_counterexamples": [
+        {
+          "case": "起点装配体A.components=[仅未来Arrival的P]",
+          "evidence_kind": "已有pure测试实际通过且原始结果为ok",
+          "actual": "无material阻断；未来ID存在被当作充分来源证据。"
+        },
+        {
+          "case": "有效fixture清空分配并将初始物品改为同类型/单位的A1,A2,P各1piece；A1.components=[P]、A2.components=[P]，无容纳关系",
+          "evidence_kind": "源码定向推导，W6未单独执行",
+          "actual": "P唯一存在且不是自身；没有组成源独占/消耗诊断，两装配体共享单件仍不会产生相应material Issue。"
+        },
+        {
+          "case": "上述单个A和P各1piece，再把P作为现存ProductionTask的hard_reserved来源1piece",
+          "evidence_kind": "源码定向推导，W6未单独执行",
+          "actual": "P仍在起点有效硬源集合；没有已组成来源不能再独立使用的诊断。"
+        }
+      ],
+      "impact": "当前业务诊断将尚无转化/时间解释的输入判为无已知物料阻断。不是已观测的Engine库存重复；本片无Engine，run_scenario仍Unsupported。",
+      "minimal_fix": "采用W00回派的有限组成图解释：components引用同来源组真实唯一实物；边不重复，每个源唯一组成父、无自含/环。被引用源整体为转化来源，不得仍参与当前容纳关系或hard_reserved。保留原Location作为历史来源位置及有效同组组成，不改输入、不造RuntimeItem；未来Engine才按该身份映为transformed并排除现有量/自由量/空间双计。本片具名诊断不合法图，并保留草稿。",
+      "required_regression": "W01 pure与W04独立实际Host覆盖合法初始/同次到料组成、未来/跨组来源、重复/共享/self/cycle、组成源与容纳关系冲突、组成源hard_reserved；Host证明合法图保留、缺口输入原样提交且具名阻断。保留合法容器与soft规划既有语义。W00集中执行修后当前源码，新raw到齐后W6再复查，不用修前124/82关闭。",
+      "prior_minimal_fallback": "推荐本片保留非空components原输入并产生具名unsupported_initial_composition类material Issue，定位实际Scenario的components字段并阻断Execution及CompleteConclusion；既有未知来源/self诊断可保留。当前DTO不能表达来源转化/分用时，不据ID存在宣告可初始化，不改holder、不造RuntimeItem、不新增公开DTO。若owner选择精细支持，须先冻结消耗/时间语义；不能只排除future便声称共享或独立再用已解决。",
+      "resolution_design_review": {
+        "status": "contract_source_and_current_execution_verified",
+        "judgment": "与既有组成转化/不另计自由库存、单一实物身份及holder/lifecycle分轴规则相容；没有发现要求必须全盘Unsupported的冻结条款。",
+        "frozen_basis": [
+          "business-objects.design.json:72-83 holder/lifecycle/组成关系分轴；378-380 assembly组成投入不作为独立自由库存。",
+          "订单工艺与物料分配.md:64,77,99,101组成件转化与容纳持有不同，已转化不可普通领用、不得同时自由库存。",
+          "business-objects.design.json:228-233及需求.md:75完整源仅留来源、不得与执行实物双计，是历史位置不另计物理量的相关已有规则；不是声称本片已运行拆批。"
+        ],
+        "precise_scope": [
+          "初始组或同次Arrival组是新收敛的本片有限支持约定；旧冻结文档没有逐字规定此组限制，W00须在正文/切片JSON明确，不将跨组场景伪称物理上永远无效。",
+          "components没有每边用量或拆分身份；本片每边表示完整源已投入该父组成，单个源只能有一个直接组成父。不能用同一10件源同时解释成4+6两份；合法分用需要先有不同实物身份，本片不自动拆分。",
+          "源的普通Location是保留的历史位置，仍须解析有效Location；不据它计当前库存/空间，不要求历史Location等于装配体当前Location。",
+          "组成源不得作为其他物品contents中的当前实物、不得holder.container，也不得自身仍有当前contents；否则仍同时担当转化记录和当前容纳实物，须具名阻断。",
+          "多层组成可形成有向无环图；中间装配体成为更高父的完整源时也属于转化来源。父级最终实物可以有正常唯一holder；components不改成Container持有。",
+          "soft_plan保持纯规划语义，不因本修复自动实施预留或造库存；hard_reserved引用组成源必须阻断。",
+          "本片只诊断与保存输入；未来初始化按组成源身份推导transformed并排除现有/自由/重复空间量，目前无Engine/RuntimeItem执行证据。"
+        ],
+        "no_runtime_acceptance": true
+      },
+      "pre_fix_evidence_ref": ".work/p0-02-stock/pre-composition-fix-verification/result.json",
+      "repair_source_review": {
+        "status": "verified_by_current_central_proof",
+        "source": "packages/domain/src/material_inputs.rs",
+        "source_frozen_last_write": "2026-10-16T00:48:21.8614473+08:00",
+        "checks": [
+          "303-349：每个父去重复、自身拒绝、全局唯一真实源解析及同来源组约束，准确components指针。",
+          "391-443：源到唯一父索引，多父与有向环具名Issue；有缺口即可全局阻断，不构造运行状态。",
+          "148,189-203,241-278,406-414：物理容纳涉及父容器、子内容及非空contents均纳入冲突索引；组成源既不能仍是当前内容，也不能作为当前容器。",
+          "647-657：hard_reserved来源若在组成源集合内，则composed_hard_source阻断；soft_plan不被转成排他或现货。",
+          "1077-1203同原pure测试组：合法初始与同Arrival组成、跨初始/到料和不同Arrival组、重复/多父/self/环、两种容纳冲突、hard与soft、来源缺证及逐次输入只读。",
+          "Host组1736起新增1正5反；SOURCE2 Location S2原样保留且合法图assert_clean；所有反例经真实stock_put后原输入相同，当前Scenario Issue指针可解析且双用途阻断。容纳反例contents与holder本身一致，隔离本次新增规则。"
+        ],
+        "public_DTO_or_operations_changed": false,
+        "runtime_initialization_executed": false,
+        "execution_evidence": "2026-10-16T00:51:33至00:52:50第二轮集中执行exit0；修后pure container_closure_and_component_origins_are_separate及独立Host container_holder_and_composition_relations_are_input_graphs_without_duplicate_physical_ownership均在当前raw中实际ok。"
+      },
+      "closure": {
+        "proof_ref": ".work/p0-02-stock/verification/result.json",
+        "source_snapshot": "material_inputs.rs最后修改00:48:21.8614473；Host回归最后修改00:41:04.2221153；均早于本轮format及workspace-tests执行，复查未再变化。",
+        "result": "合法初始/同Arrival组成保留，未来/跨组来源、重复/多父/self/环、组成源与当前容纳及hard冲突均具名阻断；不重写Location或创建RuntimeItem。",
+        "tests": "原6个pure/14个Host组名保留，新增分支位于既有组内；124 Rust与82 native名称集合与修前全部一致，没有删除旧例换取通过。"
+      }
+    }
+  ],
+  "contract_issues": [
+    {
+      "id": "W6-M-C01",
+      "status": "closed",
+      "authority_ref": "docs/04_开发与验收/P0-02_初始物料与分配输入切片.json:102",
+      "issue": "本片私有约定只要求未列为初始或未来物品的组成来源缺证，过弱；ID存在只能证明引用可解析，不能证明已转化来源、发生时间或可独立使用性。",
+      "distinction": "代码遵循了本片较窄的存在性约定，但不足以满足上层已冻结的组成转化/自由库存互斥语义；属于当前输入设计与诊断缺口，不能转嫁成已完成的Engine初始化。",
+      "disposition": "修正契约已落于主切片、business-objects、ALG-03及两份正文；对应冻结源码与第二轮实际pure/Host结果均验证。闭合本片组成来源诊断，不声称Engine初始化已实现。"
+    }
+  ],
+  "actual_result": {
+    "status": "passed_current_proof_and_independent_source_review",
+    "verification_ref": ".work/p0-02-stock/verification/result.json",
+    "commands": [
+      {
+        "key": "format",
+        "command": "cargo fmt -p sf-domain -p sf-commands -p sf-desktop-host -- --check",
+        "started_at": "2026-10-16T00:51:32.9405585+08:00",
+        "finished_at": "2026-10-16T00:51:33.4022506+08:00",
+        "exit_code": 0,
+        "stdout_ref": ".work/p0-02-stock/verification/format.stdout.txt",
+        "stderr_ref": ".work/p0-02-stock/verification/format.stderr.txt"
+      },
+      {
+        "key": "workspace-tests",
+        "command": "npm.cmd run test:rust",
+        "started_at": "2026-10-16T00:51:33.4201191+08:00",
+        "finished_at": "2026-10-16T00:52:10.1415174+08:00",
+        "exit_code": 0,
+        "stdout_ref": ".work/p0-02-stock/verification/workspace-tests.stdout.txt",
+        "stderr_ref": ".work/p0-02-stock/verification/workspace-tests.stderr.txt"
+      },
+      {
+        "key": "generate-contracts",
+        "command": "npm.cmd run generate:contracts",
+        "started_at": "2026-10-16T00:52:10.1543861+08:00",
+        "finished_at": "2026-10-16T00:52:28.5709624+08:00",
+        "exit_code": 0,
+        "stdout_ref": ".work/p0-02-stock/verification/generate-contracts.stdout.txt",
+        "stderr_ref": ".work/p0-02-stock/verification/generate-contracts.stderr.txt"
+      },
+      {
+        "key": "typecheck",
+        "command": "npm.cmd run typecheck",
+        "started_at": "2026-10-16T00:52:28.5726415+08:00",
+        "finished_at": "2026-10-16T00:52:29.5803074+08:00",
+        "exit_code": 0,
+        "stdout_ref": ".work/p0-02-stock/verification/typecheck.stdout.txt",
+        "stderr_ref": ".work/p0-02-stock/verification/typecheck.stderr.txt"
+      },
+      {
+        "key": "schema-consumer",
+        "command": "C:/Users/fujunye/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe -B -X utf8 tools/检查工程与Command边界.py --output .work/p0-02-stock/schema-validation-result.json",
+        "started_at": "2026-10-16T00:52:29.5816788+08:00",
+        "finished_at": "2026-10-16T00:52:31.3228207+08:00",
+        "exit_code": 0,
+        "stdout_ref": ".work/p0-02-stock/verification/schema-consumer.stdout.txt",
+        "stderr_ref": ".work/p0-02-stock/verification/schema-consumer.stderr.txt"
+      },
+      {
+        "key": "desktop-build",
+        "command": "cargo build -p sf-desktop-host --bin superfactory --locked",
+        "started_at": "2026-10-16T00:52:31.3244991+08:00",
+        "finished_at": "2026-10-16T00:52:49.7564332+08:00",
+        "exit_code": 0,
+        "stdout_ref": ".work/p0-02-stock/verification/desktop-build.stdout.txt",
+        "stderr_ref": ".work/p0-02-stock/verification/desktop-build.stderr.txt"
+      },
+      {
+        "key": "desktop-host-smoke",
+        "command": ".\\target\\debug\\superfactory.exe --p0-01-host-smoke",
+        "started_at": "2026-10-16T00:52:49.7580386+08:00",
+        "finished_at": "2026-10-16T00:52:50.9873068+08:00",
+        "exit_code": 0,
+        "stdout_ref": ".work/p0-02-stock/verification/desktop-host-smoke.stdout.txt",
+        "stderr_ref": ".work/p0-02-stock/verification/desktop-host-smoke.stderr.txt"
+      }
+    ],
+    "Rust_tests": 124,
+    "schemas": 20,
+    "schema_cases": 48,
+    "native_checks": 82,
+    "native_failed": 0,
+    "baseline": {
+      "ref": ".work/p0-02-inputs/verification/result.json",
+      "old_Rust_names": 107,
+      "missing_old_Rust": [],
+      "old_native_names": 56,
+      "missing_old_native": [],
+      "method": "前后workspace-tests.stdout.txt实际test ... ok名称及result.json native checks名称集合逐名比较"
+    },
+    "finite_expectations": {
+      "total": 20,
+      "passed_within_input_slice": 20,
+      "changes_required": [],
+      "independent_new_executions_claimed": false
+    },
+    "source_timestamps": [
+      {
+        "file": "packages/domain/src/material_inputs.rs",
+        "last_write": "2026-10-16T00:48:21.8614473+08:00"
+      },
+      {
+        "file": "packages/domain/src/business_inputs.rs",
+        "last_write": "2026-10-16T00:26:56.0414702+08:00"
+      },
+      {
+        "file": "packages/commands/src/project_store.rs",
+        "last_write": "2026-10-16T00:27:27.8171813+08:00"
+      },
+      {
+        "file": "packages/commands/tests/business_input_host.rs",
+        "last_write": "2026-10-16T00:41:04.2221153+08:00"
+      },
+      {
+        "file": "apps/planner/src-tauri/src/project_api.rs",
+        "last_write": "2026-10-16T00:29:39.0418847+08:00"
+      }
+    ],
+    "open_confirmed_findings": [],
+    "open_contract_issues": [],
+    "rerun_by_window6": false,
+    "native_stderr": "本轮stderr有Chromium unregister class 1412；实际程序exit0且82检查全过，未由此追加无关修复。",
+    "limitations": [
+      "未执行Engine/库存查询/拆批/预留账本或实际运行准入。",
+      "20项是预先固定复审映射；124/48/82来自集中raw。",
+      "整体原步骤2与P0-02均未完成；人工验收未建立。"
+    ],
+    "implementation_passed": true,
+    "whole_task_done": false,
+    "current_fix_proof_received": true,
+    "post_dispatch_contract_review": {
+      "status": "contract_correction_consistent",
+      "refs": [
+        "P0-02_初始物料与分配输入切片.json#/private_implementation_interfaces/components与#/scope/finite_expectations",
+        "packages/domain/business-objects.design.json#/policies/initial_composition",
+        "调度与状态转换算法.json#/rules中ALG-03/algorithm",
+        "订单工艺与物料分配.md:136-140；调度与状态转换算法.md:308-312"
+      ],
+      "observed": "同组唯一源、唯一组成父、去重复/无环、容纳与hard冲突、历史Location及未来transformed不重复计量均已明确，且明确当前仅诊断。未发现相互冲突。",
+      "Host_source_cases": {
+        "file": "packages/commands/tests/business_input_host.rs",
+        "lines": "1801-1866",
+        "positive": "同组SOURCE2(2piece)组成ASSEMBLY1(1piece)，保留SOURCE2的Location S2且无问题。",
+        "negatives": [
+          "仅未来FUTURE5",
+          "第二装配体共享SOURCE2",
+          "两装配体组成环",
+          "SOURCE2同时有一致的BOX1 contents/holder.container",
+          "SOURCE2另作TASK-A硬预留"
+        ],
+        "test_group": "container_holder_and_composition_relations_are_input_graphs_without_duplicate_physical_ownership",
+        "count_interpretation": "1正5反位于既有Host测试组；本轮raw证明修后该组实际ok，不声称新增6个独立Rust测试。"
+      },
+      "implementation_note": "W01已冻结并完成定向源码复审；本轮集中命令与pure/Host组实际通过，未发现新缺口。"
+    },
+    "findings_closed": [
+      "W6-M-F01",
+      "W6-M-C01"
+    ],
+    "native_host_instance": "desktop-host-69372",
+    "prior_evidence": [
+      ".work/p0-02-stock/pre-composition-fix-verification/result.json"
+    ],
+    "pre_fix_baseline_retention": {
+      "Rust_names": 124,
+      "missing_Rust": [],
+      "native_names": 82,
+      "missing_native": [],
+      "method": "新旧实际raw名称集合逐名比较；数量相同是新增分支在已有组内，不是没有执行修后代码。"
+    }
+  },
+  "implementation_passed": true,
+  "whole_original_step_completed": false,
+  "whole_task_done": false,
+  "human_acceptance": null,
+  "next_condition": "本输入校核切片已接收、F01/C01关闭。后续按设计开发顺序和完整任务包接续原P0-02剩余步骤及整包验收；实际Host运行准入、Worker/Engine初始化、库存/拆批/预留执行与原步骤3仍须各自真实实现与验证，本片不代替整包完成。"
+}

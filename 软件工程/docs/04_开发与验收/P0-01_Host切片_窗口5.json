@@ -1,0 +1,100 @@
+{
+  "document_kind": "P0_01_step2_window5_Host_creation_read_edit_tests",
+  "date": "2026-10-15 Asia/Shanghai",
+  "owner": "实现窗口5",
+  "status": "five_Host_core_dispatch_tests_passed",
+  "dispatch_ref": "docs/04_开发与验收/P0-01_Host最小创建读取编辑切片.json",
+  "task_id": "P0-01",
+  "within_original_step": 2,
+  "owned_files": [
+    "packages/commands/tests/host_creation_read_edit.rs",
+    "docs/04_开发与验收/P0-01_Host切片_窗口5.json"
+  ],
+  "contract_refs": [
+    "packages/commands/src/api.rs",
+    "packages/domain/src/models.rs",
+    "docs/03_架构与契约/公开操作与宿主调用契约.json#/operations",
+    "docs/03_架构与契约/共享状态与所有权.json"
+  ],
+  "expectations_fixed_before_Host_implementation_ready": true,
+  "test_binary": "host_creation_read_edit",
+  "cases": [
+    {
+      "id": "W5-HOST-01",
+      "test": "workspace_create_then_one_project_batch_is_read_back_at_revisions_one_and_two",
+      "independent_expected": "UI Workspace CreateProject显式null工程头/base_revision，读取实际返回的新ID；context与project同一ID/revision1/dirty；SetProjectSettings和PutObject(ItemType)同批只提交一次revision2；Project/ItemType/context真实读回已编辑字段。",
+      "actual_status": "passed"
+    },
+    {
+      "id": "W5-HOST-02",
+      "test": "failed_batch_keeps_the_whole_project_and_revision_without_staged_item_leakage",
+      "independent_expected": "已确认缺失的ItemType在批次最后被Remove；MissingReference使前面的title与新ItemType均不提交，整个Project深比不变，revision仍2且dirty，新ItemType不可读。",
+      "actual_status": "passed"
+    },
+    {
+      "id": "W5-HOST-03",
+      "test": "stay_keeps_the_dirty_project_and_its_registered_reader",
+      "independent_expected": "Stay拒绝替换，原Project及revision2/dirty不变，原工程受信注册的外部只读会话仍有效。",
+      "actual_status": "passed"
+    },
+    {
+      "id": "W5-HOST-04",
+      "test": "already_saved_cannot_replace_a_dirty_project_without_an_actual_save",
+      "independent_expected": "没有执行真实保存时，AlreadySaved不能由调用者宣称绕过Host的dirty状态；替换拒绝，原Project/revision2/dirty/原会话保持。",
+      "actual_status": "passed"
+    },
+    {
+      "id": "W5-HOST-05",
+      "test": "explicit_discard_replaces_the_project_and_revokes_old_external_sessions",
+      "independent_expected": "本片无长任务，DiscardAfterTasksTerminal可创建不同的新ID/revision1/dirty；旧外部会话撤销；旧工程头读取被拒；新工程无旧ItemType，读回始终属于新工程。",
+      "actual_status": "passed"
+    }
+  ],
+  "scope_limits": [
+    "仅走真实ProjectHost dispatch，响应按冻结Response类型读取；不将Schema roundtrip当Host操作。",
+    "不调用保存、undo/redo、业务前端、Figma或其他P任务。",
+    "不重复先前17组JSONschema边界；Scope/授权预算矩阵归其他窗口。",
+    "不修改Host实现、公共API、任务、配置或锁文件；实现失败交统筹修源，保持独立业务断言。"
+  ],
+  "planned_command_after_source_ready": "cargo test -p sf-commands --locked --test host_creation_read_edit",
+  "source_ready_notification_received": true,
+  "actual_result": {
+    "host_source_after_utc": "2026-10-15T13:46:50.4616993Z",
+    "test_file_formatted": "rustfmt --edition 2024 packages/commands/tests/host_creation_read_edit.rs",
+    "request_and_response": "真实ApiRequest/冻结Response；请求不携caller，ID从真实创建结果读取",
+    "observed_host_and_api_source_stable": true,
+    "exit_code": 0,
+    "warning_summary": "现有ts-rs对部分serde属性的解析warning；未为此修改类型、依赖或锁文件",
+    "host_source_before_utc": "2026-10-15T13:46:50.4616993Z",
+    "command": "cargo test -p sf-commands --locked --test host_creation_read_edit",
+    "api_source_before_utc": "2026-10-15T13:25:16.6573689Z",
+    "stdout_tail": [
+      "    Finished `test` profile [unoptimized + debuginfo] target(s) in 5.48s",
+      "     Running tests\\host_creation_read_edit.rs (target\\debug\\deps\\host_creation_read_edit-e903a50f5ac085df.exe)",
+      "",
+      "running 5 tests",
+      "test explicit_discard_replaces_the_project_and_revokes_old_external_sessions ... ok",
+      "test already_saved_cannot_replace_a_dirty_project_without_an_actual_save ... ok",
+      "test workspace_create_then_one_project_batch_is_read_back_at_revisions_one_and_two ... ok",
+      "test stay_keeps_the_dirty_project_and_its_registered_reader ... ok",
+      "test failed_batch_keeps_the_whole_project_and_revision_without_staged_item_leakage ... ok",
+      "",
+      "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      ""
+    ],
+    "passed": 5,
+    "expected_tests": 5,
+    "api_source_after_utc": "2026-10-15T13:25:16.6573689Z",
+    "execution_layer": "实际sf_commands::ProjectHost内存工程、Host登记会话及dispatch；不是类型往返或预置夹具结果"
+  },
+  "whole_P0_01_done": false,
+  "actual_Tauri_host_startup": false,
+  "actual_save_open": false,
+  "files_modified_by_window": [
+    "packages/commands/tests/host_creation_read_edit.rs",
+    "docs/04_开发与验收/P0-01_Host切片_窗口5.json"
+  ],
+  "test_expectations_changed_to_fit_implementation": false,
+  "actual_Host_core_dispatch": true,
+  "human_acceptance": null
+}

@@ -1,0 +1,41 @@
+import { createRequire } from 'node:module';
+import { fileURLToPath } from 'node:url';
+import { readFile, writeFile } from 'node:fs/promises';
+import assert from 'node:assert/strict';
+import { openCore, root, out } from './current-core.mjs';
+const require = createRequire('C:/Users/fujunye/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/package.json'), { chromium } = require('playwright');
+const source = JSON.parse(await readFile(new URL('l03-source-index.json', out), 'utf8'));
+const suffix = process.argv[2] ?? 'loaded';
+let core, browser, page;
+const result = { kind: 'current_Host_normal_Workbench_demonstration_open_real_L03_archive', Native_app: false, producer: source.producer_index, status: 'started', errors: [] };
+try {
+  core = await openCore(); await core.rpc({ kind: 'new_project' });
+  browser = await chromium.launch({ headless: true, executablePath: 'C:/Users/fujunye/AppData/Local/ms-playwright/chromium-1243/chrome-win64/chrome.exe' }); page = await browser.newPage({ viewport: { width: 1920, height: 1080 } }); page.setDefaultTimeout(30000);
+  page.on('pageerror', error => result.errors.push(String(error))); page.on('console', message => { if (message.type() === 'error') result.errors.push(message.text()); });
+  await page.route('**/__p201_core*', async route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(route.request().method() === 'GET' ? core.ready : await core.rpc(route.request().postDataJSON())) }));
+  await page.goto('http://127.0.0.1:8922/@fs/' + fileURLToPath(root).replaceAll('\\', '/').replace(/\/$/, '') + '/tests/planner/p201-whole/harness-import.html'); await page.getByLabel('工程开始方式').waitFor();
+  result.harness = await page.evaluate(() => ({keys:Object.keys(window.__p201),scripts:[...document.scripts].map(value=>value.src)})); console.log(JSON.stringify(result.harness));
+  await page.evaluate(directory => window.__p201.setOpenDirectory(directory), source.owned_read_clone);
+  await page.getByLabel('工程开始方式').getByRole('button', { name: /^展示任务/ }).click(); const modal = page.locator('.modal'); await modal.getByRole('heading', { name: '打开工程 · 采纳前核对', exact: true }).waitFor();
+  await modal.getByRole('combobox', { name: '离开当前工程', exact: true }).selectOption('discard_after_tasks_terminal'); await modal.getByRole('button', { name: '确认打开', exact: true }).click(); await modal.waitFor({ state: 'hidden' });
+  const project = (await core.rpc({ kind: 'snapshot' })).project; assert.equal(project.id, source.producer_index.project_id); assert.equal(project.devices.length, 8); assert.ok(project.resources.some(value => value.id === 'PAL01' || value.id === 'PAL-01' || value.kind === 'reusable_carrier'));
+  result.stage = 'history_load';
+  await page.getByRole('combobox', { name: '历史结果', exact: true }).selectOption(source.producer_index.run_id);
+  await page.waitForFunction(() => document.querySelector('.workbench')?.getAttribute('aria-busy') === 'false' && document.querySelector('.sf-timeline')?.getAttribute('data-view-time') === '360000');
+  result.stage = 'seek_75000';
+  await page.getByRole('spinbutton', { name: '观察毫秒', exact: true }).fill('75000'); await page.getByRole('button', { name: '读取时点', exact: true }).click();
+  await page.waitForFunction(() => document.querySelector('.sf-timeline')?.getAttribute('data-view-time') === '75000');
+  result.stage = 'detailed_media';
+  await page.waitForFunction(() => { const text = [...document.querySelectorAll('.scene-label.device')].map(value => value.textContent); return text.length === 8 && text.every(value => !/读取素材中|未连接|unavailable/.test(value)); });
+  result.stage = 'declared_resources';
+  result.expected_resources = project.resources.filter(value => value.kind === 'worker' && value.home_location || value.kind === 'reusable_carrier' && value.presentation).map(value => value.id);
+  await page.waitForFunction(expected => { const refs = new Set(); window.__p201.scene().scene.traverse(object => { if (object.userData.ref?.kind === 'resource') refs.add(object.userData.ref.id); }); return expected.every(id => refs.has(id)); }, result.expected_resources);
+  result.scene = await page.evaluate(() => { const { scene, renderer } = window.__p201.scene(); let meshes = 0, sprites = 0; const devices = new Set(), resources = new Set(); scene.traverse(object => { if (object.isMesh) meshes++; if (object.isSprite) sprites++; if (object.userData.ref?.kind === 'device') devices.add(object.userData.ref.id); if (object.userData.ref?.kind === 'resource') resources.add(object.userData.ref.id); }); return { meshes, sprites, devices: [...devices], resources: [...resources], draw_calls: renderer.info.render.calls }; });
+  result.stage = 'default_camera_margin';
+  result.default_camera = await page.evaluate(() => { const { scene, camera, renderer } = window.__p201.scene(), corners = []; scene.traverse(object => { if (object.isMesh && object.userData.ref?.kind === 'hall') { const positions = object.geometry.getAttribute('position'); for (let i=0;i<positions.count;i++) { const point = camera.position.clone().fromBufferAttribute(positions,i).applyMatrix4(object.matrixWorld).project(camera); corners.push({hall_id:object.userData.ref.id,x:point.x,y:point.y,z:point.z}); } } }); return { aspect: camera.aspect, canvas: renderer.domElement.getBoundingClientRect().toJSON(), floor_corners:corners }; });
+  assert.ok(result.default_camera.floor_corners.length > 0); assert.ok(result.default_camera.floor_corners.every(point => Math.abs(point.x) <= .9000001 && Math.abs(point.y) <= .9000001), 'The actual default camera must retain the complete floor with five percent free on every edge');
+  assert.equal(result.scene.devices.length, 8); assert.ok(result.scene.meshes > 1000, 'Detailed L03 geometry must be present, not only footprint markers'); assert.deepEqual(new Set(result.scene.resources), new Set(result.expected_resources));
+  await page.screenshot({ path: fileURLToPath(new URL(`l03-demo-current-${suffix}.png`, out)), fullPage: true }); result.project_id = project.id; result.revision = project.revision; result.run_id = source.producer_index.run_id; result.at_ms = 75000; assert.equal(result.errors.length, 0, result.errors.join('\n')); result.status = 'passed';
+} catch (error) { result.status = 'failed'; result.error = String(error); process.exitCode = 1; result.visible = await page?.evaluate(() => ({time:document.querySelector('.sf-timeline')?.getAttribute('data-view-time'),busy:document.querySelector('.workbench')?.getAttribute('aria-busy'),labels:[...document.querySelectorAll('.scene-label')].map(value=>value.textContent)})); await page?.screenshot({ path: fileURLToPath(new URL(`l03-demo-current-${suffix}-failure.png`, out)), fullPage: true }); }
+finally { await writeFile(new URL(`l03-demo-current-${suffix}.json`, out), JSON.stringify({ ...result, records: core?.records, stderr: core?.stderr() }, null, 2)); await browser?.close(); await core?.close(); }
+console.log(JSON.stringify({ status: result.status, scene: result.scene, errors: result.errors, error: result.error?.slice(0, 1800), Native_app: false }));

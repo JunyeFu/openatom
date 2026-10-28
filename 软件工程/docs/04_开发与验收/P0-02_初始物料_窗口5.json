@@ -1,0 +1,272 @@
+{
+  "document_kind": "P0_02_step2_window5_independent_initial_material_host_tests",
+  "owner": "实现窗口5",
+  "date": "2026-10-16 Asia/Shanghai",
+  "task_id": "P0-02",
+  "within_original_step": 2,
+  "status": "five_new_host_groups_passed_after_composition_fix_pending_independent_review",
+  "dispatch_ref": "docs/04_开发与验收/P0-02_初始物料与分配输入切片.json",
+  "owned_files": [
+    "packages/commands/tests/business_input_host.rs",
+    "packages/commands/tests/fixtures/business-inputs/initial-stock.scenario.json",
+    "docs/04_开发与验收/P0-02_初始物料_窗口5.json"
+  ],
+  "cases": [
+    {
+      "id": "W5-ST-01",
+      "test": "initial_stock_future_supply_demand_and_plans_remain_separate_without_finished_quantity_cap",
+      "expected": "正式STOCK初始10 pending、未来5、供应目标20、成品订单总8相互独立；同源合法4+6硬预留成功新R，不按成品8封顶；soft可明确future/空refs且不制造库存，质量与holder不变。",
+      "actual_result": {
+        "status": "passed_in_central_workspace_after_composition_fix",
+        "command": "npm.cmd run test:rust",
+        "stdout": ".work/p0-02-stock/verification/workspace-tests.stdout.txt",
+        "test": "initial_stock_future_supply_demand_and_plans_remain_separate_without_finished_quantity_cap"
+      }
+    },
+    {
+      "id": "W5-ST-02",
+      "test": "material_allocation_semantic_gaps_commit_new_revision_with_execution_and_conclusion_blocks",
+      "expected": "4+7超量、重复源/分配ID、多源部分、单位/精确版本混用、hard错Task、initial committed等逐例成功新R且具名物料Issue阻断Execution及CompleteConclusion；合法多源10+2全量12不按成品量封顶。",
+      "actual_result": {
+        "status": "passed_in_central_workspace_after_composition_fix",
+        "command": "npm.cmd run test:rust",
+        "stdout": ".work/p0-02-stock/verification/workspace-tests.stdout.txt",
+        "test": "material_allocation_semantic_gaps_commit_new_revision_with_execution_and_conclusion_blocks"
+      }
+    },
+    {
+      "id": "W5-ST-03",
+      "test": "future_arrival_and_supply_gaps_are_located_drafts_without_synthesized_stock",
+      "expected": "未来item作起点hard源、未知item/location/运输模块/供应资源/单位版本逐例是新R阻断草稿；保持原initial/arrivals/supplies，soft未来合法；缺运输module草稿可真实保存并异目录Open，Issue定位实际当前Scenario供typed store消费。",
+      "actual_result": {
+        "status": "passed_in_central_workspace_after_composition_fix",
+        "command": "npm.cmd run test:rust",
+        "stdout": ".work/p0-02-stock/verification/workspace-tests.stdout.txt",
+        "test": "future_arrival_and_supply_gaps_are_located_drafts_without_synthesized_stock"
+      }
+    },
+    {
+      "id": "W5-ST-04",
+      "test": "container_holder_and_composition_relations_are_input_graphs_without_duplicate_physical_ownership",
+      "expected": "1box装4+6piece保持单位与双向holder/contents；双父/不一致/环/自含、runtime holder和缺组成来源具名阻断；components非第二holder；同类重复初始ID仍InvalidInput整批不变。 组成来源新增边界：同一初始来源组的唯一SOURCE2可由ASSEMBLY1.components引用，SOURCE2正常Location是历史位置而非第二holder；指future到料FUTURE5、两个装配体共用SOURCE2、组成环、SOURCE2仍在双向一致的contents/holder.container或hard_reserved源均成功新R但具名双用途阻断，原正式输入不变、不生成RuntimeItem。",
+      "actual_result": {
+        "status": "passed_in_central_workspace_after_composition_fix",
+        "command": "npm.cmd run test:rust",
+        "stdout": ".work/p0-02-stock/verification/workspace-tests.stdout.txt",
+        "test": "container_holder_and_composition_relations_are_input_graphs_without_duplicate_physical_ownership"
+      }
+    },
+    {
+      "id": "W5-ST-05",
+      "test": "material_scenario_history_frozen_save_reopen_and_rejected_batches_preserve_atomic_state",
+      "expected": "真实UI Put整体物料Scenario、UndoRedo内容与新R/S；冻结R期间R+1dirty；复制异目录Open保持全部输入/物料Issue与旧Run字节。stale/越权及重复初始ID硬拒绝保持所有文档/history/ledger/tasks；不运行Engine或拆批。",
+      "actual_result": {
+        "status": "passed_in_central_workspace_after_composition_fix",
+        "command": "npm.cmd run test:rust",
+        "stdout": ".work/p0-02-stock/verification/workspace-tests.stdout.txt",
+        "test": "material_scenario_history_frozen_save_reopen_and_rejected_batches_preserve_atomic_state"
+      }
+    }
+  ],
+  "fixture_contract": {
+    "scenario": "packages/commands/tests/fixtures/business-inputs/initial-stock.scenario.json",
+    "schema": "formal ScenarioInput without version wrapper or design aliases",
+    "metadata": "new id STOCK, revision=1, fixture project_revision=2; consumer replaces project_revision with actual base R",
+    "extra_item_types": [
+      {
+        "id": "RAW-STOCK",
+        "revision": "r1",
+        "title": "declared raw batch",
+        "unit": "piece",
+        "tracking": "batch",
+        "spec_ref": null,
+        "attributes": {},
+        "attribute_schema": []
+      },
+      {
+        "id": "RAW-BOX",
+        "revision": "r1",
+        "title": "declared container",
+        "unit": "box",
+        "tracking": "individual",
+        "spec_ref": null,
+        "attributes": {},
+        "attribute_schema": []
+      }
+    ],
+    "required_existing_item_types": [
+      "finished-A/r1",
+      "finished-B/r1",
+      "T1/r1"
+    ],
+    "products": [
+      "A/r1",
+      "B/r1"
+    ],
+    "tasks": [
+      "TASK-A",
+      "TASK-B"
+    ],
+    "orders": [
+      "ORDER-A",
+      "ORDER-B"
+    ],
+    "locations": [
+      "S1",
+      "S2"
+    ],
+    "resource": "W1",
+    "transport_module": {
+      "id": "demo.transport",
+      "version": "0.1.0"
+    },
+    "current_item": "BATCH10",
+    "arrival_item": "FUTURE5",
+    "native_handoff": "extra types RAW-STOCK/RAW-BOX and existing S1/S2 declared acceptance must include them for graph input; actual archive/module seed remains current multi-order host fixture",
+    "fixed_values": {
+      "initial_pending_piece": 10,
+      "future_piece": 5,
+      "future_at_ms": 100000,
+      "supply_target_piece": 20,
+      "finished_order_piece": 8,
+      "hard_reserved_piece": [
+        4,
+        6
+      ],
+      "soft_future_piece": 5
+    }
+  },
+  "semantic_policy": "物料语义缺口保留输入且成功新R，并具名Issue blocks Execution及CompleteConclusion。重复初始Item同类ID既有InvalidInput硬拒绝不变，不事后兼容两种行为。",
+  "execution_instruction": "本窗只fmt，W00集中Cargo；原9组/F02/F03与107 Rust/56 native基线保留。",
+  "actual_result": {
+    "local_static": {
+      "rustfmt_check": "passed",
+      "command": "rustfmt --edition 2024 --check packages/commands/tests/business_input_host.rs",
+      "new_group_count": 5,
+      "old_group_count": 9,
+      "total_group_count": 14,
+      "old_test_names_and_F02_F03_retained": true,
+      "formal_fixture_json": "parsed"
+    },
+    "central_cargo": {
+      "runner": "实现窗口1集中执行；本窗只读核对proof/raw",
+      "proof_ref": ".work/p0-02-stock/verification/result.json",
+      "status": "passed_after_composition_source_fix",
+      "command": "npm.cmd run test:rust",
+      "exit_code": 0,
+      "started_at": "2026-10-16T00:51:33.4201191+08:00",
+      "finished_at": "2026-10-16T00:52:10.1415174+08:00",
+      "stdout": ".work/p0-02-stock/verification/workspace-tests.stdout.txt",
+      "stderr": ".work/p0-02-stock/verification/workspace-tests.stderr.txt",
+      "new_window5_groups_passed": 5,
+      "window5_total_groups_passed": 14,
+      "failed": 0,
+      "workspace_passed": 124,
+      "workspace_failed": 0,
+      "old_107_rust_tests_preserved_by_name": true,
+      "old_9_host_groups_and_F02_F03_preserved": true,
+      "composition_source_regressions_included": true
+    },
+    "native_consumer": {
+      "runner": "实现窗口3实现、实现窗口1集中实际desktop进程执行；本窗读取原始输出",
+      "status": "passed",
+      "stdout": ".work/p0-02-stock/verification/desktop-host-smoke.stdout.txt",
+      "checks_passed": 82,
+      "failed": 0,
+      "old_56_checks_preserved_by_name": true,
+      "new_checks": [
+        "material_context_resolves_current_project",
+        "material_declared_initial_future_supply_demand_are_separate_inputs",
+        "material_formal_inputs_commit_once",
+        "material_frozen_draft_save_admitted",
+        "material_frozen_draft_save_reaches_real_completion",
+        "material_history_never_changes_saved_or_relocated_archives",
+        "material_import_without_explicit_gap_acceptance_preserves_current_input",
+        "material_invalid_inputs_remain_visible_with_both_use_blockers",
+        "material_newer_input_edit_is_independent_of_frozen_save",
+        "material_pending_hard_and_soft_inputs_are_not_execution_results",
+        "material_positive_declared_inputs_have_no_material_issue",
+        "material_redo_restores_blocked_input_and_fresh_scenario_revision",
+        "material_relocated_draft_is_explicitly_accepted",
+        "material_relocated_import_admitted",
+        "material_relocated_parser_keeps_typed_missing_transport_issue",
+        "material_reopened_draft_edit_commits",
+        "material_reopened_input_and_use_blockers_are_preserved",
+        "material_reopened_redo_restores_declared_positive_input",
+        "material_reopened_undo_restores_blocked_draft",
+        "material_save_keeps_frozen_blocked_input_while_newer_input_stays_dirty",
+        "material_seed_explicit_same_host_open",
+        "material_seed_import_admitted",
+        "material_seed_real_task_completed",
+        "material_semantic_failures_are_saved_as_explicit_draft",
+        "material_six_input_axes_roundtrip",
+        "material_undo_restores_input_graph_and_recomputed_issues"
+      ],
+      "evidence_scope": "同managed Host的正式物料输入、历史、保存和重开；不是WebView/人工picker/Engine库存或Worker拆批执行。"
+    },
+    "other_central_checks": {
+      "all_seven_checks_exit_zero": true,
+      "contract_generation": "passed",
+      "typecheck": "passed",
+      "schema_ref": ".work/p0-02-stock/schema-validation-result.json",
+      "schemas": 20,
+      "cases": 48
+    },
+    "composition_regression": {
+      "status": "passed_in_post_fix_central_workspace",
+      "test": "container_holder_and_composition_relations_are_input_graphs_without_duplicate_physical_ownership",
+      "new_positive_branches": 1,
+      "new_negative_branches": 5,
+      "static_format": {
+        "command": "rustfmt --edition 2024 packages/commands/tests/business_input_host.rs",
+        "exit_code": 0
+      },
+      "all_14_test_names_preserved": true,
+      "actual_runtime": {
+        "command": "npm.cmd run test:rust",
+        "exit_code": 0,
+        "started_at": "2026-10-16T00:51:33.4201191+08:00",
+        "finished_at": "2026-10-16T00:52:10.1415174+08:00",
+        "stdout": ".work/p0-02-stock/verification/workspace-tests.stdout.txt",
+        "positive_branches_passed": 1,
+        "negative_branches_passed": 5
+      },
+      "prior_124_rust_82_native_result": ".work/p0-02-stock/pre-composition-fix-verification/result.json"
+    },
+    "current_source_verification": {
+      "proof_ref": ".work/p0-02-stock/verification/result.json",
+      "status": "passed",
+      "workspace_passed": 124,
+      "workspace_failed": 0,
+      "window5_total_groups_passed": 14,
+      "new_groups_passed": 5,
+      "native_checks_passed": 82,
+      "native_checks_failed": 0,
+      "old_107_rust_and_56_native_retained_by_name": true,
+      "all_seven_checks_exit_zero": true,
+      "schemas": 20,
+      "schema_cases": 48
+    },
+    "pre_composition_fix_results": {
+      "proof_ref": ".work/p0-02-stock/pre-composition-fix-verification/result.json",
+      "stdout": ".work/p0-02-stock/pre-composition-fix-verification/workspace-tests.stdout.txt",
+      "native_stdout": ".work/p0-02-stock/pre-composition-fix-verification/desktop-host-smoke.stdout.txt",
+      "workspace_passed": 124,
+      "native_checks_passed": 82,
+      "scope_note": "修前源码通过记录，独立保留，不代替组成修后分支证据。"
+    }
+  },
+  "whole_step2_done": false,
+  "whole_P0_02_done": false,
+  "engine_or_worker_execution": false,
+  "human_acceptance": null,
+  "changes": [
+    "同一business_input_host.rs末尾追加独立5组及物料fixture helper，保留原9组名称与F02/F03。",
+    "物料语义负例固定成功新R+Scenario具名JSON pointer+Execution/CompleteConclusion双阻断；不兼容硬拒绝替代。",
+    "真实缺运输模块草稿保存/异目录打开、整体物料历史/冻结R及失败原子性均在正式Host测试中。"
+  ],
+  "review": {
+    "status": "pending_window6_independent_review_after_composition_fix",
+    "owner": "实现窗口6"
+  }
+}

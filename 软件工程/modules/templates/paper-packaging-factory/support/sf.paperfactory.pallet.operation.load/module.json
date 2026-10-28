@@ -1,0 +1,158 @@
+{
+  "schema_version": "1.0",
+  "data": {
+    "assets": [],
+    "definition": {
+      "attribute_schema": [],
+      "contribution": {
+        "assets": [],
+        "author": "Super Factory pallet composition",
+        "license": "CC0-1.0"
+      },
+      "definition_state": "runtime_candidate",
+      "id": "sf.paperfactory.pallet.operation.load",
+      "parameters": [],
+      "payload": {
+        "category": "operations",
+        "data": {
+          "builtin": "pack",
+          "duration": null,
+          "family": "manual-packing",
+          "hold_on_output_wait": [],
+          "identity_policy": "container_with_contents",
+          "inputs": [
+            {
+              "declared_output_quality": null,
+              "port": "input",
+              "quantity": {
+                "unit": "piece",
+                "value": {
+                  "coefficient": 3,
+                  "decimal_places": 0
+                }
+              },
+              "required_quality": [
+                "released"
+              ],
+              "role": "input"
+            },
+            {
+              "declared_output_quality": null,
+              "port": "container",
+              "quantity": {
+                "unit": "piece",
+                "value": {
+                  "coefficient": 1,
+                  "decimal_places": 0
+                }
+              },
+              "required_quality": [
+                "released"
+              ],
+              "role": "container"
+            }
+          ],
+          "item_roles": [
+            "input",
+            "container",
+            "output"
+          ],
+          "outputs": [
+            {
+              "declared_output_quality": "released",
+              "port": "output",
+              "quantity": {
+                "unit": "piece",
+                "value": {
+                  "coefficient": 1,
+                  "decimal_places": 0
+                }
+              },
+              "required_quality": [],
+              "role": "output"
+            }
+          ],
+          "pack_identity": {
+            "container_material_roles": [
+              "container"
+            ],
+            "content_roles": [
+              "input"
+            ],
+            "output_role": "output"
+          },
+          "phases": [
+            {
+              "duration": {
+                "basis": "user_provided",
+                "source_ref": null,
+                "unit": "millisecond",
+                "value": 5000
+              },
+              "id": "load",
+              "interruption_policy": "pause_resume",
+              "phase_resources": [],
+              "work_kind": "loading"
+            },
+            {
+              "duration": {
+                "basis": "user_provided",
+                "source_ref": null,
+                "unit": "millisecond",
+                "value": 15000
+              },
+              "id": "auto",
+              "interruption_policy": "pause_resume",
+              "phase_resources": [
+                {
+                  "qualifications": [],
+                  "quantity": {
+                    "unit": "slot",
+                    "value": {
+                      "coefficient": 1,
+                      "decimal_places": 0
+                    }
+                  },
+                  "role": "auto_fixture"
+                }
+              ],
+              "work_kind": "packing"
+            },
+            {
+              "duration": {
+                "basis": "user_provided",
+                "source_ref": null,
+                "unit": "millisecond",
+                "value": 5000
+              },
+              "id": "unload",
+              "interruption_policy": "pause_resume",
+              "phase_resources": [],
+              "work_kind": "unloading"
+            }
+          ],
+          "quality_and_routes": null,
+          "resource_roles": [
+            {
+              "qualifications": [],
+              "quantity": {
+                "unit": "person",
+                "value": {
+                  "coefficient": 1,
+                  "decimal_places": 0
+                }
+              },
+              "role": "operator"
+            }
+          ]
+        }
+      },
+      "title": "三箱装托",
+      "version": "1.0.0"
+    },
+    "dependencies": [],
+    "files": [],
+    "issues": [],
+    "rights": []
+  }
+}

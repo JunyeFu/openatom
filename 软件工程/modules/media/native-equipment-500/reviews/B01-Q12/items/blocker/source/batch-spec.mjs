@@ -1,0 +1,14 @@
+export const specs={'rotary-die-cutter':{mode:'rotary_die',size:[.50,.003,.40],surface:1.08,inputX:-1.60,outputX:1.60,stagingX:1.25,clearX:.75,initial:'uncut_sheet',final:'cross_cut_blank',auxiliary:null,area:.20,product_area:.16,extra_outputs:[{role:'scrap',count:4,size:[.10,.003,.10],area:.01}]}};
+export const dieX=-.35,ruleRadius=.103,shellRadius=.099,anvilRadius=.080,rootWidth=.0006,tipWidth=.00008;
+export const shapePoints=[[-.15,-.20],[.15,-.20],[.15,-.10],[.25,-.10],[.25,.10],[.15,.10],[.15,.20],[-.15,.20],[-.15,.10],[-.25,.10],[-.25,-.10],[-.15,-.10]];
+export const cornerPositions=[[-.20,0,-.15],[.20,0,-.15],[-.20,0,.15],[.20,0,.15]];
+export const clamp=v=>Math.max(0,Math.min(1,v));
+export const seatX=(s,phase,u)=>phase==='load'?s.inputX+(-1-s.inputX)*u:phase==='unload'?s.clearX+(s.stagingX-s.clearX)*u:u<.4?-1+1.1*u/.4:u<.45?.1:u<.7?.1+.65*(u-.45)/.25:s.clearX;
+export const dieAngle=(s,u)=>(seatX(s,'auto',u)-dieX)/ruleRadius,travel=(s,u)=>seatX(s,'auto',u)+1;
+export const pusherBottom=(phase,u)=>phase==='auto'?1.16-.08*clamp((u-.4)/.05)+.08*clamp((u-.70)/.04):1.16;
+export const pusherX=(s,phase,u)=>phase==='load'?.494-.65*u:phase==='unload'?.494:Math.max(-.156,seatX(s,'auto',u)-.256);
+export const trayTop=(s,phase,u)=>phase==='load'?s.surface-.06+.06*clamp((u-.60)/.40):phase==='auto'?s.surface-.06*clamp((u-.76)/.08):s.surface-.06;
+export const trayZ=(sign,phase,u)=>sign*(phase==='load'?.65-.50*clamp(u/.60):phase==='auto'?.15+.50*clamp((u-.84)/.14):.65);
+export const cornerX=(s,p,phase,u)=>phase==='load'||phase==='auto'&&u<.70?seatX(s,phase,u)+p[0]:s.clearX+p[0];
+export const samples=[...new Set([0,1,.40,.45,.60,.70,.74,.76,.84,.98,...Array.from({length:1025},(_,i)=>i/1024)])].sort((a,b)=>a-b);
+export const inputPort=s=>[s.inputX,s.surface,0],outputPort=s=>[s.outputX,s.surface,0],scrapPort=s=>[s.clearX,.86,-.98];

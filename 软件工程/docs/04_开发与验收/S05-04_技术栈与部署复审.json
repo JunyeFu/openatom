@@ -1,0 +1,122 @@
+{
+  "document_kind": "S05_04_independent_technical_stack_deployment_review_not_build_readiness",
+  "checkpoint": "S05-04",
+  "date": "2026-10-14 Asia/Shanghai",
+  "status": "passed_document_specification",
+  "spec_ref": "docs/03_架构与契约/首版技术栈与部署设计.json",
+  "report_md_ref": "docs/04_开发与验收/S05-04_技术栈与部署复审.md",
+  "criteria": [
+    {
+      "id": "C01",
+      "subject": "已选全层范围保持",
+      "status": "passed_document_specification",
+      "basis": "Tauri/Rust/React/TS/Three、Win11x64、纸包装真实内核、九类/Agent/四格式完整；不扩大专业与后置范围。"
+    },
+    {
+      "id": "C02",
+      "subject": "具体版本与来源",
+      "status": "passed_document_specification",
+      "basis": "22直接依赖和24 features核对官方版本元数据，工具链实际CLI与环境发现记录；没有虚构产品lock/编译。"
+    },
+    {
+      "id": "C03",
+      "subject": "唯一状态与耗时工作",
+      "status": "passed_document_specification",
+      "basis": "7层路线按15组件接点，短锁/冻结输入/后台工作，UI/桥/报告不复制Engine。"
+    },
+    {
+      "id": "C04",
+      "subject": "本地Agent具体方案",
+      "status": "passed_document_specification",
+      "basis": "改统一Rust/rmcp3.5.1原生桥，stdio→当前会话授权管道→已有Host；解决JSON写Node、README写Rust的冲突。"
+    },
+    {
+      "id": "C05",
+      "subject": "部署与离线边界",
+      "status": "passed_document_specification",
+      "basis": "Windows可运行离线目录包优先，目标机Evergreen须实际发现/启动；NSIS若做须offlineInstaller，默认bootstrapper不算离线安装。"
+    },
+    {
+      "id": "C06",
+      "subject": "报告、字体与许可责任",
+      "status": "passed_document_specification",
+      "basis": "Rust ReportDocument四格式；printpdf直接排版、合法SourceHan/OFL字体，模型/依赖/Runtime许可与MIT候选分开，实际清单留S07/P5。"
+    },
+    {
+      "id": "C07",
+      "subject": "试做与前端准入",
+      "status": "passed_document_specification",
+      "basis": "各层关键接点真实试做要求明确，未开始Figma/前端/产品；S05-05及S06完整后才冻结。"
+    }
+  ],
+  "static_verification": {
+    "check_kind": "S05_04_technical_selection_and_deployment_design_not_compile",
+    "date": "2026-10-14",
+    "status": "passed_static_technical_and_deployment_design",
+    "selected_dependencies": 22,
+    "features_checked_against_registry": 24,
+    "layer_routes": 7,
+    "native_bridge_and_component_consistent": true,
+    "current_cli_and_registry_evidence": "read_only_inventory_not_application",
+    "actual_product_compile": null,
+    "actual_install_or_release": null,
+    "actual_runtime": null,
+    "errors": []
+  },
+  "closed_findings": [
+    {
+      "id": "F54-01",
+      "before": "技术栈只有语言家族，缺具体版本/features/工具链。",
+      "correction": "记录22候选版本/官方元数据与24features、当前实际工具入口；真实lock/编译仍待取得。"
+    },
+    {
+      "id": "F54-02",
+      "before": "架构JSON暂选Node桥，既有桥README选Rust。",
+      "correction": "统一原生Rust/rmcpstdio与同源DTO/Windows管道，组件职责不变。"
+    },
+    {
+      "id": "F54-03",
+      "before": "离线工作与安装形态未区分。",
+      "correction": "先可运行包，验证目标机WebView2；若安装包才明确offlineInstaller，不声称默认联网bootstrapper离线。"
+    },
+    {
+      "id": "F54-04",
+      "before": "Rust报告不能直接依赖TSrenderer、中文/PDF路由与许可未明确。",
+      "correction": "同一RustReportDocument/printpdf，实际场景帧经Host，中文字体候选/notice与代码许可分开。"
+    },
+    {
+      "id": "F54-05",
+      "before": "泛称本机管道未落实默认ACL与会话权利。",
+      "correction": "明确登录SID/DACL/所需权限/拒远程、Host Scope授权与失效，具体EnvelopeS06冻结。"
+    },
+    {
+      "id": "F54-06",
+      "before": "旧parry/nalgebra参考易被当现行API。",
+      "correction": "当前候选0.31.1依赖glamx，专业库和技术路线注明，实际query/算法须试做。"
+    }
+  ],
+  "actual_runtime": null,
+  "actual_product_compile": null,
+  "actual_release": null,
+  "actual_frontend_start": null,
+  "external_actions": [],
+  "open_evidence": [
+    "S05-05关键接点实际试做/失败与取舍",
+    "S06完整类型/接口/算法/可复算预期与设计冻结",
+    "S04监督Figma/真实原型/本人走查",
+    "S07锁文件/真实构建入口和实际依赖许可清单",
+    "S09本机NFR/第二Win11及真实软件、Agent、包装/四格式材料"
+  ],
+  "maturity_effect": {
+    "completion_credit": [
+      1,
+      1
+    ],
+    "evidence_credit": [
+      0.5,
+      0.5
+    ],
+    "other_checkpoint_rows_unchanged": true
+  },
+  "cross_file_verification_ref": "docs/04_开发与验收/主线同步检查结果.json"
+}

@@ -1,0 +1,465 @@
+{
+  "document_kind": "v2_design_only_ui_contract_consumers_and_recovery_boundary",
+  "date": "2026-10-25",
+  "implementation_allowed": true,
+  "runtime_verified": false,
+  "markdown_ref": "docs/06_v2.0设计与开发控制/界面字段状态与恢复边界设计.md",
+  "schema_ref": "docs/06_v2.0设计与开发控制/接口契约.schema.design.json",
+  "contract_version": "sf.execution/2.0-draft11",
+  "scope": {
+    "entry": "existing Workbench central workspace",
+    "tabs": [
+      "devices",
+      "data",
+      "execution"
+    ],
+    "new_page_count": 0,
+    "figma_or_frontend_created": false,
+    "source_modes": [
+      "draft_prediction",
+      "software_in_loop_execution",
+      "historical_execution_snapshot"
+    ]
+  },
+  "workflow_views": {
+    "task_interaction": "准备 -> prepared -> run -> 观察/停用新接单 -> 已准入工作核对 -> 同修订结果",
+    "structure_data": "ExecutionSnapshot/ExecutionReadEnvelope及受管只读Task",
+    "state_behavior": "草稿输入、查询请求、生产会话及命令尝试分开",
+    "interface_collaboration": "H01/H02/H03/H08 + get_task/cancel_task；无Renderer直持云凭据",
+    "ui_presentation": "原工作台单入口和三个页签；同身份/修订/来源条与明确空/未知/错误",
+    "deployment_verification": "复用现行React/Tauri/TS依赖；未来真实Host与Native核对，本轮只做设计静态检查"
+  },
+  "field_groups": [
+    {
+      "id": "UIF01",
+      "tab": "shared",
+      "label": "工程/会话/执行epoch/输入修订/来源/观察前沿",
+      "source": "ExecutionSnapshot.identity, project_input_ref, provenance, coverage",
+      "owner": "Host snapshot",
+      "presentation": "输入草稿、本地预测、软件在环执行、历史截止回看分别标明"
+    },
+    {
+      "id": "UIF02",
+      "tab": "shared",
+      "label": "本地确认修订/云发布修订/同步关系",
+      "source": "ExecutionReadEnvelope.delivery",
+      "owner": "read envelope",
+      "presentation": "publication_pending不降级为生产失败；云最后快照不冒充实时"
+    },
+    {
+      "id": "UIF03",
+      "tab": "shared",
+      "label": "允许的会话操作/设备接单开关",
+      "source": "ExecutionReadEnvelope.access",
+      "owner": "actual caller authorization + owner + lifecycle",
+      "presentation": "由Host给出可用动作，提交仍由Host再授权"
+    },
+    {
+      "id": "UIF04",
+      "tab": "devices",
+      "label": "精确设备/模块/工艺/端口/资源绑定",
+      "source": "CloudProductionConfiguration.candidate_bindings or ExecutionSnapshot.devices[].binding",
+      "owner": "validated configuration / frozen session",
+      "presentation": "准备前配置与准备后冻结绑定分开"
+    },
+    {
+      "id": "UIF05",
+      "tab": "devices",
+      "label": "设备自报状态/接单标志/当前命令",
+      "source": "ExecutionDeviceView.latest_observation.observation",
+      "owner": "Host-admitted device observation",
+      "presentation": "没有观测显示未知；不根据页面倒计时生成设备状态"
+    },
+    {
+      "id": "UIF06",
+      "tab": "devices",
+      "label": "人工允许接单/观测新鲜度/有效允许接单/阻塞理由",
+      "source": "ExecutionDeviceView",
+      "owner": "Host",
+      "presentation": "有效接单不等于任一工单均可派；物料/端口/资源仍逐工作校验"
+    },
+    {
+      "id": "UIF07",
+      "tab": "data",
+      "label": "数据集目录/来源/提交前沿",
+      "source": "H08(dataset_catalog) -> CloudReadResult.dataset_catalog",
+      "owner": "cloud",
+      "presentation": "目录前沿仅用于发现，不代替查询首响应F；generated_load标明来源，不计生产接受量"
+    },
+    {
+      "id": "UIF08",
+      "tab": "data",
+      "label": "设备/云首次存储UTC时间窗/查询类型/当前页与固定前沿",
+      "source": "DaaSQuery -> H08(data_query) -> DaaSQueryResult",
+      "owner": "cloud typed query",
+      "presentation": "每页显示dataset_id/selected_visible_frontier和当前页行数；尚有后续页不标全量；UTC微秒原值保留，不与Host会话毫秒相减"
+    },
+    {
+      "id": "UIF09",
+      "tab": "execution",
+      "label": "准备输入/方案修订/两候选绑定/目标/截止",
+      "source": "H08(configuration), current project/scenario revisions -> H01",
+      "owner": "configuration then frozen Host input",
+      "presentation": "准备成功后不在该会话中改写输入；配置读取不替代H01准入"
+    },
+    {
+      "id": "UIF10",
+      "tab": "execution",
+      "label": "逻辑工作/当前attempt/等待或选择理由",
+      "source": "LogicalWorkView.latest_dispatch_decision and AttemptView.dispatch_decision",
+      "owner": "Host/Engine admission",
+      "presentation": "展示当时已知候选、资格、预计完成及稳定排序理由；前端不重新排名"
+    },
+    {
+      "id": "UIF11",
+      "tab": "execution",
+      "label": "原命令/设备回执/Host接纳结果",
+      "source": "AttemptView, ReceiptAdmission; H08(command) and H08(command_receipts) for separately labelled raw cloud records",
+      "owner": "Host business truth / cloud raw record distinguished",
+      "presentation": "stored、device_completed、business_effect_committed、accepted分别呈现"
+    },
+    {
+      "id": "UIF12",
+      "tab": "execution",
+      "label": "接受量/目标/在途义务/工时",
+      "source": "BusinessFacts, goal_at_snapshot, goal_at_cutoff, WorkTiming",
+      "owner": "same ExecutionSnapshot revision",
+      "presentation": "空值是未知；名义、确认占用、自报时长和物理有效工时不混合"
+    },
+    {
+      "id": "UIF13",
+      "tab": "devices",
+      "label": "注册设备boot与实际观测",
+      "source": "ExecutionDeviceView.registered_device_boot_id; ActiveExecutionSlot.active_slot.device_boots",
+      "owner": "Native registered execution runtime + cloud DB15",
+      "presentation": "注册身份与观测新鲜度分列；retired/unknown不能显示在线或自动允许接单"
+    },
+    {
+      "id": "UIF14",
+      "tab": "devices",
+      "label": "状态待确认/已确认/已过期与原有效期",
+      "source": "ExecutionDeviceView.freshness/latest_observation.observation_probe/pending_observation_probe and same R/F/T",
+      "owner": "original live Host observation registry and driver",
+      "presentation": "设备当前状态和最近确认分列；只用Host固定时点判定，Renderer/只读Agent不按本机时间续期；普通视图隐藏probe标识"
+    },
+    {
+      "id": "UIF15",
+      "tab": "execution",
+      "label": "报告区的预测Run/所指执行源/窗口及偏差条件",
+      "source": "actual ProjectContext.runs (RunSummary) -> expected PredictionRunReference; H10 actual frozen source producer -> prediction_comparison",
+      "owner": "Host actual Project Run archive and exact execution source",
+      "presentation": "一个可选终态Run选择，默认不选；模型预测和执行分列，不复制当前草稿或用RunSummary.accepted作比较指标"
+    },
+    {
+      "id": "UIF16",
+      "tab": "data",
+      "label": "导出当前筛选全部结果（CSV+JSON Lines）及原Task进度",
+      "source": "displayed DaaSQueryResult selection -> actual directory -> H11 -> CloudDataExportTaskState",
+      "owner": "Host authorized export worker",
+      "presentation": "固定F/设备集合或执行revision，从头至末页；改筛选不改写已启动任务，不把当前页下载称完整导出"
+    }
+  ],
+  "read_protocol": {
+    "operation": "H08 read_cloud_production",
+    "task_kind": "cloud_read",
+    "output": "CloudReadTaskOutput",
+    "selections": [
+      "configuration",
+      "dataset_catalog",
+      "active_execution",
+      "data_query",
+      "snapshot",
+      "command",
+      "command_receipts",
+      "inputs",
+      "observations",
+      "history"
+    ],
+    "authorization": "当前Project及具体选择由Host授权；云凭据留在受管Host/网关配置，不进Renderer、MCP参数或工程包",
+    "io_boundary": "冻结请求与权限后在Host锁外读取；完成时检查实际上下文及权限；不把网络请求放进ProjectHost mutex",
+    "cancellation": "取消只读Task不停止生产；晚到结果不能改变已取消Task或当前视图",
+    "result_identity_key": [
+      "actual_native_host_context",
+      "project_id",
+      "selector_or_filter",
+      "request_serial"
+    ],
+    "pagination": "单请求在途；输入变化取消旧读并忽略晚到结果；不自动重发控制请求",
+    "failure_display": "网络失败可显示同身份旧修订并标过期；权限明确拒绝或上下文变化则清除对应受保护视图",
+    "local_operation": "H09 for local inputs/observations/history/request/catalog; no cloud I/O",
+    "data_query_identity": {
+      "telemetry": [
+        "actual_native_host_context",
+        "project_id",
+        "cloud_project_id",
+        "dataset_id",
+        "immutable_query_inputs_including_aggregation_and_page_limit",
+        "view_generation",
+        "page_request_id"
+      ],
+      "rule": "telemetry不借当前生产session/epoch作身份；execution查询仍核对原identity和固定执行revision；各页先核对H08 Task及上下文，再核对数据选择",
+      "first_page": "page.cursor=null；首响应固定dataset/F，catalog frontier不是查询前沿",
+      "later_page": "复用原不可变筛选/page limit及原next_cursor；每页dataset/F相同；更改任一查询输入即新generation，取消观察且忽略旧结果",
+      "time": "UI固定标UTC；保留原微秒字符串用于请求/显示详情，不通过JS Date毫秒roundtrip覆盖原值"
+    },
+    "data_query_result": {
+      "rows_request": "aggregation=rows只接受TelemetryRow/GeneratedLoadRow，行来源符合实际dataset purpose；不把count行当原始事件",
+      "minute_request": "aggregation=count_by_device_minute只接受DeviceMinuteCountRow；count是该组总数，当前页count之和不是dataset总数",
+      "empty": "合法空页仍显示dataset/F及范围；F=0合法；无权限不映射为空",
+      "quality": "data_quality_issues原样呈现并限定结论；HTTP成功不清除缺项",
+      "completion": "Task completed仅表示本页成功；当前页/已观察分页/完整结果分开；next_cursor=null且原链所有页成功才是完整筛选; 从中途cursor起读且无前段实际消费记录，只证明后段覆盖",
+      "failure": "后续页失败保留原有效页/F/待取cursor并标未完成；不跳页或混入新首查询；显式只读重试用原cursor和新request_id，旧Task仍按原索引核对",
+      "selected_devices": "每页实际selected_device_ids与首响应一致；空输入[]由C08在F解析，权限变化不得静默换集合"
+    },
+    "query_states": [
+      {
+        "state": "idle",
+        "display": "等待查询，无本次结果"
+      },
+      {
+        "state": "loading_first",
+        "display": "查询中；旧结果如保留须单独标旧筛选/F"
+      },
+      {
+        "state": "page_ready_more",
+        "display": "当前页N行；仍有后续页；下一页可读"
+      },
+      {
+        "state": "loading_next",
+        "display": "原有效页保留，正在读取原F下一页"
+      },
+      {
+        "state": "last_page_ready",
+        "display": "此页为末页；只有原链全页已读才标完整"
+      },
+      {
+        "state": "next_failed_or_observation_cancelled",
+        "display": "保留原有效页及范围，显示未完成；取消读取不停止生产"
+      }
+    ],
+    "execution_result_identity_key": [
+      "actual_native_host_context",
+      "project_id",
+      "session_id",
+      "execution_epoch_id",
+      "selector_or_filter",
+      "request_serial"
+    ],
+    "identity_rule": "common core plus selection-specific identity: execution_result_identity_key for execution; data_query_identity.telemetry for telemetry; no active production identity borrowed by telemetry",
+    "prediction_report": "Run目录是发现；UI保存所选真实RunId和4字段ReportRunInputRef，H10内部读取原RunResult，不要求UI搬运全部历史。导出冻结原选源；切选项不改变已启动Task，返回按原来源关联并标明。非终态或缺来源明确失败，不自动取消/重算或静默省略。"
+  },
+  "lifecycle_guards": {
+    "preparation": "准备Task完成只得到prepared；用户发run后才派工",
+    "dirty": "目标/截止/候选表单未应用参与现有hasUnappliedInput；数据筛选不作为未保存业务输入",
+    "panel_departure": "关闭面板/换页签取消观察Task，存活Host继续其生产会话；不是stop",
+    "project_departure": "当前Host有非终态执行或未知义务时拒绝切换工程；不依赖准备Task是否已结束",
+    "window_close": "前端workInProgress与Host DesktopCloseState/finish_desktop_close同时消费活动执行，禁止通过discard绕过；只读Task可明确取消",
+    "stop": "停止新派工，已准入工作仍核对；stop ack不等于全部完成",
+    "context_race": "关闭或提交期间工程/Host/epoch/修订变化时保留当前内容并重新读取",
+    "pre_close_reads": "prepareClose停止观察并取消只读Task，再进行现有Host关闭检查；不会发送生产stop",
+    "private_close_dto": "execution_blockers: session_id/execution_epoch_id/execution_revision/reason; nonterminal_session/unresolved_command/unpublished_final_result; from Host registry only"
+  },
+  "recovery": {
+    "reconnect_same_owner": "核对原identity和原CommandId，读取H02及H08；不重投H01/run/未知命令",
+    "other_or_unverified_owner": "当前Host不持有原会话时只读；不因Host身份不同、网络超时或UI刷新断定原Host已退出",
+    "lost_engine": "本版不承诺跨进程自动/人工重建Engine；最后云快照是最后确认状态，云slot继续保护未知工作",
+    "operator_actions": [
+      "查询原命令与原始回执",
+      "核对云最后发布修订与Host接纳记录",
+      "读取/导出有覆盖限制的原结果",
+      "返回实际持有会话的原Host处理（若仍存活）"
+    ],
+    "forbidden": [
+      "手工标记接受量",
+      "强制标完成",
+      "按超时释放slot",
+      "换epoch/工程身份重投同一未知工作",
+      "把原始完成回执绕过Engine直接入账"
+    ],
+    "follow_up": "真正恢复/退役未知epoch需单独完整契约，本演示未承诺该能力",
+    "settled_cloud_terminal": "原Host已发布实际结清终态时，获授权网关按TX09/C10幂等释放匹配占位；无需恢复Engine，不重放生产",
+    "last_cloud_state": "云最后快照是最后已提交状态；Host未能提交needs_resolution时不能反写旧快照，只在读取界面标明无法核对"
+  },
+  "source_anchors": [
+    {
+      "path": "apps/planner/src/features/factory/Workbench.tsx",
+      "lines": [
+        129,
+        160,
+        774,
+        780,
+        1009,
+        1092
+      ],
+      "purpose": "editing/source/dirty/close/source switch/central workspace"
+    },
+    {
+      "path": "apps/planner/src/services/projectHost.ts",
+      "lines": [
+        51,
+        304
+      ],
+      "purpose": "typed IPC and legacy frozen Run input reader; do not coerce execution into RunResult"
+    },
+    {
+      "path": "apps/planner/src/services/windowClose.ts",
+      "lines": [
+        8,
+        18,
+        32,
+        35,
+        60
+      ],
+      "purpose": "UI work state and authoritative close checks"
+    },
+    {
+      "path": "packages/commands/src/project_host.rs",
+      "lines": [
+        409,
+        424,
+        439,
+        3862
+      ],
+      "purpose": "DesktopCloseState/finish close/check_departure must see session after preparation Task ends"
+    },
+    {
+      "path": "apps/planner/src-tauri/src/project_api.rs",
+      "lines": [
+        87,
+        99,
+        519,
+        976
+      ],
+      "purpose": "authorized native dispatch and close bridge"
+    },
+    {
+      "path": "apps/planner/src-tauri/src/bin/export-engineering-types.rs",
+      "lines": [
+        3,
+        15
+      ],
+      "purpose": "actual DesktopCloseState TS generation root"
+    }
+  ],
+  "pending": [
+    "actual integration of frozen-input/observation design in V2-FROZEN-OBSERVATION-05; no Run API substitute",
+    "concrete v1-final fixture identities, UI master alignment and same-clock presented-frame measurement",
+    "full Schema validation, actual Rust generation, actual Host/cloud/Native verification"
+  ],
+  "design_cases": [
+    {
+      "id": "UI01",
+      "trigger": "读取准备配置",
+      "expected": "脱敏配置只包含允许绑定与缺项，不返回token或任意HTTP能力",
+      "runtime_result": null
+    },
+    {
+      "id": "UI02",
+      "trigger": "旧Host无H08或无读取授权",
+      "expected": "显示缺少能力/权限，明确拒绝时清除对应旧数据；不能使用假数据或浏览器预览代替",
+      "runtime_result": null
+    },
+    {
+      "id": "UI03",
+      "trigger": "准备期间输入修订变化",
+      "expected": "冻结前基准不符拒绝；冻结后保持原输入并显示与当前草稿差异，不静默覆盖或错用新输入",
+      "runtime_result": null
+    },
+    {
+      "id": "UI04",
+      "trigger": "取消数据读取Task",
+      "expected": "取消读取，不停止生产；晚到结果不污染当前视图",
+      "runtime_result": null
+    },
+    {
+      "id": "UI05",
+      "trigger": "修改筛选/分页大小、空页、聚合页和下一页失败",
+      "expected": "新输入清cursor并换generation；各页dataset/F一致；F=0合法；每页行数与全量分开；失败保留原页并标未完成；微秒不丢失",
+      "runtime_result": null
+    },
+    {
+      "id": "UI06",
+      "trigger": "工程/查询数据集切换或生产会话变化时旧请求返回",
+      "expected": "按实际Host/Project/数据集/不可变筛选/generation拒绝旧结果；telemetry不误借当前生产session；execution仍按原session/epoch核对",
+      "runtime_result": null
+    },
+    {
+      "id": "UI07",
+      "trigger": "Reader或另一个Host查看",
+      "expected": "可读结果但控制动作为空；伪造控制请求仍拒绝",
+      "runtime_result": null
+    },
+    {
+      "id": "UI08",
+      "trigger": "人工停用与设备自报接单不一致",
+      "expected": "两个值及有效资格分开；未确认前只显示提交中",
+      "runtime_result": null
+    },
+    {
+      "id": "UI09",
+      "trigger": "两候选同预计完成或均阻塞",
+      "expected": "显示Host实际稳定排序/等待原因；前端不自行选设备",
+      "runtime_result": null
+    },
+    {
+      "id": "UI10",
+      "trigger": "云已存Completed而Host尚未接纳",
+      "expected": "不增加接受量，显示原始回执与Host待接纳差异",
+      "runtime_result": null
+    },
+    {
+      "id": "UI11",
+      "trigger": "关闭云面板后再打开",
+      "expected": "不停止会话；按原身份读取，返回焦点正确",
+      "runtime_result": null
+    },
+    {
+      "id": "UI12",
+      "trigger": "准备Task已完成、Engine仍活动时关窗/换工程",
+      "expected": "UI及Host均拒绝离开；discard不能绕过",
+      "runtime_result": null
+    },
+    {
+      "id": "UI13",
+      "trigger": "断连后恢复到原Host",
+      "expected": "只查原会话/命令；不因未知响应重发生产",
+      "runtime_result": null
+    },
+    {
+      "id": "UI14",
+      "trigger": "原执行Host不可取得",
+      "expected": "最后云快照标明覆盖与只读；不清slot或伪填终态",
+      "runtime_result": null
+    },
+    {
+      "id": "UI15",
+      "trigger": "截止后迟到回执与实时新修订",
+      "expected": "截止回看固定原修订；实时读取明确为另一个修订",
+      "runtime_result": null
+    },
+    {
+      "id": "UI16",
+      "trigger": "执行三维/时间轴缺冻结输入",
+      "expected": "必须提供独立冻结输入与状态观察；缺失时明确缺项，不能套当前草稿/旧Run；实际消费者仍待实现",
+      "runtime_result": null
+    }
+  ],
+  "updated_date": "2026-10-26",
+  "frozen_observation_design_ref": "docs/06_v2.0设计与开发控制/冻结输入与执行观察设计.md",
+  "agent_report_design_ref": "docs/06_v2.0设计与开发控制/Agent与执行报告消费设计.md",
+  "device_gateway_design_ref": "docs/06_v2.0设计与开发控制/设备进程网关与部署设计.md",
+  "data_query_design_ref": "docs/06_v2.0设计与开发控制/数据查询与规模验收设计.json",
+  "prediction_report_design_ref": "docs/06_v2.0设计与开发控制/预测与执行比较设计.json",
+  "data_export_design_ref": "docs/06_v2.0设计与开发控制/筛选数据导出设计.json",
+  "historical_design_implementation_flags": {
+    "date": "2026-10-25",
+    "implementation_allowed": false,
+    "runtime_verified": false
+  },
+  "implementation_status_ref": "docs/06_v2.0设计与开发控制/开发控制计划.json#/packages",
+  "current_implementation_packages": [
+    "V2-07"
+  ],
+  "status_projection_updated_at_utc": "2026-10-27T01:45:48.535491+00:00",
+  "runtime_verification_scope": "runtime_verified仅为本文全部设计用例通过声明；当前局部真实证据和剩余动作取主计划，不把设计期禁止实施作为现行限制。"
+}

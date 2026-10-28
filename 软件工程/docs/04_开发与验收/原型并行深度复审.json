@@ -1,0 +1,674 @@
+{
+  "document_kind": "parallel_first_release_prototype_logic_review_and_repair",
+  "date": "2026-10-15T10:46:11+08:00",
+  "authority": "用户：统筹任务并完整分派到各闲置窗口并完整完成修复",
+  "status": "completed_repair_and_independent_review",
+  "baseline_review_ref": "docs/04_开发与验收/首版原型逻辑贯通复审.json",
+  "scope": "首版设计原型新增组合路径的独立复审及已证实缺陷修复；不重复将manual fixture或后续真实产品门槛计为新缺陷。",
+  "completion_rule": "四条独立线交付、所有已确认新缺陷源修正及修后复验、本窗连续浏览器回归和公共同步全部完成才关闭。",
+  "ownership_rule": "窗口2唯一写S04/对应Figma；窗口3/4/5/6仅写本轮独立复核目录和各自交付JSON；公共类型/准入/总清单由窗口1合入。",
+  "assignments": [
+    {
+      "window": "复审窗口1",
+      "thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+      "scope": "入口/表单/跨工程连续性；公共合入及最终收口",
+      "delivery_ref": "tools/design-quality-audit/prototype-parallel/window1/after.json",
+      "status": "completed_and_received",
+      "observed_status_before_dispatch": "current_coordinator",
+      "received_at": "2026-10-15T11:10:41+08:00"
+    },
+    {
+      "window": "复审窗口2",
+      "thread_id": "01a11f4e-f8a4-7a62-9d23-24834761b07e",
+      "scope": "本轮S04原型源修复及交接；保留另行进行的Figma独立设计批次",
+      "delivery_ref": "docs/04_开发与验收/特征细化/PL2_窗口2_原型修复交接.json",
+      "status": "completed_and_received",
+      "observed_status_before_dispatch": "active",
+      "received_at": "2026-10-15T11:10:41+08:00"
+    },
+    {
+      "window": "复审窗口3",
+      "thread_id": "01a13589-e1b0-73d2-aaae-c69be89c5b0f",
+      "scope": "专业认可/绑定/多消费者/版本/撤销组合",
+      "delivery_ref": "docs/04_开发与验收/特征细化/PL2_窗口3_专业复核.json",
+      "status": "completed_and_received",
+      "observed_status_before_dispatch": "idle",
+      "received_at": "2026-10-15T11:10:41+08:00"
+    },
+    {
+      "window": "复审窗口4",
+      "thread_id": "01a1396d-bb0e-7e93-8ad5-b3465048d09a",
+      "scope": "时间轴/动态输入/Agent终态和返回上下文",
+      "delivery_ref": "docs/04_开发与验收/特征细化/PL2_窗口4_时间轴Agent复核.json",
+      "status": "completed_and_received",
+      "observed_status_before_dispatch": "idle",
+      "received_at": "2026-10-15T11:10:41+08:00"
+    },
+    {
+      "window": "复审窗口5",
+      "thread_id": "01a1396d-d905-75e2-a5c5-7db3cd9b36a2",
+      "scope": "报告/保存/快照/接手与同源比较",
+      "delivery_ref": "docs/04_开发与验收/特征细化/PL2_窗口5_报告交接复核.json",
+      "status": "completed_and_received",
+      "observed_status_before_dispatch": "idle",
+      "received_at": "2026-10-15T11:10:41+08:00"
+    },
+    {
+      "window": "复审窗口6",
+      "thread_id": "01a1396d-f9d8-7ac0-ae86-b93a5d28b7ac",
+      "scope": "生产输入/实例定义/模块采用/跨层一致性",
+      "delivery_ref": "docs/04_开发与验收/特征细化/PL2_窗口6_生产模块复核.json",
+      "status": "completed_and_received",
+      "observed_status_before_dispatch": "idle",
+      "received_at": "2026-10-15T11:10:41+08:00"
+    }
+  ],
+  "findings": [
+    {
+      "id": "PR-01",
+      "priority": "P2",
+      "status": "closed_after_owner_repair_and_independent_recheck",
+      "local_case_ids": [
+        "PL2-W1-01"
+      ],
+      "title": "定义创建绕过未应用字段决定",
+      "source_ref": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+      "source_location": "workbench.js category click / definition-confirm",
+      "counterexample": "VP24未应用x=8.2时创建设备定义，字段被静默丢弃并创建实例。",
+      "closure_criteria": [
+        "创建前处理当前脏表单的应用/丢弃/留在",
+        "应用失败不创建定义/实例，不清字段"
+      ],
+      "reported_by": "复审窗口1",
+      "repair_owner": "复审窗口2",
+      "initial_evidence_ref": "tools/design-quality-audit/prototype-parallel/window1/before.json",
+      "repair": {
+        "changes": [
+          "定义确认进入统一未应用字段决策，应用失败不创建；保留/丢弃后继续对应用户选择"
+        ],
+        "source_delivery_ref": "docs/04_开发与验收/特征细化/PL2_窗口2_原型修复交接.json",
+        "verification_refs": [
+          "tools/design-quality-audit/prototype-parallel/window1/after.json"
+        ],
+        "closed_at": "2026-10-15T11:10:41+08:00"
+      },
+      "final_case_ids": [
+        "PL2-W1-01",
+        "PL2-W1-06",
+        "PL2-W1-07"
+      ]
+    },
+    {
+      "id": "PR-02",
+      "priority": "P2",
+      "status": "closed_after_owner_repair_and_independent_recheck",
+      "local_case_ids": [
+        "PL2-W1-02"
+      ],
+      "title": "应用表单后启动了错误任务链",
+      "source_ref": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+      "source_location": "workbench.js action-apply / flow-start",
+      "counterexample": "选择VF03并应用当前字段后，重渲染把flow-picker复位VF01，实际启动VF01。",
+      "closure_criteria": [
+        "待执行动作保存所选任务链目标",
+        "应用/丢弃/留在均按原动作上下文执行"
+      ],
+      "reported_by": "复审窗口1",
+      "repair_owner": "复审窗口2",
+      "initial_evidence_ref": "tools/design-quality-audit/prototype-parallel/window1/before.json",
+      "repair": {
+        "changes": [
+          "pendingAction捕获所选flow，应用导致重渲染后仍开始原目标任务链"
+        ],
+        "source_delivery_ref": "docs/04_开发与验收/特征细化/PL2_窗口2_原型修复交接.json",
+        "verification_refs": [
+          "tools/design-quality-audit/prototype-parallel/window1/after.json"
+        ],
+        "closed_at": "2026-10-15T11:10:41+08:00"
+      }
+    },
+    {
+      "id": "PR-03",
+      "priority": "P2",
+      "status": "closed_after_owner_repair_and_independent_recheck",
+      "local_case_ids": [
+        "PL2-W1-03"
+      ],
+      "title": "快照重开继承其他工程的当前任务链",
+      "source_ref": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+      "source_location": "workbench.js snapshot / resetProjectSession",
+      "counterexample": "保存VF03快照、切VF02后重开，下一步仍走VF02。",
+      "closure_criteria": [
+        "快照保存并恢复有效flow上下文",
+        "重开后下一步与保存任务链一致"
+      ],
+      "reported_by": "复审窗口1",
+      "repair_owner": "复审窗口2",
+      "initial_evidence_ref": "tools/design-quality-audit/prototype-parallel/window1/before.json",
+      "repair": {
+        "changes": [
+          "快照view保存flow；重开恢复有效链；旧快照按有效frame确定链，清旧工程链上下文"
+        ],
+        "source_delivery_ref": "docs/04_开发与验收/特征细化/PL2_窗口2_原型修复交接.json",
+        "verification_refs": [
+          "tools/design-quality-audit/prototype-parallel/window1/after.json"
+        ],
+        "closed_at": "2026-10-15T11:10:41+08:00"
+      }
+    },
+    {
+      "id": "PR-04",
+      "priority": "P2",
+      "status": "closed_after_owner_repair_and_independent_recheck",
+      "local_case_ids": [
+        "PL2-W1-04",
+        "PL2-W1-05"
+      ],
+      "title": "迟到图片读取回包污染新实例或新工程",
+      "source_ref": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+      "source_location": "workbench.js media-file FileReader.onload",
+      "counterexample": "图片读取期间切换设备或新建工程，回调写入当前全局media而非原请求对象。",
+      "closure_criteria": [
+        "异步读取绑定原工程和实例上下文",
+        "上下文失效的回包不写其他实例/工程，原工作保持"
+      ],
+      "reported_by": "复审窗口1",
+      "repair_owner": "复审窗口2",
+      "initial_evidence_ref": "tools/design-quality-audit/prototype-parallel/window1/before.json",
+      "repair": {
+        "changes": [
+          "FileReader捕获工程对象、实例ID与media引用；上下文失效时不写当前设备/工程"
+        ],
+        "source_delivery_ref": "docs/04_开发与验收/特征细化/PL2_窗口2_原型修复交接.json",
+        "verification_refs": [
+          "tools/design-quality-audit/prototype-parallel/window1/after.json"
+        ],
+        "closed_at": "2026-10-15T11:10:41+08:00"
+      }
+    },
+    {
+      "id": "PR-05",
+      "priority": "P2",
+      "status": "closed_after_owner_repair_and_independent_recheck",
+      "local_case_ids": [
+        "PL2-W6-01"
+      ],
+      "title": "拖动未选中设备覆写选中设备身份",
+      "source_ref": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+      "source_location": "moveDevice / commit(pose)",
+      "counterexample": "选择A01时移动ROB01，将A01改名为ROB01，产生重复设备ID。",
+      "closure_criteria": [
+        "姿态编辑以明确目标实例定位",
+        "仅修改位置/姿态，不覆盖稳定身份；其他实例保持",
+        "已有未应用字段时先处理应用/丢弃/留在，应用失败不移动"
+      ],
+      "reported_by": "复审窗口6",
+      "repair_owner": "复审窗口2",
+      "initial_evidence_ref": "tools/design-quality-audit/prototype-parallel/window6/initial-observations.json",
+      "evidence_case_ids": [
+        "move-nonselected"
+      ],
+      "repair": {
+        "changes": [
+          "姿态提交接受明确targetId且只写x/y/z/yaw；场景移动未选中对象不覆盖当前对象身份；有未应用字段时先决定应用/丢弃/留在，失败不移动"
+        ],
+        "source_delivery_ref": "docs/04_开发与验收/特征细化/PL2_窗口2_原型修复交接.json",
+        "verification_refs": [
+          "docs/04_开发与验收/特征细化/PL2_窗口6_生产模块复核.json",
+          "tools/design-quality-audit/prototype-parallel/window6/review-after.json",
+          "tools/design-quality-audit/prototype-parallel/window6/closure-combinations-result.json"
+        ],
+        "closed_at": "2026-10-15T11:10:41+08:00"
+      }
+    },
+    {
+      "id": "PR-06",
+      "priority": "P2",
+      "status": "closed_after_owner_repair_and_independent_recheck",
+      "local_case_ids": [
+        "PL2-W6-02"
+      ],
+      "title": "自定义定义版本未传递到实例与配置来源",
+      "source_ref": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+      "source_location": "definition-confirm / bindSelectedInstance",
+      "counterexample": "创建local.W6.device@2.3.4，实例及配置仍指向旧0.1.0和community定义。",
+      "closure_criteria": [
+        "实例保存所创定义ID/版本",
+        "配置回显及快照接手保持同一来源"
+      ],
+      "reported_by": "复审窗口6",
+      "repair_owner": "复审窗口2",
+      "initial_evidence_ref": "tools/design-quality-audit/prototype-parallel/window6/initial-observations.json",
+      "evidence_case_ids": [
+        "definition-version"
+      ],
+      "repair": {
+        "changes": [
+          "实例独立保存definitionId/精确version，详情单列设备定义身份；默认原型行为规则及其版本另列，不混用两种版本"
+        ],
+        "source_delivery_ref": "docs/04_开发与验收/特征细化/PL2_窗口2_原型修复交接.json",
+        "verification_refs": [
+          "docs/04_开发与验收/特征细化/PL2_窗口6_生产模块复核.json",
+          "tools/design-quality-audit/prototype-parallel/window6/review-after.json",
+          "tools/design-quality-audit/prototype-parallel/window6/closure-combinations-result.json"
+        ],
+        "closed_at": "2026-10-15T11:10:41+08:00"
+      }
+    },
+    {
+      "id": "PR-07",
+      "priority": "P2",
+      "status": "closed_after_owner_repair_and_independent_recheck",
+      "local_case_ids": [
+        "PL2-W6-03"
+      ],
+      "title": "负容量和负运输耗时进入已应用草稿",
+      "source_ref": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+      "source_location": "apply(device/supply)",
+      "counterexample": "capacity=-1、outbound=-10均被应用，失去可执行含义。",
+      "closure_criteria": [
+        "按对应字段语义拒绝负值",
+        "无效字段保留，不部分改草稿；合法边界按冻结契约",
+        "离散容量非整数明确拒绝",
+        "显式零时间/零到料可用或准确说明原型限制，不称未知"
+      ],
+      "reported_by": "复审窗口6",
+      "repair_owner": "复审窗口2",
+      "initial_evidence_ref": "tools/design-quality-audit/prototype-parallel/window6/initial-observations.json",
+      "evidence_case_ids": [
+        "negative-capacity",
+        "negative-transport"
+      ],
+      "repair": {
+        "changes": [
+          "容量须非负整数，四段运输耗时及单阶段工时须非负；显式0工时/0到料可应用，未知空值不伪装0"
+        ],
+        "source_delivery_ref": "docs/04_开发与验收/特征细化/PL2_窗口2_原型修复交接.json",
+        "verification_refs": [
+          "docs/04_开发与验收/特征细化/PL2_窗口6_生产模块复核.json",
+          "tools/design-quality-audit/prototype-parallel/window6/review-after.json",
+          "tools/design-quality-audit/prototype-parallel/window6/closure-combinations-result.json"
+        ],
+        "closed_at": "2026-10-15T11:10:41+08:00"
+      }
+    },
+    {
+      "id": "PR-08",
+      "priority": "P2",
+      "status": "closed_after_owner_repair_and_independent_recheck",
+      "local_case_ids": [
+        "PL2-W5-01"
+      ],
+      "title": "截断样例登记为完整A并丢失当前前缀评价",
+      "source_ref": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+      "source_location": "sample-partial / loadSchedule / registerSample",
+      "counterexample": "仅B后载入PREFIX，报告顶层为20s前缀，表内却含未加载的完整A并缺PREFIX，生成无依据A/B比较。",
+      "closure_criteria": [
+        "完整前缀构造后只登记实际该记录",
+        "顶层与逐样例评价身份/边界/完整性一致",
+        "未加载的完整A不得进入比较，续算保持前缀身份"
+      ],
+      "reported_by": "复审窗口5",
+      "repair_owner": "复审窗口2",
+      "initial_evidence_ref": "tools/design-quality-audit/prototype-parallel/window5/before/B_then_prefix.json",
+      "repair": {
+        "changes": [
+          "直接创建并一次登记最终前缀记录，不隐式登记完整A；同ID续算替换仍保留partial和未知整窗接受量"
+        ],
+        "source_delivery_ref": "docs/04_开发与验收/特征细化/PL2_窗口2_原型修复交接.json",
+        "verification_refs": [
+          "docs/04_开发与验收/特征细化/PL2_窗口5_报告交接复核.json",
+          "tools/design-quality-audit/prototype-parallel/window5/final/result.json",
+          "tools/design-quality-audit/prototype-parallel/window5/final/four-format-readback.json"
+        ],
+        "closed_at": "2026-10-15T11:10:41+08:00"
+      }
+    },
+    {
+      "id": "PR-09",
+      "priority": "P2",
+      "status": "closed_after_owner_repair_and_independent_recheck",
+      "local_case_ids": [
+        "PL2-W3-01"
+      ],
+      "title": "当前工位绑定未匹配订单期望产品版本",
+      "source_ref": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+      "source_location": "commit(inputs) / paperMatches / paper-bind",
+      "counterexample": "订单改r2仍显示r1绑定有效；r1订单也可绑定r2专业样例；重开失配快照后重载旧样例可绕过。",
+      "closure_criteria": [
+        "当前有效绑定比较消费者期望产品版本",
+        "订单改版使受影响的当前绑定失效或明确待复核，旧成果不冒称覆盖新版本",
+        "r2订单+r2纸包装与新ID工位合法路径保持可用"
+      ],
+      "reported_by": "复审窗口3",
+      "repair_owner": "复审窗口2",
+      "initial_evidence_ref": "tools/design-quality-audit/prototype-parallel/window3/version-mismatch-before.json",
+      "repair": {
+        "changes": [
+          "当前订单期待产品版本参与用途认可/绑定；改订单版本撤销旧有效用途，页面显示设计/订单匹配"
+        ],
+        "source_delivery_ref": "docs/04_开发与验收/特征细化/PL2_窗口2_原型修复交接.json",
+        "verification_refs": [
+          "docs/04_开发与验收/特征细化/PL2_窗口3_专业复核.json",
+          "tools/design-quality-audit/prototype-parallel/window3/professional-final.json"
+        ],
+        "closed_at": "2026-10-15T11:10:41+08:00"
+      }
+    },
+    {
+      "id": "PR-10",
+      "priority": "P2",
+      "status": "closed_after_owner_repair_and_independent_recheck",
+      "local_case_ids": [
+        "PL2-W4-01"
+      ],
+      "title": "动态输入冲突后重新核对仍使用旧预览修订",
+      "source_ref": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+      "source_location": "initial line 224",
+      "counterexample": "ARR03=30s，仅选ARR03预览+5；原commit将ARR03改33触发新修订；点击提交出现冲突；conflict-rebase后再次点提交仍base旧值，ARR03保留33而非明确确认的35。",
+      "closure_criteria": [
+        "明确核对后提交使用更新后的输入预览修订",
+        "冲突时不自动覆盖差异，保留字段和原草稿"
+      ],
+      "reported_by": "复审窗口4",
+      "repair_owner": "复审窗口2",
+      "initial_evidence_ref": "tools/design-quality-audit/prototype-parallel/window4/output/pre-fix-result.json",
+      "repair": {
+        "changes": [
+          "明确重定基arrivals表单时同步当前输入预览base，再次提交可以完成已核对增量"
+        ],
+        "source_delivery_ref": "docs/04_开发与验收/特征细化/PL2_窗口2_原型修复交接.json",
+        "verification_refs": [
+          "docs/04_开发与验收/特征细化/PL2_窗口4_时间轴Agent复核.json",
+          "tools/design-quality-audit/prototype-parallel/window4/output/probe-result.json"
+        ],
+        "closed_at": "2026-10-15T11:10:41+08:00"
+      }
+    },
+    {
+      "id": "PR-11",
+      "priority": "P2",
+      "status": "closed_after_owner_repair_and_independent_recheck",
+      "local_case_ids": [
+        "PL2-W4-02"
+      ],
+      "title": "设备子轴返回跳过流水线父上下文",
+      "source_ref": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+      "source_location": "initial line 230",
+      "counterexample": "同一样例factory→axis-line(100–160)→axis-device(0–40)，在设备轴确认25s后Back直接factory，未回line(100–160)。",
+      "closure_criteria": [
+        "返回只退一级并恢复父窗口/显示上下文",
+        "用户确认viewTime不回滚"
+      ],
+      "reported_by": "复审窗口4",
+      "repair_owner": "复审窗口2",
+      "initial_evidence_ref": "tools/design-quality-audit/prototype-parallel/window4/output/pre-fix-result.json",
+      "repair": {
+        "changes": [
+          "按实际进入层级保存父轴栈，设备→流水线→厂房逐层返回且不回滚确认观察时点"
+        ],
+        "source_delivery_ref": "docs/04_开发与验收/特征细化/PL2_窗口2_原型修复交接.json",
+        "verification_refs": [
+          "docs/04_开发与验收/特征细化/PL2_窗口4_时间轴Agent复核.json",
+          "tools/design-quality-audit/prototype-parallel/window4/output/probe-result.json"
+        ],
+        "closed_at": "2026-10-15T11:10:41+08:00"
+      }
+    },
+    {
+      "id": "PR-12",
+      "priority": "P2",
+      "status": "closed_after_owner_repair_and_independent_recheck",
+      "local_case_ids": [
+        "PL2-W4-03"
+      ],
+      "title": "部分换样例入口未撤销旧选择及迟到定位",
+      "source_ref": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+      "source_location": "initial line 170",
+      "counterexample": "DTC02载入后seek200待回复，再载入同名DTC02重置135；旧70ms回调仍把视图改200。另从delayed等待选中Job后载入calendar，selectedJob仍指向旧sample。",
+      "closure_criteria": [
+        "全部换样例入口清旧Job/事件/细化绑定及定位代次",
+        "同名样例迟到回复拒绝，合法续算保持同一实例和用户时点"
+      ],
+      "reported_by": "复审窗口4",
+      "repair_owner": "复审窗口2",
+      "initial_evidence_ref": "tools/design-quality-audit/prototype-parallel/window4/output/pre-fix-result.json",
+      "repair": {
+        "changes": [
+          "每个换样例入口清查询代次、旧Job/Event/细化绑定；同样例续算不重置有效选择"
+        ],
+        "source_delivery_ref": "docs/04_开发与验收/特征细化/PL2_窗口2_原型修复交接.json",
+        "verification_refs": [
+          "docs/04_开发与验收/特征细化/PL2_窗口4_时间轴Agent复核.json",
+          "tools/design-quality-audit/prototype-parallel/window4/output/probe-result.json"
+        ],
+        "closed_at": "2026-10-15T11:10:41+08:00"
+      }
+    },
+    {
+      "id": "PR-13",
+      "priority": "P2",
+      "status": "closed_after_owner_repair_and_independent_recheck",
+      "local_case_ids": [
+        "PL2-W4-04"
+      ],
+      "title": "已应用的禁止修正未约束后续FC20交互",
+      "source_ref": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+      "source_location": "initial line 254",
+      "counterexample": "目标表单取消allowRepair并实际apply；选择独立three轮次例，原rendered agent-repair按钮仍可点击，rounds从0到1，accepted从6到7。",
+      "closure_criteria": [
+        "按钮和动作共同消费已应用allowRepair",
+        "禁修保留当前结果/轮次并显示原因"
+      ],
+      "reported_by": "复审窗口4",
+      "repair_owner": "复审窗口2",
+      "initial_evidence_ref": "tools/design-quality-audit/prototype-parallel/window4/output/pre-fix-result.json",
+      "repair": {
+        "changes": [
+          "当前allowRepair=false同时禁用按钮并在处理器拒绝推进，保持已知轮次/结果"
+        ],
+        "source_delivery_ref": "docs/04_开发与验收/特征细化/PL2_窗口2_原型修复交接.json",
+        "verification_refs": [
+          "docs/04_开发与验收/特征细化/PL2_窗口4_时间轴Agent复核.json",
+          "tools/design-quality-audit/prototype-parallel/window4/output/probe-result.json"
+        ],
+        "closed_at": "2026-10-15T11:10:41+08:00"
+      }
+    },
+    {
+      "id": "PR-14",
+      "priority": "P2",
+      "status": "closed_after_owner_repair_and_independent_recheck",
+      "local_case_ids": [
+        "PL2-W4-05"
+      ],
+      "title": "工作流已停止后无变化按钮重写终态原因",
+      "source_ref": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+      "source_location": "initial line 255",
+      "counterexample": "FC20取消后点击仍可用的agent-no-change，将user_cancelled_prototype_workflow改no_effective_change；预算三轮停止后同操作也覆盖finite_budget_exhausted。",
+      "closure_criteria": [
+        "已终止工作流后续动作不改停止原因",
+        "明确开始新独立分支时才建立新交互终态"
+      ],
+      "reported_by": "复审窗口4",
+      "repair_owner": "复审窗口2",
+      "initial_evidence_ref": "tools/design-quality-audit/prototype-parallel/window4/output/pre-fix-result.json",
+      "repair": {
+        "changes": [
+          "已停止分支的repair/no-change/cancel均保持原停止原因，独立样例显式切换可重新开始"
+        ],
+        "source_delivery_ref": "docs/04_开发与验收/特征细化/PL2_窗口2_原型修复交接.json",
+        "verification_refs": [
+          "docs/04_开发与验收/特征细化/PL2_窗口4_时间轴Agent复核.json",
+          "tools/design-quality-audit/prototype-parallel/window4/output/probe-result.json"
+        ],
+        "closed_at": "2026-10-15T11:10:41+08:00"
+      }
+    },
+    {
+      "id": "PR-15",
+      "priority": "P2",
+      "status": "closed_after_owner_repair_and_independent_recheck",
+      "local_case_ids": [
+        "PL2-W5-02"
+      ],
+      "title": "新建工程绕过已修改未保存工程的离开决定",
+      "source_ref": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+      "source_location": "new-project / create-empty",
+      "counterexample": "应用X8.25后新建空工程，未询问保存/放弃/留在即清空旧设备。",
+      "closure_criteria": [
+        "替换前处理已有未保存工作并保留待执行的新建动作",
+        "保存失败/留在不得替换，放弃后正常创建",
+        "新建工程名/场地输入不得被误清"
+      ],
+      "reported_by": "复审窗口5",
+      "repair_owner": "复审窗口2",
+      "initial_evidence_ref": "tools/design-quality-audit/prototype-parallel/window5/before-extended/new-unsaved.json",
+      "repair": {
+        "changes": [
+          "新建替换修改未保存工程前保存/丢弃/留在决定；入口决定保留待执行动作，初始/已明确进入新建表单不重复丢弃新名称场地"
+        ],
+        "source_delivery_ref": "docs/04_开发与验收/特征细化/PL2_窗口2_原型修复交接.json",
+        "verification_refs": [
+          "docs/04_开发与验收/特征细化/PL2_窗口5_报告交接复核.json",
+          "tools/design-quality-audit/prototype-parallel/window5/final/result.json",
+          "tools/design-quality-audit/prototype-parallel/window5/final/four-format-readback.json"
+        ],
+        "closed_at": "2026-10-15T11:10:41+08:00"
+      }
+    },
+    {
+      "id": "PR-16",
+      "priority": "P2",
+      "status": "closed_after_owner_repair_and_independent_recheck",
+      "local_case_ids": [
+        "PL2-W5-03"
+      ],
+      "title": "真实保存配额失败无可见原因",
+      "source_ref": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+      "source_location": "save / localStorage.setItem",
+      "counterexample": "原生存储配额耗尽后保存抛QuotaExceededError，界面未说明失败原因。",
+      "closure_criteria": [
+        "保存边界错误给出明确配额/失败反馈",
+        "保留当前dirty、旧快照和工程，不发成功下载",
+        "不增加自动重试或静默兜底"
+      ],
+      "reported_by": "复审窗口5",
+      "repair_owner": "复审窗口2",
+      "initial_evidence_ref": "tools/design-quality-audit/prototype-parallel/window5/before-extended/quota-failure.json",
+      "repair": {
+        "changes": [
+          "捕获真实localStorage保存边界失败，给出错误名，保留旧快照/dirty且不下载成功文件、不重试"
+        ],
+        "source_delivery_ref": "docs/04_开发与验收/特征细化/PL2_窗口2_原型修复交接.json",
+        "verification_refs": [
+          "docs/04_开发与验收/特征细化/PL2_窗口5_报告交接复核.json",
+          "tools/design-quality-audit/prototype-parallel/window5/final/result.json",
+          "tools/design-quality-audit/prototype-parallel/window5/final/four-format-readback.json"
+        ],
+        "closed_at": "2026-10-15T11:10:41+08:00"
+      }
+    },
+    {
+      "id": "PR-17",
+      "priority": "P2",
+      "status": "closed_after_owner_repair_and_independent_recheck",
+      "local_case_ids": [
+        "PL2-W3-02"
+      ],
+      "title": "撤销消费者创建后把其他工位认可转给回退工位",
+      "source_ref": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+      "source_location": "restoreDraft / packagingTargetId",
+      "counterexample": "原P01未认可，仅认可COPY1-P01；撤销复制后目标回退P01，却沿用COPY1许可自动绑定。",
+      "closure_criteria": [
+        "恢复草稿前后比较实际消费者身份",
+        "目标消失或变为其他ID时当前认可/绑定失配",
+        "不得把其他消费者许可转给回退目标，原历史成果不伪删"
+      ],
+      "reported_by": "复审窗口3",
+      "repair_owner": "复审窗口2",
+      "initial_evidence_ref": "tools/design-quality-audit/prototype-parallel/window3/consumer-fallback-before.json",
+      "repair": {
+        "changes": [
+          "撤销前后比较真实消费者ID；被移除目标的认可/绑定不转给fallback目标；同时校正已移除设备选择以保证快照可重开"
+        ],
+        "source_delivery_ref": "docs/04_开发与验收/特征细化/PL2_窗口2_原型修复交接.json",
+        "verification_refs": [
+          "docs/04_开发与验收/特征细化/PL2_窗口3_专业复核.json",
+          "tools/design-quality-audit/prototype-parallel/window3/professional-final.json"
+        ],
+        "closed_at": "2026-10-15T11:10:41+08:00"
+      }
+    },
+    {
+      "id": "PR-18",
+      "priority": "P2",
+      "status": "closed_after_owner_repair_and_independent_recheck",
+      "local_case_ids": [
+        "PL2-W6-04"
+      ],
+      "title": "撤销采用或创作后保存悬空选中对象，快照无法重开",
+      "source_ref": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+      "source_location": "restoreDraft / snapshot / project-file validation",
+      "counterexample": "采用或创建设备后撤销，其ID仍为view.selected；保存的快照因选中ID不属于工程而不能重开。",
+      "closure_criteria": [
+        "恢复草稿后选中ID仍有效或明确无选择",
+        "相关编组/连接起点/片段上下文不引用已移除对象",
+        "自行保存的快照可重开，消费者许可不随回退转移"
+      ],
+      "reported_by": "复审窗口6",
+      "repair_owner": "复审窗口2",
+      "initial_evidence_ref": "tools/design-quality-audit/prototype-parallel/window6/selection-followup.json",
+      "repair": {
+        "changes": [
+          "restoreDraft校正已移除选择、编组/连接起点/片段上下文；保存不会生成悬空view.selected"
+        ],
+        "source_delivery_ref": "docs/04_开发与验收/特征细化/PL2_窗口2_原型修复交接.json",
+        "verification_refs": [
+          "docs/04_开发与验收/特征细化/PL2_窗口6_生产模块复核.json",
+          "tools/design-quality-audit/prototype-parallel/window6/review-after.json",
+          "tools/design-quality-audit/prototype-parallel/window6/closure-combinations-result.json"
+        ],
+        "closed_at": "2026-10-15T11:10:41+08:00"
+      }
+    }
+  ],
+  "summary": {
+    "confirmed_findings": 18,
+    "closed_findings": 18,
+    "open_findings": 0,
+    "judgment": "本轮18个已证实逻辑问题全部源修复并由对应发现窗口独立复验关闭。四条复审线48条组合、本窗7条入口，以及原17条/五链/8专项/旧DQ16组均通过，消费同一最终S04业务源。",
+    "priority_counts": {
+      "P2": 18
+    }
+  },
+  "verification": {
+    "final_validation_ref": "tools/design-quality-audit/prototype-parallel/final-validation.json",
+    "entry_ref": "tools/design-quality-audit/prototype-parallel/window1/after.json",
+    "baseline_17_ref": "tools/design-quality-audit/prototype-logic/output/playwright/parallel-regression.json",
+    "continuous_flows_ref": "tools/design-quality-audit/prototype-logic/output/playwright/parallel-flows/walkthrough-result.json",
+    "prior_DQ_ref": "tools/design-quality-audit/prototype-logic/output/playwright/parallel-dq/result.json",
+    "source_mtime_ms": 1792033408790.3506,
+    "summary": [
+      "专业10/10、时间轴Agent11/11、报告接手7/7、生产模块20/20；四线共48条组合。",
+      "本窗入口7/7；原逻辑17/17；五链5/5及专项8/8；旧DQ16/16。",
+      "报告窗口实际配额失败、原快照保留及四格式含2页PDF读回通过；隔离上下文已清理。",
+      "新建保护新增弹窗按真实UI显式选择；初案终止后需明确开始独立不足分支，再检查无变化停止；未放宽业务断言。",
+      "浏览器页面异常为0；原函数与图形stub证据分别标注；原产品准入和21planned保持。",
+      "最终主线检查通过；两份故意损坏的JSON负例保留原字节并用.txt归档，浏览器上传仍用原JSON文件名/MIME。"
+    ],
+    "mainline_result_ref": "docs/04_开发与验收/主线同步检查结果.json",
+    "mainline_errors": []
+  },
+  "actual_product_runtime": null,
+  "product_coding_authorized": false,
+  "completed_at": "2026-10-15T11:10:41+08:00",
+  "separate_Figma_scope": "复审窗口2另行设计批次按其原授权和实际交付记录继续；本轮接受S04业务源与逻辑复验，不把静态Figma连线称作任意数据执行。",
+  "source_delivery_acceptance": {
+    "owner": "复审窗口1",
+    "status": "completed_and_received",
+    "ref": "docs/04_开发与验收/特征细化/PL2_窗口2_原型修复交接.json",
+    "rule": "源负责窗口交付文件记录送验时状态；对应发现窗口独立复验与本窗最终接收决定以本记录为准。",
+    "source_mtime_ms": 1792033408790.3506
+  }
+}

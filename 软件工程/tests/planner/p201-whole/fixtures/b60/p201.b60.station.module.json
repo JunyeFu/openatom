@@ -1,0 +1,4896 @@
+{
+  "schema_version": "1.0",
+  "data": {
+    "definition": {
+      "id": "p201.b60.station",
+      "version": "1.0.0",
+      "title": "B60两秒固定保身份工位",
+      "definition_state": "runtime_candidate",
+      "contribution": {
+        "author": null,
+        "license": null,
+        "assets": []
+      },
+      "parameters": [
+        {
+          "id": "processing_sim_seconds",
+          "value_type": "integer",
+          "binding": "/payload/data/behavior/inline/phases/0/duration/value",
+          "label": "处理工时",
+          "unit": "millisecond",
+          "minimum": 1,
+          "maximum": null,
+          "integer": true,
+          "options": [],
+          "basis": "user_provided"
+        }
+      ],
+      "attribute_schema": [],
+      "payload": {
+        "category": "devices",
+        "data": {
+          "placement": "fixed_during_simulation",
+          "ports": [
+            {
+              "id": "input",
+              "direction": "input",
+              "payload": {
+                "kind": "material",
+                "data": {
+                  "item_role": "workpiece",
+                  "unit": "piece",
+                  "quantity_rule": {
+                    "value": {
+                      "coefficient": 1,
+                      "decimal_places": 0
+                    },
+                    "unit": "piece"
+                  }
+                }
+              }
+            },
+            {
+              "id": "output",
+              "direction": "output",
+              "payload": {
+                "kind": "material",
+                "data": {
+                  "item_role": "workpiece",
+                  "unit": "piece",
+                  "quantity_rule": {
+                    "value": {
+                      "coefficient": 1,
+                      "decimal_places": 0
+                    },
+                    "unit": "piece"
+                  }
+                }
+              }
+            }
+          ],
+          "behavior": {
+            "inline": {
+              "builtin": "transform",
+              "item_roles": [
+                "workpiece"
+              ],
+              "inputs": [
+                {
+                  "role": "workpiece",
+                  "quantity": {
+                    "value": {
+                      "coefficient": 1,
+                      "decimal_places": 0
+                    },
+                    "unit": "piece"
+                  },
+                  "port": "input",
+                  "required_quality": [
+                    "released"
+                  ],
+                  "declared_output_quality": null
+                }
+              ],
+              "outputs": [
+                {
+                  "role": "workpiece",
+                  "quantity": {
+                    "value": {
+                      "coefficient": 1,
+                      "decimal_places": 0
+                    },
+                    "unit": "piece"
+                  },
+                  "port": "output",
+                  "required_quality": [],
+                  "declared_output_quality": "released"
+                }
+              ],
+              "resource_roles": [],
+              "duration": null,
+              "phases": [
+                {
+                  "id": "cycle",
+                  "duration": {
+                    "value": 2000,
+                    "unit": "millisecond",
+                    "basis": "user_provided",
+                    "source_ref": "NFR-B60"
+                  },
+                  "phase_resources": [],
+                  "interruption_policy": "non_preemptive",
+                  "work_kind": "processing"
+                }
+              ],
+              "hold_on_output_wait": [],
+              "quality_and_routes": null,
+              "identity_policy": "preserve",
+              "family": null,
+              "pack_identity": null
+            },
+            "operation_ref": null,
+            "selected": "inline"
+          },
+          "configuration": {},
+          "presentation": {
+            "kind": "native_scene",
+            "source": {
+              "kind": "native_scene",
+              "data": "p201.b60.fixed-station"
+            },
+            "unit": "meter",
+            "coordinate_frame": "right_handed_z_up",
+            "scale": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            },
+            "nodes": [
+              {
+                "id": 0,
+                "name": "welded_base_bottom",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0.16
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 1.9,
+                    "y": 1.9,
+                    "z": 0.14
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.46,
+                    0.5,
+                    0.53,
+                    1
+                  ],
+                  "metallic": 0.8,
+                  "roughness": 0.3,
+                  "texture": null
+                }
+              },
+              {
+                "id": 1,
+                "name": "removable_bottom_service_tray",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0,
+                    "y": -0.08,
+                    "z": 0.27
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 1.48,
+                    "y": 1.58,
+                    "z": 0.06
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.75,
+                    0.79,
+                    0.8,
+                    1
+                  ],
+                  "metallic": 0.25,
+                  "roughness": 0.45,
+                  "texture": null
+                }
+              },
+              {
+                "id": 2,
+                "name": "adjustable_foot_-0.79_-0.79",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": -0.79,
+                    "y": -0.79,
+                    "z": 0.04
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "cylinder",
+                  "data": {
+                    "radius": 0.11,
+                    "height": 0.08
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.06,
+                    0.075,
+                    0.08,
+                    1
+                  ],
+                  "metallic": 0.05,
+                  "roughness": 0.85,
+                  "texture": null
+                }
+              },
+              {
+                "id": 3,
+                "name": "foot_thread_-0.79_-0.79",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": -0.79,
+                    "y": -0.79,
+                    "z": 0.12
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "cylinder",
+                  "data": {
+                    "radius": 0.035,
+                    "height": 0.16
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.46,
+                    0.5,
+                    0.53,
+                    1
+                  ],
+                  "metallic": 0.8,
+                  "roughness": 0.3,
+                  "texture": null
+                }
+              },
+              {
+                "id": 4,
+                "name": "corner_column_-0.79_-0.79",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": -0.79,
+                    "y": -0.79,
+                    "z": 0.67
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.12,
+                    "y": 0.12,
+                    "z": 0.92
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.46,
+                    0.5,
+                    0.53,
+                    1
+                  ],
+                  "metallic": 0.8,
+                  "roughness": 0.3,
+                  "texture": null
+                }
+              },
+              {
+                "id": 5,
+                "name": "base_fixing_bolt_-0.79_-0.79",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": -0.79,
+                    "y": -0.79,
+                    "z": 0.255
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "cylinder",
+                  "data": {
+                    "radius": 0.025,
+                    "height": 0.025
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.46,
+                    0.5,
+                    0.53,
+                    1
+                  ],
+                  "metallic": 0.8,
+                  "roughness": 0.3,
+                  "texture": null
+                }
+              },
+              {
+                "id": 6,
+                "name": "adjustable_foot_-0.79_0.79",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": -0.79,
+                    "y": 0.79,
+                    "z": 0.04
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "cylinder",
+                  "data": {
+                    "radius": 0.11,
+                    "height": 0.08
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.06,
+                    0.075,
+                    0.08,
+                    1
+                  ],
+                  "metallic": 0.05,
+                  "roughness": 0.85,
+                  "texture": null
+                }
+              },
+              {
+                "id": 7,
+                "name": "foot_thread_-0.79_0.79",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": -0.79,
+                    "y": 0.79,
+                    "z": 0.12
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "cylinder",
+                  "data": {
+                    "radius": 0.035,
+                    "height": 0.16
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.46,
+                    0.5,
+                    0.53,
+                    1
+                  ],
+                  "metallic": 0.8,
+                  "roughness": 0.3,
+                  "texture": null
+                }
+              },
+              {
+                "id": 8,
+                "name": "corner_column_-0.79_0.79",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": -0.79,
+                    "y": 0.79,
+                    "z": 0.67
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.12,
+                    "y": 0.12,
+                    "z": 0.92
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.46,
+                    0.5,
+                    0.53,
+                    1
+                  ],
+                  "metallic": 0.8,
+                  "roughness": 0.3,
+                  "texture": null
+                }
+              },
+              {
+                "id": 9,
+                "name": "base_fixing_bolt_-0.79_0.79",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": -0.79,
+                    "y": 0.79,
+                    "z": 0.255
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "cylinder",
+                  "data": {
+                    "radius": 0.025,
+                    "height": 0.025
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.46,
+                    0.5,
+                    0.53,
+                    1
+                  ],
+                  "metallic": 0.8,
+                  "roughness": 0.3,
+                  "texture": null
+                }
+              },
+              {
+                "id": 10,
+                "name": "adjustable_foot_0.79_-0.79",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0.79,
+                    "y": -0.79,
+                    "z": 0.04
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "cylinder",
+                  "data": {
+                    "radius": 0.11,
+                    "height": 0.08
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.06,
+                    0.075,
+                    0.08,
+                    1
+                  ],
+                  "metallic": 0.05,
+                  "roughness": 0.85,
+                  "texture": null
+                }
+              },
+              {
+                "id": 11,
+                "name": "foot_thread_0.79_-0.79",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0.79,
+                    "y": -0.79,
+                    "z": 0.12
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "cylinder",
+                  "data": {
+                    "radius": 0.035,
+                    "height": 0.16
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.46,
+                    0.5,
+                    0.53,
+                    1
+                  ],
+                  "metallic": 0.8,
+                  "roughness": 0.3,
+                  "texture": null
+                }
+              },
+              {
+                "id": 12,
+                "name": "corner_column_0.79_-0.79",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0.79,
+                    "y": -0.79,
+                    "z": 0.67
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.12,
+                    "y": 0.12,
+                    "z": 0.92
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.46,
+                    0.5,
+                    0.53,
+                    1
+                  ],
+                  "metallic": 0.8,
+                  "roughness": 0.3,
+                  "texture": null
+                }
+              },
+              {
+                "id": 13,
+                "name": "base_fixing_bolt_0.79_-0.79",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0.79,
+                    "y": -0.79,
+                    "z": 0.255
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "cylinder",
+                  "data": {
+                    "radius": 0.025,
+                    "height": 0.025
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.46,
+                    0.5,
+                    0.53,
+                    1
+                  ],
+                  "metallic": 0.8,
+                  "roughness": 0.3,
+                  "texture": null
+                }
+              },
+              {
+                "id": 14,
+                "name": "adjustable_foot_0.79_0.79",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0.79,
+                    "y": 0.79,
+                    "z": 0.04
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "cylinder",
+                  "data": {
+                    "radius": 0.11,
+                    "height": 0.08
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.06,
+                    0.075,
+                    0.08,
+                    1
+                  ],
+                  "metallic": 0.05,
+                  "roughness": 0.85,
+                  "texture": null
+                }
+              },
+              {
+                "id": 15,
+                "name": "foot_thread_0.79_0.79",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0.79,
+                    "y": 0.79,
+                    "z": 0.12
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "cylinder",
+                  "data": {
+                    "radius": 0.035,
+                    "height": 0.16
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.46,
+                    0.5,
+                    0.53,
+                    1
+                  ],
+                  "metallic": 0.8,
+                  "roughness": 0.3,
+                  "texture": null
+                }
+              },
+              {
+                "id": 16,
+                "name": "corner_column_0.79_0.79",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0.79,
+                    "y": 0.79,
+                    "z": 0.67
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.12,
+                    "y": 0.12,
+                    "z": 0.92
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.46,
+                    0.5,
+                    0.53,
+                    1
+                  ],
+                  "metallic": 0.8,
+                  "roughness": 0.3,
+                  "texture": null
+                }
+              },
+              {
+                "id": 17,
+                "name": "base_fixing_bolt_0.79_0.79",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0.79,
+                    "y": 0.79,
+                    "z": 0.255
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "cylinder",
+                  "data": {
+                    "radius": 0.025,
+                    "height": 0.025
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.46,
+                    0.5,
+                    0.53,
+                    1
+                  ],
+                  "metallic": 0.8,
+                  "roughness": 0.3,
+                  "texture": null
+                }
+              },
+              {
+                "id": 18,
+                "name": "upper_length_rail_-0.79",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": -0.79,
+                    "y": 0,
+                    "z": 1.04
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.12,
+                    "y": 1.7,
+                    "z": 0.13
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.46,
+                    0.5,
+                    0.53,
+                    1
+                  ],
+                  "metallic": 0.8,
+                  "roughness": 0.3,
+                  "texture": null
+                }
+              },
+              {
+                "id": 19,
+                "name": "upper_length_rail_0.79",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0.79,
+                    "y": 0,
+                    "z": 1.04
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.12,
+                    "y": 1.7,
+                    "z": 0.13
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.46,
+                    0.5,
+                    0.53,
+                    1
+                  ],
+                  "metallic": 0.8,
+                  "roughness": 0.3,
+                  "texture": null
+                }
+              },
+              {
+                "id": 20,
+                "name": "upper_cross_rail_-0.79",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0,
+                    "y": -0.79,
+                    "z": 1.04
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 1.7,
+                    "y": 0.12,
+                    "z": 0.13
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.46,
+                    0.5,
+                    0.53,
+                    1
+                  ],
+                  "metallic": 0.8,
+                  "roughness": 0.3,
+                  "texture": null
+                }
+              },
+              {
+                "id": 21,
+                "name": "upper_cross_rail_0.79",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0,
+                    "y": 0.79,
+                    "z": 1.04
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 1.7,
+                    "y": 0.12,
+                    "z": 0.13
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.46,
+                    0.5,
+                    0.53,
+                    1
+                  ],
+                  "metallic": 0.8,
+                  "roughness": 0.3,
+                  "texture": null
+                }
+              },
+              {
+                "id": 22,
+                "name": "rear_lower_service_cover",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0,
+                    "y": 0.9,
+                    "z": 0.72
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 1.74,
+                    "y": 0.08,
+                    "z": 0.84
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.75,
+                    0.79,
+                    0.8,
+                    1
+                  ],
+                  "metallic": 0.25,
+                  "roughness": 0.45,
+                  "texture": null
+                }
+              },
+              {
+                "id": 23,
+                "name": "side_service_door_-0.52",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": -0.52,
+                    "y": -0.89,
+                    "z": 0.65
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.94,
+                    "y": 0.06,
+                    "z": 0.69
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.75,
+                    0.79,
+                    0.8,
+                    1
+                  ],
+                  "metallic": 0.25,
+                  "roughness": 0.45,
+                  "texture": null
+                }
+              },
+              {
+                "id": 24,
+                "name": "service_door_handle_-0.52",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": -0.27,
+                    "y": -0.94,
+                    "z": 0.68
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "cylinder",
+                  "data": {
+                    "radius": 0.018,
+                    "height": 0.16
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.46,
+                    0.5,
+                    0.53,
+                    1
+                  ],
+                  "metallic": 0.8,
+                  "roughness": 0.3,
+                  "texture": null
+                }
+              },
+              {
+                "id": 25,
+                "name": "side_service_door_0.52",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0.52,
+                    "y": -0.89,
+                    "z": 0.65
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.94,
+                    "y": 0.06,
+                    "z": 0.69
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.75,
+                    0.79,
+                    0.8,
+                    1
+                  ],
+                  "metallic": 0.25,
+                  "roughness": 0.45,
+                  "texture": null
+                }
+              },
+              {
+                "id": 26,
+                "name": "service_door_handle_0.52",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0.77,
+                    "y": -0.94,
+                    "z": 0.68
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "cylinder",
+                  "data": {
+                    "radius": 0.018,
+                    "height": 0.16
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.46,
+                    0.5,
+                    0.53,
+                    1
+                  ],
+                  "metallic": 0.8,
+                  "roughness": 0.3,
+                  "texture": null
+                }
+              },
+              {
+                "id": 27,
+                "name": "door_hinge_-0.94_0.4",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": -0.94,
+                    "y": -0.9,
+                    "z": 0.4
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "cylinder",
+                  "data": {
+                    "radius": 0.022,
+                    "height": 0.09
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.46,
+                    0.5,
+                    0.53,
+                    1
+                  ],
+                  "metallic": 0.8,
+                  "roughness": 0.3,
+                  "texture": null
+                }
+              },
+              {
+                "id": 28,
+                "name": "door_hinge_0.94_0.4",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0.94,
+                    "y": -0.9,
+                    "z": 0.4
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "cylinder",
+                  "data": {
+                    "radius": 0.022,
+                    "height": 0.09
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.46,
+                    0.5,
+                    0.53,
+                    1
+                  ],
+                  "metallic": 0.8,
+                  "roughness": 0.3,
+                  "texture": null
+                }
+              },
+              {
+                "id": 29,
+                "name": "door_hinge_-0.94_0.84",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": -0.94,
+                    "y": -0.9,
+                    "z": 0.84
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "cylinder",
+                  "data": {
+                    "radius": 0.022,
+                    "height": 0.09
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.46,
+                    0.5,
+                    0.53,
+                    1
+                  ],
+                  "metallic": 0.8,
+                  "roughness": 0.3,
+                  "texture": null
+                }
+              },
+              {
+                "id": 30,
+                "name": "door_hinge_0.94_0.84",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0.94,
+                    "y": -0.9,
+                    "z": 0.84
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "cylinder",
+                  "data": {
+                    "radius": 0.022,
+                    "height": 0.09
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.46,
+                    0.5,
+                    0.53,
+                    1
+                  ],
+                  "metallic": 0.8,
+                  "roughness": 0.3,
+                  "texture": null
+                }
+              },
+              {
+                "id": 31,
+                "name": "roller_0",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0,
+                    "y": -0.72,
+                    "z": 1.12
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0.7071067811865476,
+                    "z": 0,
+                    "w": 0.7071067811865476
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "cylinder",
+                  "data": {
+                    "radius": 0.045,
+                    "height": 1.38
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.46,
+                    0.5,
+                    0.53,
+                    1
+                  ],
+                  "metallic": 0.8,
+                  "roughness": 0.3,
+                  "texture": null
+                }
+              },
+              {
+                "id": 32,
+                "name": "roller_bearing_0_-0.73",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": -0.73,
+                    "y": -0.72,
+                    "z": 1.12
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.09,
+                    "y": 0.09,
+                    "z": 0.09
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.08,
+                    0.3,
+                    0.5,
+                    1
+                  ],
+                  "metallic": 0.3,
+                  "roughness": 0.35,
+                  "texture": null
+                }
+              },
+              {
+                "id": 33,
+                "name": "roller_bearing_0_0.73",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0.73,
+                    "y": -0.72,
+                    "z": 1.12
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.09,
+                    "y": 0.09,
+                    "z": 0.09
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.08,
+                    0.3,
+                    0.5,
+                    1
+                  ],
+                  "metallic": 0.3,
+                  "roughness": 0.35,
+                  "texture": null
+                }
+              },
+              {
+                "id": 34,
+                "name": "roller_1",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0,
+                    "y": -0.5599999999999999,
+                    "z": 1.12
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0.7071067811865476,
+                    "z": 0,
+                    "w": 0.7071067811865476
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "cylinder",
+                  "data": {
+                    "radius": 0.045,
+                    "height": 1.38
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.46,
+                    0.5,
+                    0.53,
+                    1
+                  ],
+                  "metallic": 0.8,
+                  "roughness": 0.3,
+                  "texture": null
+                }
+              },
+              {
+                "id": 35,
+                "name": "roller_bearing_1_-0.73",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": -0.73,
+                    "y": -0.5599999999999999,
+                    "z": 1.12
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.09,
+                    "y": 0.09,
+                    "z": 0.09
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.08,
+                    0.3,
+                    0.5,
+                    1
+                  ],
+                  "metallic": 0.3,
+                  "roughness": 0.35,
+                  "texture": null
+                }
+              },
+              {
+                "id": 36,
+                "name": "roller_bearing_1_0.73",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0.73,
+                    "y": -0.5599999999999999,
+                    "z": 1.12
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.09,
+                    "y": 0.09,
+                    "z": 0.09
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.08,
+                    0.3,
+                    0.5,
+                    1
+                  ],
+                  "metallic": 0.3,
+                  "roughness": 0.35,
+                  "texture": null
+                }
+              },
+              {
+                "id": 37,
+                "name": "roller_2",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0,
+                    "y": -0.39999999999999997,
+                    "z": 1.12
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0.7071067811865476,
+                    "z": 0,
+                    "w": 0.7071067811865476
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "cylinder",
+                  "data": {
+                    "radius": 0.045,
+                    "height": 1.38
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.46,
+                    0.5,
+                    0.53,
+                    1
+                  ],
+                  "metallic": 0.8,
+                  "roughness": 0.3,
+                  "texture": null
+                }
+              },
+              {
+                "id": 38,
+                "name": "roller_bearing_2_-0.73",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": -0.73,
+                    "y": -0.39999999999999997,
+                    "z": 1.12
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.09,
+                    "y": 0.09,
+                    "z": 0.09
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.08,
+                    0.3,
+                    0.5,
+                    1
+                  ],
+                  "metallic": 0.3,
+                  "roughness": 0.35,
+                  "texture": null
+                }
+              },
+              {
+                "id": 39,
+                "name": "roller_bearing_2_0.73",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0.73,
+                    "y": -0.39999999999999997,
+                    "z": 1.12
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.09,
+                    "y": 0.09,
+                    "z": 0.09
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.08,
+                    0.3,
+                    0.5,
+                    1
+                  ],
+                  "metallic": 0.3,
+                  "roughness": 0.35,
+                  "texture": null
+                }
+              },
+              {
+                "id": 40,
+                "name": "roller_3",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0,
+                    "y": -0.24,
+                    "z": 1.12
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0.7071067811865476,
+                    "z": 0,
+                    "w": 0.7071067811865476
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "cylinder",
+                  "data": {
+                    "radius": 0.045,
+                    "height": 1.38
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.46,
+                    0.5,
+                    0.53,
+                    1
+                  ],
+                  "metallic": 0.8,
+                  "roughness": 0.3,
+                  "texture": null
+                }
+              },
+              {
+                "id": 41,
+                "name": "roller_bearing_3_-0.73",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": -0.73,
+                    "y": -0.24,
+                    "z": 1.12
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.09,
+                    "y": 0.09,
+                    "z": 0.09
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.08,
+                    0.3,
+                    0.5,
+                    1
+                  ],
+                  "metallic": 0.3,
+                  "roughness": 0.35,
+                  "texture": null
+                }
+              },
+              {
+                "id": 42,
+                "name": "roller_bearing_3_0.73",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0.73,
+                    "y": -0.24,
+                    "z": 1.12
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.09,
+                    "y": 0.09,
+                    "z": 0.09
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.08,
+                    0.3,
+                    0.5,
+                    1
+                  ],
+                  "metallic": 0.3,
+                  "roughness": 0.35,
+                  "texture": null
+                }
+              },
+              {
+                "id": 43,
+                "name": "roller_4",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0,
+                    "y": -0.07999999999999996,
+                    "z": 1.12
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0.7071067811865476,
+                    "z": 0,
+                    "w": 0.7071067811865476
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "cylinder",
+                  "data": {
+                    "radius": 0.045,
+                    "height": 1.38
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.46,
+                    0.5,
+                    0.53,
+                    1
+                  ],
+                  "metallic": 0.8,
+                  "roughness": 0.3,
+                  "texture": null
+                }
+              },
+              {
+                "id": 44,
+                "name": "roller_bearing_4_-0.73",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": -0.73,
+                    "y": -0.07999999999999996,
+                    "z": 1.12
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.09,
+                    "y": 0.09,
+                    "z": 0.09
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.08,
+                    0.3,
+                    0.5,
+                    1
+                  ],
+                  "metallic": 0.3,
+                  "roughness": 0.35,
+                  "texture": null
+                }
+              },
+              {
+                "id": 45,
+                "name": "roller_bearing_4_0.73",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0.73,
+                    "y": -0.07999999999999996,
+                    "z": 1.12
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.09,
+                    "y": 0.09,
+                    "z": 0.09
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.08,
+                    0.3,
+                    0.5,
+                    1
+                  ],
+                  "metallic": 0.3,
+                  "roughness": 0.35,
+                  "texture": null
+                }
+              },
+              {
+                "id": 46,
+                "name": "roller_5",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0,
+                    "y": 0.08000000000000007,
+                    "z": 1.12
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0.7071067811865476,
+                    "z": 0,
+                    "w": 0.7071067811865476
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "cylinder",
+                  "data": {
+                    "radius": 0.045,
+                    "height": 1.38
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.46,
+                    0.5,
+                    0.53,
+                    1
+                  ],
+                  "metallic": 0.8,
+                  "roughness": 0.3,
+                  "texture": null
+                }
+              },
+              {
+                "id": 47,
+                "name": "roller_bearing_5_-0.73",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": -0.73,
+                    "y": 0.08000000000000007,
+                    "z": 1.12
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.09,
+                    "y": 0.09,
+                    "z": 0.09
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.08,
+                    0.3,
+                    0.5,
+                    1
+                  ],
+                  "metallic": 0.3,
+                  "roughness": 0.35,
+                  "texture": null
+                }
+              },
+              {
+                "id": 48,
+                "name": "roller_bearing_5_0.73",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0.73,
+                    "y": 0.08000000000000007,
+                    "z": 1.12
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.09,
+                    "y": 0.09,
+                    "z": 0.09
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.08,
+                    0.3,
+                    0.5,
+                    1
+                  ],
+                  "metallic": 0.3,
+                  "roughness": 0.35,
+                  "texture": null
+                }
+              },
+              {
+                "id": 49,
+                "name": "roller_6",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0,
+                    "y": 0.24,
+                    "z": 1.12
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0.7071067811865476,
+                    "z": 0,
+                    "w": 0.7071067811865476
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "cylinder",
+                  "data": {
+                    "radius": 0.045,
+                    "height": 1.38
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.46,
+                    0.5,
+                    0.53,
+                    1
+                  ],
+                  "metallic": 0.8,
+                  "roughness": 0.3,
+                  "texture": null
+                }
+              },
+              {
+                "id": 50,
+                "name": "roller_bearing_6_-0.73",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": -0.73,
+                    "y": 0.24,
+                    "z": 1.12
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.09,
+                    "y": 0.09,
+                    "z": 0.09
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.08,
+                    0.3,
+                    0.5,
+                    1
+                  ],
+                  "metallic": 0.3,
+                  "roughness": 0.35,
+                  "texture": null
+                }
+              },
+              {
+                "id": 51,
+                "name": "roller_bearing_6_0.73",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0.73,
+                    "y": 0.24,
+                    "z": 1.12
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.09,
+                    "y": 0.09,
+                    "z": 0.09
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.08,
+                    0.3,
+                    0.5,
+                    1
+                  ],
+                  "metallic": 0.3,
+                  "roughness": 0.35,
+                  "texture": null
+                }
+              },
+              {
+                "id": 52,
+                "name": "roller_7",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0,
+                    "y": 0.40000000000000013,
+                    "z": 1.12
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0.7071067811865476,
+                    "z": 0,
+                    "w": 0.7071067811865476
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "cylinder",
+                  "data": {
+                    "radius": 0.045,
+                    "height": 1.38
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.46,
+                    0.5,
+                    0.53,
+                    1
+                  ],
+                  "metallic": 0.8,
+                  "roughness": 0.3,
+                  "texture": null
+                }
+              },
+              {
+                "id": 53,
+                "name": "roller_bearing_7_-0.73",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": -0.73,
+                    "y": 0.40000000000000013,
+                    "z": 1.12
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.09,
+                    "y": 0.09,
+                    "z": 0.09
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.08,
+                    0.3,
+                    0.5,
+                    1
+                  ],
+                  "metallic": 0.3,
+                  "roughness": 0.35,
+                  "texture": null
+                }
+              },
+              {
+                "id": 54,
+                "name": "roller_bearing_7_0.73",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0.73,
+                    "y": 0.40000000000000013,
+                    "z": 1.12
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.09,
+                    "y": 0.09,
+                    "z": 0.09
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.08,
+                    0.3,
+                    0.5,
+                    1
+                  ],
+                  "metallic": 0.3,
+                  "roughness": 0.35,
+                  "texture": null
+                }
+              },
+              {
+                "id": 55,
+                "name": "roller_8",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0,
+                    "y": 0.56,
+                    "z": 1.12
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0.7071067811865476,
+                    "z": 0,
+                    "w": 0.7071067811865476
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "cylinder",
+                  "data": {
+                    "radius": 0.045,
+                    "height": 1.38
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.46,
+                    0.5,
+                    0.53,
+                    1
+                  ],
+                  "metallic": 0.8,
+                  "roughness": 0.3,
+                  "texture": null
+                }
+              },
+              {
+                "id": 56,
+                "name": "roller_bearing_8_-0.73",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": -0.73,
+                    "y": 0.56,
+                    "z": 1.12
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.09,
+                    "y": 0.09,
+                    "z": 0.09
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.08,
+                    0.3,
+                    0.5,
+                    1
+                  ],
+                  "metallic": 0.3,
+                  "roughness": 0.35,
+                  "texture": null
+                }
+              },
+              {
+                "id": 57,
+                "name": "roller_bearing_8_0.73",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0.73,
+                    "y": 0.56,
+                    "z": 1.12
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.09,
+                    "y": 0.09,
+                    "z": 0.09
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.08,
+                    0.3,
+                    0.5,
+                    1
+                  ],
+                  "metallic": 0.3,
+                  "roughness": 0.35,
+                  "texture": null
+                }
+              },
+              {
+                "id": 58,
+                "name": "roller_9",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0,
+                    "y": 0.72,
+                    "z": 1.12
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0.7071067811865476,
+                    "z": 0,
+                    "w": 0.7071067811865476
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "cylinder",
+                  "data": {
+                    "radius": 0.045,
+                    "height": 1.38
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.46,
+                    0.5,
+                    0.53,
+                    1
+                  ],
+                  "metallic": 0.8,
+                  "roughness": 0.3,
+                  "texture": null
+                }
+              },
+              {
+                "id": 59,
+                "name": "roller_bearing_9_-0.73",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": -0.73,
+                    "y": 0.72,
+                    "z": 1.12
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.09,
+                    "y": 0.09,
+                    "z": 0.09
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.08,
+                    0.3,
+                    0.5,
+                    1
+                  ],
+                  "metallic": 0.3,
+                  "roughness": 0.35,
+                  "texture": null
+                }
+              },
+              {
+                "id": 60,
+                "name": "roller_bearing_9_0.73",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0.73,
+                    "y": 0.72,
+                    "z": 1.12
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.09,
+                    "y": 0.09,
+                    "z": 0.09
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.08,
+                    0.3,
+                    0.5,
+                    1
+                  ],
+                  "metallic": 0.3,
+                  "roughness": 0.35,
+                  "texture": null
+                }
+              },
+              {
+                "id": 61,
+                "name": "product_edge_rail_-0.7",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": -0.7,
+                    "y": 0,
+                    "z": 1.24
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.04,
+                    "y": 1.75,
+                    "z": 0.16
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.75,
+                    0.79,
+                    0.8,
+                    1
+                  ],
+                  "metallic": 0.25,
+                  "roughness": 0.45,
+                  "texture": null
+                }
+              },
+              {
+                "id": 62,
+                "name": "product_edge_rail_0.7",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0.7,
+                    "y": 0,
+                    "z": 1.24
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.04,
+                    "y": 1.75,
+                    "z": 0.16
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.75,
+                    0.79,
+                    0.8,
+                    1
+                  ],
+                  "metallic": 0.25,
+                  "roughness": 0.45,
+                  "texture": null
+                }
+              },
+              {
+                "id": 63,
+                "name": "drive_motor_body",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0.88,
+                    "y": 0.1,
+                    "z": 0.82
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "cylinder",
+                  "data": {
+                    "radius": 0.095,
+                    "height": 0.3
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.08,
+                    0.3,
+                    0.5,
+                    1
+                  ],
+                  "metallic": 0.3,
+                  "roughness": 0.35,
+                  "texture": null
+                }
+              },
+              {
+                "id": 64,
+                "name": "drive_motor_mount",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0.86,
+                    "y": 0.1,
+                    "z": 0.63
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.22,
+                    "y": 0.32,
+                    "z": 0.08
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.46,
+                    0.5,
+                    0.53,
+                    1
+                  ],
+                  "metallic": 0.8,
+                  "roughness": 0.3,
+                  "texture": null
+                }
+              },
+              {
+                "id": 65,
+                "name": "transmission_guard",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0.91,
+                    "y": 0.1,
+                    "z": 1.02
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.1,
+                    "y": 0.48,
+                    "z": 0.28
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.75,
+                    0.79,
+                    0.8,
+                    1
+                  ],
+                  "metallic": 0.25,
+                  "roughness": 0.45,
+                  "texture": null
+                }
+              },
+              {
+                "id": 66,
+                "name": "cable_trunk",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": -0.9,
+                    "y": 0.25,
+                    "z": 0.7
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.07,
+                    "y": 1.15,
+                    "z": 0.09
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.06,
+                    0.075,
+                    0.08,
+                    1
+                  ],
+                  "metallic": 0.05,
+                  "roughness": 0.85,
+                  "texture": null
+                }
+              },
+              {
+                "id": 67,
+                "name": "rear_vent_louver_0",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0,
+                    "y": 0.92,
+                    "z": 1.6
+                  },
+                  "rotation": {
+                    "x": -0.17410813759359595,
+                    "y": 0,
+                    "z": 0,
+                    "w": 0.9847265389049334
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.74,
+                    "y": 0.06,
+                    "z": 0.035
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.46,
+                    0.5,
+                    0.53,
+                    1
+                  ],
+                  "metallic": 0.8,
+                  "roughness": 0.3,
+                  "texture": null
+                }
+              },
+              {
+                "id": 68,
+                "name": "rear_vent_louver_1",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0,
+                    "y": 0.92,
+                    "z": 1.6800000000000002
+                  },
+                  "rotation": {
+                    "x": -0.17410813759359595,
+                    "y": 0,
+                    "z": 0,
+                    "w": 0.9847265389049334
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.74,
+                    "y": 0.06,
+                    "z": 0.035
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.46,
+                    0.5,
+                    0.53,
+                    1
+                  ],
+                  "metallic": 0.8,
+                  "roughness": 0.3,
+                  "texture": null
+                }
+              },
+              {
+                "id": 69,
+                "name": "rear_vent_louver_2",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0,
+                    "y": 0.92,
+                    "z": 1.76
+                  },
+                  "rotation": {
+                    "x": -0.17410813759359595,
+                    "y": 0,
+                    "z": 0,
+                    "w": 0.9847265389049334
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.74,
+                    "y": 0.06,
+                    "z": 0.035
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.46,
+                    0.5,
+                    0.53,
+                    1
+                  ],
+                  "metallic": 0.8,
+                  "roughness": 0.3,
+                  "texture": null
+                }
+              },
+              {
+                "id": 70,
+                "name": "rear_vent_louver_3",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0,
+                    "y": 0.92,
+                    "z": 1.84
+                  },
+                  "rotation": {
+                    "x": -0.17410813759359595,
+                    "y": 0,
+                    "z": 0,
+                    "w": 0.9847265389049334
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.74,
+                    "y": 0.06,
+                    "z": 0.035
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.46,
+                    0.5,
+                    0.53,
+                    1
+                  ],
+                  "metallic": 0.8,
+                  "roughness": 0.3,
+                  "texture": null
+                }
+              },
+              {
+                "id": 71,
+                "name": "rear_vent_louver_4",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0,
+                    "y": 0.92,
+                    "z": 1.9200000000000002
+                  },
+                  "rotation": {
+                    "x": -0.17410813759359595,
+                    "y": 0,
+                    "z": 0,
+                    "w": 0.9847265389049334
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.74,
+                    "y": 0.06,
+                    "z": 0.035
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.46,
+                    0.5,
+                    0.53,
+                    1
+                  ],
+                  "metallic": 0.8,
+                  "roughness": 0.3,
+                  "texture": null
+                }
+              },
+              {
+                "id": 72,
+                "name": "gantry_vertical_-0.86",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": -0.86,
+                    "y": 0.52,
+                    "z": 1.85
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.13,
+                    "y": 0.13,
+                    "z": 1.4
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.46,
+                    0.5,
+                    0.53,
+                    1
+                  ],
+                  "metallic": 0.8,
+                  "roughness": 0.3,
+                  "texture": null
+                }
+              },
+              {
+                "id": 73,
+                "name": "gantry_vertical_0.86",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0.86,
+                    "y": 0.52,
+                    "z": 1.85
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.13,
+                    "y": 0.13,
+                    "z": 1.4
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.46,
+                    0.5,
+                    0.53,
+                    1
+                  ],
+                  "metallic": 0.8,
+                  "roughness": 0.3,
+                  "texture": null
+                }
+              },
+              {
+                "id": 74,
+                "name": "gantry_crossbeam",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0,
+                    "y": 0.52,
+                    "z": 2.52
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 1.85,
+                    "y": 0.2,
+                    "z": 0.18
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.08,
+                    0.3,
+                    0.5,
+                    1
+                  ],
+                  "metallic": 0.3,
+                  "roughness": 0.35,
+                  "texture": null
+                }
+              },
+              {
+                "id": 75,
+                "name": "rear_upper_left_panel",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": -0.65,
+                    "y": 0.91,
+                    "z": 1.92
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.42,
+                    "y": 0.07,
+                    "z": 1.28
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.75,
+                    0.79,
+                    0.8,
+                    1
+                  ],
+                  "metallic": 0.25,
+                  "roughness": 0.45,
+                  "texture": null
+                }
+              },
+              {
+                "id": 76,
+                "name": "rear_upper_right_panel",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0.65,
+                    "y": 0.91,
+                    "z": 1.92
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.42,
+                    "y": 0.07,
+                    "z": 1.28
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.75,
+                    0.79,
+                    0.8,
+                    1
+                  ],
+                  "metallic": 0.25,
+                  "roughness": 0.45,
+                  "texture": null
+                }
+              },
+              {
+                "id": 77,
+                "name": "rear_upper_header",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0,
+                    "y": 0.91,
+                    "z": 2.5
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 1.72,
+                    "y": 0.07,
+                    "z": 0.16
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.75,
+                    0.79,
+                    0.8,
+                    1
+                  ],
+                  "metallic": 0.25,
+                  "roughness": 0.45,
+                  "texture": null
+                }
+              },
+              {
+                "id": 78,
+                "name": "clear_safety_door_-0.43",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": -0.43,
+                    "y": -0.84,
+                    "z": 1.97
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.82,
+                    "y": 0.025,
+                    "z": 1.0
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.63,
+                    0.83,
+                    0.88,
+                    0.22
+                  ],
+                  "metallic": 0.05,
+                  "roughness": 0.12,
+                  "texture": null
+                }
+              },
+              {
+                "id": 79,
+                "name": "safety_door_edge_-0.43",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": -0.43,
+                    "y": -0.85,
+                    "z": 2.48
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.86,
+                    "y": 0.04,
+                    "z": 0.045
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.46,
+                    0.5,
+                    0.53,
+                    1
+                  ],
+                  "metallic": 0.8,
+                  "roughness": 0.3,
+                  "texture": null
+                }
+              },
+              {
+                "id": 80,
+                "name": "safety_door_handle_-0.43",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": -0.1032,
+                    "y": -0.89,
+                    "z": 1.85
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.035,
+                    "y": 0.07,
+                    "z": 0.2
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.06,
+                    0.075,
+                    0.08,
+                    1
+                  ],
+                  "metallic": 0.05,
+                  "roughness": 0.85,
+                  "texture": null
+                }
+              },
+              {
+                "id": 81,
+                "name": "clear_safety_door_0.43",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0.43,
+                    "y": -0.84,
+                    "z": 1.97
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.82,
+                    "y": 0.025,
+                    "z": 1.0
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.63,
+                    0.83,
+                    0.88,
+                    0.22
+                  ],
+                  "metallic": 0.05,
+                  "roughness": 0.12,
+                  "texture": null
+                }
+              },
+              {
+                "id": 82,
+                "name": "safety_door_edge_0.43",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0.43,
+                    "y": -0.85,
+                    "z": 2.48
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.86,
+                    "y": 0.04,
+                    "z": 0.045
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.46,
+                    0.5,
+                    0.53,
+                    1
+                  ],
+                  "metallic": 0.8,
+                  "roughness": 0.3,
+                  "texture": null
+                }
+              },
+              {
+                "id": 83,
+                "name": "safety_door_handle_0.43",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0.1032,
+                    "y": -0.89,
+                    "z": 1.85
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.035,
+                    "y": 0.07,
+                    "z": 0.2
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.06,
+                    0.075,
+                    0.08,
+                    1
+                  ],
+                  "metallic": 0.05,
+                  "roughness": 0.85,
+                  "texture": null
+                }
+              },
+              {
+                "id": 84,
+                "name": "control_console",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": -0.73,
+                    "y": -0.95,
+                    "z": 1.65
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.38,
+                    "y": 0.1,
+                    "z": 0.46
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.75,
+                    0.79,
+                    0.8,
+                    1
+                  ],
+                  "metallic": 0.25,
+                  "roughness": 0.45,
+                  "texture": null
+                }
+              },
+              {
+                "id": 85,
+                "name": "control_display",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": -0.73,
+                    "y": -0.995,
+                    "z": 1.72
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.27,
+                    "y": 0.01,
+                    "z": 0.2
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.02,
+                    0.09,
+                    0.12,
+                    1
+                  ],
+                  "metallic": 0.1,
+                  "roughness": 0.25,
+                  "texture": null
+                }
+              },
+              {
+                "id": 86,
+                "name": "emergency_stop",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": -0.82,
+                    "y": -0.96,
+                    "z": 1.45
+                  },
+                  "rotation": {
+                    "x": 0.7071067811865476,
+                    "y": 0,
+                    "z": 0,
+                    "w": 0.7071067811865476
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "cylinder",
+                  "data": {
+                    "radius": 0.032,
+                    "height": 0.035
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.75,
+                    0.07,
+                    0.05,
+                    1
+                  ],
+                  "metallic": 0.1,
+                  "roughness": 0.35,
+                  "texture": null
+                }
+              },
+              {
+                "id": 87,
+                "name": "reset_button",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": -0.65,
+                    "y": -0.96,
+                    "z": 1.45
+                  },
+                  "rotation": {
+                    "x": 0.7071067811865476,
+                    "y": 0,
+                    "z": 0,
+                    "w": 0.7071067811865476
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "cylinder",
+                  "data": {
+                    "radius": 0.019,
+                    "height": 0.03
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.12,
+                    0.65,
+                    0.3,
+                    1
+                  ],
+                  "metallic": 0.1,
+                  "roughness": 0.35,
+                  "texture": null
+                }
+              },
+              {
+                "id": 88,
+                "name": "stack_light_red",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0.72,
+                    "y": 0.68,
+                    "z": 2.79
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "cylinder",
+                  "data": {
+                    "radius": 0.045,
+                    "height": 0.065
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.75,
+                    0.07,
+                    0.05,
+                    1
+                  ],
+                  "metallic": 0.1,
+                  "roughness": 0.35,
+                  "texture": null
+                }
+              },
+              {
+                "id": 89,
+                "name": "stack_light_yellow",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0.72,
+                    "y": 0.68,
+                    "z": 2.865
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "cylinder",
+                  "data": {
+                    "radius": 0.045,
+                    "height": 0.065
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.95,
+                    0.65,
+                    0.06,
+                    1
+                  ],
+                  "metallic": 0.1,
+                  "roughness": 0.35,
+                  "texture": null
+                }
+              },
+              {
+                "id": 90,
+                "name": "stack_light_green",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0.72,
+                    "y": 0.68,
+                    "z": 2.94
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "cylinder",
+                  "data": {
+                    "radius": 0.045,
+                    "height": 0.065
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.12,
+                    0.65,
+                    0.3,
+                    1
+                  ],
+                  "metallic": 0.1,
+                  "roughness": 0.35,
+                  "texture": null
+                }
+              },
+              {
+                "id": 91,
+                "name": "stack_light_stem",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0.72,
+                    "y": 0.68,
+                    "z": 2.66
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "cylinder",
+                  "data": {
+                    "radius": 0.022,
+                    "height": 0.18
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.46,
+                    0.5,
+                    0.53,
+                    1
+                  ],
+                  "metallic": 0.8,
+                  "roughness": 0.3,
+                  "texture": null
+                }
+              },
+              {
+                "id": 92,
+                "name": "stack_light_cap",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0.72,
+                    "y": 0.68,
+                    "z": 2.975
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "cylinder",
+                  "data": {
+                    "radius": 0.045,
+                    "height": 0.05
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.06,
+                    0.075,
+                    0.08,
+                    1
+                  ],
+                  "metallic": 0.05,
+                  "roughness": 0.85,
+                  "texture": null
+                }
+              },
+              {
+                "id": 93,
+                "name": "linear_guide_-0.36",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": -0.36,
+                    "y": 0.5,
+                    "z": 1.95
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "cylinder",
+                  "data": {
+                    "radius": 0.028,
+                    "height": 0.9
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.46,
+                    0.5,
+                    0.53,
+                    1
+                  ],
+                  "metallic": 0.8,
+                  "roughness": 0.3,
+                  "texture": null
+                }
+              },
+              {
+                "id": 94,
+                "name": "guide_bearing_-0.36",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": -0.36,
+                    "y": 0.5,
+                    "z": 2.06
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.12,
+                    "y": 0.13,
+                    "z": 0.18
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.08,
+                    0.3,
+                    0.5,
+                    1
+                  ],
+                  "metallic": 0.3,
+                  "roughness": 0.35,
+                  "texture": null
+                }
+              },
+              {
+                "id": 95,
+                "name": "linear_guide_0.36",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0.36,
+                    "y": 0.5,
+                    "z": 1.95
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "cylinder",
+                  "data": {
+                    "radius": 0.028,
+                    "height": 0.9
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.46,
+                    0.5,
+                    0.53,
+                    1
+                  ],
+                  "metallic": 0.8,
+                  "roughness": 0.3,
+                  "texture": null
+                }
+              },
+              {
+                "id": 96,
+                "name": "guide_bearing_0.36",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0.36,
+                    "y": 0.5,
+                    "z": 2.06
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.12,
+                    "y": 0.13,
+                    "z": 0.18
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.08,
+                    0.3,
+                    0.5,
+                    1
+                  ],
+                  "metallic": 0.3,
+                  "roughness": 0.35,
+                  "texture": null
+                }
+              },
+              {
+                "id": 97,
+                "name": "cycle_ram_carriage",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0,
+                    "y": 0.5,
+                    "z": 2.05
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.62,
+                    "y": 0.24,
+                    "z": 0.14
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.08,
+                    0.3,
+                    0.5,
+                    1
+                  ],
+                  "metallic": 0.3,
+                  "roughness": 0.35,
+                  "texture": null
+                }
+              },
+              {
+                "id": 98,
+                "name": "ram_tool_shaft",
+                "parent_index": 97,
+                "transform": {
+                  "translation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": -0.22
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "cylinder",
+                  "data": {
+                    "radius": 0.052,
+                    "height": 0.4
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.46,
+                    0.5,
+                    0.53,
+                    1
+                  ],
+                  "metallic": 0.8,
+                  "roughness": 0.3,
+                  "texture": null
+                }
+              },
+              {
+                "id": 99,
+                "name": "ram_tool_head",
+                "parent_index": 97,
+                "transform": {
+                  "translation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": -0.45
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.36,
+                    "y": 0.25,
+                    "z": 0.08
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.06,
+                    0.075,
+                    0.08,
+                    1
+                  ],
+                  "metallic": 0.05,
+                  "roughness": 0.85,
+                  "texture": null
+                }
+              },
+              {
+                "id": 100,
+                "name": "workpiece_fixture_anchor",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 1.19
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.28,
+                    "y": 0.28,
+                    "z": 0.05
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.46,
+                    0.5,
+                    0.53,
+                    1
+                  ],
+                  "metallic": 0.8,
+                  "roughness": 0.3,
+                  "texture": null
+                }
+              },
+              {
+                "id": 101,
+                "name": "photo_sensor_body_-0.71",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": -0.66,
+                    "y": -0.71,
+                    "z": 1.38
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.08,
+                    "y": 0.09,
+                    "z": 0.12
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.08,
+                    0.3,
+                    0.5,
+                    1
+                  ],
+                  "metallic": 0.3,
+                  "roughness": 0.35,
+                  "texture": null
+                }
+              },
+              {
+                "id": 102,
+                "name": "photo_sensor_window_-0.71",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": -0.61,
+                    "y": -0.71,
+                    "z": 1.38
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.01,
+                    "y": 0.04,
+                    "z": 0.055
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.02,
+                    0.09,
+                    0.12,
+                    1
+                  ],
+                  "metallic": 0.1,
+                  "roughness": 0.25,
+                  "texture": null
+                }
+              },
+              {
+                "id": 103,
+                "name": "photo_sensor_body_0.71",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": -0.66,
+                    "y": 0.71,
+                    "z": 1.38
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.08,
+                    "y": 0.09,
+                    "z": 0.12
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.08,
+                    0.3,
+                    0.5,
+                    1
+                  ],
+                  "metallic": 0.3,
+                  "roughness": 0.35,
+                  "texture": null
+                }
+              },
+              {
+                "id": 104,
+                "name": "photo_sensor_window_0.71",
+                "parent_index": null,
+                "transform": {
+                  "translation": {
+                    "x": -0.61,
+                    "y": 0.71,
+                    "z": 1.38
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "unit": "meter",
+                  "coordinate_frame": "right_handed_z_up"
+                },
+                "geometry": {
+                  "kind": "box",
+                  "data": {
+                    "x": 0.01,
+                    "y": 0.04,
+                    "z": 0.055
+                  }
+                },
+                "material": {
+                  "color_rgba": [
+                    0.02,
+                    0.09,
+                    0.12,
+                    1
+                  ],
+                  "metallic": 0.1,
+                  "roughness": 0.25,
+                  "texture": null
+                }
+              }
+            ],
+            "poses": [
+              {
+                "id": "cycle_home",
+                "node_transforms": []
+              }
+            ],
+            "actions": [
+              {
+                "id": "actual_cycle_ram",
+                "node_index": 97,
+                "transition": "linear",
+                "keys": [
+                  {
+                    "at_progress": 0,
+                    "pose": {
+                      "translation": {
+                        "x": 0,
+                        "y": 0.5,
+                        "z": 2.05
+                      },
+                      "rotation": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 0,
+                        "w": 1
+                      },
+                      "scale": {
+                        "x": 1,
+                        "y": 1,
+                        "z": 1
+                      },
+                      "unit": "meter",
+                      "coordinate_frame": "right_handed_z_up"
+                    }
+                  },
+                  {
+                    "at_progress": 0.3,
+                    "pose": {
+                      "translation": {
+                        "x": 0,
+                        "y": 0.5,
+                        "z": 1.805
+                      },
+                      "rotation": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 0,
+                        "w": 1
+                      },
+                      "scale": {
+                        "x": 1,
+                        "y": 1,
+                        "z": 1
+                      },
+                      "unit": "meter",
+                      "coordinate_frame": "right_handed_z_up"
+                    }
+                  },
+                  {
+                    "at_progress": 0.65,
+                    "pose": {
+                      "translation": {
+                        "x": 0,
+                        "y": 0.5,
+                        "z": 1.805
+                      },
+                      "rotation": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 0,
+                        "w": 1
+                      },
+                      "scale": {
+                        "x": 1,
+                        "y": 1,
+                        "z": 1
+                      },
+                      "unit": "meter",
+                      "coordinate_frame": "right_handed_z_up"
+                    }
+                  },
+                  {
+                    "at_progress": 1,
+                    "pose": {
+                      "translation": {
+                        "x": 0,
+                        "y": 0.5,
+                        "z": 2.05
+                      },
+                      "rotation": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 0,
+                        "w": 1
+                      },
+                      "scale": {
+                        "x": 1,
+                        "y": 1,
+                        "z": 1
+                      },
+                      "unit": "meter",
+                      "coordinate_frame": "right_handed_z_up"
+                    }
+                  }
+                ]
+              }
+            ],
+            "timeline": [
+              {
+                "id": "actual_cycle",
+                "phase_ref": "cycle",
+                "start_progress": 0,
+                "end_progress": 1,
+                "source": {
+                  "kind": "native_pose",
+                  "data": "cycle_home"
+                },
+                "transition": "hold"
+              }
+            ],
+            "tags": [],
+            "anchor_roles": {
+              "workpiece": {
+                "kind": "scene_node",
+                "data": 100
+              }
+            },
+            "port_anchors": {
+              "input": {
+                "kind": "scene_node",
+                "data": 31
+              },
+              "output": {
+                "kind": "scene_node",
+                "data": 58
+              }
+            },
+            "lod": {
+              "detailed": null,
+              "simplified": {
+                "kind": "media_ref",
+                "data": {
+                  "id": "p201.b60.simple",
+                  "version": "1.0.0"
+                }
+              },
+              "region": "line_whole"
+            },
+            "production_effect": "none"
+          },
+          "operations": []
+        }
+      }
+    },
+    "assets": [],
+    "files": [],
+    "dependencies": [
+      {
+        "id": "p201.b60.simple",
+        "version": "1.0.0"
+      }
+    ],
+    "rights": [],
+    "issues": []
+  }
+}

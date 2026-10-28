@@ -1,0 +1,59 @@
+{
+  "document_kind": "DRF03_C02_actual_narrow_sync_and_template_branch_consumer_recheck",
+  "owner": "复审窗口1",
+  "exact_owned_source": "packages/packaging/consumer-device.design.json",
+  "candidate_module_ref": {
+    "id": "community.parameterized-pack",
+    "version": "0.2.0"
+  },
+  "immutable_existing": "modules/devices/parameterized-pack/manifest.json及旧0.1.0原样；不把新参数塞进已冻结版本。",
+  "sync_script": {
+    "file": "tools/同步确认选择到任务.py",
+    "insert_before": "selection.selected循环完成后、write_json(B + 首版任务选择.json, selection)之前",
+    "per_task_ids": [
+      "P0-03",
+      "P4-02"
+    ],
+    "fields_to_union": {
+      "execution_plan.input_refs": [
+        "packages/packaging/consumer-device.design.json",
+        "docs/04_开发与验收/特征细化/DRF03_C02_专业绑定推导.json",
+        "packages/domain/professional-artifact-binding.design.json"
+      ],
+      "confirmed_design_input_refs": [
+        "packages/packaging/consumer-device.design.json",
+        "docs/04_开发与验收/特征细化/DRF03_C02_专业绑定推导.json"
+      ]
+    },
+    "method": "按现有顺序稳定去重合并，不能覆盖既有CREF/SREF及原任务输入；后面的task_map/backlog first_release_execution_plan沿同源更新。",
+    "package_consumer": "tools/准备编码启动包.py读取execution_plan.input_refs；只刷新输入引用，draft_not_dispatchable、actual_result和前置保持。"
+  },
+  "template_generator": {
+    "file": "modules/templates/生成三类模板设计.py",
+    "anchors": [
+      "pack=read(PROJECT/modules/devices/carton-pack/manifest.json)",
+      "definitions字典中的parameterized-pack",
+      "device(Packing01,community.parameterized-pack,...)"
+    ],
+    "selected_delta": "保留原声明模板生成路径。完整纸包装分支读取owned canonical0.2.0 source，显式选择模块版本、Job id/revision后物化实例配置；不复写旧0.1.0清单/模板数值/目录，不产生默认Job。"
+  },
+  "finite_check_hooks": [
+    "C02七项原声明预期不变",
+    "同步运行前后P/S/SF/Q身份、status/actual_result/dependencies保持",
+    "P0-03/P4-02原包精确出现owned source，其他任务不扩范围",
+    "0.1.0原JSON与新0.2.0分别检查，不用按同id替换旧内容"
+  ],
+  "actual_generator_change_here": false,
+  "actual_Host": null,
+  "status": "merged_actual_design_handoffs_only_projection_and_pure_branch_rechecked",
+  "actual_sync_entry": "tools/同步确认选择到任务.py --design-handoffs-only",
+  "actual_projection_fields": [
+    "selected.execution_plan.input_refs",
+    "tasks.first_release_execution_plan",
+    "coding_package input links",
+    "effort framework estimate_input_refs",
+    "existing SXX source_refs"
+  ],
+  "original_proposal_note": "sync_script below is the original location proposal; actual narrow entry is recorded above. confirmed_design_input_refs was not required by the package consumer and is not claimed changed.",
+  "consumer_recheck_ref": "scenarios/九类模块采用/DRF03_第三轮核验结果.json"
+}

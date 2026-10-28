@@ -1,0 +1,366 @@
+{
+  "schema_version": "1.0",
+  "data": {
+    "definition": {
+      "id": "p303.whole20261017.dual",
+      "version": "0.1.0",
+      "title": "四图装配台（明确演示输入）",
+      "definition_state": "design",
+      "contribution": {
+        "author": "Super Factory contributors; AI-assisted original SVG",
+        "license": "MIT",
+        "assets": [
+          {
+            "asset_ref": "p303.align",
+            "source": "Original vector illustration authored for P303; no external image",
+            "license": "MIT",
+            "redistribution_confirmed": true,
+            "missing_reason": null
+          },
+          {
+            "asset_ref": "p303.lower",
+            "source": "Original vector illustration authored for P303; no external image",
+            "license": "MIT",
+            "redistribution_confirmed": true,
+            "missing_reason": null
+          },
+          {
+            "asset_ref": "p303.hold",
+            "source": "Original vector illustration authored for P303; no external image",
+            "license": "MIT",
+            "redistribution_confirmed": true,
+            "missing_reason": null
+          },
+          {
+            "asset_ref": "p303.return",
+            "source": "Original vector illustration authored for P303; no external image",
+            "license": "MIT",
+            "redistribution_confirmed": true,
+            "missing_reason": null
+          }
+        ]
+      },
+      "parameters": [],
+      "attribute_schema": [],
+      "payload": {
+        "category": "devices",
+        "data": {
+          "placement": "fixed_during_simulation",
+          "ports": [
+            {
+              "id": "input",
+              "direction": "input",
+              "payload": {
+                "kind": "material",
+                "data": {
+                  "item_role": "raw",
+                  "unit": "piece",
+                  "quantity_rule": null
+                }
+              }
+            },
+            {
+              "id": "output",
+              "direction": "output",
+              "payload": {
+                "kind": "material",
+                "data": {
+                  "item_role": "product",
+                  "unit": "piece",
+                  "quantity_rule": null
+                }
+              }
+            },
+            {
+              "id": "pcb",
+              "direction": "input",
+              "payload": {
+                "kind": "material",
+                "data": {
+                  "item_role": "pcb",
+                  "unit": "piece",
+                  "quantity_rule": null
+                }
+              }
+            }
+          ],
+          "behavior": {
+            "selected": "inline",
+            "inline": {
+              "builtin": "assemble",
+              "item_roles": [
+                "raw",
+                "pcb",
+                "product"
+              ],
+              "inputs": [
+                {
+                  "role": "raw",
+                  "quantity": {
+                    "value": {
+                      "coefficient": 1,
+                      "decimal_places": 0
+                    },
+                    "unit": "piece"
+                  },
+                  "port": "input",
+                  "required_quality": [
+                    "released"
+                  ],
+                  "declared_output_quality": null
+                },
+                {
+                  "role": "pcb",
+                  "quantity": {
+                    "value": {
+                      "coefficient": 1,
+                      "decimal_places": 0
+                    },
+                    "unit": "piece"
+                  },
+                  "port": "pcb",
+                  "required_quality": [
+                    "released"
+                  ],
+                  "declared_output_quality": null
+                }
+              ],
+              "outputs": [
+                {
+                  "role": "product",
+                  "quantity": {
+                    "value": {
+                      "coefficient": 1,
+                      "decimal_places": 0
+                    },
+                    "unit": "piece"
+                  },
+                  "port": "output",
+                  "required_quality": [],
+                  "declared_output_quality": "released"
+                }
+              ],
+              "resource_roles": [
+                {
+                  "role": "worker",
+                  "quantity": {
+                    "value": {
+                      "coefficient": 1,
+                      "decimal_places": 0
+                    },
+                    "unit": "person"
+                  },
+                  "qualifications": []
+                }
+              ],
+              "duration": {
+                "value": 60000,
+                "unit": "millisecond",
+                "basis": "user_provided",
+                "source_ref": null
+              },
+              "phases": [],
+              "hold_on_output_wait": [],
+              "quality_and_routes": null,
+              "identity_policy": "assembly_with_composition",
+              "family": null,
+              "pack_identity": null
+            },
+            "operation_ref": null
+          },
+          "configuration": {},
+          "presentation": {
+            "kind": "image_sequence",
+            "source": {
+              "kind": "asset",
+              "data": {
+                "id": "p303.align",
+                "path": "assets/align.svg",
+                "kind": "svg"
+              }
+            },
+            "unit": "meter",
+            "coordinate_frame": "right_handed_y_up",
+            "scale": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            },
+            "nodes": [],
+            "poses": [],
+            "actions": [],
+            "timeline": [
+              {
+                "id": "frame-a",
+                "phase_ref": null,
+                "start_progress": 0,
+                "end_progress": 0.2,
+                "source": {
+                  "kind": "image_asset",
+                  "data": {
+                    "id": "p303.align",
+                    "path": "assets/align.svg",
+                    "kind": "svg"
+                  }
+                },
+                "transition": "hold"
+              },
+              {
+                "id": "frame-b",
+                "phase_ref": null,
+                "start_progress": 0.2,
+                "end_progress": 0.55,
+                "source": {
+                  "kind": "image_asset",
+                  "data": {
+                    "id": "p303.lower",
+                    "path": "assets/lower.svg",
+                    "kind": "svg"
+                  }
+                },
+                "transition": "hold"
+              },
+              {
+                "id": "frame-c",
+                "phase_ref": null,
+                "start_progress": 0.55,
+                "end_progress": 0.85,
+                "source": {
+                  "kind": "image_asset",
+                  "data": {
+                    "id": "p303.hold",
+                    "path": "assets/hold.svg",
+                    "kind": "svg"
+                  }
+                },
+                "transition": "hold"
+              },
+              {
+                "id": "frame-d",
+                "phase_ref": null,
+                "start_progress": 0.85,
+                "end_progress": 1,
+                "source": {
+                  "kind": "image_asset",
+                  "data": {
+                    "id": "p303.return",
+                    "path": "assets/return.svg",
+                    "kind": "svg"
+                  }
+                },
+                "transition": "hold"
+              }
+            ],
+            "tags": [
+              {
+                "id": "illustration-note",
+                "label": "示例说明",
+                "anchor": {
+                  "kind": "image_normalized",
+                  "data": {
+                    "x": 0.04,
+                    "y": 0.92
+                  }
+                },
+                "progress_range": null,
+                "payload": {
+                  "kind": "annotation",
+                  "data": "原创示意图；外观不决定工时或产量"
+                }
+              }
+            ],
+            "anchor_roles": {},
+            "port_anchors": {},
+            "lod": {
+              "detailed": null,
+              "simplified": null,
+              "region": "device_icons"
+            },
+            "production_effect": "none"
+          },
+          "operations": [
+            "configure",
+            "inspect",
+            "preview_cycle"
+          ]
+        }
+      }
+    },
+    "assets": [
+      {
+        "id": "p303.align",
+        "path": "assets/align.svg",
+        "kind": "svg"
+      },
+      {
+        "id": "p303.lower",
+        "path": "assets/lower.svg",
+        "kind": "svg"
+      },
+      {
+        "id": "p303.hold",
+        "path": "assets/hold.svg",
+        "kind": "svg"
+      },
+      {
+        "id": "p303.return",
+        "path": "assets/return.svg",
+        "kind": "svg"
+      }
+    ],
+    "files": [
+      {
+        "path": "assets/align.svg",
+        "kind": "asset"
+      },
+      {
+        "path": "assets/lower.svg",
+        "kind": "asset"
+      },
+      {
+        "path": "assets/hold.svg",
+        "kind": "asset"
+      },
+      {
+        "path": "assets/return.svg",
+        "kind": "asset"
+      },
+      {
+        "path": "LICENSE.txt",
+        "kind": "asset"
+      }
+    ],
+    "dependencies": [],
+    "rights": [
+      {
+        "asset_ref": "p303.align",
+        "source": "Original vector illustration authored for P303; no external image",
+        "license": "MIT",
+        "redistribution_confirmed": true,
+        "missing_reason": null
+      },
+      {
+        "asset_ref": "p303.lower",
+        "source": "Original vector illustration authored for P303; no external image",
+        "license": "MIT",
+        "redistribution_confirmed": true,
+        "missing_reason": null
+      },
+      {
+        "asset_ref": "p303.hold",
+        "source": "Original vector illustration authored for P303; no external image",
+        "license": "MIT",
+        "redistribution_confirmed": true,
+        "missing_reason": null
+      },
+      {
+        "asset_ref": "p303.return",
+        "source": "Original vector illustration authored for P303; no external image",
+        "license": "MIT",
+        "redistribution_confirmed": true,
+        "missing_reason": null
+      }
+    ],
+    "issues": []
+  }
+}

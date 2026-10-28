@@ -1,0 +1,411 @@
+{
+  "document_kind": "finite_independent_design_expectations_not_actual_runs",
+  "date": "2026-10-14 Asia/Shanghai",
+  "sources": [
+    "scenarios/两厂房装配包装/variants.design.json",
+    "scenarios/模板与交接/expected-template-handoff.design.json",
+    "docs/03_架构与契约/调度与状态转换算法.json"
+  ],
+  "cases": [
+    {
+      "id": "DRF05-E01",
+      "kind": "terminal_event_closure",
+      "input": {
+        "window": [
+          0,
+          100000
+        ],
+        "computed_until_ms": 100000,
+        "events": [
+          {
+            "sequence": 1,
+            "at_ms": 0,
+            "quantity": 1
+          },
+          {
+            "sequence": 2,
+            "at_ms": 50000,
+            "quantity": 1
+          },
+          {
+            "sequence": 3,
+            "at_ms": 100000,
+            "quantity": 1
+          },
+          {
+            "sequence": 4,
+            "at_ms": 100001,
+            "quantity": 1
+          }
+        ],
+        "duration_interval": [
+          0,
+          100000
+        ]
+      },
+      "independent_expected": {
+        "accepted_quantity": 3,
+        "included_sequences": [
+          1,
+          2,
+          3
+        ],
+        "duration_ms": 100000,
+        "terminal_point_visible": true,
+        "ui_visible_page_can_define_total": false
+      },
+      "existing_case_ref": null,
+      "actual_result": null
+    },
+    {
+      "id": "DRF05-E02",
+      "kind": "partial_prefix",
+      "input": {
+        "requested_window": [
+          0,
+          100000
+        ],
+        "computed_until_ms": 99999,
+        "accepted_at_ms": [
+          0,
+          50000
+        ],
+        "computation_status": "paused",
+        "demand": 3
+      },
+      "independent_expected": {
+        "known_accepted": 2,
+        "known_until_ms": 99999,
+        "whole_window_computed": false,
+        "whole_window_accepted": null,
+        "whole_window_goal_met": null,
+        "completion_ms": null,
+        "tardiness_ms": null,
+        "uncomputed_terminal_must_not_be_added": true
+      },
+      "existing_case_ref": null,
+      "actual_result": null
+    },
+    {
+      "id": "DRF05-E03",
+      "kind": "order_c_and_tardiness",
+      "input": {
+        "demand": 3,
+        "acceptance": [
+          {
+            "at_ms": 50000,
+            "quantity": 1
+          },
+          {
+            "at_ms": 100000,
+            "quantity": 2
+          }
+        ],
+        "due_at_ms": 90000,
+        "window": [
+          0,
+          100000
+        ]
+      },
+      "independent_expected": {
+        "completion_ms": 100000,
+        "tardiness_ms": 10000,
+        "accepted": 3,
+        "outstanding": 0,
+        "arrival_is_not_acceptance": true
+      },
+      "existing_case_ref": null,
+      "actual_result": null
+    },
+    {
+      "id": "DRF05-E04",
+      "kind": "capacity_integral",
+      "input": {
+        "window": [
+          0,
+          100000
+        ],
+        "capacity_unit": "person",
+        "capacity": 2,
+        "calendar": [
+          [
+            0,
+            40000
+          ],
+          [
+            60000,
+            100000
+          ]
+        ],
+        "claims": [
+          {
+            "id": "claim-A",
+            "units": 1,
+            "interval": [
+              10000,
+              70000
+            ]
+          },
+          {
+            "id": "claim-B",
+            "units": 1,
+            "interval": [
+              20000,
+              40000
+            ]
+          }
+        ]
+      },
+      "independent_expected": {
+        "any_busy_ms": 60000,
+        "occupied_capacity_ms": 80000,
+        "open_calendar_occupied_capacity_ms": 60000,
+        "closed_calendar_held_capacity_ms": 20000,
+        "available_capacity_ms": 160000,
+        "utilization": 0.375
+      },
+      "existing_case_ref": null,
+      "actual_result": null
+    },
+    {
+      "id": "DRF05-E05",
+      "kind": "multi_reason_wait_union",
+      "input": {
+        "waits": [
+          {
+            "interval": [
+              0,
+              10000
+            ],
+            "reasons": [
+              "missing_material",
+              "resource_busy"
+            ]
+          },
+          {
+            "interval": [
+              10000,
+              30000
+            ],
+            "reasons": [
+              "resource_busy"
+            ]
+          }
+        ]
+      },
+      "independent_expected": {
+        "waiting_ms": 30000,
+        "by_reason_ms": {
+          "missing_material": 10000,
+          "resource_busy": 30000
+        },
+        "reason_totals_additive": false
+      },
+      "existing_case_ref": null,
+      "actual_result": null
+    },
+    {
+      "id": "DRF05-E06",
+      "kind": "partial_phase_identity",
+      "input": {
+        "job_id": "J-01",
+        "phase_id": "P-01",
+        "true_job_start_ms": 0,
+        "computed_until_ms": 50000,
+        "requested_end_ms": 100000,
+        "phase_work": [
+          [
+            0,
+            20000
+          ],
+          [
+            40000,
+            50000
+          ]
+        ],
+        "waiting": [
+          [
+            20000,
+            40000
+          ]
+        ],
+        "end_cause": "computed_boundary"
+      },
+      "independent_expected": {
+        "effective_work_ms": 30000,
+        "elapsed_ms": 50000,
+        "waiting_ms": 20000,
+        "finished_at_ms": null,
+        "end_known": false,
+        "retained_job_id": "J-01",
+        "retained_phase_id": "P-01"
+      },
+      "existing_case_ref": null,
+      "actual_result": null
+    },
+    {
+      "id": "DRF05-E07",
+      "kind": "conditional_cost",
+      "input": {
+        "occupied_ms": 135000,
+        "paid_calendar_ms": 600000,
+        "rate_per_hour": "36",
+        "currency": "CNY",
+        "material_quantity": 2,
+        "material_unit_rate": "5",
+        "transport_rate": null,
+        "accepted": 2
+      },
+      "independent_expected": {
+        "occupied_cost": "1.35",
+        "paid_calendar_cost": "6",
+        "selected_labor_basis": "occupied_time",
+        "material_cost": "10",
+        "known_subtotal": "11.35",
+        "complete_total": null,
+        "unit_cost": null,
+        "both_labor_bases_added": false
+      },
+      "existing_case_ref": null,
+      "actual_result": null
+    },
+    {
+      "id": "DRF05-E08",
+      "kind": "existing_template_comparison",
+      "input": {
+        "baseline_case": "parallel_manufacturing",
+        "candidate_case": "parallel_board_preparation_90s",
+        "parameter": "Board01.preparation_duration_ms",
+        "before": 30000,
+        "after": 90000,
+        "common_window": [
+          0,
+          600000
+        ]
+      },
+      "independent_expected": {
+        "baseline_accept_ms": [
+          160000,
+          200000
+        ],
+        "candidate_accept_ms": [
+          220000,
+          260000
+        ],
+        "accepted_each": 2,
+        "completion_delta_ms": 60000,
+        "completion_change_percent": 30,
+        "same_initial_conditions": true,
+        "comparison_status": "controlled_changes",
+        "claim_single_mechanism_without_other_change_check": false
+      },
+      "existing_case_ref": "scenarios/模板与交接/expected-template-handoff.design.json#/cases",
+      "actual_result": null
+    },
+    {
+      "id": "DRF05-E09",
+      "kind": "initial_stock_controlled_change",
+      "input": {
+        "source": "scenarios/两厂房装配包装/variants.design.json",
+        "before_pcb_added": 0,
+        "after_pcb_added": 1,
+        "other_conditions_equal": true
+      },
+      "independent_expected": {
+        "same_initial_conditions": false,
+        "comparison_status": "controlled_changes",
+        "stock_change_list_required": true,
+        "actual_output": null
+      },
+      "existing_case_ref": "scenarios/两厂房装配包装/variants.design.json#/variants",
+      "actual_result": null
+    },
+    {
+      "id": "DRF05-E10",
+      "kind": "four_projection_identity_and_null",
+      "input": {
+        "export_project_revision": 8,
+        "runs": [
+          {
+            "run_id": "design-fixture-A",
+            "input_project_revision": 3,
+            "order_id": "O-01",
+            "accepted_coefficient": 125,
+            "decimal_places": 2,
+            "unit": "kg",
+            "cost": null
+          },
+          {
+            "run_id": "design-fixture-B",
+            "input_project_revision": 4,
+            "order_id": "O-01",
+            "accepted_coefficient": 0,
+            "decimal_places": 0,
+            "unit": "kg",
+            "cost": null
+          }
+        ],
+        "fixture_kind": "manual_expected_not_actual_Run"
+      },
+      "independent_expected": {
+        "decimal_display": "1.25",
+        "run_rows": 2,
+        "identical_order_ids_remain_distinct_by_run": true,
+        "current_revision_rewrites_old_inputs": false,
+        "json_unknown": null,
+        "csv_unknown_value": "",
+        "csv_unknown_state": "unknown",
+        "reading_unknown_label": "未知",
+        "actual_pdf_html_csv_json_exported": false
+      },
+      "existing_case_ref": null,
+      "actual_result": null
+    },
+    {
+      "id": "DRF05-E11",
+      "kind": "acceptance_mismatch",
+      "input": {
+        "A": {
+          "unit": "piece",
+          "destination": "store-A",
+          "stage": "received"
+        },
+        "B": {
+          "unit": "piece",
+          "destination": "store-A",
+          "stage": "unloaded_and_released"
+        }
+      },
+      "independent_expected": {
+        "comparable": false,
+        "delta": null,
+        "improvement_percent": null,
+        "comparison_status": "side_by_side_only"
+      },
+      "existing_case_ref": null,
+      "actual_result": null
+    },
+    {
+      "id": "DRF05-E12",
+      "kind": "design_and_zero_denominator",
+      "input": {
+        "run_refs": [],
+        "mode": "design_description",
+        "actual_resource_available_capacity_ms": 0,
+        "explicit_known_zero_rate": "0"
+      },
+      "independent_expected": {
+        "run_evaluations": [],
+        "actual_metric_rows": [],
+        "unit_cost": null,
+        "zero_capacity_utilization": null,
+        "explicit_zero_cost": "0",
+        "missing_rate_cost": null
+      },
+      "existing_case_ref": null,
+      "actual_result": null
+    }
+  ],
+  "actual_product_runtime": null,
+  "actual_exporter_result": null
+}

@@ -1,0 +1,472 @@
+{
+  "document_kind": "existing_feature_executable_design_definition_not_product_execution",
+  "id": "DRF04",
+  "definition_version": "DRF04-3",
+  "date": "2026-10-14 Asia/Shanghai",
+  "status": "owned_v3_IPC_consumer_and_S05_preparation_delivered_C02_branch_11_cases_passed_actual_product_unexecuted",
+  "dispatch_ref": "docs/04_开发与验收/重要特征细化统筹与派发.json",
+  "P_refs": [
+    "P3-04",
+    "P4-01"
+  ],
+  "S_refs": [
+    "S03-01",
+    "S03-03",
+    "S05-03",
+    "S06-03",
+    "S06-05"
+  ],
+  "SF_refs": [
+    "SF-02",
+    "SF-04",
+    "SF-10",
+    "SF-11",
+    "SF-14",
+    "SF-16",
+    "SF-17"
+  ],
+  "Q_refs": [
+    "Q04",
+    "Q08",
+    "Q09",
+    "Q10",
+    "Q20",
+    "Q27",
+    "Q34",
+    "Q45",
+    "Q46",
+    "Q47",
+    "Q48",
+    "Q49",
+    "Q50",
+    "Q53",
+    "Q54",
+    "Q57",
+    "Q59"
+  ],
+  "scope_preserved": {
+    "SF": 17,
+    "P": 21,
+    "S": 60,
+    "Q": 64,
+    "product_coding": false,
+    "Figma_resumed": false,
+    "stage_credit_changed": false
+  },
+  "canonical_refs": [
+    "docs/00_项目基线/首版交付基线.md",
+    "docs/00_项目基线/首版任务选择.json",
+    "docs/04_开发与验收/编码任务包与AI实现审查.md",
+    "docs/03_架构与契约/目标驱动厂房生成.md",
+    "docs/03_架构与契约/Agent设备生成契约.md",
+    "docs/01_业务需求/三类工厂模板与接手.md",
+    "docs/03_架构与契约/通用Agent接入与专业软件连接器.md",
+    "docs/03_架构与契约/公开操作与宿主调用契约.json",
+    "docs/03_架构与契约/全层类型与工程格式.json",
+    "docs/03_架构与契约/首版技术栈与部署设计.json",
+    "docs/02_交互设计/时间轴主轴与子轴完整定义.json",
+    "packages/domain/types.design.rs",
+    "packages/commands/api.design.rs",
+    "packages/commands/command-catalog.design.json",
+    "modules/templates/instantiation.design.json"
+  ],
+  "six_views": {
+    "task_interaction": "goal -> critical inputs together -> explicit template/version/field scope -> adopt -> check/render -> run -> direct delivery or <=3 repairs -> editable handoff; cancel/back preserves draft",
+    "structure_data": "canonical FactoryGenerationGoal/ParameterSource/TemplateSubset/ScenarioInput/GenerationContext; exact field_bindings below; no second inventory",
+    "state_behavior": "workflow_transitions below; Host Task lifecycle separate from generation decision; short atomic edit and frozen long task inputs",
+    "interface_collaboration": "same 18 Commands, typed params/results, device capability mapping, Host identity injected; public gaps in handoff_ref",
+    "UI_presentation": "same project workbench, bottom tools, menu-controlled 160px timeline and separate description dock; scope preview/forms consume field bindings; no frontend created",
+    "deployment_validation": "actual existing rmcp3.5.1 native stdio/current-session Windows pipe fixture and read-only DuplicateHandle subprocess trials completed; 40-case authorization model; product Host/renderer/Codex/UI/human remain unexecuted"
+  },
+  "field_bindings": [
+    {
+      "concept": "industry/product family",
+      "canonical": "FactoryGenerationGoal.industry/product_family",
+      "type": "String",
+      "source": "user or selected installed template",
+      "consumer": "QueryModuleLibraryParams and profile filter"
+    },
+    {
+      "concept": "product specification",
+      "canonical": "FactoryGenerationGoal.product_specification_ref; acceptance_scope.product_ref",
+      "type": "SubjectRevisionRef",
+      "source": "selected ProductRevision",
+      "consumer": "ScenarioInput demand/check/report; name-only stays in local incomplete form"
+    },
+    {
+      "concept": "Q and accepted_unit",
+      "canonical": "accepted_quantity_per_day.value/unit; acceptance_scope.unit",
+      "type": "Quantity: DecimalAmount + UnitId",
+      "unit": "declared accepted product unit",
+      "source": "user goal plus declared content conversion",
+      "consumer": "demand/check/metric; never RunResult accepted injection",
+      "encoding": "DecimalAmount {coefficient:SafeUint,decimal_places:DecimalPlaces}; integer target -> coefficient=Q,decimal_places=0; exact decimal parsing, not a plain JSON number",
+      "unit_resolution": "paper carton seed has ItemType carton with unit piece; carton count is display semantics; compare selected product plus registered UnitId, not unit label alone; bundle conversion uses actual content relation once"
+    },
+    {
+      "concept": "acceptance",
+      "canonical": "AcceptanceScope.product_ref/unit/destination/stage",
+      "type": "SubjectRevisionRef/UnitId/ObjectId/AcceptanceStage",
+      "source": "explicit actual product/destination/stage",
+      "consumer": "Engine acceptance_events, RunSummary.accepted and report"
+    },
+    {
+      "concept": "production day",
+      "canonical": "FactoryGenerationGoal.production_calendar_ref",
+      "type": "ObjectId|null",
+      "source": "explicit Calendar and working intervals",
+      "consumer": "resource calendar and sizing; no assumed 24h"
+    },
+    {
+      "concept": "observation window",
+      "canonical": "FactoryGenerationGoal.observation_window; ScenarioInput.window",
+      "type": "WindowMs.start_ms/end_ms",
+      "unit": "relative integer ms",
+      "source": "explicit calendar/start condition",
+      "consumer": "run_scenario/get_run/compare/report; same-timestamp end closure from Engine"
+    },
+    {
+      "concept": "site L/W/H",
+      "canonical": "SiteEnvelope.length_m/width_m/height_m -> HallDesign.width_m/depth_m/height_m",
+      "type": "FiniteNumber|null before resolution",
+      "unit": "m; X/Y/Z",
+      "source": "user or labeled example",
+      "consumer": "layout bounds/check/render; Hall requires resolved values"
+    },
+    {
+      "concept": "site regions/allowances",
+      "canonical": "SiteEnvelope.regions/usable_polygon_m/clearance_m; DeviceInstance.footprint_m/height_m",
+      "type": "LayoutRegion[]/Vec2[]/FiniteNumber",
+      "unit": "m",
+      "source": "declared actual/template dimensions and allowed layout mode",
+      "consumer": "static bounds/overlap/height/clearance checks; missing -> unknown"
+    },
+    {
+      "concept": "parameter provenance",
+      "canonical": "ParameterSource.target/field_path/value/basis/source_ref",
+      "type": "ObjectRef/String/TypedValue|null/SourceBasis/ObjectId|null",
+      "source": "user_provided|module_declared|template_declared_example|unknown",
+      "consumer": "generation_context/input_assumptions; unknown stays unresolved"
+    },
+    {
+      "concept": "parameter editing",
+      "canonical": "ParameterDeclaration.id/binding/value_type/unit/minimum/maximum/integer/options",
+      "type": "canonical declaration",
+      "source": "selected ModuleDefinition",
+      "consumer": "SetDeclaredParameter; RFC6901 relative to definition; no arbitrary path"
+    },
+    {
+      "concept": "versions",
+      "canonical": "ModuleRef.id/version; SubjectRevisionRef.id/revision; Project/Scenario Revision",
+      "type": "opaque stable IDs and declared versions",
+      "source": "selected exact definition and current Host revision",
+      "consumer": "adopt/check/render/run/save; freeze does not implicitly adopt"
+    },
+    {
+      "concept": "role reuse and seed",
+      "canonical": "TemplateInstantiation.mapped_bindings/proposed_objects/explicit_new_scenario_seed",
+      "type": "RoleBindings/EditableProjectObject[]/ScenarioInput|null",
+      "source": "explicit identity/supply/order preview",
+      "consumer": "one atomic InstantiateTemplate; no active Run stock copying"
+    },
+    {
+      "concept": "goal history",
+      "canonical": "GenerationContext.goal/template_ref/parameter_sources/draft_check/initial_run_id/revised_run_ids/changes/stop_reason",
+      "type": "existing domain carrier",
+      "source": "actual adopted values/check/Run IDs",
+      "consumer": "EvaluationReport.generation_context; no alternate outcome/Engine record"
+    }
+  ],
+  "input_resolution": {
+    "critical_inputs": [
+      "product revision and BOM/route",
+      "target unit/destination/stage",
+      "calendar/window/initial supply",
+      "execution time/quantity/quality source",
+      "footprint/height/clearance",
+      "resource bindings",
+      "allowed objects/fields/layout/device count"
+    ],
+    "incomplete_form": "UI/private form draft until required FactoryGenerationGoal fields exist; no malformed check call",
+    "ordinary_examples": "explicitly labeled editable template values; do not present as measured data",
+    "missing": "save draft and missing_conditions; supported complete sub-scope may run with declared scope only",
+    "template_selection": "Bundled/ProjectPackages/UserGrantedLibraries only; category + industry + family + site applicability + real capability. Within authorized choices prefer complete applicable exact-version template, then fewer unresolved inputs, stable id/version ordering; show chosen reason. A change outside authorized product/template/field scope requires user decision, ordinary tie does not force a new approval."
+  },
+  "layout_and_sizing": {
+    "modes": "selected profile's actually supplied straight_line/u_shape/parallel_lines; anchor coordinates and declared extents",
+    "algorithm": "instantiate declared transforms, rotate true footprints/clearance envelope, check Hall bounds/height/obstacles/non-overlap; a gap yields objects/Issue; do not resize geometry to fit",
+    "initial_bound": "ceil(Q*t_i/(H_i*b_i)), only positive resolved effective time and output converted to accepted unit",
+    "bound_meaning": "optimistic no-loss necessary count, never throughput proof; resources/supply/setup/transfer/quality handled by real Engine",
+    "objective": "feasible declared template and modeled accepted goal; no unbounded layout/schedule search or extra professional kernel"
+  },
+  "repair_contract": {
+    "initial_round": 0,
+    "max_repair_rounds": 3,
+    "max_comparable_capacity_runs": 4,
+    "default_variables": [
+      "granted arrivals/releases/due dates/priorities/calendars",
+      "selected template layout mode",
+      "explicitly allowed device instance count"
+    ],
+    "requires_explicit_field_authorization": [
+      "phase durations",
+      "BOM",
+      "quality",
+      "additional personnel",
+      "costs",
+      "new initial supply/stock assumptions"
+    ],
+    "effective_change": "compare typed before/after on granted meaningful fields; title-only or identical values do not justify a capacity rerun",
+    "round_consumption": "one committed repair batch consumes one round even if subsequent check fails; preview/no-op consumes zero and stops if no alternative supported change",
+    "loop": "read actual shortfall/waits -> supported/granted proposal -> no-op stop or atomic commit -> fresh check -> real run when runnable -> read result/compare -> decide; immutable previous Runs",
+    "comparison": "same base supply, time reference, window, unit, acceptance and scope; actual granted input differences listed; incomparable runs explicitly flagged",
+    "stop_precedence": [
+      "task cancellation/failure handled separately",
+      "missing input/capability -> missing_conditions",
+      "initial complete goal -> initial_target_met",
+      "repaired complete goal -> repaired_target_met",
+      "no effective supported/granted repair -> unrepairable_shortfall",
+      "three committed repair rounds -> finite_budget_exhausted"
+    ],
+    "round_counter": "private generation-session counter increments only on confirmed actual repair EditCommit; failed subsequent check consumes that committed round. Do not infer from revised_run_ids count. On ambiguous lost admission stop automation, preserve last confirmed count/proposal."
+  },
+  "workflow_transitions": [
+    {
+      "from": "input_draft",
+      "event": "required inputs absent",
+      "to": "needs_inputs",
+      "effect": "one missing list; preserve draft; no target pass"
+    },
+    {
+      "from": "input_draft/needs_inputs",
+      "event": "resolved inputs and scope",
+      "to": "template_preview",
+      "effect": "exact version/new IDs/reuse/seed choices"
+    },
+    {
+      "from": "template_preview",
+      "event": "explicit adoption",
+      "to": "checking",
+      "effect": "atomic apply_commands, new revision"
+    },
+    {
+      "from": "checking",
+      "event": "necessary checks Pass and matching real render",
+      "to": "running_initial",
+      "effect": "frozen run_scenario -> TaskHandle"
+    },
+    {
+      "from": "checking",
+      "event": "Fail/unknown",
+      "to": "repair_or_stop",
+      "effect": "object/field problem; runnable sub-scope explicit, no whole-goal claim"
+    },
+    {
+      "from": "running_initial",
+      "event": "complete scope accepted>=Q",
+      "to": "delivering",
+      "effect": "initial_target_met; one Run, no required compare"
+    },
+    {
+      "from": "running_initial/running_repair",
+      "event": "actual shortfall",
+      "to": "repair_or_stop",
+      "effect": "actual waits and granted changed fields only"
+    },
+    {
+      "from": "repair_or_stop",
+      "event": "effective allowed change and round<3",
+      "to": "checking_repair",
+      "effect": "commit and consume one repair round"
+    },
+    {
+      "from": "checking_repair",
+      "event": "Pass and matching render",
+      "to": "running_repair",
+      "effect": "new Run; no old-result overwrite"
+    },
+    {
+      "from": "running_repair",
+      "event": "complete goal",
+      "to": "delivering",
+      "effect": "repaired_target_met; retain real comparison"
+    },
+    {
+      "from": "repair_or_stop/checking_repair",
+      "event": "missing/no-change/budget",
+      "to": "stopped_with_draft",
+      "effect": "existing GenerationStopReason plus named conditions"
+    },
+    {
+      "from": "any task",
+      "event": "cancel request",
+      "to": "cancel_pending",
+      "effect": "cancel_task -> real terminal; completion wins if already committed"
+    },
+    {
+      "from": "any view",
+      "event": "back/close description",
+      "to": "prior view",
+      "effect": "restore layout only, no undo of Run/approval/files"
+    }
+  ],
+  "operation_chain": [
+    {
+      "operation": "describe_capabilities/get_context/query_module_library/get_object",
+      "effect": "read real implemented capabilities, granted scope, exact objects/version and inputs"
+    },
+    {
+      "operation": "import_package",
+      "effect": "TaskHandle -> get_task.TaskOutput.Import -> explicit AdoptImportedDraft; only when actual package import needed"
+    },
+    {
+      "operation": "apply_commands",
+      "effect": "CreateDefinitionDraft/PutDefinition/SetDeclaredParameter/AdoptModule/InstantiateTemplate/PutObject typed batch; revision and field grant"
+    },
+    {
+      "operation": "check_factory_draft",
+      "effect": "current revision/FactoryGenerationGoal/FactoryCheckScope -> FactoryDraftCheckResult; not throughput"
+    },
+    {
+      "operation": "render_view",
+      "effect": "TaskHandle -> get_task.TaskOutput.Render; matching requested_scope_revision and actual visible objects"
+    },
+    {
+      "operation": "run_scenario",
+      "effect": "TaskHandle -> get_task.TaskOutput.Run -> get_run; ProjectScenario or explicit DefinitionCycle, same Engine"
+    },
+    {
+      "operation": "compare_runs",
+      "effect": "at least two real runs only when repair exists; typed MetricScope/acceptance; actual comparability"
+    },
+    {
+      "operation": "save_project/export_package/export_evaluation",
+      "effect": "explicit selected purpose and frozen revision -> TaskHandle -> actual typed files; no publish"
+    }
+  ],
+  "mcp_host": {
+    "bridge": "Rust/rmcp3.5.1 native exe; no HTTP/TCP listener",
+    "client": "user's current Codex first; installed CLI 0.162.0-alpha.17.2 read-only checked, no Super Factory connection tested",
+    "stdio": "initialize/initialized negotiation -> tools/list actual schemas -> tools/call; one JSON-RPC line per message, stdout protocol only",
+    "IPC": "current-logon SID explicit DACL/remote reject; IpcHello.expected_host_instance_id -> IpcWelcome.client_session_id; IpcRequestFrame -> IpcResponseFrame originating_operation",
+    "framing": "IPC u32 LE byte length then exact UTF-8; 1048576 bytes; MCP stdio uses newlines, not IPC length prefix",
+    "versions": {
+      "API": "0.1",
+      "project_file": "1.0",
+      "IPC": "1",
+      "MCP": "negotiated SDK/client supported version; pinned 2025-11-25 document reference is not a universal support claim"
+    },
+    "caller": "HostCallContext and ResolvedCallScope injected by real Host; API body contains no caller identity/approval/file path authority",
+    "field_scope": "canonical HostCallContext.edit_grants and 15 private branches merged/native compiled by window1; current grant candidate-diff/creation-ledger enforcement modeled in 40 independent cases; real Host execution absent",
+    "disconnection": "revoke connection grant; accepted tasks remain Host-owned; no automatic ambiguous mutation retry or new Engine",
+    "MCP_tasks_extension": "not required or registered by this design; business TaskId/get_task/cancel_task are ordinary tools",
+    "connector_ref": "integrations/agent/stdio-connector.design.json"
+  },
+  "task_result_contract": {
+    "admission": "seven long operations return actual TaskHandle; no held edit lock during CPU/render/IO",
+    "read": "get_task TaskState.task/originating_operation/allowed_controls/result/failure",
+    "states": [
+      "queued",
+      "running",
+      "paused",
+      "cancel_requested",
+      "completed",
+      "failed",
+      "cancelled"
+    ],
+    "outputs": {
+      "render_view": "render",
+      "run_scenario": "run",
+      "compute_packaging": "packaging",
+      "import_package": "import",
+      "save_project": "save",
+      "export_package": "package",
+      "export_evaluation": "evaluation"
+    },
+    "progress": "actual phase/processed/known total; unknown total not a guessed percentage",
+    "cancel": "cancel_task action=cancel -> CancellationState.action_accepted/terminal_won/task; read actual terminal, not cancel_requested success",
+    "controls": "pause_calculation/resume_calculation/step_next_timestamp only in actual allowed_controls; step is next complete same-time closure, no material reconsumption",
+    "partial": "Cancelled/partial Run known range retained; whole_window_computed=false never whole-goal PASS",
+    "files": "completed typed output and actual root/file commit only; frozen saved R vs current R+1 remains dirty"
+  },
+  "timeline_consumer": {
+    "definition_ref": "docs/02_交互设计/时间轴主轴与子轴完整定义.json",
+    "path": "get_run Summary -> Events explicit interval/page -> FullResult or managed result -> ObjectsAt at_ms<=computed_until_ms",
+    "identity": "one run_id + RunInputRef + confirmed relative ms; Job/Phase/Claim/Wait IDs and event sequence; old Run never rebound to current draft",
+    "waiting": "canonical JobState.execution_ref; WaitInterval.execution_ref/phase_ref/reasons; RunResult.phase_work_intervals and computed_until_ms, same actual Run/input. Public records merged; absent real history remains unknown.",
+    "partial_data": "not-yet-computed or not-all-pages labeled; final_items is not arbitrary historical stock; unknown phase not nominal reconstruction",
+    "editing": "only input handles -> PutObject ScenarioInput, base_revision and granted leaf changes; actual bars read-only",
+    "UI": "bottom tools; Window menu (窗口菜单) controls default 160px timeline dock and separate readonly description dock; latest batch instruction overrides older View-menu wording; original UI owners synchronize their source",
+    "Events": "point events include observer end: start_ms<=at_ms<=end_ms; duration intervals remain half-open; stable paging/scoping even interval=null",
+    "public_status": "merged_canonical_types_and_consumer_semantics_not_actual_Engine"
+  },
+  "delivery_permissions": {
+    "report": "one frozen EvaluationReport including generation_context, actual run_refs, input assumptions, scope, missing_conditions and unit definitions",
+    "initial_success": "one real run_ref, revised_run_ids=[], scenario_comparison=null allowed",
+    "four_formats": [
+      "pdf",
+      "html",
+      "csv",
+      "json"
+    ],
+    "no_run": "ReportMode.design_description; no invented production metrics",
+    "files": "Host-issued SelectedFileRef.selection_id/purpose; grant expires on close/switch; no arbitrary path",
+    "rights": "Host-confirmed selected asset rights only; imported declaration does not authorize redistribution",
+    "approval": "RecordArtifactAcknowledgment UI-only; Agent adopt_artifact requires existing matching acceptance_ref",
+    "errors": "same 10 public error families and RFC6901 field_errors; normal shortfall/Fail/Undetermined is business result; no alternate tool to bypass"
+  },
+  "call_examples_ref": "scenarios/目标驱动建厂/mcp-calls.design.json",
+  "independent_expectations_ref": "scenarios/目标驱动建厂/finite-cases.design.json",
+  "handoff_ref": "docs/04_开发与验收/特征细化/DRF04_公共交接.json",
+  "sources": [
+    {
+      "title": "Codex MCP",
+      "url": "https://developers.openai.com/codex/mcp",
+      "read_date": "2026-10-14",
+      "scope": "stdio command config/CLI/config.toml; local version/help verified; no client interoperability proof"
+    },
+    {
+      "title": "MCP tools 2025-11-25",
+      "url": "https://modelcontextprotocol.io/specification/2025-11-25/server/tools",
+      "read_date": "2026-10-14",
+      "scope": "tools/list/call, structuredContent/outputSchema, tool errors; business schema remains canonical"
+    },
+    {
+      "title": "MCP transports 2025-11-25",
+      "url": "https://modelcontextprotocol.io/specification/2025-11-25/basic/transports",
+      "read_date": "2026-10-14",
+      "scope": "client-spawned stdio/newline/stdout discipline"
+    },
+    {
+      "title": "MCP cancellation 2025-11-25",
+      "url": "https://modelcontextprotocol.io/specification/2025-11-25/basic/utilities/cancellation",
+      "read_date": "2026-10-14",
+      "scope": "request cancellation/terminal race/optional task cancellation distinction"
+    }
+  ],
+  "evidence": {
+    "document_definition": "owned changes completed",
+    "static_and_math": "separate verification record",
+    "real_prototype": null,
+    "real_Codex_Host_call": null,
+    "actual_product_runtime": null,
+    "human_walkthrough": null,
+    "actual_native_transport_fixture_ref": "docs/04_开发与验收/特征细化/DRF04_stdio-proof/output/native-trial-result.json",
+    "actual_readonly_file_handle_ref": "docs/04_开发与验收/特征细化/DRF04_stdio-proof/output/managed-asset-result.json",
+    "authority_fixture_model_ref": "docs/04_开发与验收/特征细化/DRF04_授权差异核验.json",
+    "public_private_contract": "current canonical source present + window1 native compilation; no actual Host dispatcher",
+    "internal_IPC_asset_attachment": "merged canonical carrier; window1 native/standard Schema/411TS and8 shapes passed; real Host/Renderer not executed",
+    "new_attachment_identity_lifecycle_ref": "docs/04_开发与验收/特征细化/DRF04_stdio-proof/output/attachment-lifecycle-result.json",
+    "old_trials_replayed": false
+  },
+  "actual_result": null,
+  "new_consumer_refs": [
+    "docs/04_开发与验收/特征细化/DRF04_Host授权合入.json",
+    "docs/04_开发与验收/特征细化/DRF04_授权差异核验.json",
+    "integrations/agent/stdio-connector.design.json",
+    "docs/04_开发与验收/特征细化/DRF04_H04-04界面绑定.json"
+  ],
+  "S05_preparation_ref": "docs/04_开发与验收/特征细化/DRF04_S05接点准备.json",
+  "C02_generation_ref": "docs/04_开发与验收/特征细化/DRF04_C02生成接入.md",
+  "C02_generation_result_ref": "docs/04_开发与验收/特征细化/DRF04_C02生成分支核验.json"
+}

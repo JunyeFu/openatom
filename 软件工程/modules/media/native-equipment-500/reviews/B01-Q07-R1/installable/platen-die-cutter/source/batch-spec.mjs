@@ -1,0 +1,10 @@
+export const specs={'platen-die-cutter':{mode:'platen_die',size:[.50,.003,.40],surface:1.08,inputX:-1.60,outputX:1.60,stagingX:1.05,initial:'uncut_sheet',final:'cross_cut_blank',auxiliary:null,area:.20,product_area:.16,extra_outputs:[{role:'scrap',count:4,size:[.10,.003,.10],area:.01}]}};
+export const samples=[...new Set([...Array.from({length:513},(_,i)=>i/512),.35,.55,.72,.75,.83,.98])].sort((a,b)=>a-b);
+export const pressTimes=[0,.15,.35,.55,.72,1],pressY=[1.35,1.35,1.104,1.104,1.35,1.35];
+export const shapePoints=[[-.15,-.20],[.15,-.20],[.15,-.10],[.25,-.10],[.25,.10],[.15,.10],[.15,.20],[-.15,.20],[-.15,.10],[-.25,.10],[-.25,-.10],[-.15,-.10]];
+export const cornerPositions=[[-.20,0,-.15],[.20,0,-.15],[-.20,0,.15],[.20,0,.15]];
+export const clamp=v=>Math.max(0,Math.min(1,v));
+export const trayTop=(s,phase,u)=>phase==='load'?s.surface-.06+.06*clamp((u-.60)/.40):phase==='auto'?s.surface-.06*clamp((u-.75)/.08):s.surface-.06;
+export const trayZ=(sign,phase,u)=>sign*(phase==='load'?.65-.50*clamp(u/.60):phase==='auto'?.15+.50*clamp((u-.83)/.15):.65);
+export const seatX=(s,phase,u)=>phase==='load'?s.inputX*(1-u):phase==='auto'?0:s.stagingX*u;
+export const inputPort=s=>[s.inputX,s.surface,0],outputPort=s=>[s.outputX,s.surface,0],scrapPort=s=>[0,.86,-.98];

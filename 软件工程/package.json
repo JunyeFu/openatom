@@ -1,0 +1,24 @@
+{
+  "name": "superfactory",
+  "version": "2.0.1",
+  "private": true,
+  "workspaces": [
+    "apps/planner",
+    "packages/presentation"
+  ],
+  "engines": {
+    "node": "24.15.0",
+    "npm": "12.0.1"
+  },
+  "packageManager": "npm@12.0.1",
+  "scripts": {
+    "generate:contracts": "cargo run --locked --quiet -p sf-commands --bin export-contracts",
+    "generate:types": "cargo run --locked --quiet -p sf-desktop-host --bin export-engineering-types",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "build:web": "npm run build:web --workspace @superfactory/planner",
+    "build": "cargo build --workspace --locked && npm run build --workspace @superfactory/planner",
+    "start": "npm run start --workspace @superfactory/planner",
+    "test": "node --test tests/engineering/*.test.mjs",
+    "test:rust": "cargo test --workspace --locked"
+  }
+}

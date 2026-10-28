@@ -1,0 +1,205 @@
+{
+  "document_kind": "observed_gaps_owned_fixes_and_cross_owner_dependencies",
+  "id": "DRF04",
+  "date": "2026-10-14",
+  "gaps": [
+    {
+      "id": "F04-01",
+      "kind": "observed_failure",
+      "finding": "SKILL.md frontmatter starts with --- then HTML/Markdown choice block before name/description; not a YAML dictionary",
+      "fix": "move name/description into closed YAML header; choice block remains body",
+      "files": [
+        "integrations/agent/skills/superfactory-workflow/SKILL.md"
+      ],
+      "verification": "bundled quick_validate called against current owned skill",
+      "status": "owned_fix_completed_static_verification_separate",
+      "generator_handoff": "H04-05: W00 replace_section missing-block branch must insert after closing YAML frontmatter; current existing-marker replacement already preserves owned repair",
+      "generator_status": "fixed canonical YAML insertion by window1, 3 isolated cases passed; current owned skill valid"
+    },
+    {
+      "id": "F04-02",
+      "kind": "observed_conflict",
+      "finding": "workflow general scheduling paragraph includes supported phase durations while Q48 requires separate time/BOM/quality/personnel/cost authorization",
+      "fix": "restrict default scheduling and explicitly require field authorization; apply same candidate-diff rule to whole-object writes",
+      "files": [
+        "integrations/agent/skills/superfactory-workflow/SKILL.md",
+        "docs/03_架构与契约/目标驱动厂房生成.md"
+      ],
+      "cases": [
+        "FC08",
+        "FC09",
+        "FC23"
+      ],
+      "status": "owned_consumer_and_canonical_private_authority_fixed_actual_Host_execution_unexecuted"
+    },
+    {
+      "id": "F04-03",
+      "kind": "observed_field_drift",
+      "finding": "carton goal map uses accepted_quantity scalar/accepted_unit and site_envelope.length/width/height aliases instead of canonical Quantity and *_m",
+      "fix": "canonical_bindings map DecimalAmount coefficient/decimal_places, Quantity.unit/AcceptanceScope.unit and exact site fields; source Unknown enum corrected",
+      "files": [
+        "modules/templates/carton-factory/generation-profile.design.json"
+      ],
+      "cases": [
+        "FC01",
+        "FC02",
+        "FC03"
+      ],
+      "status": "owned_mapping_fixed"
+    },
+    {
+      "id": "F04-04",
+      "kind": "definition_missing",
+      "finding": "new ID policy lacks exact InstantiateTemplate/RoleBindings/explicit seed consumer fields",
+      "fix": "instantiation.design defines new IDs/reference rewrite/exact versions/reused resource identity/separate supply-order choices; four manifests/projects and template emitter reference it",
+      "files": [
+        "modules/templates/instantiation.design.json",
+        "modules/templates/生成三类模板设计.py",
+        "docs/01_业务需求/三类工厂模板与接手.md"
+      ],
+      "cases": [
+        "FC04",
+        "FC05",
+        "FC10",
+        "FC17"
+      ],
+      "status": "owned_contract_and_consumers_fixed_not_product_instantiation"
+    },
+    {
+      "id": "F04-05",
+      "kind": "definition_missing",
+      "finding": "workflow names long actions without concrete TaskHandle -> typed result/cancel race chain; device capability IDs can be mistaken for tool names",
+      "fix": "map seven device capabilities into existing 18 operations; seven long actions use get_task/originating_operation/real TaskOutput; MCP request cancel distinct from business task cancel",
+      "files": [
+        "docs/03_架构与契约/Agent设备生成契约.md",
+        "integrations/agent/README.md",
+        "integrations/agent/skills/superfactory-workflow/SKILL.md",
+        "scenarios/目标驱动建厂/mcp-calls.design.json"
+      ],
+      "cases": [
+        "FC11",
+        "FC12",
+        "FC13",
+        "FC19"
+      ],
+      "status": "owned_definition_fixed_real_stdio_Host_pending"
+    },
+    {
+      "id": "F04-06",
+      "kind": "definition_missing",
+      "finding": "three-round choice lacks precise committed-round consumption/no-op stop/max-run behavior in template/acceptance consumers",
+      "fix": "initial0, repairs1..3, at most4 capacity Runs, committed failed-check repair also consumes round; no effective change no commit/rerun; one initial successful Run valid",
+      "files": [
+        "docs/03_架构与契约/目标驱动厂房生成.md",
+        "modules/templates/carton-factory/generation-profile.design.json",
+        "scenarios/目标驱动建厂/acceptance.design.json",
+        "integrations/agent/skills/superfactory-workflow/SKILL.md"
+      ],
+      "cases": [
+        "FC06",
+        "FC07",
+        "FC20",
+        "FC22"
+      ],
+      "status": "owned_algorithm_and_consumer_rules_fixed"
+    },
+    {
+      "id": "F04-07",
+      "kind": "explicit_input_gap",
+      "finding": "three template XY plans omit Hall height and true machine footprint/clearance; carton profile advertises mode names without actual resolved transforms",
+      "fix": "keep height_m=null as design missing value and name geometry conversion gate; explicit straight/U/parallel fill inputs/algorithm with actual-mode availability; never derive site Pass from positions",
+      "files": [
+        "modules/templates",
+        "docs/01_业务需求/三类工厂模板与接手.md"
+      ],
+      "cases": [
+        "FC03",
+        "FC24"
+      ],
+      "status": "owned_missing_condition_defined_real_dimensions_pending"
+    },
+    {
+      "id": "F04-08",
+      "kind": "public_contract_gap",
+      "finding": "HostCallContext operation/project grants do not enforce Q47 selected object/field scope",
+      "fix": "Current canonical private records and exact normalization spec/cases in DRF04_Host授权合入; no client grant in wire",
+      "handoff": "H04-01",
+      "status": "canonical_private_Host_grants_merged_native_compiled_40_model_cases_passed_actual_Host_unexecuted"
+    },
+    {
+      "id": "F04-09",
+      "kind": "existing_timeline_gap",
+      "finding": "shared operation_ref and final phase_ref cannot locate actual executing device or historical effective phase intervals",
+      "fix": "Consume current execution_ref/blocked phase/effective work/frontier and inclusive end-point Events; no public field pending remains here",
+      "files": [
+        "integrations/agent/skills/superfactory-workflow/SKILL.md",
+        "docs/03_架构与契约/目标驱动厂房生成.md"
+      ],
+      "handoff": "H04-03 (TC01/TC02)",
+      "cases": [
+        "FC14",
+        "FC15",
+        "FC16"
+      ],
+      "status": "canonical_TC01_TC02_computed_frontier_closed_point_Events_merged_owned_consumers_cleaned_actual_Engine_unexecuted"
+    },
+    {
+      "id": "F04-10",
+      "kind": "Host_implementation_contact",
+      "finding": "no actual bridge executable/Host-issued argv/managed render AssetRef-to-Codex result delivery",
+      "fix": "Canonical carrier and prior14 fixture cases credited; new3 actual Windows peer PID/session/token and expected-instance/EOF/own-handle cases passed. Product Host/managed result registry and Renderer remain unexecuted.",
+      "handoff": "H04-02",
+      "status": "canonical_attachment_merged_real_pipe_peer_identity_3_cases_passed_product_Host_Renderer_Codex_unexecuted",
+      "pipe_peer_identity_ref": "docs/04_开发与验收/特征细化/DRF04_stdio-proof/output/pipe-peer-identity-result.json"
+    },
+    {
+      "id": "F04-11",
+      "kind": "shared_UI_projection",
+      "finding": "goal/adoption/progress/stop/report state must consume refined fields and time-axis data without reinstating old toolbar/dock; older timeline source says View menu while latest batch explicitly requires Window menu for docks",
+      "fix": "H04-04 supplies precise field/state/return paths to UI and mother owners; H04-05 refreshes original S/P projection after merge",
+      "handoff": "H04-04/H04-05",
+      "status": "32_fields_6_states_delivered_user_authorized_window2_S04_04_05_actual_evidence_pending",
+      "s04_delegated_walkthrough": {
+        "authorization_ref": "docs/04_开发与验收/完整设计与执行准入.json#/frontend_supervision/prototype_walkthrough_delegation",
+        "exact_request": "代替我完成S04-04/S04-05",
+        "thread_id": "01a11f4e-f8a4-7a62-9d23-24834761b07e",
+        "message_id": "01a13aec-61f5-7c82-9ef9-46d9a202d275",
+        "operator_kind": "user_authorized_AI",
+        "status": "actual_delegated_walkthrough_in_progress_no_pass_awarded",
+        "evidence_owner": "window2",
+        "gate_sync_owner": "window1",
+        "actual_delegated_walkthrough_result": null,
+        "personal_human_walkthrough_still_required": false
+      }
+    }
+  ],
+  "owned_changes_summary": "owned definitions, profiles/templates, product workflow, acceptance and finite examples repaired; owned template emitter updated without running. Shared domain/Commands/Host/UI/progress/SXX synchronization generator read-only.",
+  "verification_ref": "docs/04_开发与验收/特征细化/DRF04_静态与数学核验.json",
+  "evidence_limits": {
+    "static_and_finite_math": "record actual checker results separately",
+    "real_prototype": null,
+    "real_Codex_Host_call": null,
+    "actual_product_runtime": null,
+    "human_walkthrough": null
+  },
+  "actual_result": null,
+  "public_review_credit_changed": false,
+  "current_ownership": "public window1/W00; all S04/docs02 window2; DRF04 owns consumers and proof fixtures",
+  "new_evidence_refs": [
+    "docs/04_开发与验收/特征细化/DRF04_授权差异核验.json",
+    "docs/04_开发与验收/特征细化/DRF04_stdio-proof/output/native-trial-result.json",
+    "docs/04_开发与验收/特征细化/DRF04_stdio-proof/output/managed-asset-result.json"
+  ],
+  "round3_new_evidence": [
+    "docs/04_开发与验收/特征细化/DRF04_stdio-proof/output/attachment-lifecycle-result.json",
+    "docs/04_开发与验收/特征细化/DRF04_C02生成分支核验.json",
+    "docs/04_开发与验收/特征细化/DRF04_S05接点准备.json"
+  ],
+  "latest_pipe_identity_and_S05_round": {
+    "pipe_trial_ref": "docs/04_开发与验收/特征细化/DRF04_stdio-proof/output/pipe-peer-identity-result.json",
+    "S05_preparation_ref": "docs/04_开发与验收/特征细化/DRF04_S05接点准备.json",
+    "old_trials_replayed": false,
+    "public_gate_write_owner": "window1",
+    "s04_actual_evidence_owner": "window2"
+  }
+}

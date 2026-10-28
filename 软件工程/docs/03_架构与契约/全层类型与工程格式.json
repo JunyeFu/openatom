@@ -1,0 +1,931 @@
+{
+  "document_kind": "S06_02_canonical_type_and_project_format_design_not_product_release",
+  "checkpoint": "S06-02",
+  "date": "2026-10-14 Asia/Shanghai",
+  "status": "passed_document_specification",
+  "spec_md_ref": "docs/03_架构与契约/全层类型与工程格式.md",
+  "review_ref": "docs/04_开发与验收/S06-02_全层类型与工程格式复审.json",
+  "rust_type_source_ref": "packages/domain/types.design.rs",
+  "inventory_ref": "packages/domain/type-inventory.design.json",
+  "module_field_bindings_ref": "packages/domain/module-field-bindings.design.json",
+  "derived_types_ref": "tools/type-contract-proof/output/typescript/ContractTypeBundle.ts",
+  "derived_schema_ref": "tools/type-contract-proof/output/schemas/all-types.schema.json",
+  "generation_tool_ref": "tools/type-contract-proof/src/main.rs",
+  "selected_task_source_ref": "docs/00_项目基线/首版任务选择.json",
+  "ownership_source_ref": "docs/03_架构与契约/共享状态与所有权.json",
+  "algorithm_source_ref": "docs/03_架构与契约/调度与状态转换算法.json",
+  "module_protocol_ref": "packages/module-kit/category-contracts.design.json",
+  "report_contract_ref": "packages/reporting/evaluation-report.contract.design.json",
+  "format": {
+    "schema_version": "1.0",
+    "envelope_fields": [
+      "schema_version",
+      "data"
+    ],
+    "canonical_root": "Versioned<T>",
+    "unknown_version": "reject_before_adopting_or_writing",
+    "legacy_design_files": "explicit_PREP_RUNTIME_mapping_required_not_implicitly_runtime_compatible",
+    "Option_read": "absent_or_null_to_None",
+    "Option_write": "canonical_null",
+    "required_collections": "present_even_when_empty",
+    "Option_write_exceptions": {
+      "ScenarioInput.acceptance_goal": "None omits field to preserve legacy shape; Some is a complete FactoryGenerationGoal",
+      "TemplateInstantiation.preparation": "None omits field; absent/null reads None. Some carries typed source/namespace/resource/item/product/site choices; Host replays actual selected archive.",
+      "ItemType.module_ref": "None omits field; absent/null reads None. Some is the exact explicitly adopted Items ModuleRef; no name/spec/latest inference."
+    },
+    "optional_collection_write_exceptions": {
+      "DeviceInstance.route_operation_refs": "Absent reads empty; empty omits on write, preserving existing shape. Nonempty values are typed and explicit.",
+      "TransportDefinition.loading_resources": "Absent reads empty; empty omits on write, preserving existing shape. Nonempty values are typed and explicit.",
+      "TransportDefinition.unloading_resources": "Absent reads empty; empty omits on write, preserving existing shape. Nonempty values are typed and explicit."
+    }
+  },
+  "numeric_and_identity_contract": {
+    "ids": "separate_opaque_nonempty_string_types_not_file_names",
+    "module_version": "exact_SemVer",
+    "subject_revision": "opaque_SubjectRevisionId_r1_is_not_integer_1",
+    "revision_and_time": "nonnegative_safe_integer_relative_milliseconds",
+    "safe_integer_max": 9007199254740991,
+    "quantity_value": "DecimalAmount(coefficient,decimal_places)",
+    "decimal_places_range": [
+      0,
+      9
+    ],
+    "discrete_items_and_capacity": "decimal_places_0",
+    "arithmetic": "checked_u128_intermediates_exact_unit_and_decimal_alignment_then_wire_range_check",
+    "unknown": "null_with_reason_not_zero",
+    "geometry": "finite_f64_explicit_meter_or_millimeter"
+  },
+  "coordinates": {
+    "factory": {
+      "unit": "meter",
+      "frame": "right_handed_z_up",
+      "axes": [
+        "width",
+        "depth",
+        "height"
+      ]
+    },
+    "renderer": {
+      "unit": "meter",
+      "frame": "right_handed_y_up",
+      "transform_from_factory": "[x,y,z] -> [x,z,-y]",
+      "inverse": "[x,y,z] -> [x,-z,y]"
+    },
+    "packaging": {
+      "unit": "millimeter",
+      "frame": "explicit_per_job"
+    },
+    "camera": "CameraState contains unit/coordinate_frame; same transformation is applied once",
+    "benchmark_ref": "scenarios/非功能基准/benchmark.design.json"
+  },
+  "storage": {
+    "root_manifest": "project.json",
+    "manifest_type": "Versioned<PackageManifest>",
+    "document_entries": [
+      {
+        "role": "active_project",
+        "document_kind": "project",
+        "data_type": "ProjectState"
+      },
+      {
+        "role": "scenario_input",
+        "document_kind": "scenario",
+        "data_type": "ScenarioInput"
+      },
+      {
+        "role": "module_definition",
+        "document_kind": "module",
+        "data_type": "ModulePackage"
+      },
+      {
+        "role": "template_data",
+        "document_kind": "template",
+        "data_type": "TemplateSubset"
+      },
+      {
+        "role": "generation_profile",
+        "document_kind": "generation_profile",
+        "data_type": "TemplateGenerationProfile"
+      },
+      {
+        "role": "professional_input",
+        "document_kind": "packaging_job",
+        "data_type": "PackageStructureJob"
+      },
+      {
+        "role": "professional_result",
+        "document_kind": "packaging_result",
+        "data_type": "PackagingResult"
+      },
+      {
+        "role": "artifact_metadata",
+        "document_kind": "artifact_record",
+        "data_type": "ArtifactRecord"
+      },
+      {
+        "role": "frozen_run_project",
+        "document_kind": "project",
+        "data_type": "ProjectState"
+      },
+      {
+        "role": "frozen_run_scenario",
+        "document_kind": "scenario",
+        "data_type": "ScenarioInput"
+      },
+      {
+        "role": "run_result",
+        "document_kind": "run_result",
+        "data_type": "RunResult"
+      },
+      {
+        "role": "evaluation",
+        "document_kind": "evaluation",
+        "data_type": "EvaluationReport"
+      },
+      {
+        "role": "asset",
+        "document_kind": "asset",
+        "data_type": "binary_or_declared_support_file"
+      }
+    ],
+    "asset_index": "ModulePackage.assets and typed AssetRef connect asset_id to path; AssetRights holds permission facts; PackageManifest.documents records included asset files",
+    "path_base": "relative_to_current_package_root; embedded_module_paths_explicitly_rebased_to_project_root",
+    "path_rules": [
+      "relative_forward_slashes",
+      "no_absolute_drive_UNC_colon_backslash_NUL_dot_or_dotdot_segments",
+      "Windows_reserved_names_or_trailing_dot_space_rejected_at_boundary",
+      "no_casefold_path_collisions",
+      "no_zip_symlinks",
+      "opaque_ID_never_joined_as_file_path"
+    ],
+    "directory_layout": [
+      "project.json",
+      "data/g000001/project-state.json",
+      "data/g000001/scenario-0001.json",
+      "data/g000001/module-0001.json",
+      "assets/a000001/"
+    ],
+    "single_active_project_document": true,
+    "commit_point": "root manifest replacement only after all selected new files complete",
+    "existing_commit_primitive": "Windows ReplaceFileW",
+    "initial_commit_primitive": "same_volume_rename",
+    "data_generation_policy": "never_overwrite_data_referenced_by_old_committed_manifest",
+    "failed_save": "actual replacement failure verifies old root/retained root by parsed project_id+generation+revision; restore if needed; if restore fails retain recoverable files and report IoFailure/location/dirty; never claim intact old root without evidence",
+    "concurrent_save": "per resolved actual directory+filename commit queue in admission order; freeze R per task; previous committed root resolved at its turn; R+1 remains dirty; last successful queued commit is disk root",
+    "open": "private_stage_parse_and_check_then_explicit_adoption; invalid_format_or_missing_required_refs_preserve_current_project; user_may_explicitly_adopt_valid_draft_with_reported_missing_conditions",
+    "sfproj": "ZIP of same manifest and selected files; project/report/module contribution uses remain distinct",
+    "restart_policy": "from_common_initial_input; retained_results_readonly; no_midrun_resume_in_v1",
+    "durability_scope": "not_power_loss_or_hardware_level_atomicity; no_checksum_or_disaster_recovery_system",
+    "rights_source": "Contribution.assets is canonical declaration; ModulePackage.rights is included-assets derived copy; PackageManifest.assets is selected aggregate. Same-ID contradictions reject adoption; unique asset index, no filename merging or mutation of released definitions; no new rights inferred.",
+    "replacement_recovery": {
+      "targets": [
+        "docs/03_架构与契约/全层类型与工程格式.json#/storage",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json#/operations",
+        "docs/03_架构与契约/共享状态与所有权.json"
+      ],
+      "common_owner": "复审窗口1",
+      "no_new_API_field": "沿TaskState.failure ApiError IoFailure；在授权目标内报告实际相对恢复文件名，不暴露其他机器路径",
+      "same_target_queue": {
+        "key": "Host已解析的实际目标目录对象和文件名，不采用调用者字符串作为锁键",
+        "ordering": "按请求准入顺序，后任务可准备文件但只能等前任务结束再提交；失败释放轮次",
+        "freeze": "每任务接收时冻结R，先前保存的旧根在该轮提交时确定，不把R+1写入R",
+        "result": "SavedProject.saved_revision为本轮R；current_revision反映当前；R+1存在仍dirty；队列最后成功新代才是磁盘当前根"
+      },
+      "existing_target_steps": [
+        "新代/临时ZIP完整关闭，旧根引用数据不原位覆盖",
+        "提交前保存唯一内部编号的同目录旧根保留路径，调用ReplaceFileW的lpBackupFileName；不使用IGNORE_ACL_ERRORS或IGNORE_MERGE_ERRORS掩盖失败",
+        "成功根替换为提交点，TaskOutput仅此后生成；取消输给提交则Completed",
+        "失败先GetLastError核对实际根/旧保留文件/临时文件：只认与旧project_id+generation+revision对应的已解析清单，不认文件名，不新增hash",
+        "旧根仍有效则保持；旧保留文件有效则在同卷恢复旧根；恢复失败保留可恢复文件并报IoFailure、实际位置、dirty",
+        "恢复动作失败不声称旧根完好；不把新临时目录当成功或删除旧数据；下一次由人明确选择恢复/新目标再保存"
+      ],
+      "initial_target": "同卷rename；无先前有效工程就不声称已恢复旧根",
+      "report_target": "report内部生成新目录名；全所选格式形成后同卷提交；绝不合并覆盖上一报告",
+      "actual_windows_execution": null,
+      "NFR_failure_criteria_ref": "docs/01_业务需求/非功能需求与测量验收.json#/requirements/5/failure_exit_criteria"
+    }
+  },
+  "contextual_validation": [
+    "unique_IDs_in_their_declared_scope",
+    "one_active_project_role_matching_manifest_identity_and_revision",
+    "exact_ModuleRef_and_document_version_match",
+    "resolved_refs_or_explicit_missing_draft_issues",
+    "unit_scale_and_role_bindings_match",
+    "category_tag_matches_typed_payload",
+    "behavior_source_selected_not_double_execution",
+    "discrete_quantities_are_integer_scale",
+    "provider_capability_from_Host_not_upload",
+    "result_input_and_subject_versions_match",
+    "artifact_acknowledgment_and_consumer_binding_separate",
+    "imported_evidence_origin_is_only_a_claim_not_local_execution_or_user_grant",
+    "asset_index_unique_and_derived_rights_equal_canonical_declarations; conflicts_require_explicit_new_definition_or_binding"
+  ],
+  "measurement_records": {
+    "source_ref": "docs/01_业务需求/非功能需求与测量验收.json",
+    "group_type": "MeasurementGroupRecord",
+    "attempt_type": "MeasurementAttemptRecord",
+    "purpose": "S03_04_test_records_not_product_audit_or_new_API",
+    "same_clock_required": true,
+    "statuses": [
+      "not_executed",
+      "not_evaluable",
+      "pass",
+      "fail"
+    ],
+    "required_subcheck_ids": "taken_from_S03_04_required_check_groups",
+    "actual_samples": [],
+    "field_bindings": {
+      "group": {
+        "candidate_reference": [
+          {
+            "type": "MeasurementGroupRecord",
+            "field": "candidate_reference"
+          }
+        ],
+        "machine_reference": [
+          {
+            "type": "MeasurementGroupRecord",
+            "field": "machine_reference"
+          }
+        ],
+        "subcheck_id": [
+          {
+            "type": "MeasurementGroupRecord",
+            "field": "subcheck_id"
+          }
+        ],
+        "load_variant": [
+          {
+            "type": "MeasurementGroupRecord",
+            "field": "load_variant"
+          }
+        ],
+        "condition_or_action": [
+          {
+            "type": "MeasurementGroupRecord",
+            "field": "condition_or_action"
+          }
+        ],
+        "round": [
+          {
+            "type": "MeasurementGroupRecord",
+            "field": "round"
+          }
+        ],
+        "frozen_input_and_asset_references": [
+          {
+            "type": "MeasurementGroupRecord",
+            "field": "frozen_input_and_asset_references"
+          }
+        ],
+        "clock_source": [
+          {
+            "type": "MeasurementGroupRecord",
+            "field": "clock_source"
+          }
+        ],
+        "group_status": [
+          {
+            "type": "MeasurementGroupRecord",
+            "field": "group_status"
+          }
+        ],
+        "planned_attempt_count_or_observation_window": [
+          {
+            "type": "MeasurementGroupRecord",
+            "field": "planned_attempt_count"
+          },
+          {
+            "type": "MeasurementGroupRecord",
+            "field": "observation_window_ms"
+          }
+        ],
+        "environment_validity_and_reason": [
+          {
+            "type": "MeasurementGroupRecord",
+            "field": "environment"
+          },
+          {
+            "type": "MeasurementEnvironment",
+            "field": "valid"
+          },
+          {
+            "type": "MeasurementEnvironment",
+            "field": "reason"
+          }
+        ],
+        "NFR_id": [
+          {
+            "type": "MeasurementGroupRecord",
+            "field": "nfr_id"
+          }
+        ]
+      },
+      "attempt": {
+        "attempt_index": [
+          {
+            "type": "MeasurementAttemptRecord",
+            "field": "attempt_index"
+          }
+        ],
+        "start_marker": [
+          {
+            "type": "MeasurementAttemptRecord",
+            "field": "start_marker"
+          }
+        ],
+        "actual_outcome": [
+          {
+            "type": "MeasurementAttemptRecord",
+            "field": "actual_outcome"
+          }
+        ],
+        "attempt_status": [
+          {
+            "type": "MeasurementAttemptRecord",
+            "field": "attempt_status"
+          }
+        ],
+        "target_identity_and_expected_outcome": [
+          {
+            "type": "MeasurementAttemptRecord",
+            "field": "target_ref"
+          },
+          {
+            "type": "MeasurementAttemptRecord",
+            "field": "expected_outcome"
+          }
+        ],
+        "input_revision_or_run_reference_if_applicable": [
+          {
+            "type": "MeasurementAttemptRecord",
+            "field": "input_reference"
+          },
+          {
+            "type": "MeasurementInput",
+            "field": "project_ref"
+          },
+          {
+            "type": "MeasurementInput",
+            "field": "revision"
+          },
+          {
+            "type": "MeasurementInput",
+            "field": "run_ref"
+          }
+        ],
+        "end_marker_or_missing_reason": [
+          {
+            "type": "MeasurementAttemptRecord",
+            "field": "end_marker"
+          },
+          {
+            "type": "MeasurementAttemptRecord",
+            "field": "evidence"
+          },
+          {
+            "type": "MeasurementEvidence",
+            "field": "missing_reason"
+          }
+        ],
+        "elapsed_ms_if_measurable": [
+          {
+            "type": "MeasurementAttemptRecord",
+            "field": "elapsed_ms"
+          }
+        ],
+        "evidence_reference_or_missing_reason": [
+          {
+            "type": "MeasurementAttemptRecord",
+            "field": "evidence"
+          },
+          {
+            "type": "MeasurementEvidence",
+            "field": "file_ref"
+          },
+          {
+            "type": "MeasurementEvidence",
+            "field": "missing_reason"
+          }
+        ]
+      }
+    },
+    "schema_ref": "tools/type-contract-proof/output/schemas/measurement.schema.json"
+  },
+  "six_views": {
+    "task_interaction": "draft_adopt_save_open_read_result_ack_bind_report_separate",
+    "structure_data": "single_Rust_source_with_schema_TS_and_61_field_bindings",
+    "state_behavior": "Project_DefinitionScope_frozen_Run_and_R_Rplus1_separate",
+    "interface_collaboration": "W00_public_types_Host; W01_simulation; W02_presentation; W03_module; W04_packaging; W05_Agent_delivery; S06_03_freezes_18_operations",
+    "UI_presentation": "two_normal_canvases_three_LOD_click_detail_and_typed_special_views; no_Figma_work_authorized",
+    "deployment_validation": "isolated_native_codegen_TS_compile_standard_schema_and_storage_trial_not_product_acceptance"
+  },
+  "proof_refs": [
+    "tools/type-contract-proof/output/type-proof-result.json",
+    "tools/type-contract-proof/output/schema-validation-result.json",
+    "tools/type-contract-proof/output/typescript-check-result.json",
+    "tools/type-contract-proof/output/persistence-proof-result.json"
+  ],
+  "consumer_tasks": [
+    "P0-01",
+    "P0-02",
+    "P0-03",
+    "P1-01",
+    "P1-02",
+    "P1-03",
+    "P1-04",
+    "P1-05",
+    "P2-01",
+    "P2-02",
+    "P2-03",
+    "P2-04",
+    "P2-05",
+    "P2-06",
+    "P3-01",
+    "P3-02",
+    "P3-03",
+    "P3-04",
+    "P4-01",
+    "P4-02",
+    "P5-01"
+  ],
+  "source_records": [
+    {
+      "title": "Serde container attributes",
+      "url": "https://serde.rs/container-attrs.html",
+      "reading_scope": "try_from, into, deny_unknown_fields"
+    },
+    {
+      "title": "schemars 1.2.3 derive",
+      "url": "https://docs.rs/schemars/1.2.3/schemars/derive.JsonSchema.html",
+      "reading_scope": "!try_from/!into, ranges and patterns"
+    },
+    {
+      "title": "ts-rs 12.0.1 TS",
+      "url": "https://docs.rs/ts-rs/12.0.1/ts_rs/trait.TS.html",
+      "reading_scope": "Config::with_out_dir and export_all"
+    }
+  ],
+  "actual_product_runtime": null,
+  "product_API_operations_implemented": 0,
+  "frontend_or_Figma_start": null,
+  "packaging_motion_contract": {
+    "handoff_id": "H64-01",
+    "motion_type": "PackagingMotion::FixedPose(FixedPoseMotion)",
+    "carrier": "FixedPoseMotion",
+    "required_fields": [
+      "part_id",
+      "pose"
+    ],
+    "serialized_shape": {
+      "kind": "fixed_pose",
+      "data": {
+        "part_id": "declared PackagePart.id",
+        "pose": "canonical Pose"
+      }
+    },
+    "target_resolution": "part_id must resolve within this frozen PackageStructureJob.parts; unknown target is InvalidInput with exact request field pointer; never first part/root-panel inference",
+    "execution": "the named part current root pose at step start must geometrically match pose under frozen numerical policy and remain held for the whole interval; no reset, teleport or modification of another part",
+    "mismatch": "definite mismatch is an ordinary professional Fail/witness; unresolved numeric matching remains Undetermined; never move to requested pose before checking",
+    "required_checks": [
+      "full-interval collision including other parts and product obstacles",
+      "already-active fixed connection closure throughout interval",
+      "terminal connection activation only after the entire step succeeds and terminal closure is proved"
+    ],
+    "legacy_bare_pose": "reject malformed shape; unpublished design revision has no compatibility layer, automatic migration or new operation",
+    "consumers": {
+      "compute": "ComputePackagingParams.packaging_job.steps[i].motion; same canonical PackageStructureJob",
+      "edit": "EditCommand::PutPackagingJob(Box<PackageStructureJob>); entire candidate validation before one commit",
+      "professional_UI": {
+        "form_group": "F19-05",
+        "target_field": "/steps/{i}/motion/data/part_id",
+        "pose_field": "/steps/{i}/motion/data/pose",
+        "rule": "explicit part selector and hold pose; saving is not geometric Pass; no separate private Job"
+      },
+      "Agent": "read existing Job part IDs then author the identical motion through existing apply_commands / compute_packaging; no fallback to first part",
+      "preview": "show selected part, requested/current pose and full interval evidence; rendering cannot reset solver state or create a Pass"
+    },
+    "proof_input_ref": "tools/type-contract-proof/fixed-pose-cases.design.json",
+    "native_proof_ref": "tools/type-contract-proof/output/fixed-pose-native-result.json",
+    "schema_and_reference_proof_ref": "tools/type-contract-proof/output/fixed-pose-contract-result.json",
+    "typed_consumer_ref": "tools/type-contract-proof/fixed-pose-consumer.ts",
+    "actual_product_execution": null,
+    "shared_merge_report_ref": "docs/04_开发与验收/H64-01_公共契约合入.json"
+  },
+  "packaging_geometric_input_contract": {
+    "handoff_id": "H64-02",
+    "spec_refs": [
+      "docs/03_架构与契约/纸包装结构与过程算法.md",
+      "docs/03_架构与契约/纸包装数值与制造规则.md",
+      "docs/03_架构与契约/纸包装局部接触与连接契约.json"
+    ],
+    "coordinates": [
+      "FoldBand.axis_start_mm/axis_end_mm are in panel_a local coordinates",
+      "PanelDefinition.flat_pose maps panel to its owning part flat coordinates",
+      "PackagePart.placement maps part to Job coordinates",
+      "geometry Pose.scale must be (1,1,1); mm/right-handed-z-up at the declared packaging boundary"
+    ],
+    "allowance": "one paired allowance ID: selected panel-face patch extruded inward by declared depth 0<=d<min(panel thicknesses), active only for named existing steps; same-ID bilateral membership required; no numeric dead-zone enlargement",
+    "input_domain_errors": [
+      "unknown part/panel/step/connection/allowance IDs",
+      "non-simple or out-of-face patch",
+      "negative or whole-thickness inward depth",
+      "combined allowances for same pair/step authorize an entire panel solid",
+      "unsupported unit/coordinate/scale semantics"
+    ],
+    "unresolved_geometry": "unsupported clipping or uncertified precision remains Undetermined, not an input-domain rejection or expanded permission",
+    "connection": "initially closed connection or activation after its named entire step passes and terminal closure is proved; once active, preserve closure through later intervals",
+    "manufacturing": "glue derives from actual common projected allowed regions at the active endpoint; SVG contains real part/panel/band/connection/allowance/step identities; no inferred patch from frames",
+    "new_public_fields_required": false
+  },
+  "timeline_runtime_contract": {
+    "id": "TC01_TC02",
+    "status": "merged_canonical_types_and_consumers_product_execution_pending",
+    "source_ref": "packages/domain/types.design.rs",
+    "producer": "simulation owns actual transitions; desktop_host publishes same frozen Run input/frontier",
+    "fields": {
+      "JobState.execution_ref": "JobExecutionRef = project_device{device_id,route_step_id nullable,execution_capacity_ref:ObjectRef} | definition_cycle{module_ref}",
+      "WaitInterval.execution_ref": "JobExecutionRef nullable; only known execution assignment, generic resource wait stays null",
+      "WaitInterval.phase_ref": "PhaseId nullable; blocked phase at that historical wait, not final Job.phase_ref",
+      "RunResult.computed_until_ms": "SimTimeMs nullable; exact same frontier as RunSummary",
+      "RunResult.phase_work_intervals": "Vec<PhaseWorkInterval>",
+      "PhaseWorkInterval": "job_id, phase_id, interval, effective_progress_start_ms, effective_progress_end_ms, end_cause",
+      "PhaseWorkEndCause": "phase_completed | interrupted | computed_boundary",
+      "InitialConditions.material_allocations": "Vec<MaterialAllocation>; initial modes only soft_plan or hard_reserved, never committed WIP replay",
+      "RuntimeItem.split_from_ref": "ObjectId nullable; immediate source batch/lot when split, otherwise null",
+      "ResourceClaim.phase_ref": "PhaseId nullable; required for phase-kind claims, captured historical phase",
+      "ResourceClaim.interval_end_causes": "Vec<ClaimIntervalEndCause>; ordinal one-to-one with intervals",
+      "ClaimIntervalEndCause": "released | observation_end | computed_boundary",
+      "WaitInterval.end_cause": "WaitEndCause = condition_changed | resolved | observation_end | computed_boundary"
+    },
+    "execution_rules": [
+      "执行引用固定于Run输入中的设备/路线步骤；相同模块不能合并设备。定义隔离周期无正式设备身份。",
+      "执行容量仅Device/Resource引用；Device容量id必须等于device_id，Resource必须是明确绑定的实际机位。容量ID在预留账本无歧义；不以名称/坐标/人员推断。",
+      "O只消费同一job_id且ResourceClaim.resource_id等于该execution_capacity_ref.id的实际取得区间；缺容量记录为未取得证明，不从人员忙碌推出设备占用。",
+      "等待可在Job建立前携带已知执行引用和blocked phase；纯资源等待不附猜测的设备/阶段。"
+    ],
+    "phase_rules": [
+      "所有有效段为正长度半开区间，progress增量等于实际有效工作ms；等待/停工不计入，零阶段只使用原PhaseCompleted点事件。",
+      "按job_id/phase_id序记录正段，暂停恢复延续有效进度；完成端必须有同刻真实PhaseCompleted事件。",
+      "前缀/暂停/取消时截至computed_until_ms，computed_boundary不是完成；无计算边界不返回已工作区间。",
+      "部分快照截取正在进行的段为computed_boundary；恢复后的下一快照替换该临时截断段，不在原段上追加重叠历史；旧已导出评估快照不被重写。",
+      "同刻边界若完成，先完成该刻闭包并记PhaseCompleted，再形成快照；不能把已真实完成写成computed_boundary。"
+    ],
+    "read_contract": {
+      "operation": "get_run",
+      "query": "FullResult or managed typed result file",
+      "summary": "same input_ref and computed_until_ms",
+      "objects_at": "same Run and confirmed time <= computed_until_ms",
+      "events": "interval null means unfiltered time but still scoped/stably paged; observer end-point events use closed point membership; duration intervals remain half-open",
+      "new_operations": 0
+    },
+    "consumers": [
+      {
+        "owner": "factory_ui",
+        "use": "group/device identity, B effective work, W waits, O exact capacity union; no B/W/O sum shortcut"
+      },
+      {
+        "owner": "presentation",
+        "use": "historical phase effective progress/pose; wait keeps known prior progress, no nominal duration reconstruction"
+      },
+      {
+        "owner": "authoring_ui",
+        "use": "readonly current Run tags and blocked historical phase"
+      },
+      {
+        "owner": "reporting",
+        "use": "same selected Run snapshot/source/frontier/effective intervals; prefix result explicitly labelled"
+      }
+    ],
+    "derived_proof_refs": [
+      "tools/type-contract-proof/output/schemas/run.schema.json",
+      "tools/type-contract-proof/output/api-schemas/get_run.response.schema.json",
+      "tools/type-contract-proof/output/typescript/RunResult.ts",
+      "tools/type-contract-proof/timeline-consumer.ts",
+      "tools/type-contract-proof/output/timeline-contract-proof-result.json"
+    ],
+    "actual_product_runtime": null,
+    "public_operations": 18,
+    "endpoint_rules": [
+      "所有持续区间沿用正长度半开区间；任何结束均不超过computed_until_ms。",
+      "Claim的interval_end_causes与intervals逐项同序、数量相等；phase种类必须携带历史phase_ref。",
+      "resolved表示等待条件真正解除；condition_changed表示原因或阻塞对象改变后旧段结束并另开新段，均不能以计算截断冒充。",
+      "released表示Claim真正释放；observation_end仅用于完整观察窗口的end_ms且whole_window_computed=true；前缀/暂停/取消在computed_until_ms截断一律computed_boundary。",
+      "computed_boundary只用于恰好截至computed_until_ms的临时段；后续快照替换，不叠加。真实解除/释放与边界同刻时优先记录真实原因。",
+      "InitialConditions.material_allocations只接受soft_plan/hard_reserved；须按现有Item/需求引用、可用量和排他预留规则统一验证，拒绝committed及重复超额预留。",
+      "RuntimeItem拆分后每个子批保存直接split_from_ref，所有子批数量之和等于原源量；源转为transformed来源记录且不再计现有库存/空间，禁止源量和子量重复计入。取得/预留事务失败不得重复拆批；返工/报废/分配遵循调度算法。"
+    ],
+    "proof_scope": "Original TCF01-TCF13 preserved; TCF14-TCF20 add typed and semantic endpoint cases. 20 finite cases pass native Rust and standard Schema; real Engine/Host producers remain unimplemented.",
+    "AQ01_reading": "FullResult语义不变；其完整Response<R>过管道帧上限由ApiOutcome.Managed传递，同源文件含原Run/冻结输入/计算前沿与全部区间。解包由共同客户端负责，非UI自行重建工作历史。"
+  },
+  "professional_process_sample_contract": {
+    "source_ref": "packages/domain/types.design.rs#PackagingProcessSample",
+    "semantics_ref": "docs/04_开发与验收/特征细化/DRF03_C03_过程样本语义.json",
+    "field": "PackagingResult.process_poses:Vec<PackagingProcessSample>",
+    "identity": "parent job_ref resolves frozen Job; sample step_id/progress and unique complete panel_id/Pose; no array-index identity",
+    "time": "progress finite [0,1] is step parameter, not production milliseconds; production follows actual phase intervals/frontier",
+    "scope": "finite returned samples do not certify intervals between them; canceled/prefix missing samples never imply completion",
+    "actual_product_runtime": null
+  },
+  "reporting_and_comparison_contract": {
+    "delta_ref": "packages/reporting/public-delta.design.json",
+    "status": "canonical_Rust_Schema_TS_and_36_API_roundtrips_passed_product_execution_pending",
+    "domain_single_source": "MetricKey/MetricValue/RunMetric/MetricComparison/RunComparison moved to domain; API imports them; ScenarioComparison removed",
+    "report": "EvaluationReport.run_evaluations owns each Run input, scope, reference/window, frontier, status, metrics, frozen costs and actual intervals/events; top-level common time/window nullable when inconsistent",
+    "comparison": "RunComparison pairs first selected baseline with each candidate; typed InputChange and NumericDifference; per-object/acceptance/currency metric grouping",
+    "costs": "ScenarioInput.cost_inputs freezes typed rates, quantities, currency and source; unknown is not zero; reporting never rewrites old Run inputs",
+    "resource": "capacity-unit integrals separate open calendar occupancy and closed holding; unknown denominators/effective/waits nullable with reasons",
+    "actual_product_runtime": null,
+    "input_identity": "RunEvaluation.input_ref uses ReportRunInputRef identity projection, not project-relative file paths in standalone report; per-Run module_versions/input_assumptions/jobs/transport preserve frozen state",
+    "revision": "DRF05-r3",
+    "cost_payload": "CostEvaluation carries selected frozen inputs plus missing_conditions, not only computed lines; four InputChangeValue snapshots setup_policy/parameter_override/source_record/definition included"
+  },
+  "template_and_material_endpoint_contract": {
+    "source_ref": "docs/04_开发与验收/特征细化/DRF03_C04_本轮最小公共增量.json",
+    "status": "canonical_Rust_Schema_TS_passed_actual_adapter_consumers_rechecking",
+    "fields": {
+      "HallDesign.height_m": "Option<FiniteNumber>",
+      "TemplateSubset.locations": "Vec<StockLocation>",
+      "MaterialConnection.source/destination": "MaterialEndpoint = port(PortRef) | location(ObjectId)"
+    },
+    "rules": [
+      "未知高度仅允许draft保存；完整场地/净高检查必须明确缺输入/未定，不能site Pass或填假值。",
+      "模板命名空间同时重映射库位ID、连接端点、destination_store及line/hall引用；库位库存仍由现有Scenario/Run持有，模板不复制库存账本。",
+      "port须解析真实冻结module_ref/instance_id/port_id；location须解析真实StockLocation.id，禁止伪造模块或以名称匹配。",
+      "destination为location时destination_store等于该ID；为port时等于该端口明确绑定的接收库位；无法确定显式绑定即缺输入，不默用源库位。",
+      "库位/端口连接沿原供料/持有者/容量/运输/接受算法；边不生成物料，不绕过原子齐套或授权。"
+    ],
+    "fixture_upgrade": [
+      "tools\\type-contract-proof\\fixtures\\template.json"
+    ],
+    "actual_product_runtime": null
+  },
+  "typed_template_adoption_contract": {
+    "status": "R4_canonical_Rust_standard_Schema_421TS_and_36API_roundtrips_passed",
+    "source_ref": "docs/04_开发与验收/特征细化/DRF03_C04_r4_公共增量.json",
+    "fields": {
+      "TemplateSubset.adoption": "Option<TemplateAdoption>",
+      "ProjectState.template_adoptions": "Vec<TemplateAdoption>",
+      "MaterialRoleQuantity.declared_output_quality": "Option<QualityState>"
+    },
+    "identity": "Exact template version + one full ID remap; same typed adoption record survives template import/project reopen/frozen Run input, source archive remains a contained listed FileRef",
+    "obligations": "typed resource choice/preparation/imported claim/inspection preset/deferred seed/missing input fields; user cannot clear obligations by deleting derived Issue text",
+    "output_quality": "inputs must be null; selected declared transform/assembly/pack outputs may only use released. Effect occurs atomically on this Job actually produced result-slot IDs at final effective phase completion; no import/start/unrelated-item or order/professional acceptance effects",
+    "blocked_output": "retain the same produced item/quality/holder and claims; retry transfers existing slot without re-producing/re-releasing",
+    "readiness": "exact target/task/configuration first-use preparation marker; later pieces reuse readiness, no per-piece 30s repeat",
+    "draft_vs_ready": "nullable geometry/unselected resources/missing Product/BOM/Route remain typed draft obligations; affected execution/complete conclusion fails with named gaps; no stock/demand on import without explicit ready seed choice",
+    "fixture_upgrades": [
+      "tools\\type-contract-proof\\fixtures\\module-devices.json",
+      "tools\\type-contract-proof\\fixtures\\module-operations.json",
+      "tools\\type-contract-proof\\fixtures\\project.json",
+      "tools\\type-contract-proof\\fixtures\\template.json",
+      "tools\\type-contract-proof\\api-parse-cases.design.json"
+    ],
+    "actual_product_runtime": null,
+    "proof_refs": [
+      "tools/type-contract-proof/output/type-proof-result.json",
+      "tools/type-contract-proof/output/schema-validation-result.json",
+      "tools/type-contract-proof/output/typescript-check-result.json",
+      "tools/type-contract-proof/output/api-parse-proof-result.json",
+      "tools/type-contract-proof/output/persistence-proof-result.json"
+    ],
+    "execution_capacity_binding": "DeviceInstance.role_bindings.resources[execution_capacity]是系统保留机位角色。采用/冻结必须解析为实际ResourceInstance(kind=fixture,unit=station,capacity明确)及其Calendar；其他角色仍按普通requirement校验。JobExecutionRef.execution_capacity_ref记录该Resource；同一机位只建一份整Job Claim，不再同时按Device容量重复扣减。没有选定真实机位/日历时保存typed义务并阻止该执行用途。",
+    "effective_operation_identity": "RouteStep.operation_ref有三种互斥精确来源：同device_id已选择inline时，必须等于该DeviceInstance.module_ref，解析为该设备精确版本的有效inline行为；已选外部Operations时等于其精确ModuleRef；Tasks准备步骤按精确Task版本和target解析。不能将一个任意Devices版本当Operations使用，不能猜代版本或同时执行inline与外部规则。"
+  },
+  "managed_result_transport_ref": "docs/03_架构与契约/大结果传输设计.md",
+  "actual_foundation_implementation": {
+    "result_ref": "docs/04_开发与验收/P0-01_首个后端切片.json",
+    "rust_source_refs": [
+      "packages/domain/src/lib.rs",
+      "packages/domain/src/value_types.rs",
+      "packages/domain/src/ids.rs"
+    ],
+    "derived_TS_ref": "packages/domain/generated/value-types.ts",
+    "implemented_types": [
+      "SafeUint",
+      "FiniteNumber",
+      "RelativeFilePath",
+      "Revision",
+      "SimTimeMs",
+      "DurationMs",
+      "ProjectId",
+      "ObjectId",
+      "ScenarioId",
+      "RunId",
+      "TaskId",
+      "ModuleId",
+      "AssetId",
+      "ArtifactId",
+      "RoleId",
+      "PortId",
+      "PhaseId",
+      "UnitId",
+      "SubjectRevisionId",
+      "VersionId"
+    ],
+    "complete_domain_contract_implemented": false,
+    "business_API_operations_implemented": 0
+  },
+  "product_boundary_implementation": {
+    "status": "implemented_typed_boundary_not_Host_handlers",
+    "task_id": "P0-01",
+    "result_ref": "docs/04_开发与验收/P0-01_工程类型与Command边界切片.json",
+    "domain_source_ref": "packages/domain/src/models.rs",
+    "command_source_ref": "packages/commands/src/api.rs",
+    "generator_ref": "packages/commands/src/bin/export-contracts.rs",
+    "generate_command": "npm run generate:contracts",
+    "TS_ref": "packages/commands/generated/typescript/ApiRequest.ts",
+    "project_schema_ref": "packages/commands/generated/schemas/project.schema.json",
+    "command_schema_ref": "packages/commands/generated/schemas/apply_commands.request.schema.json",
+    "boundary_tests_passed": 17,
+    "schema_cases_passed": 32,
+    "implemented_public_operations": 0
+  },
+  "typed_pack_identity_contract": {
+    "status": "explicit_mapping_added_runtime_implementation_in_progress",
+    "fields": {
+      "OperationDefinition.pack_identity": "Option<PackIdentityRule>",
+      "PackIdentityRule.output_role": "RoleId",
+      "PackIdentityRule.container_material_roles": "Vec<RoleId>",
+      "PackIdentityRule.content_roles": "Vec<RoleId>"
+    },
+    "rule": "Pack + ContainerWithContents必须声明OperationDefinition.pack_identity，output_role精确指向唯一实际输出角色；container_material_roles和content_roles均非空、各自不重复且互斥，恰好覆盖全部inputs角色；不按英文角色名、顺序或输出类型推断。一次实际装盒产生新容器ID，包装材料源保留ID及来源关系但转为transformed，内容保留原ID/类型/质量/组成并将唯一holder变为该容器；容器composition_refs只记录包装材料，contents只记录内容。内容仍是物理对象但不重复算外部自由库存/库位空间，空盒源不再算现有库存；输出类型/数量/单位与质量取实际输出声明，内容单位不改成箱单位。缺映射或不一致允许保存草稿，但阻止该工序执行并定位pack_identity；非Pack不得借该字段改变身份。现有carton-pack/parameterized-pack显式contents_from=product、container_material_from=carton映射为output_role=package/container_material_roles=[carton]/content_roles=[product]，该已知来源映射不推广成按名称猜测规则。",
+    "source_ref": "packages/domain/types.design.rs",
+    "runtime_implementation_ref": "docs/04_开发与验收/整包派发/P1-01_整包执行.json",
+    "actual_result": null
+  },
+  "typed_instance_parameter_source_contract": {
+    "field": "ProjectState.parameter_sources:Vec<ParameterSource>",
+    "serialization": "serde default empty and skip_serializing_if Vec::is_empty; ts-rs uses serde field optionality",
+    "source_ref": "docs/03_架构与契约/公开操作与宿主调用契约.json#/instance_declared_parameter_contract",
+    "status": "implementation_and_consumer_verification_in_progress",
+    "actual_result": null
+  },
+  "typed_manual_acceptance_goal_contract": {
+    "status": "implemented_and_bounded_Engine_Host_native_verified",
+    "field": "ScenarioInput.acceptance_goal: Option<FactoryGenerationGoal>",
+    "source": "Explicit manual no-order acceptance declaration, independently saved with the selected Scenario through existing PutObject Scenario",
+    "compatibility": "Absent or null reads as no manual goal; None omits the new field on write to preserve exact legacy Scenario shape. Some writes the complete explicit goal. No new operation or fake GenerationContext/OrderLine.",
+    "selection": "A supplied manual goal must agree exactly with any genuine frozen GenerationContext.goal and internal explicit goal. Conflict blocks enqueue; OrderLines and a manual goal are mutually exclusive.",
+    "freeze": "The exact selected Scenario revision containing acceptance_goal is saved in RunInputRef.frozen_scenario_file; later goal edits form a new Scenario/Project revision and never change old Run/stock/events.",
+    "execution": "Exact product revision/unit/destination/stage/window, positive optional target and declared calendar are checked before enqueue by the same Engine. No inference from device name, output, missing goal, latest source or target quantity.",
+    "quantity": "Target controls only full-window goal comparison, never caps production, stock, arrivals or cumulative acceptance. Per-day conclusions require the explicitly declared daily observation basis; short cases prove only their stated finite window.",
+    "history": "Goal acceptance records have nonempty real accepted items and order_id=null; no synthetic order/allocation/allow_partial/GenerationContext.",
+    "task_refs": [
+      "docs/04_开发与验收/整包派发/P0-01_整包执行.json",
+      "docs/04_开发与验收/整包派发/P1-01_整包执行.json",
+      "docs/04_开发与验收/整包派发/P1-03_整包执行.json"
+    ],
+    "actual_result": {
+      "actual_Host_result_ref": ".work/whole-packages/native-143-result.json",
+      "Engine_result_ref": "docs/04_开发与验收/整包派发/P1-03_整包执行.json#/shared_goal_source_integration",
+      "scope": "Actual finite declared input consumers, not whole original package/UI/daily/release acceptance",
+      "current_concentrated_result_ref": ".work/whole-packages/verification-with-packaging/result.json"
+    }
+  },
+  "typed_order_transport_execution_contract": {
+    "status": "shared_type_source_frozen_actual_Engine_Host_consumers_pending",
+    "observed_gaps": [
+      "One physical Assembly needs exact A/B operation/family choices; the current compiler accepts only one default operation binding",
+      "Flat TransportDefinition.resources cannot state loading-only/unloading-only requirements without name heuristics"
+    ],
+    "fields": {
+      "DeviceInstance.route_operation_refs": "Vec<ModuleRef>; default empty and skip empty",
+      "TransportDefinition.loading_resources": "Vec<ResourceRequirement>; default empty and skip empty",
+      "TransportDefinition.unloading_resources": "Vec<ResourceRequirement>; default empty and skip empty"
+    },
+    "compatibility": "New empty arrays omit on write and absent reads empty; all previous no-choice/no-phase inputs retain their exact shape. The existing default source and whole-trip resources are unchanged.",
+    "operation_choice": {
+      "selection": "For each RouteStep, use exactly its operation_ref if it matches the current explicit default/inline source or an explicitly listed route_operation_refs entry. Additional entries are exact loaded Operations modules, never latest/category/name fallback.",
+      "physical_owner": "All alternatives remain the same DeviceInstance and execution_capacity ResourceInstance; no second physical Assembly, clock, inventory or capacity.",
+      "per_job": "Every actual Job records its one selected exact source. Material roles, ports, parameters, family, duration and readiness come from that definition and the explicit step bindings; do not merge different source trees.",
+      "validation": "Missing/mismatched/duplicate choice, unsupported category, incompatible material/resource/unit/parameter or binding cannot execute. Existing professional producer/purpose/binding/selected-input authorization is not granted by this list; an actual professional operation must still match its real consumer gate."
+    },
+    "transport_resources": {
+      "resources": "Existing resources remain held for the whole actual trip, including declared waits and return; no role name is reinterpreted into a phase.",
+      "loading_resources": "Acquire only for actual loading; release on loading completion. Waiting does not manufacture elapsed work or cargo.",
+      "unloading_resources": "Acquire only for actual unloading; retain cargo and whole-trip resources while unavailable/blocked, release the phase requirement on completion.",
+      "binding": "All tables use explicit ResourceRequirement.role through SupplyRelation.resources to actual resources with exact quantity units/qualification/calendar. Roles may have arbitrary names; no loader/unloader string inference.",
+      "aliases": "Same physical resource aliased within one trip merges overlapping declared requirements by maximum, as existing job/phase rules; independent jobs/trips still compete on aggregate actual capacity.",
+      "boundaries": "Existing declared stage times and non-preemptive conditions remain; zero-duration stages cannot claim a closed calendar boundary. Unknown durations/resources remain named gaps, not zero/default availability."
+    },
+    "task_refs": [
+      "docs/04_开发与验收/整包派发/P1-04_整包执行.json",
+      "docs/04_开发与验收/整包派发/P2-02_整包执行.json"
+    ],
+    "actual_result": null,
+    "contract_ref": "docs/04_开发与验收/P1-04_P2-02_共同类型接收约定.json"
+  },
+  "typed_template_preparation_contract": {
+    "scope": "P4-01 backend reception within P0-01 original step2; whole task acceptance remains pending",
+    "carrier": "TemplateInstantiation.preparation: Option<TemplatePreparationChoices>",
+    "fields": {
+      "source_project": "RelativeFilePath; declared actual selected ModulePackage file",
+      "namespace": "String",
+      "resources": "BTreeMap<ObjectId,Option<ObjectId>>; null=create declared example; ID=reuse actual resource; missing=unresolved",
+      "reuse_items": "BTreeMap<ObjectId,ObjectId>",
+      "include_example_product": "bool",
+      "site_envelope": "Option<SiteEnvelope>"
+    },
+    "authority": "Choices grant no capability or acknowledgment and cannot supply source/adoption records. Host replays the same prepare_template from actual exact selected archive, validates the complete candidate and commits derived new-ID adoption/source/parameter_source in the same authorized atomic candidate.",
+    "compatibility": "Absent/null preparation retains existing command shape, accepted only when one complete actual-source replay exactly matches proposed objects and bindings. Explicit choices are used for declared source/namespace/reuse/site.",
+    "source_refs": [
+      "packages/commands/api.design.rs",
+      "packages/commands/src/api.rs",
+      "packages/commands/src/host_definitions.rs",
+      "packages/commands/src/project_host.rs"
+    ],
+    "actual_evidence": {
+      "supported_host_stdout_ref": ".work/whole-packages/template-host-reception-supported-host.stdout.txt",
+      "host_checks": 145,
+      "contract_checks": 5,
+      "latest_supplement_recompile_ref": ".work/whole-packages/template-host-reception-owner-final-second.stderr.txt",
+      "latest_supplement_status": "blocked_at_compile_by_active_Engine_setup_rs_rewrite_not_test_failure",
+      "new_concentrated_result": null,
+      "independent_reception": "pending W2 full producer regression and W5 strict original metadata consumers; W6 F06 not declared closed yet"
+    }
+  },
+  "explicit_quality_reinspection_contract": {
+    "task_id": "P1-05",
+    "gap_id": "P105-EXPLICIT-REINSPECT-DISPOSITION",
+    "status": "canonical_runtime_product_type_schema_TS_verified_actual_Engine_and_independent_reception_pending",
+    "type": "QualityDisposition::Reinspect",
+    "wire_value": "reinspect",
+    "unchanged_existing_values": [
+      "pending",
+      "release",
+      "rework",
+      "isolate",
+      "scrap"
+    ],
+    "producer": "Existing ScenarioInput.initial_conditions.declared_quality_decisions:QualityDecision with exact item_ref/inspection_ref/source_kind/effective_at_ms/decision_source",
+    "consumer": "Unique Engine starts a distinct actual inspection attempt on the same physical item and exact inspection definition. It acquires actual resources and honors duration/preset cursor; pending-store item is not removed before its real check can start; hold-station handoff is atomic.",
+    "semantics": "Reinspection performs a new check; it is not rework and does not increment completed_reworks. Previous completed attempt stays completed. UNKNOWN remains pending; actual rejected recheck follows declared finite-rework/isolation policy. It does not grant professional acknowledgment or manufacture a human decision.",
+    "state_and_storage": "No new QualityDecision payload or independent quality state. Existing declared preset/human/provider source, exact refs, time, archive, frozen Scenario and event contracts remain.",
+    "source_refs": [
+      "packages/domain/types.design.rs",
+      "packages/domain/src/models.rs"
+    ],
+    "wire_version": "Existing API0.1/schema1.0 unchanged; all existing enum strings remain unchanged.",
+    "verification": "Root Schema cases cover explicit reinspect and rejection of invented automatic_pass; actual Engine behavior is owned by W3 and independent W5 consumers, not inferred from type parsing.",
+    "actual_type_verification": {
+      "canonical_native_stdout_ref": ".work/whole-packages/reinspect-design-types.stdout.txt",
+      "canonical_schema_stdout_ref": ".work/whole-packages/reinspect-design-schemas.stdout.txt",
+      "canonical_format_stdout_ref": ".work/whole-packages/reinspect-design-format.stdout.txt",
+      "product_generation_stdout_ref": ".work/whole-packages/reinspect-product-types.stdout.txt",
+      "product_schema_result_ref": ".work/whole-packages/reinspect-product-schema.json",
+      "product_TS_stdout_ref": ".work/whole-packages/reinspect-product-typecheck.stdout.txt",
+      "product_schema_documents": 40,
+      "product_schema_cases": 82,
+      "actual_Engine_disposition_execution_proven_by_types": false
+    }
+  },
+  "equipment_model_quality_ref": "docs/02_交互设计/设备建模精度与表现验收规范.json",
+  "typed_item_media_source_contract": {
+    "canonical_source": "packages/domain/src/models.rs",
+    "design_source": "packages/domain/types.design.rs",
+    "field": "ItemType.module_ref",
+    "type": "Option<ModuleRef>",
+    "producer": "Actual Items adoption sets the exact adoption.module_ref on explicit targets and new adopted ItemType instances; no second Presentation copy.",
+    "reader": "Resolve the matching frozen item_type_ref through that ItemType and exact Items module, then its existing presentation_or_media_ref and declared dependencies/rights.",
+    "missing": "Old or manually created types without an explicit source remain unavailable; no name/spec/current-library guess.",
+    "revision": "Existing Command Scope/R/authorization/atomic adoption, undo/redo, save/move fresh Host and old Run frozen source rules apply.",
+    "spatial_boundary": "This reference supplies media identity only. It does not assign actual items to holder nodes, poses, container slots or pallet stack positions.",
+    "packet_ref": "docs/04_开发与验收/整包派发/P0-01_P3-02_物品精确媒体来源完整续作.md",
+    "actual_evidence_ref": "scenarios/媒体表现/runtime-item-media-source/",
+    "whole_product_acceptance": false,
+    "record": "ItemType"
+  },
+  "typed_item_slot_layout_contract": {
+    "canonical_source": "packages/domain/types.design.rs",
+    "runtime_source": "packages/domain/src/models.rs",
+    "fields": {
+      "DeviceInstance.item_layout": "Option<ItemSlotLayout>",
+      "StockLocation.item_layout": "Option<ItemSlotLayout>",
+      "ItemType.contents_layout": "Option<ItemSlotLayout>"
+    },
+    "ItemSlotLayout": {
+      "assignment": "ItemSlotAssignment::ItemIdOrder (wire item_id_order)",
+      "slots": "Vec<ItemDisplaySlot>"
+    },
+    "ItemDisplaySlot": {
+      "item_type_ref": "SubjectRevisionRef: exact child ItemType id/revision",
+      "anchor_role": "Option<RoleId>: final selected holder Presentation scene_node role; Location null",
+      "offset": "Pose: explicit translation/rotation/scale/unit/coordinate_frame"
+    },
+    "legacy": "Missing/null means unset, write omitted. No implicit slot, pose, assignment or business capacity. Explicit empty layout remains distinguishable.",
+    "authoring": "Normal Edit / item display slots workspace, structured three-owner input, original PutObject/Project Scope/R/UndoRedo/save and frozen Run; local conflict input retained.",
+    "reference_validation": "Unknown exact child id/revision rejects candidate atomically; template explicit subset closes children and existing id/reuse mapping preserves revisions.",
+    "authorization": "Existing equal-length slot-array scalar changes require each exact RFC6901 leaf; no parent/wildcard/structural expansion. New owner requires all exact creation leaves and original creation budget.",
+    "visual_missing": "Missing anchor/media, wrong location anchor or empty explicit slots produces nonblocking item_layout.missing_display_source; inventory/timing/capacity unchanged.",
+    "consumer": "Same frozen Project plus actual ItemsAt/JobsAt; one pool per physical holder+exact child type, deterministic ID order and slots order, final LOD rig resolves role, native_scene may have no AssetRef. Overflow/missing parent/transport pose stays explicit unavailable.",
+    "producer_evidence_ref": "scenarios/媒体表现/runtime-item-layout-producer/verification.json",
+    "consumer_packet_ref": "docs/04_开发与验收/整包派发/P2-01_P3-02_持久化展示槽创作与场景完整消费者续作.md",
+    "consumer_actual_status": "frozen received: structured three-owner original Workbench entry, actual saved/moved source and same frozen item scene; main12 plus wait1, original business unchanged",
+    "new_public_operations": 0,
+    "new_Host_or_Native_space_getters": 0,
+    "actual_Native_acceptance": null,
+    "whole_product_acceptance": false,
+    "consumer_evidence_ref": "scenarios/媒体表现/runtime-item-layout-consumer/handoff.md"
+  }
+}

@@ -1,0 +1,418 @@
+{
+  "contract": "ALG-03/04/05 + original IX-01; predictions frozen before execution",
+  "cases": [
+    {
+      "name": "original-phase",
+      "input": "original-phase.json",
+      "expected_work": [
+        [
+          "load",
+          0,
+          5000
+        ],
+        [
+          "auto",
+          5000,
+          35000
+        ],
+        [
+          "unload",
+          40000,
+          45000
+        ]
+      ],
+      "finished_at_ms": 45000,
+      "machine_intervals": [
+        [
+          0,
+          45000
+        ]
+      ],
+      "worker_ms": 10000,
+      "moments": [
+        0,
+        4999,
+        5000,
+        9999,
+        10000,
+        14999,
+        15000,
+        19999,
+        20000,
+        30000,
+        35000,
+        39999,
+        40000,
+        45000,
+        49999,
+        50000,
+        55000,
+        64999,
+        65000,
+        69999,
+        70000,
+        79999,
+        80000,
+        84999,
+        85000,
+        100000
+      ],
+      "waits": [
+        [
+          35000,
+          40000,
+          "calendar",
+          "unload"
+        ]
+      ],
+      "source": "frozen p1-phase-calendar.json; original 45s/worker10s; only invalid saved hall H-A corrected to declared H-1",
+      "logistics": false
+    },
+    {
+      "name": "pause-interphase-output",
+      "input": "pause-interphase-output.json",
+      "expected_work": [
+        [
+          "load",
+          10000,
+          15000
+        ],
+        [
+          "auto",
+          15000,
+          20000
+        ],
+        [
+          "auto",
+          40000,
+          65000
+        ],
+        [
+          "unload",
+          80000,
+          85000
+        ]
+      ],
+      "finished_at_ms": null,
+      "machine_intervals": [
+        [
+          10000,
+          100000
+        ]
+      ],
+      "worker_ms": 10000,
+      "moments": [
+        0,
+        4999,
+        5000,
+        9999,
+        10000,
+        14999,
+        15000,
+        19999,
+        20000,
+        30000,
+        35000,
+        39999,
+        40000,
+        45000,
+        49999,
+        50000,
+        55000,
+        64999,
+        65000,
+        69999,
+        70000,
+        79999,
+        80000,
+        84999,
+        85000,
+        100000
+      ],
+      "waits": [
+        [
+          20000,
+          40000,
+          "calendar",
+          "auto"
+        ],
+        [
+          65000,
+          80000,
+          "calendar",
+          "unload"
+        ],
+        [
+          85000,
+          100000,
+          "output_capacity",
+          null
+        ]
+      ],
+      "source": "existing tests/simulation/p103-closeout/support.rs combined(pause_resume,0); explicit new module IDs",
+      "logistics": false
+    },
+    {
+      "name": "nonpreemptive-control",
+      "input": "nonpreemptive-control.json",
+      "expected_work": [
+        [
+          "load",
+          10000,
+          15000
+        ],
+        [
+          "auto",
+          40000,
+          70000
+        ],
+        [
+          "unload",
+          80000,
+          85000
+        ]
+      ],
+      "finished_at_ms": 85000,
+      "machine_intervals": [
+        [
+          10000,
+          85000
+        ]
+      ],
+      "worker_ms": 10000,
+      "moments": [
+        0,
+        4999,
+        5000,
+        9999,
+        10000,
+        14999,
+        15000,
+        19999,
+        20000,
+        30000,
+        35000,
+        39999,
+        40000,
+        45000,
+        49999,
+        50000,
+        55000,
+        64999,
+        65000,
+        69999,
+        70000,
+        79999,
+        80000,
+        84999,
+        85000,
+        100000
+      ],
+      "waits": [
+        [
+          15000,
+          40000,
+          "calendar",
+          "auto"
+        ],
+        [
+          70000,
+          80000,
+          "calendar",
+          "unload"
+        ]
+      ],
+      "source": "existing combined(non_preemptive,1), explicit new module IDs",
+      "logistics": false
+    },
+    {
+      "name": "pause-aux-release",
+      "input": "pause-aux-release.json",
+      "expected_work": [
+        [
+          "load",
+          10000,
+          15000
+        ],
+        [
+          "auto",
+          15000,
+          20000
+        ],
+        [
+          "auto",
+          40000,
+          65000
+        ],
+        [
+          "unload",
+          65000,
+          70000
+        ]
+      ],
+      "finished_at_ms": 70000,
+      "machine_intervals": [
+        [
+          10000,
+          70000
+        ]
+      ],
+      "worker_ms": 40000,
+      "moments": [
+        0,
+        4999,
+        5000,
+        9999,
+        10000,
+        14999,
+        15000,
+        19999,
+        20000,
+        30000,
+        35000,
+        39999,
+        40000,
+        45000,
+        49999,
+        50000,
+        55000,
+        64999,
+        65000,
+        69999,
+        70000,
+        79999,
+        80000,
+        84999,
+        85000,
+        100000
+      ],
+      "waits": [
+        [
+          20000,
+          40000,
+          "calendar",
+          "auto"
+        ]
+      ],
+      "source": "explicit declared variant of phased fixture; add worker to auto, ALG-04 pause_resume releases phase-only worker and retains job capacity",
+      "logistics": false
+    },
+    {
+      "name": "auxiliary-busy",
+      "input": "auxiliary-busy.json",
+      "expected_work": [
+        [
+          "load",
+          0,
+          5000
+        ],
+        [
+          "auto",
+          5000,
+          35000
+        ],
+        [
+          "unload",
+          50000,
+          55000
+        ]
+      ],
+      "finished_at_ms": 55000,
+      "machine_intervals": [
+        [
+          0,
+          55000
+        ]
+      ],
+      "worker_ms": 10000,
+      "moments": [
+        0,
+        4999,
+        5000,
+        9999,
+        10000,
+        14999,
+        15000,
+        19999,
+        20000,
+        30000,
+        35000,
+        39999,
+        40000,
+        45000,
+        49999,
+        50000,
+        55000,
+        64999,
+        65000,
+        69999,
+        70000,
+        79999,
+        80000,
+        84999,
+        85000,
+        100000
+      ],
+      "waits": [
+        [
+          35000,
+          50000,
+          "resource_busy",
+          "unload"
+        ]
+      ],
+      "source": "existing owner.rs unload_waits_for_a_real_other_job_holding_worker adapted to frozen w5 fixture; actual bench task45000ms released5000ms; explicit new module IDs",
+      "logistics": false
+    },
+    {
+      "name": "ix01-baseline",
+      "input": "ix01-baseline.json",
+      "logistics": true,
+      "expectation": "baseline",
+      "moments": [
+        0,
+        59999,
+        60000,
+        239999,
+        240000,
+        260000,
+        269999,
+        270000,
+        369999,
+        370000,
+        419999,
+        420000,
+        425000,
+        440000,
+        570000,
+        600000
+      ],
+      "source": "unchanged original fixture p202-ix01-baseline.json; business fields unchanged, view selected_hall corrected H-A to existing H1"
+    },
+    {
+      "name": "ix01-delayed",
+      "input": "ix01-delayed.json",
+      "logistics": true,
+      "expectation": "delayed_pcb",
+      "moments": [
+        0,
+        59999,
+        60000,
+        239999,
+        240000,
+        260000,
+        269999,
+        270000,
+        369999,
+        370000,
+        419999,
+        420000,
+        425000,
+        440000,
+        570000,
+        600000
+      ],
+      "source": "unchanged original fixture p202-ix01-delayed-pcb.json; business fields unchanged, view selected_hall corrected H-A to existing H1"
+    }
+  ]
+}

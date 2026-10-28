@@ -1,0 +1,1701 @@
+{
+  "document_kind": "S06_03_public_API_and_Host_call_contract_candidate_not_product_implementation",
+  "checkpoint": "S06-03",
+  "date": "2026-10-14 Asia/Shanghai",
+  "status": "passed_document_specification",
+  "spec_md_ref": "docs/03_架构与契约/公开操作与宿主调用契约.md",
+  "review_ref": "docs/04_开发与验收/S06-03_公开操作与宿主调用契约复审.json",
+  "rust_API_source_ref": "packages/commands/api.design.rs",
+  "domain_source_ref": "packages/domain/types.design.rs",
+  "type_format_spec_ref": "docs/03_架构与契约/全层类型与工程格式.json",
+  "catalog_ref": "packages/commands/command-catalog.design.json",
+  "ownership_ref": "docs/03_架构与契约/共享状态与所有权.json",
+  "algorithm_ref": "docs/03_架构与契约/调度与状态转换算法.json",
+  "api_version": "0.1",
+  "project_file_version": "1.0",
+  "IPC_wire_version": "1",
+  "operations": [
+    {
+      "operation": "describe_capabilities",
+      "mcp_tool_name": "superfactory_describe_capabilities",
+      "params_type": "DescribeCapabilitiesParams",
+      "service_method": "describe_capabilities",
+      "request_schema_ref": "tools/type-contract-proof/output/api-schemas/describe_capabilities.request.schema.json",
+      "response_schema_ref": "tools/type-contract-proof/output/api-schemas/describe_capabilities.response.schema.json",
+      "allowed_scopes": [
+        "workspace"
+      ],
+      "effect": "readonly",
+      "admission_output": "CapabilityCatalog",
+      "completed_task_output": null,
+      "conditions": "actual implemented registry filtered by authenticated grant; planned catalogue never creates availability",
+      "runtime_available": true,
+      "implementation_status": "implemented_minimal_scope",
+      "implementation_ref": "docs/04_开发与验收/S08_共同Host与Engine专业联通切片.json",
+      "implementation_limitations": "实际共同Host的已测Project/Scenario/精确版本定义草稿、Scope/修订/字段授权/原子提交及会话历史，目录保存搬移重开与真实任务；完整业务UI、外部MCP进程认证、渲染、比较、ZIP/评估导出和库采用未据本片验收。"
+    },
+    {
+      "operation": "get_context",
+      "mcp_tool_name": "superfactory_get_context",
+      "params_type": "GetContextParams",
+      "service_method": "get_context",
+      "request_schema_ref": "tools/type-contract-proof/output/api-schemas/get_context.request.schema.json",
+      "response_schema_ref": "tools/type-contract-proof/output/api-schemas/get_context.response.schema.json",
+      "allowed_scopes": [
+        "workspace",
+        "project",
+        "definition_draft"
+      ],
+      "effect": "readonly",
+      "admission_output": "ProjectContext",
+      "completed_task_output": null,
+      "conditions": "workspace may have no active Project and selected_scope=None; explicit IDs/selection obey current authorized scope",
+      "runtime_available": true,
+      "implementation_status": "implemented_minimal_scope",
+      "implementation_ref": "docs/04_开发与验收/S08_共同Host与Engine专业联通切片.json",
+      "implementation_limitations": "实际共同Host的已测Project/Scenario/精确版本定义草稿、Scope/修订/字段授权/原子提交及会话历史，目录保存搬移重开与真实任务；完整业务UI、外部MCP进程认证、渲染、比较、ZIP/评估导出和库采用未据本片验收。",
+      "definition_history_contract": "DefinitionSummary.history is optional; the actual Host returns the current authorized draft revision history availability and boundary reason. Reopen reads it without mutation; absence means unknown and must not be inferred from revision. A current summary takes precedence over older EditCommit metadata."
+    },
+    {
+      "operation": "get_object",
+      "mcp_tool_name": "superfactory_get_object",
+      "params_type": "GetObjectParams",
+      "service_method": "get_object",
+      "request_schema_ref": "tools/type-contract-proof/output/api-schemas/get_object.request.schema.json",
+      "response_schema_ref": "tools/type-contract-proof/output/api-schemas/get_object.response.schema.json",
+      "allowed_scopes": [
+        "project",
+        "definition_draft"
+      ],
+      "effect": "readonly",
+      "admission_output": "DomainObject",
+      "completed_task_output": null,
+      "conditions": "typed kind/ID and exact authorized parent source; node_index selects direct Presentation.nodes canonical position, not node id/name/GLB index; final Media owner explicit, no automatic MediaRef jump; frozen Run stays readonly",
+      "runtime_available": true,
+      "implementation_status": "implemented_minimal_scope",
+      "implementation_ref": "docs/04_开发与验收/S08_共同Host与Engine专业联通切片.json",
+      "implementation_limitations": "实际共同Host的已测Project/Scenario/精确版本定义草稿、Scope/修订/字段授权/原子提交及会话历史，目录保存搬移重开与真实任务；完整业务UI、外部MCP进程认证、渲染、比较、ZIP/评估导出和库采用未据本片验收。"
+    },
+    {
+      "operation": "apply_commands",
+      "mcp_tool_name": "superfactory_apply_commands",
+      "params_type": "ApplyCommandsParams",
+      "service_method": "apply_commands",
+      "request_schema_ref": "tools/type-contract-proof/output/api-schemas/apply_commands.request.schema.json",
+      "response_schema_ref": "tools/type-contract-proof/output/api-schemas/apply_commands.response.schema.json",
+      "allowed_scopes": [
+        "workspace_UI_create_or_adopt_open_import_only",
+        "project",
+        "definition_draft"
+      ],
+      "effect": "draft_write",
+      "admission_output": "EditCommit",
+      "completed_task_output": null,
+      "conditions": "Workspace仅真实UI创建/明确采用完成的OpenProject导入且base_revision=null；Project/Draft使用目标修订；完整有类型批次原子提交，不部分写入。; C04 typed endpoints/direction/units/actual receiving store/capacity/calendar and all authorized reused references checked per ALG-03/04/07/14; missing receiver/calendar stays a named gap, no all-day/cache defaults",
+      "runtime_available": true,
+      "implementation_status": "implemented_minimal_scope",
+      "material_endpoint_admission_ref": "docs/04_开发与验收/特征细化/DRF06_五链贯通核对.json#/C04",
+      "implementation_ref": "docs/04_开发与验收/S08_共同Host与Engine专业联通切片.json",
+      "implementation_limitations": "实际共同Host的已测Project/Scenario/精确版本定义草稿、Scope/修订/字段授权/原子提交及会话历史，目录保存搬移重开与真实任务；完整业务UI、外部MCP进程认证、渲染、比较、ZIP/评估导出和库采用未据本片验收。"
+    },
+    {
+      "operation": "render_view",
+      "mcp_tool_name": "superfactory_render_view",
+      "params_type": "RenderViewParams",
+      "service_method": "render_view",
+      "request_schema_ref": "tools/type-contract-proof/output/api-schemas/render_view.request.schema.json",
+      "response_schema_ref": "tools/type-contract-proof/output/api-schemas/render_view.response.schema.json",
+      "allowed_scopes": [
+        "project",
+        "definition_draft"
+      ],
+      "effect": "readonly",
+      "admission_output": "TaskHandle",
+      "completed_task_output": "RenderOutput",
+      "conditions": "freeze scope revision and project anchor; params.view.project_revision and scope semantics consistent; actual capture/controlled UI delivery; old results not auto current",
+      "runtime_available": false,
+      "implementation_status": "planned"
+    },
+    {
+      "operation": "run_scenario",
+      "mcp_tool_name": "superfactory_run_scenario",
+      "params_type": "RunScenarioParams",
+      "service_method": "run_scenario",
+      "request_schema_ref": "tools/type-contract-proof/output/api-schemas/run_scenario.request.schema.json",
+      "response_schema_ref": "tools/type-contract-proof/output/api-schemas/run_scenario.response.schema.json",
+      "allowed_scopes": [
+        "project",
+        "definition_draft_isolated_cycle"
+      ],
+      "effect": "execute",
+      "admission_output": "TaskHandle",
+      "completed_task_output": "RunSummary",
+      "conditions": "stored or explicit isolated input revision/window and scope match; supported Engine; one formal Run; isolated definition cycle uses same Engine with explicit seeds; C04 typed endpoints/direction/units/actual receiving store/capacity/calendar and all authorized reused references checked per ALG-03/04/07/14; missing receiver/calendar stays a named gap, no all-day/cache defaults",
+      "runtime_available": true,
+      "implementation_status": "implemented_minimal_scope",
+      "material_endpoint_admission_ref": "docs/04_开发与验收/特征细化/DRF06_五链贯通核对.json#/C04",
+      "implementation_ref": "docs/04_开发与验收/S08_共同Host与Engine专业联通切片.json",
+      "implementation_limitations": "唯一Engine的已测生产/齐套/检验/保ID返工/阶段日历及factory_released接受；明确Scenario目标与冻结Run。P1-04家族准备与P2-02真实物流正在实施，未据本片验收。"
+    },
+    {
+      "operation": "get_run",
+      "mcp_tool_name": "superfactory_get_run",
+      "params_type": "GetRunParams",
+      "service_method": "get_run",
+      "request_schema_ref": "tools/type-contract-proof/output/api-schemas/get_run.request.schema.json",
+      "response_schema_ref": "tools/type-contract-proof/output/api-schemas/get_run.response.schema.json",
+      "allowed_scopes": [
+        "project",
+        "definition_draft_isolated_cycle"
+      ],
+      "effect": "readonly",
+      "admission_output": "RunView",
+      "completed_task_output": null,
+      "conditions": "authorize stored Run scope; explicit stable paging, n>0, at_ms within computed range; incomplete != complete and unknown != zero",
+      "runtime_available": true,
+      "implementation_status": "implemented_minimal_scope",
+      "timeline_contract": {
+        "full_result": "canonical RunResult includes execution refs, phase history and computed_until_ms; consumers never reconstruct nominal phases",
+        "events": "null interval removes time filtering only; scope and stable paging still apply; observer upper endpoint is point-event closed membership",
+        "objects_at": "at_ms within same exact computed frontier; reply Run/scope identity must match selected context",
+        "managed_result": "typed FullResult content and same input/frontier; no independent result model"
+      },
+      "implementation_ref": "docs/04_开发与验收/S08_共同Host与Engine专业联通切片.json",
+      "implementation_limitations": "当前实际Run的Full/Summary/Events/ObjectsAt与已计算历史边界；不以本片证明外部客户端大结果传输、报告或完整时间轴界面。"
+    },
+    {
+      "operation": "compare_runs",
+      "mcp_tool_name": "superfactory_compare_runs",
+      "params_type": "CompareRunsParams",
+      "service_method": "compare_runs",
+      "request_schema_ref": "tools/type-contract-proof/output/api-schemas/compare_runs.request.schema.json",
+      "response_schema_ref": "tools/type-contract-proof/output/api-schemas/compare_runs.response.schema.json",
+      "allowed_scopes": [
+        "project"
+      ],
+      "effect": "readonly",
+      "admission_output": "RunComparison",
+      "completed_task_output": null,
+      "conditions": "at least two Host-held actual Runs; one baseline/candidate pair per subsequent Run; typed eight-condition checks/input diffs and per-object/acceptance/currency metrics; strict, controlled_changes or side_by_side_only; no invented improvement",
+      "runtime_available": false,
+      "implementation_status": "planned"
+    },
+    {
+      "operation": "compute_packaging",
+      "mcp_tool_name": "superfactory_compute_packaging",
+      "params_type": "ComputePackagingParams",
+      "service_method": "compute_packaging",
+      "request_schema_ref": "tools/type-contract-proof/output/api-schemas/compute_packaging.request.schema.json",
+      "response_schema_ref": "tools/type-contract-proof/output/api-schemas/compute_packaging.response.schema.json",
+      "allowed_scopes": [
+        "project",
+        "definition_draft"
+      ],
+      "effect": "execute",
+      "admission_output": "TaskHandle",
+      "completed_task_output": "PackagingResult",
+      "conditions": "input_revision=job revision; explicit budget stored in frozen effective input and consistent with existing job budget; capability/input/scope match; normal Fail/Undetermined not API failure; explicit FixedPoseMotion.part_id must resolve within job.parts; pose means hold the matching current root pose, never teleport; collision and activated connection checks remain required",
+      "runtime_available": true,
+      "implementation_status": "implemented_minimal_scope",
+      "implementation_ref": "docs/04_开发与验收/S08_共同Host与Engine专业联通切片.json",
+      "implementation_limitations": "实际内置三机制/三变化有限输入、预算/取消与真实刀折胶文件；结果三态独立于任务完成，不增加库存或模拟工时。"
+    },
+    {
+      "operation": "get_task",
+      "mcp_tool_name": "superfactory_get_task",
+      "params_type": "GetTaskParams",
+      "service_method": "get_task",
+      "request_schema_ref": "tools/type-contract-proof/output/api-schemas/get_task.request.schema.json",
+      "response_schema_ref": "tools/type-contract-proof/output/api-schemas/get_task.response.schema.json",
+      "allowed_scopes": [
+        "workspace_session_owned_file_tasks_only",
+        "project",
+        "definition_draft"
+      ],
+      "effect": "readonly",
+      "admission_output": "TaskState",
+      "completed_task_output": null,
+      "conditions": "authorize exact task ownership/scope; real state/progress/controls; output matches original operation and cannot exist before actual result",
+      "runtime_available": true,
+      "implementation_status": "implemented_minimal_scope",
+      "implementation_ref": "docs/04_开发与验收/S08_共同Host与Engine专业联通切片.json",
+      "implementation_limitations": "实际共同Host的已测Project/Scenario/精确版本定义草稿、Scope/修订/字段授权/原子提交及会话历史，目录保存搬移重开与真实任务；完整业务UI、外部MCP进程认证、渲染、比较、ZIP/评估导出和库采用未据本片验收。"
+    },
+    {
+      "operation": "cancel_task",
+      "mcp_tool_name": "superfactory_cancel_task",
+      "params_type": "CancelTaskParams",
+      "service_method": "cancel_task",
+      "request_schema_ref": "tools/type-contract-proof/output/api-schemas/cancel_task.request.schema.json",
+      "response_schema_ref": "tools/type-contract-proof/output/api-schemas/cancel_task.response.schema.json",
+      "allowed_scopes": [
+        "workspace_session_owned_file_tasks_only",
+        "project",
+        "definition_draft"
+      ],
+      "effect": "execute",
+      "admission_output": "CancellationState",
+      "completed_task_output": null,
+      "conditions": "registered actual controls; simulation-only calculation pause/resume/step; step requires Paused and next full timestamp closure; completed terminal wins",
+      "runtime_available": true,
+      "implementation_status": "implemented_minimal_scope",
+      "implementation_ref": "docs/04_开发与验收/S08_共同Host与Engine专业联通切片.json",
+      "implementation_limitations": "实际共同Host的已测Project/Scenario/精确版本定义草稿、Scope/修订/字段授权/原子提交及会话历史，目录保存搬移重开与真实任务；完整业务UI、外部MCP进程认证、渲染、比较、ZIP/评估导出和库采用未据本片验收。"
+    },
+    {
+      "operation": "adopt_artifact",
+      "mcp_tool_name": "superfactory_adopt_artifact",
+      "params_type": "AdoptArtifactParams",
+      "service_method": "adopt_artifact",
+      "request_schema_ref": "tools/type-contract-proof/output/api-schemas/adopt_artifact.request.schema.json",
+      "response_schema_ref": "tools/type-contract-proof/output/api-schemas/adopt_artifact.response.schema.json",
+      "allowed_scopes": [
+        "project"
+      ],
+      "effect": "accepted_binding",
+      "admission_output": "BindingCommit",
+      "completed_task_output": null,
+      "conditions": "derive exact desired Job and required subject/payload from current consumer; verify Host-held actual content and trusted purpose acknowledgment per artifact_binding_contract; atomic current revision; Agent cannot fabricate acknowledgment",
+      "runtime_available": true,
+      "implementation_status": "implemented_minimal_scope",
+      "implementation_ref": "docs/04_开发与验收/S08_共同Host与Engine专业联通切片.json",
+      "implementation_limitations": "真实生产/明确UI测试用途认可/精确消费者当前输入及专用授权门；历史重选须新明确事实，同进程精确receipt受限恢复；导入标签、新Host或内容变化不授信。"
+    },
+    {
+      "operation": "import_package",
+      "mcp_tool_name": "superfactory_import_package",
+      "params_type": "ImportPackageParams",
+      "service_method": "import_package",
+      "request_schema_ref": "tools/type-contract-proof/output/api-schemas/import_package.request.schema.json",
+      "response_schema_ref": "tools/type-contract-proof/output/api-schemas/import_package.response.schema.json",
+      "allowed_scopes": [
+        "workspace_UI_open_only",
+        "project",
+        "definition_draft"
+      ],
+      "effect": "file_write",
+      "admission_output": "TaskHandle",
+      "completed_task_output": "ImportDraft",
+      "conditions": "actual Host-selected file/purpose/scope; stage parsed refs/rights/missing/conflicts; no implicit adoption/upgrade/current-stock creation; Open requires dirty/task decision",
+      "runtime_available": true,
+      "implementation_status": "implemented_minimal_scope",
+      "implementation_ref": "docs/04_开发与验收/S08_共同Host与Engine专业联通切片.json",
+      "implementation_limitations": "实际共同Host的已测Project/Scenario/精确版本定义草稿、Scope/修订/字段授权/原子提交及会话历史，目录保存搬移重开与真实任务；完整业务UI、外部MCP进程认证、渲染、比较、ZIP/评估导出和库采用未据本片验收。",
+      "current_runtime_import_contract": {
+        "open_project": "Workspace/OpenProject; base_revision=null; exact complete project adoption and departure decision retained.",
+        "into_project": "Project/IntoProject; current base_revision; task retains epoch/owner/project/input revision. Completed Task proposes only exact ModulePackages, no source project objects. Actual UI AdoptImportedDraft selects exact versions and all their companion assets; validation/conflicts complete before a new Project revision and append-only immutable library files commit. No automatic instance adoption, stock, Runs or acknowledgments.",
+        "rights": "Original rights remain unchanged; local import never grants public redistribution.",
+        "current_implementation_limits": [
+          "No object creation or role remapping in this definition import entry; explicit category adoption remains separate.",
+          "Partial asset selection is rejected explicitly; omitted files and same-path conflicts are not silently repaired.",
+          "IntoDefinitionDraft and AddToLocalLibrary are not implemented by this increment."
+        ],
+        "ordinary_Native_validation_ref": ".work/single-window-20261018/p301-native36/Native42/validation.json"
+      },
+      "bounded_runtime_validation_ref": ".work/single-window-20261018/p301-native36/Native41/import-repair.json"
+    },
+    {
+      "operation": "save_project",
+      "mcp_tool_name": "superfactory_save_project",
+      "params_type": "SaveProjectParams",
+      "service_method": "save_project",
+      "request_schema_ref": "tools/type-contract-proof/output/api-schemas/save_project.request.schema.json",
+      "response_schema_ref": "tools/type-contract-proof/output/api-schemas/save_project.response.schema.json",
+      "allowed_scopes": [
+        "project"
+      ],
+      "effect": "file_write",
+      "admission_output": "TaskHandle",
+      "completed_task_output": "SavedProject",
+      "conditions": "freeze R at admission; same resolved target commits in admission order; root manifest commit last; pre-commit cancellation preserves old; replacement failure verifies/restores actual old root or reports recoverable retained path and dirty IoFailure; no false intact/success claim; R+1 stays dirty; commit winner Completed",
+      "runtime_available": true,
+      "implementation_status": "implemented_minimal_scope",
+      "implementation_ref": "docs/04_开发与验收/S08_共同Host与Engine专业联通切片.json",
+      "implementation_limitations": "实际共同Host的已测Project/Scenario/精确版本定义草稿、Scope/修订/字段授权/原子提交及会话历史，目录保存搬移重开与真实任务；完整业务UI、外部MCP进程认证、渲染、比较、ZIP/评估导出和库采用未据本片验收。"
+    },
+    {
+      "operation": "export_package",
+      "mcp_tool_name": "superfactory_export_package",
+      "params_type": "ExportPackageParams",
+      "service_method": "export_package",
+      "request_schema_ref": "tools/type-contract-proof/output/api-schemas/export_package.request.schema.json",
+      "response_schema_ref": "tools/type-contract-proof/output/api-schemas/export_package.response.schema.json",
+      "allowed_scopes": [
+        "project",
+        "definition_draft"
+      ],
+      "effect": "file_write",
+      "admission_output": "TaskHandle",
+      "completed_task_output": "ExportPackage",
+      "conditions": "explicit selected project/module purpose and versions/results/assets; actual redistribution allowed; no external publication; complete file output only after IO",
+      "runtime_available": false,
+      "implementation_status": "planned"
+    },
+    {
+      "operation": "export_evaluation",
+      "mcp_tool_name": "superfactory_export_evaluation",
+      "params_type": "ExportEvaluationParams",
+      "service_method": "export_evaluation",
+      "request_schema_ref": "tools/type-contract-proof/output/api-schemas/export_evaluation.request.schema.json",
+      "response_schema_ref": "tools/type-contract-proof/output/api-schemas/export_evaluation.response.schema.json",
+      "allowed_scopes": [
+        "project"
+      ],
+      "effect": "file_write",
+      "admission_output": "TaskHandle",
+      "completed_task_output": "ExportEvaluation",
+      "conditions": "design mode may have no Run; simulation mode only Host-held actual Runs and per-Run frozen identity/frontier; all four formats from same EvaluationReport; nullable shared time/window when heterogeneous; unknown costs remain unknown; no re-simulation or output-directory merge",
+      "runtime_available": false,
+      "implementation_status": "planned"
+    },
+    {
+      "operation": "query_module_library",
+      "mcp_tool_name": "superfactory_query_module_library",
+      "params_type": "QueryModuleLibraryParams",
+      "service_method": "query_module_library",
+      "request_schema_ref": "tools/type-contract-proof/output/api-schemas/query_module_library.request.schema.json",
+      "response_schema_ref": "tools/type-contract-proof/output/api-schemas/query_module_library.response.schema.json",
+      "allowed_scopes": [
+        "workspace",
+        "project",
+        "definition_draft"
+      ],
+      "effect": "readonly",
+      "admission_output": "ModuleTemplateCandidates",
+      "completed_task_output": null,
+      "conditions": "only authorized actual libraries and exact module versions; no matching means candidates[] + issues; no filesystem scan or automatic download",
+      "runtime_available": true,
+      "implementation_status": "implemented_minimal_scope",
+      "implementation_ref": "docs/04_开发与验收/S08_共同Host与Engine专业联通切片.json",
+      "implementation_limitations": "当前Host已加载的精确版本定义只读查询；P3-01完整文件库/社区采用和P4-01模板实例化仍待真实接线。"
+    },
+    {
+      "operation": "check_factory_draft",
+      "mcp_tool_name": "superfactory_check_factory_draft",
+      "params_type": "CheckFactoryDraftParams",
+      "service_method": "check_factory_draft",
+      "request_schema_ref": "tools/type-contract-proof/output/api-schemas/check_factory_draft.request.schema.json",
+      "response_schema_ref": "tools/type-contract-proof/output/api-schemas/check_factory_draft.response.schema.json",
+      "allowed_scopes": [
+        "project"
+      ],
+      "effect": "readonly",
+      "admission_output": "FactoryDraftCheckResult",
+      "completed_task_output": null,
+      "conditions": "exact current revision and explicit checks; references/business/static placement only; incomplete not pass; accepted target cannot change inventory; C04 typed endpoints/direction/units/actual receiving store/capacity/calendar and all authorized reused references checked per ALG-03/04/07/14; missing receiver/calendar stays a named gap, no all-day/cache defaults",
+      "runtime_available": false,
+      "implementation_status": "planned",
+      "material_endpoint_admission_ref": "docs/04_开发与验收/特征细化/DRF06_五链贯通核对.json#/C04"
+    }
+  ],
+  "wire_contract": {
+    "header_fields": [
+      "api_version",
+      "request_id",
+      "project_id",
+      "scope",
+      "operation",
+      "params"
+    ],
+    "project_id": "null for Workspace; explicit authorized active ProjectId for Project/DefinitionDraft",
+    "request_id": "nonempty opaque ObjectId used for correlation only",
+    "scope_kinds": [
+      "workspace",
+      "project",
+      "definition_draft"
+    ],
+    "definition_scope_id": "opaque draft ID distinct from published module ID; revision namespace separate",
+    "request_encoding": "untagged union of 18 concrete Request<single_literal_OperationTag,Params>; no flatten+deny_unknown_fields conflict",
+    "response_type": "Response<R>: original Ok(R)/Error(ApiError); optional transport Managed(ManagedJsonResultRef), resolved centrally to original Response<R>",
+    "response_semantics": "原业务Response<R>的ok/error保持；共同传输层可临时包成managed，客户端统一解包原Response<R>后判断业务结果。见managed_result_contract。",
+    "method_context": "HostCallContext and ResolvedCallScope injected from real Host/transport; never deserialize from user JSON",
+    "nullable_header_rule": "project_id键必需，Workspace显式null；Rust present_nullable和显式nullable Schema一致，缺键拒绝。"
+  },
+  "edit_contract": {
+    "command_variants": 15,
+    "editable_project_object_variants": 12,
+    "batch": "full candidate then scoped validation then one commit; error leaves old state",
+    "revision": "per Project or DefinitionDraft; no current Run mutation",
+    "creation": "Workspace UI creation only; no implicit active-project discard; real tasks/dirty decision before switching",
+    "definition": "exact typed ModulePayload for nine classes; only actual provider registry supplies available modes",
+    "parameter_binding": "runtime RFC6901 relative to ModuleDefinition; declared parameter ID/type/unit/range/options; instance configuration override versus definition default; no arbitrary/root/core/runtime/privilege path",
+    "legacy_28_binding_cases": "PREP-RUNTIME maps old dot/bracket explicitly; not silently runtime-compatible",
+    "asset_confirmation": "declarations not authority; external caller cannot mark unconfirmed permission confirmed to bypass export",
+    "human_acknowledgment": "UI-authenticated only; imported claims not current human approval",
+    "undo_redo": "same scope new revisions; nonreversible approval/binding/IO/history boundaries unchanged",
+    "import_adoption": "AdoptImportedDraft refers to completed staged TaskId and explicit choices; no implicit adoption. Workspace UI open resolves dirty/tasks before switching; old Agent grants revoked.",
+    "packaging_job": "PutPackagingJob uses the canonical PackageStructureJob including explicit FixedPoseMotion part_id; malformed/missing target rejects before commit; saving never establishes geometry Pass",
+    "host_private_authorization": {
+      "canonical_fields_ref": "packages/commands/api.design.rs#HostEditGrant",
+      "reference_delta": "docs/04_开发与验收/特征细化/DRF04_Host授权合入.json",
+      "records": "HostEditBranch, HostFieldGrant, HostObjectEditGrant, HostCreateAllowance, HostEditGrant; HostCallContext.edit_grants",
+      "wire": "Host-owned current per-session authority only; no Serialize/Deserialize/JsonSchema/TS, Request/ApiScope fields or caller-normalized effects",
+      "scope": "current real session Workspace or stable Project/definition-draft identity; base_revision independently enforces current concurrency",
+      "field_identity": "RFC6901 leaf plus stable declared array element ID; indices/names alone never transfer authority",
+      "sources_and_budget": "exact source_versions and reusable_resources; cumulative distinct created IDs across branches/batches; delete/Undo no refund; Redo rechecks same ID",
+      "atomicity": "Host normalizes all 15 EditCommand branches from current typed state, checks complete effects against current grant, then commits candidate + one revision/history + creation ledger together; any denial changes none",
+      "error_order": "typed parse, actual connection/scope, stale known revision, full candidate authorization, existing reference/business errors; no unauthorized object disclosure",
+      "actual_Host_enforcement": {
+        "result_ref": "docs/04_开发与验收/P0-02_初始物料与分配输入切片.json",
+        "supported_branches": [
+          "SetProjectSettings",
+          "PutObject(ItemType/Product/Bom/Route/Scenario)",
+          "RemoveObject(ItemType/Product/Bom/Route/Scenario)",
+          "Undo",
+          "Redo",
+          "UI AdoptImportedDraft(OpenProject)"
+        ],
+        "external_array_edits": "UnsupportedCapability",
+        "MCP_peer_authentication": false
+      },
+      "actual_product_runtime": null
+    },
+    "open_project_adoption_choices": "OpenProject adopts the complete staged archive preserving ProjectId and saved revision. Empty objects_to_create/module_versions/selected_assets mean no filtering; each nonempty list must equal the corresponding full task proposal or full asset list without duplicates. Subsets, additions and remapping are unsupported. Manifest missing or blocking project Issues require accept_missing_as_draft=true; invalid required files/references remain import failure.",
+    "scenario_document_revision": "ScenarioInput.revision/project_revision are Host-owned structural metadata in Project transactions. New Put payload revision=1; existing Put payload revision=current Scenario revision; project_revision=base_revision. Successful Project commit binds current scenarios to new Project revision and changed inputs receive a fresh session per-ID high-water revision, never refunded by undo/delete. SubjectRevisionId remains explicit business input; exact old references are not auto-upgraded. On open, initialize each ID high-water from all actually included and identity/revision-validated Scenario documents, including retained FrozenRunScenario/SupportingFile roles; absent optional declarations are excluded and old contents are never reactivated.",
+    "initial_material_draft_policy": "Initial stock, future arrivals, supply targets, demand, soft plans, hard-reservation declarations and unique holders remain separate typed inputs. Semantic gaps stay as located business_inputs material Issues blocking Execution/CompleteConclusion; no runtime stock/splits are created by edits. A future run Host must reject known Execution blockers before Worker initialization; run_scenario remains unavailable in this slice."
+  },
+  "long_task_contract": {
+    "operations": [
+      "render_view",
+      "run_scenario",
+      "compute_packaging",
+      "import_package",
+      "save_project",
+      "export_package",
+      "export_evaluation"
+    ],
+    "result_types": {
+      "render_view": "RenderOutput",
+      "run_scenario": "RunSummary",
+      "compute_packaging": "PackagingResult",
+      "import_package": "ImportDraft",
+      "save_project": "SavedProject",
+      "export_package": "ExportPackage",
+      "export_evaluation": "ExportEvaluation"
+    },
+    "entry": "short admission frozen input TaskHandle before reply; locks released before CPU/renderer/IO",
+    "read": "get_task typed TaskState and TaskOutput with originating operation",
+    "real_progress": "actual phase/processed/known total only; unknown total remains unknown",
+    "cancel": "request vs actual terminal separate; completed commit/result wins if already terminal",
+    "partial": "explicit incomplete scope, not whole-window pass or successful file delivery",
+    "simulation_controls": [
+      "cancel",
+      "pause_calculation",
+      "resume_calculation",
+      "step_next_timestamp"
+    ],
+    "step": "only Paused, next complete same-timestamp closure from S06-01; no re-consumption",
+    "view_time": "playback speed/pause independent from Engine time",
+    "save": "frozen R can commit while R+1 stays dirty; old inputs/results immutable",
+    "task_scope": "TaskScope=Workspace(authenticated session ID) or Edit(Project/DefinitionDraft); Workspace has no fake ProjectId",
+    "workspace_input_revision": "Workspace file TaskHandle.input_revision=0 is the initial selected-file input snapshot revision in this real session namespace, not a Project revision; identity is TaskScope.Workspace(session)."
+  },
+  "file_authority": {
+    "wire_type": "SelectedFileRef(selection_id,purpose)",
+    "source": "actual Host-selected file/dir and per-connection/project grant",
+    "not_wire": "no arbitrary absolute path or self-reported privilege",
+    "purpose_kinds": [
+      "import_package",
+      "save_project",
+      "export_package",
+      "export_evaluation"
+    ],
+    "expiry": "on connection/Host close or Project switch; not persisted as a reusable authority",
+    "output": "actual files after worker completion; package-relative refs and explicit rights/missing conditions"
+  },
+  "error_contract": {
+    "codes": [
+      "NoActiveProject",
+      "UnsupportedCapability",
+      "InvalidInput",
+      "MissingReference",
+      "RevisionConflict",
+      "PermissionDenied",
+      "ComputationFailed",
+      "Cancelled",
+      "UnsupportedSchema",
+      "IoFailure"
+    ],
+    "fields": [
+      "code",
+      "message",
+      "object_refs",
+      "field_errors",
+      "expected_revision",
+      "actual_revision"
+    ],
+    "field_pointer": "RFC6901",
+    "unknown_header": "unsupported API version -> UnsupportedSchema; unknown operation/capability -> UnsupportedCapability; malformed/extra/typed input -> InvalidInput",
+    "normal_business_results": "professional Fail/Undetermined, target shortfall and expected wait are normal scoped results",
+    "MCP": "protocol errors use JSON-RPC; execution errors use isError=true plus structured ApiError; structured success/error schema same declared response envelope",
+    "disclosure": "no unauthorized other-project contents or machine paths"
+  },
+  "IPC": {
+    "bridge": "Rust/rmcp3.5.1 stdio, no HTTP/TCP",
+    "stdout": "MCP messages only; diagnostics stderr",
+    "pipe_name": "Host-selected current logon session and unique instance; exact configured target, no alternate-Host fallback",
+    "Windows_authority": "explicit DACL/logon SID and remote rejection; verified Windows peer plus Host grant; pipe caller always ExternalAgent, not self-declared UI",
+    "handshake": "IpcHello expected instance -> IpcWelcome Host/session IDs and frame cap",
+    "request": "IpcRequestFrame binds actual connection session + Host instance + ApiRequest",
+    "reply": "IpcResponseFrame<R> originating_operation; decode/validate corresponding R from original operation",
+    "framing": "u32 little-endian byte length then exact UTF-8 JSON",
+    "max_frame_bytes": 1048576,
+    "large_data": "完整响应超过1MiB使用共同ApiOutcome.Managed及managed_results，只读文件携带原Response<R>；事件/对象仍可分页；不截断，不由功能面板另建读取协议。",
+    "malformed": "invalid/truncated/version/UTF8/oversize closes affected connection before dispatch",
+    "shutdown": "revoke connection scopes, real work remains Host-owned; waiting/cancel/stay and dirty decisions before switch/close; late callbacks do not write new Project",
+    "managed_asset_delivery": {
+      "carrier": "IpcResponseFrame<R>.managed_assets:Option<Vec<IpcManagedAssetAttachment>>",
+      "fields": "task_id,asset_id,scope,scope_revision,mime_type,byte_length,handle_value",
+      "source": "packages/commands/api.design.rs",
+      "direction": "authenticated Host-to-bridge only; never IpcRequestFrame/ApiRequest fields",
+      "admission": "only authorized get_task completed RenderOutput; current authenticated Host/bridge PID/session plus task/asset/requested scope revision/actual scene revision checked; actual Host-managed result map opens asset, not client FileRef.path",
+      "transfer": "Host duplicates non-inherited read-only handle into OS-verified bridge process; handle_value is an exactly representable SafeUint; invalid/nonrepresentable handles are not sent. Bridge reads exactly declared bytes and returns real MCP image plus typed Response, then closes only authenticated owned handles",
+      "lifecycle": "old captured revision remains the original task result, never overlays newer editor revision; disconnect/consume failure cleans authenticated owned attachments; admitted business task remains Host-owned",
+      "proof_ref": "tools/type-contract-proof/output/shared-handoff-check-result.json",
+      "proof_limit": "8 actual canonical native/standard Schema shapes; no actual Host duplication/MCP image delivery from those cases",
+      "actual_product_runtime": null
+    }
+  },
+  "six_views": {
+    "task_interaction": "18 operation table with parameters/success/not-completed/error choices",
+    "structure_data": "canonical typed Request/Response/EditCommand/TaskOutput/IPC and per-op schemas",
+    "state_behavior": "atomic commits, frozen inputs, controls/cancel race and namespace invariants",
+    "interface_collaboration": "18 CommandsService signatures + authenticated caller/ResolvedCallScope; seven existing producer components",
+    "UI_presentation": "shared real renderer/notifications/capture; no frontend/Figma work started",
+    "deployment_validation": "same Rust types, exact selected SDK, standard schema and isolated finite protocol proof not product E2E"
+  },
+  "source_records": [
+    {
+      "title": "MCP2025-11-25 Tools",
+      "url": "https://modelcontextprotocol.io/specification/2025-11-25/server/tools",
+      "read_date": "2026-10-14",
+      "reading_scope": "input/output Schema, structuredContent and tool errors; annotations are not authority"
+    },
+    {
+      "title": "MCP2025-11-25 Transports",
+      "url": "https://modelcontextprotocol.io/specification/2025-11-25/basic/transports",
+      "read_date": "2026-10-14",
+      "reading_scope": "stdio message framing/stdout/stderr"
+    },
+    {
+      "title": "Serde enum representations",
+      "url": "https://serde.rs/enum-representations.html",
+      "read_date": "2026-10-14",
+      "reading_scope": "untagged/internal/adjacent tagged enums"
+    }
+  ],
+  "actual_product_API_execution": {
+    "result_ref": "docs/04_开发与验收/S08_共同Host与Engine专业联通切片.json",
+    "implemented_operations": [
+      "describe_capabilities",
+      "get_context",
+      "get_object",
+      "apply_commands",
+      "run_scenario",
+      "get_run",
+      "compute_packaging",
+      "get_task",
+      "cancel_task",
+      "adopt_artifact",
+      "import_package",
+      "save_project",
+      "query_module_library"
+    ],
+    "runtime_layer": "actual_Tauri_managed_Host_and_Rust_dispatch",
+    "whole_API_complete": false,
+    "whole_task_done": false,
+    "native_validation_ref": ".work/whole-packages/verification-with-packaging/result.json",
+    "additional_verified_operations_pending_review": [],
+    "current_bounded_verification_ref": "docs/04_开发与验收/S08_共同Host与Engine专业联通切片.json",
+    "known_outside_slice_findings": [
+      "W6-WP-F06"
+    ]
+  },
+  "actual_frontend_or_Figma": null,
+  "implemented_public_operations": 13,
+  "proof_status": "actual_native_types_36_roundtrips_28_native_and_standard_schema_cases_26_policy_model_cases_5_byte_frames_not_product_Host",
+  "proof_refs": [
+    "docs/04_开发与验收/公开操作契约检查结果.json",
+    "tools/type-contract-proof/output/api-parse-proof-result.json",
+    "tools/type-contract-proof/output/api-policy-proof-result.json",
+    "tools/type-contract-proof/output/type-proof-result.json",
+    "tools/type-contract-proof/output/typescript-check-result.json",
+    "tools/type-contract-proof/output/aq01-native-result.json",
+    "tools/type-contract-proof/output/aq01-transport-result.json"
+  ],
+  "consumer_handoffs": [
+    {
+      "task_id": "P0-01",
+      "window_id": "W00",
+      "operation_names": [
+        "get_context",
+        "apply_commands",
+        "import_package",
+        "save_project",
+        "export_package",
+        "get_task",
+        "cancel_task"
+      ],
+      "relation": "implements_or_consumes_existing_public_entry; internal producers do not open additional APIs",
+      "runtime_status": "partial_actual_backend_verified_whole_package_in_progress",
+      "actual_result_ref": "docs/04_开发与验收/整包派发/整包集成验证.json"
+    },
+    {
+      "task_id": "P0-02",
+      "window_id": "W00",
+      "operation_names": [
+        "get_object",
+        "apply_commands",
+        "get_run"
+      ],
+      "relation": "implements_or_consumes_existing_public_entry; internal producers do not open additional APIs",
+      "runtime_status": "partial_actual_backend_verified_whole_package_in_progress",
+      "actual_result_ref": "docs/04_开发与验收/整包派发/整包集成验证.json"
+    },
+    {
+      "task_id": "P0-03",
+      "window_id": "W00",
+      "operation_names": [
+        "get_object",
+        "compute_packaging",
+        "adopt_artifact"
+      ],
+      "relation": "implements_or_consumes_existing_public_entry; internal producers do not open additional APIs",
+      "runtime_status": "partial_actual_backend_verified_whole_package_in_progress",
+      "actual_result_ref": "docs/04_开发与验收/整包派发/整包集成验证.json"
+    },
+    {
+      "task_id": "P1-01",
+      "window_id": "W01",
+      "operation_names": [
+        "run_scenario",
+        "get_run",
+        "cancel_task"
+      ],
+      "relation": "implements_or_consumes_existing_public_entry; internal producers do not open additional APIs",
+      "runtime_status": "partial_actual_backend_verified_whole_package_in_progress",
+      "actual_result_ref": "docs/04_开发与验收/整包派发/整包集成验证.json"
+    },
+    {
+      "task_id": "P1-02",
+      "window_id": "W01",
+      "operation_names": [
+        "run_scenario",
+        "get_run"
+      ],
+      "relation": "implements_or_consumes_existing_public_entry; internal producers do not open additional APIs",
+      "runtime_status": "planned"
+    },
+    {
+      "task_id": "P1-03",
+      "window_id": "W01",
+      "operation_names": [
+        "run_scenario",
+        "get_run"
+      ],
+      "relation": "implements_or_consumes_existing_public_entry; internal producers do not open additional APIs",
+      "runtime_status": "planned"
+    },
+    {
+      "task_id": "P1-04",
+      "window_id": "W01",
+      "operation_names": [
+        "run_scenario",
+        "get_run",
+        "compare_runs"
+      ],
+      "relation": "implements_or_consumes_existing_public_entry; internal producers do not open additional APIs",
+      "runtime_status": "planned"
+    },
+    {
+      "task_id": "P1-05",
+      "window_id": "W01",
+      "operation_names": [
+        "run_scenario",
+        "get_run"
+      ],
+      "relation": "implements_or_consumes_existing_public_entry; internal producers do not open additional APIs",
+      "runtime_status": "planned"
+    },
+    {
+      "task_id": "P2-01",
+      "window_id": "W02",
+      "operation_names": [
+        "get_context",
+        "get_object",
+        "apply_commands",
+        "render_view",
+        "check_factory_draft"
+      ],
+      "relation": "implements_or_consumes_existing_public_entry; internal producers do not open additional APIs",
+      "runtime_status": "planned"
+    },
+    {
+      "task_id": "P2-02",
+      "window_id": "W01",
+      "operation_names": [
+        "apply_commands",
+        "run_scenario",
+        "get_run"
+      ],
+      "relation": "implements_or_consumes_existing_public_entry; internal producers do not open additional APIs",
+      "runtime_status": "planned"
+    },
+    {
+      "task_id": "P2-03",
+      "window_id": "W05",
+      "operation_names": [
+        "compare_runs",
+        "import_package",
+        "save_project",
+        "export_package",
+        "get_task"
+      ],
+      "relation": "implements_or_consumes_existing_public_entry; internal producers do not open additional APIs",
+      "runtime_status": "planned"
+    },
+    {
+      "task_id": "P2-04",
+      "window_id": "W02",
+      "operation_names": [
+        "run_scenario",
+        "get_run",
+        "get_task",
+        "cancel_task"
+      ],
+      "relation": "implements_or_consumes_existing_public_entry; internal producers do not open additional APIs",
+      "runtime_status": "planned"
+    },
+    {
+      "task_id": "P2-05",
+      "window_id": "W02",
+      "operation_names": [
+        "get_object",
+        "apply_commands",
+        "get_run"
+      ],
+      "relation": "implements_or_consumes_existing_public_entry; internal producers do not open additional APIs",
+      "runtime_status": "planned"
+    },
+    {
+      "task_id": "P2-06",
+      "window_id": "W05",
+      "operation_names": [
+        "get_run",
+        "compare_runs",
+        "export_evaluation",
+        "get_task",
+        "cancel_task"
+      ],
+      "relation": "implements_or_consumes_existing_public_entry; internal producers do not open additional APIs",
+      "runtime_status": "planned"
+    },
+    {
+      "task_id": "P3-01",
+      "window_id": "W03",
+      "operation_names": [
+        "get_object",
+        "apply_commands",
+        "import_package",
+        "query_module_library",
+        "export_package"
+      ],
+      "relation": "implements_or_consumes_existing_public_entry; internal producers do not open additional APIs",
+      "runtime_status": "planned"
+    },
+    {
+      "task_id": "P3-02",
+      "window_id": "W03",
+      "operation_names": [
+        "get_object",
+        "render_view",
+        "get_task",
+        "cancel_task"
+      ],
+      "relation": "implements_or_consumes_existing_public_entry; internal producers do not open additional APIs",
+      "runtime_status": "planned"
+    },
+    {
+      "task_id": "P3-03",
+      "window_id": "W03",
+      "operation_names": [
+        "get_object",
+        "apply_commands",
+        "render_view",
+        "import_package",
+        "get_task"
+      ],
+      "relation": "implements_or_consumes_existing_public_entry; internal producers do not open additional APIs",
+      "runtime_status": "planned"
+    },
+    {
+      "task_id": "P3-04",
+      "window_id": "W05",
+      "operation_names": [
+        "describe_capabilities",
+        "get_context",
+        "get_object",
+        "apply_commands",
+        "render_view",
+        "run_scenario",
+        "get_run",
+        "compare_runs",
+        "compute_packaging",
+        "get_task",
+        "cancel_task",
+        "adopt_artifact",
+        "import_package",
+        "save_project",
+        "export_package",
+        "export_evaluation",
+        "query_module_library",
+        "check_factory_draft"
+      ],
+      "relation": "implements_or_consumes_existing_public_entry; internal producers do not open additional APIs",
+      "runtime_status": "planned"
+    },
+    {
+      "task_id": "P4-01",
+      "window_id": "W03",
+      "operation_names": [
+        "query_module_library",
+        "apply_commands",
+        "check_factory_draft",
+        "render_view"
+      ],
+      "relation": "implements_or_consumes_existing_public_entry; internal producers do not open additional APIs",
+      "runtime_status": "planned"
+    },
+    {
+      "task_id": "P4-02",
+      "window_id": "W04",
+      "operation_names": [
+        "get_object",
+        "apply_commands",
+        "compute_packaging",
+        "render_view",
+        "get_task",
+        "cancel_task",
+        "adopt_artifact"
+      ],
+      "relation": "implements_or_consumes_existing_public_entry; internal producers do not open additional APIs",
+      "runtime_status": "planned"
+    },
+    {
+      "task_id": "P5-01",
+      "window_id": "W00",
+      "operation_names": [
+        "describe_capabilities",
+        "get_context",
+        "get_object",
+        "apply_commands",
+        "render_view",
+        "run_scenario",
+        "get_run",
+        "compare_runs",
+        "compute_packaging",
+        "get_task",
+        "cancel_task",
+        "adopt_artifact",
+        "import_package",
+        "save_project",
+        "export_package",
+        "export_evaluation",
+        "query_module_library",
+        "check_factory_draft"
+      ],
+      "relation": "implements_or_consumes_existing_public_entry; internal producers do not open additional APIs",
+      "runtime_status": "planned"
+    }
+  ],
+  "packaging_input_contract_ref": "docs/03_架构与契约/全层类型与工程格式.json",
+  "packaging_input_contract": {
+    "fixed_pose_contract_ref": "docs/03_架构与契约/全层类型与工程格式.json",
+    "unknown_target_error": "InvalidInput",
+    "compute_pointer": "/params/packaging_job/steps/{i}/motion/data/part_id",
+    "edit_pointer": "/params/commands/{i}/data/steps/{j}/motion/data/part_id",
+    "same_carrier_for_UI_and_Agent": true,
+    "no_teleport_or_collision_connection_exemption": true,
+    "normal_geometry_Fail_or_Undetermined_remains_business_result": true
+  },
+  "timeline_result_contract_ref": "docs/03_架构与契约/全层类型与工程格式.json#/timeline_runtime_contract",
+  "module_adoption_contract": {
+    "source_ref": "docs/04_开发与验收/特征细化/DRF03_C01_逐类原子采用.json",
+    "canonical_fields": "ModuleAdoption + same apply_commands batch PutObject; no new command or object variants",
+    "atomicity": "current authorized Project/Scenario candidate; all selected exact versions, IDs, role bindings and unit checks pass before one commit; failure leaves no partial project registrations or instances; prior independently committed library versions remain",
+    "version_scope": "Project.module_refs plus explicit target fields; no mixed Project and DefinitionDraft writes; same published id/version different content rejects; old RunInputRef/jobs remain frozen",
+    "tasks": "RouteStep.operation_ref有三种互斥精确来源：同device_id已选择inline时，必须等于该DeviceInstance.module_ref，解析为该设备精确版本的有效inline行为；已选外部Operations时等于其精确ModuleRef；Tasks准备步骤按精确Task版本和target解析。不能将一个任意Devices版本当Operations使用，不能猜代版本或同时执行inline与外部规则。 Tasks readiness/Preparation限本Run实际目标和所选配置，不是库存。",
+    "transport": "SupplyRelation in typed Scenario supplies resolves Transport; same actual cargo IDs move through load/outbound/unload/acceptance/return; target numbers never create material",
+    "actual_product_runtime": null,
+    "template_endpoint_ref": "docs/03_架构与契约/全层类型与工程格式.json#/template_and_material_endpoint_contract",
+    "reserved_execution_capacity_role": "DeviceInstance.role_bindings.resources[execution_capacity]是系统保留机位角色。采用/冻结必须解析为实际ResourceInstance(kind=fixture,unit=station,capacity明确)及其Calendar；其他角色仍按普通requirement校验。JobExecutionRef.execution_capacity_ref记录该Resource；同一机位只建一份整Job Claim，不再同时按Device容量重复扣减。没有选定真实机位/日历时保存typed义务并阻止该执行用途。",
+    "existing_resource_values": {
+      "adopt": "Update only selected ResourceInstance.definition_ref to the chosen exact version; retain actual capacity, role, qualifications, calendar, home and presentation.",
+      "apply_new_defaults": "Separate explicit reviewed Resource Put in the real consumer; no wildcard default copying and no old Run rewrite.",
+      "new_instance": "Copy only provided definition defaults, require explicit existing calendar.",
+      "proof_ref": ".work/single-window-20261018/p301-native36/Native47-resource-upgrade/validation.json"
+    },
+    "transport_consumer": {
+      "definition_import": "Import only the exact package into the local library. It does not include the definition into Project.module_refs or change SupplyRelation.",
+      "explicit_adoption": "AdoptModule with no targets explicitly includes the exact definition into Project.module_refs. No implicit carrier, location, cargo, stock or supply is created.",
+      "actual_consumer": "Enter supplies and separately review/confirm SupplyRelation.transport_ref for the chosen Scenario. Other Scenarios retain their own exact references; project edits only rebase their revisions.",
+      "sample": "Use an explicit existing Scenario with scope=[] and a SupplyRelation mapped to the source definition id/version. The isolated Draft snapshot does not replace formal Runs.",
+      "proof_ref": ".work/single-window-20261018/p301-native36/Native48-transport/validation.json"
+    },
+    "professional_consumer": {
+      "definition_import": "Import adds the exact package to the local library only; the authoring consumer requires explicit Project.module_refs adoption.",
+      "actual_consumer": "The paper packaging workspace consumes only professional payloads declaring output_artifact_type=paper_packaging. Other planned providers stay in authoring with an explicit unavailable-consumer message.",
+      "draft_scope": "Read and validate the actual DefinitionDraft payload before opening the paper workspace, including the professional menu entry.",
+      "execution": "The workspace invokes the existing compute_packaging Host operation with explicit packaging inputs. It does not execute a contributed provider implementation.",
+      "proof_ref": ".work/single-window-20261018/p301-native36/Native49-professional/validation.json",
+      "draft_results": "DefinitionDraft packaging inputs and actual artifacts remain in their own Scope. Generic definition contribution exports only the exact declaration; it does not copy draft artifacts, Project stock, acknowledgment or binding.",
+      "professional_evidence": "Export the actual professional evidence separately. Opening it reads the same frozen input and Artifact without recomputing from current local input. Manufacturing files without confirmed redistribution rights remain explicit missing entries.",
+      "Native50_paper_validation_ref": ".work/single-window-20261018/p301-native36/Native50-paper/validation.json"
+    },
+    "media_consumer": {
+      "internal_anchors": "Presentation.anchor_roles values are AnchorRef image_normalized/scene_node/viewport coordinates within the presentation. Their names are not business object roles and must not request ModuleAdoption.bindings.targets.",
+      "business_mappings": "Keep actual item/resource/target role and port requirements; port_anchors keys remain explicit port mappings. No same-name mapping is inferred.",
+      "explicit_adoption": "Only selected existing devices receive presentation_override referencing the chosen exact media version; their module_ref, operation_binding, role_bindings, pose, footprint and production inputs remain unchanged.",
+      "history_and_reopen": "Draft save/undo/redo creates new Draft revisions; immutable local commit is a history boundary. Saving the adopted Project retains the exact presentation and old frozen Run inputs.",
+      "contribution": "Missing definition license blocks contribution export. Preserve unresolved author/license/asset redistribution state; a local commit or successful preview does not establish redistribution permission.",
+      "proof_ref": ".work/single-window-20261018/p301-native36/Native50-media/validation.json",
+      "positive_roundtrip_proof_ref": ".work/single-window-20261018/p301-native36/Native51-local-media/validation.json",
+      "positive_roundtrip_fixture": "Self-authored native geometry, no external assets; local validation declaration only. Separate-process exact import precedes explicit selected-device presentation adoption; does not establish permission for unresolved legacy media."
+    },
+    "definition_import_asset_gaps": {
+      "proposal": "Include the validated archive missing records belonging to assets of proposed exact definitions. Display the existing missing record before acceptance; do not infer redistribution permission from an imported declaration.",
+      "acceptance": "The real UI must select the full exact asset reference set. Missing optional asset bytes require accept_missing_as_draft=true and an archive-validated Asset entry with its matching missing record. Required or other missing companion files remain rejected. AssetRefs declare media separately from companion FileRefs; actual included asset bytes are explicitly copied even when absent from ModulePackage.files.",
+      "preservation": "Keep the exact module and canonical rights unchanged. Store accepted asset gaps in Project.issues; saving retains an optional Asset index and missing record with no invented bytes. Save/open/save preserves the gap and original rights. Current business objects, stock, Run and recognition are not imported.",
+      "validation_ref": ".work/single-window-20261018/p301-native36/Native51-template/rights/validation.json",
+      "current_evidence": "Native62 real rejection and actual restricted export; 26 related Host plus 2 required-file checks; candidate63 built; actual Native63 missing proposal, rejection without acceptance, explicit adoption, 69-document save, process exit and independent missing-draft reopen, exact rights readback, explicit unavailable preview and original frozen Run readback passed."
+    },
+    "device_exact_rule_mapping": {
+      "source": "Resolve only selected DeviceDefinition.behavior.operation_ref by its exact id/version in the already loaded module catalogue. Include its material roles, resource_roles, phase_resources and target roles in the explicit adoption form together with device ports and execution_capacity. Inline behavior retains its own existing fields.",
+      "selection": "No same-name or newest-version substitution, no inferred real resource or stock. All mappings still require explicit user choice and Host atomic admission; existing library commit is independent of adoption cancellation.",
+      "implementation_validation_ref": ".work/single-window-20261018/p301-native36/Native51-template/device/validation.json",
+      "current_evidence": "Native67 ordinary UI verifies selected-CNC01 two-connection impact/cancellation, full port identity, obsolete endpoint warning and every Host field error. Explicit manual two-connection repair to r19, same Draft600000ms/6accepted,70-document save/new-process reopen, formal Project Run and77-document save with four old Runs preserved, then third-process frozen r19 Run readback passed. Device contribution roundtrip and full package gates remain pending.",
+      "connection_review": "List only explicitly selected device instances whose connection PortRef still names a different exact module. Show connection ID, endpoint side, instance/port ID and original exact id/version before adoption confirmation. Adoption never rewires these connections.",
+      "manual_reconnection": "Material endpoint choices show title, stable instance ID, port ID and exact module version. Retain and warn on an obsolete selected endpoint; require explicit selection and existing PutObject(Connection). Preserve material/store and other connection declarations. No name-based inference or automatic rewrite.",
+      "authoring_admission_failure": "Before a Task exists, render original Host ApiError code, revisions, object_refs and every field_errors pointer/reason. Preserve the same DefinitionDraft for an explicit retry after correction; do not synthesize a Run or completion.",
+      "diagnosis_ref": ".work/single-window-20261018/p301-native36/Native51-template/device/diagnosis.json",
+      "Native67_runtime_validation_ref": ".work/single-window-20261018/p301-native36/Native51-template/device/native67-runtime-validation.json"
+    },
+    "contribution_export_scope": {
+      "selection": "Standalone private/community module packages contain only explicitly committed exact module versions, recursive module/file dependencies and explicitly selected professional artifacts; Project objects, Scenarios and Runs remain excluded.",
+      "issues": "Rebuild the stripped Project issues and retain backing gaps only for documents/assets in the selected dependency closure. Unselected Project objects and unrelated asset gaps must not enter the package. Selected missing assets retain original rights and absence.",
+      "new_content_metadata": "A newly authored local device ports/composition wrapper can declare a narrowly scoped local test author/license for its own new content. This never changes unknown dependency authorship/license, asset redistribution permissions or immutable prior versions.",
+      "validation_ref": ".work/single-window-20261018/p301-native36/Native51-template/device/native67-contribution-validation.json",
+      "evidence": "Actual Native67 export reproduced an unrelated-asset gap; Host regression red then green, 112 unit and 5 media tests passed. Candidate68 actual runtime roundtrip pending."
+    }
+  },
+  "artifact_binding_contract": {
+    "source_ref": "docs/04_开发与验收/特征细化/DRF03_C02_专业绑定推导.json",
+    "profile": "paper_packaging_complete_v1",
+    "desired_job": "independent current Device.configuration declared packaging_job_id:String and packaging_job_revision:Integer; exact immutable Job must exist; never choose latest or artifact-owned expectation",
+    "derived": "Host derives expected subject, required purposes/payload from current consumer + exact pack operation + desired frozen Job, materials/thickness/parts/conditions; cannot suppress manufacturing requirement by caller omission",
+    "uses": [
+      "forming",
+      "opening",
+      "linear_extraction",
+      "net_space",
+      "manufacturing"
+    ],
+    "checks": "actual Host-held artifact/result/input/job/subject/unit/frame/content/checks all match; every required check Pass; exact scope token containment; trusted existing same artifact/subject/scope human acknowledgment",
+    "commit": "only after all checks and revision check, atomic ConsumerBinding; run_scenario checks frozen current selection again; old Runs unchanged",
+    "parameter_source": "declared device parameter definitions must explicitly bind both existing configuration keys; missing declaration/selection is a reported input gap, never implicit default",
+    "actual_product_runtime": null
+  },
+  "reporting_contract_ref": "docs/03_架构与契约/全层类型与工程格式.json#/reporting_and_comparison_contract",
+  "template_companion_import_contract": {
+    "status": "R4_canonical_Rust_standard_Schema_421TS_and_36API_roundtrips_passed",
+    "source_ref": "docs/04_开发与验收/特征细化/DRF03_C04_伴随材料消费契约.json",
+    "current_obligation": "import module.json/template.json and declared companion/local definitions as one staged draft; missing or unsupported companion consumption blocks affected execution/complete conclusions; draft save preserves the issues",
+    "key_business_rules": "phase durations not double-added; preparation exact Task+target; four worker requirement calendars/remap; imported professional claims never approval; quality output applies only on correct successful completion; no seed synthesis without actual Product/BOM/Route",
+    "actual_product_runtime": null,
+    "typed_source_ref": "docs/03_架构与契约/全层类型与工程格式.json#/typed_template_adoption_contract",
+    "carrier": "existing TemplateSubset.adoption and ProjectState.template_adoptions; existing ImportDraft.proposed_data/InstantiateTemplate/AdoptModule preserve typed record in same authorized atomic commit",
+    "untrusted_claims": "ImportedProfessionalClaim has no actual result/outcome/ack fields; archived raw content is preserved input, never executable instructions",
+    "output_rule": "declared output released only on actual result-slot creation at final effective completion; inspect stays existing QualityRule; Task changes no material",
+    "proof_refs": [
+      "tools/type-contract-proof/output/type-proof-result.json",
+      "tools/type-contract-proof/output/schema-validation-result.json",
+      "tools/type-contract-proof/output/typescript-check-result.json",
+      "tools/type-contract-proof/output/api-parse-proof-result.json",
+      "tools/type-contract-proof/output/persistence-proof-result.json"
+    ]
+  },
+  "managed_result_contract": {
+    "source_ref": "docs/03_架构与契约/大结果传输设计.md",
+    "canonical_fields": "ApiOutcome<R>::Managed(ManagedJsonResultRef) + IpcResponseFrame<R>.managed_results:IpcManagedResultAttachment[]",
+    "selection": "在共同传输层封装原完整Response<R>；不为各业务增加分页/文件API，18个CommandsService签名与RunView不变",
+    "frame_cap": 1048576,
+    "payload": "immutable original Response<R> JSON; outcome ok/error only, no nested managed",
+    "type_binding": "response_schema_ref必须等于原操作目录的response_schema_ref；内外api_version/request_id/context相同；按原R完整解析",
+    "scope": "同已认证Host/连接/原操作/授权Project或Workspace；旧Run输入修订不伪装当前草稿",
+    "transfer": "每次重新打开偏移0的GENERIC_READ文件；DuplicateHandle到OS核验桥进程，non-inherited；result_id匹配，精确长度和EOF；不得接受客户端路径/句柄",
+    "consumer": "ui_host/MCP桥统一解包；功能面板仍只消费原R。MCP small structuredContent + complete application/json EmbeddedResource，无新resources/read操作",
+    "lifecycle": "成功/短读/解析与身份失败/传输取消均关己方真实句柄；断连回收未交付复制，桥退出由OS关闭；临时文件读取结束/连接清理后删除，Run保留",
+    "proof_refs": [
+      "tools/type-contract-proof/output/aq01-native-result.json",
+      "tools/type-contract-proof/output/aq01-transport-result.json"
+    ],
+    "actual_product_runtime": null
+  },
+  "product_boundary_implementation": {
+    "status": "implemented_typed_boundary_not_Host_handlers",
+    "task_id": "P0-01",
+    "result_ref": "docs/04_开发与验收/P0-01_工程类型与Command边界切片.json",
+    "domain_source_ref": "packages/domain/src/models.rs",
+    "command_source_ref": "packages/commands/src/api.rs",
+    "generator_ref": "packages/commands/src/bin/export-contracts.rs",
+    "generate_command": "npm run generate:contracts",
+    "TS_ref": "packages/commands/generated/typescript/ApiRequest.ts",
+    "project_schema_ref": "packages/commands/generated/schemas/project.schema.json",
+    "command_schema_ref": "packages/commands/generated/schemas/apply_commands.request.schema.json",
+    "boundary_tests_passed": 17,
+    "schema_cases_passed": 32,
+    "implemented_public_operations": 0
+  },
+  "fully_implemented_public_operations": 0,
+  "instance_declared_parameter_contract": {
+    "wire_command": "existing EditCommand.SetDeclaredParameter(target,parameter_id,value,basis)",
+    "definition": "Declaration.binding resolves the typed definition default; declaration basis and actual value update in the same DefinitionDraft candidate, never a released module version.",
+    "instance": "Device.configuration[parameter_id] stores the full TypedValue; effective execution applies only the exact selected module declaration binding. Do not infer behavior paths from parameter names or modify the library.",
+    "source_carrier": "ProjectState.parameter_sources:Vec<ParameterSource>, serde default and omitted when empty; no synthetic GenerationContext/goal.",
+    "source_key": "exact target + /configuration/<RFC6901 escaped parameter_id>/value; source value stores full TypedValue with command basis and source_ref=None because this command has no source_ref.",
+    "atomic_authorization": "SetDeclaredParameter branch + exact target + actual authorized parameter leaf is required. Only its deterministic matching source entry is paired; this does not grant edits to other sources, targets or generation goals.",
+    "stale_source": "PutObject cannot change a sourced value while retaining its old basis. Reject mismatched source/value before commit, or explicitly clear the affected obsolete source; do not retain false source metadata.",
+    "consumer": "Same Engine resolves actual declared configuration overrides; saving a new value without execution consuming it is incomplete.",
+    "status": "implementation_and_consumer_verification_in_progress",
+    "explicit_instance_reset": {
+      "wire_command": "existing PutObject(Device), selected configuration key omitted",
+      "paired_source": "Remove only the same target + /configuration/<escaped parameter_id>/value in the same authorized candidate; keep all other entries. A sourced value replacement still requires SetDeclaredParameter.",
+      "history": "Normal Project undo/redo and save/open preserve the paired reset.",
+      "authorization": "Existing PutObject target/field grants and external container-deletion restriction remain unchanged. No new Agent edit rights.",
+      "consumer": "Explicit remove, preview, confirm in stages; inactive inline binding is read-only after independent operation selection; never silently delete on adoption."
+    }
+  },
+  "artifact_binding_host_authorization": {
+    "wire_operation": "existing adopt_artifact",
+    "private_branch": "HostEditBranch.AdoptArtifact; trusted in-process only, never deserialized from wire",
+    "external_agent": "Require allowed_operations.AdoptArtifact AND a current Project/scope HostEditGrant with branch AdoptArtifact AND an objects target exactly equal to the existing current consumer_ref.",
+    "semantic_scope": "This branch authorizes only creating the typed consumer binding after full content/purpose checks. Its exact consumer target is mandatory; fields grant no normal Put/Remove rights through this semantic branch.",
+    "negative": "A PutObject branch or ordinary leaf grant is insufficient; an AdoptArtifact branch without the exact consumer is insufficient. Neither may create acknowledgment or trusted producer facts.",
+    "ui": "Actual trusted UI channel may acknowledge; candidate validation precedes atomic revision commit and trust registration.",
+    "producer_gate": "Actual verified producer/result/files and exact Host-recorded human purpose acknowledgment remain mandatory. Current-process trust is not created by imported metadata or mock providers.",
+    "status": "implementation_and_consumer_verification_in_progress"
+  },
+  "packaging_budget_freeze_identity": {
+    "rule": "Job.budget为None时冻结本次明确请求预算：若所请求精确Job未存档，可在该请求修订形成完整执行输入；若同ID/修订的原budget=None已存档，保留旧版，按同Job已有/请求修订上界分配新的未占用修订冻结预算。同ID/修订不同原输入先拒绝；已有Some预算须完整匹配请求，不能择latest替换内容。纯候选不改Project/信任/历史；实际producer引用派生执行Job，消费者仍须独立明确选择与认可，不自动改旧Job绑定。",
+    "private_consumer": "freeze_packaging_execution_input",
+    "source_ref": "packages/commands/src/project_professional.rs",
+    "status": "private_candidate_implemented_actual_producer_integration_pending"
+  },
+  "typed_template_preparation_contract": {
+    "scope": "P4-01 backend reception within P0-01 original step2; whole task acceptance remains pending",
+    "carrier": "TemplateInstantiation.preparation: Option<TemplatePreparationChoices>",
+    "fields": {
+      "source_project": "RelativeFilePath; declared actual selected ModulePackage file",
+      "namespace": "String",
+      "resources": "BTreeMap<ObjectId,Option<ObjectId>>; null=create declared example; ID=reuse actual resource; missing=unresolved",
+      "reuse_items": "BTreeMap<ObjectId,ObjectId>",
+      "include_example_product": "bool",
+      "site_envelope": "Option<SiteEnvelope>"
+    },
+    "authority": "Choices grant no capability or acknowledgment and cannot supply source/adoption records. Host replays the same prepare_template from actual exact selected archive, validates the complete candidate and commits derived new-ID adoption/source/parameter_source in the same authorized atomic candidate.",
+    "compatibility": "Absent/null preparation retains existing command shape, accepted only when one complete actual-source replay exactly matches proposed objects and bindings. Explicit choices are used for declared source/namespace/reuse/site.",
+    "source_refs": [
+      "packages/commands/api.design.rs",
+      "packages/commands/src/api.rs",
+      "packages/commands/src/host_definitions.rs",
+      "packages/commands/src/project_host.rs"
+    ],
+    "actual_evidence": {
+      "supported_host_stdout_ref": ".work/whole-packages/template-host-reception-supported-host.stdout.txt",
+      "host_checks": 145,
+      "contract_checks": 5,
+      "latest_supplement_recompile_ref": ".work/whole-packages/template-host-reception-owner-final-second.stderr.txt",
+      "latest_supplement_status": "blocked_at_compile_by_active_Engine_setup_rs_rewrite_not_test_failure",
+      "new_concentrated_result": null,
+      "independent_reception": "pending W2 full producer regression and W5 strict original metadata consumers; W6 F06 not declared closed yet"
+    }
+  },
+  "exact_module_object_source_contract": {
+    "task_id": "P2-01",
+    "observed_gap": "Current get_object(module,Draft) rejects if more than one exact version is declared, and public ObjectRef carries ID but no version. Real device ports/presentation must come from its exact ModuleRef, not latest or an ambiguous ID.",
+    "type_delta": "ObjectSource::ModuleVersion { module_ref: ModuleRef }, wire kind=module_version",
+    "preserved": "Old draft/run_snapshot request shapes,18 operation names and API0.1 remain.",
+    "admission": "Only object.kind=module with matching exact ModuleRef ID. Project: current selected exact module OR actual matching current additions/backing Module entry+package bytes OR trusted startup registered exact bundle. DefinitionDraft: actual own definition or its explicit exact dependency closure, including declared composition and transitive package dependencies, plus actual Draft and Project GetObject admission. Merely cached/other-Draft/other-version/other-Project/latest/name sources are not authorized. Metadata returns actual scope context; private byte reads additionally require actual UI and matching current scope_revision. Reads do not adopt, upgrade, edit, or change history; old Run exact source/frontier remain.",
+    "consumer": "P2-01 actual renderer/port and definition display reads exact device/module source; all rendered states continue to share Project/Run.",
+    "status": "actual_Host_and_derived_contracts_passed; independent_reception_and_current_UI_scope_recorded_in_P2-01_receipt",
+    "source_refs": [
+      "packages/commands/src/api.rs",
+      "packages/commands/api.design.rs"
+    ],
+    "read_contract_evolution_ref": "scenarios/真实业务设计/runtime-job-history-host/read-source-contract-evolution.json",
+    "current_Draft_source_receipt_ref": "scenarios/媒体表现/runtime-media-adoption-source/handoff.md"
+  },
+  "saved_Run_context_discovery_contract": {
+    "task_id": "P2-01",
+    "observed_gap": "ProjectState has no Run IDs, get_context active_run_id is null and tasks are session-owned; a real frontend reopening a saved project cannot discover its frozen historical Runs.",
+    "field": "ProjectContext.run_summaries:Vec<RunSummary>",
+    "compatibility": "Absent reads empty; empty omitted on write, preserving existing empty-context fixtures. No operation name/API version change.",
+    "authority": "Only actual stored Runs visible in the authorized active Project; workspace without a visible Project and definition_draft get an empty list. Exact frozen input, time/acceptance scope, status/known frontier and unknown accepted values must come from the same existing summary producer used by get_run; no inferred output or other-project/session payload.",
+    "consumer": "P2-01 actual Run selector and same frozen-source rendering; P2-03 can select old RunIds without reading private file paths.",
+    "status": "actual_Host_discovery_and_frozen_Run_tests_passed; P2-01_current_reception_separate"
+  },
+  "frozen_Run_object_sources": {
+    "task_ids": [
+      "P2-01",
+      "P2-04"
+    ],
+    "observed_gap": "Timeline requires actual frozen ScenarioInput; old Run device ports require exact historical ModuleRef even after current draft removes or replaces that version. Current RunSnapshot handles Project/Item only and ModuleVersion admits current Project membership only.",
+    "scenario_read": "get_object Scenario + existing RunSnapshot{run_id,at_ms}: actual frozen_scenario_file, identity/revision must equal same RunInputRef.",
+    "module_read": "ObjectSource::RunModuleVersion{run_id,at_ms,module_ref}, wire kind run_module_version, only matching Module ObjectRef. Exact membership in this Run frozen Project, actual frozen module bytes, never current/latest substitute.",
+    "admission": "Actual visible Run through same caller Project Scope and GetRun authority; requested time within computed frontier; exact Project/Scenario/Module identity; reject wrong Run/Scope/ID/version/unreferenced/missing frozen file. No Definition/private/other-project leak or edit grants.",
+    "compatibility": "Existing draft/run_snapshot/module_version shapes and all18 operation names/API0.1 unchanged; canonical/runtime enum and generated Schema/TS updated together. No new business operation.",
+    "required_actual_checks": [
+      "Run then edit current Scenario/module references, read exact old input",
+      "Save/Open historical frozen inputs",
+      "wrong ID/version/Scope/frontier and missing historical bytes rejection",
+      "no current draft fallback"
+    ],
+    "status": "actual_Host186_and_both_codegen_received_Root_UI_consumer_written_Native_pending",
+    "whole_task_done": false,
+    "human_acceptance": null,
+    "actual_Host": {
+      "commands_tests": 186,
+      "source_frozen": true,
+      "proof_ref": ".work/whole-packages/p204-host-frozen-input-final-first.stdout.txt",
+      "consumer": "actual RunSnapshot Scenario and RunModuleVersion; altered draft, relocated Save/Open and wrong identity/Scope/frontier rejection"
+    },
+    "generated_contracts": {
+      "canonical_roundtrips": 20,
+      "api_roundtrips": 36,
+      "typescript_files": 425,
+      "product_schemas": 40,
+      "product_schema_cases": 92,
+      "proof_refs": [
+        ".work/whole-packages/p204-canonical-codegen.stdout.txt",
+        ".work/whole-packages/p204-product-codegen.stdout.txt",
+        ".work/whole-packages/p204-product-schema.json"
+      ]
+    },
+    "actual_UI_source": "readRunInputs reads only frozen Scenario/exact historical modules; Workbench atomically publishes full matching RunObjectsPage after epoch+Project+Run ownership guard. Actual Native GUI reception remains pending."
+  },
+  "readonly_template_preview_contract": {
+    "task_ids": [
+      "P4-01",
+      "P2-01",
+      "P3-04"
+    ],
+    "observed_gap": "Empty Native Host has no actual bundled definitions. The existing library query exposes metadata only; no real client can read the exact subset/source resources or obtain canonical prepare_template output required by instantiate_template. Reimplementing preparation in TypeScript would duplicate the algorithm.",
+    "typed_read": {
+      "operation": "existing get_object",
+      "request": "Module ObjectRef + ObjectSource::TemplatePreview{module_ref,base_revision,choices:Option<TemplatePreparationChoices>,seed:Option<TemplateSeedSelection>}",
+      "result": "DomainObject::TemplatePreview{module_ref,project_id,base_revision,subset,source_project,resources,command:Option<TemplateInstantiation>,issues}",
+      "metadata": "choices=None and seed=None returns only actual source subset, listed typed source Project path and declared resource instances; no mutation or prepared command.",
+      "preparation": "Some choices calls the same Rust prepare_template and optional fill_template_site. Some seed calls the same prepare_template_seed only with explicit scenario ID, supply/demand flags, initial-quality map and declared-inspection flag.",
+      "authority": "Actual Project Scope/session and matching current base_revision; Module object ID matches exact ModuleRef. Same readable_project_module gate as exact metadata/private bytes: selected, actual declared current archive+bytes, or trusted registered bundle; no foreign Project/cache-only/latest source. Unselected exact archived versions can be inspected with command=null; read does not select definitions, edit or consume creation ledger. DefinitionDraft composition preview remains its separate explicit path.",
+      "commit": "UI/MCP sends the returned canonical TemplateInstantiation via existing ApplyCommands using the preview's captured Project revision. Host replays actual source, checks every effect and commits imported exact packages/objects/selected seed atomically. Conflicts preserve UI preview and current actual state.",
+      "compatibility": "All18 operation names/API0.1/old source shapes unchanged. No raw file reader, alternate Host/Engine, UI preparation algorithm, automatic adoption, supply, orders or acknowledgment."
+    },
+    "bundled_library": {
+      "trusted_entry": "ProjectHost::register_bundled_template_directory(&Path)",
+      "source": "Actual canonical candidate module.json plus declared exact definitions/assets/files; registration itself does not select definitions or create Project state.",
+      "storage": "Deterministic package-scoped file/AssetId relocation preserves semantic definitions, original source/rights and exact ModuleRef. Existing same-version immutable conflicts reject atomically; no rights inferred or files silently omitted.",
+      "native_bootstrap": "Root source now registers4 canonical candidate directories and8 existing support sample directories on the single managed Host. New generic entry targeted2 passed; Native rebuilt runtime and independent nine-category recheck still pending. Previous actual195 binary original/template/Run/timeline16 checks passed.",
+      "additional_trusted_entry": "ProjectHost::register_bundled_module_directory(&Path)"
+    },
+    "consumers": [
+      "apps/planner/src/features/factory/ModuleLibrary.tsx",
+      "apps/planner/src/features/factory/TemplatePreparation.tsx",
+      "apps/planner/src/services/projectHost.ts",
+      "apps/planner/src/features/factory/Workbench.tsx"
+    ],
+    "required_actual_checks": [
+      "metadata/prepare do not change Project, selected module refs, dirty flag, history or grants",
+      "actual create/reuse resources, explicit seed and initial quality preserve exact source",
+      "wrong source/ID/version/Project/Scope/revision/seed-without-choices rejected",
+      "stale preview cannot overwrite later revision; malformed later effects roll back entire candidate",
+      "three actual bundled templates adopt/Run/Save/Open and historical sources remain exact",
+      "actual Native UI preview/confirm and independent original full-package acceptance"
+    ],
+    "status": "actual_Host_and_Native_nine_category_library_template_input_comparison_passed_independent_full_reception_pending",
+    "actual_evidence": {
+      "canonical_roundtrips": 20,
+      "API_roundtrips": 36,
+      "generated_TS_files": 427,
+      "Host_old_template_reception_tests": 2,
+      "new_Host_regression_pending": false,
+      "actual_native_template_GUI": true,
+      "Host_full_regression_passed": 195,
+      "Host_preserved_previous": 186,
+      "Host_four_candidate_tests": 6,
+      "independent_finding": "W5-P401-01",
+      "integration_intake_ref": "docs/04_开发与验收/整包派发/整包集成验证.json",
+      "independent_actual_native_checks": 16,
+      "independent_actual_native_ref": ".work/whole-packages/window5-timeline-evaluation/native-combined-result.json",
+      "actual_native_nine_category_query": true,
+      "actual_native_query_ref": ".work/whole-packages/p205-delivery-native-ui/current-panels.json"
+    },
+    "whole_task_done": false,
+    "human_acceptance": null
+  },
+  "project_settings_setup_policy_write": {
+    "operation": "apply_commands",
+    "command": "set_project_settings",
+    "carrier": "ProjectSettings.setup_policies: Option<Vec<DeviceSetupPolicy>>",
+    "omitted_or_null": "Keep actual existing setup policies; no silent deletion or reset.",
+    "explicit_empty_array": "Clear current policies through the same authorized atomic draft edit.",
+    "permission": "Normalize omitted field to current value before field-difference authorization. Stable device_id identifies a policy; nested/structural array changes cannot impersonate a leaf grant.",
+    "revision_and_history": "Same captured Project base_revision and same session draft undo/redo form new shared revisions. Old Runs/actual stock/professional acknowledgment and disk files are untouched.",
+    "source_and_generation": "Actual Rust api.rs and canonical api.design.rs; TS/Schema derived, no new operation or client-side state copy.",
+    "actual_targeted_checks": "Core2 actual Host tests passed; exact Engine setup15s to30s, total downstream chain205s due real slack, oldRun unchanged. Canonical20/36/427/15 and product40Schema103cases passed. Independent Host/Native/full-release still separate."
+  },
+  "definition_template_composition_extension": {
+    "status": "current_context_setup_Host249_SDK52_frozen_actual_Native_intake_in_progress",
+    "public_operation": "apply_commands",
+    "public_operation_count": 18,
+    "api_version": "0.1",
+    "command_kind": "put_template_composition",
+    "carrier": "TemplateComposition{project_revision:Revision,definition:ModuleDefinition,subset:TemplateSubset,source_scenario?:ScenarioReference|null}",
+    "authoritative_sources": [
+      "packages/commands/api.design.rs",
+      "packages/commands/src/api.rs"
+    ],
+    "scope": "DefinitionDraft only; base_revision guards DraftR and payload.project_revision guards actual ProjectR",
+    "creation": "Existing create_definition_draft is a prior distinct transaction; failure of the second call preserves the actual created Draft descriptor and local unsaved input; cannot report whole composition saved",
+    "sidecars": "Host allocates real versioned template subset/source Project files together with definition edit; get_object reads actual DefinitionDraft and exact TemplatePreview files. Caller paths do not create authority.",
+    "permissions": "Existing PutDefinition branch and actual Project read; exact captured scope and authority remain necessary; no definition grant implies Project read",
+    "seed": "Composition captures one complete declared source seed and exact ScenarioReference; adoption supply/demand remain separate explicit choices; missing unsupported execution context remains a named issue",
+    "schema_evidence": ".work/whole-packages/seed-context-policy-product-schema.json",
+    "whole_task_done": false,
+    "base_actual_Host_tests": 244,
+    "base_composition_groups": 8,
+    "base_Host_receipt": "scenarios/自定义模块/runtime-template-composition/full-final.result.json",
+    "base_Native_managed_checks": 144,
+    "source_scenario": "Explicit actual selected Scenario id/revision; full seed bodies and actual versioned Scenario sidecar, never current Scenario guessing or Run input substitution",
+    "preview_readback": "TemplatePreview.source_scenario?:ScenarioReference|null returns only actual exact-version sidecar reference; historical absence remains absent",
+    "setup_adoption": "TemplateInstantiation.project_setup_policies?:DeviceSetupPolicy[]|null carries same SDK actual target-preserving proposal into existing atomic settings authorization, not a second policy authority",
+    "new_context_fields_status": "canonical_product_generated_Host249_SDK52_UI79_service21_passed_new_Native_consumers_pending",
+    "product_schema_cases": 117,
+    "old_schema_cases_retained": 109,
+    "actual_Native_DefinitionDraft_Task_consumer": "desktop-host-69568 Task2 Completed; private DefinitionCycle Run70/110s; Project/Scenario/full old Run unchanged; not general source-context adoption",
+    "actual_Host_tests": 249,
+    "actual_composition_groups": 13,
+    "actual_Host_receipt": "scenarios/自定义模块/runtime-template-context-setup/full-final.result.json",
+    "SDK_unique_tests": 52,
+    "SDK_receipt": "scenarios/模板与交接/runtime/setup-composition/handoff.md",
+    "current_Native_process_ref": ".work/whole-packages/context-setup-native-ui/process.json",
+    "current_Native_managed_checks": 144,
+    "actual_Native_full_sample_result": "desktop-host-69568 Task3; frozen Draft2r1, full result acceptance70/110s and formal inputs/Run unchanged; pre-context binary",
+    "resource_capture": "Explicitly rebuild selected devices and combination role resource requirements from actual Project resource kind, role, capacity, qualifications, calendar and presentation declarations. Only an explicitly attached seed with an exact matching source Scenario ID/revision also includes its declared supply resources; selecting a candidate or a newer/different Scenario does not. No instance IDs, homes or runtime occupation are copied. Adoption still requires explicit create/reuse choices.",
+    "media_dependencies": "Capture exact device override and selected resource presentation media_ref dependencies, including detailed/simplified LOD. Existing current-source permission checks, exact versions and asset rights remain in force.",
+    "request_metadata": "Read-back subset.adoption is Host-generated claim/source metadata. Authoring composition requests send adoption=null, including retries after partial Draft creation; Host regenerates it from validated actual Project declarations. Captured source_scenario stays exact and independent.",
+    "implementation_validation_ref": ".work/single-window-20261018/p301-native36/Native51-template/validation.json",
+    "import_companion_identity": "Definition-only import preserves each validated companion manifest identity, revision and exact bytes. Non-asset companion roles remain SupportingFile: a captured source Scenario is not an editable ScenarioInput and its metadata must not be replaced with the root module identity. Save retains the existing typed identity checks.",
+    "explicit_initial_quality_batch": "UI-only entry: no default quality. After an explicit quality choice and separate apply action, fill only the currently listed seed item/arrival IDs (legacy stock-location inputs retain their existing keys). Individual changes remain available; no inspection results, current inventory or Run are adopted. The existing per-input initial_quality request remains unchanged.",
+    "prepared_seed_summary": "The adoption preview counts initial item records, arrival batches, supply relations, orders, production tasks and inspection presets directly from Host command.explicit_new_scenario_seed. Counts describe declared inputs, not inventory, production output or recognized inspection conclusions.",
+    "instance_identity_presentation": "Existing current-Scenario, business-Scenario, definition-sample-Scenario, canvas-hall and object-owner-hall selectors display title plus stable identity; Scenario options also display revision. Repeated template instances can share titles, so titles alone do not select or prove identity. Option values, document data and API contracts stay unchanged. Ordinary Native evidence: .work/single-window-20261018/p301-native36/Native51-template/identity-selectors-validation.json.",
+    "frozen_result_identity": "In actual-result mode the existing source bar displays the selected Run input_ref Scenario ID and revision, independently of the current editable Scenario selection. Switching current inputs does not relabel a frozen result. Draft mode clears this frozen-context label; returning to actual mode restores it. Long source text wraps within the existing bar. Ordinary Native evidence: .work/single-window-20261018/p301-native36/Native51-template/frozen-context-validation.json."
+  },
+  "private_ui_media_read_contract": {
+    "status": "actual_Host280_complete_cut_and_Native18_source_received_successor_GUI_pending",
+    "public_operation_added": false,
+    "public_operation_count": 18,
+    "api_version": "0.1",
+    "native_command": "project_read_media_asset",
+    "frontend_service": "apps/planner/src/services/mediaAssets.ts",
+    "request_fields": [
+      "project_id",
+      "scope",
+      "scope_revision",
+      "source",
+      "asset"
+    ],
+    "caller_identity": "main window only; same ProjectApiState Host mutex and private UI session, never caller/session/origin from wire",
+    "scope_revision": "current ProjectR in Project scope; current DraftR in DefinitionDraft scope plus actual same Project read. Frozen Run input revision is a separate source identity, not a substitute for current scope revision",
+    "source": "Only exact ModuleVersion or RunModuleVersion with existing Run Scope/time frontier. Project selection/current archive+bytes/trusted startup bundle eligibility is unchanged via readable_project_module. DefinitionDraft own definition and explicit exact direct/transitive dependency closure are shared by metadata and bytes through scoped_media_package; Draft still needs Project GetObject admission. TemplatePreview remains its own explicitly Project-scoped contract. Metadata success never grants external callers private UI-only bytes; cached keys/current-library/latest/other Scope do not substitute for the captured exact source.",
+    "asset": "Full declared AssetRef id/path/kind plus actual Asset FileRef/bytes; controlled loaded map only; no filesystem join/URL or whole Project map",
+    "response": "tauri::ipc::Response(Vec<u8>) -> invoke<ArrayBuffer>; exact actual errors preserved",
+    "side_effects": "readonly; no Task/dirty/history/Project/Scenario/inventory/redistribution change",
+    "frozen_definition_cycle": "only actually listed and existing media bytes frozen privately with original Run. Later Draft edits never replace old bytes. Missing bytes stay MissingReference",
+    "payload_relocation": "package assets/files and full exact payload asset/sequence/material texture refs relocate together; renderer never guesses bundled prefixes",
+    "permissions_and_redistribution": "UI read permission is not export/redistribution confirmation; unknown original rights/omitted bytes remain unknown/missing",
+    "evidence": {
+      "Host": "scenarios/自定义模块/runtime-media-assets/full-final.result.json",
+      "Native_unit": ".work/whole-packages/media-private-native-unit.log",
+      "Native_build": ".work/whole-packages/media-private-native-build.log",
+      "typescript": ".work/whole-packages/media-private-bridge-typecheck.log",
+      "unlaunched_copy": ".work/whole-packages/media-private-native-ui/superfactory.exe",
+      "current_local_library": "scenarios/自定义模块/runtime-local-library-source/README.md"
+    },
+    "remaining": "actual sequential Native binary invoke, GIF/GLB/image decoding/rendering, full P302/P303 consumers and release separately verified",
+    "whole_task_done": false
+  },
+  "private_ui_stored_packaging_read_contract": {
+    "status": "F18_independently_closed_Host_source_and_UI45_Native18_received_actual_GUI_pending",
+    "public_operation_added": false,
+    "public_operation_count": 18,
+    "api_version": "0.1",
+    "native_command": "project_read_stored_packaging",
+    "frontend_service": "apps/planner/src/services/storedPackaging.ts",
+    "request_fields": [
+      "project_id",
+      "scope",
+      "scope_revision",
+      "artifact_id"
+    ],
+    "identity": "main window; same ProjectApiState Host mutex and private actual UI session, strict unknown wire fields denied incl caller/session/path/input_ref/result_ref",
+    "scope": "actual current Project or DefinitionDraft read rights/current ScopeR, plus current Project association; no arbitrary file path",
+    "source": "actual admitted ArtifactRecord -> its input_ref/result_ref, actual ProfessionalDocuments/files/additions/backing declared entries and decoded Job/Result matching artifact/job/subject; no highest Job replacement or new calculation",
+    "response": "private typed {artifact,result,input}; PackagingWorkspace adds inputReadIssue=null only after real success",
+    "effects": "read only; no Task, R/dirty/acknowledgment/binding/inventory/Run/file change",
+    "Root_mount": "Professional Engineering menu, actual same AuthoringIO and Project/Draft context, canonical commit and shared Task observer",
+    "remaining": "actual producer final review, current Host final suite, Native build/invoke/render/save/reopen, original release gates",
+    "whole_task_done": false,
+    "evidence": "scenarios/专业桌面/runtime-stored-artifacts/handoff.md",
+    "scoped_list": "F18 source independently closed; scoped list11 and UI33 included in subsequentUI45, Host280 complete cut and Native18; actual GUI still pending",
+    "scoped_artifact_listing": {
+      "private_command": "project_list_stored_packaging",
+      "request": [
+        "project_id",
+        "scope",
+        "scope_revision"
+      ],
+      "caller": "same managed Host private InteractiveUi session, main window only, deny unknown fields",
+      "authority": "same exact GetObject / actual Project or DefinitionDraft and current ScopeR as read",
+      "source": "that admitted Scope ProfessionalDocuments.artifacts only, input kind PackagingJob and result kind PackagingResult",
+      "no_mutation_or_file_decode": true,
+      "consumer": "storedArtifacts.list; late Scope/R results discarded; explicit loading/empty/failure and Task completion refresh",
+      "handoff_ref": "scenarios/专业桌面/runtime-stored-artifacts/f18-handoff.md",
+      "Host_targeted": 11,
+      "UI_targeted": 33,
+      "Native_units": 18,
+      "actual_Native_GUI": "pending"
+    }
+  },
+  "Run_objects_at_job_history_contract": {
+    "status": "actual_Host267_current_history_and_source_contract_batch_passed_Native_pending",
+    "operations": "existing get_run ObjectsAt and get_object RunSnapshot forwarding; API0.1/18 unchanged",
+    "empty_objects": "preserves existing complete runtime Items in original order/paging",
+    "explicit_objects": "Item/Job kind+id only, actual sameRun at_ms/frontier/scope/current GetRun authorization; paginate actual values",
+    "live": "same Engine.jobs_at, sparse real closed-instant job_history plus same actual work intervals; no final-state inference or second Engine",
+    "saved": "both formal Run and DefinitionCycle persist optional internal StoredRunHistory.job_records with actual run_id/input_ref/scope and Items; reopened same helper over exact Run work/window/frontier",
+    "legacy": "job_records absent means no actual history: explicit Job query UnsupportedCapability; Item history and full old Run remain available, never synthesize missing state",
+    "evidence": "scenarios/真实业务设计/runtime-job-history-host/README.md",
+    "whole_task_done": false
+  },
+  "private_ui_run_port_output_contract": {
+    "status": "actual_Engine172_Host280_complete_and_Native18_compiled_shared_tag_consumer_active",
+    "native_command": "project_read_run_port_output",
+    "frontend_service": "apps/planner/src/services/runPortOutput.ts",
+    "public_operation_added": false,
+    "public_operation_count": 18,
+    "request_fields": [
+      "project_id",
+      "scope",
+      "scope_revision",
+      "run_id",
+      "at_ms",
+      "port"
+    ],
+    "authority": "main window, same Host private UI session, strict unknown field rejection; actual GetRun authorization/Scope/currentScopeR and Run window/frontier",
+    "source": "actual private occurrence records from original Engine output creation and true Job→Location transfer; frozen Run Project/device/exact module/legal material output PortRef",
+    "response_fields": [
+      "run_id",
+      "at_ms",
+      "port",
+      "item_type_ref",
+      "completed_output",
+      "accepted_output"
+    ],
+    "quantities": "canonical exact DecimalAmount/Quantity and actual port unit; incompatible actual item type/revision or unit cannot combine; accepted_output means actual handoff not customer goal/quality release",
+    "history": "optional port_outputs captured by normal Run and DefinitionCycle; old missing UnsupportedCapability, actual Some(empty) known0; normal saved/moved freshHost reads original facts; DefinitionCycle lacks formal instance port and is not applicable",
+    "side_effects": "readonly, no production/dirty/R/history/redistribution changes",
+    "evidence_ref": "scenarios/真实业务设计/runtime-port-output/handoff.md",
+    "Native_ref": ".work/whole-packages/native-actual-port-and-manufacturing.log",
+    "actual_Native_GUI": false,
+    "whole_task_done": false
+  },
+  "private_ui_manufacturing_export_contract": {
+    "status": "actual_Host_new5_old11_and_Native18_compiled_UI45_Root_mounted_actual_GUI_pending",
+    "native_command": "project_export_manufacturing_package",
+    "frontend_service": "apps/planner/src/services/manufacturingExport.ts",
+    "public_operation_added": false,
+    "public_operation_count": 18,
+    "request_fields": [
+      "project_id",
+      "scope",
+      "scope_revision",
+      "params",
+      "declarations",
+      "confirm_redistribution"
+    ],
+    "params": "existing ExportPackageParams; its revision must equal actual current ScopeR",
+    "declaration_fields": [
+      "artifact_id",
+      "file",
+      "source",
+      "license"
+    ],
+    "authority": "main window only, same actual private UI session, real ExportPackage/GetObject authority and Scope/R checked before file details; no caller/session/bytes/arbitraryAssetId or native path from wire",
+    "source": "only selected exact Artifact in actual Scope and its PackagingResult.manufacturing_files FileRef/actual bytes; explicit artifact selection, nonempty user source/license, include=true and explicit current confirmation",
+    "candidate": "only immutable candidate archive Asset index/AssetRights and local confirmed set; original worker/filter/cancel/atomic commit retained",
+    "source_state": "no change to source Project/R/dirty/Job/Artifact/geometry/stock/backing/manifest/asset confirmations; ordinarySave does not record this export statement",
+    "reopen_and_other_assets": "exported package retains statement but import cannot restore current confirmation; unrelated or unknown-rights assets retain original gate/missing",
+    "consumer": "actual per-file form empty source/license, one-shot confirmation, identity/R/artifact/files changes reset; original unlicensed export still lists missing; no automatic CC0/use acknowledgment/binding",
+    "actual_Host_ref": "scenarios/专业桌面/runtime-manufacturing-rights/producer-handoff.md",
+    "actual_UI_limited_ref": "scenarios/专业桌面/runtime-manufacturing-rights/ui-handoff.md",
+    "Native_ref": ".work/whole-packages/native-actual-port-and-manufacturing.log",
+    "actual_Native_GUI": false,
+    "whole_task_done": false
+  },
+  "current_private_source_receipt": {
+    "integration_ref": "docs/04_开发与验收/整包派发/整包集成验证.json",
+    "last_complete_Engine": 172,
+    "last_complete_Host_before_new_manufacturing_target": 280,
+    "new_manufacturing_target": 5,
+    "affected_old_export_regressions": 11,
+    "Native_complete_units": 18,
+    "counts_separate_not_one285_Host_claim": true,
+    "actual_desktop_and_release": "pending"
+  },
+  "adopted_Media_exact_source_contract": {
+    "public_operations": 18,
+    "wire_type_changes": [],
+    "adoption": "Explicit Media adoption into an existing Device preserves its Device.module_ref and writes a Presentation shell whose source, detailed and simplified locators are the exact selected MediaRef. The exact Media package owns its actual source/LOD/assets/nodes/timeline/actions/tags/anchors/rights; no literal asset copy into the Device package.",
+    "consumer": "Start at the actual Device module binding; only an encountered MediaRef changes the exact metadata/byte source. Resolve actual Media package before deriving declaration phases, LOD or asset ownership. DefinitionDraft stays in its actual Scope; RunModuleVersion remains frozen to the old Run.",
+    "version_and_editing": "Registering v2 never retargets an instance or old Run. Edit through standard definition/new exact version and explicit adoption. Undo/Redo and Save/physical move/fresh Host preserve exact references and old bytes.",
+    "source_permissions": "External update requires the explicit exact source_versions grant and all changed source/detailed/simplified version leaves. Failing any grant or mixed command is atomic; no source/right elevation.",
+    "Host_receipt_ref": "scenarios/媒体表现/runtime-media-adoption-source/handoff.md",
+    "unique_actual_checks": 28,
+    "new_checks": 5,
+    "original_qualification_evolution_ref": "scenarios/媒体表现/runtime-media-adoption-source/contract-evolution.json",
+    "actual_TS_Native_receipt": "pending_shared_consumer_and_current_Native",
+    "whole_task_done": false
+  },
+  "direct_scene_node_read_contract": {
+    "operation": "get_object",
+    "params_unchanged": "GetObjectParams.object_id/source/node_index",
+    "result_unchanged": "DomainObject::SceneNode",
+    "index": "canonical array position in the exact direct parent Presentation.nodes; never SceneNode.id, GLB ImportedNode index or name",
+    "parent_admission": "Original object(None) executes first with the same caller/Project/Scope/exact source. No metadata leakage before original permission checks.",
+    "parents": [
+      "Module/Definition own Media, Devices, Items, Resources or Transport Presentation",
+      "Device actual presentation_override only",
+      "Resource actual presentation only"
+    ],
+    "no_owner_jump": "No MediaRef follow or latest module fallback. The actual final media picker must carry its own exact owner. Empty wrapper stays missing.",
+    "errors": {
+      "not_presentation_parent": "InvalidInput /params/object_id",
+      "absent_presentation_or_out_of_range": "MissingReference /params/node_index",
+      "source_or_authority": "original failure unchanged"
+    },
+    "history": "Current exact ModuleVersion, actual DefinitionDraft self/dependency, RunModuleVersion and frozen DefinitionCycle retain source admission. Formal RunSnapshot Device/Resource read static declarations through the actual frozen Project with original GetRun/GetObject/Scope/Project/computed frontier checks; get_run.ObjectsAt stays Item/Job only.",
+    "native_scene": "Type can be directly extracted but no actual parent getter currently produces it; no fabricated entry.",
+    "actual_evidence_ref": "scenarios/媒体表现/runtime-scene-node-source/handoff.md",
+    "new_actual_Host_tests": 8,
+    "old_related_regressions": 157,
+    "public_wire_changes": false,
+    "read_only": true,
+    "product_node_inspector_or_edit_acceptance": false,
+    "frozen_instance_evidence_ref": "scenarios/媒体表现/runtime-frozen-instance-nodes/handoff.md",
+    "frozen_instance_new_tests": 4,
+    "frozen_instance_related_regressions": 169
+  },
+  "render_view_execution_contract": {
+    "status": "public_factory_capture_two_kinds_actual_Native_verified_full_release_open",
+    "source_review_ref": "scenarios/Agent共建/runtime-render-view-source-review/source-review.md",
+    "private_technical_gate_ref": ".work/whole-packages/native-hidden-capture-root-actual-04/root-reception.json",
+    "implemented_public_operation": true,
+    "scopes": [
+      "Project",
+      "DefinitionDraft"
+    ],
+    "authorization": {
+      "required_operation": "render_view",
+      "extra_GetObject_GetRun_CompareRuns_operation_grants_required": false,
+      "internal_read_boundary": "only exact input closure within originally authorized Project or opaque DefinitionDraft; original Run membership/frontier and asset/file closure rules retained",
+      "external_delivery": "only owned Task RenderOutput and its actual captured image, no raw source DTO/media/professional files",
+      "caller_impersonation": false,
+      "show_authority": "non-serde HostCallContext.allow_view_control; actual UI only; omitted native AuthorityChoice defaults false; actual display rechecks authority and epoch",
+      "revoked_before_show": "explicit failure, no silent capture_only downgrade",
+      "disconnect_and_old_epoch": "preserve original task ownership and completion semantics; no automatic cancellation of admitted CaptureOnly, no write/display in new Project"
+    },
+    "selectors": {
+      "module_ref": "optional nullable ModuleRef; module_preview exact version, required when authorized module ID resolves more than one version; no latest fallback",
+      "comparison": "optional nullable original CompareRunsParams; comparison requires explicit full inputs",
+      "unrelated_kind_selectors": "module_ref only module_preview; comparison only comparison",
+      "legacy_wire": "omitted new selectors omitted again when serialized; API0.1 and 18 operation names retained",
+      "target": "object_id or view.object_ref; both present must equal; exact per-kind identity, no first target",
+      "run_time": "run_id and view_time_ms supplied together, lawful original computed frontier; preview and actual Run cannot be mixed",
+      "revision": "params.revision actual current ScopeR at admission; view.project_revision actual displayed current or Run-frozen ProjectR; DraftR and ProjectR remain separate"
+    },
+    "delivery": {
+      "capture_only": "dedicated actual product task surface hidden and unfocused; no main selection/camera/playback/preferences changes",
+      "show_and_capture": "same actual task surface explicitly authorized to display; does not silently switch main Workbench",
+      "ready": "actual assets/fonts/drawing ready; full typed source and view receipt then actual Native CapturePreview bytes",
+      "scene_revision": "actual mounted ScopeR; ProjectR stays view.project_revision",
+      "visible_objects": "actual drawable geometry in requested camera frustum or actual visible 2D rows/sheets; not per-pixel occlusion",
+      "result": "original Task FIFO/owner/scope/epoch/cancel race and read-only managed lease; old matching Task may complete without mutating current Project",
+      "visible_object_identity": "Only actual existing ObjectRef kinds/IDs from this frozen source. Manufacturing sheet/part IDs and UI group IDs are not AssetId or invented objects; report their true Artifact/PackagingJob/Line owner when applicable and retain the sheet/group label separately. Material logical arrows use their real frozen Connection IDs only when their own drawn segments intersect the requested frustum; unavailable links remain named issues, and DOM lists never add visible identities."
+    },
+    "views": [
+      {
+        "kind": "line_canvas",
+        "scopes": [
+          "Project"
+        ],
+        "target": "optional actual Line; hall_id actual selected hall, or unique hall; multiple halls require explicit hall; true empty Project may render empty with issues",
+        "source": "current Project or selected Run frozen Project; actual exact modules/items/jobs/ports at requested time",
+        "canvas": "line_canvas",
+        "preview": false,
+        "legacy_job_history": "Keep exact frozen geometry and known Item history with an explicit missing Job-history issue; do not infer actual phase or Job attachment from current/final Jobs."
+      },
+      {
+        "kind": "multi_hall_canvas",
+        "scopes": [
+          "Project"
+        ],
+        "target": "optional same Project identity; hall_id null; all real halls",
+        "source": "same precise Project or Run closure as line_canvas",
+        "canvas": "multi_hall_canvas",
+        "preview": false,
+        "legacy_job_history": "Keep exact frozen geometry and known Item history with an explicit missing Job-history issue; do not infer actual phase or Job attachment from current/final Jobs."
+      },
+      {
+        "kind": "device_detail",
+        "scopes": [
+          "Project",
+          "DefinitionDraft"
+        ],
+        "target": "Project actual Device or opaque Draft own Devices definition; no fabricated Device for Draft",
+        "source": "exact instance/module/presentation/asset closure; Run uses exact frozen Device; active unique Job may show actual process, idle/completed uses explicitly frozen static declaration",
+        "preview": "only no-Run declared preview; static local declaration is not animated world pose",
+        "legacy_job_history": "An original Item-only history may still render its exact frozen static declaration; actual Job/phase remains explicitly unknown, never empty/idle. Original GetRun Job history stays Unsupported, and actual device_cycle remains unavailable; permission/Scope/other errors are not converted to static."
+      },
+      {
+        "kind": "module_preview",
+        "scopes": [
+          "Project",
+          "DefinitionDraft"
+        ],
+        "target": "exact readable Module ID/version, or actual Draft self definition identity; explicit dependency remains in same authorized source",
+        "source": "actual exact ModulePackage or actual Draft sidecars; TemplateSubset preview reads saved subset without instantiation",
+        "preview": "no-Run explicit declaration only; unsupported nonvisual payload reports limitation without invented geometry"
+      },
+      {
+        "kind": "packaging_workbench",
+        "scopes": [
+          "Project",
+          "DefinitionDraft"
+        ],
+        "target": "explicit actual Artifact",
+        "source": "same stored exact Artifact/PackagingResult/PackageStructureJob triple and real saved process samples",
+        "preview": "omitted means flat saved design state; supplied phase_id matches real step_id exactly and progress matches one exact saved sample; both required, no pose_name, interpolation or phase-to-index conversion; not actual factory Run"
+      },
+      {
+        "kind": "packaging_manufacturing",
+        "scopes": [
+          "Project",
+          "DefinitionDraft"
+        ],
+        "target": "explicit actual Artifact",
+        "source": "same exact stored triple and actual listed manufacturing file bytes; all available SVG sheets in shared product preview, no regeneration from current Job",
+        "preview": false,
+        "run": false,
+        "camera": "2D not applicable, report limitation rather than invent 3D transform"
+      },
+      {
+        "kind": "device_cycle_preview",
+        "scopes": [
+          "Project",
+          "DefinitionDraft"
+        ],
+        "target": "explicit exact Device or supported real Draft self definition",
+        "source": "no-Run declared phase/progress/pose OR actual Run/time with one exact real Job and actual phase work; no render-triggered Engine run",
+        "preview": "declaration only; no fabricated Job or first-match execution; no-active-Job actual cycle unavailable while device_detail static remains available"
+      },
+      {
+        "kind": "timeline_snapshot",
+        "scopes": [
+          "Project",
+          "DefinitionDraft"
+        ],
+        "target": "explicit saved Scenario without Run, or exact authorized Run and its frozen Scenario",
+        "source": "original grouping/tracks/input or actual Run observation; task-local read-only cursor/preferences; no localStorage writes or drag/compute",
+        "preview": false,
+        "camera": "2D not applicable; only actually rendered visible rows count as visible objects"
+      },
+      {
+        "kind": "comparison",
+        "scopes": [
+          "Project"
+        ],
+        "target": "same Project if present; run_id/view_time_ms null, explicit comparison carrier required",
+        "source": "same original compare_runs producer with at least two exact RunIds and MetricScope; original comparability/unknown results preserved",
+        "preview": false,
+        "camera": "2D not applicable; no clone/adopt/compute actions"
+      }
+    ],
+    "no_fake_completion": "backend missing or kind not wired to real shared product surface remains unavailable; private PNG, fixture PNG, schema and control tests do not implement all nine kinds or accept industrial quality",
+    "industrial_quality_ref": "docs/02_交互设计/设备建模精度与表现验收规范.json",
+    "private_frozen_consumer_payload": {
+      "comparison_runs": "exact each RunResult + its original frozen Project/Scenario, after original comparison admission; no current-head RunEvidence",
+      "port_output_summaries": "same original Rust RunPortOutput producer at exact Project Run/time/Device/PortRef; raw port_outputs retained; Draft not applicable; missing legacy history unknown, not zero",
+      "normal_manufacturing_preview": "new main-only UI read of exact stored Artifact triple and listed manufacturing FileRef bytes, reusing same ManufacturingPreview as task; no arbitrary path or regeneration",
+      "public_operations_added": 0,
+      "Native_task_commands_added_for_these_payloads": 0
+    },
+    "factory_connection_capture_evidence": {
+      "status": "bounded_actual_Native_public_MCP_verified",
+      "ref": ".work/single-window-20261018/p201-public-native23/capture-connections/Native-validation.json",
+      "actual_images": 5,
+      "wire_types_unchanged": true,
+      "full_release_or_human_acceptance": false,
+      "implementation_boundary": "Public render_view registration and actual factory two-kind Native MCP capture verified; this does not accept all nine views, full P3-04, NFR, IX, ordinary Codex use or human review."
+    },
+    "verified_native_views": [
+      "line_canvas",
+      "multi_hall_canvas"
+    ]
+  },
+  "operation_input_quality_contract": {
+    "field": "OperationInput.required_quality:QualityState[]",
+    "semantics": "Explicit allowed quality states; empty list permits none and actual work waits for quality. No wildcard or inferred default.",
+    "ui_labels": {
+      "QualityState.released": "已放行",
+      "DefinitionState.released": "已发布版本"
+    },
+    "change_flow": "Edit DefinitionDraft, isolated sample, commit exact new version, explicitly adopt selected instance and explicitly update route reference. Keep old definitions and frozen Runs.",
+    "runtime_proof_ref": ".work/single-window-20261018/p301-native36/Native47-operation-quality/validation.json",
+    "scope": "Existing execution semantics and scoped UI clarification; no wire or Engine change, no whole-package or human acceptance."
+  },
+  "definition_authoring_media_preview": {
+    "presentation": "Current local Presentation; byte source remains an actually read exact library module or saved DefinitionDraft, not a local edited id/version.",
+    "read_boundary": "Existing createPresentationHost.media and project_read_media_asset with session/project/Scope revision/exact ModuleVersion; existing MediaPresentationView decodes the actual bytes and dependencies. No new operation or byte path.",
+    "unsaved_input": "A new unsaved definition exposes native geometry only. New references on a loaded source require saving before Host can admit their bytes.",
+    "static_inspection": "Asset inspection has no actual Run, phase clock, inventory, production output or resource occupation. Current formal Run is not a byte fallback.",
+    "rights": "Original license/source/missing_reason/redistribution flags retained; local preview does not authorize contribution redistribution.",
+    "validation_ref": ".work/single-window-20261018/p301-native36/Native51-template/preview/validation.json",
+    "current_evidence": "Native64 Project and actual DefinitionDraft SVG, PNG/GIF first frame/GLB66 nodes and missing-byte negative passed bounded. Native65 current-static heading and Chinese MissingReference, actual JPEG, two-image first frame, exact media_ref dependency and native material texture all passed bounded; original P1/four Runs/r5 readback retained. Static inspection does not prove motion, full IX/NFR or package acceptance.",
+    "inspection_semantics": "Authoring inspector says current static declaration; frozen Run declaration inspector retains its frozen title. Neither asset inspection mode invents actual runtime data."
+  },
+  "private_ui_desktop_close_contract": {
+    "source": "P0-01 existing Q51/NFR08 lifecycle boundary",
+    "snapshot_command": "project_close_state",
+    "finish_command": "project_finish_close",
+    "caller": "actual main-window identity only; no external MCP business operation",
+    "request": {
+      "expected": "unchanged DesktopCloseState fields project_id/project_revision/definition_revisions/unsaved/active_tasks",
+      "discardConfirmed": "explicit unsaved close confirmation; not permission to close an active task"
+    },
+    "admission": "Same Host mutex as UI/Agent dispatch; compare complete current snapshot, reject changed facts/active tasks/unconfirmed unsaved data, freeze new public admission then destroy actual main window under that lock. Native destroy failure reopens admission.",
+    "public_api_version_unchanged": true,
+    "project_format_unchanged": true,
+    "actual_validation_ref": ".work/single-window-20261019/p001-closeout/close-race-validation.json",
+    "ordinary_Native_validation": "pending"
+  }
+}

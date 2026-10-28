@@ -1,0 +1,485 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "HostStartRequest",
+  "type": "object",
+  "properties": {
+    "api_version": {
+      "$ref": "#/$defs/ApiVersion"
+    },
+    "operation": {
+      "$ref": "#/$defs/HostStartRequestOperation"
+    },
+    "params": {
+      "$ref": "#/$defs/HostStartRequestParams"
+    },
+    "project_id": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ProjectId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "request_id": {
+      "$ref": "#/$defs/ObjectId"
+    },
+    "scope": {
+      "$ref": "#/$defs/HostProjectScope"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "api_version",
+    "request_id",
+    "project_id",
+    "scope",
+    "operation",
+    "params"
+  ],
+  "$defs": {
+    "ApiVersion": {
+      "type": "string",
+      "enum": [
+        "0.1"
+      ]
+    },
+    "CandidateBinding": {
+      "type": "object",
+      "properties": {
+        "binding_id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "device_id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "device_module_ref": {
+          "$ref": "#/$defs/ModuleRef"
+        },
+        "execution_capacity_ref": {
+          "$ref": "#/$defs/ObjectRef"
+        },
+        "input_ports": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PortBinding"
+          }
+        },
+        "nominal_work_ms": {
+          "$ref": "#/$defs/SafeUint"
+        },
+        "operation_ref": {
+          "$ref": "#/$defs/ModuleRef"
+        },
+        "output_ports": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PortBinding"
+          }
+        },
+        "phase_id": {
+          "$ref": "#/$defs/PhaseId"
+        },
+        "resources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ResourceBinding"
+          }
+        },
+        "setup_transition": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SetupTransition"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "transport_supply_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ObjectId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "binding_id",
+        "device_id",
+        "device_module_ref",
+        "operation_ref",
+        "execution_capacity_ref",
+        "input_ports",
+        "output_ports",
+        "resources",
+        "phase_id",
+        "nominal_work_ms"
+      ]
+    },
+    "ClockMode": {
+      "type": "string",
+      "enum": [
+        "host_monotonic"
+      ]
+    },
+    "DecimalAmount": {
+      "type": "object",
+      "properties": {
+        "coefficient": {
+          "$ref": "#/$defs/SafeUint"
+        },
+        "decimal_places": {
+          "$ref": "#/$defs/DecimalPlaces"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "coefficient",
+        "decimal_places"
+      ]
+    },
+    "DecimalPlaces": {
+      "type": "integer",
+      "format": "uint8",
+      "maximum": 9,
+      "minimum": 0
+    },
+    "ExecutionContractVersion": {
+      "type": "string",
+      "enum": [
+        "sf.execution/2.0-draft11"
+      ]
+    },
+    "ExecutionPolicy": {
+      "type": "object",
+      "properties": {
+        "clock_mode": {
+          "$ref": "#/$defs/ClockMode"
+        },
+        "finish_policy": {
+          "$ref": "#/$defs/FinishPolicy"
+        },
+        "observation_max_age_ms": {
+          "$ref": "#/$defs/PositiveSafeUint"
+        },
+        "report_cutoff_ms": {
+          "$ref": "#/$defs/SafeUint"
+        },
+        "source_prediction_window": {
+          "$ref": "#/$defs/SourcePredictionWindow"
+        },
+        "stop_new_dispatch_on_cutoff": {
+          "$ref": "#/$defs/StopAtCutoff"
+        },
+        "target_quantity": {
+          "$ref": "#/$defs/Quantity"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "clock_mode",
+        "report_cutoff_ms",
+        "stop_new_dispatch_on_cutoff",
+        "finish_policy",
+        "target_quantity",
+        "source_prediction_window",
+        "observation_max_age_ms"
+      ]
+    },
+    "FinishPolicy": {
+      "type": "string",
+      "enum": [
+        "drain_admitted_then_finish"
+      ]
+    },
+    "HostProjectScope": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "$ref": "#/$defs/HostProjectScopeKind"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ]
+    },
+    "HostProjectScopeKind": {
+      "type": "string",
+      "enum": [
+        "project"
+      ]
+    },
+    "HostStartRequestOperation": {
+      "type": "string",
+      "enum": [
+        "start_execution_session"
+      ]
+    },
+    "HostStartRequestParams": {
+      "type": "object",
+      "properties": {
+        "base_revision": {
+          "$ref": "#/$defs/SafeUint"
+        },
+        "candidate_bindings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CandidateBinding"
+          }
+        },
+        "execution_contract_version": {
+          "$ref": "#/$defs/ExecutionContractVersion"
+        },
+        "policy": {
+          "$ref": "#/$defs/ExecutionPolicy"
+        },
+        "scenario_id": {
+          "$ref": "#/$defs/ScenarioId"
+        },
+        "scenario_revision": {
+          "$ref": "#/$defs/SafeUint"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "execution_contract_version",
+        "base_revision",
+        "scenario_id",
+        "scenario_revision",
+        "candidate_bindings",
+        "policy"
+      ]
+    },
+    "ModuleId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "ModuleRef": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/ModuleId"
+        },
+        "version": {
+          "$ref": "#/$defs/VersionId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "version"
+      ]
+    },
+    "ObjectId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "ObjectKind": {
+      "type": "string",
+      "enum": [
+        "project",
+        "scenario",
+        "run",
+        "definition_draft",
+        "packaging_job",
+        "asset",
+        "native_scene",
+        "item_type",
+        "item",
+        "location",
+        "hall",
+        "line",
+        "device",
+        "resource",
+        "calendar",
+        "product",
+        "bom",
+        "route",
+        "connection",
+        "order",
+        "task",
+        "job",
+        "supply",
+        "transport",
+        "artifact",
+        "module",
+        "report"
+      ]
+    },
+    "ObjectRef": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "kind": {
+          "$ref": "#/$defs/ObjectKind"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "id"
+      ]
+    },
+    "PhaseId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "PortBinding": {
+      "type": "object",
+      "properties": {
+        "item_type_id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "location_id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "port_id": {
+          "$ref": "#/$defs/PortId"
+        },
+        "role_id": {
+          "$ref": "#/$defs/RoleId"
+        },
+        "unit_id": {
+          "$ref": "#/$defs/UnitId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "role_id",
+        "port_id",
+        "location_id",
+        "item_type_id",
+        "unit_id"
+      ]
+    },
+    "PortId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "PositiveSafeUint": {
+      "type": "integer",
+      "format": "uint64",
+      "maximum": 9007199254740991,
+      "minimum": 1
+    },
+    "PredictionWindowStart": {
+      "const": 0
+    },
+    "ProjectId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "Quantity": {
+      "type": "object",
+      "properties": {
+        "unit": {
+          "$ref": "#/$defs/UnitId"
+        },
+        "value": {
+          "$ref": "#/$defs/DecimalAmount"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "unit"
+      ]
+    },
+    "ResourceBinding": {
+      "type": "object",
+      "properties": {
+        "resource_id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "role_id": {
+          "$ref": "#/$defs/RoleId"
+        },
+        "units": {
+          "$ref": "#/$defs/PositiveSafeUint"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "role_id",
+        "resource_id",
+        "units"
+      ]
+    },
+    "RoleId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "SafeUint": {
+      "type": "integer",
+      "format": "uint64",
+      "maximum": 9007199254740991,
+      "minimum": 0
+    },
+    "ScenarioId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "SetupTransition": {
+      "type": "object",
+      "properties": {
+        "from_family": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "to_family": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "to_family"
+      ]
+    },
+    "SourcePredictionWindow": {
+      "type": "object",
+      "properties": {
+        "end_ms": {
+          "$ref": "#/$defs/SafeUint"
+        },
+        "start_ms": {
+          "$ref": "#/$defs/PredictionWindowStart"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "start_ms",
+        "end_ms"
+      ]
+    },
+    "StopAtCutoff": {
+      "const": true
+    },
+    "UnitId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "VersionId": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)(?:\\.(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*)?(?:\\+[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?$"
+    }
+  }
+}

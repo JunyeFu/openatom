@@ -1,0 +1,1551 @@
+{
+  "document_kind": "independent_Host_candidate_effect_expectations_not_wire_or_product_tests",
+  "date": "2026-10-14",
+  "fixture_note": "flat RFC6901 leaf projections of explicit known inputs; normalization effects and grants are Host-private fixture inputs, not API parameters. Default quantities/IDs are invented test values.",
+  "state": {
+    "revision": 7,
+    "objects": {
+      "scenario:S1": {
+        "/arrivals/0/at_ms": 10000,
+        "/quality_presets/0/result": "pass"
+      },
+      "project:P1": {
+        "/title": "Old"
+      },
+      "definition_draft:DD1": {
+        "/title": "Old module",
+        "/version": "0.1.0"
+      },
+      "device:D1": {
+        "/configuration/cycle_seconds": 6,
+        "/module_ref/version": "0.1.0"
+      },
+      "packaging_job:PK1": {
+        "/title": "Old job"
+      },
+      "connection:C1": {
+        "/title": "Old edge"
+      },
+      "resource:W1": {
+        "/capacity": 1,
+        "/calendar_id": "Cal1"
+      },
+      "resource:W2": {
+        "/capacity": 1
+      }
+    },
+    "created_objects": []
+  },
+  "cases": [
+    {
+      "id": "HA01A",
+      "branch": "create_project",
+      "origin": "interactive_ui",
+      "scope": "workspace:session-1",
+      "batches": [
+        [
+          {
+            "branch": "create_project",
+            "effects": [
+              {
+                "kind": "create",
+                "target": "project:P2",
+                "pointer": "/title",
+                "value": "New project",
+                "element_id": null
+              }
+            ],
+            "history_from_Host": false
+          }
+        ]
+      ],
+      "expected_statuses": [
+        "ok"
+      ],
+      "expected_revision": 8,
+      "actual_result": null,
+      "grant_changes": [
+        {
+          "pointer": "/scope",
+          "value": "workspace:session-1"
+        }
+      ]
+    },
+    {
+      "id": "HA01D",
+      "branch": "create_project",
+      "origin": "external_agent",
+      "scope": "workspace:session-1",
+      "batches": [
+        [
+          {
+            "branch": "create_project",
+            "effects": [
+              {
+                "kind": "create",
+                "target": "project:P2",
+                "pointer": "/title",
+                "value": "New project",
+                "element_id": null
+              }
+            ],
+            "history_from_Host": false
+          }
+        ]
+      ],
+      "expected_statuses": [
+        "PermissionDenied"
+      ],
+      "expected_revision": 7,
+      "actual_result": null,
+      "grant_changes": [
+        {
+          "pointer": "/scope",
+          "value": "workspace:session-1"
+        }
+      ]
+    },
+    {
+      "id": "HA02A",
+      "branch": "put_object",
+      "origin": "external_agent",
+      "scope": "project:P1",
+      "batches": [
+        [
+          {
+            "branch": "put_object",
+            "effects": [
+              {
+                "kind": "set",
+                "target": "scenario:S1",
+                "pointer": "/arrivals/0/at_ms",
+                "value": 5000,
+                "element_id": "A1"
+              }
+            ],
+            "history_from_Host": false
+          }
+        ]
+      ],
+      "expected_statuses": [
+        "ok"
+      ],
+      "expected_revision": 8,
+      "actual_result": null,
+      "grant_changes": []
+    },
+    {
+      "id": "HA02D",
+      "branch": "put_object",
+      "origin": "external_agent",
+      "scope": "project:P1",
+      "batches": [
+        [
+          {
+            "branch": "put_object",
+            "effects": [
+              {
+                "kind": "set",
+                "target": "scenario:S1",
+                "pointer": "/arrivals/0/at_ms",
+                "value": 5000,
+                "element_id": "A1"
+              }
+            ],
+            "history_from_Host": false
+          }
+        ]
+      ],
+      "expected_statuses": [
+        "PermissionDenied"
+      ],
+      "expected_revision": 7,
+      "actual_result": null,
+      "grant_changes": [
+        {
+          "pointer": "/objects/scenario:S1/fields",
+          "value": []
+        }
+      ]
+    },
+    {
+      "id": "HA03A",
+      "branch": "remove_object",
+      "origin": "external_agent",
+      "scope": "project:P1",
+      "batches": [
+        [
+          {
+            "branch": "remove_object",
+            "effects": [
+              {
+                "kind": "remove",
+                "target": "connection:C1",
+                "pointer": null,
+                "value": null,
+                "element_id": null
+              }
+            ],
+            "history_from_Host": false
+          }
+        ]
+      ],
+      "expected_statuses": [
+        "ok"
+      ],
+      "expected_revision": 8,
+      "actual_result": null,
+      "grant_changes": []
+    },
+    {
+      "id": "HA03D",
+      "branch": "remove_object",
+      "origin": "external_agent",
+      "scope": "project:P1",
+      "batches": [
+        [
+          {
+            "branch": "remove_object",
+            "effects": [
+              {
+                "kind": "remove",
+                "target": "device:D1",
+                "pointer": null,
+                "value": null,
+                "element_id": null
+              }
+            ],
+            "history_from_Host": false
+          }
+        ]
+      ],
+      "expected_statuses": [
+        "PermissionDenied"
+      ],
+      "expected_revision": 7,
+      "actual_result": null,
+      "grant_changes": []
+    },
+    {
+      "id": "HA04A",
+      "branch": "set_project_settings",
+      "origin": "external_agent",
+      "scope": "project:P1",
+      "batches": [
+        [
+          {
+            "branch": "set_project_settings",
+            "effects": [
+              {
+                "kind": "set",
+                "target": "project:P1",
+                "pointer": "/title",
+                "value": "Renamed",
+                "element_id": null
+              }
+            ],
+            "history_from_Host": false
+          }
+        ]
+      ],
+      "expected_statuses": [
+        "ok"
+      ],
+      "expected_revision": 8,
+      "actual_result": null,
+      "grant_changes": []
+    },
+    {
+      "id": "HA04D",
+      "branch": "set_project_settings",
+      "origin": "external_agent",
+      "scope": "project:P1",
+      "batches": [
+        [
+          {
+            "branch": "set_project_settings",
+            "effects": [
+              {
+                "kind": "set",
+                "target": "project:P1",
+                "pointer": "/title",
+                "value": "Renamed",
+                "element_id": null
+              }
+            ],
+            "history_from_Host": false
+          }
+        ]
+      ],
+      "expected_statuses": [
+        "PermissionDenied"
+      ],
+      "expected_revision": 7,
+      "actual_result": null,
+      "grant_changes": [
+        {
+          "pointer": "/objects/project:P1/fields",
+          "value": []
+        }
+      ]
+    },
+    {
+      "id": "HA05A",
+      "branch": "create_definition_draft",
+      "origin": "external_agent",
+      "scope": "project:P1",
+      "batches": [
+        [
+          {
+            "branch": "create_definition_draft",
+            "effects": [
+              {
+                "kind": "create",
+                "target": "definition_draft:DD2",
+                "pointer": "/title",
+                "value": "New module",
+                "element_id": null
+              }
+            ],
+            "history_from_Host": false
+          }
+        ]
+      ],
+      "expected_statuses": [
+        "ok"
+      ],
+      "expected_revision": 8,
+      "actual_result": null,
+      "grant_changes": []
+    },
+    {
+      "id": "HA05D",
+      "branch": "create_definition_draft",
+      "origin": "external_agent",
+      "scope": "project:P1",
+      "batches": [
+        [
+          {
+            "branch": "create_definition_draft",
+            "effects": [
+              {
+                "kind": "create",
+                "target": "definition_draft:DD2",
+                "pointer": "/title",
+                "value": "New module",
+                "element_id": null
+              }
+            ],
+            "history_from_Host": false
+          }
+        ]
+      ],
+      "expected_statuses": [
+        "PermissionDenied"
+      ],
+      "expected_revision": 7,
+      "actual_result": null,
+      "grant_changes": [
+        {
+          "pointer": "/creates/definition_draft/max_new_objects",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "id": "HA06A",
+      "branch": "put_definition",
+      "origin": "external_agent",
+      "scope": "definition_draft:DD1",
+      "batches": [
+        [
+          {
+            "branch": "put_definition",
+            "effects": [
+              {
+                "kind": "set",
+                "target": "definition_draft:DD1",
+                "pointer": "/title",
+                "value": "Edited module",
+                "element_id": null
+              }
+            ],
+            "history_from_Host": false
+          }
+        ]
+      ],
+      "expected_statuses": [
+        "ok"
+      ],
+      "expected_revision": 8,
+      "actual_result": null,
+      "grant_changes": [
+        {
+          "pointer": "/scope",
+          "value": "definition_draft:DD1"
+        }
+      ]
+    },
+    {
+      "id": "HA06D",
+      "branch": "put_definition",
+      "origin": "external_agent",
+      "scope": "definition_draft:DD1",
+      "batches": [
+        [
+          {
+            "branch": "put_definition",
+            "effects": [
+              {
+                "kind": "set",
+                "target": "definition_draft:DD1",
+                "pointer": "/title",
+                "value": "Edited module",
+                "element_id": null
+              }
+            ],
+            "history_from_Host": false
+          }
+        ]
+      ],
+      "expected_statuses": [
+        "PermissionDenied"
+      ],
+      "expected_revision": 7,
+      "actual_result": null,
+      "grant_changes": [
+        {
+          "pointer": "/scope",
+          "value": "definition_draft:DD1"
+        },
+        {
+          "pointer": "/objects/definition_draft:DD1/fields",
+          "value": []
+        }
+      ]
+    },
+    {
+      "id": "HA07A",
+      "branch": "set_declared_parameter",
+      "origin": "external_agent",
+      "scope": "project:P1",
+      "batches": [
+        [
+          {
+            "branch": "set_declared_parameter",
+            "effects": [
+              {
+                "kind": "set",
+                "target": "device:D1",
+                "pointer": "/configuration/cycle_seconds",
+                "value": 8,
+                "element_id": null
+              }
+            ],
+            "history_from_Host": false
+          }
+        ]
+      ],
+      "expected_statuses": [
+        "ok"
+      ],
+      "expected_revision": 8,
+      "actual_result": null,
+      "grant_changes": []
+    },
+    {
+      "id": "HA07D",
+      "branch": "set_declared_parameter",
+      "origin": "external_agent",
+      "scope": "project:P1",
+      "batches": [
+        [
+          {
+            "branch": "set_declared_parameter",
+            "effects": [
+              {
+                "kind": "set",
+                "target": "device:D1",
+                "pointer": "/configuration/cycle_seconds",
+                "value": 8,
+                "element_id": null
+              }
+            ],
+            "history_from_Host": false
+          }
+        ]
+      ],
+      "expected_statuses": [
+        "PermissionDenied"
+      ],
+      "expected_revision": 7,
+      "actual_result": null,
+      "grant_changes": [
+        {
+          "pointer": "/objects/device:D1/fields",
+          "value": []
+        }
+      ]
+    },
+    {
+      "id": "HA08A",
+      "branch": "adopt_module",
+      "origin": "external_agent",
+      "scope": "project:P1",
+      "batches": [
+        [
+          {
+            "branch": "adopt_module",
+            "effects": [
+              {
+                "kind": "set",
+                "target": "device:D1",
+                "pointer": "/module_ref/version",
+                "value": "0.2.0",
+                "element_id": null,
+                "source_version": "m1@0.2.0"
+              }
+            ],
+            "history_from_Host": false
+          }
+        ]
+      ],
+      "expected_statuses": [
+        "ok"
+      ],
+      "expected_revision": 8,
+      "actual_result": null,
+      "grant_changes": []
+    },
+    {
+      "id": "HA08D",
+      "branch": "adopt_module",
+      "origin": "external_agent",
+      "scope": "project:P1",
+      "batches": [
+        [
+          {
+            "branch": "adopt_module",
+            "effects": [
+              {
+                "kind": "set",
+                "target": "device:D1",
+                "pointer": "/module_ref/version",
+                "value": "0.2.0",
+                "element_id": null,
+                "source_version": "m1@0.2.0"
+              }
+            ],
+            "history_from_Host": false
+          }
+        ]
+      ],
+      "expected_statuses": [
+        "PermissionDenied"
+      ],
+      "expected_revision": 7,
+      "actual_result": null,
+      "grant_changes": [
+        {
+          "pointer": "/objects/device:D1/fields",
+          "value": []
+        }
+      ]
+    },
+    {
+      "id": "HA09A",
+      "branch": "instantiate_template",
+      "origin": "external_agent",
+      "scope": "project:P1",
+      "batches": [
+        [
+          {
+            "branch": "instantiate_template",
+            "effects": [
+              {
+                "kind": "create",
+                "target": "device:D2",
+                "pointer": "/title",
+                "value": "Copied device",
+                "element_id": null,
+                "source_version": "t1@0.1.0"
+              }
+            ],
+            "history_from_Host": false
+          }
+        ]
+      ],
+      "expected_statuses": [
+        "ok"
+      ],
+      "expected_revision": 8,
+      "actual_result": null,
+      "grant_changes": []
+    },
+    {
+      "id": "HA09D",
+      "branch": "instantiate_template",
+      "origin": "external_agent",
+      "scope": "project:P1",
+      "batches": [
+        [
+          {
+            "branch": "instantiate_template",
+            "effects": [
+              {
+                "kind": "create",
+                "target": "device:D2",
+                "pointer": "/title",
+                "value": "Copied device",
+                "element_id": null,
+                "source_version": "t1@0.1.0"
+              }
+            ],
+            "history_from_Host": false
+          }
+        ]
+      ],
+      "expected_statuses": [
+        "PermissionDenied"
+      ],
+      "expected_revision": 7,
+      "actual_result": null,
+      "grant_changes": [
+        {
+          "pointer": "/creates/device/max_new_objects",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "id": "HA10A",
+      "branch": "put_packaging_job",
+      "origin": "external_agent",
+      "scope": "definition_draft:DD1",
+      "batches": [
+        [
+          {
+            "branch": "put_packaging_job",
+            "effects": [
+              {
+                "kind": "set",
+                "target": "packaging_job:PK1",
+                "pointer": "/title",
+                "value": "Edited job",
+                "element_id": null
+              }
+            ],
+            "history_from_Host": false
+          }
+        ]
+      ],
+      "expected_statuses": [
+        "ok"
+      ],
+      "expected_revision": 8,
+      "actual_result": null,
+      "grant_changes": [
+        {
+          "pointer": "/scope",
+          "value": "definition_draft:DD1"
+        }
+      ]
+    },
+    {
+      "id": "HA10D",
+      "branch": "put_packaging_job",
+      "origin": "external_agent",
+      "scope": "definition_draft:DD1",
+      "batches": [
+        [
+          {
+            "branch": "put_packaging_job",
+            "effects": [
+              {
+                "kind": "set",
+                "target": "packaging_job:PK1",
+                "pointer": "/title",
+                "value": "Edited job",
+                "element_id": null
+              }
+            ],
+            "history_from_Host": false
+          }
+        ]
+      ],
+      "expected_statuses": [
+        "PermissionDenied"
+      ],
+      "expected_revision": 7,
+      "actual_result": null,
+      "grant_changes": [
+        {
+          "pointer": "/scope",
+          "value": "definition_draft:DD1"
+        },
+        {
+          "pointer": "/objects/packaging_job:PK1/fields",
+          "value": []
+        }
+      ]
+    },
+    {
+      "id": "HA11A",
+      "branch": "record_artifact_acknowledgment",
+      "origin": "interactive_ui",
+      "scope": "project:P1",
+      "batches": [
+        [
+          {
+            "branch": "record_artifact_acknowledgment",
+            "effects": [
+              {
+                "kind": "create",
+                "target": "artifact:AA1",
+                "pointer": "/accepted_scope",
+                "value": [
+                  "fixture_use"
+                ],
+                "element_id": null
+              }
+            ],
+            "history_from_Host": false
+          }
+        ]
+      ],
+      "expected_statuses": [
+        "ok"
+      ],
+      "expected_revision": 8,
+      "actual_result": null,
+      "grant_changes": []
+    },
+    {
+      "id": "HA11D",
+      "branch": "record_artifact_acknowledgment",
+      "origin": "external_agent",
+      "scope": "project:P1",
+      "batches": [
+        [
+          {
+            "branch": "record_artifact_acknowledgment",
+            "effects": [
+              {
+                "kind": "create",
+                "target": "artifact:AA1",
+                "pointer": "/accepted_scope",
+                "value": [
+                  "fixture_use"
+                ],
+                "element_id": null
+              }
+            ],
+            "history_from_Host": false
+          }
+        ]
+      ],
+      "expected_statuses": [
+        "PermissionDenied"
+      ],
+      "expected_revision": 7,
+      "actual_result": null,
+      "grant_changes": []
+    },
+    {
+      "id": "HA12A",
+      "branch": "adopt_imported_draft",
+      "origin": "external_agent",
+      "scope": "project:P1",
+      "batches": [
+        [
+          {
+            "branch": "adopt_imported_draft",
+            "effects": [
+              {
+                "kind": "create",
+                "target": "location:L2",
+                "pointer": "/title",
+                "value": "Imported location",
+                "element_id": null
+              }
+            ],
+            "history_from_Host": false
+          }
+        ]
+      ],
+      "expected_statuses": [
+        "ok"
+      ],
+      "expected_revision": 8,
+      "actual_result": null,
+      "grant_changes": []
+    },
+    {
+      "id": "HA12D",
+      "branch": "adopt_imported_draft",
+      "origin": "external_agent",
+      "scope": "project:P1",
+      "batches": [
+        [
+          {
+            "branch": "adopt_imported_draft",
+            "effects": [
+              {
+                "kind": "create",
+                "target": "location:L2",
+                "pointer": "/title",
+                "value": "Imported location",
+                "element_id": null
+              }
+            ],
+            "history_from_Host": false
+          }
+        ]
+      ],
+      "expected_statuses": [
+        "PermissionDenied"
+      ],
+      "expected_revision": 7,
+      "actual_result": null,
+      "grant_changes": [
+        {
+          "pointer": "/creates/location/max_new_objects",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "id": "HA13A",
+      "branch": "commit_definition_version",
+      "origin": "external_agent",
+      "scope": "definition_draft:DD1",
+      "batches": [
+        [
+          {
+            "branch": "commit_definition_version",
+            "effects": [
+              {
+                "kind": "set",
+                "target": "definition_draft:DD1",
+                "pointer": "/version",
+                "value": "0.2.0",
+                "element_id": null
+              }
+            ],
+            "history_from_Host": false
+          }
+        ]
+      ],
+      "expected_statuses": [
+        "ok"
+      ],
+      "expected_revision": 8,
+      "actual_result": null,
+      "grant_changes": [
+        {
+          "pointer": "/scope",
+          "value": "definition_draft:DD1"
+        }
+      ]
+    },
+    {
+      "id": "HA13D",
+      "branch": "commit_definition_version",
+      "origin": "external_agent",
+      "scope": "definition_draft:DD1",
+      "batches": [
+        [
+          {
+            "branch": "commit_definition_version",
+            "effects": [
+              {
+                "kind": "set",
+                "target": "definition_draft:DD1",
+                "pointer": "/version",
+                "value": "0.2.0",
+                "element_id": null
+              }
+            ],
+            "history_from_Host": false
+          }
+        ]
+      ],
+      "expected_statuses": [
+        "PermissionDenied"
+      ],
+      "expected_revision": 7,
+      "actual_result": null,
+      "grant_changes": [
+        {
+          "pointer": "/scope",
+          "value": "definition_draft:DD1"
+        },
+        {
+          "pointer": "/objects/definition_draft:DD1/fields",
+          "value": []
+        }
+      ]
+    },
+    {
+      "id": "HA14A",
+      "branch": "undo",
+      "origin": "external_agent",
+      "scope": "project:P1",
+      "batches": [
+        [
+          {
+            "branch": "undo",
+            "effects": [
+              {
+                "kind": "set",
+                "target": "scenario:S1",
+                "pointer": "/arrivals/0/at_ms",
+                "value": 15000,
+                "element_id": "A1"
+              }
+            ],
+            "history_from_Host": true
+          }
+        ]
+      ],
+      "expected_statuses": [
+        "ok"
+      ],
+      "expected_revision": 8,
+      "actual_result": null,
+      "grant_changes": []
+    },
+    {
+      "id": "HA14D",
+      "branch": "undo",
+      "origin": "external_agent",
+      "scope": "project:P1",
+      "batches": [
+        [
+          {
+            "branch": "undo",
+            "effects": [
+              {
+                "kind": "set",
+                "target": "scenario:S1",
+                "pointer": "/arrivals/0/at_ms",
+                "value": 15000,
+                "element_id": "A1"
+              }
+            ],
+            "history_from_Host": true
+          }
+        ]
+      ],
+      "expected_statuses": [
+        "PermissionDenied"
+      ],
+      "expected_revision": 7,
+      "actual_result": null,
+      "grant_changes": [
+        {
+          "pointer": "/objects/scenario:S1/fields",
+          "value": []
+        }
+      ]
+    },
+    {
+      "id": "HA15A",
+      "branch": "redo",
+      "origin": "external_agent",
+      "scope": "project:P1",
+      "batches": [
+        [
+          {
+            "branch": "redo",
+            "effects": [
+              {
+                "kind": "set",
+                "target": "scenario:S1",
+                "pointer": "/arrivals/0/at_ms",
+                "value": 5000,
+                "element_id": "A1"
+              }
+            ],
+            "history_from_Host": true
+          }
+        ]
+      ],
+      "expected_statuses": [
+        "ok"
+      ],
+      "expected_revision": 8,
+      "actual_result": null,
+      "grant_changes": []
+    },
+    {
+      "id": "HA15D",
+      "branch": "redo",
+      "origin": "external_agent",
+      "scope": "project:P1",
+      "batches": [
+        [
+          {
+            "branch": "redo",
+            "effects": [
+              {
+                "kind": "set",
+                "target": "scenario:S1",
+                "pointer": "/arrivals/0/at_ms",
+                "value": 5000,
+                "element_id": "A1"
+              }
+            ],
+            "history_from_Host": true
+          }
+        ]
+      ],
+      "expected_statuses": [
+        "PermissionDenied"
+      ],
+      "expected_revision": 7,
+      "actual_result": null,
+      "grant_changes": [
+        {
+          "pointer": "/objects/scenario:S1/fields",
+          "value": []
+        }
+      ]
+    },
+    {
+      "id": "HAX01",
+      "origin": "external_agent",
+      "scope": "project:P1",
+      "batches": [
+        [
+          {
+            "branch": "put_object",
+            "effects": [
+              {
+                "kind": "set",
+                "target": "scenario:S1",
+                "pointer": "/arrivals/0/at_ms",
+                "value": 5000,
+                "element_id": "A1"
+              }
+            ]
+          },
+          {
+            "branch": "put_object",
+            "effects": [
+              {
+                "kind": "set",
+                "target": "scenario:S1",
+                "pointer": "/quality_presets/0/result",
+                "value": "fail",
+                "element_id": "A1"
+              }
+            ]
+          }
+        ]
+      ],
+      "expected_statuses": [
+        "PermissionDenied"
+      ],
+      "expected_revision": 7,
+      "actual_result": null,
+      "grant_changes": []
+    },
+    {
+      "id": "HAX02",
+      "origin": "external_agent",
+      "scope": "project:P1",
+      "batches": [
+        [
+          {
+            "branch": "instantiate_template",
+            "effects": [
+              {
+                "kind": "create",
+                "target": "device:D2",
+                "pointer": "/title",
+                "value": "D2",
+                "element_id": null,
+                "source_version": "t1@0.1.0"
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "branch": "instantiate_template",
+            "effects": [
+              {
+                "kind": "create",
+                "target": "device:D3",
+                "pointer": "/title",
+                "value": "D3",
+                "element_id": null,
+                "source_version": "t1@0.1.0"
+              }
+            ]
+          }
+        ]
+      ],
+      "expected_statuses": [
+        "ok",
+        "PermissionDenied"
+      ],
+      "expected_revision": 8,
+      "actual_result": null,
+      "grant_changes": []
+    },
+    {
+      "id": "HAX03",
+      "origin": "external_agent",
+      "scope": "project:P1",
+      "batches": [
+        [
+          {
+            "branch": "instantiate_template",
+            "effects": [
+              {
+                "kind": "reuse",
+                "target": "resource:W1",
+                "pointer": null,
+                "value": null,
+                "element_id": null
+              },
+              {
+                "kind": "set",
+                "target": "resource:W1",
+                "pointer": "/capacity",
+                "value": 2,
+                "element_id": null
+              }
+            ]
+          }
+        ]
+      ],
+      "expected_statuses": [
+        "PermissionDenied"
+      ],
+      "expected_revision": 7,
+      "actual_result": null,
+      "grant_changes": []
+    },
+    {
+      "id": "HAX04",
+      "origin": "external_agent",
+      "scope": "project:P1",
+      "batches": [
+        [
+          {
+            "branch": "instantiate_template",
+            "effects": [
+              {
+                "kind": "reuse",
+                "target": "resource:W2",
+                "pointer": null,
+                "value": null,
+                "element_id": null
+              }
+            ]
+          }
+        ]
+      ],
+      "expected_statuses": [
+        "PermissionDenied"
+      ],
+      "expected_revision": 7,
+      "actual_result": null,
+      "grant_changes": []
+    },
+    {
+      "id": "HAX05",
+      "origin": "external_agent",
+      "scope": "project:P1",
+      "batches": [
+        [
+          {
+            "branch": "put_object",
+            "effects": [
+              {
+                "kind": "set",
+                "target": "scenario:S1",
+                "pointer": "/arrivals/0/at_ms",
+                "value": 5000,
+                "element_id": "A2"
+              }
+            ]
+          }
+        ]
+      ],
+      "expected_statuses": [
+        "PermissionDenied"
+      ],
+      "expected_revision": 7,
+      "actual_result": null,
+      "grant_changes": []
+    },
+    {
+      "id": "HAX06",
+      "origin": "external_agent",
+      "scope": "project:P1",
+      "batches": [
+        [
+          {
+            "branch": "put_object",
+            "effects": []
+          }
+        ]
+      ],
+      "expected_statuses": [
+        "PermissionDenied"
+      ],
+      "expected_revision": 7,
+      "actual_result": null,
+      "grant_changes": [
+        {
+          "pointer": "/branches",
+          "value": [
+            "create_project",
+            "remove_object",
+            "set_project_settings",
+            "create_definition_draft",
+            "put_definition",
+            "set_declared_parameter",
+            "adopt_module",
+            "instantiate_template",
+            "put_packaging_job",
+            "record_artifact_acknowledgment",
+            "adopt_imported_draft",
+            "commit_definition_version",
+            "undo",
+            "redo"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "HAX07",
+      "origin": "external_agent",
+      "scope": "project:P1",
+      "batches": [
+        [
+          {
+            "branch": "instantiate_template",
+            "effects": [
+              {
+                "kind": "create",
+                "target": "device:D2",
+                "pointer": "/title",
+                "value": "D2",
+                "element_id": null,
+                "source_version": "t1@0.9.0"
+              }
+            ]
+          }
+        ]
+      ],
+      "expected_statuses": [
+        "PermissionDenied"
+      ],
+      "expected_revision": 7,
+      "actual_result": null,
+      "grant_changes": []
+    },
+    {
+      "id": "HAX08",
+      "origin": "external_agent",
+      "scope": "project:P1",
+      "batches": [
+        [
+          {
+            "branch": "instantiate_template",
+            "effects": [
+              {
+                "kind": "create",
+                "target": "device:D2",
+                "pointer": "/title",
+                "value": "D2",
+                "element_id": null,
+                "source_version": "t1@0.1.0"
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "branch": "remove_object",
+            "effects": [
+              {
+                "kind": "remove",
+                "target": "device:D2",
+                "pointer": null,
+                "value": null,
+                "element_id": null
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "branch": "instantiate_template",
+            "effects": [
+              {
+                "kind": "create",
+                "target": "device:D3",
+                "pointer": "/title",
+                "value": "D3",
+                "element_id": null,
+                "source_version": "t1@0.1.0"
+              }
+            ]
+          }
+        ]
+      ],
+      "expected_statuses": [
+        "ok",
+        "ok",
+        "PermissionDenied"
+      ],
+      "expected_revision": 9,
+      "actual_result": null,
+      "grant_changes": []
+    },
+    {
+      "id": "HAX09",
+      "origin": "external_agent",
+      "scope": "project:P1",
+      "batches": [
+        [
+          {
+            "branch": "instantiate_template",
+            "effects": [
+              {
+                "kind": "create",
+                "target": "device:D2",
+                "pointer": "/title",
+                "value": "D2",
+                "element_id": null,
+                "source_version": "t1@0.1.0"
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "branch": "remove_object",
+            "effects": [
+              {
+                "kind": "remove",
+                "target": "device:D2",
+                "pointer": null,
+                "value": null,
+                "element_id": null
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "branch": "redo",
+            "effects": [
+              {
+                "kind": "create",
+                "target": "device:D2",
+                "pointer": "/title",
+                "value": "D2",
+                "element_id": null,
+                "source_version": "t1@0.1.0",
+                "restore_from_history": true
+              }
+            ],
+            "history_from_Host": true
+          }
+        ]
+      ],
+      "expected_statuses": [
+        "ok",
+        "ok",
+        "ok"
+      ],
+      "expected_revision": 10,
+      "actual_result": null,
+      "grant_changes": []
+    },
+    {
+      "id": "HAX10",
+      "origin": "external_agent",
+      "scope": "project:P1",
+      "batches": [
+        [
+          {
+            "branch": "redo",
+            "history_from_Host": false,
+            "effects": [
+              {
+                "kind": "set",
+                "target": "scenario:S1",
+                "pointer": "/arrivals/0/at_ms",
+                "value": 5000,
+                "element_id": "A1"
+              }
+            ]
+          }
+        ]
+      ],
+      "expected_statuses": [
+        "PermissionDenied"
+      ],
+      "expected_revision": 7,
+      "actual_result": null,
+      "grant_changes": []
+    }
+  ],
+  "branch_pairs": 15,
+  "cross_cases": 10,
+  "actual_product_runtime": null,
+  "actual_result": null,
+  "base_grant": {
+    "id": "G1",
+    "scope": "project:P1",
+    "branches": [
+      "create_project",
+      "put_object",
+      "remove_object",
+      "set_project_settings",
+      "create_definition_draft",
+      "put_definition",
+      "set_declared_parameter",
+      "adopt_module",
+      "instantiate_template",
+      "put_packaging_job",
+      "record_artifact_acknowledgment",
+      "adopt_imported_draft",
+      "commit_definition_version",
+      "undo",
+      "redo"
+    ],
+    "objects": {
+      "scenario:S1": {
+        "fields": [
+          {
+            "pointer": "/arrivals/0/at_ms",
+            "element_id": "A1"
+          }
+        ],
+        "can_remove": false
+      },
+      "project:P1": {
+        "fields": [
+          {
+            "pointer": "/title",
+            "element_id": null
+          }
+        ],
+        "can_remove": false
+      },
+      "definition_draft:DD1": {
+        "fields": [
+          {
+            "pointer": "/title",
+            "element_id": null
+          },
+          {
+            "pointer": "/version",
+            "element_id": null
+          }
+        ],
+        "can_remove": false
+      },
+      "device:D1": {
+        "fields": [
+          {
+            "pointer": "/configuration/cycle_seconds",
+            "element_id": null
+          },
+          {
+            "pointer": "/module_ref/version",
+            "element_id": null
+          }
+        ],
+        "can_remove": false
+      },
+      "packaging_job:PK1": {
+        "fields": [
+          {
+            "pointer": "/title",
+            "element_id": null
+          }
+        ],
+        "can_remove": false
+      },
+      "connection:C1": {
+        "fields": [],
+        "can_remove": true
+      },
+      "device:D2": {
+        "fields": [
+          {
+            "pointer": "/title",
+            "element_id": null
+          }
+        ],
+        "can_remove": true
+      }
+    },
+    "creates": {
+      "project": {
+        "max_new_objects": 1,
+        "fields": [
+          {
+            "pointer": "/title",
+            "element_id": null
+          }
+        ]
+      },
+      "definition_draft": {
+        "max_new_objects": 1,
+        "fields": [
+          {
+            "pointer": "/title",
+            "element_id": null
+          }
+        ]
+      },
+      "device": {
+        "max_new_objects": 1,
+        "fields": [
+          {
+            "pointer": "/title",
+            "element_id": null
+          }
+        ]
+      },
+      "artifact": {
+        "max_new_objects": 1,
+        "fields": [
+          {
+            "pointer": "/accepted_scope",
+            "element_id": null
+          }
+        ]
+      },
+      "location": {
+        "max_new_objects": 1,
+        "fields": [
+          {
+            "pointer": "/title",
+            "element_id": null
+          }
+        ]
+      }
+    },
+    "reusable_resources": [
+      "resource:W1"
+    ],
+    "created_objects": [],
+    "source_versions": [
+      "m1@0.1.0",
+      "m1@0.2.0",
+      "t1@0.1.0"
+    ]
+  }
+}

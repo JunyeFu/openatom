@@ -1,0 +1,356 @@
+{
+  "document_kind": "v2_design_only_external_clock_and_execution_projection",
+  "date": "2026-10-25",
+  "implementation_allowed": true,
+  "runtime_verified": false,
+  "markdown_ref": "docs/06_v2.0设计与开发控制/外部时钟与结果投影设计.md",
+  "decisions": [
+    {
+      "id": "V2-A04",
+      "state": "design_selected_pending_schema_and_v1_rebase",
+      "subject": "external clock and cutoff",
+      "rule": "Host monotonic epoch drives external business time; cutoff stops new dispatch but never invents device completion; cutoff snapshot stays immutable"
+    },
+    {
+      "id": "V2-A06",
+      "state": "design_selected_pending_schema_and_v1_rebase",
+      "subject": "typed ExecutionSnapshot distinct from legacy RunResult",
+      "rule": "Reuse business facts and field meanings; do not coerce external sessions through legacy whole_window_computed or completed Run validators"
+    },
+    {
+      "id": "V2-A07",
+      "state": "design_selected_pending_schema_and_v1_rebase",
+      "subject": "occupancy, modeled work and device-reported work",
+      "rule": "Report each timing basis explicitly; unknown physical effective work remains null with a reason"
+    }
+  ],
+  "clock_policy": {
+    "owner": "existing Host single Engine",
+    "source": "Host monotonic elapsed time anchored once at first accepted run; prepared stays clock_started=false at0",
+    "epoch_fields": [
+      "session_id",
+      "host_context_session_id",
+      "execution_epoch_id"
+    ],
+    "event_order": "Host admission_sequence; same-ms causal order retained; no insertion into committed past",
+    "device_timestamps": "source metadata only; never subtracted from Host/Renderer clocks",
+    "cloud_timestamps": "transport and persistence metadata only",
+    "virtual_mode": "unchanged existing Engine virtual-window event loop",
+    "external_mode": "explicit execution driver; process due modeled boundaries only up to Host elapsed frontier; no virtual advance to predicted work completion",
+    "restart": "new Host epoch cannot append elapsed time to an old live epoch; unresolved previous session blocks conflicting admission until explicit reconciliation",
+    "activation": "prepared elapsed stays0; first run fixes Instant once; pause/resume never reset; raw pre-run telemetry is not production admission",
+    "frozen_input_observation_ref": "docs/06_v2.0设计与开发控制/冻结输入与执行观察设计.md",
+    "observation_freshness": "V2-A10 probe issued/received in original Host epoch; expiry at issued_at+frozen max_age, never received_at+max_age; deadline affects only new dispatch"
+  },
+  "cutoff_policy": {
+    "input_fields": [
+      "report_cutoff_ms:DurationMs",
+      "stop_new_dispatch_on_cutoff:true",
+      "target_quantity:Quantity",
+      "source_prediction_window:WindowMs"
+    ],
+    "source_prediction_window_is_live_termination": false,
+    "boundary_events": "instant events at committed_at<=cutoff included; duration intervals clipped as half-open intervals",
+    "unpublished_work": "stop publishing; release only genuinely unpublished reservations and record disposition",
+    "published_or_started_work": "drain/query same attempt; do not release or redispatch by timeout",
+    "unresolved_output": "preserve Engine pending output and holds; needs_resolution if not otherwise settled",
+    "cutoff_snapshot": "immutable prefix selected by epoch/revision and Host committed time; raw device earlier timestamps do not revise it",
+    "late_receipt": "may advance the live session after cutoff and appear in later snapshots; never mutate prior cutoff prefix",
+    "early_goal_completion": "can close fixed-quantity session when all obligations settled; observed window ends then, no padding to requested cutoff"
+  },
+  "lifecycle": {
+    "nonterminal": [
+      "prepared",
+      "running",
+      "dispatch_paused",
+      "draining",
+      "needs_resolution"
+    ],
+    "terminal": [
+      "completed",
+      "stopped",
+      "failed"
+    ],
+    "completed_guard": "target accepted by original Engine rules and no unresolved attempts, reservations, business outputs or disposition",
+    "stopped_guard": "new dispatch stopped and all admitted obligations settled or explicitly disposed; unmet target remains unmet",
+    "failed_guard": "known terminal failure plus explicit recorded disposition; not inferred merely from missing receipt",
+    "cutoff_is_terminal": false,
+    "command_completed_is_product_accepted": false
+  },
+  "execution_snapshot": {
+    "identity": [
+      "session_id",
+      "execution_epoch_id",
+      "project_input_ref",
+      "execution_revision"
+    ],
+    "provenance": [
+      "mode:software_in_loop|physical_device",
+      "cloud_connection_ref",
+      "device_binding_refs",
+      "producer:Host"
+    ],
+    "policy": [
+      "target_quantity",
+      "report_cutoff_ms",
+      "source_prediction_window",
+      "observation_max_age_ms"
+    ],
+    "lifecycle": [
+      "state",
+      "reason",
+      "new_dispatch_allowed",
+      "unresolved_command_ids"
+    ],
+    "coverage": [
+      "observed_until_host_ms",
+      "requested_cutoff_reached",
+      "cutoff_snapshot_ref?",
+      "data_quality_issues"
+    ],
+    "logical_work": [
+      "logical_job_id",
+      "state",
+      "allowed_binding_refs",
+      "planned_binding_ref?",
+      "current_attempt_ref?"
+    ],
+    "pending_reservations": [
+      "reservation_id",
+      "logical_job_id",
+      "command_id",
+      "item_picks",
+      "resource_units",
+      "reserved_at_host_ms"
+    ],
+    "bound_jobs": [
+      "job_id",
+      "logical_job_id",
+      "execution_ref",
+      "phase_id",
+      "state",
+      "input_refs",
+      "started_at_host_ms?",
+      "finished_at_host_ms?",
+      "nominal_stage_work_ms?"
+    ],
+    "business_facts": [
+      "items",
+      "allocations",
+      "resource_claims",
+      "acceptance_events",
+      "order_outcomes",
+      "pending_output_refs"
+    ],
+    "timings": [
+      "host_confirmed_reservation_ms?",
+      "host_confirmed_occupation_ms?",
+      "nominal_work_ms?",
+      "device_reported_duration_ms?",
+      "physical_effective_work_ms?",
+      "missing_conditions"
+    ],
+    "snapshot_selection": "all fields from one Host epoch/revision; cloud head publication and corresponding confirmed facts consumed consistently",
+    "authoritative_inventory_write": "Engine only; cloud snapshot is read-only projection",
+    "frozen_input_observation_extension": {
+      "contract": "sf.execution/2.0-draft11",
+      "frozen_inputs": "ExecutionFrozenInputs",
+      "observation_frontier": "continuous state-record prefix F",
+      "clock_started": "false in prepared; true only after first run",
+      "read": "H09 local or explicit H08 C16/C17 cloud; fixed R/F/T"
+    }
+  },
+  "goal_and_comparison": {
+    "goal_at_snapshot": "accepted quantity from Engine at snapshot; independent from requested-cutoff coverage",
+    "goal_at_cutoff": "evaluated only from reached cutoff snapshot; otherwise null/unobserved",
+    "completion_metric": "Host-confirmed fixed-quantity completion; includes observed control/network effects and is labeled as such",
+    "same_window": "compare the explicit common observed interval, not a padded planned interval",
+    "input_differences": "report routing, equipment availability, accepted criteria and policy differences; no unsupported optimization or causal claim",
+    "legacy_comparison": "unchanged; new session views do not impersonate fully computed RunResult",
+    "output_formats": "one execution comparison/report producer feeds PDF, HTML, CSV and JSON"
+  },
+  "latency_evidence": {
+    "original_target": "device send to correct visible presentation p95<=2000 ms over 100 finite samples",
+    "forbidden": "subtracting unrelated device/Host/Renderer clocks or treating DOM state as a confirmed presentation frame",
+    "preferred_evidence": "supported same-clock correctly-presented-frame mapping if actual v1 measurement capability supplies it",
+    "alternative_bound": "one coordinator clock from a trigger known before device send until an acknowledgement known after correct visible presentation; report as upper bound including extra segments",
+    "pass_rule": "over the complete valid predefined group, nearest-rank p95 of conservative upper bounds<=2000 ms proves original p95 target; do not select only passing samples",
+    "over_bound_rule": "p95 upper bound>2000 ms alone is inconclusive for actual p95; preserve all samples and report what was actually proven",
+    "runtime_evidence": "none; actual presented-frame observation still consumes v1 accepted capability",
+    "sample_group": "100 predefined samples; all need valid same-clock endpoints and correct visible frame; missing samples remain missing, never dropped to improve p95",
+    "specific_probe_bound": "预定样本若具备probe_id到新采样receipt再到真实正确呈现帧的完整因果链，可用原Host probe issued_at作为发送前起点，以同Host时钟下晚于实际正确帧的有效确认作为终点；差值为保守上界。缺端点/帧/样本时不成立，不延长终态生产或删除样本凑组。"
+  },
+  "source_anchors": [
+    {
+      "path": "packages/simulation/src/engine.rs",
+      "line": 387,
+      "symbol": "end"
+    },
+    {
+      "path": "packages/simulation/src/engine.rs",
+      "line": 493,
+      "symbol": "virtual window completion"
+    },
+    {
+      "path": "packages/simulation/src/engine.rs",
+      "line": 2010,
+      "symbol": "snapshot and whole_window_computed"
+    },
+    {
+      "path": "packages/domain/src/models.rs",
+      "line": 2161,
+      "symbol": "RunResult"
+    },
+    {
+      "path": "packages/reporting/src/evaluation.rs",
+      "line": 38,
+      "symbol": "range"
+    },
+    {
+      "path": "packages/reporting/src/evaluation.rs",
+      "line": 205,
+      "symbol": "missing effective work condition"
+    },
+    {
+      "path": "packages/reporting/src/evaluation.rs",
+      "line": 222,
+      "symbol": "effective_work_ms optional"
+    },
+    {
+      "path": "packages/reporting/src/evaluation.rs",
+      "line": 588,
+      "symbol": "input and computed frontier validation"
+    },
+    {
+      "path": "packages/reporting/src/comparison.rs",
+      "line": 141,
+      "symbol": "complete predicate"
+    },
+    {
+      "path": "packages/commands/src/host_run_history.rs",
+      "line": 94,
+      "symbol": "actual_values frontier validation"
+    }
+  ],
+  "cases": [
+    {
+      "id": "CLK01",
+      "trigger": "nominal phase duration passes, no completion receipt",
+      "expected": "no output; no automatic virtual completion; real unresolved ownership remains",
+      "runtime_result": null
+    },
+    {
+      "id": "CLK02",
+      "trigger": "cutoff occurs with started work",
+      "expected": "stop new dispatch; draining or needs_resolution; no automatic release/Completed",
+      "runtime_result": null
+    },
+    {
+      "id": "CLK03",
+      "trigger": "receipt committed after cutoff",
+      "expected": "new live revision can change; original cutoff snapshot remains unchanged",
+      "runtime_result": null
+    },
+    {
+      "id": "CLK04",
+      "trigger": "target met and obligations settled before requested cutoff",
+      "expected": "completed fixed-quantity session; observed interval ends at actual terminal time; requested full window not fabricated",
+      "runtime_result": null
+    },
+    {
+      "id": "CLK05",
+      "trigger": "missing receipt or data quality issue",
+      "expected": "unknown state recorded; no zero/default completion or physical-work value",
+      "runtime_result": null
+    },
+    {
+      "id": "CLK06",
+      "trigger": "different machine clocks",
+      "expected": "timestamps labeled by origin; no direct cross-clock duration",
+      "runtime_result": null
+    },
+    {
+      "id": "CLK07",
+      "trigger": "only Host start/complete receipt times known",
+      "expected": "confirmed occupation may be known; physical effective work is null with reason",
+      "runtime_result": null
+    },
+    {
+      "id": "CLK08",
+      "trigger": "snapshot while resource claim is open",
+      "expected": "read-only clipped view; actual resource remains held; no destructive release",
+      "runtime_result": null
+    },
+    {
+      "id": "CLK09",
+      "trigger": "Host restarts with prior unsettled execution",
+      "expected": "new epoch; old session needs reconciliation; no automatic re-admission of conflicting work",
+      "runtime_result": null
+    },
+    {
+      "id": "CLK10",
+      "trigger": "DaaS/UI/report read one execution snapshot",
+      "expected": "same epoch/revision/prefix; no mixed counter/event/state generations",
+      "runtime_result": null
+    },
+    {
+      "id": "CLK11",
+      "trigger": "ordinary v1 Run and comparison",
+      "expected": "original validation, window and evidence semantics unchanged",
+      "runtime_result": null
+    },
+    {
+      "id": "CLK12",
+      "trigger": "prediction and external execution differ in observed window or availability",
+      "expected": "explicit alignment and differences; no fabricated improvement metric",
+      "runtime_result": null
+    },
+    {
+      "id": "CLK13",
+      "trigger": "six completed commands, five accepted outputs and one pending output",
+      "expected": "accepted quantity five; no target-completed session",
+      "runtime_result": null
+    },
+    {
+      "id": "CLK14",
+      "trigger": "business commit exactly at cutoff",
+      "expected": "point event included, duration clipping half-open; no extra millisecond fabricated",
+      "runtime_result": null
+    },
+    {
+      "id": "CLK15",
+      "trigger": "device reports an old completion time after Host cutoff",
+      "expected": "Host commit remains after cutoff; old report not backfilled from raw device timestamp",
+      "runtime_result": null
+    },
+    {
+      "id": "CLK16",
+      "trigger": "latency measurement only provides an upper bound",
+      "expected": "label bound; preserve original 2000 ms target and all100 samples; valid original-Host probe-before-send and actual-correct-frame-after acknowledgement can bound delay; over-bound result alone is inconclusive",
+      "runtime_result": null
+    }
+  ],
+  "not_yet_done": [
+    "full operation/DTO JSON schema validation and actual Rust generation; draft in V2-API-DB-03",
+    "actual database transaction/API persistence proof; draft in V2-API-DB-03",
+    "concrete v1-final fixture binding",
+    "actual external Engine driver",
+    "actual presented-frame/latency evidence"
+  ],
+  "interface_transaction_design_ref": "docs/06_v2.0设计与开发控制/接口与数据库事务设计.md",
+  "updated_date": "2026-10-26",
+  "historical_design_implementation_flags": {
+    "date": "2026-10-25",
+    "implementation_allowed": false,
+    "runtime_verified": false
+  },
+  "implementation_status_ref": "docs/06_v2.0设计与开发控制/开发控制计划.json#/packages",
+  "current_implementation_packages": [
+    "V2-03",
+    "V2-04",
+    "V2-07",
+    "V2-10"
+  ],
+  "status_projection_updated_at_utc": "2026-10-27T01:45:48.535491+00:00",
+  "runtime_verification_scope": "runtime_verified仅为本文全部设计用例通过声明；当前局部真实证据和剩余动作取主计划，不把设计期禁止实施作为现行限制。"
+}

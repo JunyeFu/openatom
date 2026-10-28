@@ -1,0 +1,1015 @@
+{
+  "document_kind": "S06_02_existing_module_logical_fields_to_canonical_Rust_types",
+  "source_ref": "packages/domain/types.design.rs",
+  "schema_ref": "tools/type-contract-proof/output/schemas/all-types.schema.json",
+  "logical_source_ref": "packages/module-kit/category-contracts.design.json",
+  "common_bindings": [
+    {
+      "logical_field": "id",
+      "required_when": "new_draft_identity",
+      "carriers": [
+        {
+          "rust_type": "ModuleDefinition",
+          "fields": [
+            "id"
+          ]
+        }
+      ]
+    },
+    {
+      "logical_field": "version",
+      "required_when": "new_draft_identity",
+      "carriers": [
+        {
+          "rust_type": "ModuleDefinition",
+          "fields": [
+            "version"
+          ]
+        }
+      ]
+    },
+    {
+      "logical_field": "category",
+      "required_when": "new_draft_identity",
+      "carriers": [
+        {
+          "rust_type": "ModulePayload",
+          "discriminator": "category",
+          "values": [
+            "items",
+            "devices",
+            "resources",
+            "tasks",
+            "operations",
+            "transport",
+            "templates",
+            "professional",
+            "media"
+          ]
+        }
+      ]
+    },
+    {
+      "logical_field": "title",
+      "required_when": "editable_definition",
+      "carriers": [
+        {
+          "rust_type": "ModuleDefinition",
+          "fields": [
+            "title"
+          ]
+        }
+      ]
+    },
+    {
+      "logical_field": "definition_state",
+      "required_when": "editable_definition",
+      "carriers": [
+        {
+          "rust_type": "ModuleDefinition",
+          "fields": [
+            "definition_state"
+          ]
+        }
+      ]
+    },
+    {
+      "logical_field": "contribution.author",
+      "required_when": "publication",
+      "carriers": [
+        {
+          "rust_type": "Contribution",
+          "fields": [
+            "author"
+          ]
+        }
+      ]
+    },
+    {
+      "logical_field": "contribution.license",
+      "required_when": "redistributable_export",
+      "carriers": [
+        {
+          "rust_type": "Contribution",
+          "fields": [
+            "license"
+          ]
+        }
+      ]
+    },
+    {
+      "logical_field": "contribution.assets[]",
+      "required_when": "when_assets_referenced",
+      "carriers": [
+        {
+          "rust_type": "Contribution",
+          "fields": [
+            "assets"
+          ]
+        },
+        {
+          "rust_type": "AssetRights",
+          "fields": [
+            "asset_ref",
+            "source",
+            "license",
+            "redistribution_confirmed"
+          ]
+        },
+        {
+          "rust_type": "ModulePackage",
+          "fields": [
+            "assets"
+          ]
+        },
+        {
+          "rust_type": "AssetRef",
+          "fields": [
+            "id",
+            "path",
+            "kind"
+          ]
+        }
+      ]
+    },
+    {
+      "logical_field": "parameters[]",
+      "required_when": "when_public_parameter_exposed",
+      "carriers": [
+        {
+          "rust_type": "ModuleDefinition",
+          "fields": [
+            "parameters"
+          ]
+        }
+      ]
+    },
+    {
+      "logical_field": "attribute_schema",
+      "required_when": "when_custom_attributes_used",
+      "carriers": [
+        {
+          "rust_type": "ModuleDefinition",
+          "fields": [
+            "attribute_schema"
+          ]
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": "items",
+      "bindings": [
+        {
+          "logical_path": "item_definition.unit",
+          "required_when": "adopt_type",
+          "carriers": [
+            {
+              "rust_type": "ItemDefinition",
+              "fields": [
+                "unit"
+              ]
+            }
+          ]
+        },
+        {
+          "logical_path": "item_definition.tracking",
+          "required_when": "adopt_type",
+          "carriers": [
+            {
+              "rust_type": "ItemDefinition",
+              "fields": [
+                "tracking"
+              ]
+            }
+          ]
+        },
+        {
+          "logical_path": "item_definition.spec_ref",
+          "required_when": "matching_existing_type",
+          "carriers": [
+            {
+              "rust_type": "ItemDefinition",
+              "fields": [
+                "spec_ref"
+              ]
+            }
+          ]
+        },
+        {
+          "logical_path": "item_definition.attributes",
+          "required_when": "when_attributes_present",
+          "carriers": [
+            {
+              "rust_type": "ItemDefinition",
+              "fields": [
+                "attributes"
+              ]
+            }
+          ]
+        },
+        {
+          "logical_path": "item_definition.attribute_schema",
+          "required_when": "when_custom_attributes_present",
+          "carriers": [
+            {
+              "rust_type": "ItemDefinition",
+              "fields": [
+                "attribute_schema"
+              ]
+            }
+          ]
+        },
+        {
+          "logical_path": "presentation_or_media_ref",
+          "required_when": "preview_requested",
+          "carriers": [
+            {
+              "rust_type": "ItemDefinition",
+              "fields": [
+                "presentation_or_media_ref"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "devices",
+      "bindings": [
+        {
+          "logical_path": "placement",
+          "required_when": "adopt_device",
+          "carriers": [
+            {
+              "rust_type": "DeviceDefinition",
+              "fields": [
+                "placement"
+              ]
+            },
+            {
+              "rust_type": "DeviceInstance",
+              "fields": [
+                "pose"
+              ]
+            }
+          ]
+        },
+        {
+          "logical_path": "parameters",
+          "required_when": "parameter_editor",
+          "carriers": [
+            {
+              "rust_type": "ModuleDefinition",
+              "fields": [
+                "parameters"
+              ]
+            }
+          ]
+        },
+        {
+          "logical_path": "ports",
+          "required_when": "connect_or_run",
+          "carriers": [
+            {
+              "rust_type": "DeviceDefinition",
+              "fields": [
+                "ports"
+              ]
+            }
+          ]
+        },
+        {
+          "logical_path": "behavior OR operation_ref",
+          "required_when": "run",
+          "carriers": [
+            {
+              "rust_type": "DeviceDefinition",
+              "fields": [
+                "behavior"
+              ]
+            },
+            {
+              "rust_type": "BehaviorSources",
+              "fields": [
+                "inline",
+                "operation_ref",
+                "selected"
+              ]
+            }
+          ]
+        },
+        {
+          "logical_path": "configuration",
+          "required_when": "when_parameterized",
+          "carriers": [
+            {
+              "rust_type": "DeviceDefinition",
+              "fields": [
+                "configuration"
+              ]
+            }
+          ]
+        },
+        {
+          "logical_path": "presentation",
+          "required_when": "preview_or_scene",
+          "carriers": [
+            {
+              "rust_type": "DeviceDefinition",
+              "fields": [
+                "presentation"
+              ]
+            }
+          ]
+        },
+        {
+          "logical_path": "operations",
+          "required_when": "action_display",
+          "carriers": [
+            {
+              "rust_type": "DeviceDefinition",
+              "fields": [
+                "operations"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "resources",
+      "bindings": [
+        {
+          "logical_path": "resource_definition.kind",
+          "required_when": "adopt_resource",
+          "carriers": [
+            {
+              "rust_type": "ResourceDefinition",
+              "fields": [
+                "kind"
+              ]
+            }
+          ]
+        },
+        {
+          "logical_path": "resource_definition.role",
+          "required_when": "bind_resource",
+          "carriers": [
+            {
+              "rust_type": "ResourceDefinition",
+              "fields": [
+                "role"
+              ]
+            }
+          ]
+        },
+        {
+          "logical_path": "resource_definition.capacity",
+          "required_when": "adopt_resource",
+          "carriers": [
+            {
+              "rust_type": "ResourceDefinition",
+              "fields": [
+                "capacity"
+              ]
+            }
+          ]
+        },
+        {
+          "logical_path": "resource_definition.qualifications",
+          "required_when": "when_required_by_task",
+          "carriers": [
+            {
+              "rust_type": "ResourceDefinition",
+              "fields": [
+                "qualifications"
+              ]
+            }
+          ]
+        },
+        {
+          "logical_path": "resource_definition.default_calendar_ms",
+          "required_when": "when_calendar_default_given",
+          "carriers": [
+            {
+              "rust_type": "ResourceDefinition",
+              "fields": [
+                "default_calendar_ms"
+              ]
+            }
+          ]
+        },
+        {
+          "logical_path": "presentation",
+          "required_when": "visual_resource_preview",
+          "carriers": [
+            {
+              "rust_type": "ResourceDefinition",
+              "fields": [
+                "presentation"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tasks",
+      "bindings": [
+        {
+          "logical_path": "task_definition.kind",
+          "required_when": "adopt_task",
+          "carriers": [
+            {
+              "rust_type": "TaskDefinition",
+              "fields": [
+                "kind"
+              ]
+            }
+          ]
+        },
+        {
+          "logical_path": "task_definition.target_role",
+          "required_when": "adopt_task",
+          "carriers": [
+            {
+              "rust_type": "TaskDefinition",
+              "fields": [
+                "target_role"
+              ]
+            }
+          ]
+        },
+        {
+          "logical_path": "task_definition.prerequisites",
+          "required_when": "run",
+          "carriers": [
+            {
+              "rust_type": "TaskDefinition",
+              "fields": [
+                "prerequisites"
+              ]
+            }
+          ]
+        },
+        {
+          "logical_path": "task_definition.steps",
+          "required_when": "multi_step_task",
+          "carriers": [
+            {
+              "rust_type": "TaskDefinition",
+              "fields": [
+                "steps"
+              ]
+            },
+            {
+              "rust_type": "TaskStep",
+              "fields": [
+                "id",
+                "target_role",
+                "resources",
+                "duration",
+                "completion_markers"
+              ]
+            }
+          ]
+        },
+        {
+          "logical_path": "task_definition.resource_roles",
+          "required_when": "run",
+          "carriers": [
+            {
+              "rust_type": "TaskDefinition",
+              "fields": [
+                "resource_roles"
+              ]
+            }
+          ]
+        },
+        {
+          "logical_path": "task_definition.duration",
+          "required_when": "single_step_task",
+          "carriers": [
+            {
+              "rust_type": "TaskDefinition",
+              "fields": [
+                "duration"
+              ]
+            }
+          ]
+        },
+        {
+          "logical_path": "task_definition.equipment_access",
+          "required_when": "equipment_target_task",
+          "carriers": [
+            {
+              "rust_type": "TaskDefinition",
+              "fields": [
+                "equipment_access"
+              ]
+            }
+          ]
+        },
+        {
+          "logical_path": "task_definition.completion_effect",
+          "required_when": "run",
+          "carriers": [
+            {
+              "rust_type": "TaskDefinition",
+              "fields": [
+                "completion_effect"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "operations",
+      "bindings": [
+        {
+          "logical_path": "operation_definition.builtin",
+          "required_when": "run",
+          "carriers": [
+            {
+              "rust_type": "OperationDefinition",
+              "fields": [
+                "builtin"
+              ]
+            }
+          ]
+        },
+        {
+          "logical_path": "operation_definition.item_roles",
+          "required_when": "bind_rule",
+          "carriers": [
+            {
+              "rust_type": "OperationDefinition",
+              "fields": [
+                "item_roles"
+              ]
+            }
+          ]
+        },
+        {
+          "logical_path": "operation_definition.inputs/outputs",
+          "required_when": "rule_requires_material",
+          "carriers": [
+            {
+              "rust_type": "OperationDefinition",
+              "fields": [
+                "inputs",
+                "outputs"
+              ]
+            }
+          ]
+        },
+        {
+          "logical_path": "operation_definition.resource_roles",
+          "required_when": "when_resources_required",
+          "carriers": [
+            {
+              "rust_type": "OperationDefinition",
+              "fields": [
+                "resource_roles"
+              ]
+            }
+          ]
+        },
+        {
+          "logical_path": "operation_definition.duration OR phases",
+          "required_when": "run",
+          "carriers": [
+            {
+              "rust_type": "OperationDefinition",
+              "fields": [
+                "duration",
+                "phases"
+              ]
+            }
+          ]
+        },
+        {
+          "logical_path": "operation_definition.quality_and_routes",
+          "required_when": "inspection_or_rework",
+          "carriers": [
+            {
+              "rust_type": "OperationDefinition",
+              "fields": [
+                "quality_and_routes"
+              ]
+            }
+          ]
+        },
+        {
+          "logical_path": "operation_definition.identity_policy",
+          "required_when": "run",
+          "carriers": [
+            {
+              "rust_type": "OperationDefinition",
+              "fields": [
+                "identity_policy"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "transport",
+      "bindings": [
+        {
+          "logical_path": "parameters/ports",
+          "required_when": "adopt_transport",
+          "carriers": [
+            {
+              "rust_type": "ModuleDefinition",
+              "fields": [
+                "parameters"
+              ]
+            },
+            {
+              "rust_type": "TransportDefinition",
+              "fields": [
+                "ports"
+              ]
+            }
+          ]
+        },
+        {
+          "logical_path": "behavior.builtin",
+          "required_when": "run",
+          "carriers": [
+            {
+              "rust_type": "TransportDefinition",
+              "fields": [
+                "builtin"
+              ]
+            }
+          ]
+        },
+        {
+          "logical_path": "behavior.batch_capacity",
+          "required_when": "run",
+          "carriers": [
+            {
+              "rust_type": "TransportDefinition",
+              "fields": [
+                "batch_capacity"
+              ]
+            }
+          ]
+        },
+        {
+          "logical_path": "behavior.resources",
+          "required_when": "run",
+          "carriers": [
+            {
+              "rust_type": "TransportDefinition",
+              "fields": [
+                "resources"
+              ]
+            }
+          ]
+        },
+        {
+          "logical_path": "behavior.times",
+          "required_when": "run",
+          "carriers": [
+            {
+              "rust_type": "TransportDefinition",
+              "fields": [
+                "times"
+              ]
+            }
+          ]
+        },
+        {
+          "logical_path": "behavior.acceptance_conditions",
+          "required_when": "when_destination_requires",
+          "carriers": [
+            {
+              "rust_type": "TransportDefinition",
+              "fields": [
+                "acceptance_conditions"
+              ]
+            }
+          ]
+        },
+        {
+          "logical_path": "behavior.identity_policy",
+          "required_when": "run",
+          "carriers": [
+            {
+              "rust_type": "TransportDefinition",
+              "fields": [
+                "identity_policy"
+              ]
+            }
+          ]
+        },
+        {
+          "logical_path": "presentation",
+          "required_when": "visual_transport",
+          "carriers": [
+            {
+              "rust_type": "TransportDefinition",
+              "fields": [
+                "presentation"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "templates",
+      "bindings": [
+        {
+          "logical_path": "project",
+          "required_when": "adopt_template",
+          "carriers": [
+            {
+              "rust_type": "TemplateDefinition",
+              "fields": [
+                "project"
+              ]
+            }
+          ]
+        },
+        {
+          "logical_path": "project.module_refs",
+          "required_when": "adopt_template",
+          "carriers": [
+            {
+              "rust_type": "TemplateSubset",
+              "fields": [
+                "module_refs"
+              ]
+            }
+          ]
+        },
+        {
+          "logical_path": "project.layout_scope/halls/lines/connections",
+          "required_when": "adopt_layout",
+          "carriers": [
+            {
+              "rust_type": "TemplateSubset",
+              "fields": [
+                "layout_scope",
+                "halls",
+                "lines",
+                "connections"
+              ]
+            }
+          ]
+        },
+        {
+          "logical_path": "project.resources/item_types/role_bindings",
+          "required_when": "adopt_template",
+          "carriers": [
+            {
+              "rust_type": "TemplateSubset",
+              "fields": [
+                "resource_requirements",
+                "item_types",
+                "role_requirements",
+                "suggested_role_bindings"
+              ]
+            }
+          ]
+        },
+        {
+          "logical_path": "project.initial_stock/demand",
+          "required_when": "explicit_new_scenario_seed",
+          "carriers": [
+            {
+              "rust_type": "TemplateSubset",
+              "fields": [
+                "seed"
+              ]
+            }
+          ]
+        },
+        {
+          "logical_path": "generation_profile",
+          "required_when": "goal_driven_generation",
+          "carriers": [
+            {
+              "rust_type": "TemplateDefinition",
+              "fields": [
+                "generation_profile"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "professional",
+      "bindings": [
+        {
+          "logical_path": "professional_contract.input_fields",
+          "required_when": "call_provider",
+          "carriers": [
+            {
+              "rust_type": "ProfessionalDefinition",
+              "fields": [
+                "input_fields"
+              ]
+            }
+          ]
+        },
+        {
+          "logical_path": "professional_contract.output_artifact_type/output_fields",
+          "required_when": "call_or_bind",
+          "carriers": [
+            {
+              "rust_type": "ProfessionalDefinition",
+              "fields": [
+                "output_artifact_type",
+                "output_fields"
+              ]
+            }
+          ]
+        },
+        {
+          "logical_path": "professional_contract.intended_modes",
+          "required_when": "provider_design",
+          "carriers": [
+            {
+              "rust_type": "ProfessionalDefinition",
+              "fields": [
+                "intended_modes"
+              ]
+            }
+          ]
+        },
+        {
+          "logical_path": "professional_contract.available_modes/producer_status",
+          "required_when": "run",
+          "carriers": [
+            {
+              "rust_type": "ProviderCapability",
+              "fields": [
+                "available_modes",
+                "producer_status"
+              ]
+            }
+          ]
+        },
+        {
+          "logical_path": "professional_contract.unit/coordinate_frame/scope",
+          "required_when": "call_or_bind",
+          "carriers": [
+            {
+              "rust_type": "ProfessionalDefinition",
+              "fields": [
+                "unit",
+                "coordinate_frame",
+                "scope"
+              ]
+            }
+          ]
+        },
+        {
+          "logical_path": "acceptance/consumer_binding",
+          "required_when": "factory_adoption",
+          "carriers": [
+            {
+              "rust_type": "ProjectState",
+              "fields": [
+                "acknowledgments",
+                "bindings"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "media",
+      "bindings": [
+        {
+          "logical_path": "presentation.kind/path OR media_ref",
+          "required_when": "preview",
+          "carriers": [
+            {
+              "rust_type": "Presentation",
+              "fields": [
+                "kind",
+                "source"
+              ]
+            }
+          ]
+        },
+        {
+          "logical_path": "presentation.unit/coordinate_frame/scale",
+          "required_when": "3D_or_layout_binding",
+          "carriers": [
+            {
+              "rust_type": "Presentation",
+              "fields": [
+                "unit",
+                "coordinate_frame",
+                "scale"
+              ]
+            }
+          ]
+        },
+        {
+          "logical_path": "presentation.nodes/poses/actions",
+          "required_when": "native_or_supported_model_authoring",
+          "carriers": [
+            {
+              "rust_type": "Presentation",
+              "fields": [
+                "nodes",
+                "poses",
+                "actions"
+              ]
+            }
+          ]
+        },
+        {
+          "logical_path": "presentation.timeline",
+          "required_when": "image_sequence_or_GIF_authoring",
+          "carriers": [
+            {
+              "rust_type": "Presentation",
+              "fields": [
+                "timeline"
+              ]
+            }
+          ]
+        },
+        {
+          "logical_path": "presentation.anchor_roles/port_anchors",
+          "required_when": "data_or_operation_label",
+          "carriers": [
+            {
+              "rust_type": "Presentation",
+              "fields": [
+                "tags",
+                "anchor_roles",
+                "port_anchors"
+              ]
+            }
+          ]
+        },
+        {
+          "logical_path": "presentation.lod",
+          "required_when": "factory_canvas",
+          "carriers": [
+            {
+              "rust_type": "Presentation",
+              "fields": [
+                "lod"
+              ]
+            }
+          ]
+        },
+        {
+          "logical_path": "presentation.production_effect",
+          "required_when": "all_media",
+          "carriers": [
+            {
+              "rust_type": "Presentation",
+              "fields": [
+                "production_effect"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "definition_and_provider_rule": "available_modes/producer_status来自Host注册只读ProviderCapability，不可写入上传ProfessionalDefinition；认可/绑定归ProjectState；ModulePayload.category为唯一九类判别键",
+  "legacy_input_rule": "逻辑字段/旧design样例不是运行JSON；PREP-RUNTIME显式映射后才可按Versioned<ModulePackage>导入，不猜同名或静默兼容",
+  "actual_product_runtime": null,
+  "runtime_timeline_bindings": [
+    {
+      "path": "JobState.execution_ref",
+      "type": "JobExecutionRef",
+      "consumer": "factory_ui/presentation/authoring_ui/reporting"
+    },
+    {
+      "path": "WaitInterval.execution_ref + phase_ref",
+      "type": "JobExecutionRef nullable + PhaseId nullable",
+      "consumer": "historical wait attribution"
+    },
+    {
+      "path": "RunResult.phase_work_intervals",
+      "type": "Vec<PhaseWorkInterval>",
+      "consumer": "effective-work intervals and pose progress"
+    },
+    {
+      "path": "RunResult.computed_until_ms",
+      "type": "SimTimeMs nullable",
+      "consumer": "same frontier as RunSummary"
+    }
+  ],
+  "runtime_timeline_contract_ref": "docs/03_架构与契约/全层类型与工程格式.json#/timeline_runtime_contract"
+}

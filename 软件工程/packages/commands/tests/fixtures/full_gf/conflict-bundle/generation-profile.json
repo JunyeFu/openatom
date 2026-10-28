@@ -1,0 +1,592 @@
+{
+  "schema_version": "1.0",
+  "data": {
+    "industry": "paper_carton_manufacturing",
+    "product_family": "die_cut_fold_glued_paper_carton",
+    "site_applicability": {
+      "regions": [],
+      "length_m": null,
+      "width_m": null,
+      "height_m": null,
+      "usable_polygon_m": [],
+      "clearance_m": null
+    },
+    "process_graph": [
+      {
+        "id": "step-DieCut01",
+        "operation_ref": {
+          "id": "p401.carton-factory.DieCut01",
+          "version": "1.0.0"
+        },
+        "device_id": "DieCut01",
+        "predecessors": [],
+        "item_bindings": {
+          "input": "board",
+          "output": "carton-blank"
+        },
+        "resource_bindings": {
+          "legacy.worker.W-C": "W-C",
+          "execution_capacity": "capacity-DieCut01"
+        }
+      },
+      {
+        "id": "step-FoldGlue01",
+        "operation_ref": {
+          "id": "p401.carton-factory.FoldGlue01",
+          "version": "1.0.0"
+        },
+        "device_id": "FoldGlue01",
+        "predecessors": [
+          "step-DieCut01"
+        ],
+        "item_bindings": {
+          "input": "carton-blank",
+          "output": "carton"
+        },
+        "resource_bindings": {
+          "legacy.worker.W-A": "W-A",
+          "execution_capacity": "capacity-FoldGlue01"
+        }
+      },
+      {
+        "id": "step-Inspection01",
+        "operation_ref": {
+          "id": "p401.carton-factory.Inspection01",
+          "version": "1.0.0"
+        },
+        "device_id": "Inspection01",
+        "predecessors": [
+          "step-FoldGlue01"
+        ],
+        "item_bindings": {
+          "input": "carton",
+          "passed": "carton",
+          "rework": "carton"
+        },
+        "resource_bindings": {
+          "inspector": "W-B",
+          "execution_capacity": "capacity-Inspection01"
+        }
+      }
+    ],
+    "nine_category_roles": [
+      {
+        "role": "items.board",
+        "quantity": {
+          "value": {
+            "coefficient": 1,
+            "decimal_places": 0
+          },
+          "unit": "definition"
+        }
+      },
+      {
+        "role": "items.ready_board",
+        "quantity": {
+          "value": {
+            "coefficient": 1,
+            "decimal_places": 0
+          },
+          "unit": "definition"
+        }
+      },
+      {
+        "role": "items.carton_blank",
+        "quantity": {
+          "value": {
+            "coefficient": 1,
+            "decimal_places": 0
+          },
+          "unit": "definition"
+        }
+      },
+      {
+        "role": "items.carton",
+        "quantity": {
+          "value": {
+            "coefficient": 1,
+            "decimal_places": 0
+          },
+          "unit": "definition"
+        }
+      },
+      {
+        "role": "items.bundle",
+        "quantity": {
+          "value": {
+            "coefficient": 1,
+            "decimal_places": 0
+          },
+          "unit": "definition"
+        }
+      },
+      {
+        "role": "items.waste",
+        "quantity": {
+          "value": {
+            "coefficient": 1,
+            "decimal_places": 0
+          },
+          "unit": "definition"
+        }
+      },
+      {
+        "role": "devices.printing_optional",
+        "quantity": {
+          "value": {
+            "coefficient": 1,
+            "decimal_places": 0
+          },
+          "unit": "definition"
+        }
+      },
+      {
+        "role": "devices.die_cut",
+        "quantity": {
+          "value": {
+            "coefficient": 1,
+            "decimal_places": 0
+          },
+          "unit": "definition"
+        }
+      },
+      {
+        "role": "devices.fold_glue",
+        "quantity": {
+          "value": {
+            "coefficient": 1,
+            "decimal_places": 0
+          },
+          "unit": "definition"
+        }
+      },
+      {
+        "role": "devices.inspection",
+        "quantity": {
+          "value": {
+            "coefficient": 1,
+            "decimal_places": 0
+          },
+          "unit": "definition"
+        }
+      },
+      {
+        "role": "devices.bundling",
+        "quantity": {
+          "value": {
+            "coefficient": 1,
+            "decimal_places": 0
+          },
+          "unit": "definition"
+        }
+      },
+      {
+        "role": "devices.buffer_transfer",
+        "quantity": {
+          "value": {
+            "coefficient": 1,
+            "decimal_places": 0
+          },
+          "unit": "definition"
+        }
+      },
+      {
+        "role": "resources.operators",
+        "quantity": {
+          "value": {
+            "coefficient": 1,
+            "decimal_places": 0
+          },
+          "unit": "definition"
+        }
+      },
+      {
+        "role": "resources.tools",
+        "quantity": {
+          "value": {
+            "coefficient": 1,
+            "decimal_places": 0
+          },
+          "unit": "definition"
+        }
+      },
+      {
+        "role": "resources.vehicle_if_selected",
+        "quantity": {
+          "value": {
+            "coefficient": 1,
+            "decimal_places": 0
+          },
+          "unit": "definition"
+        }
+      },
+      {
+        "role": "tasks.setup",
+        "quantity": {
+          "value": {
+            "coefficient": 1,
+            "decimal_places": 0
+          },
+          "unit": "definition"
+        }
+      },
+      {
+        "role": "tasks.loading_unloading",
+        "quantity": {
+          "value": {
+            "coefficient": 1,
+            "decimal_places": 0
+          },
+          "unit": "definition"
+        }
+      },
+      {
+        "role": "tasks.supported_rework",
+        "quantity": {
+          "value": {
+            "coefficient": 1,
+            "decimal_places": 0
+          },
+          "unit": "definition"
+        }
+      },
+      {
+        "role": "operations.declared_transform",
+        "quantity": {
+          "value": {
+            "coefficient": 1,
+            "decimal_places": 0
+          },
+          "unit": "definition"
+        }
+      },
+      {
+        "role": "operations.inspection_split",
+        "quantity": {
+          "value": {
+            "coefficient": 1,
+            "decimal_places": 0
+          },
+          "unit": "definition"
+        }
+      },
+      {
+        "role": "operations.bundle_content_relation",
+        "quantity": {
+          "value": {
+            "coefficient": 1,
+            "decimal_places": 0
+          },
+          "unit": "definition"
+        }
+      },
+      {
+        "role": "transport.internal_transfer_and_finished_goods_supply",
+        "quantity": {
+          "value": {
+            "coefficient": 1,
+            "decimal_places": 0
+          },
+          "unit": "definition"
+        }
+      },
+      {
+        "role": "templates.hall_line_groups_and_site_layout",
+        "quantity": {
+          "value": {
+            "coefficient": 1,
+            "decimal_places": 0
+          },
+          "unit": "definition"
+        }
+      },
+      {
+        "role": "professional.paper_structure_and_manufacturing_artifact_if_required",
+        "quantity": {
+          "value": {
+            "coefficient": 1,
+            "decimal_places": 0
+          },
+          "unit": "definition"
+        }
+      },
+      {
+        "role": "media.declared_native_geometry_or_permitted_assets",
+        "quantity": {
+          "value": {
+            "coefficient": 1,
+            "decimal_places": 0
+          },
+          "unit": "definition"
+        }
+      }
+    ],
+    "required_parameters": [
+      {
+        "id": "site_length_m",
+        "label": "site_length_m",
+        "value_type": "number",
+        "binding": "/site_envelope/length_m",
+        "unit": "m",
+        "minimum": 0,
+        "maximum": null,
+        "integer": false,
+        "options": [],
+        "basis": "unknown"
+      },
+      {
+        "id": "site_width_m",
+        "label": "site_width_m",
+        "value_type": "number",
+        "binding": "/site_envelope/width_m",
+        "unit": "m",
+        "minimum": 0,
+        "maximum": null,
+        "integer": false,
+        "options": [],
+        "basis": "unknown"
+      },
+      {
+        "id": "site_height_m",
+        "label": "site_height_m",
+        "value_type": "number",
+        "binding": "/site_envelope/height_m",
+        "unit": "m",
+        "minimum": 0,
+        "maximum": null,
+        "integer": false,
+        "options": [],
+        "basis": "unknown"
+      },
+      {
+        "id": "daily_accepted_quantity",
+        "label": "daily_accepted_quantity",
+        "value_type": "number",
+        "binding": "/accepted_quantity_per_day/value",
+        "unit": "piece",
+        "minimum": 0,
+        "maximum": null,
+        "integer": false,
+        "options": [],
+        "basis": "unknown"
+      }
+    ],
+    "parameter_sources": [
+      {
+        "target": {
+          "kind": "hall",
+          "id": "H1"
+        },
+        "field_path": "/width_m",
+        "value": null,
+        "basis": "template_declared_example",
+        "source_ref": "example-source"
+      },
+      {
+        "target": {
+          "kind": "hall",
+          "id": "H1"
+        },
+        "field_path": "/depth_m",
+        "value": null,
+        "basis": "template_declared_example",
+        "source_ref": "example-source"
+      },
+      {
+        "target": {
+          "kind": "hall",
+          "id": "H1"
+        },
+        "field_path": "/height_m",
+        "value": null,
+        "basis": "unknown",
+        "source_ref": "example-source"
+      },
+      {
+        "target": {
+          "kind": "device",
+          "id": "DieCut01"
+        },
+        "field_path": "/pose",
+        "value": null,
+        "basis": "template_declared_example",
+        "source_ref": "example-source"
+      },
+      {
+        "target": {
+          "kind": "device",
+          "id": "DieCut01"
+        },
+        "field_path": "/footprint_m",
+        "value": null,
+        "basis": "template_declared_example",
+        "source_ref": "cu-explicit-geometry-example"
+      },
+      {
+        "target": {
+          "kind": "device",
+          "id": "DieCut01"
+        },
+        "field_path": "/height_m",
+        "value": null,
+        "basis": "template_declared_example",
+        "source_ref": "cu-explicit-geometry-example"
+      },
+      {
+        "target": {
+          "kind": "device",
+          "id": "FoldGlue01"
+        },
+        "field_path": "/pose",
+        "value": null,
+        "basis": "template_declared_example",
+        "source_ref": "example-source"
+      },
+      {
+        "target": {
+          "kind": "device",
+          "id": "FoldGlue01"
+        },
+        "field_path": "/footprint_m",
+        "value": null,
+        "basis": "template_declared_example",
+        "source_ref": "cu-explicit-geometry-example"
+      },
+      {
+        "target": {
+          "kind": "device",
+          "id": "FoldGlue01"
+        },
+        "field_path": "/height_m",
+        "value": null,
+        "basis": "template_declared_example",
+        "source_ref": "cu-explicit-geometry-example"
+      },
+      {
+        "target": {
+          "kind": "device",
+          "id": "Inspection01"
+        },
+        "field_path": "/pose",
+        "value": null,
+        "basis": "template_declared_example",
+        "source_ref": "example-source"
+      },
+      {
+        "target": {
+          "kind": "device",
+          "id": "Inspection01"
+        },
+        "field_path": "/footprint_m",
+        "value": null,
+        "basis": "template_declared_example",
+        "source_ref": "cu-explicit-geometry-example"
+      },
+      {
+        "target": {
+          "kind": "device",
+          "id": "Inspection01"
+        },
+        "field_path": "/height_m",
+        "value": null,
+        "basis": "template_declared_example",
+        "source_ref": "cu-explicit-geometry-example"
+      },
+      {
+        "target": {
+          "kind": "product",
+          "id": "example-product"
+        },
+        "field_path": "/item_type_ref",
+        "value": null,
+        "basis": "template_declared_example",
+        "source_ref": "example-source"
+      },
+      {
+        "target": {
+          "kind": "product",
+          "id": "example-product"
+        },
+        "field_path": "/bom_ref",
+        "value": null,
+        "basis": "template_declared_example",
+        "source_ref": "example-source"
+      },
+      {
+        "target": {
+          "kind": "product",
+          "id": "example-product"
+        },
+        "field_path": "/routing_ref",
+        "value": null,
+        "basis": "template_declared_example",
+        "source_ref": "example-source"
+      },
+      {
+        "target": {
+          "kind": "device",
+          "id": "DieCut01"
+        },
+        "field_path": "/configuration/cycle_seconds/value",
+        "value": {
+          "kind": "duration",
+          "value": {
+            "value": 20000,
+            "unit": "millisecond",
+            "basis": "module_declared",
+            "source_ref": null
+          }
+        },
+        "basis": "template_declared_example",
+        "source_ref": "example-source"
+      },
+      {
+        "target": {
+          "kind": "device",
+          "id": "FoldGlue01"
+        },
+        "field_path": "/configuration/cycle_seconds/value",
+        "value": {
+          "kind": "duration",
+          "value": {
+            "value": 20000,
+            "unit": "millisecond",
+            "basis": "module_declared",
+            "source_ref": null
+          }
+        },
+        "basis": "template_declared_example",
+        "source_ref": "example-source"
+      },
+      {
+        "target": {
+          "kind": "device",
+          "id": "Inspection01"
+        },
+        "field_path": "/configuration/cycle_seconds/value",
+        "value": {
+          "kind": "duration",
+          "value": {
+            "value": 5000,
+            "unit": "millisecond",
+            "basis": "module_declared",
+            "source_ref": null
+          }
+        },
+        "basis": "template_declared_example",
+        "source_ref": "example-source"
+      }
+    ],
+    "layout_modes": [
+      "straight_line",
+      "u_shape",
+      "parallel_lines"
+    ],
+    "role_bindings": {
+      "item_types": {},
+      "resources": {},
+      "targets": {},
+      "ports": {}
+    }
+  }
+}

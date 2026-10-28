@@ -1,0 +1,146 @@
+{
+  "api_version": "0.1",
+  "request_id": "DRF03-task-route",
+  "project_id": "P1",
+  "scope": {
+    "kind": "project"
+  },
+  "operation": "apply_commands",
+  "params": {
+    "base_revision": 1,
+    "commands": [
+      {
+        "kind": "adopt_module",
+        "data": {
+          "module_ref": {
+            "id": "community.board-preparation",
+            "version": "0.1.0"
+          },
+          "targets": [
+            {
+              "kind": "route",
+              "id": "ROUTE1"
+            }
+          ],
+          "bindings": {
+            "item_types": {
+              "product": "T1"
+            },
+            "resources": {
+              "worker": "W1"
+            },
+            "targets": {
+              "board_station": {
+                "kind": "device",
+                "id": "D1"
+              }
+            },
+            "ports": {}
+          },
+          "new_instances": [],
+          "explicit_seed": null
+        }
+      },
+      {
+        "kind": "put_object",
+        "data": {
+          "kind": "route",
+          "data": {
+            "id": "ROUTE1",
+            "revision": "r1",
+            "steps": [
+              {
+                "id": "OP1",
+                "operation_ref": {
+                  "id": "community.board-preparation",
+                  "version": "0.1.0"
+                },
+                "device_id": "D1",
+                "predecessors": [],
+                "item_bindings": {
+                  "product": "T1"
+                },
+                "resource_bindings": {
+                  "setter": "W1"
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "kind": "put_object",
+        "data": {
+          "kind": "device",
+          "data": {
+            "id": "D1",
+            "title": "device",
+            "hall_id": "H1",
+            "line_id": null,
+            "module_ref": {
+              "id": "demo.devices",
+              "version": "0.1.0"
+            },
+            "pose": {
+              "translation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+              },
+              "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "unit": "meter",
+              "coordinate_frame": "right_handed_z_up"
+            },
+            "footprint_m": [
+              {
+                "x": 0.0,
+                "y": 0.0
+              },
+              {
+                "x": 1.0,
+                "y": 0.0
+              },
+              {
+                "x": 1.0,
+                "y": 1.0
+              },
+              {
+                "x": 0.0,
+                "y": 1.0
+              }
+            ],
+            "height_m": 1.0,
+            "configuration": {},
+            "role_bindings": {
+              "item_types": {
+                "product": "T1"
+              },
+              "resources": {
+                "worker": "W1"
+              },
+              "targets": {
+                "board_station": {
+                  "kind": "device",
+                  "id": "D1"
+                }
+              },
+              "ports": {}
+            },
+            "presentation_override": null,
+            "operation_binding": null
+          }
+        }
+      }
+    ]
+  }
+}

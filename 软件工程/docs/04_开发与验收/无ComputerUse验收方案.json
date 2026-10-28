@@ -1,0 +1,1584 @@
+{
+  "document_kind": "execution_methods_for_existing_remaining_work_not_new_task_queue",
+  "updated_at": "2026-10-26T13:54:43.207734+00:00",
+  "authority": "用户明确要求将全部剩余项改为不使用Computer Use；本轮明确恢复项目自有Playwright/真实WebView2自动化。",
+  "computer_use_required": false,
+  "computer_use_execution": false,
+  "Playwright_project_acceptance_authorized": true,
+  "scope": {
+    "original_packages": 21,
+    "original_steps": 68,
+    "deferred": 7,
+    "remaining_gap_mappings": 14,
+    "method_assignments": 14,
+    "acceptance_closed_by_method_change": 0,
+    "initial_method_assignments": 46
+  },
+  "reading_rule": "coverage只镜像当前原包14条remaining_work；原21包/68步/7后置保持。已过NFR09协议仅供复用，不是活动队列。",
+  "preserved": [
+    "原业务输入、单位、独立预期、负向范围、同候选条件和原阈值",
+    "原48 FPS/1800反馈/40 I/O以及其他适用NFR完整要求",
+    "真实Host、真实Native/浏览器/播放器、正式计量、人工和发布的证据层次",
+    "既有有效completed_reuse；用户工程、旧Run、草稿及原始失败证据"
+  ],
+  "route_pilot": {
+    "receipt_ref": "output/playwright/20261025-no-cu-method-pilot/receipt.json",
+    "candidate": "C36",
+    "host_instance_id": "desktop-host-100016",
+    "passed_scope": "isolated actual Native CDP connection, real Host read, DOM File menu, empty safe normal close",
+    "formal_acceptance": false
+  },
+  "routes": {
+    "native_ui": {
+      "title": "真实Native自动化",
+      "tool": "项目自有Node/Playwright → 隔离WebView2/CDP → 生产Tauri/ProjectHost",
+      "readiness": "actual_Page_Host_files_clock_verified_through_C57; per_case_UI_state_must_be_read_before_resume",
+      "requirements": [
+        "用真实DOM鼠标/键盘/表单事件驱动生产界面，读回实际Host/Run/修订；不mock invoke、不构造替代Engine。",
+        "沿原输入、负向和字段矩阵补未覆盖项，状态/单位/错误定位及图像分别观察。"
+      ],
+      "entrypoints": [
+        "tests/planner/acceptance/native_ui_consumer.mjs",
+        "tests/planner/acceptance/native_p001_business_consumer.mjs",
+        "tests/planner/acceptance/native_repaired_business_consumer.mjs"
+      ]
+    },
+    "real_host": {
+      "title": "真实Host与引擎",
+      "tool": "现有Rust/Node/Python专用入口及真实子进程",
+      "readiness": "existing_actual_checks_reused; no_full_workspace_rerun",
+      "requirements": [
+        "直接调用生产Commands/ProjectHost/Engine，以原冻结输入和独立预期核对；已有未变结果不重跑。",
+        "与Native UI共享真实结果，不把Host通过当界面或正确呈现帧通过。"
+      ],
+      "entrypoints": [
+        "tools/dev/verify.mjs",
+        "packages/commands/tests",
+        "tests/planner/acceptance"
+      ]
+    },
+    "filesystem_process": {
+      "title": "实际文件与新进程",
+      "tool": "真实ProjectHost目录存取/故障注入/OS子进程 + Native UI驱动",
+      "readiness": "production_path_fixture_and_same_clock_verified; NFR05_complete40_and_NFR06_reused",
+      "requirements": [
+        "实际写文件、原子提交、搬移独立副本及新应用进程读回；原工程、旧Run和合法产物保留。",
+        "原生选目录的机械点击可用仅测试构建的受限最终路径夹具替代；夹具必须经生产路径登记/SelectedFileRef授权，不伪造令牌、不mock文件系统或保存结果。",
+        "计时从调用方取得最终路径首次开始请求起，包含登记/检查、IPC、序列化、I/O和成功反馈或正确资产首帧；保留40次全部样本，每次≤3000ms。",
+        "F01—F04及未知格式/缺引用按原六组真实故障/拒绝接收，不用预制成功返回。"
+      ],
+      "entrypoints": [
+        "apps/planner/src/services/projectHost.ts",
+        "apps/planner/src-tauri/src/project_api.rs",
+        "packages/commands/src/project_store.rs",
+        "tools/p0-01-host/check-native-saved.py"
+      ]
+    },
+    "native_lifecycle": {
+      "title": "历史、并发与真实窗口生命周期",
+      "tool": "Playwright真实Native UI + 生产Host并发通道 + Tauri窗口事件",
+      "readiness": "ordinary_close_conflict_leave_repaired_and_received; only_uncovered_longtask_combinations_remain",
+      "requirements": [
+        "原同R同字段合法对抗，核对胜者新R、败者RevisionConflict和原输入保留；undo/redo/new-edit/跨工程归属保持。",
+        "通过真实Tauri关闭请求/窗口生命周期触发生产关闭保护；留在/保存/测试副本丢弃/任务在途按原范围执行，不能直接调用最终销毁来冒充关闭保护。",
+        "测试结束只正常关闭本轮确认已保存或为空且无任务的窗口；原有窗口和草稿保留。"
+      ],
+      "entrypoints": [
+        "apps/planner/src/services/windowClose.ts",
+        "tests/planner/native-close/window-close.test.mjs",
+        "tests/planner/workspace-refresh/refresh-order.test.mjs",
+        "tests/planner/acceptance/native_context_policy_consumer.mjs"
+      ]
+    },
+    "native_frames": {
+      "title": "真实呈现与正式计量",
+      "tool": "实际可见Native/WebView2 + CDP Trace/UserTiming/Screenshots + 已交付归约器",
+      "readiness": "approved_reporter_and_frame_endpoint_bindings_available; NFR03_current_C55_100_of1800; FPS_and_NFR04_incomplete",
+      "requirements": [
+        "正式采样使用真实可见候选、原硬件/1920×1080/DPR1/详细模型和原运动/负载脚本，不能用本轮隐藏空窗试做替代。",
+        "实际输入/Host提交与正确目标画面的呈现事件按同一时钟关联；保留身份、首尾覆盖和掉帧，rAF/提交次数/截图张数不当FPS。",
+        "48个FPS窗口、1800次反馈及NFR04各原任务/重叠/取消样本和阈值保持；不删失败或混候选拼组。"
+      ],
+      "entrypoints": [
+        "tests/planner/p201-whole/native-trace.mjs",
+        ".work/parallel-closeout-20261024/measurements/reduce_measurements.py",
+        ".work/parallel-closeout-20261024/measurements/traceio.py"
+      ]
+    },
+    "gpu_visual": {
+      "title": "实际GPU画面与几何/过程",
+      "tool": "真实Native或公开渲染消费者的帧截图 + 结构/坐标/锚点/接触断言",
+      "readiness": "original_selected28_MQ_received; detailed_animation_binding_and_specific_missing_frames_remain",
+      "requirements": [
+        "精确版本/实际Run和虚拟时点的画面、姿态、持有、接触分别按原契约核对；结构断言和实际截图结合。",
+        "原选28款MQ/三gate/发布已通过则复用；本轮只补详细动画、指定缺帧与GF消费者，500设备扩展隔离。",
+        "实际画面可离线审阅；人类用途签认另列，不能用像素相同代业务/专业结论。"
+      ],
+      "entrypoints": [
+        "apps/planner/src/scene/FactoryScene.tsx",
+        "packages/presentation/src/phase.ts",
+        ".work/parallel-closeout-20261024/models/receipt.json",
+        ".work/parallel-closeout-20261024/professional/receipt.json"
+      ]
+    },
+    "offline_process": {
+      "title": "真实进程离线链",
+      "tool": "隔离测试进程/网络环境 + 真实Native自动化 + 该进程请求记录",
+      "readiness": "last_observed_full_process_isolation_unavailable; WSB_absent_is_not_an_execution_result",
+      "requirements": [
+        "实际无网络条件下新进程、本地资产、编辑、真实Run、保存/重开与四格式完整执行。",
+        "仅WebView2 Network offline不足以证明Rust/外部进程断网；若只做到前端离线，明确限层并保持原NFR07未验。",
+        "优先使用独立测试运行环境，不改用户全局隐私/安全设置，不接入现有浏览器，不通过禁用浏览器保护绕过原限制。"
+      ],
+      "entrypoints": [
+        "docs/01_业务需求/非功能需求与测量验收.json#/requirements/6",
+        "apps/planner/src/features/agent/AgentWorkspace.tsx",
+        "apps/planner/src/services/mediaAssets.ts"
+      ],
+      "latest_environment_observation_ref": "output/playwright/20261026-P001-detail-entry/offline-environment.json"
+    },
+    "browser_artifacts": {
+      "title": "真实浏览器离线报告",
+      "tool": "Playwright隔离浏览器 → 原已导出并搬移HTML/本地受限只读源",
+      "readiness": "original_moved_HTML_actual_browser_passed_reuse",
+      "requirements": [
+        "实际执行HTML脚本并读取中文、图像、导航、关键指标及请求结果；读取现有文件，不重复生成已过报告。",
+        "使用已知URL和独立profile，保留浏览器安全配置；不接管原受限Chrome，不关闭安全检查。",
+        "静态文件/链接检查单列；与NFR07共享已满足层次的离线结果。"
+      ],
+      "entrypoints": [
+        ".work/parallel-closeout-20261024/native/html-relocation.json",
+        ".work/parallel-closeout-20261024/reporting/receipt.json"
+      ]
+    },
+    "media_player": {
+      "title": "实际媒体播放器",
+      "tool": "隔离浏览器标准HTML5 video或可脚本控制的真实播放器 + 实际解码/画面/时点记录",
+      "readiness": "original215_second_actual_player_passed_reuse",
+      "requirements": [
+        "播放既有215秒成片，核对实际duration、playback状态、时间推进、seek及开头/核心流程/保存重开/结尾画面。",
+        "ffprobe、离线抽帧与文件存在只复用为文件证据，不替代真实播放；默认正常播放速度，失败保留。",
+        "保留C16录制身份，不把播放器接收写成最终新版实录。"
+      ],
+      "entrypoints": [
+        "docs/04_开发与验收/官方提交物交付口径.json",
+        "docs/05_开源与参赛/release-preparation/C17材料与文档对应.json"
+      ]
+    },
+    "reconcile": {
+      "title": "原包与最终材料归并",
+      "tool": "原回执/候选/版本及文件消费结果的程序核对与人工阅读",
+      "readiness": "incremental_reception_ready; full_technical_exit_and_final_freeze_still_required",
+      "requirements": [
+        "按原21包/68步/7后置、原scope、release依赖和SF/IX/NFR/MQ取证；仅接收正确层次结果。",
+        "最终候选冻结后窄改三材料差额；原50/30/20和21包等权保持，改方法不增加分数。",
+        "人工签认与外部发布另列；不恢复已取消第二机/指定真实客户端/逐素材权利确认。"
+      ],
+      "entrypoints": [
+        "docs/04_开发与验收/实现阶段完成度.json",
+        "docs/04_开发与验收/官方提交物交付口径.json",
+        "docs/05_开源与参赛/release-preparation/候选差额_20261024.md"
+      ]
+    }
+  },
+  "coverage": [],
+  "known_entry_gaps": [
+    "正式NFR02/03/04每次采样前实测当前显示与呈现身份；历史DPI标签不代当前现场，启动按当前主屏/副屏规则放置任务窗口。",
+    "NFR03参数六组的同C55正式入口接线；已有选择/详情单组驱动，总脚本不能盲重跑已有目录。",
+    "NFR04四类原受理/重叠/取消完整驱动；报告真实受理3405.9ms尚未修复。",
+    "NFR09人员详细动画已C57接收；剩同C57两负载各3次及视图/身份完整组，冻结输入已就绪。",
+    "NFR10三缺帧及九预取消引用的公开Job适用性；保留原未执行/不可判定。",
+    "NFR07实际覆盖Native/Rust/子进程的全进程离线隔离环境。",
+    "GF最终工程逐类真实采用对照，9节点不能当9类；最终候选及材料差额尚未冻结。"
+  ],
+  "sources": [
+    {
+      "title": "Playwright WebView2",
+      "url": "https://playwright.dev/docs/webview2"
+    },
+    {
+      "title": "Tauri WebDriver",
+      "url": "https://v2.tauri.app/develop/tests/webdriver/"
+    }
+  ],
+  "formal_result_changed": false,
+  "numeric_completion_changed": false,
+  "latest_actual_reception_ref": "docs/04_开发与验收/并行重组/20261025_非CU重新派发/native-reception-45.json",
+  "latest_root_actual_reception": {
+    "original_received": 45,
+    "remaining": 16,
+    "technical_estimate_percent": 91.2,
+    "formal_NFR_ids_passed": [
+      "NFR-05",
+      "NFR-06"
+    ],
+    "latest_bounded_report_ref": "output/playwright/20261026-C56-NFR11-delivery/receipt.json",
+    "method_update_added_passes": 0
+  },
+  "protocols": {
+    "NFR-03": {
+      "title": "同候选剩余反馈组",
+      "original_owner": "P2-01",
+      "operator": "本窗口Root；本次不派发",
+      "readiness": "旧扩展方法仅保留历史。当前正常使用已收尾，见正常使用收尾.json。",
+      "entrypoints": [
+        "output/playwright/20261026-C55-NFR03-remaining/collect-selection.mjs",
+        "output/playwright/20261026-C55-NFR03-remaining/collect-detail.mjs",
+        "output/playwright/20261026-P001-parameter-entry/pair.mjs",
+        ".work/parallel-closeout-20261024/measurements/reduce_measurements.py",
+        "output/playwright/20261026-C55-NFR03-remaining/collect-parameter.mjs",
+        "output/playwright/20261026-C55-NFR03-remaining/review-parameter.py"
+      ],
+      "reuse_refs": [
+        "output/playwright/20261026-C55-NFR03-balanced-select-round1/receipt.json",
+        "output/playwright/20261026-P001-noncolor/receipt.json",
+        "output/playwright/20261026-P001-mainline-recovery/receipt.json",
+        "output/playwright/20261026-C55-NFR03-remaining/balanced-parameter-r1/bounded-reception.json",
+        "output/playwright/20261026-C55-NFR03-remaining/balanced-select-r2-actual/bounded-reception.json",
+        "output/playwright/20261026-C55-NFR03-remaining/selection-six-group-reception.json"
+      ],
+      "preparation": [
+        "复用同C55六个选择组和均衡参数首轮；每组原100条和先前失败/不可判定输出全部保留。下一动作不再包含选择采样。",
+        "新进程用launch-on-task-monitor.ps1按当前主屏标记选择非主屏；先按实际画布调整宽度，再读取换行后的画布高度并调整到1080，size-task-window.ps1确认可见DWM窗口在该屏工作区。",
+        "每组继续实际96DPI、DPR1、1920×1080及原r7完整资产/Run；沿用现成参数/详情驱动。详情采集同样已修正实际450MB截图预算，审阅器复用已证实的同物理呈现关联；未执行详情仍无通过信用。",
+        "8类键盘/焦点、100/150/200%文本、非颜色状态分别审查原有效证据及候选适用范围。C50限定记录不改名为C55整组；相关呈现未变才复用，真实未覆盖项仍需按原范围验证。"
+      ],
+      "remaining_execution": [],
+      "completion_evidence": [
+        "同C55原18个100组全部齐全、无业务错误且各组p95≤200ms；当前仅7/18组通过，并须原可用性子检查齐备。",
+        "C50历史700和C51功能试做另列，不混入C55；环境不符只暂停正式采样，继续其他独立任务。"
+      ],
+      "method_update_is_not_actual_execution": true,
+      "execution_status": [
+        "not_required_for_current_v1_exit_by_user"
+      ],
+      "prepared_parameter_driver_ref": "output/playwright/20261026-C55-NFR03-remaining/parameter-driver-preparation.json",
+      "current_pilot_ref": "output/playwright/20261026-C55-NFR03-remaining/balanced-parameter-pilot/pilot-reception.json",
+      "current_parameter_formal_attempt_ref": "output/playwright/20261026-C55-NFR03-remaining/balanced-parameter-r1/bounded-reception.json",
+      "active_for_current_v1_exit": false
+    },
+    "NFR-02": {
+      "title": "48窗口真实FPS",
+      "original_owner": "P2-01",
+      "operator": "本窗口Root；本次不派发",
+      "readiness": "旧扩展方法仅保留历史。当前正常使用已收尾，见正常使用收尾.json。",
+      "entrypoints": [
+        "tests/planner/p201-whole/native-trace.mjs",
+        ".work/parallel-closeout-20261024/native/noncu-integration/fps-balanced-detailed-r1-C39.mjs",
+        ".work/parallel-closeout-20261024/measurements/reduce_measurements.py"
+      ],
+      "reuse_refs": [
+        ".work/cu-closeout-20261024/root-C26-timeline-clock/receipt.json",
+        ".work/cu-closeout-20261024/root-B60-item-layout/receipt.json"
+      ],
+      "preparation": [
+        "不再等待历史C26公共Host移交；核对当前已合入修复及候选，不重复实施端口热点修复。",
+        "参考环境按原NFR01/02，冻结同一本机候选和原详细资产/两负载已保存Run。旧C39脚本仅作入口参考，不能带着已知错误/歧义直接批跑。",
+        "先核对一段原场景的reporter/完整呈现帧关联及右键环绕/中键平移脚本；若身份仍无法判定，不再生成48份不可判定录制。"
+      ],
+      "remaining_execution": [],
+      "completion_evidence": [
+        "每轮按原instantaneous_fps=1000/Δt取median≥30；保留掉帧等待、冻结、错误及首尾覆盖缺口。",
+        "rAF/render次数或少量截图不作FPS；缺正确帧为not_evaluable，实际性能失败保留fail；不跨候选凑48。"
+      ],
+      "method_update_is_not_actual_execution": true,
+      "execution_status": [
+        "not_required_for_current_v1_exit_by_user"
+      ],
+      "active_for_current_v1_exit": false
+    },
+    "NFR-04": {
+      "title": "四类真实长任务与交互重叠",
+      "original_owner": "P2-04",
+      "operator": "本窗口Root；本次不派发",
+      "readiness": "旧扩展方法仅保留历史。当前正常使用已收尾，见正常使用收尾.json。",
+      "entrypoints": [
+        "apps/planner/src/features/reporting/useDeliveryTask.ts",
+        "packages/commands/tests/noncu_report_publication.rs",
+        "docs/01_业务需求/非功能需求与测量验收.json",
+        "output/playwright/20261026-C57-NFR11-report/report-cases.mjs"
+      ],
+      "reuse_refs": [
+        "output/playwright/20261026-C56-NFR11-delivery/receipt.json",
+        "output/playwright/20261026-C53-NFR10-experience/receipt.json",
+        "output/playwright/20261026-C57-NFR11-report/receipt.json"
+      ],
+      "preparation": [
+        "按原四类合法冻结输入建立每类3轮×100请求计划，不并发创建100个正式Run。",
+        "C55报告实际受理3405.9ms仍是未修复的延时观察；先定位受理路径并做受影响验证，不因已有阶段进度就预填200ms通过。",
+        "重叠必须有真实任务持续工作；若原输入太短，按原契约另冻结有来源的辅助长输入，不能加sleep/假进度。",
+        "先在原受理路径分段测量evaluation_inputs及ArchiveAddition克隆、入队与TaskHandle返回；已有3405.9ms观测只说明受理慢，不能先断言克隆为根因。仅对定位到的真实缺陷作最小修复和相关回归，再采原正式矩阵。"
+      ],
+      "remaining_execution": [],
+      "completion_evidence": [
+        "原各接收组nearest-rank p95≤200ms，重叠交互仍符合NFR03；进度来自真实阶段，取消不伪报成功。",
+        "C57同候选报告三态/35文件只复用为功能证据；观察总耗时不代请求接收耗时、正式交互采样或原子提交完整组。"
+      ],
+      "method_update_is_not_actual_execution": true,
+      "execution_status": [
+        "not_required_for_current_v1_exit_by_user"
+      ],
+      "active_for_current_v1_exit": false
+    },
+    "NFR-07": {
+      "title": "全进程真实离线链",
+      "original_owner": "P0-01",
+      "operator": "本窗口Root；本次不派发",
+      "readiness": "旧扩展方法仅保留历史。当前正常使用已收尾，见正常使用收尾.json。",
+      "entrypoints": [
+        ".work/noncu-redispatch-20261025/infrastructure/offline.py",
+        ".work/noncu-redispatch-20261025/infrastructure/offline-bootstrap.ps1",
+        "apps/planner/src/services/projectHost.ts"
+      ],
+      "reuse_refs": [
+        "output/playwright/20261026-P001-detail-entry/offline-environment.json",
+        ".work/noncu-redispatch-20261025/reporting/receipt.json",
+        "output/playwright/20261026-C55-NFR05/receipt.json"
+      ],
+      "preparation": [
+        "先检查现有可用环境和项目启动/路径映射；若仍无全进程隔离条件，明确保留环境待具备，不反复启动无效WSB。",
+        "实际执行必须覆盖Native及子进程的网络不可达、新OS进程、真实工程/资源路径；CDP renderer offline只能作局部诊断。"
+      ],
+      "remaining_execution": [],
+      "completion_evidence": [
+        "有全进程隔离及真实生产链证据才关闭原离线组；CDP renderer offline、WSB文本或普通联网下本地成功均不足。"
+      ],
+      "method_update_is_not_actual_execution": true,
+      "execution_status": [
+        "not_required_for_current_v1_exit_by_user"
+      ],
+      "active_for_current_v1_exit": false
+    },
+    "NFR-08": {
+      "title": "UI与外部Agent同宿主归属",
+      "original_owner": "P0-01",
+      "operator": "本窗口Root；本次不派发",
+      "readiness": "旧扩展方法仅保留历史。当前正常使用已收尾，见正常使用收尾.json。",
+      "entrypoints": [
+        ".work/parallel-closeout-20261024/native/noncu-integration/runtime.mjs",
+        "packages/commands/tests/full_gf_applicability.rs",
+        "apps/planner/src/services/windowClose.ts"
+      ],
+      "reuse_refs": [
+        ".work/noncu-closeout-20261024/p001-C22-external/receipt.json",
+        "output/playwright/20261026-P001-close-diagnosis/receipt.json",
+        "output/playwright/20261026-P301-category-history/receipt.json",
+        "output/playwright/20261026-NFR08-current-coverage/review.json",
+        "output/playwright/20261026-C50-P001-lifecycle/concurrency-stage.json",
+        "output/playwright/20261026-C50-P001-lifecycle/lifecycle-stage1.json",
+        "output/playwright/20261026-C50-P001-save-close-reopen/reopen.json"
+      ],
+      "preparation": [
+        "按review.json的四组覆盖进入；C50已完成的真实外部/UI双向冲突、完整旧Run、保存/丢弃/留在不重跑。",
+        "待当前C57密集采集自然交回后，使用现成C50候选和actual-second-client.mjs真实stdio桥/DOM授权补旧会话切换；不新增指定真实客户端认证、第二机或人为延迟OS IPC。"
+      ],
+      "remaining_execution": [],
+      "completion_evidence": [
+        "原请求/响应、Host/工程修订、可见字段、旧Run和切换上下文一致；没有要求的剩余行为就直接引用已过接收，不新造竞态门槛。"
+      ],
+      "method_update_is_not_actual_execution": true,
+      "execution_status": [
+        "not_required_for_current_v1_exit_by_user"
+      ],
+      "coverage_review_ref": "output/playwright/20261026-NFR08-current-coverage/review.json",
+      "active_for_current_v1_exit": false
+    },
+    "NFR-09": {
+      "title": "详细动画与数值独立性",
+      "original_owner": "P1-01",
+      "operator": "本窗口Root；本次不派发",
+      "readiness": "旧扩展方法仅保留历史。当前正常使用已收尾，见正常使用收尾.json。",
+      "entrypoints": [
+        "output/playwright/20261026-NFR09-native-consumer/consumer.mjs",
+        "output/playwright/20261026-NFR09-native-consumer/playback.mjs",
+        "apps/planner/src/features/media/MediaPresentationView.tsx",
+        "packages/commands/tests/noncu_timeline_host.rs",
+        "output/playwright/20261026-C57-NFR09-staff-animation/animation.mjs",
+        "output/playwright/20261026-C57-NFR09-benchmark/frozen-input.json",
+        "output/playwright/20261026-C57-NFR09-benchmark/verify-source-link.mjs",
+        "output/playwright/20261026-C57-NFR09-benchmark/collect-views.mjs"
+      ],
+      "reuse_refs": [
+        ".work/cu-closeout-20261024/root-NFR09-host/receipt.json",
+        "output/playwright/20261026-NFR09-native-consumer/receipt.json",
+        "output/playwright/20261026-P001-mainline-recovery/receipt.json",
+        "output/playwright/20261026-C53-next-native/phase-clock-receipt.json",
+        "output/playwright/20261026-C57-NFR09-staff-animation/receipt.json",
+        "output/playwright/20261026-C57-NFR09-benchmark/collection.json",
+        "output/playwright/20261026-C57-NFR09-benchmark/dense-Host-identity-queries.json"
+      ],
+      "preparation": [
+        "人员详细媒体输入缺口已解决，直接复用C57原phase_calendar人员10000ms/等待5000ms/完成45000ms及16个正反向时点；不重建该副本或重跑已过人员组。",
+        "读取collection.json的6轮终态与实际当前Native状态，不按旧running-checkpoint的4轮或旧人员工程状态重新发起运行；旧Run、原工程及测试产物保留。",
+        "先确认采集器自然结束及Native资源归属；纯方法更新不操作桌面、不启动采样，不以旧PID推断实时可操作。"
+      ],
+      "remaining_execution": [],
+      "completion_evidence": [
+        "人员占用10000ms、等待5000ms、完成45000ms等原手算值保持；显示动画不增加生产、资源工时或接受量。",
+        "P1-01/P1-03/P2-04/P3-03/P5-01共享一个有效结果，各包不另跑同一矩阵。"
+      ],
+      "method_update_is_not_actual_execution": true,
+      "execution_status": [
+        "not_required_for_current_v1_exit_by_user"
+      ],
+      "completion_receipt_ref": "output/playwright/20261026-C57-NFR09-benchmark/NFR09-C57-acceptance.json",
+      "active_for_current_v1_exit": false
+    },
+    "NFR-10": {
+      "title": "专业体验缺帧与预取消归属",
+      "original_owner": "P4-02",
+      "operator": "本窗口Root；本次不派发",
+      "readiness": "旧扩展方法仅保留历史。当前正常使用已收尾，见正常使用收尾.json。",
+      "entrypoints": [
+        "output/playwright/20261026-C53-NFR10-experience/run.mjs",
+        ".work/parallel-closeout-20261024/measurements/reduce_measurements.py",
+        "packages/packaging/tests/noncu_matrix.rs",
+        "output/playwright/20261026-C53-NFR10-cover-repeat-followup/run.mjs"
+      ],
+      "reuse_refs": [
+        "output/playwright/20261026-C53-NFR10-experience/receipt.json",
+        "output/playwright/20261026-C53-NFR10-cover-repeat-followup/preparation.json",
+        "output/playwright/20261026-C53-NFR10-cover-repeat-followup/pre-cancel-applicability.json"
+      ],
+      "preparation": [
+        "原三条轨迹均有43张截图及结果就绪后的6个完整reporter、但无对应截图，故仍不可判定；保留原记录，不用普通PNG或较早帧补端点。",
+        "用现有同C53候选、新私有测试目录和原cover-repeat输入完整补3次；采集截图边长上限1600→1200使同450MB预算可容纳78张，实际Native视口/DPR/渲染尺寸、计时起点、30000ms目标及原review-frame.py均不变。",
+        "补测图像须可读且身份匹配；在结果就绪后真实滚动/截图仍计入保守时界，不伪造帧或加求解sleep。仅在当前Native工作自然释放后启动，不打断其他窗口。",
+        "逐项核对container/cover/outer_liner三份pre_cancelled_reference与公开ComputePackagingParams、CancelTaskParams和内核AtomicBool边界；原3份内核观察不能计作9次Native。保持84位置原分类，运行中取消不替代初始预取消；若原要求仍未满足则明确开放项。"
+      ],
+      "remaining_execution": [],
+      "completion_evidence": [
+        "完整正确且≤30秒为target_met，完整正确超30秒为target_not_met；取消/预算耗尽/未完成是not_completed，均独立于专业Pass/Fail/Undetermined。",
+        "30秒是体验目标，不是强制超时；预取消参考不能改为真实Native通过，完整适用出口由P5按原契约接收。"
+      ],
+      "method_update_is_not_actual_execution": true,
+      "execution_status": [
+        "not_required_for_current_v1_exit_by_user"
+      ],
+      "completion_receipt_ref": "output/playwright/20261026-C53-NFR10-cover-repeat-followup/receipt.json",
+      "active_for_current_v1_exit": false
+    },
+    "NFR-11": {
+      "title": "媒体与可编辑封装剩余子项",
+      "original_owner": "P3-02",
+      "operator": "本窗口Root；本次不派发",
+      "readiness": "旧扩展方法仅保留历史。当前正常使用已收尾，见正常使用收尾.json。",
+      "entrypoints": [
+        "apps/planner/src/features/media/load.ts",
+        "apps/planner/src/features/media/MediaPresentationView.tsx",
+        "apps/planner/src/features/reporting/DeliveryWorkspace.tsx",
+        ".work/parallel-closeout-20261024/native/noncu-integration/runtime.mjs",
+        "output/playwright/20261026-C57-NFR11-report/report-cases.mjs",
+        "output/playwright/20261026-C57-NFR11-cross-media/run.mjs",
+        "output/playwright/20261026-C57-NFR11-cross-media/svg-and-module-metadata.mjs"
+      ],
+      "reuse_refs": [
+        "output/playwright/20261026-C56-NFR11-delivery/receipt.json",
+        "output/playwright/20261026-C55-NFR11-delivery/receipt.json",
+        "output/playwright/20261026-C57-NFR11-package/receipt.json",
+        "output/playwright/20261026-C57-NFR11-report/receipt.json",
+        "output/playwright/20261026-C57-NFR11-cross-media/collection.json",
+        "output/playwright/20261026-C57-NFR11-cross-media/svg-receipt.json",
+        "output/playwright/20261026-C57-NFR11-cross-media/NFR11-C57-acceptance.json",
+        "output/playwright/20261026-C57-NFR11-cross-media/receipt.json"
+      ],
+      "preparation": [
+        "引用同C57原输入与实际回执；只有后续源码变化影响本组时，按变更范围重验。"
+      ],
+      "remaining_execution": [],
+      "completion_evidence": [
+        "记录明确条件下的真实耗时、阶段与取消胜负；没有样本保持未验，不把阶段计数当时间百分比。",
+        "媒体功能、NFR04正式交互采样和NFR02正式FPS分层；C55已观察的3405.9ms受理延时不被报告进度修复掩盖。"
+      ],
+      "method_update_is_not_actual_execution": true,
+      "execution_status": [
+        "not_required_for_current_v1_exit_by_user"
+      ],
+      "active_for_current_v1_exit": false
+    },
+    "generated_consumers": {
+      "title": "GF九类声明与实际采用映射",
+      "original_owner": "P3-04",
+      "operator": "本窗口Root；本次不派发",
+      "readiness": "旧扩展方法仅保留历史。当前正常使用已收尾，见正常使用收尾.json。",
+      "entrypoints": [
+        "scenarios/目标驱动建厂/acceptance.design.json",
+        "packages/commands/tests/full_gf_applicability.rs",
+        ".work/noncu-redispatch-20261025/modules/driver.mjs",
+        ".work/noncu-redispatch-20261025/modules/input-manifest.json"
+      ],
+      "reuse_refs": [
+        ".work/cu-closeout-20261024/root-C16-GF-native/handoff/moved-r6/project.json"
+      ],
+      "preparation": [
+        "先区分九类声明能力、module category、工程内嵌业务角色和几何节点；逐项对照原九类协议、精确id/version及实际采用消费者，cases按对象读取。",
+        "只用现存已交付输入。若原九类作者案例输入缺失则先补原输入/采用消费者，不凭文件夹名或节点数补填。"
+      ],
+      "remaining_execution": [],
+      "completion_evidence": [
+        "九类能力与最终工程实际使用的类别分开列明；生成声明/外观/隔离周期及运行结果各取实际证据。"
+      ],
+      "method_update_is_not_actual_execution": true,
+      "execution_status": [
+        "not_required_for_current_v1_exit_by_user"
+      ],
+      "active_for_current_v1_exit": false
+    },
+    "release_reception": {
+      "title": "原release出口归并",
+      "original_owner": "P4-01",
+      "operator": "本窗口Root；本次不派发",
+      "readiness": "旧扩展方法仅保留历史。当前正常使用已收尾，见正常使用收尾.json。",
+      "entrypoints": [
+        "docs/04_开发与验收/整包派发/P3-01_整包执行.json",
+        "docs/04_开发与验收/整包派发/P1-04_整包执行.json",
+        "docs/04_开发与验收/整包派发/P1-05_整包执行.json"
+      ],
+      "reuse_refs": [
+        "output/playwright/20261026-P401-linked-reception/receipt.json",
+        ".work/cu-closeout-20261024/root-P401-native-reception/receipt.json"
+      ],
+      "preparation": [
+        "原四模板/16Run与关联普通消费者已收；不因依赖包status仍in_progress就重新做模板Native。"
+      ],
+      "remaining_execution": [],
+      "completion_evidence": [
+        "依赖出口真实闭合且范围/版本正确才关闭本门；零活动动作不等于已通过整包，也不增加测试。"
+      ],
+      "method_update_is_not_actual_execution": true,
+      "execution_status": [
+        "not_required_for_current_v1_exit_by_user"
+      ],
+      "active_for_current_v1_exit": false
+    },
+    "final_reconciliation": {
+      "title": "全技术出口复核",
+      "original_owner": "P5-01",
+      "operator": "本窗口Root；本次不派发",
+      "readiness": "旧扩展方法仅保留历史。当前正常使用已收尾，见正常使用收尾.json。",
+      "entrypoints": [
+        "docs/04_开发与验收/首版需求验收追踪.json",
+        "docs/01_业务需求/非功能需求与测量验收.json",
+        "docs/04_开发与验收/实现阶段完成度.json"
+      ],
+      "reuse_refs": [
+        "docs/04_开发与验收/并行重组/20261025_非CU重新派发/native-reception-45.json",
+        "output/playwright/20261026-C55-NFR05/receipt.json",
+        "output/playwright/20261026-C56-NFR11-delivery/receipt.json"
+      ],
+      "preparation": [
+        "每个原出口读取主责有效回执/版本/条件与未通过项；目录/程序存在不能代实际运行。"
+      ],
+      "remaining_execution": [],
+      "completion_evidence": [
+        "原21包/68步/7后置与50/30/20、5分粒度保持；只有全部适用非人工技术要求有证据才到100%，不按清单条数加分。"
+      ],
+      "method_update_is_not_actual_execution": true,
+      "execution_status": [
+        "not_required_for_current_v1_exit_by_user"
+      ],
+      "active_for_current_v1_exit": false
+    },
+    "final_materials": {
+      "title": "最终候选与三材料差额",
+      "original_owner": "P5-01",
+      "operator": "本窗口Root；本次不派发",
+      "readiness": "旧扩展方法仅保留历史。当前正常使用已收尾，见正常使用收尾.json。",
+      "entrypoints": [
+        "tools/release-preparation/source_delivery.py",
+        "tools/release-preparation/native_delivery.py",
+        "tools/release-preparation/test_source_delivery.py",
+        "docs/04_开发与验收/官方提交物交付口径.json"
+      ],
+      "reuse_refs": [
+        ".work/cu-closeout-20261024/root-C17-delivery-reception/receipt.json",
+        ".work/noncu-redispatch-20261025/reporting/receipt.json"
+      ],
+      "preparation": [
+        "先冻结最终实际版本及功能差异，不每候选重新打包/重录；纯方法文档更新不构建产品。"
+      ],
+      "remaining_execution": [],
+      "completion_evidence": [
+        "本地技术交付/说明一致；人签、可访问发布及报名发送另列，不写成本地自动化通过。"
+      ],
+      "method_update_is_not_actual_execution": true,
+      "execution_status": [
+        "not_required_for_current_v1_exit_by_user"
+      ],
+      "active_for_current_v1_exit": false
+    }
+  },
+  "execution_constraints": {
+    "operator": "当前窗口Root",
+    "new_agents_or_windows": false,
+    "computer_use": false,
+    "speed_1_5x": false,
+    "interrupt_other_windows": false,
+    "product_build_for_this_document_update": false,
+    "resume_paused_automation_for_this_update": false,
+    "window_placement": "启动验收/验证/演示/预览窗口前检测当前连接显示器及主屏标记；双屏放非主屏，单屏放主屏。仅移动任务窗口，不更改系统主屏；窗口就位后实测DPI/DPR/画布尺寸，不用emulation伪造。",
+    "document_update_only": true
+  },
+  "runtime_checkpoint": {
+    "at": "2026-10-26T13:54:43.207734+00:00",
+    "candidate": "C57",
+    "status": "normal_use_smoke_complete_both_processes_closed",
+    "pids": [
+      121236,
+      89304
+    ],
+    "port_27106": "released",
+    "active_collector": false,
+    "ref": "output/playwright/20261026-v1-usable-closeout/receipt.json"
+  },
+  "reuse_completed": [
+    {
+      "scope": "NFR05@C55完整40次与批准的帧端点绑定",
+      "receipt_ref": "output/playwright/20261026-C55-NFR05/receipt.json",
+      "repeat": false
+    },
+    {
+      "scope": "NFR06@C53完整六组，C42历史另保留",
+      "receipt_ref": ".work/parallel-closeout-20261024/native/NFR06-C53-Native.json",
+      "repeat": false
+    },
+    {
+      "scope": "C55 NFR03有效首100次；不是完整1800次",
+      "receipt_ref": "output/playwright/20261026-C55-NFR03-balanced-select-round1/receipt.json",
+      "repeat": false
+    },
+    {
+      "scope": "C56报告三态与实际阶段进度；不是完整NFR04/11",
+      "receipt_ref": "output/playwright/20261026-C56-NFR11-delivery/receipt.json",
+      "repeat": false
+    },
+    {
+      "scope": "已搬移HTML与215秒真实播放器",
+      "receipt_ref": ".work/noncu-redispatch-20261025/reporting/receipt.json",
+      "repeat": false
+    },
+    {
+      "scope": "原选28款MQ/三gate/发布，500扩展隔离",
+      "receipt_ref": "output/playwright/20261026-MQ-equipment-waits/receipt.json",
+      "repeat": false
+    },
+    {
+      "scope": "C57同候选报告三态/35文件；不代NFR04正式测量或全NFR11",
+      "receipt_ref": "output/playwright/20261026-C57-NFR11-report/receipt.json",
+      "repeat": false
+    },
+    {
+      "scope": "NFR11@C57媒体/交付/归属三子组，五格式与三态按实际层次接收",
+      "receipt_ref": "output/playwright/20261026-C57-NFR11-cross-media/NFR11-C57-acceptance.json",
+      "repeat": false
+    },
+    {
+      "scope": "C57原phase_calendar详细动画与人员显示独立性，非完整NFR09",
+      "receipt_ref": "output/playwright/20261026-C57-NFR09-staff-animation/receipt.json",
+      "repeat": false
+    }
+  ],
+  "latest_C57_bounded_NFR11_ref": "output/playwright/20261026-C57-NFR11-package/receipt.json",
+  "method_update_scope": "当前14条原剩余映射的方法；NFR09完整接收并移入复用，不改变原21/68/7和阈值。",
+  "current_stage": "v1_normal_use_closed",
+  "current_NFR03_parameter_pilot_ref": "output/playwright/20261026-C55-NFR03-remaining/balanced-parameter-pilot/pilot-reception.json",
+  "current_NFR03_parameter_formal_attempt_ref": "output/playwright/20261026-C55-NFR03-remaining/balanced-parameter-r1/bounded-reception.json",
+  "latest_NFR03_selection_group_reception_ref": "output/playwright/20261026-C55-NFR03-remaining/selection-six-group-reception.json",
+  "historical_formal_coverage": [
+    {
+      "task_id": "P0-01",
+      "remaining_index": 0,
+      "within_original_step": 2,
+      "source_ref": "docs/04_开发与验收/整包派发/P0-01_整包执行.json#/sequential_closeout/remaining_work/0",
+      "gap": "C55原选择六组600次全部通过（各组p95=18.470/22.713/25.481/49.182/44.091/50.523ms），均衡参数首轮100次p95=190.677ms。累计700/1800，余6组详情、5组参数共1100次；完整NFR03仍未过。",
+      "routes": [
+        "native_ui",
+        "native_frames"
+      ],
+      "protocols": [
+        "NFR-03"
+      ],
+      "readiness": "C55原选择六组600次全部通过（各组p95=18.470/22.713/25.481/49.182/44.091/50.523ms），均衡参数首轮100次p95=190.677ms。累计700/1800，余6组详情、5组参数共1100次；完整NFR03仍未过。",
+      "execution_status": [
+        "partial700_of1800_remaining1100"
+      ]
+    },
+    {
+      "task_id": "P0-01",
+      "remaining_index": 1,
+      "within_original_step": 3,
+      "source_ref": "docs/04_开发与验收/整包派发/P0-01_整包执行.json#/sequential_closeout/remaining_work/1",
+      "gap": "真实离线新进程编辑/运行/保存/重开及四格式链尚未取证。",
+      "routes": [
+        "offline_process",
+        "filesystem_process"
+      ],
+      "protocols": [
+        "NFR-07"
+      ],
+      "readiness": "现有WSB脚本不是离线实测；上次WindowsSandbox.exe缺失、Hyper-V访问拒绝。先核对是否已有可用隔离环境，不自行安装组件或修改安全/ACL。",
+      "execution_status": [
+        "e",
+        "n",
+        "v",
+        "i",
+        "r",
+        "o",
+        "n",
+        "m",
+        "e",
+        "n",
+        "t",
+        "_",
+        "b",
+        "l",
+        "o",
+        "c",
+        "k",
+        "e",
+        "d"
+      ]
+    },
+    {
+      "task_id": "P1-01",
+      "remaining_index": 0,
+      "within_original_step": 3,
+      "source_ref": "docs/04_开发与验收/整包派发/P1-01_整包执行.json#/sequential_closeout/remaining_work/0",
+      "gap": "NFR09@C57完整五子组已接收；仅余NFR-02原共享正式出口。",
+      "routes": [
+        "native_ui",
+        "real_host",
+        "gpu_visual"
+      ],
+      "protocols": [
+        "NFR-02"
+      ],
+      "readiness": "完整矩阵未通过；旧有效失败/帧身份不可判定保留。需实际参考显示条件、正确呈现身份及原相机脚本。",
+      "execution_status": [
+        "n",
+        "e",
+        "e",
+        "d",
+        "s",
+        "_",
+        "p",
+        "r",
+        "e",
+        "s",
+        "e",
+        "n",
+        "t",
+        "e",
+        "d",
+        "_",
+        "f",
+        "r",
+        "a",
+        "m",
+        "e",
+        "_",
+        "i",
+        "d",
+        "e",
+        "n",
+        "t",
+        "i",
+        "t",
+        "y",
+        "_",
+        "a",
+        "n",
+        "d",
+        "_",
+        "r",
+        "e",
+        "f",
+        "e",
+        "r",
+        "e",
+        "n",
+        "c",
+        "e",
+        "_",
+        "d",
+        "i",
+        "s",
+        "p",
+        "l",
+        "a",
+        "y"
+      ]
+    },
+    {
+      "task_id": "P2-01",
+      "remaining_index": 0,
+      "within_original_step": 3,
+      "source_ref": "docs/04_开发与验收/整包派发/P2-01_整包执行.json#/sequential_closeout/remaining_work/0",
+      "gap": "NFR-02原48窗口完整组未通过；先核对同候选真实呈现帧与参考显示环境，再完成原FPS矩阵。",
+      "routes": [
+        "native_frames",
+        "gpu_visual"
+      ],
+      "protocols": [
+        "NFR-02"
+      ],
+      "readiness": "完整矩阵未通过；旧有效失败/帧身份不可判定保留。需实际参考显示条件、正确呈现身份及原相机脚本。",
+      "execution_status": [
+        "n",
+        "e",
+        "e",
+        "d",
+        "s",
+        "_",
+        "p",
+        "r",
+        "e",
+        "s",
+        "e",
+        "n",
+        "t",
+        "e",
+        "d",
+        "_",
+        "f",
+        "r",
+        "a",
+        "m",
+        "e",
+        "_",
+        "i",
+        "d",
+        "e",
+        "n",
+        "t",
+        "i",
+        "t",
+        "y",
+        "_",
+        "a",
+        "n",
+        "d",
+        "_",
+        "r",
+        "e",
+        "f",
+        "e",
+        "r",
+        "e",
+        "n",
+        "c",
+        "e",
+        "_",
+        "d",
+        "i",
+        "s",
+        "p",
+        "l",
+        "a",
+        "y"
+      ]
+    },
+    {
+      "task_id": "P2-03",
+      "remaining_index": 0,
+      "within_original_step": 2,
+      "source_ref": "docs/04_开发与验收/整包派发/P2-03_整包执行.json#/sequential_closeout/remaining_work/0",
+      "gap": "原工程接手正例、C53 NFR06六组及C55 NFR05完整40次已接收；仅共享NFR07真实全进程离线链仍未取证。",
+      "routes": [
+        "offline_process",
+        "filesystem_process"
+      ],
+      "protocols": [
+        "NFR-07"
+      ],
+      "readiness": "现有WSB脚本不是离线实测；上次WindowsSandbox.exe缺失、Hyper-V访问拒绝。先核对是否已有可用隔离环境，不自行安装组件或修改安全/ACL。",
+      "execution_status": [
+        "e",
+        "n",
+        "v",
+        "i",
+        "r",
+        "o",
+        "n",
+        "m",
+        "e",
+        "n",
+        "t",
+        "_",
+        "b",
+        "l",
+        "o",
+        "c",
+        "k",
+        "e",
+        "d"
+      ]
+    },
+    {
+      "task_id": "P3-02",
+      "remaining_index": 0,
+      "within_original_step": 3,
+      "source_ref": "docs/04_开发与验收/整包派发/P3-02_整包执行.json#/sequential_closeout/remaining_work/0",
+      "gap": "NFR11@C57原三子组已完成；本步仅余共享NFR02正式FPS及NFR04受理/重叠矩阵。",
+      "routes": [
+        "native_ui",
+        "gpu_visual",
+        "filesystem_process"
+      ],
+      "protocols": [
+        "NFR-02",
+        "NFR-04"
+      ],
+      "readiness": "完整矩阵未通过；旧有效失败/帧身份不可判定保留。需实际参考显示条件、正确呈现身份及原相机脚本。；C57真实报告三态/35文件已记录，普通功能无需重复；四类正式受理/真实在途交互重叠驱动与同钟正确帧矩阵仍缺。",
+      "execution_status": [
+        "n",
+        "e",
+        "e",
+        "d",
+        "s",
+        "_",
+        "p",
+        "r",
+        "e",
+        "s",
+        "e",
+        "n",
+        "t",
+        "e",
+        "d",
+        "_",
+        "f",
+        "r",
+        "a",
+        "m",
+        "e",
+        "_",
+        "i",
+        "d",
+        "e",
+        "n",
+        "t",
+        "i",
+        "t",
+        "y",
+        "_",
+        "a",
+        "n",
+        "d",
+        "_",
+        "r",
+        "e",
+        "f",
+        "e",
+        "r",
+        "e",
+        "n",
+        "c",
+        "e",
+        "_",
+        "d",
+        "i",
+        "s",
+        "p",
+        "l",
+        "a",
+        "y",
+        "n",
+        "e",
+        "e",
+        "d",
+        "s",
+        "_",
+        "f",
+        "o",
+        "r",
+        "m",
+        "a",
+        "l",
+        "_",
+        "m",
+        "a",
+        "t",
+        "r",
+        "i",
+        "x",
+        "_",
+        "d",
+        "r",
+        "i",
+        "v",
+        "e",
+        "r"
+      ]
+    },
+    {
+      "task_id": "P3-03",
+      "remaining_index": 0,
+      "within_original_step": 3,
+      "source_ref": "docs/04_开发与验收/整包派发/P3-03_整包执行.json#/sequential_closeout/remaining_work/0",
+      "gap": "NFR09@C57完整五子组已接收；仅余NFR-02、NFR-04原共享正式出口。",
+      "routes": [
+        "native_ui",
+        "gpu_visual",
+        "real_host"
+      ],
+      "protocols": [
+        "NFR-02",
+        "NFR-04"
+      ],
+      "readiness": "完整矩阵未通过；旧有效失败/帧身份不可判定保留。需实际参考显示条件、正确呈现身份及原相机脚本。；C57真实报告三态/35文件已记录，普通功能无需重复；四类正式受理/真实在途交互重叠驱动与同钟正确帧矩阵仍缺。",
+      "execution_status": [
+        "n",
+        "e",
+        "e",
+        "d",
+        "s",
+        "_",
+        "p",
+        "r",
+        "e",
+        "s",
+        "e",
+        "n",
+        "t",
+        "e",
+        "d",
+        "_",
+        "f",
+        "r",
+        "a",
+        "m",
+        "e",
+        "_",
+        "i",
+        "d",
+        "e",
+        "n",
+        "t",
+        "i",
+        "t",
+        "y",
+        "_",
+        "a",
+        "n",
+        "d",
+        "_",
+        "r",
+        "e",
+        "f",
+        "e",
+        "r",
+        "e",
+        "n",
+        "c",
+        "e",
+        "_",
+        "d",
+        "i",
+        "s",
+        "p",
+        "l",
+        "a",
+        "y",
+        "n",
+        "e",
+        "e",
+        "d",
+        "s",
+        "_",
+        "f",
+        "o",
+        "r",
+        "m",
+        "a",
+        "l",
+        "_",
+        "m",
+        "a",
+        "t",
+        "r",
+        "i",
+        "x",
+        "_",
+        "d",
+        "r",
+        "i",
+        "v",
+        "e",
+        "r"
+      ]
+    },
+    {
+      "task_id": "P4-01",
+      "remaining_index": 0,
+      "within_original_step": 3,
+      "source_ref": "docs/04_开发与验收/整包派发/P4-01_整包执行.json#/sequential_closeout/remaining_work/0",
+      "gap": "四模板及P3-01/P1-04/P1-05关联普通消费者均已接收；仅三个原包正式release依赖与适用整体出口未关闭，无新增模板Native动作。",
+      "routes": [
+        "reconcile"
+      ],
+      "protocols": [
+        "release_reception"
+      ],
+      "readiness": "不需新增模板测试；按各原包适用出口作证据审查，尚缺共享出口继续引用原主责。",
+      "execution_status": [
+        "e",
+        "v",
+        "i",
+        "d",
+        "e",
+        "n",
+        "c",
+        "e",
+        "_",
+        "r",
+        "e",
+        "v",
+        "i",
+        "e",
+        "w",
+        "_",
+        "o",
+        "n",
+        "l",
+        "y",
+        "_",
+        "w",
+        "a",
+        "i",
+        "t",
+        "_",
+        "s",
+        "h",
+        "a",
+        "r",
+        "e",
+        "d",
+        "_",
+        "e",
+        "x",
+        "i",
+        "t",
+        "s"
+      ]
+    },
+    {
+      "task_id": "P2-06",
+      "remaining_index": 0,
+      "within_original_step": 2,
+      "source_ref": "docs/04_开发与验收/整包派发/P2-06_整包执行.json#/sequential_closeout/remaining_work/0",
+      "gap": "C57报告/封装三态与NFR11已接收；余NFR04原正式受理、在途交互和取消完成竞争完整组。",
+      "routes": [
+        "native_frames",
+        "filesystem_process",
+        "native_lifecycle"
+      ],
+      "protocols": [
+        "NFR-04"
+      ],
+      "readiness": "C57真实报告三态/35文件已记录，普通功能无需重复；四类正式受理/真实在途交互重叠驱动与同钟正确帧矩阵仍缺。",
+      "execution_status": [
+        "n",
+        "e",
+        "e",
+        "d",
+        "s",
+        "_",
+        "f",
+        "o",
+        "r",
+        "m",
+        "a",
+        "l",
+        "_",
+        "m",
+        "a",
+        "t",
+        "r",
+        "i",
+        "x",
+        "_",
+        "d",
+        "r",
+        "i",
+        "v",
+        "e",
+        "r"
+      ]
+    },
+    {
+      "task_id": "P3-04",
+      "remaining_index": 0,
+      "within_original_step": 2,
+      "source_ref": "docs/04_开发与验收/整包派发/P3-04_整包执行.json#/sequential_closeout/remaining_work/0",
+      "gap": "最终生成工程九类声明、设备实例、时间轴/标签与实际采用之间尚缺逐项普通Native接收归并。",
+      "routes": [
+        "native_ui",
+        "gpu_visual",
+        "real_host"
+      ],
+      "protocols": [
+        "generated_consumers"
+      ],
+      "readiness": "现有GF最终工程仅3个module category；应对照原九类能力契约逐类查实际采用和消费者，不能由3类别直接判失败，也不能由9几何节点判通过。",
+      "execution_status": [
+        "n",
+        "e",
+        "e",
+        "d",
+        "s",
+        "_",
+        "c",
+        "a",
+        "t",
+        "e",
+        "g",
+        "o",
+        "r",
+        "y",
+        "_",
+        "t",
+        "o",
+        "_",
+        "a",
+        "c",
+        "t",
+        "u",
+        "a",
+        "l",
+        "_",
+        "c",
+        "o",
+        "n",
+        "s",
+        "u",
+        "m",
+        "e",
+        "r",
+        "_",
+        "m",
+        "a",
+        "p",
+        "p",
+        "i",
+        "n",
+        "g"
+      ]
+    },
+    {
+      "task_id": "P3-04",
+      "remaining_index": 1,
+      "within_original_step": 3,
+      "source_ref": "docs/04_开发与验收/整包派发/P3-04_整包执行.json#/sequential_closeout/remaining_work/1",
+      "gap": "适用NFR-04/07/08与原release依赖尚未完整接收；GF已过直交/修正/报告不重跑。",
+      "routes": [
+        "native_ui",
+        "offline_process",
+        "native_frames",
+        "reconcile"
+      ],
+      "protocols": [
+        "NFR-04",
+        "NFR-07",
+        "NFR-08",
+        "final_reconciliation"
+      ],
+      "readiness": "C57真实报告三态/35文件已记录，普通功能无需重复；四类正式受理/真实在途交互重叠驱动与同钟正确帧矩阵仍缺。；现有WSB脚本不是离线实测；上次WindowsSandbox.exe缺失、Hyper-V访问拒绝。先核对是否已有可用隔离环境，不自行安装组件或修改安全/ACL。；已核对C50真实stdio桥/DOM授权、双向同字段冲突、完整旧Run及三分支切换。仅补同C50候选的旧外部会话切换后授权/回调归属；C22六类拒绝保留历史，不跨候选冒充整组。；可随真实回执增量归并；最终关闭仍等待原适用SF/IX/NFR/MQ齐全。",
+      "execution_status": [
+        "n",
+        "e",
+        "e",
+        "d",
+        "s",
+        "_",
+        "f",
+        "o",
+        "r",
+        "m",
+        "a",
+        "l",
+        "_",
+        "m",
+        "a",
+        "t",
+        "r",
+        "i",
+        "x",
+        "_",
+        "d",
+        "r",
+        "i",
+        "v",
+        "e",
+        "r",
+        "e",
+        "n",
+        "v",
+        "i",
+        "r",
+        "o",
+        "n",
+        "m",
+        "e",
+        "n",
+        "t",
+        "_",
+        "b",
+        "l",
+        "o",
+        "c",
+        "k",
+        "e",
+        "d",
+        "c",
+        "o",
+        "v",
+        "e",
+        "r",
+        "a",
+        "g",
+        "e",
+        "_",
+        "r",
+        "e",
+        "v",
+        "i",
+        "e",
+        "w",
+        "_",
+        "t",
+        "h",
+        "e",
+        "n",
+        "_",
+        "m",
+        "i",
+        "s",
+        "s",
+        "i",
+        "n",
+        "g",
+        "_",
+        "c",
+        "a",
+        "s",
+        "e",
+        "s",
+        "_",
+        "o",
+        "n",
+        "l",
+        "y",
+        "i",
+        "n",
+        "c",
+        "r",
+        "e",
+        "m",
+        "e",
+        "n",
+        "t",
+        "a",
+        "l",
+        "_",
+        "e",
+        "v",
+        "i",
+        "d",
+        "e",
+        "n",
+        "c",
+        "e",
+        "_",
+        "r",
+        "e",
+        "v",
+        "i",
+        "e",
+        "w",
+        "_",
+        "w",
+        "a",
+        "i",
+        "t",
+        "_",
+        "s",
+        "h",
+        "a",
+        "r",
+        "e",
+        "d",
+        "_",
+        "e",
+        "x",
+        "i",
+        "t",
+        "s"
+      ]
+    },
+    {
+      "task_id": "P4-02",
+      "remaining_index": 0,
+      "within_original_step": 2,
+      "source_ref": "docs/04_开发与验收/整包派发/P4-02_整包执行.json#/sequential_closeout/remaining_work/0",
+      "gap": "三条实际呈现补测与预取消入口审查已接收；本原步骤仅余共享NFR04受理/重叠/进度/取消正式组。",
+      "routes": [
+        "native_frames",
+        "native_ui",
+        "real_host"
+      ],
+      "protocols": [
+        "NFR-04"
+      ],
+      "readiness": "C57真实报告三态/35文件已记录，普通功能无需重复；四类正式受理/真实在途交互重叠驱动与同钟正确帧矩阵仍缺。",
+      "execution_status": [
+        "n",
+        "e",
+        "e",
+        "d",
+        "s",
+        "_",
+        "f",
+        "o",
+        "r",
+        "m",
+        "a",
+        "l",
+        "_",
+        "m",
+        "a",
+        "t",
+        "r",
+        "i",
+        "x",
+        "_",
+        "d",
+        "r",
+        "i",
+        "v",
+        "e",
+        "r"
+      ]
+    },
+    {
+      "task_id": "P5-01",
+      "remaining_index": 0,
+      "within_original_step": 2,
+      "source_ref": "docs/04_开发与验收/整包派发/P5-01_整包执行.json#/sequential_closeout/remaining_work/0",
+      "gap": "17SF/3IX/适用NFR/MQ最终技术出口仍缺样本；本包仅汇总主责有效结果。",
+      "routes": [
+        "reconcile"
+      ],
+      "protocols": [
+        "final_reconciliation"
+      ],
+      "readiness": "可随真实回执增量归并；最终关闭仍等待原适用SF/IX/NFR/MQ齐全。",
+      "execution_status": [
+        "i",
+        "n",
+        "c",
+        "r",
+        "e",
+        "m",
+        "e",
+        "n",
+        "t",
+        "a",
+        "l",
+        "_",
+        "e",
+        "v",
+        "i",
+        "d",
+        "e",
+        "n",
+        "c",
+        "e",
+        "_",
+        "r",
+        "e",
+        "v",
+        "i",
+        "e",
+        "w",
+        "_",
+        "w",
+        "a",
+        "i",
+        "t",
+        "_",
+        "s",
+        "h",
+        "a",
+        "r",
+        "e",
+        "d",
+        "_",
+        "e",
+        "x",
+        "i",
+        "t",
+        "s"
+      ]
+    },
+    {
+      "task_id": "P5-01",
+      "remaining_index": 1,
+      "within_original_step": 3,
+      "source_ref": "docs/04_开发与验收/整包派发/P5-01_整包执行.json#/sequential_closeout/remaining_work/1",
+      "gap": "最终技术候选未冻结，冻结时需一次核对C17三材料与后续修复差异。",
+      "routes": [
+        "reconcile"
+      ],
+      "protocols": [
+        "final_materials"
+      ],
+      "readiness": "待最终技术候选冻结后一次执行；C17现存本地材料和215秒播放器结果直接复用。",
+      "execution_status": [
+        "w",
+        "a",
+        "i",
+        "t",
+        "_",
+        "f",
+        "i",
+        "n",
+        "a",
+        "l",
+        "_",
+        "c",
+        "a",
+        "n",
+        "d",
+        "i",
+        "d",
+        "a",
+        "t",
+        "e",
+        "_",
+        "t",
+        "h",
+        "e",
+        "n",
+        "_",
+        "d",
+        "i",
+        "f",
+        "f",
+        "e",
+        "r",
+        "e",
+        "n",
+        "c",
+        "e",
+        "_",
+        "o",
+        "n",
+        "l",
+        "y"
+      ]
+    }
+  ],
+  "current_acceptance_policy_ref": "docs/04_开发与验收/正常使用收尾.json",
+  "current_exit_rule": "仅典型正常使用，原正式矩阵不再是v1出口；不恢复旧压力任务。"
+}

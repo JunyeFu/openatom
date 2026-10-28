@@ -1,0 +1,387 @@
+{
+  "document_kind": "equipment_model_quality_design_requirement",
+  "date": "2026-10-27",
+  "spec_md_ref": "docs/02_交互设计/设备建模精度与表现验收规范.md",
+  "authority": "用户要求：设备的建模精度要求和之前的8设备流水线一致，统一在各设计文件中给出一致的建模要求",
+  "status": "current_required_quality_not_asset_acceptance",
+  "reference": {
+    "line": "L03八设备修正后实际GLB与动作试样",
+    "source_ref": "tools/3d-proof/README.md",
+    "definition_ref": "packages/module-kit/demo-equipment/README.md",
+    "actual_geometry_directory": "tools/3d-proof/output/",
+    "device_ids": [
+      "ASM01",
+      "R01",
+      "CV01",
+      "V01",
+      "RW01",
+      "CV02",
+      "PK01",
+      "CASE01"
+    ],
+    "resource_ids": [
+      "PAL01"
+    ],
+    "geometry_reuse": "RW01/PK01可复用装配台几何但保留独立定义/实例/行为；CV01/CV02独立实例",
+    "AI_reference_role": "原AI设备/产线图继续作为轮廓/材质/细节风格目标，实际GLB与同源动作是可执行比较标尺",
+    "known_remaining_details": [
+      "精确夹紧机构",
+      "标准型材截面",
+      "导轨/驱动总成",
+      "真实材质与标识",
+      "机器人壳体曲面与线缆",
+      "人员/服饰及物料箭头/业务标签"
+    ],
+    "known_gap_policy": "旧试样缺口保留待补，不作为新模型允许同类缺陷或全部已验收的依据"
+  },
+  "applicability": {
+    "required": "全部内置/交付演示及标为详细完整设备的新模型，在结构、装配细节、材质和动作可解释度上与该线同等级",
+    "same_grade_not_identical_geometry": "不同类别按实际构造，不要求同外壳/面数/节点数/贴图分辨率",
+    "current_small_fixtures": "P302受控66节点、编辑教学简模、方块或图片代理不成为详细档新标准",
+    "user_assets": "仍可显式使用照片/GIF/简模或不符合详细验收的用户素材，标明类型/未验收，不冒充官方详细质量",
+    "professional_geometry": "本标准不改纸包装制造公差、工业设备测量、标定或通用运动学的证据边界"
+  },
+  "requirements": [
+    {
+      "dimension": "整体与尺度",
+      "required": "同八设备的完整轮廓、合理比例与接地；声明单位/朝向/原点，工件、工装、夹爪及端口按同一尺度",
+      "review": "同一版本的斜视/正面/背面/底部/工装近景",
+      "id": "MQ-01"
+    },
+    {
+      "dimension": "完整结构",
+      "required": "机架/底座/脚垫或调平/横撑/台面/罩壳背底按实际构造完整，无缺面、悬空、明显穿插或伪接触",
+      "review": "自由环绕与底部检查",
+      "id": "MQ-02"
+    },
+    {
+      "dimension": "关键机构",
+      "required": "支撑、定位夹紧、导轨滑台、驱动传动、执行头或夹爪、输送检测封箱部件按实际类别实现，不适用具名说明",
+      "review": "近景说明所声明作业怎样执行",
+      "id": "MQ-03"
+    },
+    {
+      "dimension": "装配细部",
+      "required": "灯塔/面板/传感器/电机/灯环有安装支撑，线束拖链及卡箍连续并合理随动，必要螺钉/连接板/槽线/接缝可辨",
+      "review": "不重新引入旧八设备12类修正缺陷",
+      "id": "MQ-04"
+    },
+    {
+      "dimension": "材质与表面",
+      "required": "区分金属塑料橡胶纸箱，倒角/粗糙度/法线或等效表面/接缝/必要标识达到相同等级",
+      "review": "相同照明尺度的对应类别比较，非统一贴图或面数门槛",
+      "id": "MQ-05"
+    },
+    {
+      "dimension": "层级与动作",
+      "required": "活动件命名及父子层级正确，执行声明动作，附属件随动，不以整机平移冒充机构",
+      "review": "开始/中段/完成/反向seek，无累计变形或脱离",
+      "id": "MQ-06"
+    },
+    {
+      "dimension": "物品与接触",
+      "required": "工件、箱体、托盘支承夹取移交位置匹配，保留实际holder和包件内容关系",
+      "review": "上料/夹取/放下/入箱/封箱/接受，非通用碰撞求解声明",
+      "id": "MQ-07"
+    },
+    {
+      "dimension": "状态表现",
+      "required": "实际阶段/有效进度驱动；缺料、阶段等资源、途中中断、输出阻塞各自保持姿态",
+      "review": "同Run/Job/时点，观看不改生产，声明预览不伪造实际",
+      "id": "MQ-08"
+    }
+  ],
+  "scale_examples_not_thresholds": {
+    "assembly_triangles": 40492,
+    "assembly_mesh_nodes": 336,
+    "robot_triangles": 12124,
+    "robot_mesh_nodes": 116,
+    "shared_material_example": "修正后2K基础色/ORM/法线三图；只作规模参照，等效材质效果允许",
+    "not_acceptance_by_counts": true
+  },
+  "lod": {
+    "detailed": "完整同等级3D，设备详情与流水线近景使用精确同版本，不换低精度代理",
+    "simplified": "明确选择轻量几何，保持识别/方向/状态/必要动作，不称已通过详细资产验收",
+    "region": "真实分组聚合，保留身份和详情入口，不改运行/库存/轨道",
+    "image_or_missing": "显式图片/GIF/最低行为包继续可用，不能冒称完整详细3D",
+    "thresholds_unchanged_ref": "docs/02_交互设计/交互流程与视图导航.json#/lod_policy"
+  },
+  "performance": {
+    "spec_ref": "docs/01_业务需求/非功能需求与测量验收.json",
+    "benchmark_ref": "scenarios/非功能基准/benchmark.design.json",
+    "load_unchanged": "保留3厂房/60设备/3000身份、三档及30FPS/200ms/3秒的原性能协议；当前v1按正常使用收尾，不逐批恢复旧压力矩阵",
+    "current_exit_ref": "docs/04_开发与验收/正常使用收尾.json",
+    "detailed_assets": "用本规范合格且经认可的冻结详细资产，不删机构、换方块/简化或隐藏物品达标",
+    "failure": "如实报告实际结果与取舍，不自动降低详细质量"
+  },
+  "delivery_and_acceptance": {
+    "assets": [
+      "实际模型和合法依赖",
+      "可编辑源或明确编辑范围",
+      "单位/朝向/原点",
+      "命名节点/动作和端口映射",
+      "许可",
+      "可重开样例"
+    ],
+    "separate_gates": [
+      "几何/层级检查",
+      "完整视角/近景/动作的画面质量认可",
+      "实际产品加载/保存重开",
+      "适用NFR与原release"
+    ],
+    "existing_wire_types_unchanged": true,
+    "new_public_operations": 0,
+    "actual_asset_acceptance": null,
+    "actual_Native_acceptance": null,
+    "human_acceptance": null,
+    "historical_results": "不修改局部JS/GLB、旧Run或原验收结果"
+  },
+  "current_markdown_consumers": [
+    "docs/00_项目基线/首版交付基线.md",
+    "docs/00_项目基线/首版需求与验收.md",
+    "docs/00_项目基线/全量设计编码确认选择.md",
+    "docs/00_项目基线/技术与经济可行性.md",
+    "docs/01_业务需求/业务设计.md",
+    "docs/01_业务需求/非功能需求与测量验收.md",
+    "docs/02_交互设计/主流程与视图导航.md",
+    "docs/02_交互设计/自定义设备创作与采用.md",
+    "docs/02_交互设计/设备时间轴与标签设计.md",
+    "docs/02_交互设计/完整操作流程与方案交付.md",
+    "docs/02_交互设计/工业工作台母版与字段细化.md",
+    "docs/02_交互设计/连续任务与原型制作依据.md",
+    "docs/02_交互设计/首版表单与反馈.md",
+    "docs/03_架构与契约/模块设计.md",
+    "docs/03_架构与契约/九类模块清单与消费者.md",
+    "docs/03_架构与契约/九类协议与采用设计.md",
+    "docs/03_架构与契约/Agent设备生成契约.md",
+    "docs/03_架构与契约/目标驱动厂房生成.md",
+    "docs/03_架构与契约/全层组件与接点设计.md",
+    "docs/03_架构与契约/首版技术栈与部署设计.md",
+    "docs/03_架构与契约/全层类型与工程格式.md",
+    "docs/04_开发与验收/特征细化/DRF01_完整定义.md",
+    "docs/04_开发与验收/全量设计编码确认/SXX-XX_确认选择落实.md",
+    "docs/04_开发与验收/编码任务包/P2-01.md",
+    "docs/04_开发与验收/编码任务包/P3-02.md",
+    "docs/04_开发与验收/编码任务包/P3-03.md",
+    "docs/04_开发与验收/整包派发/P3-02_完整任务包.md",
+    "docs/04_开发与验收/整包派发/P3-03_完整任务包.md",
+    "packages/module-kit/demo-equipment/README.md",
+    "modules/media/README.md",
+    "modules/media/editable-bench/README.md",
+    "modules/devices/manual-assembly/README.md",
+    "../设计预览/当前交互规格.md",
+    "../设计预览/多层视图与对象设计.md",
+    "../设计预览/预览阅读说明.md",
+    "integrations/agent/skills/superfactory-workflow/SKILL.md",
+    "integrations/agent/skills/superfactory-workflow/references/equipment-modeling.md"
+  ],
+  "source_consistency_rule": "当前正文与设计JSON共同引用本规范；历史输出/复审/图像及tools/3d-proof源和实际结果保持原记录。",
+  "external_modeling": {
+    "permitted": true,
+    "authority": "2026-10-19用户允许提出外部建模支持要求，并要求明确且逐模型落实质量",
+    "workflow_ref": "integrations/agent/skills/superfactory-workflow/references/equipment-modeling.md",
+    "routes": [
+      "可编辑Blender源与Python/bpy制作后导出GLB",
+      "可复现参数化网格程序制作后导出GLB",
+      "其他合法工具制作的兼容GLB与可编辑源"
+    ],
+    "tool_readiness": "首次选择/更换工具时说明支持；已授权、已验证的工具链直接复用。工具配置不等于已连接，实际缺能力才说明缺什么。",
+    "no_new_permissions": "不自动购买服务、上传素材、安装工具、执行导入包内脚本或公开发布",
+    "loader_authority": "packages/presentation/src/glb.ts",
+    "loader_subset": {
+      "container": "self-contained GLB 2.0",
+      "geometry": "triangle meshes, named rigid nodes",
+      "images": "embedded PNG/JPEG",
+      "animation": "rigid transform clips; no skin/morph",
+      "extensions": [
+        "KHR_materials_unlit",
+        "KHR_texture_transform"
+      ]
+    },
+    "public_operations_added": 0,
+    "runtime_types_changed": false,
+    "exporter_primary_source": "https://github.com/KhronosGroup/glTF-Blender-IO/blob/main/docs/blender_docs/scene_gltf2.rst",
+    "source_checked_on": "2026-10-19"
+  },
+  "per_model_acceptance": {
+    "ledger_ref": "modules/media/model-quality-ledger.json",
+    "checker_ref": "tools/check_model_quality.py",
+    "inventory_roots": [
+      "modules",
+      "tools/3d-proof/output"
+    ],
+    "not_new_models": [
+      "historical scenarios",
+      "build output copies",
+      "independent working copies"
+    ],
+    "gates": [
+      "source_export",
+      "visual",
+      "platform_reopen"
+    ],
+    "required_dimensions": [
+      "MQ-01",
+      "MQ-02",
+      "MQ-03",
+      "MQ-04",
+      "MQ-05",
+      "MQ-06",
+      "MQ-07",
+      "MQ-08"
+    ],
+    "dimension_results": [
+      "pass",
+      "fail",
+      "pending",
+      "not_applicable"
+    ],
+    "not_applicable_requires": "按设备类别给理由和实际检查资料；不免除该素材适用的结构、比例、支承等要求",
+    "required_views": [
+      "isometric",
+      "front",
+      "back",
+      "left",
+      "right",
+      "top",
+      "bottom"
+    ],
+    "extra_captures": "关键机构及材质近景；适用的关键姿态、四类等待和反向回看",
+    "comparison": "实际GLB同版本、等效光照/观察尺度，对照原监督试样；不能只看外部工具渲染",
+    "renderer_failure": "外部表现合格而平台丢失材质/反射/接触层次，记录显示链路缺陷并保持平台接收待修",
+    "hard_gate": "任一适用项fail/pending或任一接收环节缺证据，不能称官方详细模型已通过；无加权分数或计数替代",
+    "fixture_policy": "测试/诊断文件保留原用途，不能因改名进入官方详细交付",
+    "review_record_contract": {
+      "asset_quality": "pending / accepted；accepted只由实际逐项审查填写，刷新不会自动接受",
+      "review": "null直到审查；审查对象包含以下字段",
+      "reviewed_file": "与model_path相同的仓库相对路径",
+      "file_revision": {
+        "bytes": "observed.bytes",
+        "modified_ns": "observed.modified_ns"
+      },
+      "reviewer": "真实审查者及AI或真人身份",
+      "reviewed_at": "实际审查日期时间",
+      "open_defects": "仍有缺陷则具名列出；完整接收须为空数组",
+      "gates": {
+        "source_export": {
+          "result": "pass / fail / pending",
+          "evidence": "非空的实际资料相对路径数组"
+        },
+        "visual": {
+          "result": "pass / fail / pending",
+          "evidence": "非空的实际资料相对路径数组"
+        },
+        "platform_reopen": {
+          "result": "pass / fail / pending",
+          "evidence": "非空的实际资料相对路径数组"
+        }
+      },
+      "dimensions": "按MQ-01到MQ-08记录result、reason和非空evidence数组；pass或具名not_applicable才可接收",
+      "views": "七个required_views分别映射不同的实际截图文件路径",
+      "closeups": "关键机构/材质近景路径数组",
+      "motion_evidence": "动作及等待资料路径数组；MQ-06具名not_applicable时可不提供",
+      "human_acceptance": "独立记录；AI审查不自动填写真人认可",
+      "reference_comparison": {
+        "reference_files": "实际参照GLB/画面路径数组",
+        "evidence": "等效视角光照下的对照与缺陷审查文件路径数组",
+        "conclusion": "逐项说明达到同等级或仍有差距，不以计数代替"
+      }
+    },
+    "refresh_policy": "新增登记pending；该文件变化时更新观察值并重审实际受影响部分，未变设备和运行内核证据复用；镜头/文案不撤销未变模型认可，旧结果保留。",
+    "release_command": "python tools/check_model_quality.py --release-catalog <actual-module-registration.json>",
+    "release_scope": "检查实际register_order清单中的精确模块ID/版本及所声明GLB，不要求返修所有未选历史文件",
+    "inventory_check_not_acceptance": true,
+    "product_auto_import_gate_implemented": false,
+    "private_user_assets_still_allowed": true,
+    "human_approval_not_fabricated": true,
+    "existing_native_nfr_release_gates_unchanged": true,
+    "efficient_batch_profile": "新批显式选择simulation-efficient-v1；源/视觉/平台三门及逐设备MQ八维度保持。Host逐台全工况；Native与两进程读回可按明确同族声明复用三类等待，逐台normal/output-wait/特殊工况和全部当前资产保留。"
+  },
+  "efficient_modeling": {
+    "profile": "simulation-efficient-v1",
+    "authority": "2026-10-27用户再次明确允许损失少量精准度换取大效率提升",
+    "default_for_new_batches": true,
+    "visual_baseline": "保持L03整体轮廓、比例、材质层次、主要支承及可辨识工艺；允许少量可见几何精准度损失，不复刻制造过程；MQ八维度保持。",
+    "mechanical_contact_reference_m": null,
+    "thin_workpiece_reference": "先以实际近景确认支承和移交；薄纸/胶带可用贴花或薄片，不默认按厚度推导容差。仅对已发现局部问题计算必要间隙，可见缺陷仍须修复。",
+    "fold_subdivisions": [
+      4,
+      8
+    ],
+    "visual_material_diagnostic_relative_error": null,
+    "material_mesh_volume_gate_required": false,
+    "animation_samples_reference": null,
+    "precision_priority": "业务数据准确；L03轮廓、材质、支承、关键机构和可见动作清楚；非关键制造细节近似或省略。数值诊断仅处理已观察缺陷，无默认微观误差门槛。",
+    "rigid_animation": "固定示例路径默认预设/烘焙关键姿态，取放点对齐、层级连续、工件随工具；中段平滑近似。不默认实现IK、真实逐轴加减速或连续碰撞。每线性段只留端点与抓放/停顿边界，旋转补足路径；状态服从实际阶段和holder。",
+    "fold_representation": "默认整体工件、刚性板片或加工前后状态网格；需要可见弯曲再用少量段，4–8仅为起步参考。多纸层可用整体厚度和边缘层线，蜂窝内部用孔格纹理/代表截面，不逐壁贴胶。",
+    "first_preview_prompt_minutes": [
+      10,
+      15
+    ],
+    "noncritical_detail_stop": "约5分钟或一次局部修正无明显可见/业务收益立即采用简单表示；正常产线及单设备完整视图可辨即停止，不因继续放大追加精修。实质缺陷须修，次要近似不算缺陷。",
+    "family_selection": "成熟机构每批参考6–10种，只写差异；新机构先1–2种代表机。复用现成工具，新批用共享capture-batch入口，不逐批复制包装脚本或建设新的夹具平台。",
+    "hidden_details": "正常操作视距不可见且不影响设备理解的细节默认不建；固定件可合并，主要服务线束可成束，隐藏机构用具名封闭总成；不逐螺纹、纤芯或内部流道",
+    "batch_size_reference": [
+      6,
+      10
+    ],
+    "order": [
+      "definition_and_family",
+      "coarse_business_and_staging",
+      "representative_detail_and_variants",
+      "freeze_once_and_accept",
+      "publish_once"
+    ],
+    "required_host_conditions": [
+      "normal",
+      "missing",
+      "phase-wait",
+      "interrupted",
+      "output-wait"
+    ],
+    "auxiliary_condition": "missing-auxiliary when applicable",
+    "Native_frames_reference": "每台normal、output-wait及所有适用特殊工况实际Native一帧；仅共用执行/等待驱动、身份规则及阶段/holder/anchor绑定的同族成员可复用代表机missing、phase-wait、interrupted。新增驱动/绑定/路由或观测差异独立验；未配置复用则逐台全工况。",
+    "persistence": "整批一次普通UI保存及一个新进程重开，覆盖全部当前资产精确版本；两进程读回每台normal/output-wait/特殊工况及代表机三类共享等待。不伪称成员等待逐台实测。",
+    "source_rebuild": "稳定后一次源重开/再导出；冻结后只再导出实际改变的包，未改设备/物品包不重建。",
+    "exact_invariants": [
+      "definition_identity",
+      "quantities_and_origins",
+      "quality_routes",
+      "holder",
+      "simulation_clock_and_wait_recovery",
+      "saved_asset_integrity",
+      "permissions"
+    ],
+    "reuse": "一台几何改变仅复验其画面/接触和保存当前资产；未改业务断言、其他设备/物品包和运行内核复用。新媒体需新Run时只重算受影响场景，不能把旧图改称新修订。",
+    "historical_acceptance_unchanged": true,
+    "formal_NFR_unchanged": true,
+    "formal_NFR_scope": "保留历史协议和实际结果；当前v1出口按正常使用收尾，不以建模批次恢复已取消的压力或穷尽矩阵",
+    "throughput_measure": "只在原批记录顺手记已知起止时间与实际接收数，未知留空；不新建追踪系统、不用文件时间倒算。候选生成与正式接收不同口径，拍摄量减少不代表已测得端到端倍数。",
+    "workflow_ref": "docs/04_开发与验收/项目搭建与执行工作流.md",
+    "review_config_field": "acceptance-input.json.modeling_profile",
+    "frozen_run_binding": "不能把旧Run视图改称新修订；平台不支持同Run重绘新媒体时重算受影响场景，未变素材/内核证据仍可复用。",
+    "capture_tool_ref": "tools/3d-proof/native500/capture-batch.mjs",
+    "capture_default": "共享入口views：两个LOD保留七向图，详细档一张机构近景；可选设备做局部重拍并写独立selected回执。额外近景仅为具体未明问题补拍；历史完整模式保留。",
+    "numerical_diagnostics": "接触间隙、材料网格误差及采样数不设默认验收阈值；只为已见缺陷做最小局部诊断。实际业务规格、数量、来源、持有、时钟和保存保持精确。",
+    "manufacturing_representation": "孔壁、纸层、订丝弯脚、重复线圈、胶层、封闭传动可用整体网格、重复件、纹理或加工前后状态；主工作头和成品可辨，可数主要结构不与定义矛盾。无需逐步钻穿、穿圈、弯脚或材料形变推导。",
+    "visible_defect_boundary": "采用允许的简化表示、近景可见非关键几何近似本身不算缺陷；明显悬空、主机构断开、工件明显穿透/丢失/复制、错误成品/业务或材质丢失须修。正常产线及单设备完整视图清楚后停止细化，不因继续放大追加微观精修。",
+    "native_wait_reuse": {
+      "config_field": "acceptance-input.json.native_wait_reuse",
+      "shape": "member_id: {representative: device_id, basis: shared actual behavior/wait driver and phase/holder/anchor bindings}",
+      "shared_conditions": [
+        "missing",
+        "phase-wait",
+        "interrupted"
+      ],
+      "per_device_native": [
+        "normal",
+        "output-wait",
+        "all additional applicable conditions"
+      ],
+      "host_per_device_coverage_unchanged": true,
+      "not_allowed": "新增机构驱动、绑定/路由或已有差异；代表机不得递归复用，异身份规则不能复用",
+      "record": "quality-review.json保留复用声明，未执行的成员Native等待不记单独通过"
+    },
+    "native_plan_selection": "Host生成完整native-plan.json后，acceptance_profiles.py <批号>写native-plan-selected.json；launch-native.ps1 -PlanFile及两普通进程native-proof.mjs末参数使用同一所选计划；完整Run/计划保留。"
+  }
+}

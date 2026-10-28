@@ -1,0 +1,39 @@
+{
+  "review_batch": "B02-Q02",
+  "formal_count_added": 0,
+  "issues": [
+    {
+      "id": "Q02-FOLD-01",
+      "devices": [
+        "paper-unwinder",
+        "paper-rewinder"
+      ],
+      "status": "resolved",
+      "requirement": "明确30m连续纸幅与紧凑折叠形态的物理关系；补齐放卷后往复收集机构及连续折边/取纸路径，使纸材端点随真实Job阶段与机构保持接触。当前离散叠层不足以单独证明连续纸幅收集/展开。",
+      "next_evidence": "更新源、双LOD/纸材重导出与接触检查，真实Native完整60状态重拍，逐机MQ复核。",
+      "resolution": "增加齿条驱动往复导槽、59个连续折边；30m中心线、源级40个和实际产品解码40个正反接触时点通过，最新完整60个Native业务画面及两进程140快照通过。",
+      "evidence": [
+        "fold-contact-checks.json",
+        "scenarios/媒体表现/native500-20261024/b02-q02-fold-contact-checks.json",
+        ".work/native500-quality-20261025/q02/native-render-r4/report.json",
+        ".work/native500-quality-20261025/q02/Native-persistence-r3-checks.json"
+      ]
+    },
+    {
+      "id": "Q02-CAPTURE-02",
+      "status": "resolved",
+      "devices": [
+        "paper-unwinder"
+      ],
+      "requirement": "素材变化已排队重绘时不得交付旧submittedFrame",
+      "observed": ".work/native500-quality-20261025/q02/visibility-probe-01/report.json",
+      "failure": "same exact view repeated4 times, one lacked real Item geometry",
+      "next_evidence": "new Native build, repeated current view and complete60 capture with per-item visibility",
+      "resolution": "notifyReady不得在mediaRenderFrame排队时交付旧帧；无新增重试/延时。新Native8次定向复现及完整60状态逐件可见性通过。",
+      "evidence": [
+        "capture-readiness-regression.json",
+        ".work/native500-quality-20261025/q02/native-render-r4/report.json"
+      ]
+    }
+  ]
+}

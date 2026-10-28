@@ -1,0 +1,251 @@
+{
+  "apiVersion": "v1",
+  "kind": "List",
+  "items": [
+    {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {
+        "name": "sf-cloud",
+        "namespace": "__NAMESPACE__",
+        "labels": {
+        "app": "sf-cloud",
+        "cloud.sealos.io/app-deploy-manager": "sf-cloud",
+        "cloud.sealos.io/deploy-on-sealos": "sf-cloud"
+      },
+      "annotations": {
+        "deploy.cloud.sealos.io/minReplicas": "1",
+        "deploy.cloud.sealos.io/maxReplicas": "1"
+        }
+      },
+      "spec": {
+        "replicas": 1,
+        "revisionHistoryLimit": 2,
+        "selector": {
+          "matchLabels": {
+            "app": "sf-cloud"
+          }
+        },
+        "strategy": {
+          "type": "Recreate"
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app": "sf-cloud"
+            }
+          },
+          "spec": {
+            "automountServiceAccountToken": false,
+            "securityContext": {
+              "runAsNonRoot": true,
+              "runAsUser": 10001,
+              "runAsGroup": 10001,
+              "seccompProfile": {
+                "type": "RuntimeDefault"
+              }
+            },
+            "terminationGracePeriodSeconds": 30,
+            "imagePullSecrets": [
+              {
+                "name": "sf-cloud-registry-pull"
+              }
+            ],
+            "containers": [
+              {
+                "name": "sf-cloud",
+                "securityContext": {
+                  "allowPrivilegeEscalation": false,
+                  "capabilities": {
+                    "drop": ["ALL"]
+                  }
+                },
+                "image": "__IMAGE_DIGEST_REF__",
+                "imagePullPolicy": "IfNotPresent",
+                "args": [
+                  "serve"
+                ],
+                "ports": [
+                  {
+                    "name": "http",
+                    "containerPort": 8080
+                  }
+                ],
+                "env": [
+                  {
+                    "name": "PORT",
+                    "value": "8080"
+                  },
+                  {
+                    "name": "SF_CLOUD_LISTEN_ADDRESS",
+                    "value": "0.0.0.0"
+                  },
+                  {
+                    "name": "SF_CLOUD_BINDINGS_FILE",
+                    "value": "/opt/superfactory/config/demo-bindings.json"
+                  },
+                  {
+                    "name": "SSL_CERT_FILE",
+                    "value": "/opt/superfactory/pg-trust/ca.pem"
+                  },
+                  {
+                    "name": "DATABASE_URL",
+                    "valueFrom": {
+                      "secretKeyRef": {
+                        "name": "sf-cloud-runtime",
+                        "key": "DATABASE_URL"
+                      }
+                    }
+                  },
+                  {
+                    "name": "SF_CLOUD_AUTH_TOKENS_JSON",
+                    "valueFrom": {
+                      "secretKeyRef": {
+                        "name": "sf-cloud-runtime",
+                        "key": "SF_CLOUD_AUTH_TOKENS_JSON"
+                      }
+                    }
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "cpu": "100m",
+                    "memory": "204Mi"
+                  },
+                  "limits": {
+                    "cpu": "1",
+                    "memory": "2048Mi"
+                  }
+                },
+                "readinessProbe": {
+                  "httpGet": {
+                    "path": "/healthz",
+                    "port": "http"
+                  },
+                  "periodSeconds": 10,
+                  "timeoutSeconds": 5,
+                  "failureThreshold": 3
+                },
+                "volumeMounts": [
+                  {
+                    "name": "bindings",
+                    "mountPath": "/opt/superfactory/config",
+                    "readOnly": true
+                  },
+                  {
+                    "name": "pg-trust",
+                    "mountPath": "/opt/superfactory/pg-trust",
+                    "readOnly": true
+                  }
+                ]
+              }
+            ],
+            "volumes": [
+              {
+                "name": "bindings",
+                "configMap": {
+                  "name": "sf-cloud-bindings",
+                  "items": [
+                    {
+                      "key": "demo-bindings.json",
+                      "path": "demo-bindings.json"
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "pg-trust",
+                "secret": {
+                  "secretName": "sf-cloud-pg-trust",
+                  "items": [
+                    {
+                      "key": "ca.pem",
+                      "path": "ca.pem"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "name": "sf-cloud",
+        "namespace": "__NAMESPACE__",
+        "labels": {
+        "app": "sf-cloud",
+        "cloud.sealos.io/app-deploy-manager": "sf-cloud",
+        "cloud.sealos.io/deploy-on-sealos": "sf-cloud"
+        }
+      },
+      "spec": {
+        "type": "ClusterIP",
+        "selector": {
+          "app": "sf-cloud"
+        },
+        "ports": [
+          {
+            "name": "http",
+            "port": 8080,
+            "targetPort": "http"
+          }
+        ]
+      }
+    },
+    {
+      "apiVersion": "networking.k8s.io/v1",
+      "kind": "Ingress",
+      "metadata": {
+        "name": "sf-cloud",
+        "namespace": "__NAMESPACE__",
+        "labels": {
+        "app": "sf-cloud",
+        "cloud.sealos.io/app-deploy-manager": "sf-cloud",
+        "cloud.sealos.io/app-deploy-manager-domain": "__PUBLIC_HOST_PREFIX__",
+        "cloud.sealos.io/deploy-on-sealos": "sf-cloud"
+        },
+        "annotations": {
+          "kubernetes.io/ingress.class": "__INGRESS_CLASS__",
+          "nginx.ingress.kubernetes.io/ssl-redirect": "true",
+          "nginx.ingress.kubernetes.io/backend-protocol": "HTTP"
+        }
+      },
+      "spec": {
+        "ingressClassName": "__INGRESS_CLASS__",
+        "tls": [
+          {
+            "hosts": [
+              "__PUBLIC_HOST__"
+            ],
+            "secretName": "__HTTPS_TLS_SECRET__"
+          }
+        ],
+        "rules": [
+          {
+            "host": "__PUBLIC_HOST__",
+            "http": {
+              "paths": [
+                {
+                  "path": "/",
+                  "pathType": "Prefix",
+                  "backend": {
+                    "service": {
+                      "name": "sf-cloud",
+                      "port": {
+                        "name": "http"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

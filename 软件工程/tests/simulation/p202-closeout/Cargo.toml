@@ -1,0 +1,27 @@
+[package]
+name = "sf-p202-closeout-tests"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[workspace]
+resolver = "3"
+
+[dependencies]
+sf-domain = { path = "../../../packages/domain" }
+sf-simulation = { path = "../../../packages/simulation" }
+sf-commands = { path = "../../../packages/commands" }
+serde = "=1.0.229"
+serde_json = { version = "=1.0.154", features = ["float_roundtrip"] }
+
+[[bin]]
+name = "p202-reopen"
+path = "reopen.rs"
+
+[[test]]
+name = "host_lifecycle"
+path = "host_lifecycle.rs"
+
+[[test]]
+name = "original_transport_acceptance"
+path = "../../../packages/simulation/tests/transport_acceptance.rs"

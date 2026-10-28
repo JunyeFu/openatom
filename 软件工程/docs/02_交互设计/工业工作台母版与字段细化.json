@@ -1,0 +1,698 @@
+{
+  "document_kind": "S04_02_industrial_workbench_editable_master_and_field_presentation",
+  "checkpoint": "S04-02",
+  "date": "2026-10-14 Asia/Shanghai",
+  "owner": "复审窗口2",
+  "user_decision": "重新读取设计要求并替换上下文，完成母版的进一步升级",
+  "status": "passed_current_master_and_prototype_design_AI_review",
+  "source_refs": [
+    "docs/02_交互设计/Figma制作依据核对与工作台纠偏.json#/layout_contract",
+    "docs/02_交互设计/首版表单与反馈.json",
+    "docs/02_交互设计/主流程与视图导航.md",
+    "packages/domain/types.design.rs",
+    "packages/domain/module-field-bindings.design.json",
+    "docs/00_项目基线/项目主线.json",
+    "docs/02_交互设计/时间轴主轴与轨道组_监督细化.json",
+    "docs/02_交互设计/时间轴主轴与子轴完整定义.json",
+    "docs/02_交互设计/设备时间轴与标签设计.md",
+    "docs/04_开发与验收/特征细化/DRF01_完整定义.json",
+    "packages/module-kit/device-editor-capabilities.design.json"
+  ],
+  "authoring": {
+    "tool": "draw.io Desktop 31.3.2",
+    "source_ref": "docs/02_交互设计/S04-02_drawio母版_20261014/industrial-workbench-master.drawio",
+    "generator_ref": "docs/02_交互设计/S04-02_drawio母版_20261014/build_master.py",
+    "field_projection_ref": "docs/02_交互设计/S04-02_drawio母版_20261014/母版字段与页面映射.json",
+    "AI_reference": "docs/02_交互设计/S04-02_AI母版迭代_20261014/母版_v03_侧栏收起候选.png",
+    "UI_native_editable": true,
+    "scene_asset_editable_3d": false,
+    "whole_screenshot_as_UI": false,
+    "Figma_mutations_this_turn": 0,
+    "state_pages": 26
+  },
+  "visual_parameters": {
+    "status": "current_design_values_not_user_final_acceptance",
+    "window_width": 1920,
+    "window_height": 1080,
+    "base_font": "Microsoft YaHei",
+    "text_size": 16,
+    "field_label_size": 14,
+    "command_height": 30,
+    "field_height": 28,
+    "left_expanded": 256,
+    "right_expanded": 400,
+    "collapsed_rail": 32,
+    "wide_left": 320,
+    "wide_right": 480,
+    "sizing": "固定顶底栏；中央占余下空间；参数为母版制作值，不是最低屏幕限制或性能结果",
+    "bottom_dock_height": 160,
+    "description_width": 300,
+    "bottom_tool_strip_y": 1004,
+    "bottom_tool_strip_height": 36,
+    "central_scene_y": 148,
+    "scene_height_with_dock": 682,
+    "scene_height_without_dock": 850,
+    "timeline_name_column": 240,
+    "timeline_group_row": 40,
+    "timeline_device_row": 32,
+    "timeline_ruler": 28,
+    "timeline_header": 24,
+    "timeline_min_text_size": 13,
+    "expanded_dock_height": 320,
+    "dock_height_range": [
+      120,
+      320
+    ]
+  },
+  "cards": [
+    {
+      "id": "identity_behavior",
+      "forms": [
+        "F01",
+        "F03"
+      ],
+      "rule": "设备实例身份/定义精确版本/唯一行为源分开；实例名称不套用定义身份组的UI映射。"
+    },
+    {
+      "id": "layout",
+      "forms": [
+        "F11"
+      ],
+      "rule": "位置m/Z向上；高度坐标与设备height_m分开；网格仅UI；绕Z角为UI快捷编辑，共同Pose.rotation采用Quaternion。"
+    },
+    {
+      "id": "ports",
+      "forms": [
+        "F03",
+        "F06"
+      ],
+      "rule": "端口稳定ID、方向、物品/信号/成果类别、类型单位、容量与接受规则分列；容量未知按用途反馈。"
+    },
+    {
+      "id": "phases_resources",
+      "forms": [
+        "F03",
+        "F14"
+      ],
+      "rule": "phase_id、duration和来源、阶段资源与实例角色绑定、实际人员日历分开；不能从人物动画生成资源。"
+    },
+    {
+      "id": "timeline_task",
+      "forms": [
+        "F12",
+        "F13",
+        "F22",
+        "F28"
+      ],
+      "rule": "订单/到料输入轨与计算实际轨分开；真实Run缺失显示暂无，不预画计算完成。"
+    },
+    {
+      "id": "dirty_leave",
+      "forms": [
+        "F26",
+        "F27"
+      ],
+      "rule": "应用/保存不同；放弃更改不取消计算；应用失败/冲突保留字段；表单无改动时不可重复提交。"
+    }
+  ],
+  "resolved_findings": [
+    {
+      "id": "WM-01",
+      "observed": "工具文字误写",
+      "correction": "旋转等工具改为draw.io原生文字；不复制AI图片中的文字。",
+      "scope": "本轮母版和现行呈现规范；产品行为尚待实现"
+    },
+    {
+      "id": "WM-02",
+      "observed": "常态画布带关闭符号、自动档混同第四档",
+      "correction": "两个画布入口不带X；详细/简化/区域是三档，自动为独立开关。",
+      "scope": "本轮母版和现行呈现规范；产品行为尚待实现"
+    },
+    {
+      "id": "WM-03",
+      "observed": "实例、定义和行为归属含糊",
+      "correction": "实例ID、模块精确版本、唯一行为源分别展示；明确本实例修改不改库。",
+      "scope": "本轮母版和现行呈现规范；产品行为尚待实现"
+    },
+    {
+      "id": "WM-04",
+      "observed": "人数替代实际资源绑定",
+      "correction": "operator绑定真实OP01引用，阶段资源与人员日历分开；人物图像不创建人员实例。",
+      "scope": "本轮母版和现行呈现规范；产品行为尚待实现"
+    },
+    {
+      "id": "WM-05",
+      "observed": "输入输出仅有自由文字",
+      "correction": "摘要显示稳定端口ID/载荷/类型/单位，设备详情表另列方向和容量。",
+      "scope": "本轮母版和现行呈现规范；产品行为尚待实现"
+    },
+    {
+      "id": "WM-06",
+      "observed": "Z坐标与设备高度混同",
+      "correction": "Z高度坐标、包络与设备height_m分开；厂房m/Z向上，UI朝向转共同Quaternion。",
+      "scope": "本轮母版和现行呈现规范；产品行为尚待实现"
+    },
+    {
+      "id": "WM-07",
+      "observed": "默认时长或容量误当已知值",
+      "correction": "工时/容量未知明确显示未填写；来源与单位可见，不以0补未知。",
+      "scope": "本轮母版和现行呈现规范；产品行为尚待实现"
+    },
+    {
+      "id": "WM-08",
+      "observed": "取消、放弃、应用、保存混用",
+      "correction": "放弃更改与取消计算分开；应用提交修订，保存落盘；表单无改动时禁用应用。",
+      "scope": "本轮母版和现行呈现规范；产品行为尚待实现"
+    },
+    {
+      "id": "WM-09",
+      "observed": "未填必需项仍显示可运行",
+      "correction": "当前例的工艺阶段工时缺失，彩排标缺项；只阻塞相应用途，仍可编辑和保存草稿。",
+      "scope": "本轮母版和现行呈现规范；产品行为尚待实现"
+    },
+    {
+      "id": "WM-10",
+      "observed": "输入排期伪装成已计算工序条",
+      "correction": "输入轨使用订单释放/到料事件标记，不预画工序完成；结果回放无Run时不可用。",
+      "scope": "本轮母版和现行呈现规范；产品行为尚待实现"
+    },
+    {
+      "id": "WM-11",
+      "observed": "无Run仍显示当前生产时点",
+      "correction": "明确Run未生成/计算未运行/结果暂无；相对秒为输入显示，持久化使用共同ms类型。",
+      "scope": "本轮母版和现行呈现规范；产品行为尚待实现"
+    },
+    {
+      "id": "WM-12",
+      "observed": "左右伸缩与恢复状态缺失",
+      "correction": "提供展开、单侧/双侧收起和调宽页；侧栏为UI状态，不拥有库存/时钟。",
+      "scope": "本轮母版和现行呈现规范；产品行为尚待实现"
+    },
+    {
+      "id": "WM-13",
+      "observed": "设备工作台与右侧重复编辑同一实例",
+      "correction": "设备详情中央为唯一字段编辑区，右侧只显示只读上下文与区段。",
+      "scope": "本轮母版和现行呈现规范；产品行为尚待实现"
+    },
+    {
+      "id": "WM-14",
+      "observed": "整张AI截图冒充可编辑界面",
+      "correction": "仅中央场景保留独立AI图像；外壳、字段、表格、箭头、标签及弹层均为原生元素。",
+      "scope": "本轮母版和现行呈现规范；产品行为尚待实现"
+    },
+    {
+      "id": "WM-15",
+      "observed": "时间轴占高且说明/轨道混杂",
+      "correction": "默认250改160；事件描述独立，轨道不重复完整说明字段。",
+      "scope": "当前母版与呈现规范"
+    },
+    {
+      "id": "WM-16",
+      "observed": "工具排占用上方中央空间",
+      "correction": "文件/编辑/视图等菜单在顶；选择/移动/旋转等位于底部工具条。",
+      "scope": "当前母版与呈现规范"
+    },
+    {
+      "id": "WM-17",
+      "observed": "窗口隐藏缺明确入口与恢复状态",
+      "correction": "窗口菜单分别显示/隐藏时间轴和描述，补四种可见性及相应菜单页；恢复不修改业务数据。",
+      "scope": "当前母版与呈现规范"
+    },
+    {
+      "id": "WM-18",
+      "observed": "永久输入行替代设备层级",
+      "correction": "主轴按厂房/显示组/设备展开，输入临时叠层，共享资源只出现一次。",
+      "scope": "当前draw.io母版与呈现规范；产品行为待实现"
+    },
+    {
+      "id": "WM-19",
+      "observed": "输入、实际和回看混用",
+      "correction": "输入/实际/对比分开；Task计算与只读回看分开，无Run不播放。",
+      "scope": "当前draw.io母版与呈现规范；产品行为待实现"
+    },
+    {
+      "id": "WM-20",
+      "observed": "子轴裁短作业或重新计时",
+      "correction": "DTC02手工预期90–180s保身份，显示100–160s、两端续接，观察135s不归零。",
+      "scope": "当前draw.io母版与呈现规范；产品行为待实现"
+    },
+    {
+      "id": "WM-21",
+      "observed": "运行明细缺记录却按名义时长补画",
+      "correction": "设备页显示执行/阶段/等待历史未知；不生成实际区间。",
+      "scope": "当前draw.io母版与呈现规范；产品行为待实现"
+    },
+    {
+      "id": "WM-22",
+      "observed": "吸附与联动范围含糊",
+      "correction": "E04同类输入10/20s预览15/25s，仅+5s；可见5s网格，未提交、不改旧Run/日历/交期。",
+      "scope": "当前draw.io母版与呈现规范；产品行为待实现"
+    },
+    {
+      "id": "WM-23",
+      "observed": "跨厂页面混用单厂对象和时间",
+      "correction": "三厂房输入输出与S01供货属性、24h输入窗/描述/选择统一；目标不等于到货。",
+      "scope": "当前draw.io母版与呈现规范；产品行为待实现"
+    },
+    {
+      "id": "WM-24",
+      "observed": "外观周期混同全厂时钟",
+      "correction": "独立u轴/姿态/注释/类型标签；循环外观不创建生产。",
+      "scope": "当前draw.io母版与呈现规范；产品行为待实现"
+    },
+    {
+      "id": "WM-25",
+      "observed": "三档按钮没有对应的不同画面",
+      "correction": "M01详细、M21简化、M22区域可相互跳转；A01选择保留，未编组设备不被聚合。",
+      "scope": "原生母版呈现；实际行为仍须原型和产品验证"
+    },
+    {
+      "id": "WM-26",
+      "observed": "视图菜单与窗口菜单职责未在画面分开",
+      "correction": "M23明确相机、LOD、时间比例和文字缩放；显隐回到窗口菜单。",
+      "scope": "原生母版呈现；实际行为仍须原型和产品验证"
+    },
+    {
+      "id": "WM-27",
+      "observed": "修订冲突缺少字段保留画面",
+      "correction": "M24展示r7/r8/未应用值，提供留在当前、放弃本次、重新核对入口；不直接覆盖。",
+      "scope": "原生母版呈现；实际行为仍须原型和产品验证"
+    },
+    {
+      "id": "WM-28",
+      "observed": "归一化u容易被解释成多阶段全作业时钟",
+      "correction": "M20编辑auto阶段的u轴，M25查看全部阶段绑定；cycle_normalized仅适用单阶段正工时，无多阶段全局duration。",
+      "scope": "原生母版呈现；实际行为仍须原型和产品验证"
+    },
+    {
+      "id": "WM-29",
+      "observed": "区域档没有成员进入设备详情路径",
+      "correction": "M22明确LINE01与五个成员，先选区域、再点成员，保持A01身份。",
+      "scope": "原生母版呈现；实际行为仍须原型和产品验证"
+    },
+    {
+      "id": "WM-30",
+      "observed": "文字缩放未给出字段可访问示例",
+      "correction": "M26仅属性文字150%并重排，滚动访问其余字段，底部提交入口保持；不缩放相机。",
+      "scope": "原生母版呈现；实际行为仍须原型和产品验证"
+    }
+  ],
+  "state_policy": {
+    "draft_form": "当前实例或定义会话之一；不能产生两个独立脏表单",
+    "dirty_form": "有未应用字段",
+    "applied_revision": "实际提交成功才更新修订",
+    "saved_project": "实际写入成功才清除工程未保存",
+    "missing_input": "未知不为0；只阻塞当前用途",
+    "computed_result": "实际Run/修订归属才显示结果",
+    "presentation": "面板宽度、相机、选择、LOD/观察时点为局部显示状态"
+  },
+  "data_policy": {
+    "sample": "控制盒、OP01、数量/布局/时点均是人工UI示例，不属于已跑案例、工业观察或产能结果",
+    "units": "布局m；秒显示到ms存储做明确换算；包装mm另行标识",
+    "source_of_truth": "原公开API/Commands/types；本轮不新增API、公共类型、库存或时钟"
+  },
+  "remaining": [
+    "实际产品Engine/Host/外部Agent、工业正确性/性能及正式工程保存接手由相应实现阶段验证",
+    "完整纸包装机制和连续无干涉等专业验证不由五板片UI代理替代",
+    "S10独立目标用户试用未执行；真人操作和视觉认可仍空"
+  ],
+  "actual_user_visual_acceptance": null,
+  "actual_product_runtime": null,
+  "passed_public_checkpoint": false,
+  "previous_user_decision": "进入精细化卡片和字段核对修复细微缺陷并使用draw.io接过母版制作",
+  "workbench_regions": {
+    "top": "标题/文件、编辑、视图、工程、模块、仿真、窗口、帮助菜单及工程归属；无选择/移动等工具排",
+    "center": "两画布与三档显示；填余下空间",
+    "bottom_tools": "选择/移动/旋转/连接/编组及常用命令；位于底部工具条",
+    "bottom_status": "工程/选择/未应用/计算状态",
+    "timeline": "默认160高的厂房主轴；显示组/设备细化复用同面板，展开例320；输入/实际/对比分开",
+    "description": "独立只读选中描述，默认宽300；对象/来源/时窗/阶段/资源/等待/引用与定位，不复制参数表单",
+    "visibility_menu": "顶部窗口菜单分别勾选时间轴、事件描述；X是隐藏；菜单打开不改变可见性；恢复默认布局是显式操作"
+  },
+  "dock_behavior": {
+    "both_visible": "描述左、时间轴右，分隔柄调宽；停靠区顶部柄调高；轨道行超过可用高度时滚动，不挤高默认母版",
+    "description_hidden": "时间轴占满底部停靠区",
+    "timeline_hidden": "描述窗口占满底部停靠区，仍显示原选中事件",
+    "both_hidden": "移除停靠区占位；中央延伸至底部工具栏上方",
+    "restore": "恢复上次高度/描述宽度/时间窗口/选中事件与各自滚动位置；不重置相机/工程/Run/选择",
+    "state_owner": "本地呈现状态；不新增领域对象或第19个API，不停止计算、不删除输入",
+    "selection": "时间轴对象/事件选择仅投影到共享选择；描述隐藏时不自动重开。展开箭头与名称选择分开。",
+    "scroll": "时间轴行标题与对应轨道同步纵向滚动，水平时间滚动仅改时间视口；描述区独立滚动",
+    "detail_mode": "中央设备工作台覆盖正常画布区域；底部工具栏/状态栏仍常驻；退出恢复两窗口原可见性"
+  },
+  "requirement_refresh": {
+    "authority": "最新用户要求、现行主线与已确认选择优先；旧母版不反推需求",
+    "timeline_definition_ref": "docs/02_交互设计/时间轴主轴与子轴完整定义.json",
+    "latest_consumer_ref": "docs/04_开发与验收/特征细化/DRF01_完整定义.json",
+    "layout_source": "窗口菜单显隐、描述左/轨道右、描述300、下置工具、默认160；保持2常态画布与3档LOD",
+    "public_contract_changes_in_this_batch": false,
+    "actual_product_result": null,
+    "appearance_binding_ref": "packages/module-kit/device-editor-capabilities.design.json#/timeline",
+    "scope": "当前外壳、三档呈现、阶段表现、修订冲突与文字重排；24业务帧/实际原型/本人走查分别验收"
+  },
+  "current_state_pages": [
+    {
+      "id": "master-main",
+      "title": "M01 · 工业工作台 / 紧凑主轴"
+    },
+    {
+      "id": "master-left-collapsed",
+      "title": "M02 · 左侧收起 / 中央扩展"
+    },
+    {
+      "id": "master-right-collapsed",
+      "title": "M03 · 右侧收起 / 中央扩展"
+    },
+    {
+      "id": "master-both-collapsed",
+      "title": "M04 · 两侧收起 / 大画布"
+    },
+    {
+      "id": "master-wide-panels",
+      "title": "M05 · 左右调宽 / 状态保留"
+    },
+    {
+      "id": "master-device-detail",
+      "title": "M06 · 设备详细字段 / 缺项定位"
+    },
+    {
+      "id": "master-dirty-leave",
+      "title": "M07 · 未应用更改 / 离开选择"
+    },
+    {
+      "id": "master-timeline-hidden",
+      "title": "M08 · 时间轴隐藏 / 保留描述"
+    },
+    {
+      "id": "master-description-hidden",
+      "title": "M09 · 描述隐藏 / 时间轴铺满"
+    },
+    {
+      "id": "master-lower-hidden",
+      "title": "M10 · 底部双面板隐藏 / 大画布"
+    },
+    {
+      "id": "master-window-menu",
+      "title": "M11 · 窗口菜单 / 面板显示关闭"
+    },
+    {
+      "id": "master-timeline-hidden-menu",
+      "title": "M12 · 时间轴关闭后的窗口菜单"
+    },
+    {
+      "id": "master-description-hidden-menu",
+      "title": "M13 · 描述关闭后的窗口菜单"
+    },
+    {
+      "id": "master-lower-hidden-menu",
+      "title": "M14 · 双面板关闭后的窗口菜单"
+    },
+    {
+      "id": "master-axis-expanded",
+      "title": "M15 · 主轴展开 / 设备与共享资源"
+    },
+    {
+      "id": "master-line-axis",
+      "title": "M16 · 流水线细化 / 裁窗保身份"
+    },
+    {
+      "id": "master-device-axis",
+      "title": "M17 · 设备运行明细 / 缺失历史"
+    },
+    {
+      "id": "master-input-drag",
+      "title": "M18 · 输入多选 / 吸附与联动预览"
+    },
+    {
+      "id": "master-multi-hall",
+      "title": "M19 · 多厂房画布 / 批次供货"
+    },
+    {
+      "id": "master-device-appearance",
+      "title": "M20 · 设备表现创作 / 独立u轴"
+    },
+    {
+      "id": "master-simplified",
+      "title": "M21 · 简化显示 / 身份与流向"
+    },
+    {
+      "id": "master-region",
+      "title": "M22 · 区域显示 / 成员入口"
+    },
+    {
+      "id": "master-view-menu",
+      "title": "M23 · 视图菜单 / 相机与显示"
+    },
+    {
+      "id": "master-revision-conflict",
+      "title": "M24 · 修订冲突 / 未应用字段保留"
+    },
+    {
+      "id": "master-phase-appearance",
+      "title": "M25 · 多阶段表现 / 有效进度绑定"
+    },
+    {
+      "id": "master-text-scale",
+      "title": "M26 · 文字150% / 属性重排"
+    }
+  ],
+  "new_state_source_examples": {
+    "master-line-axis": {
+      "ref": "docs/02_交互设计/时间轴主轴与子轴完整定义.json#/independent_design_cases",
+      "case_id": "DTC02",
+      "source_kind": "manual_expected",
+      "actual_run": null
+    },
+    "master-input-drag": {
+      "ref": "docs/02_交互设计/时间轴主轴与轨道组_监督细化.json#/walkthrough_cases",
+      "case_id": "E04",
+      "source_kind": "manual_input_preview",
+      "actual_command_calls": null
+    },
+    "master-multi-hall": {
+      "source_kind": "independently_designed_UI_example",
+      "target_quantity_per_day": 120,
+      "actual_transport": null
+    }
+  },
+  "runtime_data_gaps": [
+    {
+      "id": "TC01",
+      "need": "真实执行设备、容量占用与等待/历史阶段归属",
+      "mother_policy": "缺项明示，不以人员Claim或最终phase猜历史",
+      "public_contract_merged": true,
+      "actual_product_producer_implemented": false,
+      "contract_ref": "docs/03_架构与契约/全层类型与工程格式.json#/timeline_runtime_contract"
+    },
+    {
+      "id": "TC02",
+      "need": "有效阶段区间、中断与已计算边界",
+      "mother_policy": "缺项明示，不按名义工时补段",
+      "public_contract_merged": true,
+      "actual_product_producer_implemented": false,
+      "contract_ref": "docs/03_架构与契约/全层类型与工程格式.json#/timeline_runtime_contract"
+    }
+  ],
+  "master_revision": "drawio-r3-20261014",
+  "presentation_state_contract": {
+    "lod_pages": {
+      "detailed": "master-main",
+      "simplified": "master-simplified",
+      "region": "master-region"
+    },
+    "selected_object_preserved": "A01",
+    "region_group": "LINE01",
+    "region_members": [
+      "KIT",
+      "A01",
+      "I01",
+      "P01",
+      "R01"
+    ],
+    "not_grouped": [
+      "B01",
+      "B02",
+      "FG01"
+    ],
+    "zoom_does_not_enter_device": true,
+    "zoom_does_not_change_canvas": true,
+    "view_menu_page": "master-view-menu",
+    "window_menu_page": "master-window-menu",
+    "appearance_modes": {
+      "cycle_normalized": "one positive known fixed-duration phase only",
+      "phase_local": "bound frozen phase effective progress; waiting holds pose"
+    },
+    "conflict_page": "master-revision-conflict",
+    "text_scale_page": "master-text-scale",
+    "text_scale_example": 1.5,
+    "actual_behaviors_verified": false,
+    "equipment_model_quality_ref": "docs/02_交互设计/设备建模精度与表现验收规范.json"
+  },
+  "verification_ref": "docs/02_交互设计/S04-02_drawio母版_20261014/母版核对结果.json",
+  "current_isolated_prototype": {
+    "entry_url": "http://127.0.0.1:8921/",
+    "entry_file_ref": "docs/02_交互设计/S04_可操作设计原型/index.html",
+    "guide_ref": "docs/02_交互设计/S04_可操作设计原型/README.md",
+    "browser_result_ref": "docs/02_交互设计/S04_可操作设计原型/output/playwright/browser-check-result.json",
+    "frames_ref": "docs/02_交互设计/S04_可操作设计原型/output/playwright/frames.json",
+    "frame_count": 24,
+    "continuous_chains": 5,
+    "finite_browser_checks": 16,
+    "browser_errors": [],
+    "data_origin": [
+      "manual_expected",
+      "type_fixture",
+      "independent_UI_visual_fixture"
+    ],
+    "actual_browser_interaction": true,
+    "actual_product_runtime": null,
+    "actual_user_walkthrough": null,
+    "Figma_used": false,
+    "product_frontend_started": false,
+    "delegated_walkthrough_ref": "docs/02_交互设计/S04_可操作设计原型/output/delegated-walkthrough/walkthrough-result.json",
+    "AI_visual_review_ref": "docs/02_交互设计/S04_可操作设计原型/output/visual-review/visual-review-result.json"
+  },
+  "actual_delegated_walkthrough": {
+    "status": "passed_user_authorized_AI_design_walkthrough",
+    "operator_kind": "AI_delegated",
+    "operator": "Codex / 复审窗口2",
+    "authority": {
+      "quote": "代替我完成S04-04/S04-05",
+      "user_message_id": "01a13aec-61f5-7c82-9ef9-46d9a202d275",
+      "source": "direct_human_user_message_in_current_thread",
+      "scope": [
+        "S04-04",
+        "S04-05"
+      ]
+    },
+    "started_at": "2026-10-14T15:58:21.085Z",
+    "ended_at": "2026-10-14T15:58:42.664Z",
+    "timestamp_timezone": "UTC; local display Asia/Shanghai",
+    "entry_url": "http://127.0.0.1:8921/",
+    "evidence_ref": "docs/02_交互设计/S04_可操作设计原型/output/delegated-walkthrough/walkthrough-result.json",
+    "continuous_chains": 5,
+    "failure_check_groups": 8,
+    "actual_browser_interaction": true,
+    "page_errors": [],
+    "actual_user_walkthrough": null,
+    "actual_product_runtime": null,
+    "target_user_trial": null,
+    "scope": "S04设计原型和授权代走查，不是S08产品运行或S10独立目标用户试用"
+  },
+  "actual_AI_visual_review": {
+    "operator_kind": "AI_delegated",
+    "authority": {
+      "source_thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+      "user_message_id": "01a13b06-8349-7340-8f32-a6a2cb7bfb1a",
+      "quote": "自主完成整个设计阶段，所有操作我都给你权限独立执行",
+      "verification": "本窗口实际read_thread读取到该userMessage；统筹续派S04-02自主视觉审查",
+      "scope": "设计视觉与状态覆盖的AI代理审查，Figma仍暂停，不授权产品开发或代填真人认可"
+    },
+    "evidence_ref": "docs/02_交互设计/S04_可操作设计原型/output/visual-review/visual-review-result.json",
+    "status": "passed_design_visual_review",
+    "reviewed_at": "2026-10-14T16:07:26.340076+00:00",
+    "actual_browser_checks_ref": "docs/02_交互设计/S04_可操作设计原型/output/visual-review/browser-result.json",
+    "native_master_check_ref": "docs/02_交互设计/S04-02_drawio母版_20261014/母版核对结果.json",
+    "master_pages": 26,
+    "business_frames": 24,
+    "actual_user_visual_acceptance": null,
+    "actual_product_runtime": null
+  },
+  "current_Figma_prototype": {
+    "file_key": "QBtchORv1wTdJI3ldYxexm",
+    "design_url": "https://www.figma.com/design/QBtchORv1wTdJI3ldYxexm?node-id=23-1282",
+    "prototype_url": "https://www.figma.com/proto/QBtchORv1wTdJI3ldYxexm?page-id=22-1278&node-id=23-1278&starting-point-node-id=23%3A1278&scaling=scale-down&content-scaling=fixed",
+    "page_id": "22:1278",
+    "main_frames": 24,
+    "support_states": 42,
+    "state_frames": 66,
+    "category_frames": 9,
+    "reactions_connected": 3419,
+    "native_text_nodes": 8723,
+    "component_instances": 4327,
+    "full_UI_flattened_image_allowed": false,
+    "actual_design_write": true,
+    "actual_prototype_interaction": "native_Figma_reactions_written_and_read_back",
+    "clickable_prototype_complete": true,
+    "visual_review_complete": true,
+    "visual_review_scope": "代表性画面截图；全部66状态结构与主画面图可达性核验，不等于逐控件实际点击",
+    "frame_node_ids": {
+      "VP01": "23:1278",
+      "VP02": "23:1279",
+      "VP03": "23:1280",
+      "VP04": "23:1281",
+      "VP05": "23:1282",
+      "VP06": "23:1283",
+      "VP07": "23:1284",
+      "VP08": "23:1285",
+      "VP09": "23:1286",
+      "VP10": "23:1287",
+      "VP11": "23:1288",
+      "VP12": "23:1289",
+      "VP13": "23:1290",
+      "VP14": "23:1291",
+      "VP15": "23:1292",
+      "VP16": "23:1293",
+      "VP17": "23:1294",
+      "VP18": "23:1295",
+      "VP19": "23:1296",
+      "VP20": "23:1297",
+      "VP21": "23:1298",
+      "VP22": "23:1299",
+      "VP23": "23:1300",
+      "VP24": "23:1301",
+      "CAT0": "23:1302",
+      "CAT1": "23:1303",
+      "CAT2": "23:1304",
+      "CAT3": "23:1305",
+      "CAT4": "23:1306",
+      "CAT5": "23:1307",
+      "CAT6": "23:1308",
+      "CAT7": "23:1309",
+      "CAT8": "23:1310",
+      "MENU文件": "23:1311",
+      "MENU编辑": "23:1312",
+      "MENU视图": "23:1313",
+      "MENU工程": "23:1314",
+      "MENU模块": "23:1315",
+      "MENU仿真": "23:1316",
+      "MENU窗口": "23:1317",
+      "MENU帮助": "23:1318",
+      "DOCK0": "23:1319",
+      "DOCK1": "23:1320",
+      "DOCK2": "23:1321",
+      "AXIS0": "26:4508",
+      "AXIS1": "26:4509",
+      "AXIS2": "26:4510",
+      "EDIT0": "26:4511",
+      "MEDIA0": "26:4512",
+      "PAPER0": "26:4513",
+      "PAPER1": "26:4514",
+      "REPORTPDF": "26:4515",
+      "REPORTCSV": "26:4516",
+      "REPORTJSON": "26:4517",
+      "CONFLICT": "26:4518",
+      "DIRTY": "26:4519",
+      "ADOPT": "26:4520",
+      "COLL0": "26:4521",
+      "COLL1": "26:4522",
+      "COLL2": "26:4523",
+      "SELDIRTY": "34:5120",
+      "OPENFIELDS": "34:5121",
+      "OPENUNSAVED": "34:5122",
+      "PKGACK": "34:5123",
+      "PKGBOUND": "34:5124",
+      "PKGREVIEW": "34:5125"
+    },
+    "verification_ref": "docs/02_交互设计/Figma批次_20261015/figma-structural-check.json",
+    "product_frontend_coding_authorized": false,
+    "actual_product_runtime": null,
+    "actual_user_walkthrough": null
+  },
+  "Figma_hold_superseded": {
+    "date": "2026-10-15",
+    "quote": "使用Figma完成前端原型制作",
+    "scope": "设计原型；draw.io继续保留为母版源，本地原型保留为实际交互验证源"
+  },
+  "equipment_model_quality_ref": "docs/02_交互设计/设备建模精度与表现验收规范.json"
+}

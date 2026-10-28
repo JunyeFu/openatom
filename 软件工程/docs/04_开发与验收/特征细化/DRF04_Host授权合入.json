@@ -1,0 +1,280 @@
+{
+  "document_kind": "Host_private_authorization_delta_not_canonical_implementation",
+  "version": "DRF04-2",
+  "date": "2026-10-14",
+  "owner": "复审窗口1/W00",
+  "delta_ref": "docs/04_开发与验收/特征细化/DRF04_Host授权合入.delta.rs",
+  "canonical_API_ref": "packages/commands/api.design.rs",
+  "context_addition": "HostCallContext.edit_grants:Vec<HostEditGrant>; no Serialize/Deserialize/JsonSchema/TS derives and no ApiRequest members",
+  "private_fields": {
+    "HostEditGrant": "id,scope,branches,objects,creates,source_versions,reusable_resources,created_objects",
+    "HostObjectEditGrant": "target,fields,can_remove",
+    "HostFieldGrant": "pointer(RFC6901 leaf),element_id(nullable stable declared array entry ID)",
+    "HostCreateAllowance": "kind,max_new_objects(cumulative),fields"
+  },
+  "authority": "UI issues/revises grants from the existing authorized task/object/field choices; Host fetches current per-session record under short Commands transaction, never trusts client JSON or old cloned context",
+  "scope": "real session owns Workspace; EditScope stable Project/draft identity. Existing base_revision independently controls concurrency; Host updates definition scope revision after commit without increasing permissions",
+  "algorithm": [
+    "1. Parse the existing typed Request; reject extra caller/grant/unknown fields. Authenticate actual transport and resolve current Host scope/operation/file capability.",
+    "2. Verify expected base_revision under serialized Commands; origin-only commands and workspace departure obey existing UI/task/dirty rules.",
+    "3. Read only granted source definitions/staged task/history; expand all 15 branches into a complete candidate using current Host objects. No IO/Engine/real approval side effect yet.",
+    "4. Compute changes by typed stable identity. Arrays match declared entry IDs, never index/name alone; record changed RFC6901 leaf and pinned containing entry. Whole-object replace includes removed fields.",
+    "5. Check branch + target scope, existing target leaf/remove permission, distinct fresh create IDs/count and exact selected versions, all resource reuse references. A reusable ID does not grant editing its capacity/calendar/qualifications.",
+    "6. All create-source baseline/defaults come from actual selected module/template; transferred overrides, seed supplies/orders and imported objects still undergo authorization. Missing geometry/parameters remain named input gaps.",
+    "7. Validate complete candidate references/type/unit/range and original business rules; no partial success or error conversion to success.",
+    "8. Commit candidate, one revision/history update and current grant creation ledger together. Failure commits neither. Delete/Undo never refund; authorized Redo of the same tracked ID rechecks current grant."
+  ],
+  "new_object_rule": "max_new_objects is across one grant lifetime and all branches/batches, not per call. Fields in approved creation baseline explicitly covered by allowance; reused existing fields use object grants. Derived copy does not authorize new workers/supply/BOM/duration/quality changes.",
+  "parameter_rule": "instance configuration override vs draft definition default follow existing declared binding; time/BOM/quality/personnel/cost require explicit field grant, not a scheduling synonym",
+  "normalization_proof_limit": "finite cases are explicit Host-private effect projections, not wire requests or proof of the future Host compiler. No normalized effects/grant are accepted from clients.",
+  "error_precedence": "typed input InvalidInput/UnsupportedSchema first, real connection/scope PermissionDenied/NoActiveProject, stale known scope RevisionConflict, then whole candidate authorization PermissionDenied; references/business retain existing error families. No unauthorized object disclosure.",
+  "all_branches": [
+    {
+      "branch": "create_project",
+      "normalization": "UI Workspace only; normalize new Project/time reference and approved departure; no Agent implicit switch",
+      "origin_rule": "interactive_ui only",
+      "scope": "workspace",
+      "effect_types_checked": [
+        "create",
+        "set",
+        "remove",
+        "reuse",
+        "source_version",
+        "history/departure boundary"
+      ],
+      "denial": "PermissionDenied before any state/revision/history/creation-ledger commit",
+      "consumer": "same Commands; MCP tool switch or whole-object submission cannot bypass"
+    },
+    {
+      "branch": "put_object",
+      "normalization": "full canonical object diff; preserve stable array element IDs; no hidden quality/BOM/time/stock edits",
+      "origin_rule": "authenticated UI/ExternalAgent with same current grant",
+      "scope": "project",
+      "effect_types_checked": [
+        "create",
+        "set",
+        "remove",
+        "reuse",
+        "source_version",
+        "history/departure boundary"
+      ],
+      "denial": "PermissionDenied before any state/revision/history/creation-ledger commit",
+      "consumer": "same Commands; MCP tool switch or whole-object submission cannot bypass"
+    },
+    {
+      "branch": "remove_object",
+      "normalization": "explicit target delete, no implicit cascade; separately check every co-deleted reference",
+      "origin_rule": "authenticated UI/ExternalAgent with same current grant",
+      "scope": "project",
+      "effect_types_checked": [
+        "create",
+        "set",
+        "remove",
+        "reuse",
+        "source_version",
+        "history/departure boundary"
+      ],
+      "denial": "PermissionDenied before any state/revision/history/creation-ledger commit",
+      "consumer": "same Commands; MCP tool switch or whole-object submission cannot bypass"
+    },
+    {
+      "branch": "set_project_settings",
+      "normalization": "diff title/time_reference/generation_context/sources against current Project settings; no forged Run context",
+      "origin_rule": "authenticated UI/ExternalAgent with same current grant",
+      "scope": "project",
+      "effect_types_checked": [
+        "create",
+        "set",
+        "remove",
+        "reuse",
+        "source_version",
+        "history/departure boundary"
+      ],
+      "denial": "PermissionDenied before any state/revision/history/creation-ledger commit",
+      "consumer": "same Commands; MCP tool switch or whole-object submission cannot bypass"
+    },
+    {
+      "branch": "create_definition_draft",
+      "normalization": "normalize new draft identity/definition; no registration of actual provider capabilities or approval",
+      "origin_rule": "authenticated UI/ExternalAgent with same current grant",
+      "scope": "project",
+      "effect_types_checked": [
+        "create",
+        "set",
+        "remove",
+        "reuse",
+        "source_version",
+        "history/departure boundary"
+      ],
+      "denial": "PermissionDenied before any state/revision/history/creation-ledger commit",
+      "consumer": "same Commands; MCP tool switch or whole-object submission cannot bypass"
+    },
+    {
+      "branch": "put_definition",
+      "normalization": "full selected draft diff; exact identity/version; no mutation of published version or authority declarations",
+      "origin_rule": "authenticated UI/ExternalAgent with same current grant",
+      "scope": "definition_draft",
+      "effect_types_checked": [
+        "create",
+        "set",
+        "remove",
+        "reuse",
+        "source_version",
+        "history/departure boundary"
+      ],
+      "denial": "PermissionDenied before any state/revision/history/creation-ledger commit",
+      "consumer": "same Commands; MCP tool switch or whole-object submission cannot bypass"
+    },
+    {
+      "branch": "set_declared_parameter",
+      "normalization": "resolve parameter_id via current declaration to instance configuration or definition leaf; authorize that exact field and type/unit",
+      "origin_rule": "authenticated UI/ExternalAgent with same current grant",
+      "scope": "project",
+      "effect_types_checked": [
+        "create",
+        "set",
+        "remove",
+        "reuse",
+        "source_version",
+        "history/departure boundary"
+      ],
+      "denial": "PermissionDenied before any state/revision/history/creation-ledger commit",
+      "consumer": "same Commands; MCP tool switch or whole-object submission cannot bypass"
+    },
+    {
+      "branch": "adopt_module",
+      "normalization": "expand exact actual ModuleRef, targets/bindings/new_instances/explicit_seed; check every derived edit/create/reuse/seed",
+      "origin_rule": "authenticated UI/ExternalAgent with same current grant",
+      "scope": "project",
+      "effect_types_checked": [
+        "create",
+        "set",
+        "remove",
+        "reuse",
+        "source_version",
+        "history/departure boundary"
+      ],
+      "denial": "PermissionDenied before any state/revision/history/creation-ledger commit",
+      "consumer": "same Commands; MCP tool switch or whole-object submission cannot bypass"
+    },
+    {
+      "branch": "instantiate_template",
+      "normalization": "expand actual selected template/subset/proposed_objects/mapped_bindings; fresh IDs, selected versions, reuse and explicit Scenario seed",
+      "origin_rule": "authenticated UI/ExternalAgent with same current grant",
+      "scope": "project",
+      "effect_types_checked": [
+        "create",
+        "set",
+        "remove",
+        "reuse",
+        "source_version",
+        "history/departure boundary"
+      ],
+      "denial": "PermissionDenied before any state/revision/history/creation-ledger commit",
+      "consumer": "same Commands; MCP tool switch or whole-object submission cannot bypass"
+    },
+    {
+      "branch": "put_packaging_job",
+      "normalization": "diff canonical PackageStructureJob input only; resolve part/steps; saving produces no professional Pass/acceptance",
+      "origin_rule": "authenticated UI/ExternalAgent with same current grant",
+      "scope": "definition_draft",
+      "effect_types_checked": [
+        "create",
+        "set",
+        "remove",
+        "reuse",
+        "source_version",
+        "history/departure boundary"
+      ],
+      "denial": "PermissionDenied before any state/revision/history/creation-ledger commit",
+      "consumer": "same Commands; MCP tool switch or whole-object submission cannot bypass"
+    },
+    {
+      "branch": "record_artifact_acknowledgment",
+      "normalization": "trusted UI only; artifact/subject/use scope validated; client origin/decision_source does not authenticate",
+      "origin_rule": "interactive_ui only",
+      "scope": "project",
+      "effect_types_checked": [
+        "create",
+        "set",
+        "remove",
+        "reuse",
+        "source_version",
+        "history/departure boundary"
+      ],
+      "denial": "PermissionDenied before any state/revision/history/creation-ledger commit",
+      "consumer": "same Commands; MCP tool switch or whole-object submission cannot bypass"
+    },
+    {
+      "branch": "adopt_imported_draft",
+      "normalization": "Host-owned completed staged Task and authorized choices expand all effects; Workspace open UI only; import receipt alone never adoption",
+      "origin_rule": "authenticated UI/ExternalAgent with same current grant",
+      "scope": "project",
+      "effect_types_checked": [
+        "create",
+        "set",
+        "remove",
+        "reuse",
+        "source_version",
+        "history/departure boundary"
+      ],
+      "denial": "PermissionDenied before any state/revision/history/creation-ledger commit",
+      "consumer": "same Commands; MCP tool switch or whole-object submission cannot bypass"
+    },
+    {
+      "branch": "commit_definition_version",
+      "normalization": "only selected definition draft local version/state freeze; no instance upgrade, remote publish or fabricated provider availability",
+      "origin_rule": "authenticated UI/ExternalAgent with same current grant",
+      "scope": "definition_draft",
+      "effect_types_checked": [
+        "create",
+        "set",
+        "remove",
+        "reuse",
+        "source_version",
+        "history/departure boundary"
+      ],
+      "denial": "PermissionDenied before any state/revision/history/creation-ledger commit",
+      "consumer": "same Commands; MCP tool switch or whole-object submission cannot bypass"
+    },
+    {
+      "branch": "undo",
+      "normalization": "derive inverse from current Host draft history, then reauthorize complete candidate under current grant; no rollback of Run/IO/approval or budget refund",
+      "origin_rule": "authenticated UI/ExternalAgent with same current grant",
+      "scope": "project",
+      "effect_types_checked": [
+        "create",
+        "set",
+        "remove",
+        "reuse",
+        "source_version",
+        "history/departure boundary"
+      ],
+      "denial": "PermissionDenied before any state/revision/history/creation-ledger commit",
+      "consumer": "same Commands; MCP tool switch or whole-object submission cannot bypass"
+    },
+    {
+      "branch": "redo",
+      "normalization": "derive forward from current Host draft history, reauthorize current fields/reuse/count; restore same permitted ID without fresh budget refund",
+      "origin_rule": "authenticated UI/ExternalAgent with same current grant",
+      "scope": "project",
+      "effect_types_checked": [
+        "create",
+        "set",
+        "remove",
+        "reuse",
+        "source_version",
+        "history/departure boundary"
+      ],
+      "denial": "PermissionDenied before any state/revision/history/creation-ledger commit",
+      "consumer": "same Commands; MCP tool switch or whole-object submission cannot bypass"
+    }
+  ],
+  "independent_cases_ref": "docs/04_开发与验收/特征细化/DRF04_授权有限案例.json",
+  "verification_ref": "docs/04_开发与验收/特征细化/DRF04_授权差异核验.json",
+  "actual_Host_enforcement": null,
+  "actual_product_runtime": null,
+  "actual_result": null,
+  "status": "canonical_private_delta_merged_native_compiled_by_window1_finite_model_passed_real_Host_unexecuted",
+  "canonical_merge_ref": "packages/commands/api.design.rs#HostEditGrant"
+}
