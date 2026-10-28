@@ -7,7 +7,8 @@
     "technical_manifest_current": "2.0.1",
     "user_next": "v2.0",
     "v2_manifest_version": "2.0.1",
-    "last_verified_baseline_manifest": "0.1.0"
+    "last_verified_baseline_manifest": "0.1.0",
+    "current_core_release_manifest_verified": "2.0.1"
   },
   "v2_phase": "full_target_implementation_in_progress",
   "v2_implementation_allowed": true,
@@ -7305,14 +7306,14 @@
     "authority": "2026-10-28用户最新要求：本窗口仅负责代码仓库部分提交，不负责或安排PDF、视频。",
     "owner_thread": "01a1731e-3f61-7c52-a25e-48d6e006a446",
     "owner": "本窗口",
-    "status": "in_progress",
+    "status": "completed_current_code_release_scope",
     "current_stage": "ST08",
     "next_stage": null,
     "execution_mode": "single_window_sequential",
     "other_window_dependencies": false,
     "scope_rule": "本窗口Stage仅覆盖代码仓库实现、必要验证、运行资源/打包脚本、仓库文档及提交准备。原项目15项保留历史；PDF/视频交付不归本窗口，不安排负责人或排期，也不作为代码完成前置。",
     "completion_rule": "每阶段本轮范围D项完成且V项有适用实际证据才关闭；实现待验保持待验。ST05原整厂云扩展延期而非通过，ST06—ST08按本轮核心范围继续；缺口关闭数不因延期增加。",
-    "counting_rule": "ST01—ST07已完成各自本轮适用出口；当前ST08源码审查与提交。原整厂云延期及完整缺口状态保留，不因本轮收口增加原完整缺口关闭数。",
+    "counting_rule": "ST01—ST08本轮适用出口已完成并本地提交；93端点整厂云及原完整版缺口继续延期/开放，不能从本轮Stage完成推断全产品需求关闭。",
     "resume_rule": "用户2026-10-28已明确恢复本窗口，从ST01按顺序持续完成代码仓库部分；未验证不标通过；不负责PDF和视频制作。",
     "validation_policy": {
       "must_keep": [
@@ -7912,7 +7913,7 @@
         "id": "ST08",
         "title": "代码仓库整理与提交",
         "owner": "本窗口",
-        "state": "in_progress",
+        "state": "completed_current_local_repository_scope",
         "depends_on": [
           "ST07"
         ],
@@ -7936,32 +7937,37 @@
           {
             "id": "ST08-D1",
             "action": "核对最终仓库diff、必要源码/配置/资源及构建运行说明；排除凭据、缓存、临时录像和无关文件，不删除用户已有材料",
-            "state": "pending"
+            "state": "completed_current_local_repository_scope"
           },
           {
             "id": "ST08-D2",
             "action": "按已有仓库约定整理提交范围及说明，执行已授权的代码提交动作并记录结果；公开发布、推送及PR依照实际授权办理，不因计划建立就执行",
-            "state": "pending"
+            "state": "completed_current_local_repository_scope"
           }
         ],
         "verify": [
           {
             "id": "ST08-V1",
             "check": "提交内容覆盖本窗口代码需求，必要资源和许可证齐全；ST01～ST07适用验证对应实际提交内容，不重复全量构建",
-            "state": "pending",
-            "evidence": null
+            "state": "passed_current_local_repository_scope",
+            "evidence": "docs/06_v2.0设计与开发控制/本轮代码交付接收.json"
           },
           {
             "id": "ST08-V2",
             "check": "核对实际提交状态、提交标识及剩余工作区变更；如推送则核对远端结果。未提交/未推送分别如实记录，不以PDF或视频完成作为前置",
-            "state": "pending",
-            "evidence": null
+            "state": "passed_current_local_repository_scope",
+            "evidence": "docs/06_v2.0设计与开发控制/本轮代码交付接收.json"
           }
         ],
         "exit": "代码仓库范围实现与验收已收口，提交结果与遗留状态准确记录；PDF、视频及报名不进入本窗口出口。",
         "verification_depth": "中：实际diff、必要资源与提交状态",
         "time_simplification": "复用适用测试结果，只审本次提交范围；不制作PDF/视频，不统筹三材料。",
-        "current_release_scope_note": "消费ST05本轮核心出口和ST03本地整厂证据；延期整厂云不作本轮前置。所选候选的正确性、正常使用、保存和独立包资源仍须验证。完成时仅声明本轮范围，原延期需求不得写完成。"
+        "current_release_scope_note": "消费ST05本轮核心出口和ST03本地整厂证据；延期整厂云不作本轮前置。所选候选的正确性、正常使用、保存和独立包资源仍须验证。完成时仅声明本轮范围，原延期需求不得写完成。",
+        "evidence_ref": "docs/06_v2.0设计与开发控制/本轮代码交付接收.json",
+        "local_code_commit": "1271cee38f56d61d1b46cbed3ae2c99e429746f2",
+        "branch": "codex/superfactory-v2-core-release-20261029",
+        "pushed": false,
+        "progress_note": "本地代码提交1271cee已完成，分支codex/superfactory-v2-core-release-20261029。源码/必要资源范围31121文件，代码提交31003文件，无范围外暂存；源码闭包及13项源码整理测试通过，已知活动凭据匹配0。恢复原公开版本MIT/NOTICE，缓存/历史验收输出/其他窗口PDF材料不提交。独立包5712文件、ZIP212749309字节已验；未推送或发布，既有非本轮改动保留。"
       }
     ],
     "excluded_scope": [
@@ -7970,6 +7976,13 @@
       "PDF/视频与代码的三材料统筹或对其他窗口派发"
     ],
     "report_boundary": "产品内报告/PDF导出是软件功能，相关代码修复及真实导出验证仍保留；不负责撰写或制作提交用PDF。",
-    "scope_update_20261029": "先完成任务8必须能运行的真实云核心；92设备整厂保留本地演示，93端点全量云执行及规模缺陷延期到入围后。PDF/视频仍不负责。"
+    "scope_update_20261029": "先完成任务8必须能运行的真实云核心；92设备整厂保留本地演示，93端点全量云执行及规模缺陷延期到入围后。PDF/视频仍不负责。",
+    "local_delivery": {
+      "code_commit": "1271cee38f56d61d1b46cbed3ae2c99e429746f2",
+      "branch": "codex/superfactory-v2-core-release-20261029",
+      "zip": "F:\\SuperFactory-v2-temp\\01a1731e\\full-factory\\st07-final-20261029\\superfactory-2.0.1-core-20261029-final.zip",
+      "pushed": false,
+      "receipt_ref": "docs/06_v2.0设计与开发控制/本轮代码交付接收.json"
+    }
   }
 }
