@@ -916,13 +916,13 @@ impl ProjectHost {
                 // A retired preparation cannot erase history already saved as immutable data.
                 if capture.snapshots.is_empty() && !old.record.snapshots.is_empty() {continue;}
                 if !crate::execution_archive::snapshot_prefix(&old.record.snapshots,&capture.snapshots)
-                    || old.record.history.as_ref().is_some_and(|h|capture.history.as_ref().is_none_or(|n|n.records.len()<h.records.len()||!same(h.records.as_slice(),&n.records[..h.records.len()]))) {
+                    || old.record.history.as_ref().is_some_and(|h|capture.history.as_ref().is_none_or(|n|!crate::execution_archive::record_prefix(&h.records,&n.records))) {
                     return Err(fail("Execution save would replace a different immutable observation prefix"));
                 }
                 capture.inherited=Some(old.record.files.clone());
                 for revision in &old.record.published_revisions {if !capture.published.contains(revision){capture.published.push(revision.clone());}}
                 capture.published.sort_by_key(|r|r.value());
-                if old.record.snapshots.len()==capture.snapshots.len()&&crate::execution_archive::snapshot_prefix(&old.record.snapshots,&capture.snapshots)&&same(&old.record.history,&capture.history)&&same(&old.record.published_revisions,&capture.published){continue;}
+                if old.record.snapshots.len()==capture.snapshots.len()&&crate::execution_archive::snapshot_prefix(&old.record.snapshots,&capture.snapshots)&&crate::execution_archive::same_history(old.record.history.as_ref(),capture.history.as_ref())&&same(&old.record.published_revisions,&capture.published){continue;}
             }
             capture.directory=self.next_document_directory("execution");
             captures.push(capture);
@@ -940,7 +940,7 @@ impl ProjectHost {
             let bytes=self.execution_frozen_files(identity)?;
             if !same(saved.record.frozen_inputs.as_ref(),&live.core.frozen)
                 || !crate::execution_archive::snapshot_prefix(&saved.record.snapshots,&snapshots)
-                || saved.record.history.as_ref().is_some_and(|old|history.records.len()<old.records.len()||!same(old.records.as_slice(),&history.records[..old.records.len()]))
+                || saved.record.history.as_ref().is_some_and(|old|!crate::execution_archive::record_prefix(&old.records,&history.records))
                 || saved.files.len()!=bytes.len()||saved.files.iter().any(|old|bytes.iter().find(|n|same(&n.file,&old.file)).is_none_or(|n|n.bytes!=old.bytes))
                 || saved.record.published_revisions.iter().any(|r|live.core.cloud_published_revision.is_none_or(|current|r.value()>current)) {
                 return Err(fail("Saved execution is not a consistent prefix of the original live Engine"));

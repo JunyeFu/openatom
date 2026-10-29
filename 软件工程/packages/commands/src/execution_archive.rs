@@ -52,6 +52,18 @@ pub(crate) fn snapshot_prefix(old:&[Arc<StoredExecutionSnapshot>], new:&[Arc<Sto
     let by_revision:BTreeMap<_,_>=new.iter().map(|s|(s.execution_revision.value(),s)).collect();
     old.iter().all(|s|by_revision.get(&s.execution_revision.value()).is_some_and(|n|s.same_snapshot(n)))
 }
+pub(crate) fn record_prefix(old:&[ExecutionObservationRecord],new:&[ExecutionObservationRecord])->bool {
+    old.len()<=new.len() && old.iter().zip(new).all(|(a,b)|same(a,b))
+}
+pub(crate) fn same_history(old:Option<&ExecutionObservationHistoryDocument>,new:Option<&ExecutionObservationHistoryDocument>)->bool {
+    match (old,new) {
+        (None,None)=>true,
+        (Some(a),Some(b))=>same(&(&a.document_kind,&a.contract_version,&a.identity,&a.observation_frontier),
+            &(&b.document_kind,&b.contract_version,&b.identity,&b.observation_frontier))
+            && a.records.len()==b.records.len() && record_prefix(&a.records,&b.records),
+        _=>false,
+    }
+}
 pub(crate) fn file_refs(record:&StoredExecutionArchive)->Vec<FileRef> {record.files.iter().map(|f|f.stored_file.clone()).collect()}
 
 impl ArchivedExecutionSource {
@@ -143,7 +155,7 @@ impl ArchivedExecutionSource {
         if !snapshot_prefix(&self.record.snapshots,&new.record.snapshots) {return false;}
         if let Some(old)=&self.record.history {
             let Some(new)=&new.record.history else{return false};
-            if old.records.len()>new.records.len()||!same(&old.records,&new.records[..old.records.len()].to_vec()) {return false;}
+            if !record_prefix(&old.records,&new.records) {return false;}
         }
         self.record.published_revisions.iter().all(|r|new.record.published_revisions.contains(r))
     }
