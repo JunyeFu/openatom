@@ -47,7 +47,7 @@ try{
   await sleep(500);
  }
  assert(last.snapshot.attempts.some(a=>a.attempt.phase_id==='load'&&a.started_at_host_ms!==null),'An actual multistage job must start before stopping');
- const startedJobs=last.snapshot.bound_jobs.filter(j=>j.started_at_ms!==null).map(j=>j.id);
+ const startedJobs=last.snapshot.bound_jobs.filter(j=>j.started_at_host_ms!==null).map(j=>j.job_id);assert(startedJobs.length>0);
  await write('before-stop.json',last);await p.getByRole('button',{name:'停止新派工',exact:true}).click();
  const deadline=Date.now()+600000;
  while(Date.now()<deadline){
@@ -58,7 +58,7 @@ try{
   await sleep(2000);
  }
  assert.equal(last.snapshot.lifecycle.state,'stopped','Started jobs must drain without being stranded by the device command gate');
- assert(startedJobs.every(id=>last.snapshot.bound_jobs.some(j=>j.id===id&&j.state==='completed')),'Every job already started before stop must finish');
+ assert(startedJobs.every(id=>last.snapshot.bound_jobs.some(j=>j.job_id===id&&j.state==='completed')),'Every job already started before stop must finish');
  assert(last.snapshot.attempts.some(a=>a.attempt.phase_id==='unload'&&a.completed_at_host_ms!==null),'Original multistage job must reach its actual unload receipt');
  assert.equal(last.snapshot.lifecycle.unresolved_command_ids.length,0);assert.equal(last.snapshot.pending_reservations.length,0);
  let close;const cleanupDeadline=Date.now()+120000;

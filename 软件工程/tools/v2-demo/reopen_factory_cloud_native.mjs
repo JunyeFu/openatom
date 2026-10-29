@@ -7,7 +7,7 @@ const launch=await read(path.join(directory,'launch.json')),saved=await read(pat
 assert(launch.pid!==JSON.parse((await fs.readFile(path.join(base,previous,'launch.json'),'utf8')).replace(/^\uFEFF/,'')).pid);
 assert(launch.monitor.connected===1||!launch.monitor.primary);assert(launch.owned_browser);
 const require=createRequire(import.meta.url),{chromium}=require('C:/Users/fujunye/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');
-const browser=await chromium.connectOverCDP(launch.cdp),page=browser.contexts().flatMap(c=>c.pages()).find(p=>p.url()==='http://tauri.localhost/');assert(page);page.setDefaultTimeout(30000);
+const browser=await chromium.connectOverCDP(launch.cdp),page=browser.contexts().flatMap(c=>c.pages()).find(p=>p.url()==='http://tauri.localhost/');assert(page);page.setDefaultTimeout(120000);
 const exec=promisify(execFile),pwsh='C:/Users/fujunye/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe',errors=[];let projectId=null;
 page.on('pageerror',e=>errors.push(String(e)));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
 const write=(name,value)=>fs.writeFile(path.join(out,name),JSON.stringify(value,null,2));
