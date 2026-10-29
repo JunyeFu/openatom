@@ -60,7 +60,7 @@ async fn session_payload(
         "SELECT immutable_payload FROM execution_sessions WHERE session_id=$1"
     };
     let payload: Value = if let Some(device) = device {
-        // Polling needs identity and membership, not every modeled stage's ports.
+        // Device polling and ingress need identity and membership, not every stage's ports.
         // Shared project/session locks exclude lifecycle writers while allowing
         // different devices to poll concurrently; binding() still locks each device.
         let sql = "SELECT jsonb_build_object('identity',immutable_payload->'identity','candidate_bindings',COALESCE((SELECT jsonb_agg(jsonb_build_object('device_id',b->'device_id')) FROM jsonb_array_elements(immutable_payload->'candidate_bindings') b WHERE b->>'device_id'=$2),'[]'::jsonb)) FROM execution_sessions WHERE session_id=$1 FOR SHARE";
@@ -770,7 +770,7 @@ async fn event(t: &Transaction<'_>, p: &Principal, device: &str, v: Value) -> Re
     let boot = text(&obs, "device_boot_id")?;
     let sequence = num(&obs, "device_sequence")?;
     let (b, ds, s) = if execution {
-        let s = session(t, p, text(&obs, "session_id")?, true).await?;
+        let s = session_payload(t, p, text(&obs, "session_id")?, true, Some(device)).await?;
         if obs["execution_epoch_id"] != s.identity["execution_epoch_id"] {
             return Err(Fault::conflict("epoch_mismatch", "wrong epoch"));
         }
