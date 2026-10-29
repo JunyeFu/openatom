@@ -704,6 +704,22 @@ pub(crate) mod tests {
         assert_eq!(s.admissions.len(), 2);
     }
     #[test]
+    fn same_inlet_time_reports_retain_all_admissions_and_dispatch_on_readiness_change() {
+        let mut s = session();
+        let start = Instant::now();
+        run(&mut s, start);
+        for sequence in [1, 2] {
+            let mut report = observation(&s, "L1-D01", sequence);
+            report.accept_new_work = false;
+            s.apply_observation(id(&format!("not-ready-{sequence}")), stamp(), report, at(start, 1)).unwrap();
+            assert!(commands(&s).is_empty());
+        }
+        ready(&mut s, "L1-D01", 3, at(start, 1));
+        assert_eq!(commands(&s).len(), 1);
+        assert_eq!(s.admissions.len(), 3);
+        assert!(s.admissions.iter().all(|a| matches!(a.decision, ReceiptAdmissionDecision::Applied)));
+    }
+    #[test]
     fn original_probe_expiry_and_exact_retry_do_not_refresh_eligibility() {
         let mut s = session();
         let start = Instant::now();
@@ -2474,6 +2490,10 @@ impl ExecutionSession {
             ));
         }
         let elapsed = self.elapsed(now)?;
+        let previous_elapsed = self.projector.snapshot(&SnapshotSelection::Latest {})
+            .expect("prepared execution projector has its latest frame")
+            .coverage.observed_until_host_ms.value();
+        let previous_revision = self.revision;
         self.advance_boundaries(elapsed, false)?;
         if self.is_terminal() {
             return Err(fault(
@@ -2481,6 +2501,15 @@ impl ExecutionSession {
                 "Execution observation window ended before this telemetry",
             ));
         }
+        // One ingress page has one actual Host time. Unchanged readiness at that
+        // same time cannot unlock work already scanned by its preceding admission.
+        let schedule_needed = previous_elapsed != elapsed || previous_revision != self.revision
+            || self.devices[&observation.device_id].latest.as_ref().is_none_or(|old| {
+                elapsed > old.observation_probe.expires_at_host_ms.value()
+                    || old.observation.accept_new_work != observation.accept_new_work
+                    || std::mem::discriminant(&old.observation.device_state) != std::mem::discriminant(&observation.device_state)
+                    || old.observation.active_command_id != observation.active_command_id
+            });
         let probe = self.devices[&observation.device_id]
             .probe
             .clone()
@@ -2530,7 +2559,9 @@ impl ExecutionSession {
         }
         self.reconcile_lifecycle()?;
         self.refresh_probes(elapsed)?;
-        self.schedule(elapsed)?;
+        if schedule_needed {
+            self.schedule(elapsed)?;
+        }
         self.capture_frame()?;
         Ok(admission)
     }
