@@ -338,6 +338,10 @@ def assemble(source_root, candidate_exe, device_resources, output, candidate_id,
     guide = root / "docs/05_开源与参赛/release-preparation/v2/当前版本快速开始.md"
     if guide.is_file():
         planned.append((guide, Path("使用说明.md"), "current_release_quickstart"))
+    for suffix in ("md", "html"):
+        guide = root / f"docs/05_开源与参赛/release-preparation/v2/软件操作指南.{suffix}"
+        if guide.is_file():
+            planned.append((guide, Path(f"操作指南.{suffix}"), "user_documentation"))
     destinations = set()
     for _, destination, _ in planned:
         safe_relative(str(destination))

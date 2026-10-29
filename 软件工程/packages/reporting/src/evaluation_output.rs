@@ -208,30 +208,49 @@ pub fn render_evaluation(
                 for image in &report.data.layout_and_schedule {
                     html.push_str(&format!("<section><h2>{}</h2><img src=\"{}\" alt=\"{}\"><p>场景修订 {} · 视图 {}</p></section>",escape(&image.title),escape(image.scene_ref.file.path.as_str()),escape(&image.title),image.scene_ref.scene_revision.0.value(),escape(&serde_json::to_string(&image.scene_ref.view).unwrap())));
                 }
-                html.push_str("<h2>完整数据明细</h2><label>筛选已保存的记录：<input id=\"filter\" type=\"search\" placeholder=\"输入Run、设备、物品或等待原因\"></label><p><small>以下15张原始数据表可展开；未知为空/null，并附状态与原因。所有筛选只读取本报告已保存的数据，不联网、不重新仿真。</small></p>");
+                html.push_str("<h2>完整数据明细</h2><label>筛选已保存的记录：<input id=\"filter\" type=\"search\" placeholder=\"输入Run、设备、物品或等待原因\"></label><p><small>以下15张原始数据表保留全部记录，展开后每页显示100条。筛选作用于整张表；未知为空/null，并附状态与原因。所有筛选只读取本报告已保存的数据，不联网、不重新仿真。</small></p>");
                 for table in &tables {
                     cancelled(flag)?;
-                    html.push_str(&format!("<details><summary>{} · {}条记录</summary><div class=scroll><table><thead><tr>",escape(&table.title),table.rows.len()));
+                    html.push_str(&format!("<details class=data-table><summary>{} · {}条记录</summary><p><button type=button class=table-previous>上一页</button> <span class=table-page></span> <button type=button class=table-next>下一页</button></p><div class=scroll><table><thead><tr>",escape(&table.title),table.rows.len()));
                     for c in &table.columns {
                         html.push_str(&format!("<th>{}</th>", escape(c)));
                     }
                     html.push_str("</tr></thead><tbody>");
-                    for row in &table.rows {
-                        html.push_str("<tr class=data-row>");
-                        for c in &table.columns {
-                            let v = &row[c];
-                            html.push_str(&format!("<td>{}</td>",if v.is_null(){"<span title=\"未取得或不适用，参见state/reason\">未知/不适用</span>".into()}else{escape(&if table.name=="costs.csv"&&c=="amount"{v.as_f64().map_or_else(||cell(v),money)}else{cell(v)})}));
-                        }
-                        html.push_str("</tr>");
-                    }
-                    html.push_str("</tbody></table></div></details>");
+                    let rows: Vec<Vec<Option<String>>> = table
+                        .rows
+                        .iter()
+                        .map(|row| {
+                            table
+                                .columns
+                                .iter()
+                                .map(|column| {
+                                    let value = &row[column];
+                                    if value.is_null() {
+                                        None
+                                    } else if table.name == "costs.csv" && column == "amount" {
+                                        Some(value.as_f64().map_or_else(|| cell(value), money))
+                                    } else {
+                                        Some(cell(value))
+                                    }
+                                })
+                                .collect()
+                        })
+                        .collect();
+                    let data = serde_json::to_string(&rows)
+                        .unwrap()
+                        .replace('<', "\\u003c")
+                        .replace('>', "\\u003e")
+                        .replace('&', "\\u0026");
+                    html.push_str(&format!("</tbody></table></div><script type=application/json>{data}</script></details>"));
                 }
                 let json = serde_json::to_string(report)
                     .unwrap()
                     .replace('<', "\\u003c")
                     .replace('>', "\\u003e")
                     .replace('&', "\\u0026");
-                html.push_str(&format!("<details><summary>同源完整数据与接手</summary><p>独立报告JSON不是可恢复工程快照；工程包需单独明确随附。</p><pre id=raw></pre></details><script id=report-data type=application/json>{json}</script><script>const report=JSON.parse(document.getElementById('report-data').textContent);document.getElementById('raw').textContent=JSON.stringify(report,null,2);document.getElementById('filter').addEventListener('input',e=>{{const q=e.target.value.toLocaleLowerCase();for(const row of document.querySelectorAll('.data-row'))row.hidden=!row.textContent.toLocaleLowerCase().includes(q);}});</script></main></html>"));
+                html.push_str(&format!("<details id=raw-data><summary>同源完整数据与接手</summary><p>独立报告JSON不是可恢复工程快照；工程包需单独明确随附。</p><pre id=raw></pre></details><script id=report-data type=application/json>{json}</script><script>"));
+                html.push_str(include_str!("evaluation_table_browser.js"));
+                html.push_str("</script></main></html>");
                 outputs.insert(
                     "index.html".into(),
                     file("index.html", "text/html;charset=utf-8", html.into_bytes()),

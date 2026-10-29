@@ -211,19 +211,40 @@ fn csv_context_retains_each_frozen_runs_target_and_assumptions() {
     // Export-level assumptions are not the selected historical Run's input.
     report.data.input_assumptions.clear();
     let rows = csv_rows(&report, "csv/context.csv");
-    let row = rows.iter().find(|r| r["run_id"] == i[0].3.id.as_str()).unwrap();
+    let row = rows
+        .iter()
+        .find(|r| r["run_id"] == i[0].3.id.as_str())
+        .unwrap();
     let assumptions: Vec<ParameterSource> =
         serde_json::from_str(&row["input_assumptions_json"]).unwrap();
-    let source = assumptions.iter().find(|s| s.field_path == "/acceptance_goal").unwrap();
-    let Some(TypedValue::String(goal)) = &source.value else { panic!("frozen goal absent") };
+    let source = assumptions
+        .iter()
+        .find(|s| s.field_path == "/acceptance_goal")
+        .unwrap();
+    let Some(TypedValue::String(goal)) = &source.value else {
+        panic!("frozen goal absent")
+    };
     let goal: Value = serde_json::from_str(goal).unwrap();
-    assert_eq!(goal["accepted_quantity_per_day"], json!({"value":{"coefficient":3,"decimal_places":0},"unit":"piece"}));
-    assert_eq!(goal["observation_window"], json!({"start_ms":0,"end_ms":120000}));
+    assert_eq!(
+        goal["accepted_quantity_per_day"],
+        json!({"value":{"coefficient":3,"decimal_places":0},"unit":"piece"})
+    );
+    assert_eq!(
+        goal["observation_window"],
+        json!({"start_ms":0,"end_ms":120000})
+    );
     assert_eq!(row["goal_met"], "false");
     assert_eq!(row["goal_met_state"], "known");
     assert!(row.contains_key("report_generation_context_json"));
 
-    let design = build_evaluation(context(&i[0], ReportMode::DesignDescription), &[], &[], &[], &[]).unwrap();
+    let design = build_evaluation(
+        context(&i[0], ReportMode::DesignDescription),
+        &[],
+        &[],
+        &[],
+        &[],
+    )
+    .unwrap();
     let rows = csv_rows(&design, "csv/context.csv");
     assert_eq!(rows[0]["goal_met"], "");
     assert_eq!(rows[0]["goal_met_state"], "not_applicable");
@@ -768,7 +789,18 @@ fn human_money_half_up_does_not_round_the_frozen_base_data() {
                 .unwrap()
                 .bytes,
         );
-        assert!(html.contains(&format!("<td>{display}</td>")));
+        let displayed_cells: Vec<Vec<Vec<Option<String>>>> = html
+            .split("<script type=application/json>")
+            .skip(1)
+            .map(|part| serde_json::from_str(part.split("</script>").next().unwrap()).unwrap())
+            .collect();
+        assert!(
+            displayed_cells
+                .iter()
+                .flatten()
+                .flatten()
+                .any(|cell| cell.as_deref() == Some(display))
+        );
         let json: Value = serde_json::from_slice(
             &files
                 .iter()

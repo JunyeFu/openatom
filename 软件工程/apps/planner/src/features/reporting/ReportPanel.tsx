@@ -28,8 +28,13 @@ export function ReportPanel({ workspace, services, evidence, scope, ready, task,
     <details><summary>工程与运行来源</summary><dl><dt>当前工程</dt><dd>{project.title} · {project.id} r{project.revision}</dd><dt>实际Run引用</dt><dd>{mode === 'design_description' ? '不适用' : evidence.map(e => e.run.id).join('、') || '未选择'}</dd><dt>方案及版本</dt><dd>{scenarioRefs.map(s => `${s.scenario_id} r${s.revision}`).join('、') || '无'}</dd><dt>接受范围</dt><dd>{scope.acceptance.length ? scope.acceptance.map(scopeText).join('；') : '按宿主分别列出已声明范围；不暗分单位成本'}</dd></dl></details>
     <p>价格、币种、日历或计算边界缺失时保留未知；明确的零费率与“没有数据”分开。专业图、用途认可和绑定只取真实已有结果。</p>
     {disabledReason && <p className="delivery-hint">{disabledReason}</p>}<button className="primary" disabled={task.active || !!disabledReason} onClick={() => void task.start(() => services.startEvaluation({ revision: project.revision, report_mode: mode, scenario_refs: scenarioRefs, run_refs: mode === 'design_description' ? [] : evidence.map(e => e.run.id), metric_scope: scope, formats }), 'evaluation')}>选择目录并生成报告</button>
-    {output && <section><h3>上次任务返回的实际文件</h3><p>目标选择 {output.destination.selection_id}；以下内容归属已完成任务，不随上方选择改写。</p><ul>{output.files.map(f => <li key={f.path}><code>{f.path}</code> · {f.kind}</li>)}</ul><IssueList issues={output.limitations} /><EvaluationView report={output.context} onLocate={onLocate} /></section>}
+    {output && <section><h3>上次任务返回的实际文件</h3><p>报告已生成，文件保存在刚才选择的目录中。</p><OutputFiles key={output.context.id} files={output.files} /><IssueList issues={output.limitations} /><EvaluationView report={output.context} onLocate={onLocate} /></section>}
   </section>;
+}
+
+function OutputFiles({ files }: { files: readonly { path: string; kind: string }[] }) {
+  const [open, setOpen] = useState(false), [page, setPage] = useState(0);
+  return <details onToggle={event => setOpen(event.currentTarget.open)}><summary>查看生成文件 · 共 {files.length} 项，含报告资源与工程数据</summary>{open && <><button disabled={page === 0} onClick={() => setPage(page - 1)}>上一页文件</button><span> 第 {page + 1} / {Math.ceil(files.length / 100)} 页 </span><button disabled={(page + 1) * 100 >= files.length} onClick={() => setPage(page + 1)}>下一页文件</button><ul>{files.slice(page * 100, page * 100 + 100).map(file => <li key={file.path}><code>{file.path}</code> · {file.kind}</li>)}</ul></>}</details>;
 }
 
 export function EvaluationView({ report, onLocate }: { report: EvaluationReport; onLocate?: DeliveryWorkspaceProps['onLocate'] }) {
@@ -43,7 +48,13 @@ export function EvaluationView({ report, onLocate }: { report: EvaluationReport;
       {!r.costs.inputs.length && <p>没有提供所选成本输入，不能据此声称完整成本为零。</p>}<IssueList issues={r.costs.missing_conditions} /><JsonDetails label="冻结费率、资源占用与来源" value={{ inputs: r.costs.inputs, lines: r.costs.lines, resources: r.resource_metrics }} />
       <div className="delivery-table-scroll"><table><caption>实际资源占用与等待（不相加为总工时）</caption><thead><tr><th>资源</th><th>占用／容量时间</th><th>可用容量时间</th><th>有效工作</th><th>等待</th><th>利用率</th><th>缺项</th></tr></thead><tbody>{r.resource_metrics.map(m => <tr key={m.resource_id}><td>{m.resource_id}</td><td>{m.any_busy_ms} ms／{m.occupied_capacity_ms} {m.capacity_unit}·ms</td><td>{m.available_capacity_ms == null ? '未知' : `${m.available_capacity_ms} ${m.capacity_unit}·ms`}</td><td>{m.effective_work_ms == null ? '未知' : `${m.effective_work_ms} ms`}</td><td>{m.waiting_ms == null ? '未知' : `${m.waiting_ms} ms`}</td><td>{m.utilization ?? '未知'}</td><td><IssueList issues={m.missing_conditions} /></td></tr>)}</tbody></table></div>
       <IssueList issues={r.limitations} /><JsonDetails label="该Run的等待原因、接受事件与参数来源" value={{ waits: r.waits, acceptance_events: r.acceptance_events, input_assumptions: r.input_assumptions }} />
-      {!!r.waits.length && <div className="delivery-table-scroll"><table><caption>等待与对象定位</caption><thead><tr><th>对象</th><th>实际区间（ms）</th><th>原因与结束</th></tr></thead><tbody>{r.waits.map((w, i) => <tr key={i}><td>{onLocate ? <button onClick={() => onLocate(r.run_id, w.object_ref)}>{w.object_ref.kind}:{w.object_ref.id}</button> : `${w.object_ref.kind}:${w.object_ref.id}`}</td><td>{w.interval.start_ms}—{w.interval.end_ms}</td><td><JsonDetails label="查看等待条件" value={{ reasons: w.reasons, end_cause: w.end_cause, execution_ref: w.execution_ref, phase_ref: w.phase_ref }} /></td></tr>)}</tbody></table></div>}
+      {!!r.waits.length && <WaitingRecords key={`${report.id}:${r.run_id}`} run={r} onLocate={onLocate} />}
     </section>)}<JsonDetails label="报告模块精确版本、素材权利与专业附件" value={{ modules: report.module_versions, rights: report.asset_rights, images: report.layout_and_schedule, editable_project: report.editable_project_ref }} /><p>报告JSON是评估数据；另行交付可编辑工程，才能重开修改。没有完整运行快照时从初始条件重跑。</p>
   </section>;
+}
+
+function WaitingRecords({ run, onLocate }: { run: EvaluationReport['run_evaluations'][number]; onLocate?: DeliveryWorkspaceProps['onLocate'] }) {
+  const [page, setPage] = useState(0);
+  const start = page * 100;
+  return <section aria-label="等待记录明细"><p>共 {run.waits.length} 条等待记录，每页100条。</p><button disabled={page === 0} onClick={() => setPage(page - 1)}>上一页等待</button><span> 第 {page + 1} / {Math.ceil(run.waits.length / 100)} 页 </span><button disabled={start + 100 >= run.waits.length} onClick={() => setPage(page + 1)}>下一页等待</button><div className="delivery-table-scroll"><table><caption>等待与对象定位</caption><thead><tr><th>对象</th><th>实际区间（ms）</th><th>原因与结束</th></tr></thead><tbody>{run.waits.slice(start, start + 100).map((w, index) => <tr key={start + index}><td>{onLocate ? <button onClick={() => onLocate(run.run_id, w.object_ref)}>{w.object_ref.kind}:{w.object_ref.id}</button> : `${w.object_ref.kind}:${w.object_ref.id}`}</td><td>{w.interval.start_ms}—{w.interval.end_ms}</td><td><JsonDetails label="查看等待条件" value={{ reasons: w.reasons, end_cause: w.end_cause, execution_ref: w.execution_ref, phase_ref: w.phase_ref }} /></td></tr>)}</tbody></table></div></section>;
 }
