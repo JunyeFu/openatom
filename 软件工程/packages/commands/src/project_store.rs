@@ -14,7 +14,7 @@ use std::{
     fs::{self, File, OpenOptions},
     io::{Read, Write},
     path::{Path, PathBuf},
-    sync::atomic::{AtomicBool, AtomicU64, Ordering},
+    sync::{Arc, atomic::{AtomicBool, AtomicU64, Ordering}},
 };
 #[cfg(windows)]
 use windows_sys::Win32::Storage::FileSystem::{
@@ -30,7 +30,8 @@ pub struct ProjectArchive {
     pub professional: crate::ProfessionalDocuments,
     pub manifest: PackageManifest,
     /// Exact included file bytes, keyed by package-relative paths; excludes project.json.
-    pub files: BTreeMap<String, Vec<u8>>,
+    /// Validation and save candidates share them; explicit edits use Arc::make_mut.
+    pub files: Arc<BTreeMap<String, Vec<u8>>>,
     pub(crate) execution_sources: crate::execution_archive::ArchivedExecutions,
 }
 
@@ -839,23 +840,24 @@ fn read_root_with_documents(
 
 fn validate_archive(
     manifest: PackageManifest,
-    files: BTreeMap<String, Vec<u8>>,
+    files: impl Into<Arc<BTreeMap<String, Vec<u8>>>>,
 ) -> Result<ProjectArchive, ApiError> {
     validate_archive_with_documents(manifest, files).map(|(archive, _)| archive)
 }
 
 fn validate_archive_with_documents(
     manifest: PackageManifest,
-    files: BTreeMap<String, Vec<u8>>,
+    files: impl Into<Arc<BTreeMap<String, Vec<u8>>>>,
 ) -> Result<(ProjectArchive, BTreeMap<String, Document>), ApiError> {
     validate_archive_reusing_documents(manifest, files, None)
 }
 
 fn validate_archive_reusing_documents(
     manifest: PackageManifest,
-    files: BTreeMap<String, Vec<u8>>,
+    files: impl Into<Arc<BTreeMap<String, Vec<u8>>>>,
     mut reusable: Option<(&ProjectArchive, &mut BTreeMap<String, Document>)>,
 ) -> Result<(ProjectArchive, BTreeMap<String, Document>), ApiError> {
+    let files = files.into();
     check_paths(manifest.documents.iter().map(|e| e.file_ref.path.as_str()))?;
     check_paths(files.keys().map(String::as_str))?;
     if files.keys().any(|path| {
@@ -1920,7 +1922,7 @@ pub(crate) fn write_project_archive_with_additions(
         }
     }
     let archive = assemble_archive_with_retained(draft, backing, additions, generation, retained)?;
-    for (path, bytes) in &archive.files {
+    for (path, bytes) in archive.files.iter() {
         check_cancelled(cancelled)?;
         match directory.read(path) {
             Ok(existing) if &existing == bytes => {}
@@ -2620,10 +2622,10 @@ mod tests {
             let duplicate_path = format!("conflicts/{expected}.json");
             duplicate.file_ref.path = RelativeFilePath::try_from(duplicate_path.clone()).unwrap();
             archive.manifest.documents.push(duplicate);
-            archive.files.insert(duplicate_path, changed);
+            Arc::make_mut(&mut archive.files).insert(duplicate_path, changed);
             let directory = TempDirectory::new();
             let opened = Directory::open(&directory.path).unwrap();
-            for (path, bytes) in &archive.files {
+            for (path, bytes) in archive.files.iter() {
                 opened.write_new(path, bytes).unwrap();
             }
             opened
@@ -2695,10 +2697,8 @@ mod tests {
             .collect();
         for (index, original) in originals.iter().enumerate() {
             let path = format!("copies/document-{:04}.json", index + 1);
-            archive.files.insert(
-                path.clone(),
-                archive.files[original.file_ref.path.as_str()].clone(),
-            );
+            let bytes = archive.files[original.file_ref.path.as_str()].clone();
+            Arc::make_mut(&mut archive.files).insert(path.clone(), bytes);
             let mut duplicate = original.clone();
             duplicate.file_ref.path = RelativeFilePath::try_from(path).unwrap();
             archive.manifest.documents.push(duplicate);
@@ -2713,13 +2713,12 @@ mod tests {
         next_entry.revision = Some(next.revision.clone());
         next_entry.file_ref.path =
             RelativeFilePath::try_from("copies/next-job-version.json".to_owned()).unwrap();
-        archive
-            .files
+        Arc::make_mut(&mut archive.files)
             .insert(next_entry.file_ref.path.as_str().into(), encode(&next));
         archive.manifest.documents.push(next_entry);
         let directory = TempDirectory::new();
         let opened = Directory::open(&directory.path).unwrap();
-        for (path, bytes) in &archive.files {
+        for (path, bytes) in archive.files.iter() {
             opened.write_new(path, bytes).unwrap();
         }
         opened
@@ -2797,7 +2796,7 @@ mod tests {
         let active = changed.manifest.documents.iter()
             .find(|entry| matches!(entry.role, DocumentRole::ActiveProject)).unwrap()
             .file_ref.path.as_str().to_owned();
-        changed.files.insert(active, b"not JSON".to_vec());
+        Arc::make_mut(&mut changed.files).insert(active, b"not JSON".to_vec());
         error(write_for_project(&directory.path, &first.project, Some(&changed),
             &AtomicBool::new(false)), ErrorCode::InvalidInput);
         assert_eq!(fs::read(directory.path.join("project.json")).unwrap(), old_root);
@@ -2854,7 +2853,7 @@ mod tests {
             .file_ref
             .path
             .as_str();
-        for (path, bytes) in &first.files {
+        for (path, bytes) in first.files.iter() {
             if path != active {
                 assert_eq!(moved.files.get(path), Some(bytes), "lost/changed {path}");
             }
@@ -3059,8 +3058,7 @@ mod tests {
         let first = save(&directory.path, &source.project, Some(&source));
         let old_root = fs::read(directory.path.join("project.json")).unwrap();
         let mut changed = first.clone();
-        changed
-            .files
+        Arc::make_mut(&mut changed.files)
             .insert("support/notes.bin".into(), vec![9, 9, 9]);
         let mut project = first.project.clone();
         set_revision(&mut project, 2);
@@ -4009,7 +4007,7 @@ mod tests {
                 let mut frozen: ScenarioInput = decode(&saved.files[path], path).unwrap();
                 frozen.supplies = draft.scenarios.values().next().unwrap().supplies.clone();
                 frozen.supplies[0].transport_ref = other;
-                saved.files.insert(path.into(), encode(&frozen));
+                Arc::make_mut(&mut saved.files).insert(path.into(), encode(&frozen));
                 if variant == "supporting" {
                     saved
                         .manifest
@@ -4075,7 +4073,7 @@ mod tests {
                 .path
                 .as_str()
                 .to_owned();
-            source.files.insert(active_path, encode(&active));
+            Arc::make_mut(&mut source.files).insert(active_path, encode(&active));
             for entry in &mut source.manifest.documents {
                 if matches!(entry.role, DocumentRole::ScenarioInput) {
                     entry.role = DocumentRole::SupportingFile;
@@ -4085,7 +4083,7 @@ mod tests {
             let mut frozen: ScenarioInput = decode(&source.files[path], path).unwrap();
             frozen.revision = Revision(SafeUint::try_from(9).unwrap());
             frozen.supplies = draft.scenarios.values().next().unwrap().supplies.clone();
-            source.files.insert(path.into(), encode(&frozen));
+            Arc::make_mut(&mut source.files).insert(path.into(), encode(&frozen));
             let entry = source
                 .manifest
                 .documents
@@ -4098,10 +4096,10 @@ mod tests {
             }
             let mut run: RunResult = decode(&source.files["run.json"], "run.json").unwrap();
             run.input_ref.scenario_revision = frozen.revision;
-            source.files.insert("run.json".into(), encode(&run));
+            Arc::make_mut(&mut source.files).insert("run.json".into(), encode(&run));
             let directory = TempDirectory::new();
             let opened = Directory::open(&directory.path).unwrap();
-            for (path, bytes) in &source.files {
+            for (path, bytes) in source.files.iter() {
                 opened.write_new(path, bytes).unwrap();
             }
             opened
@@ -4475,8 +4473,7 @@ pub(crate) fn prepare_handoff_archive(
         .assets
         .retain(|r| asset_ids.contains(r.asset_ref.as_str()));
     manifest.restart_policy = RestartPolicy::RestartFromInitialInput;
-    let mut files: BTreeMap<_, _> = full
-        .files
+    let mut files: BTreeMap<_, _> = Arc::unwrap_or_clone(full.files)
         .into_iter()
         .filter(|(p, _)| keep.contains(p))
         .collect();
@@ -4598,7 +4595,7 @@ pub(crate) fn write_package_directory(
         Err(e) if matches!(e.code, ErrorCode::MissingReference) => None,
         Err(e) => return Err(e),
     };
-    for (path, bytes) in &archive.files {
+    for (path, bytes) in archive.files.iter() {
         check_cancelled(cancelled)?;
         match directory.read(path) {
             Ok(existing) if existing == *bytes => {}

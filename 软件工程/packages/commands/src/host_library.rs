@@ -539,7 +539,7 @@ impl ProjectHost {
         let mut files = self
             .backing
             .as_ref()
-            .map(|archive| archive.files.clone())
+            .map(|archive| archive.files.as_ref().clone())
             .unwrap_or_default();
         for addition in &self.additions {
             files.insert(

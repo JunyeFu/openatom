@@ -6552,10 +6552,7 @@ mod tests {
         let removed: Vec<_> = module_paths
             .iter()
             .filter_map(|path| {
-                host.backing
-                    .as_mut()
-                    .unwrap()
-                    .files
+                std::sync::Arc::make_mut(&mut host.backing.as_mut().unwrap().files)
                     .remove(path)
                     .map(|bytes| (path.clone(), bytes))
             })
@@ -6570,25 +6567,22 @@ mod tests {
             "{missing}"
         );
         for (path, bytes) in removed {
-            host.backing.as_mut().unwrap().files.insert(path, bytes);
+            std::sync::Arc::make_mut(&mut host.backing.as_mut().unwrap().files).insert(path, bytes);
         }
         let path = module_paths[0].clone();
-        let original = host.backing.as_mut().unwrap().files.remove(&path).unwrap();
+        let original = std::sync::Arc::make_mut(&mut host.backing.as_mut().unwrap().files).remove(&path).unwrap();
         let mut malformed: Value = serde_json::from_slice(&original).unwrap();
         malformed["data"]["definition"]["version"] = json!("9.9.9");
-        host.backing
-            .as_mut()
-            .unwrap()
-            .files
+        std::sync::Arc::make_mut(&mut host.backing.as_mut().unwrap().files)
             .insert(path.clone(), serde_json::to_vec(&malformed).unwrap());
         let invalid = read(&mut host, "module", old_ref.id.as_str(), source.clone());
         assert_eq!(
             invalid["outcome"]["data"]["code"], "InvalidInput",
             "{invalid}"
         );
-        host.backing.as_mut().unwrap().files.insert(path, original);
+        std::sync::Arc::make_mut(&mut host.backing.as_mut().unwrap().files).insert(path, original);
         let path = run.input_ref.frozen_scenario_file.path.as_str().to_owned();
-        let original = host.backing.as_mut().unwrap().files.remove(&path).unwrap();
+        let original = std::sync::Arc::make_mut(&mut host.backing.as_mut().unwrap().files).remove(&path).unwrap();
         let missing = read(
             &mut host,
             "scenario",
@@ -6606,10 +6600,7 @@ mod tests {
             } else {
                 json!(99)
             };
-            host.backing
-                .as_mut()
-                .unwrap()
-                .files
+            std::sync::Arc::make_mut(&mut host.backing.as_mut().unwrap().files)
                 .insert(path.clone(), serde_json::to_vec(&malformed).unwrap());
             let invalid = read(
                 &mut host,
@@ -6622,15 +6613,15 @@ mod tests {
                 "{invalid}"
             );
         }
-        host.backing.as_mut().unwrap().files.insert(path, original);
+        std::sync::Arc::make_mut(&mut host.backing.as_mut().unwrap().files).insert(path, original);
         let path = run.input_ref.frozen_project_file.path.as_str().to_owned();
-        let original = host.backing.as_mut().unwrap().files.remove(&path).unwrap();
+        let original = std::sync::Arc::make_mut(&mut host.backing.as_mut().unwrap().files).remove(&path).unwrap();
         let missing = read(&mut host, "module", old_ref.id.as_str(), source.clone());
         assert_eq!(
             missing["outcome"]["data"]["code"], "MissingReference",
             "{missing}"
         );
-        host.backing.as_mut().unwrap().files.insert(path, original);
+        std::sync::Arc::make_mut(&mut host.backing.as_mut().unwrap().files).insert(path, original);
         assert!(exact_data(host.project.as_ref().unwrap(), &project_before));
         assert!(exact_data(&host.runs[&run.id].result, &run));
         let created = packaging_call(
@@ -9907,10 +9898,7 @@ mod tests {
             panic!("template source")
         };
         let template_path = template.project.as_str().to_owned();
-        host.backing
-            .as_mut()
-            .unwrap()
-            .files
+        std::sync::Arc::make_mut(&mut host.backing.as_mut().unwrap().files)
             .remove(&template_path)
             .unwrap();
         let before = host.current_draft();
@@ -10719,7 +10707,7 @@ mod tests {
 
     fn write_test_archive(path: &std::path::Path, archive: &ProjectArchive) {
         std::fs::create_dir(path).unwrap();
-        for (name, bytes) in &archive.files {
+        for (name, bytes) in archive.files.iter() {
             let file = path.join(name);
             std::fs::create_dir_all(file.parent().unwrap()).unwrap();
             std::fs::write(file, bytes).unwrap();
@@ -11296,7 +11284,7 @@ mod tests {
             "{state:?}"
         );
         let archive = read_project_archive(&saved).unwrap();
-        for (path, bytes) in &archive.files {
+        for (path, bytes) in archive.files.iter() {
             let file = altered.join(path);
             std::fs::create_dir_all(file.parent().unwrap()).unwrap();
             std::fs::write(file, bytes).unwrap();
