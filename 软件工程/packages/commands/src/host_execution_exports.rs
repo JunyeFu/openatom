@@ -1573,7 +1573,7 @@ impl ProjectHost {
         source: &ExecutionReportSource,
     ) -> Result<ExecutionReportInputSession, ApiError> {
         let local = self.local_execution_source(&source.identity)?;
-        let snapshot = local.snapshot(&SnapshotSelection::Revision {execution_revision:source.execution_revision.clone()})?.clone();
+        let snapshot = local.snapshot(&SnapshotSelection::Revision {execution_revision:source.execution_revision.clone()})?.into_owned();
         let mut history=local.history_document()?;
         history.records.truncate(snapshot.observation_frontier.value() as usize);
         history.observation_frontier=snapshot.observation_frontier.clone();

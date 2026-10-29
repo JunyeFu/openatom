@@ -56,7 +56,7 @@ impl LocalExecutionSource<'_> {
     pub(super) fn frozen(&self) -> &ExecutionFrozenInputs {
         match self { Self::Live(v) => &v.core.frozen, Self::Archive(v) => &v.record.frozen_inputs }
     }
-    pub(super) fn snapshot(&self, selection: &SnapshotSelection) -> Result<&ExecutionSnapshot,ApiError> {
+    pub(super) fn snapshot(&self, selection: &SnapshotSelection) -> Result<std::borrow::Cow<'_, ExecutionSnapshot>,ApiError> {
         match self {
             Self::Live(v) => v.core.projector.snapshot(selection).map_err(projection_failure),
             Self::Archive(v) => v.reader.as_ref().ok_or_else(||error(ErrorCode::MissingReference,"Unbuilt preparation has no observed execution revision",None))?.snapshot(selection).map_err(projection_failure),
@@ -262,7 +262,7 @@ impl ProjectHost {
         Ok(core.pending_cloud_work.first().cloned())
     }
     pub fn execution_gateway_snapshot(&mut self, lease: &ExecutionGatewayLease) -> Result<ExecutionSnapshot, ApiError> {
-        self.gateway_core(lease)?.projector.snapshot(&SnapshotSelection::Latest {}).cloned().map_err(projection_failure)
+        self.gateway_core(lease)?.projector.snapshot(&SnapshotSelection::Latest {}).map(std::borrow::Cow::into_owned).map_err(projection_failure)
     }
     pub fn execution_gateway_acknowledge(
         &mut self,
@@ -464,7 +464,7 @@ impl ProjectHost {
         params: HostReadRequestParams,
     ) -> Result<ExecutionReadEnvelope, ApiError> {
         let source = self.local_execution_source(&params.identity)?;
-        let snapshot = source.snapshot(&params.selection)?.clone();
+        let snapshot = source.snapshot(&params.selection)?.into_owned();
         let entry = match source {
             LocalExecutionSource::Live(entry) => entry,
             LocalExecutionSource::Archive(_) => {

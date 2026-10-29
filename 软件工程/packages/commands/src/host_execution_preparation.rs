@@ -909,20 +909,20 @@ impl ProjectHost {
                 ExecutionArchiveCapture {directory:String::new(),frozen:pending.frozen.clone(),snapshots,history,published,files:pending._files.clone(),inherited:None}
             };
             if let Some(old)=self.backing.as_ref().and_then(|a|a.execution_sources.get(&key(&capture.frozen.identity))) {
-                if !same(&old.record.frozen_inputs,&*capture.frozen) || old.files.len()!=capture.files.len()
+                if !same(old.record.frozen_inputs.as_ref(),capture.frozen.as_ref()) || old.files.len()!=capture.files.len()
                     || old.files.iter().any(|f|capture.files.iter().find(|n|same(&f.file,&n.file)).is_none_or(|n|n.bytes!=f.bytes)) {
                     return Err(fail("Original execution frozen bytes conflict with the saved source"));
                 }
                 // A retired preparation cannot erase history already saved as immutable data.
                 if capture.snapshots.is_empty() && !old.record.snapshots.is_empty() {continue;}
-                if old.record.snapshots.iter().any(|s|capture.snapshots.iter().find(|n|n.execution_revision==s.execution_revision).is_none_or(|n|!same(n,s)))
+                if !crate::execution_archive::snapshot_prefix(&old.record.snapshots,&capture.snapshots)
                     || old.record.history.as_ref().is_some_and(|h|capture.history.as_ref().is_none_or(|n|n.records.len()<h.records.len()||!same(h.records.as_slice(),&n.records[..h.records.len()]))) {
                     return Err(fail("Execution save would replace a different immutable observation prefix"));
                 }
                 capture.inherited=Some(old.record.files.clone());
                 for revision in &old.record.published_revisions {if !capture.published.contains(revision){capture.published.push(revision.clone());}}
                 capture.published.sort_by_key(|r|r.value());
-                if same(&old.record.snapshots,&capture.snapshots)&&same(&old.record.history,&capture.history)&&same(&old.record.published_revisions,&capture.published){continue;}
+                if old.record.snapshots.len()==capture.snapshots.len()&&crate::execution_archive::snapshot_prefix(&old.record.snapshots,&capture.snapshots)&&same(&old.record.history,&capture.history)&&same(&old.record.published_revisions,&capture.published){continue;}
             }
             capture.directory=self.next_document_directory("execution");
             captures.push(capture);
@@ -938,8 +938,8 @@ impl ProjectHost {
             let snapshots=live.core.projector.snapshots();
             let history=live.core.projector.history_document().map_err(|e|fail(&e.message))?;
             let bytes=self.execution_frozen_files(identity)?;
-            if !same(&saved.record.frozen_inputs,&live.core.frozen)
-                || saved.record.snapshots.iter().any(|old|snapshots.iter().find(|n|n.execution_revision==old.execution_revision).is_none_or(|n|!same(n,old)))
+            if !same(saved.record.frozen_inputs.as_ref(),&live.core.frozen)
+                || !crate::execution_archive::snapshot_prefix(&saved.record.snapshots,&snapshots)
                 || saved.record.history.as_ref().is_some_and(|old|history.records.len()<old.records.len()||!same(old.records.as_slice(),&history.records[..old.records.len()]))
                 || saved.files.len()!=bytes.len()||saved.files.iter().any(|old|bytes.iter().find(|n|same(&n.file,&old.file)).is_none_or(|n|n.bytes!=old.bytes))
                 || saved.record.published_revisions.iter().any(|r|live.core.cloud_published_revision.is_none_or(|current|r.value()>current)) {

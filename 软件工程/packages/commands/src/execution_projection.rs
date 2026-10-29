@@ -1047,10 +1047,47 @@ fn objects(
     Ok(result)
 }
 
+/// Immutable snapshot held compressed between reads. Its JSON representation is
+/// still the exact ExecutionSnapshot, including when reading an older archive.
+#[derive(Debug, Clone)]
+pub struct StoredExecutionSnapshot {
+    pub execution_revision: SafeUint,
+    pub identity: w::ExecutionIdentity,
+    pub project_input_ref: RunInputRef,
+    compressed: Vec<u8>,
+}
+impl StoredExecutionSnapshot {
+    pub(crate) fn capture(snapshot: &w::ExecutionSnapshot) -> Result<Self> {
+        let mut encoder = flate2::write::GzEncoder::new(Vec::new(), flate2::Compression::fast());
+        serde_json::to_writer(&mut encoder, snapshot).map_err(|e| fail("projection.snapshot_encoding", e.to_string()))?;
+        let compressed = encoder.finish().map_err(|e| fail("projection.snapshot_encoding", e.to_string()))?;
+        Ok(Self { execution_revision: snapshot.execution_revision.clone(), identity: snapshot.identity.clone(),
+            project_input_ref: snapshot.project_input_ref.clone(), compressed })
+    }
+    pub(crate) fn decode(&self) -> Result<w::ExecutionSnapshot> {
+        serde_json::from_reader(flate2::read::GzDecoder::new(self.compressed.as_slice()))
+            .map_err(|e| fail("projection.snapshot_encoding", e.to_string()))
+    }
+    pub(crate) fn same_snapshot(&self, other: &Self) -> bool { self.compressed == other.compressed }
+}
+impl Serialize for StoredExecutionSnapshot {
+    fn serialize<S: serde::Serializer>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error> {
+        self.decode().map_err(serde::ser::Error::custom)?.serialize(serializer)
+    }
+}
+impl<'de> serde::Deserialize<'de> for StoredExecutionSnapshot {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> std::result::Result<Self, D::Error> {
+        let snapshot = w::ExecutionSnapshot::deserialize(deserializer)?;
+        Self::capture(&snapshot).map_err(serde::de::Error::custom)
+    }
+}
+
 /// Owns only immutable read projections and state records. Never an Engine or inventory.
 #[derive(Default)]
 pub struct ExecutionProjector {
-    snapshots: BTreeMap<u64, std::sync::Arc<w::ExecutionSnapshot>>,
+    snapshots: BTreeMap<u64, std::sync::Arc<StoredExecutionSnapshot>>,
+    latest_snapshot: Option<std::sync::Arc<w::ExecutionSnapshot>>,
+    cutoff_snapshot: Option<std::sync::Arc<w::ExecutionSnapshot>>,
     records: Vec<w::ExecutionObservationRecord>,
     cutoff_revision: Option<u64>,
     last_engine_event_sequence: u64,
@@ -1067,10 +1104,11 @@ impl ExecutionProjector {
             ));
         }
         let revision = input.ledger.execution_revision.value();
-        let cutoff = self.cutoff_revision.and_then(|r| self.snapshots.get(&r)).map(|s| s.as_ref());
+        let cutoff = self.cutoff_snapshot.as_deref();
         let mut snapshot = build(&input, cutoff)?;
         if let Some(existing) = self.snapshots.get(&revision) {
-            let mut comparison = existing.as_ref().clone();
+            let existing = existing.decode()?;
+            let mut comparison = existing.clone();
             comparison.observation_frontier = n(0)?;
             if !equal(&comparison, &snapshot) {
                 return Err(fail(
@@ -1079,11 +1117,11 @@ impl ExecutionProjector {
                 ));
             }
             return Ok(ProjectionBatch {
-                snapshot: existing.as_ref().clone(),
+                snapshot: existing,
                 observation_records: vec![],
             });
         }
-        let previous = self.snapshots.last_key_value();
+        let previous = self.latest_snapshot.as_ref().map(|s| (s.execution_revision.value(), s.as_ref()));
         let expected = previous.map_or(0, |(r, _)| r + 1);
         if revision != expected {
             return Err(fail(
@@ -1189,9 +1227,12 @@ impl ExecutionProjector {
         }
         snapshot.observation_frontier = n((self.records.len() + added.len()) as u64)?;
         self.records.extend(added.clone());
-        self.snapshots.insert(revision, std::sync::Arc::new(snapshot.clone()));
+        self.snapshots.insert(revision, std::sync::Arc::new(StoredExecutionSnapshot::capture(&snapshot)?));
+        let current = std::sync::Arc::new(snapshot.clone());
+        self.latest_snapshot = Some(current.clone());
         if input.as_cutoff_snapshot {
             self.cutoff_revision = Some(revision);
+            self.cutoff_snapshot = Some(current);
         }
         self.last_engine_event_sequence = event_frontier;
         Ok(ProjectionBatch {
@@ -1199,22 +1240,17 @@ impl ExecutionProjector {
             observation_records: added,
         })
     }
-    pub fn snapshot(&self, selection: &w::SnapshotSelection) -> Result<&w::ExecutionSnapshot> {
-        let found = match selection {
-            w::SnapshotSelection::Latest {} => self.snapshots.last_key_value().map(|(_, s)| s),
-            w::SnapshotSelection::Revision { execution_revision } => {
-                self.snapshots.get(&execution_revision.value())
-            }
-            w::SnapshotSelection::Cutoff {} => {
-                self.cutoff_revision.and_then(|r| self.snapshots.get(&r))
-            }
-        };
-        found.map(|s| s.as_ref()).ok_or_else(|| {
-            fail(
-                "projection.missing_snapshot",
-                "Exact requested revision/cutoff is unavailable; no latest fallback",
-            )
-        })
+    pub fn snapshot(&self, selection: &w::SnapshotSelection) -> Result<std::borrow::Cow<'_, w::ExecutionSnapshot>> {
+        let revision = match selection {
+            w::SnapshotSelection::Latest {} => self.snapshots.last_key_value().map(|(r, _)| *r),
+            w::SnapshotSelection::Revision { execution_revision } => Some(execution_revision.value()),
+            w::SnapshotSelection::Cutoff {} => self.cutoff_revision,
+        }.ok_or_else(|| fail("projection.missing_snapshot", "Exact requested revision/cutoff is unavailable; no latest fallback"))?;
+        for cached in [&self.latest_snapshot, &self.cutoff_snapshot].into_iter().flatten() {
+            if cached.execution_revision.value() == revision { return Ok(std::borrow::Cow::Borrowed(cached)); }
+        }
+        self.snapshots.get(&revision).ok_or_else(|| fail("projection.missing_snapshot", "Exact requested revision/cutoff is unavailable; no latest fallback"))?
+            .decode().map(std::borrow::Cow::Owned)
     }
     pub fn history_document(&self) -> Result<w::ExecutionObservationHistoryDocument> {
         let snapshot = self.snapshot(&w::SnapshotSelection::Latest {})?;
@@ -1228,7 +1264,7 @@ impl ExecutionProjector {
             records: self.records.clone(),
         })
     }
-    pub fn snapshots(&self) -> Vec<std::sync::Arc<w::ExecutionSnapshot>> {
+    pub fn snapshots(&self) -> Vec<std::sync::Arc<StoredExecutionSnapshot>> {
         self.snapshots.values().cloned().collect()
     }
 
@@ -1236,7 +1272,7 @@ impl ExecutionProjector {
     /// Restored archives can be queried, but not appended (their original live Engine is absent).
     pub fn from_archive(
         history: w::ExecutionObservationHistoryDocument,
-        snapshots: Vec<std::sync::Arc<w::ExecutionSnapshot>>,
+        snapshots: Vec<std::sync::Arc<StoredExecutionSnapshot>>,
     ) -> Result<ExecutionArchiveReader> {
         let mut saved = BTreeMap::new();
         for snapshot in snapshots {
@@ -1253,9 +1289,11 @@ impl ExecutionProjector {
         }
         let cutoff_revision = saved
             .last_key_value()
-            .and_then(|(_, s)| s.coverage.cutoff_snapshot_revision.as_ref())
-            .map(|r| r.value());
-        let store = Self {
+            .map(|(_, s)| s.decode())
+            .transpose()?
+            .and_then(|s| s.coverage.cutoff_snapshot_revision.map(|r| r.value()));
+        let mut store = Self {
+            latest_snapshot: None, cutoff_snapshot: None,
             snapshots: saved,
             records: history.records,
             cutoff_revision,
@@ -1269,7 +1307,7 @@ impl ExecutionProjector {
                 "Archive needs r0 and its complete original record prefix",
             ));
         }
-        let baseline = &store.snapshots[&0];
+        let baseline = store.snapshots[&0].decode()?;
         if baseline.coverage.clock_started || baseline.coverage.observed_until_host_ms.value() != 0
         {
             return Err(fail(
@@ -1298,9 +1336,12 @@ impl ExecutionProjector {
                 "Archive has unowned records beyond latest snapshot",
             ));
         }
-        let mut previous_snapshot: Option<&w::ExecutionSnapshot> = None;
-        for snapshot in store.snapshots.values() {
-            if let Some(previous) = previous_snapshot {
+        let mut previous_snapshot: Option<w::ExecutionSnapshot> = None;
+        let mut reconstructed = BTreeMap::new();
+        let mut reconstructed_frontier = 0;
+        for frame in store.snapshots.values() {
+            let snapshot = frame.decode()?;
+            if let Some(previous) = &previous_snapshot {
                 if snapshot.observation_frontier.value() < previous.observation_frontier.value()
                     || snapshot.coverage.observed_until_host_ms.value()
                         < previous.coverage.observed_until_host_ms.value()
@@ -1314,9 +1355,14 @@ impl ExecutionProjector {
                     ));
                 }
             }
-            let reconstructed =
-                store.as_of(snapshot, snapshot.coverage.observed_until_host_ms.value())?;
-            let expected = objects(snapshot)?;
+            // Frontiers advance monotonically. Replaying every earlier record for
+            // every saved frame made a factory archive take quadratic work to open.
+            let prefix = store.prefix(&snapshot)?;
+            for record in &prefix[reconstructed_frontier..] {
+                reconstructed.insert(object_key(&record.object), record.object.clone());
+            }
+            reconstructed_frontier = prefix.len();
+            let expected = objects(&snapshot)?;
             if reconstructed.len() != expected.len()
                 || reconstructed
                     .iter()
@@ -1329,23 +1375,13 @@ impl ExecutionProjector {
             }
             previous_snapshot = Some(snapshot);
         }
+        store.latest_snapshot = previous_snapshot.map(std::sync::Arc::new);
+        store.cutoff_snapshot = store.cutoff_revision.and_then(|r| store.snapshots.get(&r)).map(|frame| frame.decode().map(std::sync::Arc::new)).transpose()?;
         Ok(ExecutionArchiveReader { store })
     }
-    fn exact(
-        &self,
-        identity: &w::ExecutionIdentity,
-        revision: &SafeUint,
-    ) -> Result<&w::ExecutionSnapshot> {
-        let snapshot = self
-            .snapshots
-            .get(&revision.value())
-            .ok_or_else(|| fail("projection.missing_snapshot", "Exact revision missing"))?;
-        if !equal(identity, &snapshot.identity) {
-            return Err(fail(
-                "projection.identity",
-                "Query identity differs from this read store",
-            ));
-        }
+    fn exact(&self, identity: &w::ExecutionIdentity, revision: &SafeUint) -> Result<std::borrow::Cow<'_, w::ExecutionSnapshot>> {
+        let snapshot = self.snapshot(&w::SnapshotSelection::Revision { execution_revision: revision.clone() })?;
+        if !equal(identity, &snapshot.identity) { return Err(fail("projection.identity", "Query identity differs from this read store")); }
         Ok(snapshot)
     }
     fn prefix<'a>(
@@ -1359,16 +1395,17 @@ impl ExecutionProjector {
                 "Requested observation frontier is absent",
             )
         })?;
-        for (i, record) in prefix.iter().enumerate() {
-            if record.record_sequence.value() != i as u64 + 1
+        // append and archive admission establish the complete ordered sequence.
+        // Its last row bounds this prefix; do not rescan it on every query/page.
+        if prefix.last().is_some_and(|record| {
+            record.record_sequence.value() != frontier
                 || record.execution_revision.value() > snapshot.execution_revision.value()
                 || record.at_host_ms.value() > snapshot.coverage.observed_until_host_ms.value()
-            {
-                return Err(fail(
-                    "projection.history_gap",
-                    "Record is outside the exact snapshot prefix",
-                ));
-            }
+        }) {
+            return Err(fail(
+                "projection.history_gap",
+                "Record is outside the exact snapshot prefix",
+            ));
         }
         Ok(prefix)
     }
@@ -1384,9 +1421,11 @@ impl ExecutionProjector {
             ));
         }
         let mut result = BTreeMap::new();
-        for record in self.prefix(snapshot)? {
+        for record in self.prefix(snapshot)?.iter().rev() {
             if record.at_host_ms.value() <= at {
-                result.insert(object_key(&record.object), record.object.clone());
+                // The last record before the selected time is the one displayed.
+                // Clone each object's selected state once, not every older state.
+                result.entry(object_key(&record.object)).or_insert_with(|| record.object.clone());
             }
         }
         Ok(result)
@@ -1399,7 +1438,7 @@ impl ExecutionProjector {
         let filter = normalized_objects(&query.objects);
         let keys: BTreeSet<_> = filter.iter().map(reference_key).collect();
         let values: Vec<_> = self
-            .as_of(snapshot, query.at_host_ms.value())?
+            .as_of(&snapshot, query.at_host_ms.value())?
             .into_iter()
             .filter(|(key, _)| keys.is_empty() || keys.contains(key))
             .map(|(_, v)| v)
@@ -1468,16 +1507,12 @@ impl ExecutionProjector {
         }
         let filter = normalized_objects(&query.objects);
         let keys: BTreeSet<_> = filter.iter().map(reference_key).collect();
-        let selected: Vec<_> = self
-            .prefix(snapshot)?
-            .iter()
-            .filter(|r| {
+        let prefix = self.prefix(&snapshot)?;
+        let matches = |r: &&w::ExecutionObservationRecord| {
                 r.at_host_ms.value() >= query.host_from_ms.value()
                     && r.at_host_ms.value() <= query.host_until_ms.value()
                     && (keys.is_empty() || keys.contains(&object_key(&r.object)))
-            })
-            .cloned()
-            .collect();
+            };
         let selection = w::ExecutionHistoryCursorQuerySelection {
             contract_version:
                 w::ExecutionHistoryCursorQuerySelectionContractVersion::SfExecution20Draft11,
@@ -1501,27 +1536,29 @@ impl ExecutionProjector {
                     "History cursor selection/frontier changed",
                 ));
             }
-            selected
-                .iter()
-                .position(|r| r.record_sequence.value() == c.after_record_sequence.value())
-                .ok_or_else(|| {
-                    fail(
-                        "projection.cursor_mismatch",
-                        "History cursor does not name an original selected record",
-                    )
-                })?
-                + 1
+            let after = c.after_record_sequence.value() as usize;
+            if after == 0 || prefix.get(after - 1).is_none_or(|r| !matches(&r)) {
+                return Err(fail(
+                    "projection.cursor_mismatch",
+                    "History cursor does not name an original selected record",
+                ));
+            }
+            after
         } else {
             0
         };
-        let end = (start + query.page.limit.value() as usize).min(selected.len());
-        let cursor = if end < selected.len() {
+        // Clone at most one page plus its lookahead, rather than the full history.
+        let limit = query.page.limit.value() as usize;
+        let mut selected: Vec<_> = prefix[start..].iter().filter(matches).take(limit + 1).cloned().collect();
+        let more = selected.len() > limit;
+        selected.truncate(limit);
+        let cursor = if more {
             Some(encode_cursor(&w::ExecutionHistoryCursor {
                 kind: w::ExecutionHistoryCursorKind::ExecutionHistory,
                 cursor_version: 1.try_into().expect("version1"),
                 query_selection: selection,
                 observation_frontier: snapshot.observation_frontier.clone(),
-                after_record_sequence: n(selected[end - 1].record_sequence.value())?,
+                after_record_sequence: n(selected.last().unwrap().record_sequence.value())?,
             })?)
         } else {
             None
@@ -1532,7 +1569,7 @@ impl ExecutionProjector {
             observation_frontier: snapshot.observation_frontier.clone(),
             host_from_ms: query.host_from_ms.clone(),
             host_until_ms: query.host_until_ms.clone(),
-            records: selected[start..end].to_vec(),
+            records: selected,
             next_cursor: cursor,
         })
     }
@@ -1541,7 +1578,7 @@ pub struct ExecutionArchiveReader {
     store: ExecutionProjector,
 }
 impl ExecutionArchiveReader {
-    pub fn snapshot(&self, selection: &w::SnapshotSelection) -> Result<&w::ExecutionSnapshot> {
+    pub fn snapshot(&self, selection: &w::SnapshotSelection) -> Result<std::borrow::Cow<'_, w::ExecutionSnapshot>> {
         self.store.snapshot(selection)
     }
     pub fn query_observations(

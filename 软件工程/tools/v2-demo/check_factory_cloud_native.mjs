@@ -44,15 +44,20 @@ try{
  while(Date.now()<deadline){
   last=await snapshot();const s=last.snapshot;
   const accepted=s.business_facts.acceptance_events.reduce((n,e)=>n+e.quantity.value.coefficient/10**e.quantity.value.decimal_places,0);
-  const summary={at:new Date().toISOString(),state:s.lifecycle.state,T:s.coverage.observed_until_host_ms,R:s.execution_revision,accepted,attempts:s.attempts.length,completed:s.attempts.filter(a=>a.state==='accepted').length,cloud_revision:last.delivery.cloud_published_revision};
+  const summary={at:new Date().toISOString(),state:s.lifecycle.state,T:s.coverage.observed_until_host_ms,R:s.execution_revision,accepted,attempts:s.attempts.length,completed:s.attempts.filter(a=>['accepted','business_effect_committed'].includes(a.state)).length,cloud_revision:last.delivery.cloud_published_revision};
   events.push(summary);await write('progress.json',events);console.log(JSON.stringify(summary));
   if(!activeSaved&&s.devices.some(d=>d.latest_observation?.observation.phase_progress?.effective_work_ms>0)){await write('actual-active-snapshot.json',last);await p.screenshot({path:path.join(out,'actual-active.png')});activeSaved=true;}
   if(['completed','stopped','failed'].includes(s.lifecycle.state)){await write('terminal.json',last);break;}
   await sleep(10000);
  }
  assert.equal(last.snapshot.lifecycle.state,'completed','Retain original session for diagnosis');
- assert.equal(events.at(-1).accepted,167);assert(last.snapshot.attempts.every(a=>a.state==='accepted'));
+ assert.equal(events.at(-1).accepted,167);
+ assert(last.snapshot.attempts.every(a=>['accepted','business_effect_committed'].includes(a.state)),'Every stage must settle, including intermediate products and transport');
  assert.equal(last.snapshot.attempts.length,1578,'Actual unchanged factory must complete every expected stage command');
+ const local=(await read(path.join(prior.saved,'documents/run-00000001/result.json'))).data;
+ const acceptedByOrder=events=>Object.fromEntries([...new Set(events.map(e=>e.order_id))].sort().map(id=>[id,events.filter(e=>e.order_id===id).reduce((n,e)=>n+e.quantity.value.coefficient/10**e.quantity.value.decimal_places,0)]));
+ assert.deepEqual(acceptedByOrder(last.snapshot.business_facts.acceptance_events),acceptedByOrder(local.acceptance_events),'Each frozen order must receive its own quantity');
+ assert.equal(last.snapshot.business_facts.transport.length,273);assert(last.snapshot.business_facts.transport.every(t=>t.phase==='returned'));
  await write('receipt.json',{status:'actual_full_factory_cloud_production_completed',identity,accepted:167,commands:last.snapshot.attempts.length,terminal_revision:last.snapshot.execution_revision,terminal_ms:last.snapshot.coverage.observed_until_host_ms,source_archive:prior.saved,software_in_loop:true,visual_same_revision_verified:false,saved_reopen_verified:false});
  console.log('Whole factory completed; same-source visual, query/export and saved reopening still require verification.');
 }catch(e){await write('failure.json',{error:String(e),stack:e.stack,identity});if(identity)await write('last-snapshot.json',await snapshot()).catch(()=>{});await p.screenshot({path:path.join(out,'failure.png')}).catch(()=>{});throw e;}finally{await browser.close();}

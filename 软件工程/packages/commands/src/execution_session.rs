@@ -102,6 +102,46 @@ pub(crate) mod tests {
     }
 
     #[test]
+    fn restored_history_pages_match_original_filtered_records_and_validate_middle_frames() {
+        let mut s = session();
+        let start = Instant::now();
+        run(&mut s, start);
+        s.tick(at(start, 500)).unwrap();
+        s.tick(at(start, 1000)).unwrap();
+        let history = s.projector.history_document().unwrap();
+        let frames = s.projector.snapshots();
+        let reader = ExecutionProjector::from_archive(history.clone(), frames.clone()).unwrap();
+        let mut query: ExecutionHistoryQuery = serde_json::from_value(json!({
+            "contract_version":"sf.execution/2.0-draft11", "identity":s.identity,
+            "execution_revision":s.revision, "host_from_ms":500, "host_until_ms":1000,
+            "objects":[], "page":{"limit":1,"cursor":null}
+        })).unwrap();
+        let expected: Vec<_> = history.records.iter().filter(|r| r.at_host_ms.value() >= 500).cloned().collect();
+        assert!(expected.len() > 1);
+        let mut actual = Vec::new();
+        loop {
+            let page = reader.query_history(&query).unwrap();
+            assert!(page.records.len() <= 1);
+            actual.extend(page.records);
+            query.page.cursor = page.next_cursor;
+            if query.page.cursor.is_none() { break; }
+        }
+        assert!(equal(&actual, &expected));
+        // Incremental reconstruction must still inspect an intermediate frame,
+        // even when the latest frame and every record remain unchanged.
+        let mut changed = frames;
+        let middle = changed.len() / 2;
+        let mut altered = changed[middle].decode().unwrap();
+        altered.devices[0].operator_accept_new_work = !altered.devices[0].operator_accept_new_work;
+        changed[middle] = std::sync::Arc::new(crate::execution_projection::StoredExecutionSnapshot::capture(&altered).unwrap());
+        assert!(ExecutionProjector::from_archive(history.clone(), changed).is_err());
+        let mut broken = history;
+        let middle = broken.records.len() / 2;
+        broken.records[middle].record_sequence = 1_u64.try_into().unwrap();
+        assert!(ExecutionProjector::from_archive(broken, s.projector.snapshots()).is_err());
+    }
+
+    #[test]
     fn selected_binding_views_preserve_the_full_view_filter() {
         let s = session();
         let observation = s.observe().unwrap();
@@ -376,7 +416,7 @@ pub(crate) mod tests {
             let next: Vec<_> = commands(s).into_iter().filter(|c| !handled.contains(&c.attempt.command_id)).collect();
             if next.is_empty() {
                 idle += 1;
-                if idle >= 3 { return s.projector.snapshot(&SnapshotSelection::Latest {}).unwrap().clone(); }
+                if idle >= 3 { return s.projector.snapshot(&SnapshotSelection::Latest {}).unwrap().into_owned(); }
                 continue;
             }
             idle = 0;
@@ -389,7 +429,7 @@ pub(crate) mod tests {
                     let admission = s.apply_receipt(id(&format!("semantic-{}-{seq}", command.device_id.as_str())), stamp(), receipt, at(start, now)).unwrap();
                     assert!(matches!(admission.decision, ReceiptAdmissionDecision::Applied), "{admission:?}");
                 }
-                if handled.len() >= limit { return s.projector.snapshot(&SnapshotSelection::Latest {}).unwrap().clone(); }
+                if handled.len() >= limit { return s.projector.snapshot(&SnapshotSelection::Latest {}).unwrap().into_owned(); }
             }
         }
         panic!("semantic Host did not settle");
@@ -1133,7 +1173,7 @@ pub(crate) mod tests {
             .projector
             .snapshot(&SnapshotSelection::Cutoff {})
             .unwrap()
-            .clone();
+            .into_owned();
         let latest = s.projector.snapshot(&SnapshotSelection::Latest {}).unwrap();
         assert_eq!(
             cutoff.execution_revision.value(),
@@ -1171,7 +1211,7 @@ pub(crate) mod tests {
         );
         s.tick(at(start, 30)).unwrap();
         assert!(equal(
-            s.projector.snapshot(&SnapshotSelection::Cutoff {}).unwrap(),
+            &s.projector.snapshot(&SnapshotSelection::Cutoff {}).unwrap(),
             &cutoff
         ));
         assert_eq!(
@@ -1201,7 +1241,7 @@ pub(crate) mod tests {
             .projector
             .snapshot(&SnapshotSelection::Cutoff {})
             .unwrap()
-            .clone();
+            .into_owned();
         assert_eq!(cutoff.coverage.observed_until_host_ms.value(), 10);
         assert!(cutoff.business_facts.acceptance_events.is_empty());
         assert!(cutoff.business_facts.resource_claims.iter().any(
@@ -1232,7 +1272,7 @@ pub(crate) mod tests {
             1
         );
         assert!(equal(
-            s.projector.snapshot(&SnapshotSelection::Cutoff {}).unwrap(),
+            &s.projector.snapshot(&SnapshotSelection::Cutoff {}).unwrap(),
             &cutoff
         ));
     }

@@ -70,8 +70,17 @@ impl ProjectArchive {
     }
 }
 
-pub(crate) fn encode_document<T: Serialize + Clone>(value: &T) -> Vec<u8> {
+pub(crate) fn encode_document<T: Serialize>(value: &T) -> Vec<u8> {
     encode(value)
+}
+
+/// Stream a large execution document into gzip instead of allocating its full
+/// uncompressed JSON in addition to the immutable captured history.
+pub(crate) fn encode_compressed_document<T: Serialize>(value: &T) -> Vec<u8> {
+    let mut encoder = flate2::write::GzEncoder::new(Vec::new(), flate2::Compression::fast());
+    serde_json::to_writer(&mut encoder, &Versioned { schema_version: SchemaVersion::V1, data: value })
+        .expect("typed execution document serialization");
+    encoder.finish().expect("in-memory execution document compression")
 }
 
 fn professional_additions(
@@ -536,12 +545,50 @@ fn decode<T: DeserializeOwned>(bytes: &[u8], path: &str) -> Result<T, ApiError> 
         .map_err(|e| invalid(path, format!("invalid typed document: {e}")))
 }
 
-fn encode<T: Serialize + Clone>(value: &T) -> Vec<u8> {
+fn encode<T: Serialize>(value: &T) -> Vec<u8> {
     serde_json::to_vec_pretty(&Versioned {
         schema_version: SchemaVersion::V1,
-        data: value.clone(),
+        data: value,
     })
     .expect("typed document serialization")
+}
+
+#[cfg(test)]
+mod borrowed_encoding_tests {
+    use super::*;
+    use std::sync::{Arc, atomic::{AtomicUsize, Ordering}};
+
+    #[test]
+    fn compressed_encoding_preserves_the_document_and_rejects_truncation() {
+        let value = serde_json::json!({"events":vec!["unchanged immutable state";1000]});
+        let bytes = encode_compressed_document(&value);
+        let restored: Versioned<Value> = serde_json::from_reader(flate2::read::GzDecoder::new(bytes.as_slice())).unwrap();
+        assert_eq!(restored.data, value);
+        assert!(bytes.len() < encode_document(&value).len());
+        assert!(serde_json::from_reader::<_,Versioned<Value>>(flate2::read::GzDecoder::new(&bytes[..bytes.len()/2])).is_err());
+    }
+
+    #[test]
+    fn encoding_keeps_the_versioned_document_without_cloning_its_payload() {
+        #[derive(Serialize)]
+        struct Payload {
+            rows: Vec<u64>,
+            #[serde(skip)]
+            clones: Arc<AtomicUsize>,
+        }
+        impl Clone for Payload {
+            fn clone(&self) -> Self {
+                self.clones.fetch_add(1, Ordering::SeqCst);
+                Self { rows: self.rows.clone(), clones: self.clones.clone() }
+            }
+        }
+        let clones = Arc::new(AtomicUsize::new(0));
+        let payload = Payload { rows: vec![1, 2, 3], clones: clones.clone() };
+        let bytes = encode_document(&payload);
+        assert_eq!(clones.load(Ordering::SeqCst), 0);
+        assert_eq!(serde_json::from_slice::<Value>(&bytes).unwrap(),
+            serde_json::json!({"schema_version":"1.0","data":{"rows":[1,2,3]}}));
+    }
 }
 
 enum Document {
@@ -555,7 +602,7 @@ enum Document {
     Artifact(ArtifactRecord),
     Run(RunResult),
     Evaluation(EvaluationReport),
-    ExecutionArchive(crate::StoredExecutionArchive),
+    ExecutionArchive(std::sync::Arc<crate::StoredExecutionArchive>),
     Binary,
 }
 
@@ -657,7 +704,7 @@ fn parse_document(entry: &DocumentEntry, bytes: &[u8]) -> Result<Document, ApiEr
         K::ArtifactRecord => Document::Artifact(decode(bytes, path)?),
         K::RunResult => Document::Run(decode(bytes, path)?),
         K::Evaluation => Document::Evaluation(decode(bytes, path)?),
-        K::ExecutionArchive => Document::ExecutionArchive(decode(bytes, path)?),
+        K::ExecutionArchive => Document::ExecutionArchive(std::sync::Arc::new(crate::execution_archive::decode_archive_document(bytes, path)?)),
         K::Asset => Document::Binary,
         _ => {
             return Err(failure(
@@ -988,7 +1035,10 @@ fn validate_archive_reusing_documents(
         files,
         execution_sources: BTreeMap::new(),
     };
-    archive.execution_sources = crate::execution_archive::load_sources(&archive)?;
+    let execution_documents = documents.iter().filter_map(|(path, document)| match document {
+        Document::ExecutionArchive(record) => Some((path.clone(), record.clone())), _ => None,
+    }).collect();
+    archive.execution_sources = crate::execution_archive::load_sources(&archive, &execution_documents)?;
     Ok((archive, documents))
 }
 

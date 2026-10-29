@@ -1,7 +1,7 @@
 //! Immutable execution data in ProjectArchive. No runtime, authority or Engine is persisted.
 use crate::{ApiError,ApiFieldError,ErrorCode,FrozenExecutionFile};
-use crate::execution_projection::{ExecutionArchiveReader,ExecutionProjector};
-use crate::project_store::{ArchiveAddition,ProjectArchive,encode_document};
+use crate::execution_projection::{ExecutionArchiveReader,ExecutionProjector,StoredExecutionSnapshot};
+use crate::project_store::{ArchiveAddition,ProjectArchive,encode_compressed_document};
 use sf_domain::{cloud_execution::*,*};
 use serde::{Serialize,Deserialize};
 use schemars::JsonSchema;
@@ -18,15 +18,19 @@ pub struct StoredExecutionFile {
 #[derive(Debug,Clone,Serialize,Deserialize,JsonSchema,TS)]
 #[serde(deny_unknown_fields)]
 pub struct StoredExecutionArchive {
-    pub frozen_inputs:ExecutionFrozenInputs,
-    pub snapshots:Vec<Arc<ExecutionSnapshot>>,
+    #[schemars(with = "ExecutionFrozenInputs")]
+    #[ts(as = "ExecutionFrozenInputs")]
+    pub frozen_inputs:Arc<ExecutionFrozenInputs>,
+    #[schemars(with = "Vec<ExecutionSnapshot>")]
+    #[ts(as = "Vec<ExecutionSnapshot>")]
+    pub snapshots:Vec<Arc<StoredExecutionSnapshot>>,
     // Unbuilt H01 preparation has frozen bytes but no actual r0/history yet.
     pub history:Option<ExecutionObservationHistoryDocument>,
     pub published_revisions:Vec<SafeUint>,
     pub files:Vec<StoredExecutionFile>,
 }
 pub(crate) struct ArchivedExecutionSource {
-    pub record:StoredExecutionArchive,
+    pub record:Arc<StoredExecutionArchive>,
     pub reader:Option<ExecutionArchiveReader>,
     pub files:Arc<Vec<FrozenExecutionFile>>,
 }
@@ -38,10 +42,20 @@ pub(crate) fn fail(message:&str)->ApiError {ApiError {code:ErrorCode::InvalidInp
 fn document<T:for<'de>Deserialize<'de>>(bytes:&[u8])->Result<T,ApiError> {
     serde_json::from_slice::<Versioned<T>>(bytes).map(|v|v.data).map_err(|_|fail("Invalid versioned execution archive document"))
 }
+pub(crate) fn decode_archive_document(bytes:&[u8], path:&str)->Result<StoredExecutionArchive,ApiError> {
+    if path.ends_with(".json.gz") {
+        serde_json::from_reader::<_,Versioned<StoredExecutionArchive>>(flate2::read::GzDecoder::new(bytes))
+            .map(|v|v.data).map_err(|_|fail("Invalid compressed versioned execution archive document"))
+    } else { document(bytes) }
+}
+pub(crate) fn snapshot_prefix(old:&[Arc<StoredExecutionSnapshot>], new:&[Arc<StoredExecutionSnapshot>])->bool {
+    let by_revision:BTreeMap<_,_>=new.iter().map(|s|(s.execution_revision.value(),s)).collect();
+    old.iter().all(|s|by_revision.get(&s.execution_revision.value()).is_some_and(|n|s.same_snapshot(n)))
+}
 pub(crate) fn file_refs(record:&StoredExecutionArchive)->Vec<FileRef> {record.files.iter().map(|f|f.stored_file.clone()).collect()}
 
 impl ArchivedExecutionSource {
-    pub(crate) fn load(record:StoredExecutionArchive,archive:&ProjectArchive)->Result<Self,ApiError> {
+    pub(crate) fn load(record:Arc<StoredExecutionArchive>,archive:&ProjectArchive)->Result<Self,ApiError> {
         let frozen=&record.frozen_inputs;
         if frozen.identity.project_id!=archive.project.id || frozen.project.id!=archive.project.id
             || frozen.project_input_ref.project_id!=archive.project.id
@@ -126,7 +140,7 @@ impl ArchivedExecutionSource {
     pub(crate) fn is_prefix_of(&self,new:&Self)->bool {
         if !same(&self.record.frozen_inputs,&new.record.frozen_inputs)||self.files.len()!=new.files.len()
             || self.files.iter().any(|old|new.files.iter().find(|n|same(&n.file,&old.file)).is_none_or(|n|n.bytes!=old.bytes)) {return false;}
-        if self.record.snapshots.iter().any(|old|new.record.snapshots.iter().find(|n|n.execution_revision==old.execution_revision).is_none_or(|n|!same(n,old))) {return false;}
+        if !snapshot_prefix(&self.record.snapshots,&new.record.snapshots) {return false;}
         if let Some(old)=&self.record.history {
             let Some(new)=&new.record.history else{return false};
             if old.records.len()>new.records.len()||!same(&old.records,&new.records[..old.records.len()].to_vec()) {return false;}
@@ -134,14 +148,15 @@ impl ArchivedExecutionSource {
         self.record.published_revisions.iter().all(|r|new.record.published_revisions.contains(r))
     }
 }
-pub(crate) fn load_sources(archive:&ProjectArchive)->Result<ArchivedExecutions,ApiError> {
+pub(crate) fn load_sources(archive:&ProjectArchive,documents:&BTreeMap<String,Arc<StoredExecutionArchive>>)->Result<ArchivedExecutions,ApiError> {
     let mut result=ArchivedExecutions::new();
     for entry in &archive.manifest.documents {
         if !matches!(entry.file_ref.kind,DocumentKind::ExecutionArchive) {continue;}
         if !entry.required||!matches!(entry.role,DocumentRole::SupportingFile)||!matches!(entry.object_ref.kind,ObjectKind::Project)
             ||entry.object_ref.id.as_str()!=archive.project.id.as_str()||entry.revision.is_some() {return Err(fail("Execution archive manifest owner/role conflicts"));}
         let bytes=archive.files.get(entry.file_ref.path.as_str()).ok_or_else(||fail("Execution archive document is missing"))?;
-        let record=document(bytes)?;
+        let _ = bytes; // Presence checked above; reuse the already parsed immutable document.
+        let record=documents.get(entry.file_ref.path.as_str()).ok_or_else(||fail("Execution archive document was not parsed"))?.clone();
         let source=Arc::new(ArchivedExecutionSource::load(record,archive)?);
         let key=key(&source.record.frozen_inputs.identity);
         if let Some(old)=result.get(&key) {
@@ -155,7 +170,7 @@ pub(crate) fn load_sources(archive:&ProjectArchive)->Result<ArchivedExecutions,A
 pub(crate) struct ExecutionArchiveCapture {
     pub directory:String,
     pub frozen:Arc<ExecutionFrozenInputs>,
-    pub snapshots:Vec<Arc<ExecutionSnapshot>>,
+    pub snapshots:Vec<Arc<StoredExecutionSnapshot>>,
     pub history:Option<ExecutionObservationHistoryDocument>,
     pub published:Vec<SafeUint>,
     pub files:Arc<Vec<FrozenExecutionFile>>,
@@ -177,9 +192,9 @@ impl ExecutionArchiveCapture {
                 revision:None,file_ref:stored.clone(),required:true},bytes:file.bytes.clone()});
             bindings.push(StoredExecutionFile {original_file:file.file.clone(),stored_file:stored,byte_length:(file.bytes.len() as u64).try_into().map_err(|_|fail("Frozen file exceeds safe length"))?});
         }
-        let record=StoredExecutionArchive {frozen_inputs:(*self.frozen).clone(),snapshots:self.snapshots,history:self.history,published_revisions:self.published,files:bindings};
+        let record=StoredExecutionArchive {frozen_inputs:self.frozen,snapshots:self.snapshots,history:self.history,published_revisions:self.published,files:bindings};
         additions.push(ArchiveAddition {entry:DocumentEntry {role:DocumentRole::SupportingFile,module_ref:None,object_ref:owner,revision:None,
-            file_ref:FileRef {path:format!("{}/source.json",self.directory).try_into().unwrap(),kind:DocumentKind::ExecutionArchive},required:true},bytes:encode_document(&record)});
+            file_ref:FileRef {path:format!("{}/source.json.gz",self.directory).try_into().unwrap(),kind:DocumentKind::ExecutionArchive},required:true},bytes:encode_compressed_document(&record)});
         Ok(additions)
     }
 }
