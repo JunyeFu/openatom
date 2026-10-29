@@ -7,6 +7,7 @@ import {chromium} from 'file:///C:/Users/fujunye/.cache/codex-runtimes/codex-pri
 const [base,attempt,resume='']=process.argv.slice(2),output=resume?'factory-live-'+resume:'factory-live',dir=path.join(base,attempt),out=path.join(dir,output||(resume?'connection-'+resume:'connection'));await fs.mkdir(out);
 const read=async f=>JSON.parse((await fs.readFile(f,'utf8')).replace(/^\uFEFF/,''));
 const launch=await read(path.join(dir,'launch.json')),prior=await read('F:/SuperFactory-v2-temp/01a1731e/full-factory/factory-native-1_6-standalone/st03-template-02/flow/receipt.json');
+const originalRun=await read(path.join(base,'st03-template-02/flow/actual-run.json')),cutoffMs=originalRun.window.end_ms;assert.equal(originalRun.window.start_ms,0);assert(Number.isSafeInteger(cutoffMs)&&cutoffMs>0);
 const browser=await chromium.connectOverCDP(launch.cdp),p=browser.contexts().flatMap(c=>c.pages()).find(p=>p.url()==='http://tauri.localhost/');assert(p);p.setDefaultTimeout(120000);
 const exec=promisify(execFile),pwsh='C:/Users/fujunye/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe';
 const write=(n,v)=>fs.writeFile(path.join(out,n),JSON.stringify(v,null,2));
@@ -30,17 +31,17 @@ try{
  }
  if(!resume || resume==='form'){
  await p.getByLabel('最终目标数量',{exact:true}).fill('167');await p.getByRole('combobox',{name:'目标单位',exact:true}).selectOption('piece');
- await p.getByLabel('停止新派工时间（秒）',{exact:true}).fill('7200');await p.getByLabel('设备状态有效期（秒）',{exact:true}).fill('30');
+ await p.getByLabel('停止新派工时间（秒）',{exact:true}).fill(String(cutoffMs/1000));await p.getByLabel('设备状态有效期（秒）',{exact:true}).fill('30');
  await p.waitForFunction(()=>document.querySelectorAll('.cloud-bindings input[type=checkbox]').length===93);
  await p.getByRole('button',{name:'选择全部设备',exact:true}).click();await p.waitForFunction(()=>document.querySelectorAll('.cloud-bindings input[type=checkbox]:checked').length===93);
- await write('prepare-requested.json',{target:167,devices:93,stages:944,cutoff_ms:7200000,software_demo_speed:30,minimum_phase_ms:1000,real_Host_clock:true,pid:launch.pid});
+ await write('prepare-requested.json',{target:167,devices:93,stages:944,cutoff_ms:cutoffMs,cutoff_source:'unchanged original Run window',software_demo_speed:30,minimum_phase_ms:1000,real_Host_clock:true,pid:launch.pid});
  await p.getByRole('button',{name:'准备生产',exact:true}).click();
  }
  await p.waitForFunction(()=>{const e=[...document.querySelectorAll('.cloud-controls button')].find(e=>e.textContent==='启动');return e&&!e.disabled;},{},{timeout:600000});
  identity=await p.locator('.cloud-source dl').evaluate(e=>Object.fromEntries([...e.querySelectorAll(':scope > div')].map(x=>[x.querySelector('dt').textContent,x.querySelector('dd').textContent])));
  await write('identity.json',identity);await write('prepared.json',await snapshot());
  await p.getByRole('button',{name:'启动',exact:true}).click();console.log('Actual whole-factory cloud production started',JSON.stringify(identity));
- let last,activeSaved=false;const deadline=Date.now()+7200000;
+ let last,activeSaved=false;const deadline=Date.now()+cutoffMs;
  while(Date.now()<deadline){
   last=await snapshot();const s=last.snapshot;
   const accepted=s.business_facts.acceptance_events.reduce((n,e)=>n+e.quantity.value.coefficient/10**e.quantity.value.decimal_places,0);
