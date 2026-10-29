@@ -106,8 +106,8 @@ pub(crate) mod tests {
         let mut s = session();
         let start = Instant::now();
         run(&mut s, start);
-        s.tick(at(start, 500)).unwrap();
-        s.tick(at(start, 1000)).unwrap();
+        ready(&mut s, "L1-D01", 1, at(start, 500));
+        ready(&mut s, "L1-D02", 1, at(start, 1000));
         let history = s.projector.history_document().unwrap();
         let frames = s.projector.snapshots();
         let reader = ExecutionProjector::from_archive(history.clone(), frames.clone()).unwrap();
@@ -683,6 +683,25 @@ pub(crate) mod tests {
             s.devices[&id("L1-D02")].bindings[0].nominal_work_ms.value(),
             15000
         );
+    }
+    #[test]
+    fn unrelated_idle_report_does_not_rewrite_unchanged_waiting_decisions() {
+        let mut s = session();
+        let start = Instant::now();
+        run(&mut s, start);
+        for device in ["L1-D01", "L1-D02"] {
+            s.control(id("operator"), id(&format!("disable-{device}")), s.revision,
+                ControlAction::SetDeviceAcceptance { device_id: id(device), accept_new_work: false }, start).unwrap();
+        }
+        ready(&mut s, "L1-D01", 1, at(start, 1));
+        let decisions = s.dispatch_decisions.clone();
+        let before = s.projector.history_document().unwrap().records.len();
+        ready(&mut s, "L1-D01", 2, at(start, 1));
+        assert!(equal(&decisions, &s.dispatch_decisions));
+        let history = s.projector.history_document().unwrap();
+        assert!(history.records[before..].iter().all(|r| !matches!(r.object, ExecutionObservedObject::LogicalWork { .. })));
+        assert!(commands(&s).is_empty());
+        assert_eq!(s.admissions.len(), 2);
     }
     #[test]
     fn original_probe_expiry_and_exact_retry_do_not_refresh_eligibility() {
@@ -2261,8 +2280,15 @@ impl ExecutionSession {
                     .map(|c| c.attempt.selected_binding_id.clone()),
                 candidates,
             };
-            self.dispatch_decisions
-                .insert(logical_job_id, explanation.clone());
+            // An unrelated idle report is not a new dispatch decision. Retain
+            // the original waiting cause until eligibility/ranking changes;
+            // otherwise the global admission sequence rewrites every queued
+            // job and turns one device report into a factory-sized history.
+            if selected.is_some() || self.dispatch_decisions.get(&logical_job_id).is_none_or(|old|
+                old.selected_binding_id.is_some() || !equal(&old.reason, &explanation.reason)
+                    || !equal(&old.candidates, &explanation.candidates)) {
+                self.dispatch_decisions.insert(logical_job_id, explanation.clone());
+            }
             if let Some(command) = selected {
                 current = self.observe()?;
                 let resource_plan = current

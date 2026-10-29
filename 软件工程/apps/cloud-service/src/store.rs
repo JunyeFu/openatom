@@ -216,7 +216,7 @@ pub(super) fn settled(v: &Value) -> bool {
             v.iter().all(|x| {
                 matches!(
                     x["state"].as_str(),
-                    Some("accepted" | "cancelled_not_started" | "device_failed")
+                    Some("accepted" | "business_effect_committed" | "cancelled_not_started" | "device_failed")
                 )
             })
         })
@@ -230,7 +230,6 @@ pub(super) fn settled(v: &Value) -> bool {
                             | "device_accepted"
                             | "device_started"
                             | "device_completed"
-                            | "business_effect_committed"
                             | "output_wait"
                             | "reconciliation_required"
                     )
@@ -1128,13 +1127,21 @@ async fn publish(
         )
         .await?;
     }
+    close_completed_commands(t, &sid, snap, old.as_ref(), None).await?;
+    success("snapshot_published", ack(snap, "stored"))
+}
+// Physical stage completion closes its command even when the product is an
+// intermediate result. Final acceptance remains a separate Host business fact.
+async fn close_completed_commands(t: &Transaction<'_>, sid: &str, snap: &Value,
+    old: Option<&Value>, only_device: Option<&str>) -> Result<()> {
     for a in array(snap, "attempts")? {
+        if only_device.is_some_and(|device| a["device_id"] != device) { continue; }
         if old.as_ref().is_some_and(|previous| previous["attempts"].as_array().unwrap().contains(a)) {
             continue;
         }
         if matches!(
             a["state"].as_str(),
-            Some("accepted" | "cancelled_not_started" | "device_failed")
+            Some("accepted" | "business_effect_committed" | "device_completed" | "cancelled_not_started" | "device_failed")
         ) {
             let cid = text(&a["attempt"], "command_id")?;
             let row=t.query_opt("SELECT immutable_payload,delivery_state FROM commands WHERE command_id=$1 AND session_id=$2",&[&cid,&sid]).await?.ok_or_else(Fault::missing)?;
@@ -1152,7 +1159,7 @@ async fn publish(
                 a["state"] == "cancelled_not_started" && row.get::<_, String>(1) == "withdrawn";
             if !withdrawn {
                 let expected = match a["state"].as_str().unwrap() {
-                    "accepted" => "completed",
+                    "accepted" | "business_effect_committed" | "device_completed" => "completed",
                     "device_failed" => "failed",
                     _ => "cancelled_not_started",
                 };
@@ -1164,7 +1171,7 @@ async fn publish(
                         && array(snap, "receipt_admissions")?.iter().any(|v| {
                             v["receipt_id"] == *id
                                 && v["decision"] == "applied"
-                                && (a["state"] != "accepted"
+                                && (!matches!(a["state"].as_str(), Some("accepted" | "business_effect_committed" | "device_completed"))
                                     || v["business_effect_committed"] == true)
                         })
                     {
@@ -1190,7 +1197,7 @@ async fn publish(
             t.execute("UPDATE commands SET closed_by_host_at=clock_timestamp() WHERE command_id=$1 AND closed_by_host_at IS NULL",&[&cid]).await?;
         }
     }
-    success("snapshot_published", ack(snap, "stored"))
+    Ok(())
 }
 async fn withdraw(t: &Transaction<'_>, p: &Principal, cid: &str, v: Value) -> Result<Value> {
     p.role(&[Role::HostGateway])?;
@@ -1268,7 +1275,15 @@ async fn retire(
         &v["expected_published_revision"],
         &snap["execution_revision"],
     )?;
-    if !settled(&snap)||t.query_opt("SELECT 1 FROM commands WHERE device_binding_id=$1 AND target_device_boot_id=$2 AND closed_by_host_at IS NULL",&[&b,&boot]).await?.is_some(){return Err(Fault::conflict("device_boot_conflict","published session or boot commands remain unsettled"));}
+    if !settled(&snap) { return Err(Fault::conflict("device_boot_conflict", "published session remains unsettled")); }
+    if t.query_opt("SELECT 1 FROM commands WHERE device_binding_id=$1 AND target_device_boot_id=$2 AND closed_by_host_at IS NULL LIMIT 1", &[&b,&boot]).await?.is_some() {
+        // Repair only the observed older publisher omission, using the exact
+        // current snapshot and matching Host-admitted terminal receipts.
+        close_completed_commands(t, &sid, &snap, None, Some(device)).await?;
+        if t.query_opt("SELECT 1 FROM commands WHERE device_binding_id=$1 AND target_device_boot_id=$2 AND closed_by_host_at IS NULL LIMIT 1", &[&b,&boot]).await?.is_some() {
+            return Err(Fault::conflict("device_boot_conflict", "boot commands remain unsettled"));
+        }
+    }
     t.execute("UPDATE device_boots SET state='retired',retired_at_published_revision=$3 WHERE device_binding_id=$1 AND device_boot_id=$2",&[&b,&boot,&num(&v,"expected_published_revision")?]).await?;
     success(
         "device_boot",

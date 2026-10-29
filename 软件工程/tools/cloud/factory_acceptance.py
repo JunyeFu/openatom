@@ -51,6 +51,7 @@ with cloud.Server():
     last_view=copy.deepcopy(view);last_view['binding']=second;probe=dict(probe,probe_id='last-stage-probe');last_view['pending_observation_probe']=probe
     snapshot['expected_published_revision']=revision;snapshot['snapshot']['execution_revision']=revision+1;snapshot['snapshot']['devices']=[view,last_view]
     result('PUT','/v2/sessions/'+sid+'/snapshots/'+str(revision+1),snapshot)
+    issued=[]
     for index,binding in enumerate([first,second]):
         command=cloud.fixture('Command');cid='stage-command-'+str(index)
         command['attempt'].update(command_id=cid,logical_job_id='stage-job',selected_binding_id=binding['binding_id'],phase_id=binding['phase_id'])
@@ -64,6 +65,7 @@ with cloud.Server():
         delivered=polled['command']
         assert delivered['attempt']['selected_binding_id']==binding['binding_id']
         assert delivered['target_device_boot_id']==boot['device_boot_id']
+        issued.append(copy.deepcopy(command))
     checks.append('both exact stage commands delivered to the same registered boot')
     checks.append('device-specific probe projection and exact poll retry retain the original boot')
     bad=copy.deepcopy(command);bad['attempt']['command_id']='wrong-phase-command';bad['parameters']['nominal_work_ms']=9999
@@ -93,6 +95,49 @@ with cloud.Server():
     observed=result('POST','/v2/sessions/'+sid+'/observations/query',query,who='reader')
     assert observed['objects']==[dict(kind='transport',data=transport)]
     checks.append('transport observation persists and reads with the exact object identity and retry')
+    # Reproduce the full factory: physical stages finish without final-order acceptance.
+    terminal=copy.deepcopy(bulk);final_revision=revision+4
+    terminal['expected_published_revision']=revision+3;terminal['snapshot']['execution_revision']=final_revision
+    snap=terminal['snapshot'];snap['coverage']['observed_until_host_ms']=2
+    snap['lifecycle'].update(state='stopped',new_dispatch_allowed=False,unresolved_command_ids=[])
+    snap['pending_reservations']=[];snap['bound_jobs']=[]
+    snap['business_facts'].update(pending_output_refs=[],resource_claims=[])
+    snap['receipt_admissions']=[];snap['attempts']=[]
+    for index,command in enumerate(issued):
+        event=cloud.fixture('CloudReceiptRequest')
+        event['observation'].update(session_id=sid,execution_epoch_id=create['identity']['execution_epoch_id'],
+            command_id=command['attempt']['command_id'],device_id=command['device_id'],device_boot_id=boot['device_boot_id'],
+            device_sequence=index+1,phase_id=command['attempt']['phase_id'],phase_token=command['attempt']['phase_token'],
+            receipt=dict(kind='completed',device_reported_duration_ms=7))
+        stored=result('POST','/v2/devices/example/events',event,'device')
+        admission=cloud.fixture('ReceiptAdmission');admission.update(receipt_id=stored['receipt_id'],execution_revision=final_revision,
+            decision='applied',host_admission_sequence=index+1,host_received_elapsed_ms=2,business_effect_committed=True)
+        attempt=cloud.fixture('AttemptView');attempt.update(attempt=command['attempt'],state='business_effect_committed',
+            receipt_ids=[stored['receipt_id']],target_device_boot_id=boot['device_boot_id'],device_id=command['device_id'],
+            started_at_host_ms=0,completed_at_host_ms=2)
+        snap['receipt_admissions'].append(admission);snap['attempts'].append(attempt)
+    logical['state']='business_effect_committed';snap['logical_work']=[logical]
+    transport.update(phase='returned',departed_ms=0,arrived_ms=0,received_ms=0,returned_ms=1)
+    snap['business_facts']['transport']=[transport]
+    objects=[dict(kind='transport',data=transport),dict(kind='logical_work',data=logical)]+[dict(kind='attempt',data=a) for a in snap['attempts']]
+    terminal['observation_records']=[dict(record_sequence=40002+i,execution_revision=final_revision,at_host_ms=2,object=o) for i,o in enumerate(objects)]
+    snap['observation_frontier']=40001+len(objects)
+    final_path='/v2/sessions/'+sid+'/snapshots/'+str(final_revision)
+    bad=copy.deepcopy(terminal);bad['snapshot']['receipt_admissions'][0]['business_effect_committed']=False
+    result('PUT',final_path,bad,expected=422)
+    assert cloud.sql('SELECT count(*) FROM commands WHERE closed_by_host_at IS NULL;').strip()=='2'
+    checks.append('intermediate completion without Host-admitted business effect is rejected atomically')
+    result('PUT',final_path,terminal)
+    assert cloud.sql('SELECT count(*) FROM commands WHERE closed_by_host_at IS NOT NULL;').strip()=='2'
+    checks.append('completed intermediate stages close both physical commands without final product acceptance')
+    # Isolated component DB only: restore the exact omission left by the older publisher.
+    cloud.sql('UPDATE commands SET closed_by_host_at=NULL;')
+    retire=dict(contract_version=cloud.VERSION,session_id=sid,execution_epoch_id=create['identity']['execution_epoch_id'],expected_published_revision=final_revision)
+    assert result('POST','/v2/devices/example/boots/'+boot['device_boot_id']+'/retire',retire)['state']=='retired'
+    assert cloud.sql('SELECT count(*) FROM commands WHERE closed_by_host_at IS NOT NULL;').strip()=='2'
+    checks.append('retirement repairs older unclosed stages only from matching immutable Host-admitted Completed receipts')
+    assert result('POST','/v2/sessions/'+sid+'/release-slot',dict(contract_version=cloud.VERSION,identity=create['identity'],expected_published_revision=final_revision))['released']
+    checks.append('stopped multistage session releases its real retired boot and settled command slot')
     cloud.run([str(cloud.EXE),'migrate'],env=cloud.environment())
     assert cloud.sql('SELECT string_agg(version::text,\',\' ORDER BY version) FROM schema_migrations;').strip()=='1,2'
     checks.append('schema 2 migration is repeatable and retains transport rows')

@@ -44,7 +44,7 @@ fn document<T:for<'de>Deserialize<'de>>(bytes:&[u8])->Result<T,ApiError> {
 }
 pub(crate) fn decode_archive_document(bytes:&[u8], path:&str)->Result<StoredExecutionArchive,ApiError> {
     if path.ends_with(".json.gz") {
-        serde_json::from_reader::<_,Versioned<StoredExecutionArchive>>(flate2::read::GzDecoder::new(bytes))
+        serde_json::from_reader::<_,Versioned<StoredExecutionArchive>>(std::io::BufReader::new(flate2::read::GzDecoder::new(bytes)))
             .map(|v|v.data).map_err(|_|fail("Invalid compressed versioned execution archive document"))
     } else { document(bytes) }
 }

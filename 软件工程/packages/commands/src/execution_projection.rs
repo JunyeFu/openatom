@@ -1058,14 +1058,16 @@ pub struct StoredExecutionSnapshot {
 }
 impl StoredExecutionSnapshot {
     pub(crate) fn capture(snapshot: &w::ExecutionSnapshot) -> Result<Self> {
-        let mut encoder = flate2::write::GzEncoder::new(Vec::new(), flate2::Compression::fast());
-        serde_json::to_writer(&mut encoder, snapshot).map_err(|e| fail("projection.snapshot_encoding", e.to_string()))?;
-        let compressed = encoder.finish().map_err(|e| fail("projection.snapshot_encoding", e.to_string()))?;
+        let encoder = flate2::write::GzEncoder::new(Vec::new(), flate2::Compression::fast());
+        let mut writer = std::io::BufWriter::new(encoder);
+        serde_json::to_writer(&mut writer, snapshot).map_err(|e| fail("projection.snapshot_encoding", e.to_string()))?;
+        let compressed = writer.into_inner().map_err(|e| fail("projection.snapshot_encoding", e.to_string()))?
+            .finish().map_err(|e| fail("projection.snapshot_encoding", e.to_string()))?;
         Ok(Self { execution_revision: snapshot.execution_revision.clone(), identity: snapshot.identity.clone(),
             project_input_ref: snapshot.project_input_ref.clone(), compressed })
     }
     pub(crate) fn decode(&self) -> Result<w::ExecutionSnapshot> {
-        serde_json::from_reader(flate2::read::GzDecoder::new(self.compressed.as_slice()))
+        serde_json::from_reader(std::io::BufReader::new(flate2::read::GzDecoder::new(self.compressed.as_slice())))
             .map_err(|e| fail("projection.snapshot_encoding", e.to_string()))
     }
     pub(crate) fn same_snapshot(&self, other: &Self) -> bool { self.compressed == other.compressed }

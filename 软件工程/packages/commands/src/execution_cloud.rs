@@ -143,11 +143,11 @@ impl ExecutionCloudConnection {
             || (path.get(1) == Some(&"sessions") && path.get(3) == Some(&"snapshots"));
         if let Some(body) = body {
             if large_execution_document {
-                use std::io::Write;
-                let mut gzip = flate2::write::GzEncoder::new(Vec::new(), flate2::Compression::fast());
-                serde_json::to_writer(&mut gzip, body).map_err(|_| error(ErrorCode::IoFailure, "Cannot encode frozen execution upload"))?;
-                gzip.flush().map_err(|_| error(ErrorCode::IoFailure, "Cannot compress frozen execution upload"))?;
-                let bytes = gzip.finish().map_err(|_| error(ErrorCode::IoFailure, "Cannot finish frozen execution upload"))?;
+                let gzip = flate2::write::GzEncoder::new(Vec::new(), flate2::Compression::fast());
+                let mut writer = std::io::BufWriter::new(gzip);
+                serde_json::to_writer(&mut writer, body).map_err(|_| error(ErrorCode::IoFailure, "Cannot encode frozen execution upload"))?;
+                let bytes = writer.into_inner().map_err(|_| error(ErrorCode::IoFailure, "Cannot compress frozen execution upload"))?
+                    .finish().map_err(|_| error(ErrorCode::IoFailure, "Cannot finish frozen execution upload"))?;
                 request = request.header("Content-Encoding", "gzip").header("Content-Type", "application/json").body(bytes);
             } else {
                 request = request.json(body);

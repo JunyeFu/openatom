@@ -77,10 +77,12 @@ pub(crate) fn encode_document<T: Serialize>(value: &T) -> Vec<u8> {
 /// Stream a large execution document into gzip instead of allocating its full
 /// uncompressed JSON in addition to the immutable captured history.
 pub(crate) fn encode_compressed_document<T: Serialize>(value: &T) -> Vec<u8> {
-    let mut encoder = flate2::write::GzEncoder::new(Vec::new(), flate2::Compression::fast());
-    serde_json::to_writer(&mut encoder, &Versioned { schema_version: SchemaVersion::V1, data: value })
+    let encoder = flate2::write::GzEncoder::new(Vec::new(), flate2::Compression::fast());
+    let mut writer = std::io::BufWriter::new(encoder);
+    serde_json::to_writer(&mut writer, &Versioned { schema_version: SchemaVersion::V1, data: value })
         .expect("typed execution document serialization");
-    encoder.finish().expect("in-memory execution document compression")
+    writer.into_inner().expect("buffered execution document compression")
+        .finish().expect("in-memory execution document compression")
 }
 
 fn professional_additions(
