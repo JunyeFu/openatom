@@ -671,13 +671,13 @@ impl ActiveJob {
         now: Instant,
     ) -> Result<(), ApiError> {
         loop {
-            self.receive_one(host, io, now)?;
+            self.receive_page(host, io, now)?;
             if self.ingress.frontier.is_none() {
                 return Ok(());
             }
         }
     }
-    fn receive_one(
+    fn receive_page(
         &mut self,
         host: &Arc<Mutex<ProjectHost>>,
         io: &mut impl ExternalIo,
@@ -717,65 +717,40 @@ impl ActiveJob {
             self.ingress.page_end = Some(page.page.next_ingress_id);
             self.ingress.rows = page.page.rows.into();
         }
-        let Some(row) = self.ingress.rows.front().cloned() else {
-            return Ok(());
-        };
-        let position = match row {
-            CloudEventRow::Receipt {
-                receipt_id,
-                ingress_id,
-                cloud_received_at,
-                observation,
-            } => {
-                let result = with_host(host, |h| {
-                    h.execution_gateway_receipt(
-                        self.gateway(),
-                        receipt_id,
-                        cloud_received_at,
-                        observation,
-                        Instant::now(),
-                    )
-                })?;
-                if matches!(result.decision, ReceiptAdmissionDecision::Rejected) {
-                    return Err(fault(
-                        ErrorCode::InvalidInput,
-                        "Host rejected original production receipt; retain cursor for reconciliation",
-                    ));
-                }
-                ingress_id
-            }
-            CloudEventRow::Telemetry {
-                receipt_id,
-                ingress_id,
-                cloud_received_at,
-                observation,
-            } => {
-                let snapshot = self.snapshot(host)?;
-                if snapshot.coverage.clock_started && !terminal(&snapshot) {
-                    match with_host(host, |h| {
-                        h.execution_gateway_observation(
-                            self.gateway(),
-                            receipt_id,
-                            cloud_received_at,
-                            observation,
-                            Instant::now(),
-                        )
-                    }) {
-                        Ok(_) => {}
-                        Err(error) => {
-                            let latest = self.snapshot(host)?;
-                            if latest.coverage.clock_started && !terminal(&latest) {
-                                return Err(error);
-                            }
+        // A fetched page enters the Host as one ordered batch. Capture its actual
+        // inlet time after acquiring the lock; UI controls cannot interleave and
+        // later rows cannot acquire artificial clock/wait deltas from encoding
+        // earlier rows. Every original row still gets its own admission/revision.
+        with_host(host, |h| {
+            let received_at = Instant::now();
+            while let Some(row) = self.ingress.rows.front().cloned() {
+                let position = match row {
+                    CloudEventRow::Receipt { receipt_id, ingress_id, cloud_received_at, observation } => {
+                        let result = h.execution_gateway_receipt(self.gateway(), receipt_id,
+                            cloud_received_at, observation, received_at)?;
+                        if matches!(result.decision, ReceiptAdmissionDecision::Rejected) {
+                            return Err(fault(ErrorCode::InvalidInput,
+                                "Host rejected original production receipt; retain cursor for reconciliation"));
                         }
+                        ingress_id
                     }
-                } // prepared/terminal telemetry stays raw in cloud; no fake freshness.
-                ingress_id
+                    CloudEventRow::Telemetry { receipt_id, ingress_id, cloud_received_at, observation } => {
+                        let snapshot = h.execution_gateway_snapshot(self.gateway())?;
+                        if snapshot.coverage.clock_started && !terminal(&snapshot) {
+                            if let Err(error) = h.execution_gateway_observation(self.gateway(), receipt_id,
+                                cloud_received_at, observation, received_at) {
+                                let latest = h.execution_gateway_snapshot(self.gateway())?;
+                                if latest.coverage.clock_started && !terminal(&latest) { return Err(error); }
+                            }
+                        } // prepared/terminal telemetry stays raw in cloud; no fake freshness.
+                        ingress_id
+                    }
+                };
+                self.ingress.after = position.value();
+                self.ingress.rows.pop_front();
             }
-        };
-        self.ingress.after = position.value();
-        self.ingress.rows.pop_front();
-        Ok(())
+            Ok(())
+        })
     }
     fn step(
         &mut self,
@@ -975,6 +950,7 @@ impl ActiveJob {
                                     snapshot.lifecycle.state,
                                     ExecutionSnapshotLifecycleState::Running
                                         | ExecutionSnapshotLifecycleState::DispatchPaused
+                                        | ExecutionSnapshotLifecycleState::Draining
                                 )
                                 && d.operator_accept_new_work,
                         )
@@ -1669,6 +1645,44 @@ mod tests {
         assert!(f.current.job.prepare_engine().is_err());
     }
     #[test]
+    fn one_event_page_preserves_rows_with_one_actual_host_inlet_time() {
+        let mut f = fixture();
+        f.until(NativeExecutionPhase::Live);
+        f.run();
+        let before = f.current.snapshot(&f.host).unwrap();
+        f.io.push_telemetry(&before, 0, 1);
+        f.io.push_telemetry(&before, 1, 1);
+        f.current.receive_frontier(&f.host, &mut f.io, Instant::now()).unwrap();
+        let after = f.current.snapshot(&f.host).unwrap();
+        let observations: Vec<_> = after.devices.iter().map(|d| d.latest_observation.as_ref().unwrap()).collect();
+        assert_eq!(observations.len(), 2);
+        assert_eq!(observations[0].host_received_elapsed_ms, observations[1].host_received_elapsed_ms);
+        assert_ne!(observations[0].host_admission_sequence, observations[1].host_admission_sequence);
+        assert_eq!(f.current.ingress.after, 2);
+        assert!(f.current.ingress.rows.is_empty());
+        assert_eq!(after.receipt_admissions.len(), 2);
+    }
+    #[test]
+    fn draining_keeps_owned_devices_available_for_started_work_continuations() {
+        let mut f = fixture();
+        f.until(NativeExecutionPhase::Live);
+        f.run();
+        let before = f.current.snapshot(&f.host).unwrap();
+        f.io.push_telemetry(&before, 0, 1);
+        f.step().unwrap();
+        f.step().unwrap();
+        let command = f.io.published.iter().find_map(|w| match w {
+            CloudWorkItem::PublishCommand { command, .. } => Some(command.clone()), _ => None,
+        }).unwrap();
+        f.io.push_receipt(&command, 2, DeviceReceiptKind::Accepted {});
+        f.io.push_receipt(&command, 3, DeviceReceiptKind::Started {});
+        f.step().unwrap();
+        f.stop();
+        f.step().unwrap();
+        assert!(matches!(f.current.snapshot(&f.host).unwrap().lifecycle.state, ExecutionSnapshotLifecycleState::Draining));
+        assert!(f.io.facts[&command.device_id].status.as_ref().unwrap().accept_commands);
+    }
+    #[test]
     fn cancellation_before_external_has_no_cloud_or_child() {
         let mut f = fixture();
         f.cancel();
@@ -1826,7 +1840,7 @@ mod tests {
         let s = f.current.snapshot(&f.host).unwrap();
         f.io.push_telemetry(&s, 0, 100);
         f.current
-            .receive_one(&f.host, &mut f.io, Instant::now())
+            .receive_page(&f.host, &mut f.io, Instant::now())
             .unwrap();
         assert_eq!(f.current.ingress.after, 1);
         let next = f.current.snapshot(&f.host).unwrap();
@@ -2091,7 +2105,7 @@ mod tests {
         });
         assert!(
             f.current
-                .receive_one(&f.host, &mut f.io, Instant::now())
+                .receive_page(&f.host, &mut f.io, Instant::now())
                 .is_err()
         );
         assert_eq!(f.current.ingress.after, 0);
@@ -2099,7 +2113,7 @@ mod tests {
         f.run();
         assert!(
             f.current
-                .receive_one(&f.host, &mut f.io, Instant::now())
+                .receive_page(&f.host, &mut f.io, Instant::now())
                 .is_err()
         );
         assert_eq!(f.current.ingress.after, 0);
