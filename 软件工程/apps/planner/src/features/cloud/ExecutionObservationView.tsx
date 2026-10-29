@@ -2,7 +2,7 @@ import { useEffect, useId, useRef, useState } from 'react';
 import { FactoryScene } from '../../scene/FactoryScene';
 import type { LodMode } from '../../scene/FactoryScene';
 import { cloudErrorCode, formatQuantity } from '../../services/cloudProduction';
-import { factoryDeviceTitle, factoryItemPlace, factoryItemTitle, factoryLifecycleLabel, factoryQualityLabel, factoryUnitLabel } from '../../scene/factoryLabels';
+import { factoryDeviceTitle, factoryItemPlace, factoryItemTitle, factoryLifecycleLabel, factoryQualityLabel, factoryResourceTitle, factoryUnitLabel } from '../../scene/factoryLabels';
 import type { CloudContext } from '../../services/cloudProduction';
 import {
   createExecutionPresentation, executionBaseKey, executionObjectRef, executionSourceKey,
@@ -17,6 +17,7 @@ import type { ExecutionObservedObjectRef } from '../../../../../packages/command
 import type { LogicalWorkViewState } from '../../../../../packages/commands/generated/typescript/LogicalWorkViewState';
 import type { BoundExecutionJobSnapshotState } from '../../../../../packages/commands/generated/typescript/BoundExecutionJobSnapshotState';
 import type { DispatchExplanationReason } from '../../../../../packages/commands/generated/typescript/DispatchExplanationReason';
+import type { TransportPhase } from '../../../../../packages/commands/generated/typescript/TransportPhase';
 import './executionObservation.css';
 
 export interface ExecutionObservationViewProps {
@@ -29,8 +30,9 @@ export interface ExecutionObservationViewProps {
   onLocateObject: (reference: ObjectRef | ExecutionObservedObjectRef) => void;
   onSelectionChange?: (selection: ExecutionObservationSelection) => void;
 }
-const kinds = [['item', '物品'], ['job', '加工记录'], ['device', '设备'], ['logical_work', '生产任务'], ['attempt', '指令下发']] as const;
-const label = (kind: ExecutionObservedObject['kind']) => kinds.find(k => k[0] === kind)![1];
+const kinds: Record<ExecutionObservedObject['kind'], string> = { item: '物品', job: '加工记录', device: '设备', logical_work: '生产任务', attempt: '指令下发', transport: '运输记录' };
+const label = (kind: ExecutionObservedObject['kind']) => kinds[kind];
+const transportPhases: Record<TransportPhase, string> = { reserved: '准备装货', loading: '装货中', outbound: '运输中', waiting_receive: '等待收货', unloading: '卸货中', returning: '空车返回', returned: '已返回' };
 const json = (value: unknown) => JSON.stringify(value, null, 2);
 const workStates: Record<LogicalWorkViewState, string> = {
   queued: '等待安排', reserved: '已预留设备', published: '已发送指令', device_accepted: '设备已接单',
@@ -52,6 +54,7 @@ const deviceTitle = (source: ExecutionFrozenSource | null, id: string) => {
 };
 function objectTitle(object: ExecutionObservedObject, source: ExecutionFrozenSource | null) {
   switch (object.kind) {
+    case 'transport': return `${factoryResourceTitle(source?.inputs.project ?? null, object.data.carrier_id)} · 运输记录`;
     case 'item': return factoryItemTitle(source?.inputs.project ?? null, object.data);
     case 'device': return deviceTitle(source, object.data.binding.device_id);
     case 'job': return object.data.execution_ref.kind === 'project_device'
@@ -67,6 +70,7 @@ function objectTitle(object: ExecutionObservedObject, source: ExecutionFrozenSou
 }
 function detail(object: ExecutionObservedObject, source: ExecutionFrozenSource | null) {
   switch (object.kind) {
+    case 'transport': return `${transportPhases[object.data.phase]} · 关联 ${object.data.cargo.length} 条货物记录`;
     case 'item': return `${formatQuantity({ ...object.data.quantity, unit: factoryUnitLabel(object.data.quantity.unit) })} · ${factoryLifecycleLabel[object.data.lifecycle]} · ${factoryQualityLabel[object.data.quality]} · ${factoryItemPlace(source?.inputs.project ?? null, object.data)}`;
     case 'job': return `${jobStates[object.data.state]} · 开始于 ${seconds(object.data.started_at_host_ms)} · ${object.data.finished_at_host_ms === null ? '尚无完成记录' : `完成于 ${seconds(object.data.finished_at_host_ms)}`} · 关联 ${object.data.input_refs.length} 条来料记录`;
     case 'device': {
@@ -239,7 +243,7 @@ export function ExecutionObservationView(props: ExecutionObservationViewProps) {
     </> : <p className="execution-view-empty">{error ? '暂时无法显示所选记录的三维画面。' : '正在读取生产画面。'}</p>}</div>
     {current && <p className="execution-view-complete" role="status">当前时点共 {current.value.objects.length} 条对象记录。设备动作按上报阶段显示，物品位置按实际持有者显示；没有进度报告的设备保持静态。</p>}
     <div className="execution-view-filter">
-      <label>对象类别<select aria-label="观察对象类别" value={kind} onChange={e => setKind(e.target.value)}><option value="all">全部对象</option>{kinds.map(([value, title]) => <option key={value} value={value}>{title}</option>)}</select></label>
+      <label>对象类别<select aria-label="观察对象类别" value={kind} onChange={e => setKind(e.target.value)}><option value="all">全部对象</option>{Object.entries(kinds).map(([value, title]) => <option key={value} value={value}>{title}</option>)}</select></label>
       <details><summary>按编号精确查找</summary><label>对象编号<input aria-label="观察对象编号" value={objectId} onChange={e => setObjectId(e.target.value)}/></label></details>
       <button type="button" onClick={() => { setKind('all'); setObjectId(''); }}>清除筛选</button>
     </div>

@@ -642,7 +642,7 @@ export function CloudProductionPanel(props: CloudProductionPanelProps) {
               </details>
             </div>
             <button type="submit" disabled={!configured || !available('start_execution_session') || unresolvedTask}>准备生产</button>
-            {!available('start_execution_session') && <small>当前程序尚未提供生产准备功能。</small>}
+            {!available('start_execution_session') && <small>{configured ? '当前连接未提供生产准备功能。' : '请先在“设备”页导入连接文件，保存工程并重启应用后准备生产。'}</small>}
           </fieldset>
         </form>
         <div className="cloud-controls">{([['run', '启动'], ['pause_dispatch', '暂停新派工'], ['resume_dispatch', '继续新派工'], ['stop_dispatch', '停止新派工'], ['request_reconciliation', '请求原命令核对']] as const).map(([kind, label]) => <button type="button" key={kind} disabled={mutationBusy || !available('control_execution_session') || !canControl(envelope, { kind }, currentLatest)} onClick={() => void control({ kind })}>{label}</button>)}</div>
