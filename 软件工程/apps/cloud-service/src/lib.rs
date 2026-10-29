@@ -481,7 +481,14 @@ fn same(a: &Value, b: &Value) -> Result<()> {
 }
 fn success(kind: &str, data: Value) -> Result<Value> {
     let v = json!({"contract_version":CONTRACT,"result":{"kind":kind,"data":data}});
-    serde_json::from_value::<CloudResponse>(v.clone()).map_err(|e| {
+    // The known inputs variant contains large byte arrays. Decode its data
+    // directly so the adjacent response tag does not buffer another JSON tree.
+    let checked = if kind == "inputs" {
+        <ExecutionFrozenInputs as serde::Deserialize>::deserialize(&v["result"]["data"]).map(|_| ())
+    } else {
+        <CloudResponse as serde::Deserialize>::deserialize(&v).map(|_| ())
+    };
+    checked.map_err(|e| {
         eprintln!("response DTO validation failed: {e}");
         Fault::new(
             StatusCode::SERVICE_UNAVAILABLE,
