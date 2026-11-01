@@ -18,7 +18,7 @@
     "user_provided",
     "module_declared",
     "template_declared_example",
-    "unknown_requires_input"
+    "unknown"
   ],
   "layout_patterns": [
     "straight_line",
@@ -121,16 +121,16 @@
   ],
   "goal_bindings": [
     {
-      "from": "goal.daily_accepted_quantity",
-      "to": "demand.quantity"
+      "from": "resolved Quantity + AcceptanceScope",
+      "to": "ScenarioInput.orders/production_tasks with explicit demand choice"
     },
     {
-      "from": "goal.site_dimensions",
-      "to": "hall.envelope"
+      "from": "goal.site_envelope.length_m/width_m/height_m",
+      "to": "HallDesign.width_m/depth_m/height_m"
     },
     {
-      "from": "resolved.calendar",
-      "to": "resource_calendars_and_observation_window"
+      "from": "resolved Calendar + observation_window",
+      "to": "ResourceInstance.calendar_id + ScenarioInput.window"
     }
   ],
   "forbidden_bindings": [
@@ -155,13 +155,113 @@
     "note": "existing hall width_m/depth_m naming retained; user L/W labels do not swap product dimensions"
   },
   "generic_goal_field_mapping": {
-    "daily_accepted_quantity": "accepted_quantity_per_day",
-    "quantity_unit": "accepted_unit",
-    "acceptance_scope": "acceptance_scope",
-    "production_day_calendar": "production_calendar_ref",
-    "observation_window": "observation_window",
-    "site_length_m": "site_envelope.length",
-    "site_width_m": "site_envelope.width",
-    "site_height_m": "site_envelope.height"
+    "daily_accepted_quantity": "FactoryGenerationGoal.accepted_quantity_per_day.value",
+    "quantity_unit": "FactoryGenerationGoal.accepted_quantity_per_day.unit + acceptance_scope.unit",
+    "acceptance_scope": "FactoryGenerationGoal.acceptance_scope (product_ref/unit/destination/stage)",
+    "production_day_calendar": "FactoryGenerationGoal.production_calendar_ref",
+    "observation_window": "FactoryGenerationGoal.observation_window (start_ms/end_ms)",
+    "site_length_m": "FactoryGenerationGoal.site_envelope.length_m",
+    "site_width_m": "FactoryGenerationGoal.site_envelope.width_m",
+    "site_height_m": "FactoryGenerationGoal.site_envelope.height_m"
+  },
+  "definition_version": "DRF04-1",
+  "canonical_domain_ref": "packages/domain/types.design.rs",
+  "instantiation_contract_ref": "modules/templates/instantiation.design.json",
+  "canonical_bindings": [
+    {
+      "input": "daily_accepted_quantity",
+      "target": "FactoryGenerationGoal.accepted_quantity_per_day.value",
+      "type": "DecimalAmount",
+      "conversion": "exact decimal coefficient/decimal_places from explicit target; integer cartons -> coefficient=Q,decimal_places=0",
+      "consumer": "ScenarioInput order/task quantity; never accepted result"
+    },
+    {
+      "input": "quantity_unit",
+      "target": "FactoryGenerationGoal.accepted_quantity_per_day.unit",
+      "type": "UnitId",
+      "also": "FactoryGenerationGoal.acceptance_scope.unit",
+      "rule": "accepted carton unit from ItemType/declared bundle content conversion"
+    },
+    {
+      "input": "product_specification",
+      "target": "FactoryGenerationGoal.product_specification_ref",
+      "type": "SubjectRevisionRef",
+      "rule": "selected product revision, not display title"
+    },
+    {
+      "input": "acceptance_scope",
+      "target": "FactoryGenerationGoal.acceptance_scope",
+      "type": "AcceptanceScope",
+      "required": [
+        "product_ref",
+        "unit",
+        "destination",
+        "stage"
+      ]
+    },
+    {
+      "input": "production_day_calendar",
+      "target": "FactoryGenerationGoal.production_calendar_ref",
+      "type": "ObjectId|null",
+      "rule": "explicit actual calendar; null remains missing"
+    },
+    {
+      "input": "observation_window",
+      "target": "FactoryGenerationGoal.observation_window",
+      "type": "WindowMs",
+      "unit": "relative integer millisecond"
+    },
+    {
+      "input": "site_length_m",
+      "target": "FactoryGenerationGoal.site_envelope.length_m",
+      "type": "FiniteNumber|null",
+      "hall_target": "HallDesign.width_m",
+      "unit": "m"
+    },
+    {
+      "input": "site_width_m",
+      "target": "FactoryGenerationGoal.site_envelope.width_m",
+      "type": "FiniteNumber|null",
+      "hall_target": "HallDesign.depth_m",
+      "unit": "m"
+    },
+    {
+      "input": "site_height_m",
+      "target": "FactoryGenerationGoal.site_envelope.height_m",
+      "type": "FiniteNumber|null",
+      "hall_target": "HallDesign.height_m",
+      "unit": "m"
+    }
+  ],
+  "source_value_rule": "ParameterSource(target,field_path,TypedValue|null,basis,source_ref); unknown has no executable value; do not send design aliases as wire fields",
+  "adoption_rule": "exact ModuleRef.id/version, explicit role/resource reuse, atomic InstantiateTemplate; explicit_new_scenario_seed=null until selected supply/order conditions",
+  "feedback_repair_limit": {
+    "max_rounds": 3,
+    "initial_run_counts": false,
+    "max_capacity_runs": 4,
+    "stop_on_target_met_or_missing_inputs_or_no_effective_change": true,
+    "failed_check_after_committed_repair_consumes_round": true
+  },
+  "layout_fill_algorithm": {
+    "inputs": [
+      "selected available mode",
+      "declared ordered station/line groups",
+      "each actual rotated footprint and loading/maintenance envelope",
+      "explicit anchor/rotation/gaps",
+      "actual Hall height/bounds/obstacles"
+    ],
+    "straight_line": "station min x[0]=anchor_x; min x[i+1]=min x[i]+envelope_width[i]+declared_gap; keep declared y/rotation",
+    "u_shape": "use explicitly declared split_index and two ordered rows/turn anchors; row2 direction reversed; no automatic optimal split",
+    "parallel_lines": "use explicitly allowed line_count and declared row pitch/anchors; copy fresh instances and bind shared resources explicitly",
+    "check": "transform actual footprints/envelopes into Hall coordinates; bounds/height/overlap/clearance; insufficient geometry -> unknown, collision -> object-specific Fail",
+    "availability": "layout names are candidate design modes; use only actually supplied profile transforms/parameters, otherwise missing condition",
+    "output": "proposed_objects with real poses/connections and check issues; no fabricated throughput"
+  },
+  "accepted_unit_resolution": {
+    "seed_item_type": "carton",
+    "seed_declared_unit": "piece",
+    "display_label": "合格箱数",
+    "canonical": "Quantity.unit and AcceptanceScope.unit must be actual ItemType unit; carton is a product/count label unless separately registered as a convertible UnitId",
+    "bundle": "bundle unit piece counts bundles only; use actual content/carton relation once at declared destination/stage to count accepted carton pieces"
   }
 }

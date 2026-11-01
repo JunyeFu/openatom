@@ -1,0 +1,21 @@
+// Generated from sf-domain Rust value types. Do not edit by hand.
+export type SafeUint = number;
+export type FiniteNumber = number;
+export type RelativeFilePath = string;
+export type Revision = SafeUint;
+export type SimTimeMs = SafeUint;
+export type DurationMs = SafeUint;
+export type ProjectId = string;
+export type ObjectId = string;
+export type ScenarioId = string;
+export type RunId = string;
+export type TaskId = string;
+export type ModuleId = string;
+export type AssetId = string;
+export type ArtifactId = string;
+export type RoleId = string;
+export type PortId = string;
+export type PhaseId = string;
+export type UnitId = string;
+export type SubjectRevisionId = string;
+export type VersionId = string;

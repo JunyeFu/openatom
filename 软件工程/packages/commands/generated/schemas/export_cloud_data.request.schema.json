@@ -1,0 +1,421 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "HostExportCloudDataRequest",
+  "type": "object",
+  "properties": {
+    "api_version": {
+      "$ref": "#/$defs/ApiVersion"
+    },
+    "operation": {
+      "$ref": "#/$defs/HostExportCloudDataRequestOperation"
+    },
+    "params": {
+      "$ref": "#/$defs/HostExportCloudDataRequestParams"
+    },
+    "project_id": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ProjectId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "request_id": {
+      "$ref": "#/$defs/ObjectId"
+    },
+    "scope": {
+      "$ref": "#/$defs/HostProjectScope"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "api_version",
+    "request_id",
+    "project_id",
+    "scope",
+    "operation",
+    "params"
+  ],
+  "$defs": {
+    "ApiVersion": {
+      "type": "string",
+      "enum": [
+        "0.1"
+      ]
+    },
+    "CloudDataExportDestination": {
+      "type": "object",
+      "properties": {
+        "purpose": {
+          "$ref": "#/$defs/CloudDataExportDestinationPurpose"
+        },
+        "selection_id": {
+          "$ref": "#/$defs/ObjectId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "selection_id",
+        "purpose"
+      ]
+    },
+    "CloudDataExportDestinationPurpose": {
+      "type": "string",
+      "enum": [
+        "export_cloud_data"
+      ]
+    },
+    "CloudDataExportSelection": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "cloud_project_id": {
+              "$ref": "#/$defs/CloudProjectId"
+            },
+            "dataset": {
+              "type": "string",
+              "const": "telemetry"
+            },
+            "dataset_id": {
+              "$ref": "#/$defs/CloudDatasetId"
+            },
+            "selected_device_ids": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/ObjectId"
+              },
+              "uniqueItems": true
+            },
+            "selected_visible_frontier": {
+              "$ref": "#/$defs/SafeUint"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "dataset",
+            "cloud_project_id",
+            "dataset_id",
+            "selected_visible_frontier",
+            "selected_device_ids"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "dataset": {
+              "type": "string",
+              "const": "execution"
+            },
+            "execution_revision": {
+              "$ref": "#/$defs/SafeUint"
+            },
+            "identity": {
+              "$ref": "#/$defs/ExecutionIdentity"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "dataset",
+            "identity",
+            "execution_revision"
+          ]
+        }
+      ]
+    },
+    "CloudDatasetId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "CloudProjectId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "CloudTimestamp": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-([0-2][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\\.[0-9]{1,6})?(Z|[+-]([01][0-9]|2[0-3]):[0-5][0-9])$"
+    },
+    "ExecutionContractVersion": {
+      "type": "string",
+      "enum": [
+        "sf.execution/2.0-draft11"
+      ]
+    },
+    "ExecutionEpochId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "ExecutionIdentity": {
+      "type": "object",
+      "properties": {
+        "execution_epoch_id": {
+          "$ref": "#/$defs/ExecutionEpochId"
+        },
+        "host_context_session_id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "project_id": {
+          "$ref": "#/$defs/ProjectId"
+        },
+        "session_id": {
+          "$ref": "#/$defs/ExecutionSessionId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "session_id",
+        "execution_epoch_id",
+        "project_id",
+        "host_context_session_id"
+      ]
+    },
+    "ExecutionSessionId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "ExportPageSize": {
+      "type": "integer",
+      "format": "uint64",
+      "maximum": 200,
+      "minimum": 200
+    },
+    "HostExportCloudDataRequestOperation": {
+      "type": "string",
+      "enum": [
+        "export_cloud_data"
+      ]
+    },
+    "HostExportCloudDataRequestParams": {
+      "type": "object",
+      "properties": {
+        "execution_contract_version": {
+          "$ref": "#/$defs/ExecutionContractVersion"
+        },
+        "query": {
+          "$ref": "#/$defs/HostExportQuery"
+        },
+        "revision": {
+          "$ref": "#/$defs/SafeUint"
+        },
+        "selected_destination_ref": {
+          "$ref": "#/$defs/CloudDataExportDestination"
+        },
+        "selection": {
+          "$ref": "#/$defs/CloudDataExportSelection"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "execution_contract_version",
+        "revision",
+        "query",
+        "selection",
+        "selected_destination_ref"
+      ]
+    },
+    "HostExportQuery": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "aggregation": {
+              "$ref": "#/$defs/HostExportQueryTelemetryAggregation"
+            },
+            "cloud_project_id": {
+              "$ref": "#/$defs/CloudProjectId"
+            },
+            "contract_version": {
+              "$ref": "#/$defs/ExecutionContractVersion"
+            },
+            "dataset": {
+              "type": "string",
+              "const": "telemetry"
+            },
+            "dataset_id": {
+              "$ref": "#/$defs/CloudDatasetId"
+            },
+            "device_ids": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/ObjectId"
+              }
+            },
+            "page": {
+              "$ref": "#/$defs/HostExportQueryTelemetryPage"
+            },
+            "received_from": {
+              "$ref": "#/$defs/CloudTimestamp"
+            },
+            "received_until": {
+              "$ref": "#/$defs/CloudTimestamp"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "dataset",
+            "contract_version",
+            "cloud_project_id",
+            "dataset_id",
+            "device_ids",
+            "received_from",
+            "received_until",
+            "aggregation",
+            "page"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "aggregation": {
+              "$ref": "#/$defs/HostExportQueryExecutionAggregation"
+            },
+            "contract_version": {
+              "$ref": "#/$defs/ExecutionContractVersion"
+            },
+            "dataset": {
+              "type": "string",
+              "const": "execution"
+            },
+            "host_from_ms": {
+              "$ref": "#/$defs/SafeUint"
+            },
+            "host_until_ms": {
+              "$ref": "#/$defs/SafeUint"
+            },
+            "identity": {
+              "$ref": "#/$defs/ExecutionIdentity"
+            },
+            "page": {
+              "$ref": "#/$defs/HostExportQueryExecutionPage"
+            },
+            "selection": {
+              "$ref": "#/$defs/HostExportQueryExecutionSelection"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "dataset",
+            "contract_version",
+            "identity",
+            "selection",
+            "host_from_ms",
+            "host_until_ms",
+            "aggregation",
+            "page"
+          ]
+        }
+      ]
+    },
+    "HostExportQueryExecutionAggregation": {
+      "type": "string",
+      "enum": [
+        "rows",
+        "accepted_quantity",
+        "command_counts",
+        "waiting_time"
+      ]
+    },
+    "HostExportQueryExecutionPage": {
+      "type": "object",
+      "properties": {
+        "cursor": {
+          "type": "null"
+        },
+        "limit": {
+          "$ref": "#/$defs/ExportPageSize"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "limit",
+        "cursor"
+      ]
+    },
+    "HostExportQueryExecutionSelection": {
+      "type": "object",
+      "properties": {
+        "execution_revision": {
+          "$ref": "#/$defs/SafeUint"
+        },
+        "kind": {
+          "$ref": "#/$defs/HostExportQueryExecutionSelectionKind"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "execution_revision"
+      ]
+    },
+    "HostExportQueryExecutionSelectionKind": {
+      "type": "string",
+      "enum": [
+        "revision"
+      ]
+    },
+    "HostExportQueryTelemetryAggregation": {
+      "type": "string",
+      "enum": [
+        "rows",
+        "count_by_device_minute"
+      ]
+    },
+    "HostExportQueryTelemetryPage": {
+      "type": "object",
+      "properties": {
+        "cursor": {
+          "type": "null"
+        },
+        "limit": {
+          "$ref": "#/$defs/ExportPageSize"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "limit",
+        "cursor"
+      ]
+    },
+    "HostProjectScope": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "$ref": "#/$defs/HostProjectScopeKind"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ]
+    },
+    "HostProjectScopeKind": {
+      "type": "string",
+      "enum": [
+        "project"
+      ]
+    },
+    "ObjectId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "ProjectId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "SafeUint": {
+      "type": "integer",
+      "format": "uint64",
+      "maximum": 9007199254740991,
+      "minimum": 0
+    }
+  }
+}

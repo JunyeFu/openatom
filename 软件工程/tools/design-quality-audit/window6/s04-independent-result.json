@@ -1,0 +1,1039 @@
+{
+  "document_kind": "window6_actual_prototype_source_independent_state_sequences",
+  "source_ref": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+  "source_modified_utc": "2026-10-15T02:02:20.818Z",
+  "source_changed_during_execution": false,
+  "extracted_range": {
+    "start_line": 4,
+    "end_line": 260
+  },
+  "cases": [
+    {
+      "id": "X3-menu",
+      "meaning": "Dirty object switch offers apply/discard/stay",
+      "matched": true,
+      "ok": true,
+      "actions": [
+        "selection-apply",
+        "selection-discard",
+        "dialog-close"
+      ],
+      "selected": "A01",
+      "pending": "ROB01"
+    },
+    {
+      "id": "X3-apply",
+      "meaning": "Apply changes old object before selecting next",
+      "matched": true,
+      "ok": true,
+      "actual": {
+        "project": "控制盒厂房",
+        "selected": "ROB01",
+        "revision": 3,
+        "savedRevision": 2,
+        "undo": 1,
+        "redo": 0,
+        "form": null,
+        "run": null,
+        "viewTime": 0,
+        "packResult": null,
+        "paper": {
+          "mechanism": "tuck_carton",
+          "width": 160,
+          "depth": 100,
+          "height": 80,
+          "thickness": 0.5,
+          "productRevision": "1.0.0",
+          "angle": 0,
+          "outcome": "pass",
+          "ack": false,
+          "bound": false
+        }
+      },
+      "old_x": 8.6
+    },
+    {
+      "id": "X3-conflict",
+      "meaning": "Apply conflict keeps old selection and all fields",
+      "matched": true,
+      "ok": true,
+      "actual": {
+        "project": "控制盒厂房",
+        "selected": "A01",
+        "revision": 2,
+        "savedRevision": 2,
+        "undo": 0,
+        "redo": 0,
+        "form": {
+          "kind": "pose",
+          "base": 1,
+          "dirty": true,
+          "data": {
+            "id": "A01",
+            "name": "控制盒装配台",
+            "model": "assembly",
+            "x": 8.6,
+            "y": 5,
+            "z": 0,
+            "yaw": 0,
+            "version": "0.1.0"
+          }
+        },
+        "run": null,
+        "viewTime": 0,
+        "packResult": null,
+        "paper": {
+          "mechanism": "tuck_carton",
+          "width": 160,
+          "depth": 100,
+          "height": 80,
+          "thickness": 0.5,
+          "productRevision": "1.0.0",
+          "angle": 0,
+          "outcome": "pass",
+          "ack": false,
+          "bound": false
+        }
+      },
+      "actions": [
+        "conflict-rebase",
+        "dialog-close"
+      ]
+    },
+    {
+      "id": "X3-missing",
+      "meaning": "Invalid required pose cannot leave or lose fields",
+      "matched": true,
+      "ok": true,
+      "actual": {
+        "project": "控制盒厂房",
+        "selected": "A01",
+        "revision": 2,
+        "savedRevision": 2,
+        "undo": 0,
+        "redo": 0,
+        "form": {
+          "kind": "pose",
+          "base": 2,
+          "dirty": true,
+          "data": {
+            "id": "A01",
+            "name": "控制盒装配台",
+            "model": "assembly",
+            "x": "",
+            "y": 5,
+            "z": 0,
+            "yaw": 0,
+            "version": "0.1.0"
+          }
+        },
+        "run": null,
+        "viewTime": 0,
+        "packResult": null,
+        "paper": {
+          "mechanism": "tuck_carton",
+          "width": 160,
+          "depth": 100,
+          "height": 80,
+          "thickness": 0.5,
+          "productRevision": "1.0.0",
+          "angle": 0,
+          "outcome": "pass",
+          "ack": false,
+          "bound": false
+        }
+      }
+    },
+    {
+      "id": "X3-discard",
+      "meaning": "Discard switches without applying old fields",
+      "matched": true,
+      "ok": true,
+      "actual": {
+        "project": "控制盒厂房",
+        "selected": "ROB01",
+        "revision": 2,
+        "savedRevision": 2,
+        "undo": 0,
+        "redo": 0,
+        "form": null,
+        "run": null,
+        "viewTime": 0,
+        "packResult": null,
+        "paper": {
+          "mechanism": "tuck_carton",
+          "width": 160,
+          "depth": 100,
+          "height": 80,
+          "thickness": 0.5,
+          "productRevision": "1.0.0",
+          "angle": 0,
+          "outcome": "pass",
+          "ack": false,
+          "bound": false
+        }
+      }
+    },
+    {
+      "id": "X3-stay",
+      "meaning": "Stay leaves selection/form/current run unchanged",
+      "matched": true,
+      "ok": true,
+      "actual": {
+        "project": "控制盒厂房",
+        "selected": "A01",
+        "revision": 2,
+        "savedRevision": 2,
+        "undo": 0,
+        "redo": 0,
+        "form": {
+          "kind": "pose",
+          "base": 2,
+          "dirty": true,
+          "data": {
+            "id": "A01",
+            "name": "控制盒装配台",
+            "model": "assembly",
+            "x": 8.6,
+            "y": 5,
+            "z": 0,
+            "yaw": 0,
+            "version": "0.1.0"
+          }
+        },
+        "run": {
+          "id": "OLD-RUN",
+          "computedUntil": 170,
+          "source_kind": "manual_expected"
+        },
+        "viewTime": 0,
+        "packResult": null,
+        "paper": {
+          "mechanism": "tuck_carton",
+          "width": 160,
+          "depth": 100,
+          "height": 80,
+          "thickness": 0.5,
+          "productRevision": "1.0.0",
+          "angle": 0,
+          "outcome": "pass",
+          "ack": false,
+          "bound": false
+        }
+      }
+    },
+    {
+      "id": "X4-dirty-options",
+      "meaning": "Opening replacement asks save/discard/stay",
+      "matched": true,
+      "ok": true,
+      "actions": [
+        "open-save",
+        "open-discard",
+        "open-stay"
+      ],
+      "actual": {
+        "project": "控制盒厂房",
+        "selected": "A01",
+        "revision": 3,
+        "savedRevision": 2,
+        "undo": 1,
+        "redo": 0,
+        "form": null,
+        "run": null,
+        "viewTime": 0,
+        "packResult": null,
+        "paper": {
+          "mechanism": "tuck_carton",
+          "width": 160,
+          "depth": 100,
+          "height": 80,
+          "thickness": 0.5,
+          "productRevision": "1.0.0",
+          "angle": 0,
+          "outcome": "pass",
+          "ack": false,
+          "bound": false
+        }
+      }
+    },
+    {
+      "id": "X4-stay",
+      "meaning": "Open stay preserves project, history and unapplied fields",
+      "matched": true,
+      "ok": true,
+      "actual": {
+        "project": "控制盒厂房",
+        "selected": "A01",
+        "revision": 2,
+        "savedRevision": 2,
+        "undo": 1,
+        "redo": 0,
+        "form": {
+          "kind": "pose",
+          "base": 2,
+          "dirty": true,
+          "data": {
+            "id": "A01",
+            "name": "控制盒装配台",
+            "model": "assembly",
+            "x": 8.6,
+            "y": 5,
+            "z": 0,
+            "yaw": 0,
+            "version": "0.1.0"
+          }
+        },
+        "run": null,
+        "viewTime": 0,
+        "packResult": null,
+        "paper": {
+          "mechanism": "tuck_carton",
+          "width": 160,
+          "depth": 100,
+          "height": 80,
+          "thickness": 0.5,
+          "productRevision": "1.0.0",
+          "angle": 0,
+          "outcome": "pass",
+          "ack": false,
+          "bound": false
+        }
+      }
+    },
+    {
+      "id": "X4-save",
+      "meaning": "Save current then open candidate; snapshot belongs to old project",
+      "matched": true,
+      "ok": true,
+      "snapshot_title": "控制盒厂房",
+      "snapshot_revision": 3,
+      "actual": {
+        "project": "C-imported-project",
+        "selected": "A01",
+        "revision": 10,
+        "savedRevision": 10,
+        "undo": 0,
+        "redo": 0,
+        "form": null,
+        "run": null,
+        "viewTime": 0,
+        "packResult": null,
+        "paper": {
+          "mechanism": "tuck_carton",
+          "width": 160,
+          "depth": 100,
+          "height": 80,
+          "thickness": 0.5,
+          "productRevision": "1.0.0",
+          "angle": 0,
+          "outcome": "pass",
+          "ack": false,
+          "bound": false
+        }
+      }
+    },
+    {
+      "id": "X4-save-denied",
+      "meaning": "Failed old-project snapshot save cannot replace active project",
+      "matched": true,
+      "ok": true,
+      "error": "Error: Independent storage-denied probe",
+      "actual": {
+        "project": "控制盒厂房",
+        "selected": "A01",
+        "revision": 3,
+        "savedRevision": 2,
+        "undo": 1,
+        "redo": 0,
+        "form": null,
+        "run": null,
+        "viewTime": 0,
+        "packResult": null,
+        "paper": {
+          "mechanism": "tuck_carton",
+          "width": 160,
+          "depth": 100,
+          "height": 80,
+          "thickness": 0.5,
+          "productRevision": "1.0.0",
+          "angle": 0,
+          "outcome": "pass",
+          "ack": false,
+          "bound": false
+        }
+      }
+    },
+    {
+      "id": "X4-discard",
+      "meaning": "Discard current applied changes then open clears old sample/view/async state",
+      "matched": true,
+      "ok": true,
+      "actual": {
+        "project": "C-imported-project",
+        "selected": "A01",
+        "revision": 10,
+        "savedRevision": 10,
+        "undo": 0,
+        "redo": 0,
+        "form": null,
+        "run": null,
+        "viewTime": 0,
+        "packResult": null,
+        "paper": {
+          "mechanism": "tuck_carton",
+          "width": 160,
+          "depth": 100,
+          "height": 80,
+          "thickness": 0.5,
+          "productRevision": "1.0.0",
+          "angle": 0,
+          "outcome": "pass",
+          "ack": false,
+          "bound": false
+        }
+      }
+    },
+    {
+      "id": "X4-apply-conflict",
+      "meaning": "Unapplied-form conflict cannot open new project or lose fields",
+      "matched": true,
+      "ok": true,
+      "actual": {
+        "project": "控制盒厂房",
+        "selected": "A01",
+        "revision": 2,
+        "savedRevision": 2,
+        "undo": 0,
+        "redo": 0,
+        "form": {
+          "kind": "pose",
+          "base": 1,
+          "dirty": true,
+          "data": {
+            "id": "A01",
+            "name": "控制盒装配台",
+            "model": "assembly",
+            "x": 8.6,
+            "y": 5,
+            "z": 0,
+            "yaw": 0,
+            "version": "0.1.0"
+          }
+        },
+        "run": null,
+        "viewTime": 0,
+        "packResult": null,
+        "paper": {
+          "mechanism": "tuck_carton",
+          "width": 160,
+          "depth": 100,
+          "height": 80,
+          "thickness": 0.5,
+          "productRevision": "1.0.0",
+          "angle": 0,
+          "outcome": "pass",
+          "ack": false,
+          "bound": false
+        }
+      }
+    },
+    {
+      "id": "X4-two-decisions",
+      "meaning": "Discarding fields still asks about previously applied unsaved project",
+      "matched": true,
+      "ok": true,
+      "actual": {
+        "project": "控制盒厂房",
+        "selected": "A01",
+        "revision": 3,
+        "savedRevision": 2,
+        "undo": 1,
+        "redo": 0,
+        "form": null,
+        "run": null,
+        "viewTime": 0,
+        "packResult": null,
+        "paper": {
+          "mechanism": "tuck_carton",
+          "width": 160,
+          "depth": 100,
+          "height": 80,
+          "thickness": 0.5,
+          "productRevision": "1.0.0",
+          "angle": 0,
+          "outcome": "pass",
+          "ack": false,
+          "bound": false
+        }
+      },
+      "actions": [
+        "open-save",
+        "open-discard",
+        "open-stay"
+      ]
+    },
+    {
+      "id": "X4-clean-history",
+      "meaning": "Clean open resets scope history and old undo cannot replace project",
+      "matched": true,
+      "ok": true,
+      "actual": {
+        "project": "C-imported-project",
+        "selected": "A01",
+        "revision": 10,
+        "savedRevision": 10,
+        "undo": 0,
+        "redo": 0,
+        "form": null,
+        "run": null,
+        "viewTime": 0,
+        "packResult": null,
+        "paper": {
+          "mechanism": "tuck_carton",
+          "width": 160,
+          "depth": 100,
+          "height": 80,
+          "thickness": 0.5,
+          "productRevision": "1.0.0",
+          "angle": 0,
+          "outcome": "pass",
+          "ack": false,
+          "bound": false
+        }
+      }
+    },
+    {
+      "id": "X4-failed-open",
+      "meaning": "Malformed input retains active project, dirty form, run and both histories",
+      "matched": true,
+      "ok": true,
+      "actual": {
+        "project": "控制盒厂房",
+        "selected": "A01",
+        "revision": 2,
+        "savedRevision": 2,
+        "undo": 1,
+        "redo": 1,
+        "form": {
+          "kind": "pose",
+          "base": 2,
+          "dirty": true,
+          "data": {
+            "id": "A01",
+            "name": "控制盒装配台",
+            "model": "assembly",
+            "x": 8.6,
+            "y": 5,
+            "z": 0,
+            "yaw": 0,
+            "version": "0.1.0"
+          }
+        },
+        "run": {
+          "id": "A-OLD-RUN",
+          "computedUntil": 180
+        },
+        "viewTime": 0,
+        "packResult": null,
+        "paper": {
+          "mechanism": "tuck_carton",
+          "width": 160,
+          "depth": 100,
+          "height": 80,
+          "thickness": 0.5,
+          "productRevision": "1.0.0",
+          "angle": 0,
+          "outcome": "pass",
+          "ack": false,
+          "bound": false
+        }
+      }
+    },
+    {
+      "id": "X4-failed-shape",
+      "meaning": "Rejected snapshot cannot partially replace project",
+      "matched": true,
+      "ok": true,
+      "actual": {
+        "project": "控制盒厂房",
+        "selected": "A01",
+        "revision": 2,
+        "savedRevision": 2,
+        "undo": 0,
+        "redo": 0,
+        "form": {
+          "kind": "pose",
+          "base": 2,
+          "dirty": true,
+          "data": {
+            "id": "A01",
+            "name": "控制盒装配台",
+            "model": "assembly",
+            "x": 8.6,
+            "y": 5,
+            "z": 0,
+            "yaw": 0,
+            "version": "0.1.0"
+          }
+        },
+        "run": null,
+        "viewTime": 0,
+        "packResult": null,
+        "paper": {
+          "mechanism": "tuck_carton",
+          "width": 160,
+          "depth": 100,
+          "height": 80,
+          "thickness": 0.5,
+          "productRevision": "1.0.0",
+          "angle": 0,
+          "outcome": "pass",
+          "ack": false,
+          "bound": false
+        }
+      }
+    },
+    {
+      "id": "X5-width",
+      "meaning": "Same product version width edit invalidates old effective result/binding",
+      "matched": true,
+      "ok": true,
+      "before": {
+        "ack": true,
+        "bound": true,
+        "result": {
+          "outcome": "pass",
+          "productRevision": "1.0.0",
+          "input": {
+            "mechanism": "tuck_carton",
+            "width": 160,
+            "depth": 100,
+            "height": 80,
+            "thickness": 0.5,
+            "productRevision": "1.0.0"
+          },
+          "source_kind": "manual_expected",
+          "actual_provider": false
+        },
+        "paper": {
+          "mechanism": "tuck_carton",
+          "width": 160,
+          "depth": 100,
+          "height": 80,
+          "thickness": 0.5,
+          "productRevision": "1.0.0",
+          "angle": 0,
+          "outcome": "pass",
+          "ack": true,
+          "bound": true
+        }
+      },
+      "after": {
+        "ack": false,
+        "bound": false,
+        "result": {
+          "outcome": "pass",
+          "productRevision": "1.0.0",
+          "input": {
+            "mechanism": "tuck_carton",
+            "width": 160,
+            "depth": 100,
+            "height": 80,
+            "thickness": 0.5,
+            "productRevision": "1.0.0"
+          },
+          "source_kind": "manual_expected",
+          "actual_provider": false
+        },
+        "paper": {
+          "mechanism": "tuck_carton",
+          "width": 200,
+          "depth": 100,
+          "height": 80,
+          "thickness": 0.5,
+          "productRevision": "1.0.0",
+          "angle": 0,
+          "outcome": "pass",
+          "ack": false,
+          "bound": false
+        }
+      }
+    },
+    {
+      "id": "X5-thickness",
+      "meaning": "Same product version thickness edit invalidates effective result/binding",
+      "matched": true,
+      "ok": true,
+      "before": {
+        "ack": true,
+        "bound": true,
+        "result": {
+          "outcome": "pass",
+          "productRevision": "1.0.0",
+          "input": {
+            "mechanism": "tuck_carton",
+            "width": 160,
+            "depth": 100,
+            "height": 80,
+            "thickness": 0.5,
+            "productRevision": "1.0.0"
+          },
+          "source_kind": "manual_expected",
+          "actual_provider": false
+        },
+        "paper": {
+          "mechanism": "tuck_carton",
+          "width": 160,
+          "depth": 100,
+          "height": 80,
+          "thickness": 0.5,
+          "productRevision": "1.0.0",
+          "angle": 0,
+          "outcome": "pass",
+          "ack": true,
+          "bound": true
+        }
+      },
+      "after": {
+        "ack": false,
+        "bound": false,
+        "result": {
+          "outcome": "pass",
+          "productRevision": "1.0.0",
+          "input": {
+            "mechanism": "tuck_carton",
+            "width": 160,
+            "depth": 100,
+            "height": 80,
+            "thickness": 0.5,
+            "productRevision": "1.0.0"
+          },
+          "source_kind": "manual_expected",
+          "actual_provider": false
+        },
+        "paper": {
+          "mechanism": "tuck_carton",
+          "width": 160,
+          "depth": 100,
+          "height": 80,
+          "thickness": 0.8,
+          "productRevision": "1.0.0",
+          "angle": 0,
+          "outcome": "pass",
+          "ack": false,
+          "bound": false
+        }
+      }
+    },
+    {
+      "id": "X5-mechanism",
+      "meaning": "Same product version mechanism edit invalidates effective result/binding",
+      "matched": true,
+      "ok": true,
+      "before": {
+        "ack": true,
+        "bound": true,
+        "result": {
+          "outcome": "pass",
+          "productRevision": "1.0.0",
+          "input": {
+            "mechanism": "tuck_carton",
+            "width": 160,
+            "depth": 100,
+            "height": 80,
+            "thickness": 0.5,
+            "productRevision": "1.0.0"
+          },
+          "source_kind": "manual_expected",
+          "actual_provider": false
+        },
+        "paper": {
+          "mechanism": "tuck_carton",
+          "width": 160,
+          "depth": 100,
+          "height": 80,
+          "thickness": 0.5,
+          "productRevision": "1.0.0",
+          "angle": 0,
+          "outcome": "pass",
+          "ack": true,
+          "bound": true
+        }
+      },
+      "after": {
+        "ack": false,
+        "bound": false,
+        "result": {
+          "outcome": "pass",
+          "productRevision": "1.0.0",
+          "input": {
+            "mechanism": "tuck_carton",
+            "width": 160,
+            "depth": 100,
+            "height": 80,
+            "thickness": 0.5,
+            "productRevision": "1.0.0"
+          },
+          "source_kind": "manual_expected",
+          "actual_provider": false
+        },
+        "paper": {
+          "mechanism": "fold_glue",
+          "width": 160,
+          "depth": 100,
+          "height": 80,
+          "thickness": 0.5,
+          "productRevision": "1.0.0",
+          "angle": 0,
+          "outcome": "pass",
+          "ack": false,
+          "bound": false
+        }
+      }
+    },
+    {
+      "id": "X5-preview",
+      "meaning": "Only fold preview angle keeps professional input identity",
+      "matched": true,
+      "ok": true,
+      "before": {
+        "ack": true,
+        "bound": true,
+        "result": {
+          "outcome": "pass",
+          "productRevision": "1.0.0",
+          "input": {
+            "mechanism": "tuck_carton",
+            "width": 160,
+            "depth": 100,
+            "height": 80,
+            "thickness": 0.5,
+            "productRevision": "1.0.0"
+          },
+          "source_kind": "manual_expected",
+          "actual_provider": false
+        },
+        "paper": {
+          "mechanism": "tuck_carton",
+          "width": 160,
+          "depth": 100,
+          "height": 80,
+          "thickness": 0.5,
+          "productRevision": "1.0.0",
+          "angle": 0,
+          "outcome": "pass",
+          "ack": true,
+          "bound": true
+        }
+      },
+      "after": {
+        "ack": true,
+        "bound": true,
+        "result": {
+          "outcome": "pass",
+          "productRevision": "1.0.0",
+          "input": {
+            "mechanism": "tuck_carton",
+            "width": 160,
+            "depth": 100,
+            "height": 80,
+            "thickness": 0.5,
+            "productRevision": "1.0.0"
+          },
+          "source_kind": "manual_expected",
+          "actual_provider": false
+        },
+        "paper": {
+          "mechanism": "tuck_carton",
+          "width": 160,
+          "depth": 100,
+          "height": 80,
+          "thickness": 0.5,
+          "productRevision": "1.0.0",
+          "angle": 20,
+          "outcome": "pass",
+          "ack": true,
+          "bound": true
+        }
+      }
+    },
+    {
+      "id": "X5-ack-not-resurrected",
+      "meaning": "Undo after changed geometry cannot silently resurrect old acknowledgment",
+      "matched": true,
+      "ok": true,
+      "actual": {
+        "ack": false,
+        "bound": false,
+        "result": {
+          "outcome": "pass",
+          "productRevision": "1.0.0",
+          "input": {
+            "mechanism": "tuck_carton",
+            "width": 160,
+            "depth": 100,
+            "height": 80,
+            "thickness": 0.5,
+            "productRevision": "1.0.0"
+          },
+          "source_kind": "manual_expected",
+          "actual_provider": false
+        },
+        "paper": {
+          "mechanism": "tuck_carton",
+          "width": 160,
+          "depth": 100,
+          "height": 80,
+          "thickness": 0.5,
+          "productRevision": "1.0.0",
+          "angle": 0,
+          "outcome": "pass",
+          "ack": false,
+          "bound": false
+        }
+      },
+      "note": "Local prototype effective state only; no real acknowledgment ledger is executed."
+    },
+    {
+      "id": "X5-rebind",
+      "meaning": "Explicit new matching sample and acknowledgment allow rebind",
+      "matched": true,
+      "ok": true,
+      "actual": {
+        "ack": true,
+        "bound": true,
+        "result": {
+          "outcome": "pass",
+          "productRevision": "1.0.0",
+          "input": {
+            "mechanism": "tuck_carton",
+            "width": 200,
+            "depth": 100,
+            "height": 80,
+            "thickness": 0.5,
+            "productRevision": "1.0.0"
+          },
+          "source_kind": "manual_expected",
+          "actual_provider": false
+        },
+        "paper": {
+          "mechanism": "tuck_carton",
+          "width": 200,
+          "depth": 100,
+          "height": 80,
+          "thickness": 0.5,
+          "productRevision": "1.0.0",
+          "angle": 0,
+          "outcome": "pass",
+          "ack": true,
+          "bound": true
+        }
+      }
+    },
+    {
+      "id": "X6-one-clock",
+      "meaning": "Axis/LOD/camera presentation cannot change frozen run times, input quantities or results",
+      "matched": true,
+      "ok": true,
+      "run_id": "样例-L03-baseline",
+      "view_time": 120,
+      "input_quantity": 6
+    },
+    {
+      "id": "X5-camera",
+      "meaning": "LOD/camera display change does not revoke valid prototype professional binding",
+      "matched": true,
+      "ok": true,
+      "actual": {
+        "ack": true,
+        "bound": true,
+        "result": {
+          "outcome": "pass",
+          "productRevision": "1.0.0",
+          "input": {
+            "mechanism": "tuck_carton",
+            "width": 160,
+            "depth": 100,
+            "height": 80,
+            "thickness": 0.5,
+            "productRevision": "1.0.0"
+          },
+          "source_kind": "manual_expected",
+          "actual_provider": false
+        },
+        "paper": {
+          "mechanism": "tuck_carton",
+          "width": 160,
+          "depth": 100,
+          "height": 80,
+          "thickness": 0.5,
+          "productRevision": "1.0.0",
+          "angle": 0,
+          "outcome": "pass",
+          "ack": true,
+          "bound": true
+        }
+      }
+    },
+    {
+      "id": "X4-old-unit",
+      "meaning": "Opening project with no Run cannot keep old Run item selection",
+      "matched": true,
+      "ok": true,
+      "selected_unit": null,
+      "project": "C-imported-project",
+      "run": null
+    },
+    {
+      "id": "X4-stale-definition",
+      "meaning": "Definition callback after project replacement cannot commit old draft into new scope",
+      "matched": true,
+      "ok": true,
+      "definitions": [],
+      "pending_definition": null,
+      "project": "C-imported-project"
+    },
+    {
+      "id": "X5-purpose-uncheck",
+      "meaning": "Unchecking current purpose acknowledgment makes effective binding inactive",
+      "matched": true,
+      "ok": true,
+      "actual": {
+        "ack": false,
+        "bound": false,
+        "result": {
+          "outcome": "pass",
+          "productRevision": "1.0.0",
+          "input": {
+            "mechanism": "tuck_carton",
+            "width": 160,
+            "depth": 100,
+            "height": 80,
+            "thickness": 0.5,
+            "productRevision": "1.0.0"
+          },
+          "source_kind": "manual_expected",
+          "actual_provider": false
+        },
+        "paper": {
+          "mechanism": "tuck_carton",
+          "width": 160,
+          "depth": 100,
+          "height": 80,
+          "thickness": 0.5,
+          "productRevision": "1.0.0",
+          "angle": 0,
+          "outcome": "pass",
+          "ack": false,
+          "bound": false
+        }
+      }
+    }
+  ],
+  "failed_ids": [],
+  "execution": "Actual workbench functions in Node VM; DOM/render/SceneView/download presentation are stubs.",
+  "actual_browser_execution": false,
+  "actual_Host_or_Engine": null,
+  "limits": "Does not assert actual professional ledger, real persistence, rendering or product run."
+}

@@ -1,0 +1,454 @@
+{
+  "document_kind": "PL2_window3_professional_independent_combination_review",
+  "status": "received",
+  "authority_ref": "docs/04_开发与验收/原型并行深度复审.json",
+  "human_coordination_message_id": "01a13d71-d8d1-7173-a17e-590530753005",
+  "scope": "多个实际/新ID包装消费者的当前认可绑定、旧表单/历史、订单版本和快照接手；新增组合不裸重跑基线17/五链或DQ21。",
+  "baseline_refs": [
+    "docs/04_开发与验收/首版原型逻辑贯通复审.json",
+    "packages/packaging/adoption-lifecycle.design.json"
+  ],
+  "probe_ref": "tools/design-quality-audit/prototype-parallel/window3/professional-combinations.cjs",
+  "harness_ref": "tools/design-quality-audit/prototype-parallel/window3/professional-harness.cjs",
+  "result_ref": "tools/design-quality-audit/prototype-parallel/window3/professional-final.json",
+  "source_observation": {
+    "mtime_ms": 1792033408790.3506,
+    "bytes": 109185
+  },
+  "executed_cases": 10,
+  "passed": 10,
+  "failed": 0,
+  "confirmed_findings": [
+    {
+      "id": "PL2-W3-01",
+      "priority": "P2",
+      "status": "closed_after_independent_final_recheck",
+      "title": "当前工位绑定未按当前订单推导期望产品版本",
+      "parent_scope": "PL2专业连续组合复审",
+      "affected_checkpoints": [
+        "S04-03",
+        "S04-04",
+        "S04-05"
+      ],
+      "normative_refs": [
+        "packages/packaging/adoption-lifecycle.design.json#/binding_gate_order/2",
+        "packages/packaging/adoption-lifecycle.design.json#/professional_version_effects/2",
+        "docs/04_开发与验收/特征细化/DRF03_C02_专业绑定推导.json"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+          "line": 38,
+          "function": "paperMatches",
+          "observed": "只比较packResult.input与当前paper输入，不比较当前消费者实际产品/订单版本。"
+        },
+        {
+          "path": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+          "line": 42,
+          "function": "commit(inputs)",
+          "observed": "订单版本变化仅更新order/arrivals，旧paper当前认可/绑定仍true。"
+        },
+        {
+          "path": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+          "line": 258,
+          "function": "paper-bind",
+          "observed": "存在sealer目标且样例匹配paper就可绑定，没有消费者期望版本与order版本校核。"
+        }
+      ],
+      "counterexamples": [
+        {
+          "case": "M06",
+          "input": "order/paper/sample1.0.0，P01已认可绑定",
+          "actions": [
+            "真实inputs表单将order.version改2.0.0并Apply"
+          ],
+          "actual": "paper/sample仍1.0.0且ack/bound=true",
+          "expected": "旧r1可保留，但不作为当前r2消费者有效绑定。"
+        },
+        {
+          "case": "M07",
+          "input": "order仍1.0.0",
+          "actions": [
+            "paper.productRevision改2.0.0",
+            "载入2.0.0手工Pass样例",
+            "认可",
+            "绑定"
+          ],
+          "actual": "bound=true",
+          "expected": "当前消费者仍r1，应拒绝r2有效绑定或明确独立展示不覆盖当前订单。"
+        },
+        {
+          "case": "M10",
+          "input": "r2订单/r1纸包装、实际COPY1-P01",
+          "actions": [
+            "保存快照",
+            "实际打开接手",
+            "重新载入旧r1样例/认可/绑定"
+          ],
+          "actual": "bound=true",
+          "expected": "接手不绕过同一消费者版本匹配。"
+        }
+      ],
+      "positive_witness": "最终同10条全部通过；M06/M07/M10拒绝当前消费者版本失配，M08匹配r2的新ID消费者可明确认可绑定，M01—M05/M09均通过。",
+      "result_ref": "tools/design-quality-audit/prototype-parallel/window3/professional-result.json",
+      "before_ref": "tools/design-quality-audit/prototype-parallel/window3/version-mismatch-before.json",
+      "impact": "当前绿色绑定可能把独立旧版专业样例误当作新订单/消费者的有效用途，违反独立期望来源。",
+      "recommended_minimal_fix": "在本原型现有单活动订单范围，以实际消费者所需产品版本独立校核当前paper/样例版本；订单版本变化使受影响当前绑定失配，绑定入口也复查。独立专业设计仍可保留但须标未适配当前订单。新旧成果/真实历史认可不删除，不自动把paper改成新版本，不新增公共类型或工业求解。",
+      "repair_owner": "窗口2唯一S04源；公共合同由窗口1",
+      "closure": "原M06/M07/M10拒绝不匹配，M08合法匹配仍通过，其他组合不回归；用变更后的真实源码再跑。",
+      "coordinator_notified": true,
+      "public_id": "PR-09",
+      "after_cases": {
+        "M06": true,
+        "M07": true,
+        "M08": true,
+        "M10": true
+      },
+      "after_source": {
+        "mtime_ms": 1792033408790.3506,
+        "bytes": 109185
+      },
+      "after_ref": "tools/design-quality-audit/prototype-parallel/window3/professional-final.json",
+      "initial_evidence_ref": "tools/design-quality-audit/prototype-parallel/window3/version-mismatch-before.json",
+      "final_cases": [
+        {
+          "id": "M06",
+          "passed": true
+        },
+        {
+          "id": "M07",
+          "passed": true
+        },
+        {
+          "id": "M08",
+          "passed": true
+        },
+        {
+          "id": "M10",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "PL2-W3-02",
+      "priority": "P2",
+      "status": "closed_after_independent_final_recheck",
+      "title": "撤销唯一已认可新工位后将其许可转给未认可的fallback工位",
+      "affected_checkpoints": [
+        "S04-03",
+        "S04-04",
+        "S04-05"
+      ],
+      "normative_refs": [
+        "packages/packaging/adoption-lifecycle.design.json#/professional_version_effects/6",
+        "packages/packaging/adoption-lifecycle.design.json#/binding_gate_order/6",
+        "packages/packaging/adoption-lifecycle.design.json#/binding_gate_order/7"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+          "line": 44,
+          "function": "restoreDraft",
+          "observed": "旧目标被undo删除后把paperBindingTargetId清null；同纸包装输入/版本且fallback目标存在，就保留当前B的ack/bound=true。"
+        },
+        {
+          "path": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+          "line": 129,
+          "function": "packagingTargetId",
+          "observed": "null目标回退P01，未与之前许可绑定的COPY1-P01作身份比较。"
+        }
+      ],
+      "actions": [
+        "原P01从未认可/绑定，仅载入手工Pass",
+        "真实复制创建COPY1-P01",
+        "明确选择COPY1-P01并认可/绑定",
+        "undo撤销新工位创建"
+      ],
+      "actual": "COPY1-P01消失，目标回退P01，ack/bound仍true；P01从未发生用途认可。",
+      "expected": "当前B用途不自动变成A用途；目标消失/改身份应失配，A需自己的明确选择/认可/绑定。结果和历史B记录可保留。",
+      "actual_trace": [
+        {
+          "label": "only copied B ever approved; original A never approved",
+          "project": "控制盒厂房",
+          "revision": 5,
+          "saved": 0,
+          "selected": "A01",
+          "target": "COPY1-P01",
+          "selected_target_field": "COPY1-P01",
+          "available_targets": [
+            "P01",
+            "COPY1-P01"
+          ],
+          "order": {
+            "product": "控制盒",
+            "version": "1.0.0",
+            "quantity": 6,
+            "unit": "piece",
+            "due": 500
+          },
+          "paper": {
+            "mechanism": "tuck_carton",
+            "width": 160,
+            "depth": 100,
+            "height": 80,
+            "thickness": 0.5,
+            "productRevision": "1.0.0",
+            "angle": 0,
+            "outcome": "pass",
+            "ack": true,
+            "bound": true
+          },
+          "form": null,
+          "result": {
+            "outcome": "pass",
+            "productRevision": "1.0.0",
+            "input": {
+              "mechanism": "tuck_carton",
+              "width": 160,
+              "depth": 100,
+              "height": 80,
+              "thickness": 0.5,
+              "productRevision": "1.0.0"
+            },
+            "source_kind": "manual_expected",
+            "actual_provider": false
+          },
+          "history": {
+            "undo": 1,
+            "redo": 0
+          },
+          "dialog": "<h2>复制预览 / 新身份</h2><table class=\"table\"><thead><tr><th>原ID</th><th>新ID</th></tr></thead><tbody><tr><td>A01</td><td>COPY1-A01</td></tr><tr><td>ROB01</td><td>COPY1-ROB01</td></tr><tr><td>CV01</td><td>COPY1-CV01</td></tr><tr><td>I01</td><td>COPY1-I01</td></tr><tr><td>CV02</td><td>COPY1-CV02</td></tr><tr><td>PK01</td><td>COPY1-PK01</td></tr><tr><td>P01</td><td>COPY1-P01</td></tr><tr><td>FG01</td><td>COPY1-FG01</td></tr><tr><td>R01</td><td>COPY1-R01</td></tr></tbody></table><div class=\"message \">复制当前原型画布设备和内部连接。未应用前不更改成员；每次复制分配新ID。</div><button data-action=\"copy-confirm\"  >应用复制</button><button data-action=\"dialog-close\"  >取消</button>",
+          "notice": null
+        },
+        {
+          "label": "B removed; no prior A purpose exists",
+          "project": "控制盒厂房",
+          "revision": 6,
+          "saved": 0,
+          "selected": "A01",
+          "target": "P01",
+          "selected_target_field": null,
+          "available_targets": [
+            "P01"
+          ],
+          "order": {
+            "product": "控制盒",
+            "version": "1.0.0",
+            "quantity": 6,
+            "unit": "piece",
+            "due": 500
+          },
+          "paper": {
+            "mechanism": "tuck_carton",
+            "width": 160,
+            "depth": 100,
+            "height": 80,
+            "thickness": 0.5,
+            "productRevision": "1.0.0",
+            "angle": 0,
+            "outcome": "pass",
+            "ack": true,
+            "bound": true
+          },
+          "form": null,
+          "result": {
+            "outcome": "pass",
+            "productRevision": "1.0.0",
+            "input": {
+              "mechanism": "tuck_carton",
+              "width": 160,
+              "depth": 100,
+              "height": 80,
+              "thickness": 0.5,
+              "productRevision": "1.0.0"
+            },
+            "source_kind": "manual_expected",
+            "actual_provider": false
+          },
+          "history": {
+            "undo": 0,
+            "redo": 1
+          },
+          "dialog": "<h2>复制预览 / 新身份</h2><table class=\"table\"><thead><tr><th>原ID</th><th>新ID</th></tr></thead><tbody><tr><td>A01</td><td>COPY1-A01</td></tr><tr><td>ROB01</td><td>COPY1-ROB01</td></tr><tr><td>CV01</td><td>COPY1-CV01</td></tr><tr><td>I01</td><td>COPY1-I01</td></tr><tr><td>CV02</td><td>COPY1-CV02</td></tr><tr><td>PK01</td><td>COPY1-PK01</td></tr><tr><td>P01</td><td>COPY1-P01</td></tr><tr><td>FG01</td><td>COPY1-FG01</td></tr><tr><td>R01</td><td>COPY1-R01</td></tr></tbody></table><div class=\"message \">复制当前原型画布设备和内部连接。未应用前不更改成员；每次复制分配新ID。</div><button data-action=\"copy-confirm\"  >应用复制</button><button data-action=\"dialog-close\"  >取消</button>",
+          "notice": "已撤销草稿；样例/认可/下载文件未回滚"
+        }
+      ],
+      "before_ref": "tools/design-quality-audit/prototype-parallel/window3/consumer-fallback-before.json#/cases/4",
+      "recommended_minimal_fix": "restoreDraft恢复前后比较实际消费者ID；若变化或原目标丢失，失效当前用途/有效绑定。保留实际存在的目标和真正匹配的明确历史记录，但不能仅靠bool+fallback存在推有效。无需公共新类型。",
+      "scope_note": "仍是原M05 undo目标创建的10条既有范围；附加无A历史认可fixture，不新增工业/算法范围。",
+      "repair_owner": "窗口2",
+      "coordinator_notified": true,
+      "closure": "同M05不再借用B许可；原M01—10合法/拒绝路径均通过，尤其版本修复与B重建后显式再次认可保持可行。",
+      "public_id": "PR-17",
+      "initial_evidence_ref": "tools/design-quality-audit/prototype-parallel/window3/consumer-fallback-before.json",
+      "after_ref": "tools/design-quality-audit/prototype-parallel/window3/professional-final.json",
+      "after_source": {
+        "mtime_ms": 1792033408790.3506,
+        "bytes": 109185
+      },
+      "final_cases": [
+        {
+          "id": "M05",
+          "passed": true
+        },
+        {
+          "id": "M01",
+          "passed": true
+        },
+        {
+          "id": "M02",
+          "passed": true
+        },
+        {
+          "id": "M03",
+          "passed": true
+        },
+        {
+          "id": "M04",
+          "passed": true
+        }
+      ]
+    }
+  ],
+  "independence": "实际读取当前workbench.js和prototype.data.js，在VM执行原业务函数、input/change/save/open事件；DOM/SceneView/下载与本地存储终端隔离，断言来自独立专业生命周期/消费者版本语义，不复制窗口2预期或PASS。",
+  "probe_correction": "首次所有10条在初始化阶段遇到语法探针错误；已限定提取真实project-title/save-indicator语句，排除新markDirectEdit函数行，未计作被审消费者缺陷。随后实际10条7/3结果是本条依据。",
+  "manual_expected_boundary": "所有专业结果仍是显式manual_expected/actual_provider=false，仅核原型状态，不补真实工业计算或专业认可。",
+  "current_write_scope": [
+    "tools/design-quality-audit/prototype-parallel/window3/",
+    "docs/04_开发与验收/特征细化/PL2_窗口3_专业复核.json"
+  ],
+  "S04_public_or_frozen_sources_written": false,
+  "service_or_Figma_or_port_install": false,
+  "actual_product_runtime": null,
+  "wait_for": null,
+  "original_version_before_ref": "tools/design-quality-audit/prototype-parallel/window3/version-mismatch-before.json",
+  "M05_fixture_note": "保留原A先认可流程；另以A从未认可、仅B认可的同范围fixture先执行，避免将错误解释为恢复历史A。原断言及其他9条未放宽。",
+  "evidence": {
+    "initial_evidence_ref": "tools/design-quality-audit/prototype-parallel/window3/version-mismatch-before.json",
+    "initial_results": {
+      "cases": 10,
+      "passed": 7,
+      "failed": 3,
+      "failed_cases": [
+        "M06",
+        "M07",
+        "M10"
+      ],
+      "source": {
+        "mtime_ms": 1792032782707.7852,
+        "bytes": 105446
+      }
+    },
+    "PR17_evidence_ref": "tools/design-quality-audit/prototype-parallel/window3/consumer-fallback-before.json",
+    "PR17_results": {
+      "cases": 10,
+      "passed": 9,
+      "failed": 1,
+      "failed_cases": [
+        "M05"
+      ],
+      "source": {
+        "mtime_ms": 1792033026282.8604,
+        "bytes": 106874
+      }
+    },
+    "final_evidence_ref": "tools/design-quality-audit/prototype-parallel/window3/professional-final.json",
+    "final_results": {
+      "cases": 10,
+      "passed": 10,
+      "failed": 0,
+      "failed_cases": [],
+      "source": {
+        "mtime_ms": 1792033408790.3506,
+        "bytes": 109185
+      },
+      "stable_source_and_data": true,
+      "executed_at": "2026-10-15T03:04:21.872Z"
+    },
+    "before_files_policy": "two existing before files retained as independent snapshots; they are not overwritten by professional-result.json final output"
+  },
+  "selected_scope_complete": true,
+  "further_scope_expansion": false,
+  "messages_to_coordinator": [
+    {
+      "finding": "PL2-W3-01",
+      "public_id": "PR-09",
+      "delivered": true
+    },
+    {
+      "finding": "PL2-W3-02",
+      "public_id": "PR-17",
+      "delivered": true
+    }
+  ],
+  "review_result": "passed_in_selected_scope",
+  "remaining_findings_in_selected_scope": [],
+  "final_case_results": [
+    {
+      "id": "M01",
+      "passed": true
+    },
+    {
+      "id": "M02",
+      "passed": true
+    },
+    {
+      "id": "M03",
+      "passed": true
+    },
+    {
+      "id": "M04",
+      "passed": true
+    },
+    {
+      "id": "M05",
+      "passed": true
+    },
+    {
+      "id": "M06",
+      "passed": true
+    },
+    {
+      "id": "M07",
+      "passed": true
+    },
+    {
+      "id": "M08",
+      "passed": true
+    },
+    {
+      "id": "M09",
+      "passed": true
+    },
+    {
+      "id": "M10",
+      "passed": true
+    }
+  ],
+  "final_source_stability": {
+    "executed_at": "2026-10-15T03:04:21.872Z",
+    "stability_method": "filesystem metadata before and after fresh-process original 10 cases",
+    "before": {
+      "docs/02_交互设计/S04_可操作设计原型/workbench.js": {
+        "mtime_ms": 1792033408790.3506,
+        "bytes": 109185
+      },
+      "docs/02_交互设计/S04_可操作设计原型/prototype.data.js": {
+        "mtime_ms": 1791992467979.749,
+        "bytes": 142377
+      }
+    },
+    "after": {
+      "docs/02_交互设计/S04_可操作设计原型/workbench.js": {
+        "mtime_ms": 1792033408790.3506,
+        "bytes": 109185
+      },
+      "docs/02_交互设计/S04_可操作设计原型/prototype.data.js": {
+        "mtime_ms": 1791992467979.749,
+        "bytes": 142377
+      }
+    },
+    "unchanged": true
+  },
+  "final_boundary": "窗口2整批稳定通知后，以实际当前workbench.js/prototype.data.js执行原10条组合；两处缺口复验闭合。结果限VM原型业务函数/真实事件，manual_expected且actual_provider=false，不是浏览器图形或产品Host/Engine/工业求解验收。"
+}

@@ -29,8 +29,31 @@ for instance_id, title, kind, definition_id, operation, x, z in stations:
                         operation=operation, duration_ms=round(behavior["duration"]["value"] * 1000),
                         behavior=behavior, ports=definition["ports"], resources=[r["role"] for r in behavior["resources"]],
                         placement=[x, z]))
+def local_definition(module_id, category, title, field, payload):
+    return dict(id=module_id, version="0.1.0", category=category, title=title, definition_state="design",
+                contribution=dict(author="本项目自建演示输入", license="待项目许可确认", status="local_proof_only"), **{field: payload})
+item_definitions = []
+for alias, name, unit in [("shell", "控制盒壳体", "piece"), ("pcb", "控制板", "piece"), ("fastener", "PCB紧固件", "piece"),
+                          ("carton", "控制盒包装纸箱", "piece"), ("assembly", "已装配控制盒", "piece"),
+                          ("package", "控制盒包件", "piece"), ("sealing_tape", "封箱胶带", "meter")]:
+    payload = dict(unit=unit, tracking="individual" if unit == "piece" else "quantity", quantity_is_instance_state=True,
+                   specification_basis="自建演示规格；不采用另一壳体样例的100mm规格")
+    if alias == "package": payload.update(container="carton", contents="assembly", supported_closure_values=["open", "sealed"], envelope_meter=[.49, .34, .36])
+    if alias == "assembly": payload.update(recipe=dict(shell=1, pcb=1, fastener=4), visual="shared_control_box_geometry_1_to_1")
+    if alias == "sealing_tape": payload["quantity_resolution_meter"] = .001
+    definition = local_definition("superfactory.demo.item." + alias, "items", name, "item_definition", payload)
+    item_definitions.append(dict(alias=alias, **definition))
+resource_definitions = [json.loads((ROOT / "modules/resources/operator-role/manifest.json").read_text(encoding="utf-8"))]
+for role, title in [("inspector", "检查人员"), ("repairer", "返工人员"), ("packer", "包装人员")]:
+    resource_definitions.append(local_definition("superfactory.demo.role." + role, "resources", title, "resource_definition",
+                                                dict(kind="worker", role=role, capacity=dict(value=1, unit="person"), current_occupation_is_instance_state=True)))
+resource_instances = [dict(id="W-" + d["resource_definition"]["role"].upper() + "-01", role=d["resource_definition"]["role"],
+                           definition_ref={"id": d["id"], "version": d["version"]}, capacity=1,
+                           availability="always_available_in_this_local_proof", calendar_adoption="explicit_override_of_definition_default") for d in resource_definitions]
 config = dict(document_kind="L03_local_executable_proof_input_not_product_project", project_id="E01", hall_id="H01", line_id="L03",
               source_seed="packages/module-kit/demo-equipment/definitions.design.json", stations=records,
+              item_definitions=item_definitions, resource_definitions=resource_definitions, resource_instances=resource_instances,
+              item_bindings={d["alias"]: {"id": d["id"], "version": d["version"]} for d in item_definitions},
               pallet=dict(id="PAL01", category="resources", definition_ref={"id": "superfactory.demo.pallet12", "version": "0.1.0"},
                           capacity=definitions["superfactory.demo.pallet12"]["resource_definition"]["capacity"]["value"], placement=[14.9, 0]),
               order=dict(id="ORDER-001", quantity=6, accepted_unit="sealed_package_at_PAL01"),

@@ -1,0 +1,780 @@
+{
+  "document_kind": "finite_algorithm_inputs_and_expected_values_not_product_Run",
+  "time_note": "本文件使用自建秒值/抽象整数演示算术；映射真实Project时秒×1000为整数ms，不冒充行业节拍。",
+  "cases": [
+    {
+      "id": "SCHED-01",
+      "kind": "dispatch",
+      "rules": [
+        "ALG-01",
+        "ALG-02"
+      ],
+      "at": 0,
+      "jobs": [
+        {
+          "id": "late",
+          "priority": 100,
+          "due": 1,
+          "ready": 10
+        },
+        {
+          "id": "A",
+          "priority": 2,
+          "due": null,
+          "ready": 0
+        },
+        {
+          "id": "B",
+          "priority": 2,
+          "due": 30,
+          "ready": 0
+        },
+        {
+          "id": "C",
+          "priority": 2,
+          "due": 30,
+          "ready": 0
+        },
+        {
+          "id": "D",
+          "priority": 3,
+          "due": 50,
+          "ready": 0
+        }
+      ],
+      "expected": [
+        "D",
+        "B",
+        "C",
+        "A"
+      ]
+    },
+    {
+      "id": "SCHED-02",
+      "kind": "atomic_kit",
+      "rules": [
+        "ALG-03"
+      ],
+      "stock": {
+        "shell": 1,
+        "pcb": 0
+      },
+      "need": {
+        "shell": 1,
+        "pcb": 1
+      },
+      "capacity": 1,
+      "expected": {
+        "committed": false,
+        "stock": {
+          "shell": 1,
+          "pcb": 0
+        },
+        "capacity": 1
+      }
+    },
+    {
+      "id": "SCHED-03",
+      "kind": "eligibility",
+      "rules": [
+        "ALG-03",
+        "ALG-06"
+      ],
+      "items": [
+        {
+          "id": "D0",
+          "holder": "store",
+          "quality": "released",
+          "reserve": null
+        },
+        {
+          "id": "D1",
+          "holder": "store",
+          "quality": "pending",
+          "reserve": "other"
+        },
+        {
+          "id": "D2",
+          "holder": "store",
+          "quality": "released",
+          "reserve": "other"
+        },
+        {
+          "id": "D3",
+          "holder": "store",
+          "quality": "released",
+          "reserve": "self"
+        },
+        {
+          "id": "D4",
+          "holder": "container",
+          "quality": "released",
+          "reserve": null
+        }
+      ],
+      "expected": {
+        "free": [
+          "D0"
+        ],
+        "ordinary_for_self": [
+          "D0",
+          "D3"
+        ],
+        "excluded_from_free_count": 4
+      }
+    },
+    {
+      "id": "SCHED-04",
+      "kind": "calendar_phases",
+      "rules": [
+        "ALG-04"
+      ],
+      "machine": [
+        [
+          0,
+          100
+        ]
+      ],
+      "worker": [
+        [
+          0,
+          20
+        ],
+        [
+          40,
+          60
+        ]
+      ],
+      "phases": [
+        {
+          "id": "load",
+          "duration": 5,
+          "worker": true
+        },
+        {
+          "id": "auto",
+          "duration": 30,
+          "worker": false
+        },
+        {
+          "id": "unload",
+          "duration": 5,
+          "worker": true
+        }
+      ],
+      "expected": {
+        "phases": [
+          [
+            "load",
+            0,
+            5
+          ],
+          [
+            "auto",
+            5,
+            35
+          ],
+          [
+            "unload",
+            40,
+            45
+          ]
+        ],
+        "worker_active": 10,
+        "active": 40,
+        "waiting": 5,
+        "completion": 45
+      }
+    },
+    {
+      "id": "SCHED-05",
+      "kind": "non_preemptive_no_fit",
+      "rules": [
+        "ALG-04"
+      ],
+      "calendar": [
+        [
+          0,
+          20
+        ],
+        [
+          40,
+          60
+        ]
+      ],
+      "at": 0,
+      "duration": 40,
+      "expected": null
+    },
+    {
+      "id": "SCHED-06",
+      "kind": "pause_resume",
+      "rules": [
+        "ALG-04"
+      ],
+      "calendar": [
+        [
+          0,
+          10
+        ],
+        [
+          20,
+          30
+        ]
+      ],
+      "at": 5,
+      "duration": 8,
+      "expected": {
+        "active_intervals": [
+          [
+            5,
+            10
+          ],
+          [
+            20,
+            23
+          ]
+        ],
+        "completion": 23,
+        "active": 8,
+        "waiting": 10,
+        "phase_resource_intervals": [
+          [
+            5,
+            10
+          ],
+          [
+            20,
+            23
+          ]
+        ],
+        "job_resource_interval": [
+          5,
+          23
+        ]
+      }
+    },
+    {
+      "id": "SCHED-07",
+      "kind": "output_once",
+      "rules": [
+        "ALG-06",
+        "ALG-07"
+      ],
+      "completed_at": 20,
+      "tries": [
+        {
+          "at": 20,
+          "room": false
+        },
+        {
+          "at": 40,
+          "room": true
+        },
+        {
+          "at": 40,
+          "room": true
+        }
+      ],
+      "expected": {
+        "created": 1,
+        "transfers": 1,
+        "accepted_at": 40,
+        "wait_interval": [
+          20,
+          40
+        ],
+        "final_holder": "destination"
+      }
+    },
+    {
+      "id": "SCHED-08",
+      "kind": "quality",
+      "rules": [
+        "ALG-08"
+      ],
+      "samples": [
+        {
+          "quality": "FAIL",
+          "completed_reworks": 0,
+          "max": 1,
+          "expected": "rework"
+        },
+        {
+          "quality": "FAIL",
+          "completed_reworks": 1,
+          "max": 1,
+          "expected": "isolate"
+        },
+        {
+          "quality": null,
+          "completed_reworks": 0,
+          "max": 1,
+          "expected": "pending"
+        },
+        {
+          "quality": "PASS",
+          "completed_reworks": 1,
+          "max": 1,
+          "expected": "released"
+        }
+      ],
+      "expected": [
+        "rework",
+        "isolate",
+        "pending",
+        "released"
+      ]
+    },
+    {
+      "id": "SCHED-09",
+      "kind": "pending_capacity",
+      "rules": [
+        "ALG-07",
+        "ALG-08"
+      ],
+      "capacity": 1,
+      "occupied": 1,
+      "expected": {
+        "full": {
+          "holder": "inspection",
+          "resources_released": false,
+          "quality": "pending"
+        },
+        "after_declared_consumer_frees_slot": {
+          "holder": "pending_store",
+          "resources_released": true,
+          "quality": "pending"
+        }
+      }
+    },
+    {
+      "id": "SCHED-10",
+      "kind": "full_order_acceptance",
+      "rules": [
+        "ALG-10"
+      ],
+      "demand": 2,
+      "receipts": [
+        {
+          "at": 10,
+          "item": "I1"
+        },
+        {
+          "at": 20,
+          "item": "I2"
+        }
+      ],
+      "due": 20,
+      "expected": {
+        "nonpartial": {
+          "accepted_after_first": 0,
+          "accepted_after_second": 2,
+          "physical_received": 2,
+          "completion": 20,
+          "tardiness": 0
+        },
+        "partial": {
+          "accepted_after_first": 1,
+          "accepted_after_second": 2,
+          "completion": 20
+        },
+        "storage_count_after_acceptance": 2
+      }
+    },
+    {
+      "id": "SCHED-11",
+      "kind": "transport_backpressure",
+      "rules": [
+        "ALG-04",
+        "ALG-07",
+        "ALG-09"
+      ],
+      "depart": 360,
+      "travel": 10,
+      "unload": 0,
+      "receiver_ready": 420,
+      "return": 5,
+      "expected": {
+        "arrived": 370,
+        "received": 420,
+        "carrier_available": 425,
+        "wait": [
+          370,
+          420
+        ],
+        "carrier_held": [
+          360,
+          425
+        ],
+        "same_cargo_identity": true
+      }
+    },
+    {
+      "id": "SCHED-12",
+      "kind": "window_and_union",
+      "rules": [
+        "ALG-10",
+        "ALG-11",
+        "ALG-13"
+      ],
+      "end": 40,
+      "acceptance_events": [
+        {
+          "at": 40,
+          "quantity": 1
+        },
+        {
+          "at": 41,
+          "quantity": 1
+        }
+      ],
+      "occupancy": [
+        [
+          0,
+          10
+        ],
+        [
+          0,
+          10
+        ],
+        [
+          10,
+          20
+        ]
+      ],
+      "waits": [
+        [
+          10,
+          30
+        ],
+        [
+          20,
+          40
+        ]
+      ],
+      "expected": {
+        "accepted": 1,
+        "occupied": 20,
+        "wait_union": 30
+      }
+    },
+    {
+      "id": "SCHED-13",
+      "kind": "snapshot_and_quiescence",
+      "rules": [
+        "ALG-01",
+        "ALG-12",
+        "ALG-14"
+      ],
+      "input": {
+        "work_ms": 2,
+        "initial_qty": 1
+      },
+      "edit_next_work_ms": 3,
+      "window_end": 10,
+      "no_future_enabling_event": true,
+      "expected": {
+        "frozen_work_ms": 2,
+        "next_work_ms": 3,
+        "run_calculation_complete": true,
+        "target_complete": false,
+        "missing_target_quantity": 1,
+        "last_time": 10
+      }
+    },
+    {
+      "id": "SCHED-14",
+      "kind": "zero_duration_route",
+      "rules": [
+        "ALG-01"
+      ],
+      "acyclic": {
+        "a": [
+          "b"
+        ],
+        "b": [
+          "c"
+        ],
+        "c": []
+      },
+      "unbounded": {
+        "a": [
+          "a"
+        ]
+      },
+      "expected": {
+        "acyclic_accepted": true,
+        "unbounded_rejected": true,
+        "finite_zero_work_output_count": 1
+      }
+    },
+    {
+      "id": "SCHED-15",
+      "kind": "first_article",
+      "rules": [
+        "ALG-05"
+      ],
+      "current": {
+        "device": "D1",
+        "family": "B",
+        "route": "r2",
+        "epoch": 2
+      },
+      "approvals": [
+        {
+          "device": "D1",
+          "family": "A",
+          "route": "r2",
+          "epoch": 2
+        },
+        {
+          "device": "D1",
+          "family": "B",
+          "route": "r1",
+          "epoch": 2
+        },
+        {
+          "device": "D1",
+          "family": "B",
+          "route": "r2",
+          "epoch": 1
+        },
+        {
+          "device": "D1",
+          "family": "B",
+          "route": "r2",
+          "epoch": 2
+        }
+      ],
+      "expected": [
+        false,
+        false,
+        false,
+        true
+      ]
+    },
+    {
+      "id": "SCHED-16",
+      "kind": "transport_quantity",
+      "rules": [
+        "ALG-03",
+        "ALG-09"
+      ],
+      "samples": [
+        {
+          "goal": 200,
+          "stock": 150,
+          "capacity": 200,
+          "partial": true,
+          "expected": 150
+        },
+        {
+          "goal": 200,
+          "stock": 150,
+          "capacity": 200,
+          "partial": false,
+          "expected": 0
+        },
+        {
+          "goal": 1,
+          "stock": 1,
+          "capacity": 2,
+          "partial": false,
+          "expected": 0
+        }
+      ],
+      "expected": [
+        150,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "SCHED-17",
+      "kind": "prepare_ahead",
+      "rules": [
+        "ALG-01",
+        "ALG-05"
+      ],
+      "previous_batch_finish": 60,
+      "changeover": 15,
+      "material_arrives": 100,
+      "expected": {
+        "setup": [
+          60,
+          75
+        ],
+        "assembly_earliest": 100,
+        "after_one_idle_setup_no_same_time_family_flip": true
+      }
+    },
+    {
+      "id": "SCHED-18",
+      "kind": "professional_binding_and_unknown_cost",
+      "rules": [
+        "ALG-13",
+        "ALG-14"
+      ],
+      "bindings": [
+        {
+          "outcome": "Pass",
+          "ack": true,
+          "matching": true
+        },
+        {
+          "outcome": "Pass",
+          "ack": false,
+          "matching": true
+        },
+        {
+          "outcome": "Undetermined",
+          "ack": true,
+          "matching": true
+        },
+        {
+          "outcome": "Pass",
+          "ack": true,
+          "matching": false
+        }
+      ],
+      "price": null,
+      "expected": {
+        "eligible": [
+          true,
+          false,
+          false,
+          false
+        ],
+        "cost": null
+      }
+    },
+    {
+      "id": "SCHED-19",
+      "kind": "zero_stage_calendar_boundary",
+      "rules": [
+        "ALG-01",
+        "ALG-04"
+      ],
+      "at": 20,
+      "duration": 0,
+      "calendars": [
+        [
+          [
+            0,
+            20
+          ]
+        ],
+        [
+          [
+            0,
+            20
+          ],
+          [
+            40,
+            60
+          ]
+        ]
+      ],
+      "expected": [
+        null,
+        40
+      ]
+    },
+    {
+      "id": "SCHED-20",
+      "kind": "capacity_integral",
+      "rules": [
+        "ALG-03",
+        "ALG-13"
+      ],
+      "capacity": 2,
+      "calendar": [
+        [
+          0,
+          40
+        ]
+      ],
+      "claims": [
+        {
+          "id": "A",
+          "units": 1,
+          "intervals": [
+            [
+              0,
+              20
+            ],
+            [
+              5,
+              15
+            ]
+          ]
+        },
+        {
+          "id": "B",
+          "units": 1,
+          "intervals": [
+            [
+              10,
+              30
+            ]
+          ]
+        }
+      ],
+      "expected": {
+        "any_busy": 30,
+        "occupied_capacity_time": 40,
+        "available_capacity_time": 80,
+        "utilization": 0.5
+      }
+    },
+    {
+      "id": "SCHED-21",
+      "kind": "single_step_closed_timestamp",
+      "rules": [
+        "ALG-01",
+        "ALG-04",
+        "ALG-06",
+        "ALG-07",
+        "ALG-12"
+      ],
+      "events": [
+        {
+          "at": 10,
+          "phase": 1,
+          "id": "arrival",
+          "kind": "arrival"
+        },
+        {
+          "at": 20,
+          "phase": 1,
+          "id": "later",
+          "kind": "arrival"
+        },
+        {
+          "at": 10,
+          "phase": 0,
+          "id": "release",
+          "kind": "release"
+        }
+      ],
+      "expected": {
+        "step_at": 10,
+        "processed": [
+          "release",
+          "arrival",
+          "start",
+          "zero_done",
+          "transfer"
+        ],
+        "accepted": 1,
+        "resource_free": true,
+        "pending_output": 0,
+        "next_event_at": 20
+      }
+    }
+  ],
+  "actual_product_runtime": null,
+  "actual_product_results": [],
+  "protected_existing_expectations_unchanged": true
+}

@@ -1,0 +1,1193 @@
+{
+  "document_kind": "v2_design_coverage_audit",
+  "date": "2026-10-26",
+  "implementation_allowed": true,
+  "runtime_verified": false,
+  "contract_version": "sf.execution/2.0-draft11",
+  "markdown_ref": "docs/06_v2.0设计与开发控制/需求覆盖复核.md",
+  "authority": "任务8需求第0节/0.4优先，完整目标和未进入演示部分不被静默删除",
+  "row_count": 32,
+  "scope": "16F+5Q+8A+3 deliverables; design coverage only, no completion percentage or runtime pass",
+  "findings": [
+    {
+      "id": "AUD-01",
+      "status": "design_updated",
+      "finding": "F16预测等待原缺，draft11新增PredictionWaitingMetric及第17张CSV表，实际源/覆盖/区间并集与未知语义明确"
+    },
+    {
+      "id": "AUD-02",
+      "status": "external_final_binding_required",
+      "finding": "Q04/A08时延规则完整但真实正确帧端点须取v1最终能力；当前源号不能冒充最终候选"
+    },
+    {
+      "id": "AUD-03",
+      "status": "design_only",
+      "finding": "除已明确后置的范围，未因48h删除后端/规模/权限/持久化；160行为例全部未运行"
+    },
+    {
+      "id": "AUD-04",
+      "status": "mapping_corrected",
+      "finding": "复核文件表后更正F05窗口关闭误引用、F08/F10/F11调度引擎与旧Run历史接点混用；H10报告工作器归L60，L25负责注册/派发"
+    },
+    {
+      "id": "AUD-05",
+      "status": "document_validation_passed",
+      "finding": "独立工具目录jsonschema4.26.0显式date-time；3份schema元检查和26个正反结构样例符合预期；没有Rust/Host运行"
+    }
+  ],
+  "rows": [
+    {
+      "id": "T8-F01",
+      "demo_scope": "真实PaaS/网络连接/持久化，单组织单线",
+      "design_status": "design_drafted",
+      "evidence": [
+        {
+          "ref": "docs/06_v2.0设计与开发控制/托管部署配置与交付闭包设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/接口与数据库事务设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/界面字段状态与恢复边界设计.md"
+        }
+      ],
+      "locations": [
+        "L01",
+        "L27",
+        "L30",
+        "L65",
+        "L67"
+      ],
+      "case_ids": [
+        "DEP01",
+        "DEP02",
+        "DEP03",
+        "DEP04",
+        "DEP05",
+        "DEP08"
+      ],
+      "pending": "参考profile已选；实际账号/资源/网络及依赖镜像/构建待实施阶段落实",
+      "runtime_result": null
+    },
+    {
+      "id": "T8-F02",
+      "demo_scope": "两个独立软件设备，配置绑定；通用向导后置",
+      "design_status": "design_drafted",
+      "evidence": [
+        {
+          "ref": "docs/06_v2.0设计与开发控制/执行准入与替代设备设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/设备进程网关与部署设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/接口与数据库事务设计.md"
+        }
+      ],
+      "locations": [
+        "L24",
+        "L25",
+        "L28",
+        "L62",
+        "L63",
+        "L66"
+      ],
+      "case_ids": [
+        "EX06",
+        "DG01",
+        "DG03",
+        "DG09"
+      ],
+      "pending": "v1最终源码/实际工程ID重核；准入后实际消费者验收",
+      "runtime_result": null
+    },
+    {
+      "id": "T8-F03",
+      "demo_scope": "实际观测/事件/字段单位/来源/双时间",
+      "design_status": "design_drafted",
+      "evidence": [
+        {
+          "ref": "docs/06_v2.0设计与开发控制/设备进程网关与部署设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/数据查询与规模验收设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/界面字段状态与恢复边界设计.md"
+        }
+      ],
+      "locations": [
+        "L24",
+        "L25",
+        "L27",
+        "L28",
+        "L30"
+      ],
+      "case_ids": [
+        "FR01",
+        "FR03",
+        "FR04",
+        "FR07",
+        "FR11",
+        "DS01",
+        "DS02"
+      ],
+      "pending": "v1最终源码/实际工程ID重核；准入后实际消费者验收",
+      "runtime_result": null
+    },
+    {
+      "id": "T8-F04",
+      "demo_scope": "目录、设备/会话/时间查询、聚合、独立消费者及完整筛选导出",
+      "design_status": "design_drafted",
+      "evidence": [
+        {
+          "ref": "docs/06_v2.0设计与开发控制/接口与数据库事务设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/数据查询与规模验收设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/筛选数据导出设计.md"
+        }
+      ],
+      "locations": [
+        "L24",
+        "L27",
+        "L30",
+        "L31",
+        "L37",
+        "L68"
+      ],
+      "case_ids": [
+        "DS01",
+        "DS02",
+        "DS03",
+        "DS05",
+        "DS06",
+        "DS08",
+        "CLK10",
+        "AR12",
+        "AR14",
+        "DE01",
+        "DE02",
+        "DE03",
+        "DE04",
+        "DE07"
+      ],
+      "pending": "v1最终源码/实际工程ID重核；准入后实际消费者验收",
+      "runtime_result": null
+    },
+    {
+      "id": "T8-F05",
+      "demo_scope": "两个既有设备模型，单工序精确动作/端口/资源映射",
+      "design_status": "design_drafted",
+      "evidence": [
+        {
+          "ref": "docs/06_v2.0设计与开发控制/执行准入与替代设备设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/冻结输入与执行观察设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/设备进程网关与部署设计.md"
+        }
+      ],
+      "locations": [
+        "L04",
+        "L10",
+        "L24",
+        "L25",
+        "L26",
+        "L28",
+        "L45"
+      ],
+      "case_ids": [
+        "EX01",
+        "EX06",
+        "OBS02",
+        "OBS03"
+      ],
+      "pending": "v1最终代表模型/Job/phase/端口/资源精确ID尚待冻结",
+      "runtime_result": null
+    },
+    {
+      "id": "T8-F06",
+      "demo_scope": "预测/软件在环/回看分源；独立库存、时钟与报告",
+      "design_status": "design_drafted",
+      "evidence": [
+        {
+          "ref": "docs/06_v2.0设计与开发控制/外部时钟与结果投影设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/冻结输入与执行观察设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/预测与执行比较设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/界面字段状态与恢复边界设计.md"
+        }
+      ],
+      "locations": [
+        "L13",
+        "L24",
+        "L40",
+        "L41",
+        "L42",
+        "L43",
+        "L47",
+        "L57"
+      ],
+      "case_ids": [
+        "CLK11",
+        "CLK12",
+        "OBS16",
+        "PE01",
+        "PE07"
+      ],
+      "pending": "v1最终源码/实际工程ID重核；准入后实际消费者验收",
+      "runtime_result": null
+    },
+    {
+      "id": "T8-F07",
+      "demo_scope": "一工程一会话六件输入和接受目标，采用版本冻结",
+      "design_status": "design_drafted",
+      "evidence": [
+        {
+          "ref": "docs/06_v2.0设计与开发控制/执行准入与替代设备设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/冻结输入与执行观察设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/接口与数据库事务设计.md"
+        }
+      ],
+      "locations": [
+        "L04",
+        "L24",
+        "L25",
+        "L26",
+        "L36"
+      ],
+      "case_ids": [
+        "EX01",
+        "OBS01",
+        "OBS02",
+        "OBS03",
+        "OBS06",
+        "UI03"
+      ],
+      "pending": "v1最终源码/实际工程ID重核；准入后实际消费者验收",
+      "runtime_result": null
+    },
+    {
+      "id": "T8-F08",
+      "demo_scope": "两设备确定性合法派工及等待理由；无全局优化",
+      "design_status": "design_drafted",
+      "evidence": [
+        {
+          "ref": "docs/06_v2.0设计与开发控制/执行准入与替代设备设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/接口与数据库事务设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/界面字段状态与恢复边界设计.md"
+        }
+      ],
+      "locations": [
+        "L09",
+        "L10",
+        "L24",
+        "L25",
+        "L26"
+      ],
+      "case_ids": [
+        "EX01",
+        "EX02",
+        "EX04",
+        "UI09"
+      ],
+      "pending": "v1最终源码/实际工程ID重核；准入后实际消费者验收",
+      "runtime_result": null
+    },
+    {
+      "id": "T8-F09",
+      "demo_scope": "精确命令/各阶段回执/拒绝失败和未知结果",
+      "design_status": "design_drafted",
+      "evidence": [
+        {
+          "ref": "docs/06_v2.0设计与开发控制/执行准入与替代设备设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/设备进程网关与部署设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/接口与数据库事务设计.md"
+        }
+      ],
+      "locations": [
+        "L24",
+        "L25",
+        "L27",
+        "L28",
+        "L62"
+      ],
+      "case_ids": [
+        "EX06",
+        "EX08",
+        "DG03",
+        "DG04",
+        "DG05",
+        "DG06",
+        "DG07",
+        "DG08",
+        "UI10"
+      ],
+      "pending": "v1最终源码/实际工程ID重核；准入后实际消费者验收",
+      "runtime_result": null
+    },
+    {
+      "id": "T8-F10",
+      "demo_scope": "回执驱动唯一生产内核效果，重复不重复领料/产出",
+      "design_status": "design_drafted",
+      "evidence": [
+        {
+          "ref": "docs/06_v2.0设计与开发控制/执行准入与替代设备设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/外部时钟与结果投影设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/接口与数据库事务设计.md"
+        }
+      ],
+      "locations": [
+        "L09",
+        "L10",
+        "L11",
+        "L12",
+        "L25",
+        "L26"
+      ],
+      "case_ids": [
+        "EX04",
+        "EX05",
+        "EX07",
+        "EX08",
+        "EX09",
+        "CLK01",
+        "CLK13",
+        "AR12"
+      ],
+      "pending": "v1最终源码/实际工程ID重核；准入后实际消费者验收",
+      "runtime_result": null
+    },
+    {
+      "id": "T8-F11",
+      "demo_scope": "停接单/恢复及未开始工作改派；未知执行待核对",
+      "design_status": "design_drafted",
+      "evidence": [
+        {
+          "ref": "docs/06_v2.0设计与开发控制/执行准入与替代设备设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/设备进程网关与部署设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/界面字段状态与恢复边界设计.md"
+        }
+      ],
+      "locations": [
+        "L09",
+        "L25",
+        "L26",
+        "L28",
+        "L29",
+        "L30"
+      ],
+      "case_ids": [
+        "EX02",
+        "EX03",
+        "DG06",
+        "DG07",
+        "FR08",
+        "UI08",
+        "UI13"
+      ],
+      "pending": "v1最终源码/实际工程ID重核；准入后实际消费者验收",
+      "runtime_result": null
+    },
+    {
+      "id": "T8-F12",
+      "demo_scope": "原工作台+一个面板三页签；五套新工作区后置",
+      "design_status": "design_drafted",
+      "evidence": [
+        {
+          "ref": "docs/06_v2.0设计与开发控制/界面字段状态与恢复边界设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/冻结输入与执行观察设计.md"
+        }
+      ],
+      "locations": [
+        "L14",
+        "L15",
+        "L16",
+        "L29",
+        "L30",
+        "L38",
+        "L40",
+        "L41",
+        "L42",
+        "L43",
+        "L47"
+      ],
+      "case_ids": [
+        "UI02",
+        "UI04",
+        "UI05",
+        "UI06",
+        "UI11",
+        "UI14",
+        "UI16",
+        "OBS14",
+        "OBS16"
+      ],
+      "pending": "v1最终源码/实际工程ID重核；准入后实际消费者验收",
+      "runtime_result": null
+    },
+    {
+      "id": "T8-F13",
+      "demo_scope": "目标/作业/决策/命令/回执定位，回看无控制",
+      "design_status": "design_drafted",
+      "evidence": [
+        {
+          "ref": "docs/06_v2.0设计与开发控制/执行准入与替代设备设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/界面字段状态与恢复边界设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/冻结输入与执行观察设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/Agent与执行报告消费设计.md"
+        }
+      ],
+      "locations": [
+        "L14",
+        "L24",
+        "L25",
+        "L29",
+        "L30",
+        "L42",
+        "L43",
+        "L47"
+      ],
+      "case_ids": [
+        "UI09",
+        "UI10",
+        "OBS08",
+        "OBS13",
+        "OBS16",
+        "AR06"
+      ],
+      "pending": "v1最终源码/实际工程ID重核；准入后实际消费者验收",
+      "runtime_result": null
+    },
+    {
+      "id": "T8-F14",
+      "demo_scope": "原Agent链保留，有限新增操作走实际共同权限入口",
+      "design_status": "design_drafted",
+      "evidence": [
+        {
+          "ref": "docs/06_v2.0设计与开发控制/Agent与执行报告消费设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/接口与数据库事务设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/筛选数据导出设计.md"
+        }
+      ],
+      "locations": [
+        "L06",
+        "L08",
+        "L18",
+        "L19",
+        "L37",
+        "L54",
+        "L55",
+        "L56"
+      ],
+      "case_ids": [
+        "AR01",
+        "AR02",
+        "AR03",
+        "AR04",
+        "AR05",
+        "AR07",
+        "AR19",
+        "DG16",
+        "DE08"
+      ],
+      "pending": "v1最终源码/实际工程ID重核；准入后实际消费者验收",
+      "runtime_result": null
+    },
+    {
+      "id": "T8-F15",
+      "demo_scope": "原工程保存；会话/命令持久化，重连查原身份",
+      "design_status": "design_drafted",
+      "evidence": [
+        {
+          "ref": "docs/06_v2.0设计与开发控制/接口与数据库事务设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/设备进程网关与部署设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/冻结输入与执行观察设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/界面字段状态与恢复边界设计.md"
+        }
+      ],
+      "locations": [
+        "L07",
+        "L22",
+        "L24",
+        "L25",
+        "L27",
+        "L30",
+        "L62"
+      ],
+      "case_ids": [
+        "EX10",
+        "DG08",
+        "DG09",
+        "DG10",
+        "DG11",
+        "OBS17",
+        "OBS18",
+        "DEP03",
+        "DEP04"
+      ],
+      "pending": "v1最终源码/实际工程ID重核；准入后实际消费者验收",
+      "runtime_result": null
+    },
+    {
+      "id": "T8-F16",
+      "demo_scope": "同源四格式/预测执行来源、接受量等待完成时间；其他云报表后置",
+      "design_status": "design_drafted",
+      "evidence": [
+        {
+          "ref": "docs/06_v2.0设计与开发控制/Agent与执行报告消费设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/预测与执行比较设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/筛选数据导出设计.md"
+        }
+      ],
+      "locations": [
+        "L20",
+        "L21",
+        "L22",
+        "L24",
+        "L25",
+        "L52",
+        "L57",
+        "L58",
+        "L59",
+        "L60"
+      ],
+      "case_ids": [
+        "AR10",
+        "AR11",
+        "AR13",
+        "AR16",
+        "AR17",
+        "AR20",
+        "PE01",
+        "PE03",
+        "PE04",
+        "PE05",
+        "PE06",
+        "PE08"
+      ],
+      "pending": "预测侧等待漏项已在draft11补齐；对象/口径/窗口映射仍须以v1最终工程和实际输出验证",
+      "runtime_result": null
+    },
+    {
+      "id": "T8-Q01",
+      "demo_scope": "真实网络身份/TLS，读取控制/设备/MCP范围分离",
+      "design_status": "design_drafted",
+      "evidence": [
+        {
+          "ref": "docs/06_v2.0设计与开发控制/托管部署配置与交付闭包设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/接口与数据库事务设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/Agent与执行报告消费设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/设备进程网关与部署设计.md"
+        }
+      ],
+      "locations": [
+        "L06",
+        "L08",
+        "L16",
+        "L18",
+        "L27",
+        "L62",
+        "L64",
+        "L65"
+      ],
+      "case_ids": [
+        "DEP01",
+        "DEP06",
+        "DG16",
+        "AR01",
+        "AR02",
+        "AR08",
+        "DS08",
+        "DE06"
+      ],
+      "pending": "实际TLS/凭据/权限验证待准入；配置只在私有运行位置，不作为已部署事实",
+      "runtime_result": null
+    },
+    {
+      "id": "T8-Q02",
+      "demo_scope": "重复/迟到/未知不重复生产，历史读取不改现态",
+      "design_status": "design_drafted",
+      "evidence": [
+        {
+          "ref": "docs/06_v2.0设计与开发控制/执行准入与替代设备设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/外部时钟与结果投影设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/设备进程网关与部署设计.md"
+        }
+      ],
+      "locations": [
+        "L24",
+        "L25",
+        "L26",
+        "L27",
+        "L28",
+        "L36"
+      ],
+      "case_ids": [
+        "EX06",
+        "EX07",
+        "EX08",
+        "EX10",
+        "DG03",
+        "DG04",
+        "DG05",
+        "DG06",
+        "DG08",
+        "FR03",
+        "FR04",
+        "FR07"
+      ],
+      "pending": "v1最终源码/实际工程ID重核；准入后实际消费者验收",
+      "runtime_result": null
+    },
+    {
+      "id": "T8-Q03",
+      "demo_scope": "百万+10路各1Hz30min；查询/聚合30+30及原2秒p95",
+      "design_status": "design_drafted",
+      "evidence": [
+        {
+          "ref": "docs/06_v2.0设计与开发控制/数据查询与规模验收设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/设备进程网关与部署设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/托管部署配置与交付闭包设计.md"
+        }
+      ],
+      "locations": [
+        "L27",
+        "L28",
+        "L31",
+        "L32",
+        "L65"
+      ],
+      "case_ids": [
+        "DS04",
+        "DS05",
+        "DS06",
+        "DS07",
+        "DG13",
+        "DG14",
+        "DEP04"
+      ],
+      "pending": "实际实例/网络/原始数据/独立预期及全部样本未取得，不以本地Run规模替代",
+      "runtime_result": null
+    },
+    {
+      "id": "T8-Q04",
+      "demo_scope": "100原定样本发送到正确帧p95<=2秒，过期停新派工",
+      "design_status": "needs_v1_frame_binding",
+      "evidence": [
+        {
+          "ref": "docs/06_v2.0设计与开发控制/外部时钟与结果投影设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/设备进程网关与部署设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/界面字段状态与恢复边界设计.md"
+        }
+      ],
+      "locations": [
+        "L14",
+        "L16",
+        "L29",
+        "L30",
+        "L47",
+        "L61",
+        "L62"
+      ],
+      "case_ids": [
+        "CLK06",
+        "CLK16",
+        "FR01",
+        "FR02",
+        "FR07",
+        "FR08",
+        "FR11",
+        "FR12"
+      ],
+      "pending": "计时/保守上界和全100样本规则已定；实际正确帧端点须绑定v1最终接收能力，不能用DOM/IPC回复替代",
+      "runtime_result": null
+    },
+    {
+      "id": "T8-Q05",
+      "demo_scope": "仅复验受影响Run/库存资源/保存/权限/报告，原缺口原归属",
+      "design_status": "design_drafted",
+      "evidence": [
+        {
+          "ref": "docs/06_v2.0设计与开发控制/开发控制设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/冻结输入与执行观察设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/Agent与执行报告消费设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/预测与执行比较设计.md"
+        }
+      ],
+      "locations": [
+        "L09",
+        "L14",
+        "L22",
+        "L31",
+        "L32"
+      ],
+      "case_ids": [
+        "EX12",
+        "CLK11",
+        "UI12",
+        "OBS17",
+        "AR17",
+        "PE07"
+      ],
+      "pending": "v1最终候选/有效原证据和本次真实改动确定后，冻结适用回归清单",
+      "runtime_result": null
+    },
+    {
+      "id": "T8-A01",
+      "demo_scope": "真实云接A/B、工作台/独立客户端同窗读取及重启历史",
+      "design_status": "design_drafted",
+      "evidence": [
+        {
+          "ref": "docs/06_v2.0设计与开发控制/托管部署配置与交付闭包设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/接口与数据库事务设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/数据查询与规模验收设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/界面字段状态与恢复边界设计.md"
+        }
+      ],
+      "locations": [
+        "L27",
+        "L28",
+        "L30",
+        "L31",
+        "L65"
+      ],
+      "case_ids": [
+        "DEP03",
+        "DEP04",
+        "DS01",
+        "DS02",
+        "DS03",
+        "DS05",
+        "DS08"
+      ],
+      "pending": "v1最终源码/实际工程ID重核；准入后实际消费者验收",
+      "runtime_result": null
+    },
+    {
+      "id": "T8-A02",
+      "demo_scope": "单工序六件完整生产，唯一库存资源与接受量",
+      "design_status": "design_drafted",
+      "evidence": [
+        {
+          "ref": "docs/06_v2.0设计与开发控制/执行准入与替代设备设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/外部时钟与结果投影设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/设备进程网关与部署设计.md"
+        }
+      ],
+      "locations": [
+        "L09",
+        "L10",
+        "L25",
+        "L26",
+        "L27",
+        "L28"
+      ],
+      "case_ids": [
+        "EX01",
+        "EX04",
+        "EX07",
+        "EX09",
+        "CLK13",
+        "AR12"
+      ],
+      "pending": "正常6件独立输入/模型/精确ID待v1最终工程绑定，未运行",
+      "runtime_result": null
+    },
+    {
+      "id": "T8-A03",
+      "demo_scope": "另会话停A/恢复A，未开始改派，未知不重做",
+      "design_status": "design_drafted",
+      "evidence": [
+        {
+          "ref": "docs/06_v2.0设计与开发控制/执行准入与替代设备设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/设备进程网关与部署设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/界面字段状态与恢复边界设计.md"
+        }
+      ],
+      "locations": [
+        "L09",
+        "L25",
+        "L26",
+        "L28",
+        "L29"
+      ],
+      "case_ids": [
+        "EX02",
+        "EX03",
+        "DG06",
+        "FR08"
+      ],
+      "pending": "v1最终源码/实际工程ID重核；准入后实际消费者验收",
+      "runtime_result": null
+    },
+    {
+      "id": "T8-A04",
+      "demo_scope": "重复命令/完成及Accepted后断连，原身份核对",
+      "design_status": "design_drafted",
+      "evidence": [
+        {
+          "ref": "docs/06_v2.0设计与开发控制/执行准入与替代设备设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/设备进程网关与部署设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/接口与数据库事务设计.md"
+        }
+      ],
+      "locations": [
+        "L25",
+        "L27",
+        "L28",
+        "L62"
+      ],
+      "case_ids": [
+        "EX07",
+        "EX08",
+        "EX10",
+        "DG05",
+        "DG08",
+        "FR07"
+      ],
+      "pending": "v1最终源码/实际工程ID重核；准入后实际消费者验收",
+      "runtime_result": null
+    },
+    {
+      "id": "T8-A05",
+      "demo_scope": "暂停新派工/历史回看，原执行/未知仍可见",
+      "design_status": "design_drafted",
+      "evidence": [
+        {
+          "ref": "docs/06_v2.0设计与开发控制/界面字段状态与恢复边界设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/冻结输入与执行观察设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/外部时钟与结果投影设计.md"
+        }
+      ],
+      "locations": [
+        "L25",
+        "L29",
+        "L30",
+        "L42",
+        "L43",
+        "L47"
+      ],
+      "case_ids": [
+        "OBS07",
+        "OBS16",
+        "UI08",
+        "UI11"
+      ],
+      "pending": "v1最终源码/实际工程ID重核；准入后实际消费者验收",
+      "runtime_result": null
+    },
+    {
+      "id": "T8-A06",
+      "demo_scope": "实际Agent获准动作与越界拒绝",
+      "design_status": "design_drafted",
+      "evidence": [
+        {
+          "ref": "docs/06_v2.0设计与开发控制/Agent与执行报告消费设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/接口与数据库事务设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/设备进程网关与部署设计.md"
+        }
+      ],
+      "locations": [
+        "L08",
+        "L18",
+        "L19",
+        "L54",
+        "L55",
+        "L56"
+      ],
+      "case_ids": [
+        "AR01",
+        "AR02",
+        "AR07",
+        "AR19",
+        "DG16",
+        "DE06"
+      ],
+      "pending": "v1最终源码/实际工程ID重核；准入后实际消费者验收",
+      "runtime_result": null
+    },
+    {
+      "id": "T8-A07",
+      "demo_scope": "对应实际预测Run/云会话、四格式及可编辑工程",
+      "design_status": "design_drafted",
+      "evidence": [
+        {
+          "ref": "docs/06_v2.0设计与开发控制/预测与执行比较设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/Agent与执行报告消费设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/冻结输入与执行观察设计.md"
+        }
+      ],
+      "locations": [
+        "L22",
+        "L25",
+        "L52",
+        "L57",
+        "L58",
+        "L59",
+        "L60"
+      ],
+      "case_ids": [
+        "PE01",
+        "PE02",
+        "PE03",
+        "PE04",
+        "PE05",
+        "PE06",
+        "PE07",
+        "PE08",
+        "OBS17",
+        "AR10",
+        "AR17",
+        "AR20"
+      ],
+      "pending": "v1最终源码/实际工程ID重核；准入后实际消费者验收",
+      "runtime_result": null
+    },
+    {
+      "id": "T8-A08",
+      "demo_scope": "原Q03/Q04数据采样/配置/结果/呈现证据",
+      "design_status": "needs_v1_frame_binding",
+      "evidence": [
+        {
+          "ref": "docs/06_v2.0设计与开发控制/数据查询与规模验收设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/外部时钟与结果投影设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/设备进程网关与部署设计.md"
+        }
+      ],
+      "locations": [
+        "L14",
+        "L16",
+        "L27",
+        "L31",
+        "L32",
+        "L62"
+      ],
+      "case_ids": [
+        "DS05",
+        "DS06",
+        "DS07",
+        "CLK06",
+        "CLK16",
+        "DEP04",
+        "FR11",
+        "FR12"
+      ],
+      "pending": "Q04实际帧端点及全部100原样本待v1最终能力；其余真实数据/部署待准入",
+      "runtime_result": null
+    },
+    {
+      "id": "DEL-CODE",
+      "demo_scope": "实际v2候选可运行代码及可访问链接",
+      "design_status": "design_drafted",
+      "evidence": [
+        {
+          "ref": "docs/06_v2.0设计与开发控制/开发控制设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/托管部署配置与交付闭包设计.md"
+        }
+      ],
+      "locations": [
+        "L01",
+        "L02",
+        "L23",
+        "L31",
+        "L66"
+      ],
+      "case_ids": [],
+      "pending": "沿用未变化的已接收材料；v2实际候选/截图/片段/链接尚未生成，不能把v1材料改标签当v2",
+      "runtime_result": null
+    },
+    {
+      "id": "DEL-PDF",
+      "demo_scope": "更新任务8架构/功能/截图的作品介绍PDF",
+      "design_status": "design_drafted",
+      "evidence": [
+        {
+          "ref": "docs/06_v2.0设计与开发控制/开发控制设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/托管部署配置与交付闭包设计.md"
+        }
+      ],
+      "locations": [
+        "L01",
+        "L02",
+        "L23",
+        "L31",
+        "L66"
+      ],
+      "case_ids": [],
+      "pending": "沿用未变化的已接收材料；v2实际候选/截图/片段/链接尚未生成，不能把v1材料改标签当v2",
+      "runtime_result": null
+    },
+    {
+      "id": "DEL-VIDEO",
+      "demo_scope": "相同候选真实录屏及可访问视频链接",
+      "design_status": "design_drafted",
+      "evidence": [
+        {
+          "ref": "docs/06_v2.0设计与开发控制/开发控制设计.md"
+        },
+        {
+          "ref": "docs/06_v2.0设计与开发控制/托管部署配置与交付闭包设计.md"
+        }
+      ],
+      "locations": [
+        "L01",
+        "L02",
+        "L23",
+        "L31",
+        "L66"
+      ],
+      "case_ids": [],
+      "pending": "沿用未变化的已接收材料；v2实际候选/截图/片段/链接尚未生成，不能把v1材料改标签当v2",
+      "runtime_result": null
+    }
+  ],
+  "common_pending": [
+    "v1原验收/最终源码及真实工程/模型/Run/会话ID绑定",
+    "实际账户/部署/构建/网络/Host/Native/独立客户端和文件消费者，在实施准入后执行",
+    "v2实施入口继续关闭，不以覆盖表授权启动"
+  ],
+  "standard_schema_validation_ref": ".work/v2-design-schema-validation/receipt.json",
+  "design_checks": {
+    "mapping": "pass_32_exact_rows_reference_location_and_case_id_mapping_only",
+    "runtime_result": null,
+    "remaining_external_binding": [
+      "v1 final source/fixture identities",
+      "Q04/A08 actual correctly-presented-frame endpoints"
+    ],
+    "product_implementation_started": false,
+    "latest_v1_revalidation": {
+      "at": "2026-10-25T20:59:38.920332+00:00",
+      "whole_project_done": false,
+      "source": "docs/04_开发与验收/逐包收口计划.json",
+      "frame_and_final_source_dependency": "still unavailable",
+      "not_a_live_process_wait": true
+    }
+  },
+  "historical_design_implementation_flags": {
+    "date": "2026-10-26",
+    "implementation_allowed": false,
+    "runtime_verified": false
+  },
+  "implementation_status_ref": "docs/06_v2.0设计与开发控制/开发控制计划.json#/packages",
+  "current_implementation_packages": [
+    "V2-10",
+    "V2-11"
+  ],
+  "status_projection_updated_at_utc": "2026-10-27T01:45:48.535491+00:00",
+  "runtime_verification_scope": "runtime_verified仅为本文全部设计用例通过声明；当前局部真实证据和剩余动作取主计划，不把设计期禁止实施作为现行限制。"
+}

@@ -1,0 +1,181 @@
+{
+  "document_kind": "H64_shared_contract_merge_not_S06_04_acceptance",
+  "date": "2026-10-14 Asia/Shanghai",
+  "status": "shared_contract_merged_verified_and_independent_S06_04_design_review_passed",
+  "handoff_ref": "docs/04_开发与验收/S06-04_公共契约交接.md",
+  "report_md_ref": "docs/04_开发与验收/H64-01_公共契约合入.md",
+  "merged_items": [
+    "H64-01",
+    "H64-02"
+  ],
+  "changed_source_refs": [
+    "packages/domain/types.design.rs",
+    "packages/commands/api.design.rs",
+    "packages/domain/type-inventory.design.json",
+    "docs/03_架构与契约/全层类型与工程格式.json",
+    "docs/03_架构与契约/全层类型与工程格式.md",
+    "docs/03_架构与契约/公开操作与宿主调用契约.json",
+    "docs/03_架构与契约/公开操作与宿主调用契约.md",
+    "docs/03_架构与契约/首版类型格式与操作契约.md",
+    "packages/commands/command-catalog.design.json",
+    "packages/domain/README.md",
+    "integrations/agent/README.md",
+    "docs/04_开发与验收/首版需求验收追踪.json",
+    "docs/04_开发与验收/首版需求验收追踪.md",
+    "tools/type-contract-proof/src/main.rs",
+    "tools/type-contract-proof/src/fixed_pose_proof.rs",
+    "tools/type-contract-proof/check_fixed_pose.py",
+    "tools/type-contract-proof/fixed-pose-cases.design.json",
+    "tools/type-contract-proof/fixed-pose-consumer.ts",
+    "tools/type-contract-proof/tsconfig.json",
+    "tools/type-contract-proof/README.md"
+  ],
+  "canonical_delta": "FixedPoseMotion {part_id:ObjectId, pose:Pose}; PackagingMotion::FixedPose(FixedPoseMotion); derives/tag/content unchanged",
+  "generated_refs": [
+    "tools/type-contract-proof/output/typescript/FixedPoseMotion.ts",
+    "tools/type-contract-proof/output/typescript/PackagingMotion.ts",
+    "tools/type-contract-proof/output/schemas/packaging-job.schema.json",
+    "tools/type-contract-proof/output/api-schemas/compute_packaging.request.schema.json",
+    "tools/type-contract-proof/output/api-schemas/apply_commands.request.schema.json"
+  ],
+  "checks": [
+    {
+      "command": "cargo run --locked --offline --manifest-path tools/type-contract-proof/Cargo.toml --target-dir tools/architecture-proof/target",
+      "result": "passed actual Rust compile/codegen; 388 TS /15 aggregate schema /20 domain /36 API roundtrips",
+      "evidence_ref": "tools/type-contract-proof/output/type-proof-result.json"
+    },
+    {
+      "command": "python -X utf8 tools/type-contract-proof/check_schemas.py",
+      "result": "passed; 4786 schema references and 1130 TS imports resolved",
+      "evidence_ref": "tools/type-contract-proof/output/schema-validation-result.json"
+    },
+    {
+      "command": "python -X utf8 tools/type-contract-proof/check_fixed_pose.py",
+      "result": "passed 18 shape checks and 6 finite reference outcomes; unknown-ID and geometric semantics explicitly separate from schema acceptance",
+      "evidence_ref": "tools/type-contract-proof/output/fixed-pose-contract-result.json"
+    },
+    {
+      "command": "python -X utf8 tools/检查类型与格式.py",
+      "result": "passed current generated DTO plus actual typed professional-form/Agent consumer TS7.0.2 check",
+      "evidence_ref": "tools/type-contract-proof/output/typescript-check-result.json"
+    },
+    {
+      "command": "python -X utf8 tools/检查公开操作契约.py",
+      "result": "passed 18 service signatures,36 schema/roundtrips,28 parse cases,26 finite policy cases; no Host runtime",
+      "evidence_ref": "docs/04_开发与验收/公开操作契约检查结果.json"
+    },
+    {
+      "command": "python -X utf8 tools/检查需求验收追踪.py",
+      "result": "passed 17SF/11NFR/21 selected tasks/3IX; zero product cases executed",
+      "evidence_ref": "docs/04_开发与验收/需求验收追踪检查结果.json"
+    }
+  ],
+  "current_type_summary": {
+    "record_types": 181,
+    "enum_types": 88,
+    "TS_files": 388,
+    "operations": 18
+  },
+  "finite_reference_cases": [
+    {
+      "id": "H64-P01",
+      "shape_accepted": true,
+      "expected": "FixedHoldConditionsSatisfied",
+      "actual_finite_reference": "FixedHoldConditionsSatisfied",
+      "witness": {
+        "selected_part": "PART-B",
+        "all_part_root_poses_unchanged": true,
+        "required_checks": [
+          "all_pairs_collision",
+          "already_active_connection_closure"
+        ],
+        "not_a_complete_PackagingResult_Pass": true
+      }
+    },
+    {
+      "id": "H64-P02",
+      "shape_accepted": true,
+      "expected": "InvalidInputUnknownPart",
+      "actual_finite_reference": "InvalidInputUnknownPart",
+      "witness": null
+    },
+    {
+      "id": "H64-P03",
+      "shape_accepted": false,
+      "expected": "RejectedShape",
+      "actual_finite_reference": "RejectedShape",
+      "witness": null
+    },
+    {
+      "id": "H64-P04",
+      "shape_accepted": true,
+      "expected": "FailPoseMismatch",
+      "actual_finite_reference": "FailPoseMismatch",
+      "witness": {
+        "root_translation_error_squared_mm2": "25"
+      }
+    },
+    {
+      "id": "H64-P05",
+      "shape_accepted": true,
+      "expected": "FailStationaryCollision",
+      "actual_finite_reference": "FailStationaryCollision",
+      "witness": {
+        "panels": [
+          "PANEL-A",
+          "PANEL-B"
+        ],
+        "overlap_depths_mm": [
+          "80",
+          "60",
+          "1"
+        ],
+        "interval": [
+          0,
+          1
+        ],
+        "basis": "all poses constant over entire hold interval"
+      }
+    },
+    {
+      "id": "H64-P06",
+      "shape_accepted": true,
+      "expected": "FailActiveConnectionClosure",
+      "actual_finite_reference": "FailActiveConnectionClosure",
+      "witness": {
+        "connection_id": "BOND-AB",
+        "closure_error_squared_mm2": "14400",
+        "interval": [
+          0,
+          1
+        ]
+      }
+    }
+  ],
+  "protected_readonly_paths": [
+    "packages/packaging/algorithm.design.json",
+    "tools/packaging-algorithm-proof",
+    "docs/03_架构与契约/纸包装结构与过程算法.md",
+    "docs/03_架构与契约/纸包装数值与制造规则.md",
+    "docs/04_开发与验收/S06-04_纸包装算法与数值方法复审.md",
+    "docs/04_开发与验收/S06-04_纸包装算法与数值方法复审.json",
+    "docs/02_交互设计",
+    "tools/3d-proof"
+  ],
+  "S06_04_public_status_changed": true,
+  "design_freeze_changed": false,
+  "existing_independent_geometry_expectations_changed": false,
+  "new_dependency_or_compatibility_layer": false,
+  "actual_Host_or_product_execution": null,
+  "full_geometry_proved": false,
+  "independent_review_owner": "复审窗口3",
+  "root_physical_proof_limit": "Stationary rectangular identity poses and one hold step only; not articulated, arbitrary polygons, interval numeric certification or complete PackagingResult. Native parse does not enforce foreign-key or geometry semantics.",
+  "mainline_sync": {
+    "files": 2318,
+    "matrix_passed": 12,
+    "local_references": 3570,
+    "errors": [],
+    "evidence_ref": "docs/04_开发与验收/主线同步检查结果.json"
+  },
+  "independent_review_ref": "docs/04_开发与验收/S06-04_纸包装算法与数值方法复审.json"
+}

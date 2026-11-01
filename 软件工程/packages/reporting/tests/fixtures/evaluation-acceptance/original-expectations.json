@@ -1,0 +1,1347 @@
+{
+  "document_kind": "independent_complete_original_expectations_before_report_or_timeline_execution",
+  "source_tasks": {
+    "P2-04": {
+      "id": "P2-04",
+      "disposition": "required",
+      "scope": "共同生产时间轴、计划输入与只读结果、物品跟随及当前等待/资源条件定位；拖动显示不重放生产",
+      "release_dependencies": [
+        "P1-03",
+        "P2-02"
+      ],
+      "status": "planned",
+      "implementation_owner": "user_with_ai_windows",
+      "acceptance_owner": "user",
+      "actual_result": null,
+      "requirement_ids": [
+        "SF-05",
+        "SF-08",
+        "SF-09",
+        "SF-17"
+      ],
+      "release_acceptance": "作业/资源/来料/物流轨道共用事件时钟；选时和等待定位两画布；折叠与回看不增产；计划/手算/实际分开，未运行实际为空；时间面板不新增常态画布；计划输入与只读结果轨分层，释放时点不充当实际开工，回看/移动显示不改变产量；IX-01在P1-03阶段/到料及P2-02物流完成后，实际核对从零建厂基线440秒/延迟570秒、370—420等待接收/425返程及全部事件、物品持有与资源区间。",
+      "release_paths": [
+        "apps/planner",
+        "packages/domain",
+        "packages/presentation",
+        "packages/simulation"
+      ],
+      "implementation_dependencies": [
+        "P1-03"
+      ],
+      "execution_plan": {
+        "input_refs": [
+          "scenarios/从零搭建控制盒厂房/project.design.json",
+          "scenarios/从零搭建控制盒厂房/expected-timeline.design.json",
+          "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+          "docs/03_架构与契约/调度与状态转换算法.json",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "inputs": [
+          "实际阶段/来料/物流事件与画布对象；计划输入和运行结果"
+        ],
+        "outputs": [
+          "共同时间轴/物品跟随与当前阻断定位",
+          "计划轨与只读实际轨",
+          "IX-01完整事件与画面联合证据"
+        ],
+        "steps": [
+          "绘制同一时钟的作业、来料、占用、物流与物品",
+          "回看/定位只读，不重放生产",
+          "接齐P1-03/P2-02后验IX-01的两RunId和资源/库存"
+        ],
+        "verification_method": "完整基线440秒、到料延迟570秒，370—420秒待接收/425秒车辆可再用等全部保留；检验完整事件/数量/归属而非只终点，LOD/回看不改结果",
+        "actual_result": null
+      },
+      "dependency_reasons": {
+        "P1-03": "消费到料事件与分阶段占用；机器持有/有效进度/输出受阻等待，用于本任务的共同时间轴/物品跟随与当前阻断定位",
+        "P2-02": "消费固定时间批次运输事件/持有状态；供货目标/发出/在途/接受/返程分离，用于本任务的共同时间轴/物品跟随与当前阻断定位"
+      },
+      "accountable_owner": "user",
+      "planned_window_id": "W02",
+      "parallel_plan_ref": "docs/04_开发与验收/本机并行窗口计划.json",
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P2-04.md",
+      "coding_protocol_ref": "docs/04_开发与验收/编码任务包与AI实现审查.md",
+      "effort_estimate_ref": "docs/04_开发与验收/任务框架与工量里程碑.json#P2-04",
+      "deliverable_milestone_id": "MS-08",
+      "phase_exit_ref": "docs/04_开发与验收/阶段实现计划.json#P2",
+      "acceptance_trace_ids": [
+        "SF-05",
+        "SF-08",
+        "SF-09",
+        "SF-17",
+        "NFR-04",
+        "NFR-09"
+      ],
+      "confirmed_question_ids": [
+        "Q06",
+        "Q16",
+        "Q17",
+        "Q18",
+        "Q33",
+        "Q34",
+        "Q37"
+      ],
+      "confirmed_design_requirements": [
+        {
+          "question_id": "Q06",
+          "selected_text": "中部3D画布、右侧对象属性、可收起模块库和底部时间轴；专业/比较/报告进入同工程工作台。"
+        },
+        {
+          "question_id": "Q16",
+          "selected_text": "上料、紧固/加工、移交、检验、装盒/封箱与运输绑定实际阶段；四类等待保持对应姿态。"
+        },
+        {
+          "question_id": "Q17",
+          "selected_text": "用人员位置/角色与占用标识，必要时受控动作；不从行走动画推导未声明工时。"
+        },
+        {
+          "question_id": "Q18",
+          "selected_text": "全部身份真实追踪，画面允许明确标识的代表物品/批次聚合；任一件可定位和看经历。"
+        },
+        {
+          "question_id": "Q33",
+          "selected_text": "事件驱动真实计算，可显示任务进度/已形成状态并回放真实事件；播放速度只改变呈现。"
+        },
+        {
+          "question_id": "Q34",
+          "selected_text": "缺项定位到对象/用途；完整结论受阻，可对已有支持且输入齐全的范围运行并明确标范围。"
+        },
+        {
+          "question_id": "Q37",
+          "selected_text": "选择物品或等待段，显示条件、持有者、前后事件及定位；时间轴与两画布同步。"
+        }
+      ],
+      "confirmed_design_input_refs": [
+        "docs/00_项目基线/全量设计编码确认选择.json",
+        "docs/04_开发与验收/全量设计编码确认/SXX-XX_确认选择落实.json"
+      ],
+      "algorithm_spec_ref": "docs/03_架构与契约/调度与状态转换算法.json"
+    },
+    "P2-06": {
+      "id": "P2-06",
+      "disposition": "required",
+      "scope": "指定接受量/时间/资源与条件成本评审，同一EvaluationReport的PDF/HTML/CSV/JSON导出；未知金额/结果不补零",
+      "release_dependencies": [
+        "P0-03",
+        "P2-05",
+        "P2-03"
+      ],
+      "status": "planned",
+      "implementation_owner": "user_with_ai_windows",
+      "acceptance_owner": "user",
+      "actual_result": null,
+      "requirement_ids": [
+        "SF-09",
+        "SF-16",
+        "SF-17"
+      ],
+      "release_acceptance": "按目的接受评价完整/部分需求；窗口内未完整C=null而非迟延0；人员/机器区间不双计，班次计价不与占用计价相加；未知成本null；取消/缺件/待判可解释，工程包可重开修改；同一实际运行/比较生成PDF、离线HTML、CSV分表及JSON，单位/时间/接受口径一致；无运行仅导出设计说明；生成报告包含目标与实际接受量、模板来源/版本、场地/班次、采用参数/缺项、布局检查、初案RunId与停止原因；初案达标允许无修正RunId/比较，发生修正才附新旧RunId、变化原因与比较；生产表现与实测软件性能分开。",
+      "release_paths": [
+        "apps/planner",
+        "packages/domain",
+        "scenarios",
+        "docs",
+        "packages/reporting"
+      ],
+      "implementation_dependencies": [
+        "P2-03"
+      ],
+      "execution_plan": {
+        "input_refs": [
+          "packages/reporting/evaluation-report.contract.design.json",
+          "docs/01_业务需求/指标成本与决策口径.md",
+          "docs/03_架构与契约/评估报告与数据导出.md",
+          "docs/03_架构与契约/调度与状态转换算法.json",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "inputs": [
+          "实际RunResult/比较、来源/模板/目标与单位窗；专业成果类型及已知费率"
+        ],
+        "outputs": [
+          "EvaluationReport及接受/资源/条件成本口径",
+          "PDF/HTML/CSV/JSON四种同源输出",
+          "缺项/未运行设计说明及可空修正引用"
+        ],
+        "steps": [
+          "实现接受、区间占用和条件成本，不重复计量",
+          "构造一份报告对象后输出四格式",
+          "检验中文/跨页/离线HTML及单RunId直交；接专业成果在IX-03"
+        ],
+        "verification_method": "同源数值/单位/范围一致；C和未知成本保持null，单RunId达标不要求修正；无实际运行只设计说明，专业图/结果不伪造",
+        "actual_result": null
+      },
+      "dependency_reasons": {
+        "P0-03": "消费artifact/acceptance/binding/result四对象与引用；产品/成果变化的受影响绑定判定，用于本任务的EvaluationReport及接受/资源/条件成本口径",
+        "P2-05": "消费业务面板和时间轴共用的输入编辑；明确的缺项/成本与当前等待定位，用于本任务的EvaluationReport及接受/资源/条件成本口径",
+        "P2-03": "消费同口径比较与输入差异；目录工程/ZIP交付包及缺项读取，用于本任务的EvaluationReport及接受/资源/条件成本口径"
+      },
+      "accountable_owner": "user",
+      "planned_window_id": "W05",
+      "parallel_plan_ref": "docs/04_开发与验收/本机并行窗口计划.json",
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P2-06.md",
+      "coding_protocol_ref": "docs/04_开发与验收/编码任务包与AI实现审查.md",
+      "effort_estimate_ref": "docs/04_开发与验收/任务框架与工量里程碑.json#P2-06",
+      "deliverable_milestone_id": "MS-09",
+      "phase_exit_ref": "docs/04_开发与验收/阶段实现计划.json#P2",
+      "acceptance_trace_ids": [
+        "SF-09",
+        "SF-16",
+        "SF-17",
+        "NFR-04",
+        "NFR-06",
+        "NFR-07",
+        "NFR-10",
+        "NFR-11"
+      ],
+      "confirmed_question_ids": [
+        "Q03",
+        "Q37",
+        "Q53",
+        "Q54",
+        "Q57"
+      ],
+      "confirmed_design_requirements": [
+        {
+          "question_id": "Q03",
+          "selected_text": "中文界面、中文说明与报告；稳定ID和代码保持英文，不增加整套国际化。"
+        },
+        {
+          "question_id": "Q37",
+          "selected_text": "选择物品或等待段，显示条件、持有者、前后事件及定位；时间轴与两画布同步。"
+        },
+        {
+          "question_id": "Q53",
+          "selected_text": "同屏主比较2个，可保留更多方案列表；列输入变化、实际结果与限制。"
+        },
+        {
+          "question_id": "Q54",
+          "selected_text": "中文工程报告版：目标/输入/流程图景/指标/等待/比较/限制/接手；数据一致，PDF处理分页与中文。"
+        },
+        {
+          "question_id": "Q57",
+          "selected_text": "先输出已支持接受量/时间/占用/等待/条件成本；无价格的项列缺值，不拼完整总成本。"
+        }
+      ],
+      "confirmed_design_input_refs": [
+        "docs/00_项目基线/全量设计编码确认选择.json",
+        "docs/04_开发与验收/全量设计编码确认/SXX-XX_确认选择落实.json"
+      ],
+      "algorithm_spec_ref": "docs/03_架构与契约/调度与状态转换算法.json"
+    }
+  },
+  "canonical_reporting_contract": {
+    "document_kind": "evaluation_export_design_not_runtime",
+    "revision": "draft-4-DRF05",
+    "implementation_tasks": [
+      "P2-03",
+      "P2-06",
+      "P3-04",
+      "P5-01"
+    ],
+    "read_dependencies": [
+      "domain",
+      "simulation",
+      "presentation"
+    ],
+    "state_effect": "readonly_engine_state_with_selected_file_output",
+    "formats": [
+      "pdf",
+      "html",
+      "csv",
+      "json"
+    ],
+    "report_modes": [
+      "design_description",
+      "simulation_evaluation"
+    ],
+    "required_context": [
+      "id",
+      "schema_version",
+      "mode",
+      "project_id",
+      "project_revision",
+      "scenario_refs",
+      "run_refs",
+      "time_reference",
+      "observation_window",
+      "acceptance_scope",
+      "input_assumptions",
+      "module_versions",
+      "supported_scope",
+      "limitations",
+      "run_evaluations"
+    ],
+    "sections": [
+      "question_and_scope",
+      "inputs_and_sources",
+      "layout_and_schedule",
+      "results_and_resources",
+      "item_history",
+      "scenario_comparison",
+      "conclusions_and_missing_conditions",
+      "editable_project_and_licenses"
+    ],
+    "rules": {
+      "design_description": "run_refs may be empty; result metrics must remain empty and design expectations labeled",
+      "simulation_evaluation": "Actual selected software Run, complete or consistent partial result matching frozen RunInputRef; prefix metrics never imply full-window production or goal met.",
+      "same_source": "All serializers read one immutable EvaluationReport.run_evaluations, its costs.inputs snapshot (r3 owner-sync required), and shared projections; no current-price lookups.",
+      "csv_units": "split tables; retain project/scenario/run/object identity, base units and unknown values",
+      "html": "offline browser viewing; filters inspect saved data and do not execute a new simulation",
+      "images": "current presentation render with scene revision; AI preview never used as runtime proof",
+      "project_package": "separate .sfproj editable handoff; JSON report is not a recoverable snapshot",
+      "scenario_comparison": "Option<RunComparison>; one actual initial success leaves null; actual pairs carry typed changes/conditions; no string-only input_changes or ScenarioComparison alias.",
+      "report_language": "zh-CN; stable identifiers and code remain English",
+      "main_comparison": "Display two scenarios together; retain additional saved scenarios. No comparison required for an initial successful run.",
+      "unknown_price": "List missing prices and affected cost conclusions; do not fill zero or claim complete total cost.",
+      "selected_observation_window": "Use each selected Run.window frozen at execution. Timeline display cropping is not a new report observation window; a different execution window is selected in Scenario and rerun. Compare full metric windows only when equal."
+    },
+    "runtime_available": false,
+    "actual_result": null,
+    "optional_generation_context": {
+      "applies_when": "project_generated_from_industry_goal",
+      "fields": [
+        "generation_goal",
+        "template_id_and_version",
+        "parameter_sources",
+        "site_envelope",
+        "production_calendar",
+        "missing_inputs",
+        "layout_check",
+        "initial_sizing_assumptions",
+        "initial_and_revised_scenario_run_refs",
+        "goal_actual_accepted_quantity_and_gap",
+        "changes_and_reasons",
+        "stop_reason"
+      ],
+      "rules": "actual production metrics only from referenced runs; goals and actual quantities use the same selected unit/scope/window; software timing/FPS only if measured; initial target met may have exactly one run, no revised reference, empty changes/reasons and no comparison; missing/unrepairable conditions do not imply target met",
+      "field_usage": {
+        "initial_and_revised_scenario_run_refs": "Initial actual run when available; revised references optional and empty when initial target met or no repair run exists. Do not duplicate an initial RunId as a revision.",
+        "changes_and_reasons": "Empty for initial-success delivery; otherwise record actual changes or named inability/missing conditions.",
+        "stop_reason": "initial_target_met, repaired_target_met, missing_conditions, unrepairable_shortfall or finite_budget_exhausted, according to actual state."
+      },
+      "max_feedback_repair_rounds": 3
+    },
+    "confirmed_design_choices": {
+      "selection_ref": "docs/00_项目基线/全量设计编码确认选择.json",
+      "checkpoint_requirements_ref": "docs/04_开发与验收/全量设计编码确认/SXX-XX_确认选择落实.json",
+      "question_ids": [
+        "Q03",
+        "Q37",
+        "Q44",
+        "Q49",
+        "Q53",
+        "Q54",
+        "Q55",
+        "Q56",
+        "Q57"
+      ],
+      "requirements": {
+        "Q03": "中文界面、中文说明与报告；稳定ID和代码保持英文，不增加整套国际化。",
+        "Q37": "选择物品或等待段，显示条件、持有者、前后事件及定位；时间轴与两画布同步。",
+        "Q44": "按板片/构件标识导出分层SVG、材料数量表和可重开专业工程；每份对应实际产品/成果版本。",
+        "Q49": "候选默认3轮，每轮真实检查/运行并保留变化；达标即停，关键缺项或无有效改动则说明。",
+        "Q53": "同屏主比较2个，可保留更多方案列表；列输入变化、实际结果与限制。",
+        "Q54": "中文工程报告版：目标/输入/流程图景/指标/等待/比较/限制/接手；数据一致，PDF处理分页与中文。",
+        "Q55": "带所选方案与必要定义/合法资产/成果/认可绑定/所选实际结果，并列缺项；其他历史按需选。",
+        "Q56": "接受默认从共同初始条件重跑，旧结果仍可读/回放；中途续跑留明确后续范围。",
+        "Q57": "先输出已支持接受量/时间/占用/等待/条件成本；无价格的项列缺值，不拼完整总成本。"
+      }
+    },
+    "refinement": {
+      "id": "DRF05",
+      "date": "2026-10-14 Asia/Shanghai",
+      "definition_ref": "docs/04_开发与验收/特征细化/DRF05_完整定义.json",
+      "handoff_ref": "docs/04_开发与验收/特征细化/DRF05_缺口与修复.json",
+      "expectation_ref": "docs/04_开发与验收/特征细化/DRF05_独立预期.json",
+      "canonical_public_types": "packages/domain/types.design.rs",
+      "canonical_api": "packages/commands/api.design.rs",
+      "no_local_public_type_copy": true,
+      "pending_public_requests": [],
+      "actual_runtime": null,
+      "merge_owner": "复审窗口1",
+      "visual_owner": "复审窗口2",
+      "merged_r2": "TC01/TC02/端点、逐Run报告、比较、容量、成本主要载荷、保存定义、生成器保留已读取当前源；产品执行未验证",
+      "exact_r3_delta_ref": "packages/reporting/public-delta.design.json#/post_r2_consumer_correction",
+      "merged_r3": "CostEvaluation.inputs/missing_conditions与4快照变体已通过当前Rust/Schema/TS读取复核"
+    },
+    "public_field_mapping": [
+      {
+        "logical_field": "id",
+        "carrier": "Versioned<EvaluationReport>.data.id",
+        "rust_type": "ObjectId",
+        "producer": "Host report identity",
+        "unit_or_version": "opaque ID",
+        "absence": "required",
+        "consumers": [
+          "reporting four serializers",
+          "factory_ui evaluation",
+          "Agent selected export"
+        ],
+        "binding_status": "current_canonical_r2_source"
+      },
+      {
+        "logical_field": "mode",
+        "carrier": "Versioned<EvaluationReport>.data.mode",
+        "rust_type": "ReportMode",
+        "producer": "ExportEvaluationParams.report_mode",
+        "unit_or_version": "design_description|simulation_evaluation",
+        "absence": "required",
+        "consumers": [
+          "reporting four serializers",
+          "factory_ui evaluation",
+          "Agent selected export"
+        ],
+        "binding_status": "current_canonical_r2_source"
+      },
+      {
+        "logical_field": "project_id",
+        "carrier": "Versioned<EvaluationReport>.data.project_id",
+        "rust_type": "ProjectId",
+        "producer": "Host selected ProjectState.id",
+        "unit_or_version": "opaque ProjectId",
+        "absence": "required",
+        "consumers": [
+          "reporting four serializers",
+          "factory_ui evaluation",
+          "Agent selected export"
+        ],
+        "binding_status": "current_canonical_r2_source"
+      },
+      {
+        "logical_field": "project_revision",
+        "carrier": "Versioned<EvaluationReport>.data.project_revision",
+        "rust_type": "Revision",
+        "producer": "ExportEvaluationParams.revision accepted and frozen",
+        "unit_or_version": "safe integer revision; not substitute for each Run input revision",
+        "absence": "required",
+        "consumers": [
+          "reporting four serializers",
+          "factory_ui evaluation",
+          "Agent selected export"
+        ],
+        "binding_status": "current_canonical_r2_source"
+      },
+      {
+        "logical_field": "scenario_refs",
+        "carrier": "Versioned<EvaluationReport>.data.scenario_refs",
+        "rust_type": "Vec<ScenarioRevisionRef>",
+        "producer": "selected ScenarioInput revisions / each RunInputRef",
+        "unit_or_version": "exact id+revision",
+        "absence": "present even empty",
+        "consumers": [
+          "reporting four serializers",
+          "factory_ui evaluation",
+          "Agent selected export"
+        ],
+        "binding_status": "current_canonical_r2_source"
+      },
+      {
+        "logical_field": "run_refs",
+        "carrier": "Versioned<EvaluationReport>.data.run_refs",
+        "rust_type": "Vec<RunId>",
+        "producer": "authorized selected stored RunResult.id",
+        "unit_or_version": "RunId; evidence origin retained",
+        "absence": "empty only design mode",
+        "consumers": [
+          "reporting four serializers",
+          "factory_ui evaluation",
+          "Agent selected export"
+        ],
+        "binding_status": "current_canonical_r2_source"
+      },
+      {
+        "logical_field": "time_reference",
+        "carrier": "Versioned<EvaluationReport>.data.time_reference",
+        "rust_type": "Option<TimeReference>",
+        "producer": "selected ScenarioInput.time_reference / frozen Run input",
+        "unit_or_version": "relative ms; optional ISO origin/timezone not invented",
+        "absence": "共同上下文相同才填；多Run不一致null且逐Run保留，不能猜共同值",
+        "consumers": [
+          "reporting four serializers",
+          "factory_ui evaluation",
+          "Agent selected export"
+        ],
+        "binding_status": "current_canonical_r2_source"
+      },
+      {
+        "logical_field": "observation_window",
+        "carrier": "Versioned<EvaluationReport>.data.observation_window",
+        "rust_type": "Option<WindowMs>",
+        "producer": "selected requested RunResult.window",
+        "unit_or_version": "event endpoints inclusive; duration integration half-open",
+        "absence": "共同上下文相同才填；多Run不一致null且逐Run保留，不能猜共同值",
+        "consumers": [
+          "reporting four serializers",
+          "factory_ui evaluation",
+          "Agent selected export"
+        ],
+        "binding_status": "current_canonical_r2_source"
+      },
+      {
+        "logical_field": "acceptance_scope",
+        "carrier": "Versioned<EvaluationReport>.data.acceptance_scope",
+        "rust_type": "Vec<AcceptanceScope>",
+        "producer": "MetricScope.acceptance + frozen order product/version/destination/stage",
+        "unit_or_version": "exact product revision, UnitId, destination, stage",
+        "absence": "required",
+        "consumers": [
+          "reporting four serializers",
+          "factory_ui evaluation",
+          "Agent selected export"
+        ],
+        "binding_status": "current_canonical_r2_source"
+      },
+      {
+        "logical_field": "question_and_scope",
+        "carrier": "Versioned<EvaluationReport>.data.question_and_scope",
+        "rust_type": "String",
+        "producer": "user evaluation question + actual selected scope",
+        "unit_or_version": "zh-CN",
+        "absence": "required",
+        "consumers": [
+          "reporting four serializers",
+          "factory_ui evaluation",
+          "Agent selected export"
+        ],
+        "binding_status": "current_canonical_r2_source"
+      },
+      {
+        "logical_field": "input_assumptions",
+        "carrier": "Versioned<EvaluationReport>.data.input_assumptions",
+        "rust_type": "Vec<ParameterSource>",
+        "producer": "frozen ParameterSource values/basis/source_ref",
+        "unit_or_version": "typed value/unit; declared/measured separated",
+        "absence": "empty allowed with missing conditions",
+        "consumers": [
+          "reporting four serializers",
+          "factory_ui evaluation",
+          "Agent selected export"
+        ],
+        "binding_status": "current_canonical_r2_source"
+      },
+      {
+        "logical_field": "module_versions",
+        "carrier": "Versioned<EvaluationReport>.data.module_versions",
+        "rust_type": "Vec<ModuleRef>",
+        "producer": "frozen project adopted ModuleRef closure",
+        "unit_or_version": "exact SemVer and id",
+        "absence": "present even empty",
+        "consumers": [
+          "reporting four serializers",
+          "factory_ui evaluation",
+          "Agent selected export"
+        ],
+        "binding_status": "current_canonical_r2_source"
+      },
+      {
+        "logical_field": "layout_and_schedule",
+        "carrier": "Versioned<EvaluationReport>.data.layout_and_schedule",
+        "rust_type": "Vec<ReportImage>",
+        "producer": "Host render output at frozen scope revision and Run/time",
+        "unit_or_version": "ReportImage scene_ref/evidence_kind; licensed",
+        "absence": "empty when not selected or explicitly unavailable",
+        "consumers": [
+          "reporting four serializers",
+          "factory_ui evaluation",
+          "Agent selected export"
+        ],
+        "binding_status": "current_canonical_r2_source"
+      },
+      {
+        "logical_field": "scenario_comparison",
+        "carrier": "Versioned<EvaluationReport>.data.scenario_comparison",
+        "rust_type": "Option<RunComparison>",
+        "producer": "同源RunComparison，包括pairs/metrics/typed changes；不是旧ScenarioComparison",
+        "unit_or_version": "strict|controlled_changes|side_by_side_only proposed status",
+        "absence": "null for design or single initial-success Run",
+        "consumers": [
+          "reporting four serializers",
+          "factory_ui evaluation",
+          "Agent selected export"
+        ],
+        "binding_status": "current_canonical_r2_source"
+      },
+      {
+        "logical_field": "conclusions",
+        "carrier": "Versioned<EvaluationReport>.data.conclusions",
+        "rust_type": "Vec<String>",
+        "producer": "known facts from selected result/metric/comparison",
+        "unit_or_version": "zh-CN",
+        "absence": "present even empty",
+        "consumers": [
+          "reporting four serializers",
+          "factory_ui evaluation",
+          "Agent selected export"
+        ],
+        "binding_status": "current_canonical_r2_source"
+      },
+      {
+        "logical_field": "missing_conditions",
+        "carrier": "Versioned<EvaluationReport>.data.missing_conditions",
+        "rust_type": "Vec<Issue>",
+        "producer": "frozen input/result/rights/provider omissions",
+        "unit_or_version": "Issue with affected object/field/conclusion",
+        "absence": "present even empty",
+        "consumers": [
+          "reporting four serializers",
+          "factory_ui evaluation",
+          "Agent selected export"
+        ],
+        "binding_status": "current_canonical_r2_source"
+      },
+      {
+        "logical_field": "supported_scope",
+        "carrier": "Versioned<EvaluationReport>.data.supported_scope",
+        "rust_type": "Vec<String>",
+        "producer": "actual module/provider capabilities",
+        "unit_or_version": "declared and actual separated",
+        "absence": "present even empty",
+        "consumers": [
+          "reporting four serializers",
+          "factory_ui evaluation",
+          "Agent selected export"
+        ],
+        "binding_status": "current_canonical_r2_source"
+      },
+      {
+        "logical_field": "limitations",
+        "carrier": "Versioned<EvaluationReport>.data.limitations",
+        "rust_type": "Vec<Issue>",
+        "producer": "Run limitations, partial range and comparison/export restrictions",
+        "unit_or_version": "Issue preserved in all formats",
+        "absence": "present even empty",
+        "consumers": [
+          "reporting four serializers",
+          "factory_ui evaluation",
+          "Agent selected export"
+        ],
+        "binding_status": "current_canonical_r2_source"
+      },
+      {
+        "logical_field": "editable_project_ref",
+        "carrier": "Versioned<EvaluationReport>.data.editable_project_ref",
+        "rust_type": "Option<FileRef>",
+        "producer": "separately produced selected project package FileRef",
+        "unit_or_version": "relative path only when actually included",
+        "absence": "null if not supplied",
+        "consumers": [
+          "reporting four serializers",
+          "factory_ui evaluation",
+          "Agent selected export"
+        ],
+        "binding_status": "current_canonical_r2_source"
+      },
+      {
+        "logical_field": "asset_rights",
+        "carrier": "Versioned<EvaluationReport>.data.asset_rights",
+        "rust_type": "Vec<AssetRights>",
+        "producer": "included image/font/asset aggregate, Host export decision",
+        "unit_or_version": "AssetRights declaration + actual permission confirmation",
+        "absence": "missing license blocks selected file export",
+        "consumers": [
+          "reporting four serializers",
+          "factory_ui evaluation",
+          "Agent selected export"
+        ],
+        "binding_status": "current_canonical_r2_source"
+      },
+      {
+        "logical_field": "generation_context",
+        "carrier": "Versioned<EvaluationReport>.data.generation_context",
+        "rust_type": "Option<GenerationContext>",
+        "producer": "frozen GenerationContext SF-17; optional real runs",
+        "unit_or_version": "goal/template/parameters/check/changes/stop",
+        "absence": "null outside generation; initial-success no revised Run",
+        "consumers": [
+          "reporting four serializers",
+          "factory_ui evaluation",
+          "Agent selected export"
+        ],
+        "binding_status": "current_canonical_r2_source"
+      },
+      {
+        "logical_field": "run_evaluations",
+        "carrier": "Versioned<EvaluationReport>.data.run_evaluations",
+        "producer": "选定一致RunResult+冻结输入，ReportRunInputRef仅复制4个身份；jobs/transport/TC01/TC02直接使用源",
+        "unit_or_version": "逐Run载荷内时间/单位/输入身份明确",
+        "absence": "design_description为空数组",
+        "consumers": [
+          "reporting四格式",
+          "评估UI",
+          "Agent"
+        ],
+        "rust_type": "Vec<RunEvaluation>",
+        "binding_status": "current_canonical_r2_source"
+      }
+    ],
+    "format_version_mapping": {
+      "schema_version": "Versioned<EvaluationReport>.schema_version",
+      "value": "1.0",
+      "report_id_label": "Versioned<EvaluationReport>.data.id",
+      "unknown_option_write": "null",
+      "unknown_version": "UnsupportedSchema",
+      "legacy_design_json": "not runtime-compatible without explicit mapping",
+      "current_type": "Versioned<EvaluationReport>，run_evaluations分组及Option<RunComparison>已合入公共1.0设计"
+    },
+    "metric_definitions": {
+      "accepted_quantity": {
+        "source": "actual acceptance_events matching exact AcceptanceScope/allocations",
+        "formula": "sum accepted in closed requested event window; prefix labeled partial",
+        "unit": "exact Quantity.unit/DecimalAmount",
+        "identity": "each actual record once; never double count assembly contents/container",
+        "unknown": "no actual Run -> no metrics"
+      },
+      "completion_time": {
+        "source": "first cumulative acceptance reaching frozen demand",
+        "formula": "C absolute relative ms; tardiness=max(0,C-due) both known",
+        "unknown": "C=null if unmet; tardiness=null if unmet/no due"
+      },
+      "waiting_time": {
+        "source": "RunResult.waits + TC01 execution/blocked phase",
+        "formula": "per-object interval union in known window; per-reason durations nonadditive",
+        "unit": "ms per object; explicitly cumulative object*ms",
+        "unknown": "unassigned waits separate; open end capped with end_known=false"
+      },
+      "resource_utilization": {
+        "source": "unique Claim ids+units+frozen calendar; TC01 machine capacity / TC02 work",
+        "formula": "busy union; total held integral; open-calendar held / available; closed held separate",
+        "unit": "capacity_unit*ms; dimensionless ratio",
+        "unknown": "zero denominator/missing capacity/unit/history -> null; conflict never clipped to100%",
+        "effective_work_ms": "Duration union of actual PhaseWorkInterval intersections with this resource actual applicable Claim intervals; not sum across simultaneous claims. Actual phase role/binding required; missing history unknown.",
+        "waiting_ms": "Duration union of execution waits intersected with this resource held Claim intervals; means held while waiting. Waiting to acquire a busy resource is object waiting, not occupancy/waiting of that resource. Unassigned waits remain separate."
+      },
+      "unit_cost": {
+        "source": "H05 explicit frozen cost input and actual measured basis",
+        "formula": "known_subtotal per currency; complete_total only all selected lines known; unit_cost complete total / positive accepted qty",
+        "unit": "currency / accepted UnitId; occupied unit_ms /3600000",
+        "unknown": "missing rate/currency/basis null; explicit zero rate known0"
+      },
+      "rework_quantity": {
+        "source": "actual rework events",
+        "formula": "attempt count separate from unique reworked qty/output",
+        "unit": "attempt or declared Quantity.unit",
+        "unknown": "missing events unknown, not0"
+      }
+    },
+    "comparison": {
+      "conditions": [
+        "origin/restart",
+        "demand/product revision",
+        "window/known range",
+        "destination/stage",
+        "unit",
+        "selected scope/capabilities"
+      ],
+      "strict_initial_equality": "exact typed items/setup/quality, not revision-number equality",
+      "controlled_changes": "same baseline except explicit before/after changes incl initial stock; strict_initial flag stays false when stock changed",
+      "incomparable": "different reference/demand/unit/acceptance/scope or unexplained changes -> side_by_side_only",
+      "delta": "B-A both known comparable; percent100*(B-A)/A only A>0",
+      "change_identity": "ObjectRef+typed path; added/deleted typed object, not title",
+      "public_request": "r2共同RunPairComparison/MetricComparison已合入；r3 InputChangeValue增加4项已存在domain快照见delta"
+    },
+    "time_and_partial_result": {
+      "duration_intervals": "[start_ms,end_ms)",
+      "engine_event_observation": "[start_ms,end_ms] includes terminal closure",
+      "chart_clipping": "does not change source window or Job",
+      "time_buckets": "[a,b) except final bucket includes terminal point",
+      "partial": "computed_until_ms last complete closure; cap not phase completion",
+      "source_freeze": "Host one consistent Run result/boundary",
+      "paging": "Events interval:null is unfiltered within authorized scope; aggregate FullResult, never UI page",
+      "expectation": "DRF05-E01",
+      "public_handoff": "DRF05-H01; TC01/TC02",
+      "wait_end": "WaitEndCause=condition_changed|resolved|observation_end|computed_boundary；end_known为段端已观测；只有resolved表示等待解除。observation_end表示完整窗末截断，computed_boundary表示前缀/暂停/取消。"
+    },
+    "csv_projection": {
+      "encoding": "UTF-8 BOM",
+      "separator": ",",
+      "record_terminator": "CRLF",
+      "header": true,
+      "quote": "csv1.4.0 necessary quotes/double embedded quotes",
+      "prefix_columns": [
+        "report_id",
+        "run_id",
+        "project_id",
+        "input_project_revision",
+        "scenario_id",
+        "input_scenario_revision",
+        "window_start_ms",
+        "window_end_ms",
+        "computed_until_ms",
+        "value_state",
+        "reason",
+        "computed_until_ms_state",
+        "computed_until_ms_reason"
+      ],
+      "tables": [
+        {
+          "file": "context.csv",
+          "columns": [
+            "export_project_revision",
+            "mode",
+            "evidence_origin",
+            "computation_status",
+            "whole_window_computed",
+            "time_origin",
+            "timezone",
+            "scope_refs",
+            "product_revision",
+            "accepted_unit",
+            "destination",
+            "acceptance_stage",
+            "time_origin_state",
+            "time_origin_reason",
+            "timezone_state",
+            "timezone_reason"
+          ],
+          "source": "Versioned<EvaluationReport>.data，同一冻结报告；依据canonical_bindings",
+          "row_order": "stable source order, source identities retained",
+          "nullable_columns": [
+            "computed_until_ms",
+            "time_origin",
+            "timezone"
+          ]
+        },
+        {
+          "file": "orders.csv",
+          "columns": [
+            "order_id",
+            "demand_coefficient",
+            "demand_decimal_places",
+            "accepted_coefficient",
+            "accepted_decimal_places",
+            "outstanding_coefficient",
+            "outstanding_decimal_places",
+            "unit",
+            "completion_ms",
+            "due_at_ms",
+            "tardiness_ms",
+            "completion_ms_state",
+            "completion_ms_reason",
+            "due_at_ms_state",
+            "due_at_ms_reason",
+            "tardiness_ms_state",
+            "tardiness_ms_reason"
+          ],
+          "source": "Versioned<EvaluationReport>.data，同一冻结报告；依据canonical_bindings",
+          "row_order": "stable source order, source identities retained",
+          "nullable_columns": [
+            "completion_ms",
+            "due_at_ms",
+            "tardiness_ms"
+          ]
+        },
+        {
+          "file": "resources.csv",
+          "columns": [
+            "resource_id",
+            "capacity_unit",
+            "any_busy_ms",
+            "occupied_capacity_ms",
+            "open_calendar_occupied_capacity_ms",
+            "closed_calendar_held_capacity_ms",
+            "available_capacity_ms",
+            "utilization",
+            "effective_work_ms",
+            "waiting_ms",
+            "utilization_state",
+            "utilization_reason",
+            "effective_work_ms_state",
+            "effective_work_ms_reason",
+            "waiting_ms_state",
+            "waiting_ms_reason"
+          ],
+          "source": "Versioned<EvaluationReport>.data，同一冻结报告；依据canonical_bindings",
+          "row_order": "stable source order, source identities retained",
+          "nullable_columns": [
+            "utilization",
+            "effective_work_ms",
+            "waiting_ms"
+          ]
+        },
+        {
+          "file": "resource_claims.csv",
+          "columns": [
+            "claim_id",
+            "resource_id",
+            "job_id",
+            "phase_id",
+            "execution_device_id",
+            "units",
+            "kind",
+            "interval_index",
+            "true_start_ms",
+            "true_end_ms",
+            "clipped_start_ms",
+            "clipped_end_ms",
+            "end_known",
+            "phase_id_state",
+            "phase_id_reason",
+            "end_cause"
+          ],
+          "source": "Versioned<EvaluationReport>.data，同一冻结报告；依据canonical_bindings",
+          "row_order": "stable source order, source identities retained",
+          "nullable_columns": [
+            "phase_id"
+          ]
+        },
+        {
+          "file": "waits.csv",
+          "columns": [
+            "wait_key",
+            "object_ref",
+            "execution_device_id",
+            "route_step_id",
+            "phase_id",
+            "true_start_ms",
+            "true_end_ms",
+            "clipped_start_ms",
+            "clipped_end_ms",
+            "end_known",
+            "execution_device_id_state",
+            "execution_device_id_reason",
+            "route_step_id_state",
+            "route_step_id_reason",
+            "phase_id_state",
+            "phase_id_reason",
+            "true_end_ms_state",
+            "true_end_ms_reason",
+            "end_cause"
+          ],
+          "source": "Versioned<EvaluationReport>.data，同一冻结报告；依据canonical_bindings",
+          "row_order": "stable source order, source identities retained",
+          "nullable_columns": [
+            "execution_device_id",
+            "route_step_id",
+            "phase_id",
+            "true_end_ms"
+          ]
+        },
+        {
+          "file": "wait_reasons.csv",
+          "columns": [
+            "wait_key",
+            "reason_index",
+            "kind",
+            "blocking_object",
+            "required",
+            "next_known_boundary_ms",
+            "blocking_object_state",
+            "blocking_object_reason",
+            "next_known_boundary_ms_state",
+            "next_known_boundary_ms_reason"
+          ],
+          "source": "Versioned<EvaluationReport>.data，同一冻结报告；依据canonical_bindings",
+          "row_order": "stable source order, source identities retained",
+          "nullable_columns": [
+            "blocking_object",
+            "next_known_boundary_ms"
+          ]
+        },
+        {
+          "file": "phase_work.csv",
+          "columns": [
+            "job_id",
+            "phase_id",
+            "interval_index",
+            "true_start_ms",
+            "true_end_ms",
+            "effective_start_ms",
+            "effective_end_ms",
+            "end_cause"
+          ],
+          "source": "Versioned<EvaluationReport>.data，同一冻结报告；依据canonical_bindings",
+          "row_order": "stable source order, source identities retained",
+          "nullable_columns": []
+        },
+        {
+          "file": "events.csv",
+          "columns": [
+            "sequence",
+            "at_ms",
+            "subject_ref",
+            "payload_kind",
+            "payload_json"
+          ],
+          "source": "Versioned<EvaluationReport>.data，同一冻结报告；依据canonical_bindings",
+          "row_order": "stable source order, source identities retained",
+          "nullable_columns": []
+        },
+        {
+          "file": "acceptance_events.csv",
+          "columns": [
+            "acceptance_index",
+            "order_id",
+            "item_refs_json",
+            "quantity_coefficient",
+            "quantity_decimal_places",
+            "unit",
+            "destination",
+            "acceptance_stage",
+            "at_ms"
+          ],
+          "source": "Versioned<EvaluationReport>.data，同一冻结报告；依据canonical_bindings",
+          "row_order": "stable source order, source identities retained",
+          "nullable_columns": []
+        },
+        {
+          "file": "costs.csv",
+          "columns": [
+            "cost_line_id",
+            "object_ref",
+            "basis",
+            "measured_quantity",
+            "measure_unit",
+            "rate",
+            "rate_unit",
+            "currency",
+            "amount",
+            "includes_json",
+            "missing_conditions_json",
+            "measured_quantity_state",
+            "measured_quantity_reason",
+            "rate_state",
+            "rate_reason",
+            "rate_unit_state",
+            "rate_unit_reason",
+            "currency_state",
+            "currency_reason",
+            "amount_state",
+            "amount_reason",
+            "row_kind",
+            "accepted_unit"
+          ],
+          "source": "Versioned<EvaluationReport>.data，同一冻结报告；依据canonical_bindings",
+          "row_order": "stable source order, source identities retained",
+          "nullable_columns": [
+            "measured_quantity",
+            "rate",
+            "rate_unit",
+            "currency",
+            "amount"
+          ]
+        },
+        {
+          "file": "changes.csv",
+          "columns": [
+            "change_index",
+            "object_ref",
+            "path",
+            "kind",
+            "before_typed_json",
+            "after_typed_json",
+            "source_basis",
+            "change_reason",
+            "before_typed_json_state",
+            "before_typed_json_reason",
+            "after_typed_json_state",
+            "after_typed_json_reason",
+            "source_basis_state",
+            "source_basis_reason",
+            "change_reason_state",
+            "change_reason_reason"
+          ],
+          "source": "Versioned<EvaluationReport>.data，同一冻结报告；依据canonical_bindings",
+          "row_order": "stable source order, source identities retained",
+          "nullable_columns": [
+            "before_typed_json",
+            "after_typed_json",
+            "source_basis",
+            "change_reason"
+          ]
+        },
+        {
+          "file": "modules.csv",
+          "columns": [
+            "module_id",
+            "module_version",
+            "source_ref"
+          ],
+          "source": "Versioned<EvaluationReport>.data，同一冻结报告；依据canonical_bindings",
+          "row_order": "stable source order, source identities retained",
+          "nullable_columns": []
+        },
+        {
+          "file": "assets.csv",
+          "columns": [
+            "asset_id",
+            "source",
+            "license",
+            "redistribution_confirmed",
+            "actual_export_authorized",
+            "missing_reason",
+            "source_state",
+            "source_reason",
+            "license_state",
+            "license_reason",
+            "missing_reason_state",
+            "missing_reason_reason"
+          ],
+          "source": "Versioned<EvaluationReport>.data，同一冻结报告；依据canonical_bindings",
+          "row_order": "stable source order, source identities retained",
+          "nullable_columns": [
+            "source",
+            "license",
+            "missing_reason"
+          ]
+        },
+        {
+          "file": "missing_conditions.csv",
+          "columns": [
+            "issue_index",
+            "object_ref",
+            "field_path",
+            "affected_conclusion",
+            "message",
+            "object_ref_state",
+            "object_ref_reason",
+            "field_path_state",
+            "field_path_reason"
+          ],
+          "source": "Versioned<EvaluationReport>.data，同一冻结报告；依据canonical_bindings",
+          "row_order": "stable source order, source identities retained",
+          "nullable_columns": [
+            "object_ref",
+            "field_path"
+          ]
+        },
+        {
+          "file": "comparison.csv",
+          "columns": [
+            "metric_key",
+            "metric_object_ref",
+            "baseline_run_id",
+            "candidate_run_id",
+            "baseline_input_ref_json",
+            "candidate_input_ref_json",
+            "baseline_window_json",
+            "candidate_window_json",
+            "baseline_acceptance_scope_json",
+            "candidate_acceptance_scope_json",
+            "comparison_status",
+            "comparable",
+            "baseline_typed_json",
+            "candidate_typed_json",
+            "delta_typed_json",
+            "change_percent",
+            "direction",
+            "condition_issues_json",
+            "delta_typed_json_state",
+            "delta_typed_json_reason",
+            "change_percent_state",
+            "change_percent_reason",
+            "currency",
+            "value_unit"
+          ],
+          "nullable_columns": [
+            "delta_typed_json",
+            "change_percent"
+          ],
+          "source": "Versioned<EvaluationReport>.data，同一冻结报告；依据canonical_bindings",
+          "row_order": "selected pair then metric key/object identity"
+        }
+      ],
+      "quantity": "lossless coefficient/decimal_places/unit",
+      "option": "Each nullable field has <field>_state and <field>_reason (computed_until_ms included via context definition). Null=>empty+unknown+reason; absent before/after on added/removed=>not_applicable; empty string=>empty; explicit zero=>known/0. Prefix value_state is row known|partial|not_applicable; prefix reason is row limitation, not a substitute for per-field reasons.",
+      "report_only_rows": "blank Run + value_state=not_applicable",
+      "external_text": "text column import; CSV quoting preserves structure, not formula execution; raw content unchanged",
+      "row_identity": "wait_key=run_id+source waits array index from pinned result; acceptance_index=source acceptance_events ordinal; interval_index=source interval ordinal. These serializer keys do not become new domain IDs and cannot be reused after changing a pinned result.",
+      "phase_claim_binding": "ResourceClaim.phase_ref从实际phase Claim创建时捕获，非phase可null；不从最终Job.phase_ref推导。",
+      "claim_end": "ResourceClaim.interval_end_causes:Vec<ClaimIntervalEndCause>按intervals序一一对应；released才是已释放，observation_end/computed_boundary均为开放生命端",
+      "comparison_rows": "Pair rows carry baseline/candidate input/window/acceptance explicitly; run-specific prefix fields not_applicable when no single Run applies. Incomparable delta/percent unknown with named mismatch; never copy zero.",
+      "cost_rows": "row_kind=cost_line|known_subtotal|complete_total|unit_cost. Subtotal/total separately per currency; unit_cost adds accepted_unit denominator. Line vs totals never summed together."
+    },
+    "serializers": {
+      "shared_source": "one immutable EvaluationReport and shared row/figure projection; no per-output business calculation",
+      "json": "UTF-8 Versioned<EvaluationReport>/canonical null; public increment pending",
+      "html": "offline index.html/local assets/data; escaped content, static in-memory filters, no network/file-fetch/new run",
+      "pdf": "printpdf0.12.8 direct page ops; A4 portrait/20mm/11pt, repeated headers/continuations/page numbers; licensed Source Han Sans CN2.005R; actual revision/time image captions",
+      "display_rounding": "ms->seconds, ratio->percent, money2 decimals half-up only display",
+      "consistency_key": "report/run/input/window/scope/unit/acceptance/missing conditions, not bytes/pixels"
+    },
+    "export_lifecycle": {
+      "calls": [
+        "export_evaluation -> TaskHandle",
+        "get_task -> TaskState",
+        "Completed -> TaskOutput::Evaluation(ExportEvaluation)",
+        "cancel_task -> allowed Cancel"
+      ],
+      "freeze": "accepted current revision; old Runs keep own input refs",
+      "commit": "all outputs in temp sibling directory; same-volume rename new internal report directory; never mix old report",
+      "cancel_before_commit": "Cancelled/no files; old reports/project retained",
+      "commit_wins": "Completed; no rollback",
+      "errors": {
+        "RevisionConflict": "refresh selection, retain form",
+        "MissingReference": "name absent input/render/font/asset",
+        "PermissionDenied": "no unauthorized paths/assets",
+        "UnsupportedCapability": "selected format/render capability absent",
+        "IoFailure": "no partially completed files",
+        "Cancelled": "preserve selections"
+      },
+      "dirty_effect": "none"
+    },
+    "technology_sources": [
+      {
+        "title": "printpdf0.12.8 API",
+        "url": "https://docs.rs/printpdf/0.12.8/printpdf/",
+        "use": "direct page/text/font/image route"
+      },
+      {
+        "title": "csv1.4.0 WriterBuilder",
+        "url": "https://docs.rs/csv/1.4.0/csv/struct.WriterBuilder.html",
+        "use": "CRLF and quote configuration"
+      },
+      {
+        "title": "RFC4180",
+        "url": "https://www.rfc-editor.org/rfc/rfc4180",
+        "use": "CSV record and quoting"
+      },
+      {
+        "title": "Source Han Sans2.005R license",
+        "url": "https://raw.githubusercontent.com/adobe-fonts/source-han-sans/2.005R/LICENSE.txt",
+        "use": "original terms carried with actual bundled font"
+      }
+    ],
+    "public_delta_ref": "packages/reporting/public-delta.design.json",
+    "public_delta_revision": "DRF05-r3",
+    "consumer_recheck_ref": "docs/04_开发与验收/特征细化/DRF05_消费者复核.json",
+    "canonical_bindings": {
+      "prefix": "r=report.run_evaluations[i]；report_id=report.id，project_id=r.input_ref.project_id，input_project_revision=r.input_ref.project_revision，scenario_id/revision同r.input_ref，window=r.requested_window，computed_until=r.computed_until_ms",
+      "context": "r.time_reference/r.scope/r.acceptance_scope/r.evidence_origin/computation_status/whole_window_computed；export_project_revision=report.project_revision",
+      "orders": "r.order_metrics；Quantity输出coefficient/decimal_places/unit；completion/due/tardiness各自state/reason",
+      "resources": "r.resource_metrics；capacity_unit保持实际冻结单位；open/closed/available/work/wait的Option不可空补0",
+      "resource_claims": "r.resource_claims[j].intervals[k] + 同j.interval_end_causes[k] + phase_ref；经r.jobs.execution_ref定位设备，只认execution_capacity_ref；长度必须一一对应",
+      "waits": "r.waits[j].execution_ref/phase_ref/interval/end_cause；wait_key=run_id+j；condition_changed只说明本原因段结束，不叫等待已解除",
+      "phase_work": "r.phase_work_intervals；CSV effective_start_ms<-effective_progress_start_ms，effective_end_ms<-effective_progress_end_ms，end_cause保持原PhaseWorkEndCause",
+      "events_and_acceptance": "r.events及r.acceptance_events原序；接受以实际accepted quantity而非页条数/工序件数计",
+      "costs": "r.costs.inputs按id接lines.cost_input_id；rate精确DecimalAmount读数，rate_quantity给分母/单位，includes/source/component同冻结输入；currencies生成小计/完整额/单位成本行，不混加lines与汇总行；r3 inputs未合入前不宣称完整四格式",
+      "comparison": "report.scenario_comparison:RunComparison；pairs.conditions/input_changes与metrics.object_ref/acceptance_scope/currency/values/pair_differences；NumericDifference带符号/精确幅度；before/after为InputChangeValue，外层None和null变体分别编码",
+      "modules": "r.module_versions，顶层仅所选清单并集；不以最新版补旧Run",
+      "files": "ReportRunInputRef没有工程内部文件路径；editable_project_ref仅已实际随附工程；图/字体按报告根相对资源处理"
+    },
+    "implementation_gate": "r3共同字段已复核；隔离4格式文件投影与69字段读回成立，PDF已逐页图像检查，HTML浏览器未验证；产品导出/Windows/跨机/本人证据仍空。",
+    "isolated_projection_trial": {
+      "result_ref": "docs/04_开发与验收/特征细化/DRF05_四格式试做/projection-result.json",
+      "origin": "type_fixture",
+      "formats_written_and_file_reopened": [
+        "json",
+        "csv",
+        "html",
+        "pdf"
+      ],
+      "shared_rows": 69,
+      "PDF_pages_agent_visually_reviewed": 4,
+      "HTML_browser_preview": "blocked_file_protocol_not_verified",
+      "product_exporter_runtime": null
+    }
+  },
+  "fixed_cases": {
+    "ix01_baseline": {
+      "completion_ms": 440000,
+      "accepted_packages": 6
+    },
+    "ix01_delayed_pcb": {
+      "completion_ms": 570000,
+      "accepted_packages": 6,
+      "actual_wait": [
+        370000,
+        420000
+      ],
+      "carrier_available_ms": 425000
+    },
+    "original_order_A_first": {
+      "completion_ms": 205000,
+      "worker_A_person_ms": 135000,
+      "A_due_ms": 160000,
+      "A_lateness_ms": 0,
+      "B_lateness_ms": 5000
+    },
+    "original_order_B_first": {
+      "completion_ms": 205000,
+      "worker_A_person_ms": 160000,
+      "A_lateness_ms": 45000,
+      "B_lateness_ms": 0
+    },
+    "original_halls_A": {
+      "accepted": 1,
+      "C": null,
+      "unfulfilled": 1
+    },
+    "original_halls_B": {
+      "accepted": 2,
+      "C_ms": 205000
+    },
+    "manual_quality_goal": {
+      "demand": 3,
+      "accepted": 2,
+      "gap": 1,
+      "goal_met": false,
+      "no_invented_OrderLine_or_GenerationContext": true
+    },
+    "declared_costs_A_first": {
+      "labor_rate": 36,
+      "labor_rate_quantity": 3600000,
+      "labor_rate_unit": "person_ms",
+      "labor_amount": 1.35,
+      "carton_rate": 10,
+      "carton_rate_quantity": 4,
+      "carton_rate_unit": "piece",
+      "carton_amount": 10,
+      "fastener_rate": 0,
+      "fastener_amount": 0,
+      "CNY_known_subtotal": 11.35,
+      "CNY_complete_total": 11.35,
+      "explicit_selected_A_acceptance_quantity": 2,
+      "unit_cost": 5.675
+    },
+    "fractional_actual_carton_consumption": {
+      "consumed": 2,
+      "rate": 67500,
+      "rate_quantity": 7,
+      "amount_expression": "135000/7",
+      "base_value": 19285.714285714286,
+      "presentation_may_round_only": true
+    },
+    "unknown_cost": {
+      "known_subtotal_preserved": true,
+      "complete_total": null,
+      "unit_cost": null
+    },
+    "multi_scope_cost": {
+      "no_implicit_allocation": true,
+      "unit_cost": null
+    },
+    "csv_cost_metadata": {
+      "component": "纸箱，\"7件计价\"\n=SUM(1+1)",
+      "source_field_path": "/declared_cost_rate",
+      "source_basis": "user_provided",
+      "rate_denominator": 7,
+      "rule": "Standard parsed CSV preserves frozen component/source/denominator; no invented header alias, no prepended apostrophe changing data"
+    },
+    "design_metadata": {
+      "known_declared_module_versions": "retain context.module_versions unchanged when no Run; empty actual metrics do not mean erase known design inputs"
+    }
+  },
+  "strict_rules": [
+    "one immutable Versioned<EvaluationReport> across all formats",
+    "design-only has no Run/actual metrics/comparison",
+    "single actual successful Run needs no repair or comparison",
+    "different windows remain per Run and cannot be reported as equal",
+    "real known prefix never becomes full-window accepted/goal/cost conclusion",
+    "busy interval union differs from capacity-unit integral; calendar union and closed-calendar holding are separate",
+    "same resource+component paid_calendar and occupied_time never summed",
+    "source prices are frozen Scenario inputs; never current draft or current web prices",
+    "CSV BOM UTF8 comma CRLF double quote/newline standard parsing; nullable columns have individual state/reason",
+    "CSV/JSON base numbers round-trip without .9g; HTML/PDF reading precision never writes back",
+    "HTML file offline and filters only saved data; user text escaped",
+    "actual printpdf PDF CJK cross-page headers/page numbering/ID wrapping; no ReportLab substitute",
+    "selected image/font missing or permission absent fails concretely; no fake render/professional acceptance",
+    "all four selected files commit atomically through actual selected token and IO Task; cancellation/failed format preserves old destinations",
+    "software/geometry/professional status/site/human/software-performance evidence remain distinct"
+  ],
+  "actual_result": null,
+  "whole_task_done": false,
+  "human_acceptance": false
+}

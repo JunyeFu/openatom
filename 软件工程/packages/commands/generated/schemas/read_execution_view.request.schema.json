@@ -1,0 +1,376 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "HostExecutionViewRequest",
+  "type": "object",
+  "properties": {
+    "api_version": {
+      "$ref": "#/$defs/ApiVersion"
+    },
+    "operation": {
+      "$ref": "#/$defs/HostExecutionViewRequestOperation"
+    },
+    "params": {
+      "$ref": "#/$defs/HostExecutionViewRequestParams"
+    },
+    "project_id": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ProjectId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "request_id": {
+      "$ref": "#/$defs/ObjectId"
+    },
+    "scope": {
+      "$ref": "#/$defs/HostProjectScope"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "api_version",
+    "request_id",
+    "project_id",
+    "scope",
+    "operation",
+    "params"
+  ],
+  "$defs": {
+    "ApiVersion": {
+      "type": "string",
+      "enum": [
+        "0.1"
+      ]
+    },
+    "DeviceText": {
+      "type": "string",
+      "minLength": 1
+    },
+    "ExecutionContractVersion": {
+      "type": "string",
+      "enum": [
+        "sf.execution/2.0-draft11"
+      ]
+    },
+    "ExecutionEpochId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "ExecutionHistoryQuery": {
+      "type": "object",
+      "properties": {
+        "contract_version": {
+          "$ref": "#/$defs/ExecutionHistoryQueryContractVersion"
+        },
+        "execution_revision": {
+          "$ref": "#/$defs/SafeUint"
+        },
+        "host_from_ms": {
+          "$ref": "#/$defs/SafeUint"
+        },
+        "host_until_ms": {
+          "$ref": "#/$defs/SafeUint"
+        },
+        "identity": {
+          "$ref": "#/$defs/ExecutionIdentity"
+        },
+        "objects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ExecutionObservedObjectRef"
+          }
+        },
+        "page": {
+          "$ref": "#/$defs/PageSelection"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "contract_version",
+        "identity",
+        "execution_revision",
+        "host_from_ms",
+        "host_until_ms",
+        "objects",
+        "page"
+      ]
+    },
+    "ExecutionHistoryQueryContractVersion": {
+      "type": "string",
+      "enum": [
+        "sf.execution/2.0-draft11"
+      ]
+    },
+    "ExecutionIdentity": {
+      "type": "object",
+      "properties": {
+        "execution_epoch_id": {
+          "$ref": "#/$defs/ExecutionEpochId"
+        },
+        "host_context_session_id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "project_id": {
+          "$ref": "#/$defs/ProjectId"
+        },
+        "session_id": {
+          "$ref": "#/$defs/ExecutionSessionId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "session_id",
+        "execution_epoch_id",
+        "project_id",
+        "host_context_session_id"
+      ]
+    },
+    "ExecutionObservationQuery": {
+      "type": "object",
+      "properties": {
+        "at_host_ms": {
+          "$ref": "#/$defs/SafeUint"
+        },
+        "contract_version": {
+          "$ref": "#/$defs/ExecutionObservationQueryContractVersion"
+        },
+        "execution_revision": {
+          "$ref": "#/$defs/SafeUint"
+        },
+        "identity": {
+          "$ref": "#/$defs/ExecutionIdentity"
+        },
+        "objects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ExecutionObservedObjectRef"
+          }
+        },
+        "page": {
+          "$ref": "#/$defs/PageSelection"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "contract_version",
+        "identity",
+        "execution_revision",
+        "at_host_ms",
+        "objects",
+        "page"
+      ]
+    },
+    "ExecutionObservationQueryContractVersion": {
+      "type": "string",
+      "enum": [
+        "sf.execution/2.0-draft11"
+      ]
+    },
+    "ExecutionObservedObjectRef": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "kind": {
+          "$ref": "#/$defs/ExecutionObservedObjectRefKind"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "id"
+      ]
+    },
+    "ExecutionObservedObjectRefKind": {
+      "type": "string",
+      "enum": [
+        "transport",
+        "item",
+        "job",
+        "device",
+        "logical_work",
+        "attempt"
+      ]
+    },
+    "ExecutionSessionId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "ExecutionViewSelection": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "identity": {
+              "$ref": "#/$defs/ExecutionIdentity"
+            },
+            "kind": {
+              "type": "string",
+              "const": "inputs"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "identity"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "observations"
+            },
+            "query": {
+              "$ref": "#/$defs/ExecutionObservationQuery"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "query"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "history"
+            },
+            "query": {
+              "$ref": "#/$defs/ExecutionHistoryQuery"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "query"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "request"
+            },
+            "originating_request_id": {
+              "$ref": "#/$defs/ObjectId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "originating_request_id"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "catalog"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        }
+      ]
+    },
+    "HostExecutionViewRequestOperation": {
+      "type": "string",
+      "enum": [
+        "read_execution_view"
+      ]
+    },
+    "HostExecutionViewRequestParams": {
+      "type": "object",
+      "properties": {
+        "execution_contract_version": {
+          "$ref": "#/$defs/ExecutionContractVersion"
+        },
+        "selection": {
+          "$ref": "#/$defs/ExecutionViewSelection"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "execution_contract_version",
+        "selection"
+      ]
+    },
+    "HostProjectScope": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "$ref": "#/$defs/HostProjectScopeKind"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ]
+    },
+    "HostProjectScopeKind": {
+      "type": "string",
+      "enum": [
+        "project"
+      ]
+    },
+    "ObjectId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "PageLimit": {
+      "type": "integer",
+      "format": "uint64",
+      "maximum": 200,
+      "minimum": 1
+    },
+    "PageSelection": {
+      "type": "object",
+      "properties": {
+        "cursor": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DeviceText"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "limit": {
+          "$ref": "#/$defs/PageLimit"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "limit",
+        "cursor"
+      ]
+    },
+    "ProjectId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "SafeUint": {
+      "type": "integer",
+      "format": "uint64",
+      "maximum": 9007199254740991,
+      "minimum": 0
+    }
+  }
+}

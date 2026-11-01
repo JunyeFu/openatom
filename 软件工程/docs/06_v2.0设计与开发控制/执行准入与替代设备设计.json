@@ -1,0 +1,472 @@
+{
+  "document_kind": "v2_design_only_execution_admission_and_routing_contract",
+  "date": "2026-10-25",
+  "implementation_allowed": true,
+  "runtime_verified": false,
+  "source_ref": "docs/06_v2.0设计与开发控制/执行准入与替代设备设计.md",
+  "scope": {
+    "mode": "single_operation_two_device_software_in_loop",
+    "input_units": 6,
+    "device_capacity_each": 1,
+    "stock_owner": "existing Host Engine",
+    "cloud_owner": "telemetry and command/receipt persistence only",
+    "v1_virtual_execution_changed": false
+  },
+  "decisions": [
+    {
+      "id": "V2-A02",
+      "subject": "logical work identity and deferred execution binding",
+      "state": "design_selected_pending_v1_final_fixture",
+      "rule": "one task-cycle-route-step yields one logical job id; compile a frozen candidate binding set; choose one before publishing; never enqueue both variants as independent production jobs"
+    },
+    {
+      "id": "V2-A03",
+      "subject": "prepare-reserve then start-commit admission",
+      "state": "design_selected_not_implemented",
+      "rule": "Engine owns pending material and resource reservations; publish exact command; valid device-start consumes once and creates bound execution; valid completion applies existing production and transfer semantics"
+    },
+    {
+      "id": "V2-A04",
+      "subject": "clock and result projection boundary",
+      "state": "clock_cutoff_and_projection_rules_selected_schema_pending",
+      "rule": "Host monotonic epoch; stop new dispatch at cutoff without inventing completion; immutable cutoff snapshot; independent ExecutionSnapshot; see V2-CLOCK-PROJECTION-02"
+    },
+    {
+      "id": "V2-A05",
+      "subject": "reassignment eligibility",
+      "state": "design_selected_not_implemented",
+      "rule": "unpublished work may choose another frozen legal binding; published attempts require confirmed not-started cancellation before reservation release; started/unknown execution cannot be reassigned"
+    }
+  ],
+  "identity_fields": {
+    "logical_work": [
+      "session_id",
+      "production_task_id:ObjectId",
+      "route_step_id:ObjectId",
+      "cycle:SafeUint",
+      "logical_job_id:ObjectId"
+    ],
+    "candidate_binding": [
+      "device_id:ObjectId",
+      "device_module_ref:ModuleRef",
+      "operation_ref:ModuleRef",
+      "execution_capacity_ref:ObjectRef",
+      "input_port_and_location_map",
+      "output_port_and_location_map",
+      "resource_role_map",
+      "resolved_phase_model"
+    ],
+    "attempt": [
+      "logical_job_id",
+      "attempt_ordinal:SafeUint",
+      "command_id:DispatchCommandId",
+      "selected_binding_ref",
+      "phase_id:PhaseId",
+      "phase_token"
+    ],
+    "reservation": [
+      "logical_job_id",
+      "command_id",
+      "exact_item_and_quantity_picks",
+      "resource_id_and_units",
+      "state",
+      "created_at_host_elapsed_ms"
+    ],
+    "receipt": [
+      "session_id",
+      "command_id",
+      "device_id",
+      "phase_id",
+      "phase_token",
+      "device_sequence",
+      "kind",
+      "device_timestamp",
+      "host_admission_sequence",
+      "host_received_elapsed_ms"
+    ]
+  },
+  "states": [
+    {
+      "id": "queued",
+      "bound_execution": false,
+      "material_taken": false,
+      "reservation": "none",
+      "next": [
+        "reserved"
+      ]
+    },
+    {
+      "id": "reserved",
+      "bound_execution": false,
+      "material_taken": false,
+      "reservation": "Engine-owned; reduces available quantities and capacity",
+      "next": [
+        "published",
+        "queued"
+      ]
+    },
+    {
+      "id": "published",
+      "bound_execution": false,
+      "material_taken": false,
+      "reservation": "held",
+      "next": [
+        "device_accepted",
+        "cancelled_not_started",
+        "reconciliation_required"
+      ]
+    },
+    {
+      "id": "device_accepted",
+      "bound_execution": false,
+      "material_taken": false,
+      "reservation": "held",
+      "next": [
+        "device_started",
+        "cancelled_not_started",
+        "reconciliation_required"
+      ]
+    },
+    {
+      "id": "device_started",
+      "bound_execution": true,
+      "material_taken": true,
+      "reservation": "converted atomically to ordinary job/item/resource ownership",
+      "next": [
+        "device_completed",
+        "device_failed",
+        "reconciliation_required"
+      ]
+    },
+    {
+      "id": "device_completed",
+      "bound_execution": true,
+      "material_taken": true,
+      "reservation": "ordinary Engine state; not automatically accepted output",
+      "next": [
+        "business_effect_committed"
+      ]
+    },
+    {
+      "id": "business_effect_committed",
+      "bound_execution": true,
+      "material_taken": true,
+      "reservation": "preserve original output-hold and downstream transfer semantics",
+      "next": [
+        "output_wait",
+        "accepted"
+      ]
+    },
+    {
+      "id": "output_wait",
+      "bound_execution": true,
+      "material_taken": true,
+      "reservation": "according to declared model; not released by HTTP status",
+      "next": [
+        "accepted"
+      ]
+    },
+    {
+      "id": "accepted",
+      "bound_execution": true,
+      "material_taken": true,
+      "reservation": "according to existing completed business state",
+      "next": []
+    },
+    {
+      "id": "reconciliation_required",
+      "bound_execution": "preserve prior truth",
+      "material_taken": "preserve prior truth",
+      "reservation": "do not release on network timeout",
+      "next": [
+        "published",
+        "device_accepted",
+        "device_started",
+        "device_completed",
+        "cancelled_not_started",
+        "device_failed"
+      ],
+      "transition_guard": "same command and confirmed original state only; no automatic rollback of committed business effects"
+    },
+    {
+      "id": "cancelled_not_started",
+      "bound_execution": false,
+      "material_taken": false,
+      "reservation": "release only after positive cancellation proof",
+      "next": [],
+      "logical_work_effect": "may return to queued under a new attempt; old command remains terminal"
+    },
+    {
+      "id": "device_failed",
+      "bound_execution": true,
+      "material_taken": true,
+      "reservation": "preserve actual Engine ownership; explicit failure disposition required",
+      "next": [],
+      "logical_work_effect": "blocked for explicit disposition; no automatic material rollback or redispatch"
+    }
+  ],
+  "reservation_rules": [
+    "Pending reservations live in the same Engine/Stock, never in a cloud inventory mirror.",
+    "Two pending commands cannot reserve the same discrete item or exceed resource capacity.",
+    "Before device-start, original item holder/lifecycle/quantity remain unchanged; availability subtracts live reservations.",
+    "At valid start, reservation and normal Stock.take/claims transition occur as one Engine action, preserving existing split and allocation identity rules.",
+    "Only an unpublished reservation or a positively confirmed cancelled-not-started attempt may be released for reassignment.",
+    "Do not emit a bound v1 JobState before execution binding is committed; queued/reserved logical work is presented in an explicit execution projection."
+  ],
+  "completion_rules": [
+    "Do not schedule Boundary::Work at nominal duration for an external phase.",
+    "Completion receipt must match exact session/attempt/device/phase/token and compatible prior state.",
+    "Completion without confirmed start is retained as an unapplied receipt until the same attempt is reconciled.",
+    "Duplicate completion returns the original admitted outcome; does not call production a second time.",
+    "Existing produce/transfer/acceptance logic determines inventory, quality, destination and accepted units.",
+    "A command marked completed is distinct from a product accepted at the declared destination."
+  ],
+  "source_anchors": [
+    {
+      "path": "packages/simulation/src/compile.rs",
+      "line": 919,
+      "symbol": "stable job id from task/cycle/step"
+    },
+    {
+      "path": "packages/domain/src/models.rs",
+      "line": 1994,
+      "symbol": "JobExecutionRef"
+    },
+    {
+      "path": "packages/simulation/src/engine.rs",
+      "line": 933,
+      "symbol": "dispatch_one"
+    },
+    {
+      "path": "packages/simulation/src/engine.rs",
+      "line": 1040,
+      "symbol": "stock.take"
+    },
+    {
+      "path": "packages/simulation/src/engine.rs",
+      "line": 1102,
+      "symbol": "start_phase"
+    },
+    {
+      "path": "packages/simulation/src/engine.rs",
+      "line": 1118,
+      "symbol": "push Boundary::Work"
+    },
+    {
+      "path": "packages/simulation/src/engine.rs",
+      "line": 493,
+      "symbol": "virtual-window completion"
+    },
+    {
+      "path": "packages/simulation/src/engine.rs",
+      "line": 1381,
+      "symbol": "produce"
+    },
+    {
+      "path": "packages/simulation/src/engine.rs",
+      "line": 1603,
+      "symbol": "transfer_one"
+    },
+    {
+      "path": "packages/simulation/src/engine.rs",
+      "line": 1707,
+      "symbol": "accept_orders"
+    },
+    {
+      "path": "packages/simulation/src/stock.rs",
+      "line": 298,
+      "symbol": "plan"
+    },
+    {
+      "path": "packages/simulation/src/stock.rs",
+      "line": 409,
+      "symbol": "take"
+    }
+  ],
+  "design_cases": [
+    {
+      "id": "EX01",
+      "trigger": "normal two-device six-work execution",
+      "expected": [
+        "one logical work per unit",
+        "one admitted attempt per started work",
+        "six accepted outputs after valid destination/quality transfer",
+        "zero duplicated stock effects"
+      ],
+      "runtime_result": null
+    },
+    {
+      "id": "EX02",
+      "trigger": "A stops accepting before any next command is published",
+      "expected": [
+        "queued work can select B",
+        "running A work keeps its frozen binding",
+        "no additional six-work queue is created"
+      ],
+      "runtime_result": null
+    },
+    {
+      "id": "EX03",
+      "trigger": "published command races with cancel",
+      "expected": [
+        "reassign only after cancelled_not_started is confirmed",
+        "same logical work keeps attempt history",
+        "unknown or already started remains on original attempt"
+      ],
+      "runtime_result": null
+    },
+    {
+      "id": "EX04",
+      "trigger": "one available item and two simultaneous pending reservations",
+      "expected": [
+        "at most one succeeds",
+        "losing attempt has no material take or resource leak"
+      ],
+      "runtime_result": null
+    },
+    {
+      "id": "EX05",
+      "trigger": "nominal duration elapsed without completion receipt",
+      "expected": [
+        "no output and no accepted units",
+        "command remains running/unknown according to observed state",
+        "resources are not silently freed"
+      ],
+      "runtime_result": null
+    },
+    {
+      "id": "EX06",
+      "trigger": "wrong session/device/phase token or old attempt completion",
+      "expected": [
+        "no Engine business effect",
+        "original receipt retained with rejection reason"
+      ],
+      "runtime_result": null
+    },
+    {
+      "id": "EX07",
+      "trigger": "duplicate start and duplicate completion",
+      "expected": [
+        "Stock.take occurs once",
+        "production effect occurs once",
+        "query returns same admitted outcome"
+      ],
+      "runtime_result": null
+    },
+    {
+      "id": "EX08",
+      "trigger": "complete arrives before start observation",
+      "expected": [
+        "unapplied until same attempt start is reconciled",
+        "no invented start or output"
+      ],
+      "runtime_result": null
+    },
+    {
+      "id": "EX09",
+      "trigger": "device completes while output location is full or quality not released",
+      "expected": [
+        "command completion is visible",
+        "existing WaitingOutput/quality/destination conditions control acceptance",
+        "accepted quantity is not command count"
+      ],
+      "runtime_result": null
+    },
+    {
+      "id": "EX10",
+      "trigger": "network loss or cloud restart during accepted/started work",
+      "expected": [
+        "query original command",
+        "no automatic second dispatch",
+        "Engine reservations/ownership preserved until verified disposition"
+      ],
+      "runtime_result": null
+    },
+    {
+      "id": "EX11",
+      "trigger": "observation deadline reached while physical work is unresolved",
+      "expected": [
+        "not a fabricated completed session",
+        "preserve cutoff report and unresolved identities",
+        "clock/result contract must be resolved before implementation readiness"
+      ],
+      "runtime_result": null
+    },
+    {
+      "id": "EX12",
+      "trigger": "ordinary local v1 execution and old Run replay",
+      "expected": [
+        "existing virtual execution semantics unchanged",
+        "no external command or reservation is created"
+      ],
+      "runtime_result": null
+    }
+  ],
+  "remaining_design_items": [
+    {
+      "id": "ED-01",
+      "subject": "Concrete accepted v1 project/device/port/resource identities",
+      "owner_package": "V2-01",
+      "reason": "v1 final candidate not frozen"
+    },
+    {
+      "id": "ED-05",
+      "subject": "complete Host-operation and DTO schema validation and actual integration",
+      "owner_package": "V2-01",
+      "reason": "draft authored/reference checked in V2-API-DB-03; actual generated-contract validation, v1 rebase and Rust integration remain pending"
+    },
+    {
+      "id": "ED-06",
+      "subject": "actual same-clock correctly-presented-frame latency observation",
+      "owner_package": "V2-10",
+      "reason": "consume v1 final accepted measurement capability; no v2 runtime started"
+    }
+  ],
+  "mathematical_expected_timing": {
+    "scope": "design arithmetic only, not Engine or cloud runtime",
+    "normal_completed_units": 6,
+    "normal_ideal_end_ms": 40000,
+    "stop_A_at_ms": 6000,
+    "changed_completed_units": 6,
+    "changed_ideal_end_ms": 75000,
+    "runtime_verified": false
+  },
+  "design_resolutions": [
+    {
+      "id": "ED-02",
+      "subject": "external clock, observation horizon, result cutoff and completed-session encoding",
+      "state": "design_rule_selected_pending_schema_and_v1_rebase",
+      "resolution_ref": "docs/06_v2.0设计与开发控制/外部时钟与结果投影设计.md",
+      "runtime_verified": false
+    },
+    {
+      "id": "ED-03",
+      "subject": "unbound queue and reservation projection for UI/Agent/reporting",
+      "state": "design_rule_selected_pending_schema_and_v1_rebase",
+      "resolution_ref": "docs/06_v2.0设计与开发控制/外部时钟与结果投影设计.md",
+      "runtime_verified": false
+    },
+    {
+      "id": "ED-04",
+      "subject": "resource-reservation duration versus measured effective work in reports",
+      "state": "design_rule_selected_pending_schema_and_v1_rebase",
+      "resolution_ref": "docs/06_v2.0设计与开发控制/外部时钟与结果投影设计.md",
+      "runtime_verified": false
+    }
+  ],
+  "interface_transaction_design_ref": "docs/06_v2.0设计与开发控制/接口与数据库事务设计.md",
+  "historical_design_implementation_flags": {
+    "date": "2026-10-25",
+    "implementation_allowed": false,
+    "runtime_verified": false
+  },
+  "implementation_status_ref": "docs/06_v2.0设计与开发控制/开发控制计划.json#/packages",
+  "current_implementation_packages": [
+    "V2-01",
+    "V2-04",
+    "V2-05",
+    "V2-06"
+  ],
+  "status_projection_updated_at_utc": "2026-10-27T01:45:48.535491+00:00",
+  "runtime_verification_scope": "runtime_verified仅为本文全部设计用例通过声明；当前局部真实证据和剩余动作取主计划，不把设计期禁止实施作为现行限制。"
+}

@@ -1,0 +1,300 @@
+{
+  "review_batch": "B02-Q05",
+  "modeling_profile": "simulation-efficient-v1",
+  "status": "accepted_by_AI",
+  "version": "1.1.0",
+  "equipment": [
+    {
+      "index": 71,
+      "batch": "B02",
+      "id": "digital-label-printer",
+      "title": "卷筒标签数码印刷机（六标定长段）",
+      "mechanisms": [
+        "nip-feed-and-inkjet-bar",
+        "six-pattern-printing"
+      ],
+      "flow": {
+        "input": "600×80mm未印标签复合段+0.03mL计量墨",
+        "output": "1段有六个SF-DEMO-01图案的新印刷复合段"
+      },
+      "rule": "transform",
+      "auxiliary": "metered_black_ink_003ml",
+      "cycle_seconds": 24,
+      "definition_id": "sf.native500.device.digital-label-printer",
+      "media_id": "sf.native500.media.digital-label-printer",
+      "version": "1.1.0",
+      "basis": "原创六标定长复合段示例；声明工时，非厂家额定性能。空卷轴表示机器构型，本批不含整卷放卷/复卷、换卷或工业印切精度标定。",
+      "suffix": "detailed",
+      "module_id": "sf.native500.media.digital-label-printer",
+      "directory": "installable/digital-label-printer",
+      "asset": {
+        "id": "sf.native500.media.digital-label-printer.glb",
+        "path": "digital-label-printer.glb",
+        "kind": "glb"
+      },
+      "bytes": 1243096,
+      "nodes": 341,
+      "triangles": 12474,
+      "phase_ids": [
+        "load",
+        "auto",
+        "unload"
+      ],
+      "primary_phase": "auto",
+      "focus_node": "InkjetHead",
+      "bounds": {
+        "min": [
+          -1.5749999997019768,
+          -1.0430812810713341e-10,
+          -0.8349999997019768
+        ],
+        "max": [
+          1.6400000214576722,
+          1.6749999996647238,
+          1.0500000002980232
+        ]
+      },
+      "moving_names": [
+        "PaperSeat",
+        "FeedRoller_-0.5",
+        "FeedRoller_0.5",
+        "InkjetHead"
+      ],
+      "initial": "plain_web",
+      "final": "printed_web",
+      "extra_outputs": [],
+      "media_version": "1.1.0",
+      "review_batch": "B02-Q05",
+      "service_circuits": [
+        {
+          "name": "electrical and regulated print/inspection supply",
+          "entry": "AirRegulator",
+          "boundary": "visible trunk and local supply; closed internal drive"
+        }
+      ]
+    },
+    {
+      "index": 72,
+      "batch": "B02",
+      "id": "label-die-cutter",
+      "title": "标签圆刀模切机（六标半切、保留矩阵）",
+      "mechanisms": [
+        "registered-rotary-kiss-cut-cylinder",
+        "five-repeat-die-and-anvil"
+      ],
+      "flow": {
+        "input": "1段六标印刷复合段",
+        "output": "1段六标半切复合段，底纸/矩阵保留"
+      },
+      "rule": "transform",
+      "auxiliary": null,
+      "cycle_seconds": 24,
+      "definition_id": "sf.native500.device.label-die-cutter",
+      "media_id": "sf.native500.media.label-die-cutter",
+      "version": "1.1.0",
+      "basis": "原创六标定长复合段示例；声明工时，非厂家额定性能。空卷轴表示机器构型，本批不含整卷放卷/复卷、换卷或工业印切精度标定。",
+      "suffix": "detailed",
+      "module_id": "sf.native500.media.label-die-cutter",
+      "directory": "installable/label-die-cutter",
+      "asset": {
+        "id": "sf.native500.media.label-die-cutter.glb",
+        "path": "label-die-cutter.glb",
+        "kind": "glb"
+      },
+      "bytes": 1221736,
+      "nodes": 336,
+      "triangles": 13790,
+      "phase_ids": [
+        "load",
+        "auto",
+        "unload"
+      ],
+      "primary_phase": "auto",
+      "focus_node": "KissCutCylinder",
+      "bounds": {
+        "min": [
+          -1.5749999997019768,
+          -1.0430812810713341e-10,
+          -0.8349999997019768
+        ],
+        "max": [
+          1.6400000214576722,
+          1.6749999996647238,
+          1.0500000002980232
+        ]
+      },
+      "moving_names": [
+        "PaperSeat",
+        "FeedRoller_-0.5",
+        "FeedRoller_0.5",
+        "KissCutCylinder",
+        "CutAnvil"
+      ],
+      "initial": "printed_web",
+      "final": "kiss_cut_web",
+      "extra_outputs": [],
+      "media_version": "1.1.0",
+      "review_batch": "B02-Q05",
+      "service_circuits": [
+        {
+          "name": "electrical and regulated print/inspection supply",
+          "entry": "AirRegulator",
+          "boundary": "visible trunk and local supply; closed internal drive"
+        }
+      ]
+    },
+    {
+      "index": 73,
+      "batch": "B02",
+      "id": "label-peeler",
+      "title": "标签剥离机（六标与底纸矩阵分离）",
+      "mechanisms": [
+        "supported-peel-nose-and-return-path",
+        "six-original-patterns-to-six-new-labels"
+      ],
+      "flow": {
+        "input": "1段含六标的半切复合段",
+        "output": "6件新标签+1段带废矩阵的底纸，保留来源"
+      },
+      "rule": "transform",
+      "auxiliary": null,
+      "cycle_seconds": 20,
+      "definition_id": "sf.native500.device.label-peeler",
+      "media_id": "sf.native500.media.label-peeler",
+      "version": "1.1.0",
+      "basis": "原创六标定长复合段示例；声明工时，非厂家额定性能。空卷轴表示机器构型，本批不含整卷放卷/复卷、换卷或工业印切精度标定。",
+      "suffix": "detailed",
+      "module_id": "sf.native500.media.label-peeler",
+      "directory": "installable/label-peeler",
+      "asset": {
+        "id": "sf.native500.media.label-peeler.glb",
+        "path": "label-peeler.glb",
+        "kind": "glb"
+      },
+      "bytes": 1189160,
+      "nodes": 342,
+      "triangles": 11662,
+      "phase_ids": [
+        "load",
+        "auto",
+        "unload"
+      ],
+      "primary_phase": "auto",
+      "focus_node": "PeelNose",
+      "bounds": {
+        "min": [
+          -1.5749999997019768,
+          -1.0430812810713341e-10,
+          -0.8349999997019768
+        ],
+        "max": [
+          1.6400000214576722,
+          1.6749999996647238,
+          1.0500000002980232
+        ]
+      },
+      "moving_names": [
+        "PaperSeat",
+        "FeedRoller_-0.5",
+        "FeedRoller_0.5"
+      ],
+      "initial": "kiss_cut_web",
+      "final": "peeled_label",
+      "extra_outputs": [
+        {
+          "role": "backing"
+        }
+      ],
+      "acceptance_conditions": [
+        "backing-wait"
+      ],
+      "media_version": "1.1.0",
+      "review_batch": "B02-Q05",
+      "service_circuits": [
+        {
+          "name": "electrical and regulated print/inspection supply",
+          "entry": "AirRegulator",
+          "boundary": "visible trunk and local supply; closed internal drive"
+        }
+      ]
+    },
+    {
+      "index": 74,
+      "batch": "B02",
+      "id": "label-web-inspector",
+      "title": "标签复卷检验机（六标段检测与分流）",
+      "mechanisms": [
+        "line-camera-and-supported-light-bar",
+        "pass-recheck-isolation-destinations"
+      ],
+      "flow": {
+        "input": "1段六标半切复合段",
+        "output": "同一复合段按实际质量判定通过、复核或隔离"
+      },
+      "rule": "inspect",
+      "auxiliary": null,
+      "cycle_seconds": 24,
+      "definition_id": "sf.native500.device.label-web-inspector",
+      "media_id": "sf.native500.media.label-web-inspector",
+      "version": "1.1.0",
+      "basis": "原创六标定长复合段示例；声明工时，非厂家额定性能。空卷轴表示机器构型，本批不含整卷放卷/复卷、换卷或工业印切精度标定。",
+      "suffix": "detailed",
+      "module_id": "sf.native500.media.label-web-inspector",
+      "directory": "installable/label-web-inspector",
+      "asset": {
+        "id": "sf.native500.media.label-web-inspector.glb",
+        "path": "label-web-inspector.glb",
+        "kind": "glb"
+      },
+      "bytes": 1268660,
+      "nodes": 345,
+      "triangles": 12706,
+      "phase_ids": [
+        "load",
+        "auto",
+        "unload"
+      ],
+      "primary_phase": "auto",
+      "focus_node": "LineCamera",
+      "bounds": {
+        "min": [
+          -1.5749999997019768,
+          -1.0430812810713341e-10,
+          -1.1299999991059304
+        ],
+        "max": [
+          1.6400000214576722,
+          1.6749999996647238,
+          1.1299999991059304
+        ]
+      },
+      "moving_names": [
+        "PaperSeat",
+        "FeedRoller_-0.5",
+        "FeedRoller_0.5"
+      ],
+      "initial": "kiss_cut_web",
+      "final": "kiss_cut_web",
+      "extra_outputs": [
+        {
+          "role": "isolation"
+        }
+      ],
+      "acceptance_conditions": [
+        "rejected",
+        "pending-recovery",
+        "rework",
+        "reject-wait"
+      ],
+      "media_version": "1.1.0",
+      "review_batch": "B02-Q05",
+      "service_circuits": [
+        {
+          "name": "electrical and regulated print/inspection supply",
+          "entry": "AirRegulator",
+          "boundary": "visible trunk and local supply; closed internal drive"
+        }
+      ]
+    }
+  ]
+}

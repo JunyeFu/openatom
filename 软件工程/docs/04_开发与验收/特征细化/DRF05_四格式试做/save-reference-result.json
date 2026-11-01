@@ -1,0 +1,171 @@
+{
+  "document_kind": "finite_save_queue_terminal_reference_not_Windows_fault_test",
+  "date": "2026-10-14 Asia/Shanghai",
+  "status": "passed_finite_reference",
+  "same_logical_target_queue": {
+    "admission_order": [
+      7,
+      8
+    ],
+    "prepare_order": [
+      8,
+      7
+    ],
+    "commits_after_R8_ready": [],
+    "actual_reference_commit_order": [
+      7,
+      8
+    ]
+  },
+  "terminal_cases": [
+    {
+      "case": "save_R7_with_current_R8",
+      "reference_input": [
+        7,
+        8,
+        true
+      ],
+      "independent_expected": {
+        "state": "completed",
+        "saved_revision": 7,
+        "dirty": true
+      },
+      "actual_reference_output": {
+        "state": "completed",
+        "saved_revision": 7,
+        "dirty": true,
+        "old_root": "superseded",
+        "failure": null
+      },
+      "actual_Windows_output": null
+    },
+    {
+      "case": "save_R8_current_R8",
+      "reference_input": [
+        8,
+        8,
+        true
+      ],
+      "independent_expected": {
+        "state": "completed",
+        "saved_revision": 8,
+        "dirty": false
+      },
+      "actual_reference_output": {
+        "state": "completed",
+        "saved_revision": 8,
+        "dirty": false,
+        "old_root": "superseded",
+        "failure": null
+      },
+      "actual_Windows_output": null
+    },
+    {
+      "case": "replacement_failed_restore_succeeded",
+      "reference_input": [
+        7,
+        8,
+        false,
+        true
+      ],
+      "independent_expected": {
+        "state": "failed",
+        "old_root": "restored",
+        "dirty": true,
+        "failure": "IoFailure"
+      },
+      "actual_reference_output": {
+        "state": "failed",
+        "saved_revision": null,
+        "dirty": true,
+        "old_root": "restored",
+        "failure": "IoFailure",
+        "recoverable_old_file_reported": false
+      },
+      "actual_Windows_output": null
+    },
+    {
+      "case": "replacement_failed_restore_failed",
+      "reference_input": [
+        7,
+        8,
+        false,
+        false
+      ],
+      "independent_expected": {
+        "state": "failed",
+        "old_root": "not_claimed_intact",
+        "dirty": true,
+        "recoverable_old_file_reported": true
+      },
+      "actual_reference_output": {
+        "state": "failed",
+        "saved_revision": null,
+        "dirty": true,
+        "old_root": "not_claimed_intact",
+        "failure": "IoFailure",
+        "recoverable_old_file_reported": true
+      },
+      "actual_Windows_output": null
+    },
+    {
+      "case": "cancel_before_commit",
+      "reference_input": [
+        7,
+        8,
+        false,
+        null,
+        true
+      ],
+      "independent_expected": {
+        "state": "cancelled",
+        "saved_revision": null,
+        "dirty": true
+      },
+      "actual_reference_output": {
+        "state": "cancelled",
+        "saved_revision": null,
+        "dirty": true,
+        "old_root": "retained",
+        "failure": null
+      },
+      "actual_Windows_output": null
+    },
+    {
+      "case": "commit_wins_cancel",
+      "reference_input": [
+        7,
+        8,
+        true,
+        null,
+        true,
+        true
+      ],
+      "independent_expected": {
+        "state": "completed",
+        "saved_revision": 7,
+        "dirty": true
+      },
+      "actual_reference_output": {
+        "state": "completed",
+        "saved_revision": 7,
+        "dirty": true,
+        "old_root": "superseded",
+        "failure": null
+      },
+      "actual_Windows_output": null
+    }
+  ],
+  "prior_12_case_evidence": {
+    "path": "tools/type-contract-proof/output/persistence-proof-result.json",
+    "case_count": 12,
+    "evidence_kind": "isolated_type_fixture_IO_not_product_Save_Open_or_software_handoff",
+    "rerun_here": false
+  },
+  "actual_directory_identity_resolution_tested": false,
+  "ReplaceFileW_called_here": false,
+  "Windows_fault_injection_here": false,
+  "new_recovery_file_operations_here": false,
+  "actual_Host_or_product_save": null,
+  "actual_cross_machine": null
+}

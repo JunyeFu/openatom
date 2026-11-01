@@ -1,7 +1,7 @@
 {
   "document_kind": "planned_editor_capabilities_not_callable_api",
   "status": "design",
-  "schema_revision": "draft-2",
+  "schema_revision": "draft-3",
   "media_kinds": [
     "image",
     "image_sequence",
@@ -15,12 +15,12 @@
     "plane"
   ],
   "timeline": {
-    "clock": "simulation_cycle_progress",
+    "clock": "selected_binding_mode_normalized_effective_progress",
     "progress_domain": [
       0,
       1
     ],
-    "duration_source": "behavior.duration",
+    "duration_source": "binding_modes[mode].duration_source; no global duration for multi-phase behavior",
     "clip_sources": [
       "image_asset",
       "gif_segment",
@@ -52,15 +52,16 @@
     "binding_modes": {
       "cycle_normalized": {
         "scope": "existing_single_fixed_phase",
-        "duration_source": "behavior.duration",
+        "duration_source": "the single frozen PhaseDefinition.duration, requiring positive known duration",
         "reorder_effect": "visual_only"
       },
       "phase_local": {
         "scope": "explicit_behavior_phases",
         "phase_reference": "phase_id",
-        "progress_source": "active_phase.effective_progress",
+        "progress_source": "RunResult.phase_work_intervals matching run/job/phase/start_ms; waiting freezes effective progress",
         "reorder_scope": "within_bound_phase",
-        "cross_phase_move": "explicit_rebinding_not_behavior_reorder"
+        "cross_phase_move": "explicit_rebinding_not_behavior_reorder",
+        "duration_source": "bound frozen PhaseDefinition.duration; zero or unknown duration uses completion/unknown state, not division"
       }
     },
     "wait_pose_policy": [
@@ -257,5 +258,7 @@
     "current_callable_api": false
   },
   "first_release_command_layer": "../commands/command-catalog.design.json",
-  "public_api_policy": "editor_capability_ids_are_features_of_common_commands;not_independent_MCP_servers"
+  "public_api_policy": "editor_capability_ids_are_features_of_common_commands;not_independent_MCP_servers",
+  "api_contract_spec_ref": "docs/03_架构与契约/公开操作与宿主调用契约.json",
+  "timeline_clock_contract_ref": "docs/03_架构与契约/全层类型与工程格式.json#/timeline_runtime_contract"
 }

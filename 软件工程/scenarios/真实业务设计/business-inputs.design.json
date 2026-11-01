@@ -124,7 +124,81 @@
           240000
         ]
       ],
-      "station_output_capacity": 4
+      "station_output_capacity": 4,
+      "execution_design": {
+        "device_ids": [
+          "Assembly",
+          "Inspection",
+          "Packing"
+        ],
+        "route_steps": {
+          "assembly": "step-assembly",
+          "inspection": "step-inspection",
+          "packing": "step-packing"
+        },
+        "execution_capacities": {
+          "Assembly": {
+            "kind": "device",
+            "id": "Assembly"
+          },
+          "Inspection": {
+            "kind": "device",
+            "id": "Inspection"
+          },
+          "Packing": {
+            "kind": "device",
+            "id": "Packing"
+          }
+        },
+        "job_resources": {
+          "assembly": [
+            "Assembly",
+            "W-A"
+          ],
+          "inspection": [
+            "Inspection",
+            "W-B"
+          ],
+          "packing": [
+            "Packing",
+            "W-B"
+          ],
+          "setup": [
+            "Assembly",
+            "W-A"
+          ]
+        },
+        "single_phase_policy": "non_preemptive",
+        "quality_release": "preset_PASS_at_inspection_finish",
+        "first_article_required": false,
+        "priority_rule": "variants.dispatch为显式顺序对照，生成冻结任务优先序，不声明自动最优；后续阶段/准备继承任务优先序",
+        "transport": {
+          "source": "dispatch-store",
+          "destination": "customer",
+          "carrier_id": "T1",
+          "carrier_job_held": true,
+          "unloader_extra_person": null,
+          "departure_point_mapping": "[t,t+1ms) loading-start opportunity",
+          "receiver_retains_accepted_cargo": true,
+          "cargo_order_allocation": "2件同一订单整批，不混单"
+        },
+        "capacity_units": "设备/人员/载具容量均1；车货容量2 piece、目的4 piece、工序输出4 piece",
+        "interval_end_contract": {
+          "status": "canonical_merged_local_consumer_mapping",
+          "claim_per_interval": [
+            "released",
+            "observation_end",
+            "computed_boundary"
+          ],
+          "wait": [
+            "condition_changed",
+            "resolved",
+            "observation_end",
+            "computed_boundary"
+          ],
+          "claim_alias": "intervals_ms数值不改，映射intervals和等长同序interval_end_causes"
+        }
+      }
     },
     {
       "id": "phase_calendar",
@@ -178,7 +252,52 @@
       ],
       "job_resources": [
         "CNC"
-      ]
+      ],
+      "execution_design": {
+        "device_id": "CNC",
+        "route_step_id": "step-cnc",
+        "job_id": "J-calendar-part1",
+        "execution_capacity_ref": {
+          "kind": "device",
+          "id": "CNC"
+        },
+        "phase_ids": [
+          "load",
+          "auto",
+          "unload"
+        ],
+        "phase_person_claims": {
+          "load": [
+            "W-C"
+          ],
+          "auto": [],
+          "unload": [
+            "W-C"
+          ]
+        },
+        "job_resources": [
+          "CNC"
+        ],
+        "next_phase_wait_binding": "35—40秒等待phase_ref=unload，表现姿态可停auto结束；工作与持有分列",
+        "deduplicate_resource": "CNC在job/phase重复只一个容量claim",
+        "output_location": "finished",
+        "output_capacity_piece": 1,
+        "interval_end_contract": {
+          "status": "canonical_merged_local_consumer_mapping",
+          "claim_per_interval": [
+            "released",
+            "observation_end",
+            "computed_boundary"
+          ],
+          "wait": [
+            "condition_changed",
+            "resolved",
+            "observation_end",
+            "computed_boundary"
+          ],
+          "claim_alias": "intervals_ms数值不改，映射intervals和等长同序interval_end_causes"
+        }
+      }
     },
     {
       "id": "quality_pending_and_scrap",
@@ -241,7 +360,70 @@
           120000
         ]
       ],
-      "station_output_capacity": 3
+      "station_output_capacity": 3,
+      "execution_design": {
+        "device_ids": [
+          "Assembly",
+          "Inspection",
+          "Rework",
+          "Packing"
+        ],
+        "route_steps": {
+          "assembly": "step-assembly",
+          "inspection": "step-inspection",
+          "rework": "step-rework",
+          "packing": "step-packing"
+        },
+        "job_resources": {
+          "assembly": [
+            "Assembly",
+            "W-A"
+          ],
+          "inspection": [
+            "Inspection",
+            "W-Q"
+          ],
+          "rework": [
+            "Rework",
+            "W-A"
+          ],
+          "packing": [
+            "Packing",
+            "W-P"
+          ]
+        },
+        "single_phase_policy": "non_preemptive",
+        "acceptance": {
+          "destination": "factory-release",
+          "stage": "factory_released",
+          "unit": "piece",
+          "mode": "legacy_goal_demand_cumulative_not_invented_OrderLine_flag"
+        },
+        "quality_rules": {
+          "inspection": "QC/r1",
+          "pending_store": "pending-store",
+          "isolation_store": "isolation-store",
+          "scrap_holder_policy": "保持隔离库位holder，scrap_record仅是处置记录，不是瞬移目的地"
+        },
+        "pending_transfer_release": "70秒assembly3成功接收pending-store后Inspection/W-Q释放，仍pending",
+        "rework_ready_and_wait": "assembly2于50秒等W-A到60秒；返工完成75秒completed_reworks=1，85秒复检FAIL隔离",
+        "scrap_keeps_physical_slot": true,
+        "interval_end_contract": {
+          "status": "canonical_merged_local_consumer_mapping",
+          "claim_per_interval": [
+            "released",
+            "observation_end",
+            "computed_boundary"
+          ],
+          "wait": [
+            "condition_changed",
+            "resolved",
+            "observation_end",
+            "computed_boundary"
+          ],
+          "claim_alias": "intervals_ms数值不改，映射intervals和等长同序interval_end_causes"
+        }
+      }
     },
     {
       "id": "refinement",
@@ -255,7 +437,47 @@
         "phases_from": "phase_calendar",
         "same_total_active_ms": 40000
       },
-      "meaning": "change in declared behavior; presentation-only changes would preserve results"
+      "meaning": "change in declared behavior; presentation-only changes would preserve results",
+      "execution_design": {
+        "scope": "同phase_calendar设备/日历/观察窗；coarse与refined是行为改动对照",
+        "coarse_job_resources": [
+          "CNC",
+          "W-C"
+        ],
+        "refined_job_resources": [
+          "CNC"
+        ],
+        "appearance_only_edit": "不得改变任一输入/结果",
+        "acceptance_expected_ref": "scenarios/真实业务设计/expected-business.design.json#coarse_full_worker/refined_phases",
+        "interval_end_contract": {
+          "status": "canonical_merged_local_consumer_mapping",
+          "claim_per_interval": [
+            "released",
+            "observation_end",
+            "computed_boundary"
+          ],
+          "wait": [
+            "condition_changed",
+            "resolved",
+            "observation_end",
+            "computed_boundary"
+          ],
+          "claim_alias": "intervals_ms数值不改，映射intervals和等长同序interval_end_causes"
+        }
+      }
     }
-  ]
+  ],
+  "refinement_revision": "DRF06-2a",
+  "boundary_inputs_ref": "scenarios/真实业务设计/business-rule-boundaries.design.json#B07-B18",
+  "public_input_mapping_ref": "docs/04_开发与验收/特征细化/DRF06_完整定义.json#field_mappings",
+  "expected_timeline_ref": "docs/04_开发与验收/特征细化/DRF06_时间轴独立预期.json",
+  "scope_note": "保持draft-1自建案例格式；execution_design为落实公共ScenarioInput/Route/Device字段的设计绑定，非直接DTO；后置维修/公用服务/交通不加载",
+  "selected_contract_delta_ref": "docs/04_开发与验收/特征细化/DRF06_公共字段合入delta.json",
+  "protocol_alias_mapping": {
+    "manual_claim_intervals_ms": "手工intervals_ms [[a,b]]→intervals:[{start_ms:a,end_ms:b}] + interval_end_causes:[明确原因]，两数组等长同序逐项对应；不默认cause、不要求嵌套改型",
+    "manual_execution_ref": "旧手工平面kind/device_id等映射现行JobExecutionRef serde {kind,data}，不改设备身份/数值",
+    "B03_demand_label": "旧A/B为案例需求标签；公共初始硬预留demand_ref用显式承接该订单的ProductionTask.id，不按同名猜任务",
+    "scrap_record": "处置记录标签，不是holder目的库位",
+    "departures_ms": "整数点t→装载开始机会[t,t+1ms)，load后才depart"
+  }
 }

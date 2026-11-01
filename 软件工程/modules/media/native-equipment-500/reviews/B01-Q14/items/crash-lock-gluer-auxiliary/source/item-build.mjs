@@ -1,0 +1,48 @@
+import * as T from 'three';import fs from 'node:fs/promises';import path from 'node:path';import {fileURLToPath}from 'node:url';import{GLTFExporter}from 'three/addons/exporters/GLTFExporter.js';
+import{mergeGeometries}from 'three/addons/utils/BufferGeometryUtils.js';
+import{specs,carton,processU,clockKnots,paperShiftX,seatX,paperDatumY,sourceArea,glueParts,glueFraction,coatedPoint,auxSeat,doseRadius,doseHeight,doseSegments,samples,finitePaperPoint}from './batch-spec.mjs';import{V}from './lock-bottom-kinematics.mjs';import{buildPaper}from './finite-paper-build.mjs';import{definition,pack,version}from './contract.mjs';
+globalThis.FileReader=class{readAsArrayBuffer(b){b.arrayBuffer().then(v=>{this.result=v;this.onloadend?.();});}};
+const here=path.dirname(fileURLToPath(import.meta.url)),adhesive=new T.MeshStandardMaterial({name:'Actual 0.426mL water based adhesive',color:'#ddc27b',roughness:.48});
+const inverse=v=>{for(let i=1;i<clockKnots.length;i++)if(v<=clockKnots[i][1]){const[a,x]=clockKnots[i-1],[b,y]=clockKnots[i];return a+(b-a)*(v-x)/(y-x);}return 1;};
+const glueTimes=[...new Set([...samples,...[[.06,.20],[.22,.34],[.40,.58],[.64,.80]].flatMap(([a,b])=>Array.from({length:193},(_,i)=>inverse(a+(b-a)*i/192)))])].sort((a,b)=>a-b);
+function patchState(patch,phase,u,full=false){const f=full?1:glueFraction(phase,u),side=patch.role==='side',c=patch.points.reduce((a,p)=>a.add(p),V([0,0,0])).multiplyScalar(1/patch.points.length);if(side)c.x*=f;
+ const r=full?1:processU(phase,u),a=finitePaperPoint(patch.part,c,r),basis=[[1,0,0],[0,1,0],[0,0,1]].map(v=>finitePaperPoint(patch.part,c.clone().add(V(v)),r).sub(a)),pos=coatedPoint(patch,c,full?'unload':phase,full?1:u,side?1:f);
+ return{p:pos,q:new T.Quaternion().setFromRotationMatrix(new T.Matrix4().makeBasis(...basis)),scale:side?[f,1,1]:[1,f,1]};}
+export function buildItem(cfg){
+ const s=specs[cfg.device],root=new T.Group();root.name='ActualFiniteLockStock_'+cfg.id;const clips=[],state=cfg.role==='input'?s.initial:cfg.role==='output'?s.final:cfg.role==='auxiliary'?'adhesive_dose_ready':null,states=state?[state]:[],names=state?[state,...['load','auto','unload'].map(ph=>state+':'+ph)]:['idle'];let paper;
+ if(cfg.role==='input'){paper=buildPaper(u=>processU('auto',u),inverse);paper.root.name='FiniteStockMaterial';paper.root.position.x=paperShiftX;root.add(paper.root);}
+ if(cfg.role==='output'){
+  const b=buildPaper(()=>1),gs=[];b.root.updateMatrixWorld(true);b.root.traverse(o=>{if(o.isMesh&&Math.abs(o.matrixWorld.determinant())>1e-24){const g=o.geometry.clone().applyMatrix4(o.matrixWorld);gs.push(g.index?g.toNonIndexed():g);}});
+  const merged=mergeGeometries(gs,false);merged.translate(paperShiftX,0,0);const o=new T.Mesh(merged,new T.MeshStandardMaterial({name:'Original finite scored board',color:'#cbb17d',roughness:.84}));o.name='FinalFiniteScoredCarton';root.add(o);
+ }
+ if(cfg.role==='blocker'){const o=new T.Mesh(new T.BoxGeometry(.10,.02,.10),new T.MeshStandardMaterial({color:'#a2543e'}));o.name='ExplicitOutputBlocker';o.position.y=.01;root.add(o);}
+ let liquid;const bands=[];
+ if(cfg.role==='auxiliary'){liquid=new T.Mesh(new T.CylinderGeometry(doseRadius,doseRadius,doseHeight,doseSegments),adhesive);liquid.name='ActualGlueDose';liquid.position.y=doseHeight/2;root.add(liquid);}
+ if(['auxiliary','output'].includes(cfg.role))for(const patch of glueParts){const c=patch.points.reduce((a,p)=>a.add(p),V([0,0,0])).multiplyScalar(1/patch.points.length),sh=new T.Shape();sh.moveTo(patch.points[0].x-c.x,patch.points[0].z-c.z);for(const p of patch.points.slice(1))sh.lineTo(p.x-c.x,p.z-c.z);sh.closePath();const g=new T.ExtrudeGeometry(sh,{depth:carton.glueThickness,bevelEnabled:false});g.rotateX(Math.PI/2);g.translate(0,carton.glueThickness/2,0);const o=new T.Mesh(g,adhesive);o.name='ActualGlue_'+patch.role;const v=patchState(patch,'load',0,cfg.role==='output');o.position.copy(v.p);o.quaternion.copy(v.q);o.scale.fromArray(v.scale);root.add(o);bands.push({patch,o});}
+ const track=(list,o,key,ts,fn)=>list.push(key==='quaternion'?new T.QuaternionKeyframeTrack(o.name+'.'+key,ts,ts.flatMap(fn)):new T.VectorKeyframeTrack(o.name+'.'+key,ts,ts.flatMap(fn)));
+ for(const name of names){const phase=name.split(':')[1]??'load',active=name.includes(':'),ts=active&&phase==='auto'?glueTimes:[0,1],at=u=>active?u:0,list=[];
+  if(paper){if(active&&phase==='auto')list.push(...paper.tracks);else for(const t of paper.tracks){const size=t.getValueSize(),offset=active&&phase==='unload'?t.values.length-size:0,a=Array.from(t.values.slice(offset,offset+size));list.push(new t.constructor(t.name,[0,1],[...a,...a]));}}
+  if(liquid){track(list,liquid,'scale',ts,u=>[1,1-glueFraction(phase,at(u)),1]);track(list,liquid,'position',ts,u=>[0,doseHeight*(1-glueFraction(phase,at(u)))/2,0]);}
+  for(const{patch,o}of bands){const calc=u=>patchState(patch,phase,at(u),cfg.role==='output');track(list,o,'quaternion',ts,u=>calc(u).q.toArray());track(list,o,'scale',ts,u=>calc(u).scale);track(list,o,'position',ts,u=>{const p=calc(u).p;if(cfg.role==='auxiliary')p.add(V([seatX(s,phase,at(u))-auxSeat(s)[0],paperDatumY(s)-auxSeat(s)[1],-auxSeat(s)[2]]));return p.toArray();});}
+  if(!list.length){const o=root.children[0];track(list,o,'position',[0,1],()=>o.position.toArray());}clips.push(new T.AnimationClip(name,1,list));
+ }
+ return{root,clips,states};
+}
+const pose=n=>({translation:Object.fromEntries(['x','y','z'].map((k,i)=>[k,(n.translation??[0,0,0])[i]])),rotation:Object.fromEntries(['x','y','z','w'].map((k,i)=>[k,(n.rotation??[0,0,0,1])[i]])),scale:Object.fromEntries(['x','y','z'].map((k,i)=>[k,(n.scale??[1,1,1])[i]])),unit:'meter',coordinate_frame:'right_handed_y_up'});
+export async function exportItem(cfg,dir,copySource=true){
+ const {root,clips,states}=buildItem(cfg),id='qa.paper.b01q14.media.'+cfg.id,itemId='qa.paper.b01q14.items.'+cfg.id;
+ const bytes=Buffer.from(await new GLTFExporter().parseAsync(root,{binary:true,animations:clips}));await fs.mkdir(dir,{recursive:true});await fs.writeFile(path.join(dir,'paper.glb'),bytes);
+ const j=JSON.parse(bytes.subarray(20,20+bytes.readUInt32LE(12))),asset={id:id+'.glb',path:'paper.glb',kind:'glb'};
+ const media={kind:'model',source:{kind:'asset',data:asset},unit:'meter',coordinate_frame:'right_handed_y_up',scale:{x:1,y:1,z:1},nodes:j.nodes.map((n,i)=>({id:i,name:n.name,parent_index:j.nodes.findIndex(p=>p.children?.includes(i))<0?null:j.nodes.findIndex(p=>p.children?.includes(i)),transform:pose(n),geometry:{kind:'imported_node',data:{asset_ref:asset,node_index:i,unsupported_extensions:[]}},material:{color_rgba:[1,1,1,1],metallic:0,roughness:.85,texture:null}})),poses:[],actions:[],timeline:(j.animations??[]).map((a,i)=>({id:cfg.id+'-'+a.name,phase_ref:a.name,start_progress:0,end_progress:1,source:{kind:'model_animation',data:{asset_ref:asset,animation_index:i}},transition:'hold'})),tags:[],anchor_roles:{},port_anchors:{},lod:{detailed:null,simplified:{kind:'asset',data:asset},region:'device_icons'},production_effect:'none'};
+ const json=(p,v)=>fs.writeFile(p,JSON.stringify(v,null,2)+'\n'),files=['paper.glb','LICENSE.txt','source/item-build.mjs','source/batch-spec.mjs','source/contract.mjs','source/finite-paper-build.mjs','source/finite-scored-bands.mjs','source/lock-bottom-kinematics.mjs','source/rebuild.json'];
+ if(copySource){await fs.mkdir(path.join(dir,'source'),{recursive:true});for(const file of ['item-build.mjs','batch-spec.mjs','contract.mjs','finite-paper-build.mjs','finite-scored-bands.mjs','lock-bottom-kinematics.mjs'])await fs.copyFile(path.join(here,file),path.join(dir,'source',file));await fs.copyFile(path.join(here,'../LICENSE.txt'),path.join(dir,'LICENSE.txt'));await json(path.join(dir,'source/rebuild.json'),cfg);}
+ await json(path.join(dir,'module.json'),pack(definition(id,'真实持有纸材 '+cfg.id,'media',media,[asset]),files,[],[asset]));
+ const wrapper={...media,source:{kind:'media_ref',data:{id,version}},nodes:[],timeline:[],lod:{detailed:null,simplified:{kind:'media_ref',data:{id,version}},region:'device_icons'}};
+ const aux=cfg.role.startsWith('auxiliary'),tracking=aux?'batch':'individual',s=specs[cfg.device];
+ const attributes=states.length?{presentation_state:{kind:'enum',value:states[0]}}:{},attribute_schema=states.length?[{name:'presentation_state',value_type:'enum',unit:null,shape:null,options:states,basis:'module_declared'}]:[];
+ const values=cfg.role==='blocker'?{}:aux?{declared_dose_volume_m3:s.volume}:cfg.role==='input'?{nominal_body_height_m:carton.height,nominal_square_side_m:carton.side,area_m2:sourceArea(),thickness_m:carton.paperThickness}:{nominal_body_height_m:carton.height,developed_area_m2:sourceArea(),finished_total_height_m:.0053,adhesive_volume_m3:s.volume};
+ for(const [name,value]of Object.entries(values)){attributes[name]={kind:'number',value};attribute_schema.push({name,value_type:'number',unit:null,shape:null,options:[],basis:'module_declared'});}
+ const itemDir=path.join(dir,'item-definition');await fs.mkdir(itemDir,{recursive:true});const d=definition(itemId,'明确纸材类型 '+cfg.id,'items',{unit:'piece',tracking,spec_ref:null,attributes,attribute_schema,presentation_or_media_ref:wrapper});d.attribute_schema=attribute_schema;await json(path.join(itemDir,'module.json'),pack(d,[],[{id,version}]));
+ root.traverse(o=>{if(o.isMesh)o.geometry.dispose();});return {id,itemId,version,tracking,states,attributes,attribute_schema,bytes:bytes.length};
+}
+if(await fs.access(path.join(here,'rebuild.json')).then(()=>true,()=>false))await exportItem(JSON.parse(await fs.readFile(path.join(here,'rebuild.json'),'utf8')),path.resolve(here,'..'),false);

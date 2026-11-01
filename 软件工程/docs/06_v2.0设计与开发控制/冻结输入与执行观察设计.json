@@ -1,0 +1,367 @@
+{
+  "document_kind": "v2_design_only_frozen_execution_inputs_and_observation",
+  "date": "2026-10-26",
+  "implementation_allowed": true,
+  "runtime_verified": false,
+  "markdown_ref": "docs/06_v2.0设计与开发控制/冻结输入与执行观察设计.md",
+  "schema_ref": "docs/06_v2.0设计与开发控制/接口契约.schema.design.json",
+  "contract_version": "sf.execution/2.0-draft11",
+  "views": {
+    "task_interaction": "准备并持久化冻结文档 -> prepared -> run启动时钟 -> Host状态提交 -> 同来源/修订观察与回看 -> 保存交接",
+    "structure_data": "ExecutionFrozenInputs + immutable state records + Snapshot observation_frontier; no RunResult coercion",
+    "state_behavior": "prepared clock not started; first run anchors monotonic time once; reads never advance or execute Engine",
+    "interface_collaboration": "H09 local read, H08 explicit cloud reads C16/C17, native exact-asset binary reader, TX01/TX06/TX07",
+    "ui_presentation": "third execution source in existing canvases/dock; item/job/device at fixed time; unknown progress remains static",
+    "deployment_verification": "local managed archive plus cloud frozen JSON/state records; existing model media shipped with project; all runtime checks deferred"
+  },
+  "decisions": [
+    {
+      "id": "V2-A08",
+      "subject": "冻结输入文档及素材归属",
+      "selected": "Host捕获实际Engine输入、精确模块和AssetRef映射；Native受管归档保存媒体字节并随工程交付，云C01保存同一冻结文档JSON；不创建云媒体分发服务或伪造Engine检查点"
+    },
+    {
+      "id": "V2-A09",
+      "subject": "固定前沿的时点观察",
+      "selected": "Host为必要item/job/device状态改变赋连续record_sequence；TX06把新增记录、快照/接纳/cutoff/head原子发布，读取固定R/F/T，不从最终状态猜过去"
+    },
+    {
+      "id": "V2-A04-refinement",
+      "subject": "prepared与生产计时零点",
+      "selected": "prepared保持clock_started=false和0观察毫秒；首次run固定唯一monotonic锚点，后续pause/resume不重置；启动后有效新观测才能参与派工"
+    }
+  ],
+  "frozen_inputs": {
+    "type": "ExecutionFrozenInputs",
+    "identity": "exact session/epoch/project/Host source; no caller/grants/SelectedFileRef or token",
+    "documents": [
+      "frozen ProjectState",
+      "frozen ScenarioInput",
+      "exact ModulePackage dependency closure with rights",
+      "execution_definitions consumed by actual Engine compilation including resolved overrides",
+      "scope and candidate bindings",
+      "AssetRef -> immutable archive_file bindings"
+    ],
+    "references": "RunInputRef frozen_project_file/frozen_scenario_file resolve to actual saved Versioned supporting documents; not arbitrary network or disk reads",
+    "preparation_ready": [
+      "Native managed input/media archive durable",
+      "C01 typed immutable frozen_inputs/session/dataset/slot committed",
+      "r0 initial state records and snapshot confirmed published",
+      "only then preparation Task returns prepared; no command published"
+    ],
+    "cancellation": "before dispatch only; unknown cloud outcome stays cancellation in progress, query original identity; settle stopped prefix and TX09 before releasing",
+    "cloud_media_bytes": false,
+    "engine_checkpoint": false
+  },
+  "clock": {
+    "prepared": "no running monotonic clock; coverage.clock_started=false, observed_until_host_ms=0",
+    "activation": "first accepted H03 run anchors once at Host monotonic Instant; initial queue/control states can share time0 by sequence",
+    "pre_run_device_observation": "C04可保存prepared原始遥测；run后只有精确ObservationProbe的新采样回应能更新Host资格，旧补发不续期",
+    "pause_resume": "pauses only new dispatch; elapsed real time continues, no reset or virtual jump",
+    "cutoff": "report_cutoff_ms counted from first run; existing drain/immutable cutoff semantics preserved",
+    "restart": "cannot recreate old monotonic epoch or resume Engine from archive"
+  },
+  "history": {
+    "owner": "single Host/Engine state, UI/cloud only projections",
+    "record": "ExecutionObservationRecord(record_sequence,execution_revision,at_host_ms,object)",
+    "kinds": [
+      "item RuntimeItem",
+      "job BoundExecutionJobSnapshot",
+      "device ExecutionDeviceView",
+      "logical_work LogicalWorkView",
+      "attempt AttemptView"
+    ],
+    "record_sequence": "starts1; consecutive through Snapshot.observation_frontier; independent of DB ingress and business revision",
+    "initial": "real initialized item/device states at time0 included in r0; not generated production acceptance",
+    "state_changes": "记录必要状态变更，包括Host probe发起/接纳及设备资格到期；到期是资格边界，不产生工艺完成/资源释放；读接口不推进时钟",
+    "publication": "TX06 may skip intermediate snapshot rows only if all new observation records through F are present; identical record replay accepted; different payload conflicts",
+    "as_of": "exact Snapshot R gives F and observed bound; select each object last (at_host_ms,record_sequence) with seq<=F, source revision<=R and time<=T",
+    "paging": "fixed identity/R/F/T/filter; item/job/device/logical_work/attempt then stable object id, cursor binds original selection; no latest fallback"
+  },
+  "interfaces": {
+    "local": "H09 read_execution_view -> inputs or observations; no Engine execution or cloud I/O",
+    "cloud": "H08(inputs/observations) -> C16/C17, marked cloud source; missing local never silently becomes old cloud data",
+    "asset": "planned native project_read_execution_media_asset(ExecutionMediaAssetRequest) -> ArrayBuffer using actual primary UI authority and exact frozen AssetRef mapping",
+    "asset_error": "missing exact archived bytes gives MissingReference/unavailable; never current-module/new-version/remote-URL substitute"
+  },
+  "archive": {
+    "root": "Native-configured private managed execution directory with Host-allocated safe child paths; no caller path or session-id-as-path",
+    "layout": [
+      "execution-index.json",
+      "execution-inputs.json",
+      "Versioned frozen project/scenario files named by RunInputRef",
+      "observation-history.json",
+      "immutable snapshot files and exact asset copies"
+    ],
+    "manifest": "existing DocumentRole.SupportingFile; typed execution docs use DocumentKind.Asset plus own document_kind/contract_version; frozen project/scenario keep typed DocumentKind; no FrozenRun role or RunResult",
+    "index": "ExecutionArchiveIndex pins identity/input/history/snapshot FileRefs; atomic archive additions follow current ProjectStore publication method",
+    "reload": "load and validate read-only records, sources and frontier; never auto-register active Engine, old grants or command execution",
+    "compatibility_status": "design direction only; actual archive save/reopen and generic parser coverage not yet verified"
+  },
+  "projection": {
+    "source": "execution separate from draft/local Run; exact input docs + R/F/T observed item/job/device/logical-work/attempt objects + provenance",
+    "scene": "existing frozen geometry and item owner/slot layout; BoundJob device mapping from actual record, no fake JobState",
+    "timeline": "new execution projection in existing dock; reuse time/row geometry utilities, preserve RunTimeline semantics",
+    "working_progress": "only admitted working/completed/waiting state; without actual device progress no nominal percentage or cycle-complete animation",
+    "resource_intervals": "Host-confirmed occupation/reservation clipped at selected time; no physical effective-work claim",
+    "seek": "changes observation only; no H01/H03/H04 or device command",
+    "frame_key": [
+      "actual Native context",
+      "execution identity",
+      "project_input_ref",
+      "execution_revision",
+      "observation_frontier",
+      "at_host_ms"
+    ],
+    "quality": "reuse accepted media quality; missing media prevents corresponding Native acceptance rather than passing with a substitute"
+  },
+  "source_anchors": [
+    {
+      "path": "packages/simulation/src/lib.rs",
+      "lines": [
+        20,
+        23
+      ],
+      "purpose": "actual private EngineInput frozen documents"
+    },
+    {
+      "path": "packages/simulation/src/engine.rs",
+      "lines": [
+        1881,
+        1888,
+        1931,
+        2010
+      ],
+      "purpose": "existing item/job history and actual snapshot; new external typed view needed"
+    },
+    {
+      "path": "packages/commands/src/host_run_history.rs",
+      "lines": [
+        77,
+        94,
+        237
+      ],
+      "purpose": "preserve old Run scope/frontier reads"
+    },
+    {
+      "path": "packages/commands/src/project_host.rs",
+      "lines": [
+        165,
+        175,
+        1639,
+        4752
+      ],
+      "purpose": "HostRun/history and frozen run additions are precedents, not execution DTOs"
+    },
+    {
+      "path": "packages/commands/src/project_store.rs",
+      "lines": [
+        576,
+        593,
+        1482,
+        1628
+      ],
+      "purpose": "SupportingFile parsing and atomic archive additions"
+    },
+    {
+      "path": "apps/planner/src/services/factoryPresentation.ts",
+      "lines": [
+        23,
+        73,
+        85,
+        101,
+        121
+      ],
+      "purpose": "Run-bound frame sources, holder binding and slot layout"
+    },
+    {
+      "path": "apps/planner/src/scene/FactoryScene.tsx",
+      "lines": [
+        29,
+        66
+      ],
+      "purpose": "separate execution scene source; no RunResult cast"
+    },
+    {
+      "path": "apps/planner/src/features/timeline/types.ts",
+      "lines": [
+        26,
+        56,
+        83
+      ],
+      "purpose": "Run-bound selection/props/primitives"
+    },
+    {
+      "path": "apps/planner/src/features/timeline/RunTimeline.tsx",
+      "lines": [
+        13,
+        19,
+        40,
+        54
+      ],
+      "purpose": "preserve existing Run timeline; execution projection separate"
+    },
+    {
+      "path": "apps/planner/src/services/mediaAssets.ts",
+      "lines": [
+        10,
+        18
+      ],
+      "purpose": "existing exact-asset byte boundary"
+    },
+    {
+      "path": "packages/commands/src/host_media_assets.rs",
+      "lines": [
+        7,
+        21,
+        113
+      ],
+      "purpose": "actual UI identity and exact AssetRef admission"
+    },
+    {
+      "path": "apps/planner/src/scene/factoryMedia.ts",
+      "lines": [
+        44,
+        47
+      ],
+      "purpose": "cache source currently depends on Run ID"
+    }
+  ],
+  "pending": [
+    "v1-final project/device/model/port/media identities and current source rebase",
+    "actual Rust schema/TS generation and complete schema meta/instance validation",
+    "real local archive/Cloud transactions/H09/Native consumers and presented-frame evidence",
+    "Agent/report consumer field coverage and concrete PaaS/version/budget"
+  ],
+  "design_cases": [
+    {
+      "id": "OBS01",
+      "trigger": "只有RunInputRef但无冻结文档",
+      "expected": "准备不就绪；不能将当前草稿当本会话输入",
+      "runtime_result": null
+    },
+    {
+      "id": "OBS02",
+      "trigger": "准备冻结后当前草稿或方案变化",
+      "expected": "执行仍读原冻结文档，标明差异；不覆盖新草稿",
+      "runtime_result": null
+    },
+    {
+      "id": "OBS03",
+      "trigger": "原模块文件后来被替换",
+      "expected": "读取本会话已复制归档字节，不读当前同路径内容",
+      "runtime_result": null
+    },
+    {
+      "id": "OBS04",
+      "trigger": "精确素材缺失",
+      "expected": "明确MissingReference/缺项，不换近似模型填通过",
+      "runtime_result": null
+    },
+    {
+      "id": "OBS05",
+      "trigger": "跨Project/session/epoch或伪造Native身份读取",
+      "expected": "按实际授权拒绝，不把FileRef当读取权限",
+      "runtime_result": null
+    },
+    {
+      "id": "OBS06",
+      "trigger": "prepared等待超过报告时长才run",
+      "expected": "prepared不消耗观察窗；首次run才锚定0时刻",
+      "runtime_result": null
+    },
+    {
+      "id": "OBS07",
+      "trigger": "pause/resume或模型名义工时到达",
+      "expected": "Host时钟不重置；无有效完成回执不产出",
+      "runtime_result": null
+    },
+    {
+      "id": "OBS08",
+      "trigger": "同毫秒多对象多次改变",
+      "expected": "按固定F内record_sequence取最后合法状态，不丢因果",
+      "runtime_result": null
+    },
+    {
+      "id": "OBS09",
+      "trigger": "查询T超出R的观察前沿",
+      "expected": "明确拒绝；不外推或回退到其他修订",
+      "runtime_result": null
+    },
+    {
+      "id": "OBS10",
+      "trigger": "快照从r2合并发布到r8",
+      "expected": "所有必要状态记录前缀仍连续；历史时点不丢",
+      "runtime_result": null
+    },
+    {
+      "id": "OBS11",
+      "trigger": "记录重发或同序号不同内容",
+      "expected": "相同幂等，不同内容冲突且不覆盖",
+      "runtime_result": null
+    },
+    {
+      "id": "OBS12",
+      "trigger": "观察记录/快照事务中途失败",
+      "expected": "不移动head或暴露半个观察前缀",
+      "runtime_result": null
+    },
+    {
+      "id": "OBS13",
+      "trigger": "翻页时更换R/T/filter",
+      "expected": "cursor选择不匹配拒绝，重新读取",
+      "runtime_result": null
+    },
+    {
+      "id": "OBS14",
+      "trigger": "末态物品已移交、回看开始时点",
+      "expected": "显示当时holder/job状态，不拿末态猜过去",
+      "runtime_result": null
+    },
+    {
+      "id": "OBS15",
+      "trigger": "只有Started/Completed，无连续进度",
+      "expected": "模型保留可证实状态，无名义百分比或虚假动作完成",
+      "runtime_result": null
+    },
+    {
+      "id": "OBS16",
+      "trigger": "拖动执行时间轴或关闭面板",
+      "expected": "只改变观察，不提交设备命令或重跑Engine",
+      "runtime_result": null
+    },
+    {
+      "id": "OBS17",
+      "trigger": "保存重开执行归档",
+      "expected": "只读来源和状态保持；不恢复旧授权或自动续跑",
+      "runtime_result": null
+    },
+    {
+      "id": "OBS18",
+      "trigger": "准备取消遇到云提交结果未知",
+      "expected": "查询原身份并结清未派工前缀；不直接放弃占位",
+      "runtime_result": null
+    }
+  ],
+  "internal_engine_identity": {
+    "virtual_api": "existing EngineInput/RunResult callers retain virtual semantics",
+    "external_owner": "typed ExternalSession identity, never a temporary fake RunId",
+    "shared_state": "private common frozen-docs/stock/resources core; separate virtual/external wrappers may expose different result types, one active owner only",
+    "source_evidence": "engine.rs only uses input.run_id at current line2133 to build RunResult; external export must bypass that legacy result path",
+    "implementation_freedom": "private helper layout remains implementation choice; cannot duplicate stock or construct a RunResult for external observations"
+  },
+  "observation_freshness_design_ref": "docs/06_v2.0设计与开发控制/设备进程网关与部署设计.md#41-v2-a10运行后探测与有效期",
+  "historical_design_implementation_flags": {
+    "date": "2026-10-26",
+    "implementation_allowed": false,
+    "runtime_verified": false
+  },
+  "implementation_status_ref": "docs/06_v2.0设计与开发控制/开发控制计划.json#/packages",
+  "current_implementation_packages": [
+    "V2-04",
+    "V2-07",
+    "V2-09"
+  ],
+  "status_projection_updated_at_utc": "2026-10-27T01:45:48.535491+00:00",
+  "runtime_verification_scope": "runtime_verified仅为本文全部设计用例通过声明；当前局部真实证据和剩余动作取主计划，不把设计期禁止实施作为现行限制。"
+}

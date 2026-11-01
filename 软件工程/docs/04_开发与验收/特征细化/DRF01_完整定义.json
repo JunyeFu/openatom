@@ -1,0 +1,414 @@
+{
+  "document_kind": "existing_feature_executable_design_refinement",
+  "assignment": "DRF01",
+  "date": "2026-10-14",
+  "status": "owned_definition_refined_actual_prototype_pending",
+  "P_refs": [
+    "P2-01",
+    "P2-04",
+    "P2-05",
+    "P3-02",
+    "P3-03"
+  ],
+  "authority": "本轮用户授权重要特征细化，包含时间轴缺口解决；Figma仍保持用户要求的暂停操作。",
+  "authoritative_refs": {
+    "navigation": "docs/02_交互设计/交互流程与视图导航.json",
+    "forms": "docs/02_交互设计/首版表单与反馈.json",
+    "timeline": "docs/02_交互设计/时间轴主轴与子轴完整定义.json",
+    "timeline_choices": "docs/02_交互设计/时间轴主轴与轨道组_监督细化.json",
+    "visual": "docs/02_交互设计/工业工作台母版与字段细化.json",
+    "device": "docs/02_交互设计/自定义设备创作与采用.md",
+    "media": "docs/02_交互设计/设备时间轴与标签设计.md",
+    "public_types": "packages/domain/types.design.rs",
+    "operations": "packages/commands/command-catalog.design.json"
+  },
+  "six_views": [
+    {
+      "view": "任务与交互",
+      "source": "navigation#/task_routes and pointer_policy; forms F03/F08/F10/F11/F16/F17/F28",
+      "resolved": "单击详情、手柄拖动、相机修饰键与Ctrl多选优先级固定；详情在中央替换工作面，返回恢复两画布上下文；缩放只变相机/LOD。dock统一由窗口菜单显隐。",
+      "consumer": "factory_ui/workbench and ui_host"
+    },
+    {
+      "view": "结构与数据",
+      "source": "timeline#/private_view_records; forms; frozen RunInputRef and DeviceInstance",
+      "resolved": "主轴/子轴使用同Run和毫秒绝对时点；局部时间窗仅裁显示；phase、事件、作业身份保持。一个shared selected_event_ref，AxisView只投影；表现分段取phase_id和有效进度。",
+      "consumer": "TimelinePanel/TimelineInspector/TimelineDescription/DeviceWorkbench"
+    },
+    {
+      "view": "状态与行为",
+      "source": "timeline#/ui_transitions; navigation#/editing_policy",
+      "resolved": "输入草稿、临时预览、待提交、冲突、实际跟随/回看分开；隐藏描述选择不自动重开；换Run清空临时预览、旧选择和旧定位归属。",
+      "consumer": "ui_host and Commands/Host"
+    },
+    {
+      "view": "接口与协作",
+      "source": "18 existing operations; merged canonical timeline_runtime_contract",
+      "resolved": "输入编辑一次apply_commands并校验base_revision；运行时点通过get_run ObjectsAt取得匹配同Run/at_ms后提交；计算只取get_task.allowed_controls。configure/inspect/preview_cycle是设备入口，不能绕过Commands。",
+      "consumer": "same Rust Host via existing UI invoke/MCP adapters"
+    },
+    {
+      "view": "界面与表现",
+      "source": "master and TL03/TL05/TL09; F10/F16/F17",
+      "resolved": "工业浅灰外壳、顶菜单、底工具/状态、可伸缩左右面板、中央工作面；描述左/时间轴右，两dock独立显隐；全厂组/设备轨道与设备三条表现编辑轨分开。",
+      "consumer": "S04-02 frames and S04-04 clickable prototype"
+    },
+    {
+      "view": "部署与验证",
+      "source": "TL11/TL12; S04-04/S04-05/S05-05/S06-05",
+      "resolved": "沿既有React/TS/Three与SVG/HTML选择，未新增依赖；静态与DTC01—03数学已有检查，DTC04—11与E01—E08等待真实可操作证据；本人走查不由AI代填。",
+      "consumer": "W00 readiness and later admitted implementation"
+    }
+  ],
+  "feature_contracts": [
+    {
+      "id": "FC01",
+      "feature": "双画布与中央详情",
+      "trigger": "菜单切流水线/多厂房；单击设备或选明确详情入口",
+      "inputs": "project_id/input_revision/run_id、Hall/Device稳定ID、相机/LOD与ReturnContext",
+      "state_owner": "ui_host current context",
+      "rule": "两常态画布保持；设备/专业/比较详情替换中央工作面。Back恢复父画布与相机/滚动；切工程加载新context，不借旧ID重绑。",
+      "output": "明确归属的中央工作面与可返回入口",
+      "error": "脏表单先应用/丢弃/留在；RevisionConflict保留字段；对象删除提供原Run查看",
+      "source_ref": "docs/02_交互设计/交互流程与视图导航.json#/editing_policy"
+    },
+    {
+      "id": "FC02",
+      "feature": "主轴/组与设备子轴",
+      "trigger": "展开组、独立设备行、选段后明确细化/Back",
+      "inputs": "冻结工程分组、RunResult与TC01/TC02、IntervalMs；毫秒整数",
+      "state_owner": "ui_host; Engine produces actual history",
+      "rule": "组唯一成员、B/W/O可重叠；分母保持全成员，筛选另示匹配数。子轴与主轴同Run/确认时点，局部窗保持源区间/ID；部分结果端帽不声称完成。",
+      "output": "厂房→显示组→设备最多三层及同源细化",
+      "error": "无法绑定列未归属/未知；无阶段历史不画名义工时；共享资源占用按真实resource ID一次计数",
+      "source_ref": "docs/02_交互设计/时间轴主轴与子轴完整定义.json#/sections"
+    },
+    {
+      "id": "FC03",
+      "feature": "输入拖动、吸附与联动",
+      "trigger": "输入模式中明确可编辑手柄",
+      "inputs": "同ScenarioInput字段、base_revision、Arrival/Order/ProductionTask释放时间；ms；6CSSpx吸附阈值",
+      "state_owner": "UI pending preview; Commands apply typed draft",
+      "rule": "候选按屏幕距离→明确参考/业务边界/网格→稳定ID；Alt关闭吸附。联动同Δt，不改变真实等待/Run，交期仅明确纳入；pointercancel/Esc不提交。",
+      "output": "预览旧/新值与一次PutObject ScenarioInput提交",
+      "error": "RevisionConflict/InvalidInput保留预览无部分提交；实际条段没有输入编辑手柄",
+      "source_ref": "docs/02_交互设计/时间轴主轴与轨道组_监督细化.json#/design_contract"
+    },
+    {
+      "id": "FC04",
+      "feature": "设备定义、实例与表现编辑",
+      "trigger": "创作/保存库定义、采用指定版本、修改实例或升级",
+      "inputs": "F01/F03/F10/F17；module_id/version、DeviceInstance.id、端口/资源绑定；部件局部坐标、图像归一化锚点",
+      "state_owner": "ModuleDraft/ProjectDraft via existing Commands",
+      "rule": "外观草稿不能获得产能；实例不复制库定义库存；采用新版本列端口/行为/包络/标签影响。图片/姿态重排只改Presentation；多阶段每phase内u∈[0,1]，等人/中断保持有效进度姿态。",
+      "output": "可编辑定义/指定版本实例、明确升级差异与待补项",
+      "error": "删除引用列依赖并改绑/删除/保留待补；不存在能力显示未支持；素材失败保留草稿",
+      "source_ref": "docs/02_交互设计/自定义设备创作与采用.md"
+    },
+    {
+      "id": "FC05",
+      "feature": "运行查看、标签与等待解释",
+      "trigger": "选Run/事件/等待/物品，seek与回到当前",
+      "inputs": "get_run ObjectsAt at_ms匹配回复、PhaseWorkInterval、WaitInterval与真实holder；quantity有物品单位，ratio有效进度，duration ms",
+      "state_owner": "Engine/Host truth; ui_host confirmed view_time and selection",
+      "rule": "数据标签只读，完成/移交/订单接受各自口径；没当前物品显示无当前物品；零时长phase沿完成事件取终姿态。迟到旧Run回复不得提交。计算与回看控制分离。",
+      "output": "同Run/时点的3D、时间轴和描述；当前需要/持有者/下一已知边界",
+      "error": "未知/未计算不查询超界或借final_items；Task取消等真实终态",
+      "source_ref": "docs/02_交互设计/时间轴主轴与子轴完整定义.json#/sections"
+    },
+    {
+      "id": "FC06",
+      "feature": "dock、键盘与原型交付",
+      "trigger": "窗口菜单、dock X、显式打开描述按钮",
+      "inputs": "visible flags、previous size/window/scroll/selected_event_ref；CSS px",
+      "state_owner": "ui_host private view preferences",
+      "rule": "描述左/时间轴右；单dock铺满、双隐藏释放中央；选事件不自动重开描述。Enter执行聚焦按钮，不无条件开描述；显式重开恢复布局和最新选择。",
+      "output": "可预测显隐与可访问的选择/返回",
+      "error": "偏好保存失败会话保留并标未保存；未得可操作原型不能填写已通过",
+      "source_ref": "docs/02_交互设计/时间轴主轴与子轴完整定义.json#/sections/2"
+    }
+  ],
+  "prototype_execution_contract": {
+    "chains_ref": "docs/02_交互设计/连续任务与原型制作依据.json",
+    "business_cases_ref": "docs/02_交互设计/时间轴主轴与轨道组_监督细化.json#/walkthrough_cases",
+    "detail_cases_ref": "docs/02_交互设计/时间轴主轴与子轴完整定义.json#/independent_design_cases",
+    "mandatory_real_actions": [
+      "展开/折叠组并看B/W/O",
+      "范围细化并Back保留主动选时",
+      "隐藏描述选事件并显式重开",
+      "隐藏两个dock恢复中央并重开布局",
+      "输入取消/冲突/一次提交",
+      "同Run seek匹配提交、切Run拒绝旧回复",
+      "多阶段等待姿态、零时长完成事件",
+      "五条既有全层业务链与异常返回",
+      "观察窗末刻接受/零时长完成点可見，指标不被半开裁窗漏掉",
+      "同Run续算新快照替换临时截断段，不叠加旧前缀；DTC11"
+    ],
+    "evidence_per_case": [
+      "入口/实际链接",
+      "同一示例输入/归属Run",
+      "用户动作",
+      "预期",
+      "实际结果/问题",
+      "修复后复核"
+    ],
+    "prototype_current_state": "pending_actual_interactive_artifact",
+    "Figma_current_state": "user_hold",
+    "human_current_state": "pending_real_user_operation",
+    "actual_prototype_result": null,
+    "actual_human_result": null
+  },
+  "shared_handoff": [
+    {
+      "id": "H-DRF01-01",
+      "owner": "W00/复审窗口2",
+      "request": "按TC01/TC02实际合入公共运行字段并统一Rust/Schema/TS/API、阶段算法与消费者；合入证据回写DRF02，不因派发改变原准入数。",
+      "source": "时间轴监督JSON#/public_contract_change_requests",
+      "blocked_gaps": [
+        "DG01",
+        "DG02"
+      ],
+      "status": "canonical_public_design_merged_finite_contract_proof_passed_actual_product_pending",
+      "resolution_ref": "docs/03_架构与契约/全层类型与工程格式.json#/timeline_runtime_contract"
+    },
+    {
+      "id": "H-DRF01-02",
+      "owner": "W00/复审窗口2",
+      "request": "新24帧/母版落实window.timeline/window.timeline_description、描述左/轨道右及hidden selection；同步SXX生成、共享视图状态、缺口清单中的旧“视图菜单”文字；保留真实证据缺口。",
+      "source": "docs/02_交互设计/时间轴主轴与子轴完整定义.json#TL03/TL08/TL09",
+      "blocked_gaps": [
+        "DG03",
+        "DG04"
+      ],
+      "status": "pending_owner_integration"
+    },
+    {
+      "id": "H-DRF01-03",
+      "owner": "W00 routing to module-kit owner",
+      "request": "device-editor-capabilities.design.json顶层timeline.clock/duration_source须明确按binding_modes选择，不能把多阶段一律写成behavior.duration；phase_local每阶段分段、零时长用PhaseCompleted、等候保持有效进度。现binding_modes已具基础语义，完善顶层避免读取歧义。",
+      "source": "packages/module-kit/device-editor-capabilities.design.json#/timeline",
+      "blocked_gaps": [],
+      "status": "pending_owner_integration"
+    },
+    {
+      "id": "H-DRF01-04",
+      "owner": "W00/复审窗口2",
+      "request": "公开调用文档明确既有Events interval:null不加时间过滤、仍受scope与分页权限限制；持续IntervalMs半开和观察窗末刻事件闭包分别解释，报告指标同源。无需新增公开操作。",
+      "source": "packages/commands/api.design.rs#RunQuery and 调度与状态转换算法.json#ALG-09/ALG-11",
+      "blocked_gaps": [
+        "DG03",
+        "DG04"
+      ],
+      "status": "canonical_public_design_merged_finite_contract_proof_passed_actual_product_pending",
+      "resolution_ref": "docs/03_架构与契约/全层类型与工程格式.json#/timeline_runtime_contract"
+    },
+    {
+      "id": "H-DRF01-05",
+      "owner": "W00/复审窗口2",
+      "request": "按业务责任接入既有17个AC，不增身份、不改实际结果；输入与预期都添加精确引用，并补对应procedure/expected。保持检查断言，不以跳过案例恢复通过。",
+      "detail_ref": "docs/04_开发与验收/特征细化/DRF01_公共追踪交接.json",
+      "blocked_gaps": [
+        "DG07",
+        "DG08"
+      ],
+      "status": "merged_existing_AC_refs_verified",
+      "resolution_ref": "docs/04_开发与验收/特征细化/DRF01_公共追踪交接.json"
+    }
+  ],
+  "actual_product_runtime": null,
+  "passed_public_checkpoints_changed": false,
+  "field_contract_consumer": {
+    "source": "packages/module-kit/category-contracts.design.json",
+    "binding_ref": "docs/02_交互设计/首版表单与反馈.json#/field_contract_bindings",
+    "rules": 71,
+    "field_groups_preserved": 111,
+    "runtime_UI_verified": false
+  },
+  "business_timeline_fixture_bindings": [
+    {
+      "fixture_id": "DRF06-T01",
+      "source_ref": "docs/04_开发与验收/特征细化/DRF06_时间轴独立预期.json#/fixtures/0",
+      "title": "阶段上下料、等待与机器持有",
+      "source_kind": "manual_expected_not_Run",
+      "input_ref": null,
+      "run_id": null,
+      "UI_consumers": [
+        "F16-03",
+        "F16-08",
+        "F16-09",
+        "F28-01",
+        "F28-02",
+        "F28-03",
+        "F28-04"
+      ],
+      "required_display": "阶段工作、设备容量、等待/实际接受数值沿fixture.expected，不改写源预期。",
+      "actual_result": null
+    },
+    {
+      "fixture_id": "DRF06-T02",
+      "source_ref": "docs/04_开发与验收/特征细化/DRF06_时间轴独立预期.json#/fixtures/1",
+      "title": "pause_resume与部分计算",
+      "source_kind": "manual_expected_not_Run",
+      "input_ref": null,
+      "run_id": null,
+      "UI_consumers": [
+        "F16-03",
+        "F16-08",
+        "F16-09",
+        "F28-01",
+        "F28-02",
+        "F28-03",
+        "F28-04"
+      ],
+      "required_display": "阶段工作、设备容量、等待/实际接受数值沿fixture.expected，不改写源预期。",
+      "actual_result": null
+    },
+    {
+      "fixture_id": "DRF06-T03",
+      "source_ref": "docs/04_开发与验收/特征细化/DRF06_时间轴独立预期.json#/fixtures/2",
+      "title": "并行汇合三对照与hold_station",
+      "source_kind": "manual_expected_not_Run",
+      "input_ref": null,
+      "run_id": null,
+      "UI_consumers": [
+        "F16-03",
+        "F16-08",
+        "F16-09",
+        "F28-01",
+        "F28-02",
+        "F28-03",
+        "F28-04"
+      ],
+      "required_display": "阶段工作、设备容量、等待/实际接受数值沿fixture.expected，不改写源预期。",
+      "actual_result": null
+    },
+    {
+      "fixture_id": "DRF06-T04",
+      "source_ref": "docs/04_开发与验收/特征细化/DRF06_时间轴独立预期.json#/fixtures/3",
+      "title": "换单、待料与两趟客户接受",
+      "source_kind": "manual_expected_not_Run",
+      "input_ref": null,
+      "run_id": null,
+      "UI_consumers": [
+        "F16-03",
+        "F16-08",
+        "F16-09",
+        "F28-01",
+        "F28-02",
+        "F28-03",
+        "F28-04"
+      ],
+      "required_display": "阶段工作、设备容量、等待/实际接受数值沿fixture.expected，不改写源预期。",
+      "actual_result": null
+    },
+    {
+      "fixture_id": "DRF06-T05",
+      "source_ref": "docs/04_开发与验收/特征细化/DRF06_时间轴独立预期.json#/fixtures/4",
+      "title": "待判、复检与报废保持位置",
+      "source_kind": "manual_expected_not_Run",
+      "input_ref": null,
+      "run_id": null,
+      "UI_consumers": [
+        "F16-03",
+        "F16-08",
+        "F16-09",
+        "F28-01",
+        "F28-02",
+        "F28-03",
+        "F28-04"
+      ],
+      "required_display": "阶段工作、设备容量、等待/实际接受数值沿fixture.expected，不改写源预期。",
+      "actual_result": null
+    },
+    {
+      "fixture_id": "DRF06-T06",
+      "source_ref": "docs/04_开发与验收/特征细化/DRF06_时间轴独立预期.json#/fixtures/5",
+      "title": "控制盒第六件接收阻塞与同刻腾位",
+      "source_kind": "manual_expected_not_Run",
+      "input_ref": null,
+      "run_id": null,
+      "UI_consumers": [
+        "F16-03",
+        "F16-08",
+        "F16-09",
+        "F28-01",
+        "F28-02",
+        "F28-03",
+        "F28-04"
+      ],
+      "required_display": "阶段工作、设备容量、等待/实际接受数值沿fixture.expected，不改写源预期。",
+      "actual_result": null
+    },
+    {
+      "fixture_id": "DRF06-T07",
+      "source_ref": "docs/04_开发与验收/特征细化/DRF06_时间轴独立预期.json#/fixtures/6",
+      "title": "多原因、零时长和非部分订单容量",
+      "source_kind": "manual_expected_not_Run",
+      "input_ref": null,
+      "run_id": null,
+      "UI_consumers": [
+        "F16-03",
+        "F16-08",
+        "F16-09",
+        "F28-01",
+        "F28-02",
+        "F28-03",
+        "F28-04"
+      ],
+      "required_display": "阶段工作、设备容量、等待/实际接受数值沿fixture.expected，不改写源预期。",
+      "actual_result": null
+    },
+    {
+      "fixture_id": "DRF06-T08",
+      "source_ref": "docs/04_开发与验收/特征细化/DRF06_时间轴独立预期.json#/fixtures/7",
+      "title": "跨日接受与卸载班次",
+      "source_kind": "manual_expected_not_Run",
+      "input_ref": null,
+      "run_id": null,
+      "UI_consumers": [
+        "F16-03",
+        "F16-08",
+        "F16-09",
+        "F28-01",
+        "F28-02",
+        "F28-03",
+        "F28-04"
+      ],
+      "required_display": "阶段工作、设备容量、等待/实际接受数值沿fixture.expected，不改写源预期。",
+      "actual_result": null
+    }
+  ],
+  "current_master_delivery": {
+    "source_ref": "docs/02_交互设计/工业工作台母版与字段细化.json",
+    "editable_state_pages": 20,
+    "source_evidence_kind": "master_native_design_only",
+    "default_dock_height_px": 160,
+    "expanded_dock_height_px": 320,
+    "description_width_px": 300,
+    "full_24_frame_five_chain_acceptance": "separate_pending_gate",
+    "runtime_history_policy": "M17 missing authoritative history is visible, not fabricated"
+  },
+  "comparison_export_display_contract_ref": "docs/02_交互设计/首版表单与反馈.json#/comparison_export_display_contract",
+  "received_handoffs": [
+    {
+      "id": "DRF03-C04",
+      "status": "71_field_consumer_mapping_integrated_public_adapter_pending"
+    },
+    {
+      "id": "DRF05-H07",
+      "status": "owned_definition_integrated_actual_prototype_pending"
+    }
+  ],
+  "public_contract_merge": {
+    "status": "canonical_public_types_merged_finite_proof_passed_product_execution_pending",
+    "canonical_ref": "docs/03_架构与契约/全层类型与工程格式.json#/timeline_runtime_contract",
+    "proof_ref": "tools/type-contract-proof/output/timeline-contract-proof-result.json",
+    "finite_case_count": 13,
+    "evidence_kind": "Rust_derived_TS_Schema_and_native_FullResult_finite_contract_proof",
+    "Engine_or_Host_executed": false,
+    "actual_product_runtime": null,
+    "actual_prototype": null
+  },
+  "business_timeline_fixture_policy": "8个DRF06实例仍为manual_expected，不因TC01/TC02类型合入转成真实Run；运行DTO及嵌套序列化唯一取派生Schema/TS",
+  "equipment_model_quality_ref": "docs/02_交互设计/设备建模精度与表现验收规范.json"
+}

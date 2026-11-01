@@ -1,0 +1,1453 @@
+{
+  "document_kind": "S05_01_component_and_connection_design_not_runtime",
+  "checkpoint": "S05-01",
+  "date": "2026-10-14 Asia/Shanghai",
+  "spec_ref": "docs/03_架构与契约/全层组件与接点设计.md",
+  "window_plan_ref": "docs/04_开发与验收/本机并行窗口计划.json",
+  "navigation_ref": "docs/02_交互设计/交互流程与视图导航.json",
+  "form_spec_ref": "docs/02_交互设计/首版表单与反馈.json",
+  "components": [
+    {
+      "id": "domain",
+      "title": "共同类型/格式",
+      "owner_window": "W00",
+      "technology_family": "Rust；同源生成TS/schema",
+      "planned_code_paths": [
+        "packages/domain"
+      ],
+      "code_dependencies": [],
+      "interface_summary": [
+        "Project/Scenario/Run/Module/Artifact/Acceptance/Binding/Report/Envelope"
+      ],
+      "views": {
+        "task_interaction": "F01—F28及所有后端按同源类型消费",
+        "structure_data": [
+          "Project/Scenario/Run/Module/Artifact/Acceptance/Binding/Report/Envelope"
+        ],
+        "state_behavior": "只拥有类型、单位与纯规则；不持有活动库存或UI选择；生成客户端类型，禁止手抄另一套",
+        "interface_collaboration": "现行18个CommandsService签名、错误、Scope、任务/渲染/文件生命周期已由packages/commands/api.design.rs及公开操作JSON明确；本组件只按下列view_source_refs消费，不另立协议。",
+        "presentation_UI": "F01—F28及所有后端按同源类型消费",
+        "deployment_validation": "冻结类型与序列化/单位有限样例；S06细化，S07构建；设计阶段具体版本/实际隔离试做取现行技术JSON与S05-05记录，产品构建入口留S07。"
+      },
+      "implementation_method": "serde型数据与边界schema；数量/时间/坐标转换明确",
+      "actual_implementation": null,
+      "behavior_source_ref": "docs/03_架构与契约/首版类型格式与操作契约.md",
+      "view_source_refs": {
+        "task_interaction": [
+          "docs/02_交互设计/交互流程与视图导航.json",
+          "docs/02_交互设计/首版表单与反馈.json"
+        ],
+        "structure_data": [
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "packages/domain/types.design.rs"
+        ],
+        "state_behavior": [
+          "docs/03_架构与契约/共享状态与所有权.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "interface_collaboration": [
+          "packages/commands/api.design.rs",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "presentation_UI": [
+          "docs/02_交互设计/工业工作台母版与字段细化.json",
+          "docs/02_交互设计/S04_可操作设计原型/README.md"
+        ],
+        "deployment_validation": [
+          "docs/03_架构与契约/首版技术栈与部署设计.json",
+          "docs/04_开发与验收/S05-05_关键架构实际试做.json"
+        ]
+      }
+    },
+    {
+      "id": "simulation",
+      "title": "生产物流唯一内核",
+      "owner_window": "W01",
+      "technology_family": "Rust",
+      "planned_code_paths": [
+        "packages/simulation"
+      ],
+      "code_dependencies": [
+        "domain"
+      ],
+      "interface_summary": [
+        "冻结Scenario输入→实际RunResult/事件/快照"
+      ],
+      "views": {
+        "task_interaction": "时间轴/画布/等待/比较/报告只读同一结果",
+        "structure_data": [
+          "冻结Scenario输入→实际RunResult/事件/快照"
+        ],
+        "state_behavior": "持有每Run唯一时钟、物品归属、资源及事件；不依赖图片/JS/文件选取",
+        "interface_collaboration": "现行18个CommandsService签名、错误、Scope、任务/渲染/文件生命周期已由packages/commands/api.design.rs及公开操作JSON明确；本组件只按下列view_source_refs消费，不另立协议。",
+        "presentation_UI": "时间轴/画布/等待/比较/报告只读同一结果",
+        "deployment_validation": "既有17AC/3IX独立预期；真实试做S05-05/完整执行S08—S09；设计阶段具体版本/实际隔离试做取现行技术JSON与S05-05记录，产品构建入口留S07。"
+      },
+      "implementation_method": "确定事件队列、齐套一次取得、阶段日历/质量返工与固定时间运输",
+      "actual_implementation": null,
+      "behavior_source_ref": "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+      "view_source_refs": {
+        "task_interaction": [
+          "docs/02_交互设计/交互流程与视图导航.json",
+          "docs/02_交互设计/首版表单与反馈.json"
+        ],
+        "structure_data": [
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "packages/domain/types.design.rs"
+        ],
+        "state_behavior": [
+          "docs/03_架构与契约/共享状态与所有权.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/03_架构与契约/调度与状态转换算法.json",
+          "docs/03_架构与契约/全厂时间轴与阶段资源设计.md"
+        ],
+        "interface_collaboration": [
+          "packages/commands/api.design.rs",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/03_架构与契约/调度与状态转换算法.json",
+          "docs/03_架构与契约/全厂时间轴与阶段资源设计.md"
+        ],
+        "presentation_UI": [
+          "docs/02_交互设计/工业工作台母版与字段细化.json",
+          "docs/02_交互设计/S04_可操作设计原型/README.md"
+        ],
+        "deployment_validation": [
+          "docs/03_架构与契约/首版技术栈与部署设计.json",
+          "docs/04_开发与验收/S05-05_关键架构实际试做.json",
+          "docs/03_架构与契约/调度与状态转换算法.json",
+          "docs/03_架构与契约/全厂时间轴与阶段资源设计.md"
+        ]
+      }
+    },
+    {
+      "id": "module_kit",
+      "title": "九类解析/实例化/采用",
+      "owner_window": "W03",
+      "technology_family": "Rust",
+      "planned_code_paths": [
+        "packages/module-kit"
+      ],
+      "code_dependencies": [
+        "domain"
+      ],
+      "interface_summary": [
+        "包/类别声明→ImportDraft/定义/角色映射/采用编辑"
+      ],
+      "views": {
+        "task_interaction": "F01—F10，W03创作面板；UI调用Commands不直接写正式库",
+        "structure_data": [
+          "包/类别声明→ImportDraft/定义/角色映射/采用编辑"
+        ],
+        "state_behavior": "不创建活动库存；定义与实例、内联与工艺引用分离",
+        "interface_collaboration": "现行18个CommandsService签名、错误、Scope、任务/渲染/文件生命周期已由packages/commands/api.design.rs及公开操作JSON明确；本组件只按下列view_source_refs消费，不另立协议。",
+        "presentation_UI": "F01—F10，W03创作面板；UI调用Commands不直接写正式库",
+        "deployment_validation": "九类采用/升级/素材与行为不串改的已有设计情景；设计阶段具体版本/实际隔离试做取现行技术JSON与S05-05记录，产品构建入口留S07。"
+      },
+      "implementation_method": "外部包边界验证、版本/能力检查、新ID/引用重映射、显式种子",
+      "actual_implementation": null,
+      "behavior_source_ref": "docs/03_架构与契约/九类模块清单与消费者.md",
+      "view_source_refs": {
+        "task_interaction": [
+          "docs/02_交互设计/交互流程与视图导航.json",
+          "docs/02_交互设计/首版表单与反馈.json"
+        ],
+        "structure_data": [
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "packages/domain/types.design.rs"
+        ],
+        "state_behavior": [
+          "docs/03_架构与契约/共享状态与所有权.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "packages/module-kit/category-contracts.design.json",
+          "docs/04_开发与验收/特征细化/DRF03_C04_伴随材料消费契约.json"
+        ],
+        "interface_collaboration": [
+          "packages/commands/api.design.rs",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "packages/module-kit/category-contracts.design.json",
+          "docs/04_开发与验收/特征细化/DRF03_C04_伴随材料消费契约.json"
+        ],
+        "presentation_UI": [
+          "docs/02_交互设计/工业工作台母版与字段细化.json",
+          "docs/02_交互设计/S04_可操作设计原型/README.md"
+        ],
+        "deployment_validation": [
+          "docs/03_架构与契约/首版技术栈与部署设计.json",
+          "docs/04_开发与验收/S05-05_关键架构实际试做.json",
+          "packages/module-kit/category-contracts.design.json",
+          "docs/04_开发与验收/特征细化/DRF03_C04_伴随材料消费契约.json"
+        ]
+      }
+    },
+    {
+      "id": "packaging",
+      "title": "真实纸包装专业内核",
+      "owner_window": "W04",
+      "technology_family": "Rust",
+      "planned_code_paths": [
+        "packages/packaging"
+      ],
+      "code_dependencies": [
+        "domain"
+      ],
+      "interface_summary": [
+        "PackageStructureJob→专业三态/过程/制造成果"
+      ],
+      "views": {
+        "task_interaction": "F19/F20，W04同工程工作台；制造SVG与产品/成果版本相连",
+        "structure_data": [
+          "PackageStructureJob→专业三态/过程/制造成果"
+        ],
+        "state_behavior": "不写工厂库存或人工认可；三机制/三变化完整范围",
+        "interface_collaboration": "现行18个CommandsService签名、错误、Scope、任务/渲染/文件生命周期已由packages/commands/api.design.rs及公开操作JSON明确；本组件只按下列view_source_refs消费，不另立协议。",
+        "presentation_UI": "F19/F20，W04同工程工作台；制造SVG与产品/成果版本相连",
+        "deployment_validation": "PREP-PACKAGING的实际输入与独立三态，关键试做/全链分别证明；设计阶段具体版本/实际隔离试做取现行技术JSON与S05-05记录，产品构建入口留S07。"
+      },
+      "implementation_method": "有限厚度板片/折带/连接、多件、成型/开合/固定姿态直线取物；具体数值算法S06-04",
+      "actual_implementation": null,
+      "behavior_source_ref": "packages/packaging/README.md",
+      "view_source_refs": {
+        "task_interaction": [
+          "docs/02_交互设计/交互流程与视图导航.json",
+          "docs/02_交互设计/首版表单与反馈.json"
+        ],
+        "structure_data": [
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "packages/domain/types.design.rs"
+        ],
+        "state_behavior": [
+          "docs/03_架构与契约/共享状态与所有权.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "packages/packaging/algorithm.design.json",
+          "docs/03_架构与契约/纸包装结构与过程算法.md",
+          "docs/03_架构与契约/纸包装数值与制造规则.md"
+        ],
+        "interface_collaboration": [
+          "packages/commands/api.design.rs",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "packages/packaging/algorithm.design.json",
+          "docs/03_架构与契约/纸包装结构与过程算法.md",
+          "docs/03_架构与契约/纸包装数值与制造规则.md"
+        ],
+        "presentation_UI": [
+          "docs/02_交互设计/工业工作台母版与字段细化.json",
+          "docs/02_交互设计/S04_可操作设计原型/README.md"
+        ],
+        "deployment_validation": [
+          "docs/03_架构与契约/首版技术栈与部署设计.json",
+          "docs/04_开发与验收/S05-05_关键架构实际试做.json",
+          "packages/packaging/algorithm.design.json",
+          "docs/03_架构与契约/纸包装结构与过程算法.md",
+          "docs/03_架构与契约/纸包装数值与制造规则.md"
+        ]
+      }
+    },
+    {
+      "id": "reporting",
+      "title": "评估与工程/模块交接",
+      "owner_window": "W05",
+      "technology_family": "Rust",
+      "planned_code_paths": [
+        "packages/reporting"
+      ],
+      "code_dependencies": [
+        "domain"
+      ],
+      "interface_summary": [
+        "冻结工程/实际结果/指定画面→同源四格式与可编辑交接"
+      ],
+      "views": {
+        "task_interaction": "F24—26，报告/交接面板；工业评估、制造层、作品介绍分开",
+        "structure_data": [
+          "冻结工程/实际结果/指定画面→同源四格式与可编辑交接"
+        ],
+        "state_behavior": "只读实际结果；合法资产/版本/缺项随包，只有当前宿主加载新活动工程",
+        "interface_collaboration": "现行18个CommandsService签名、错误、Scope、任务/渲染/文件生命周期已由packages/commands/api.design.rs及公开操作JSON明确；本组件只按下列view_source_refs消费，不另立协议。",
+        "presentation_UI": "F24—26，报告/交接面板；工业评估、制造层、作品介绍分开",
+        "deployment_validation": "四格式语义/文件可读、另一目录/机器重开修改；不由草稿存在宣称完成；设计阶段具体版本/实际隔离试做取现行技术JSON与S05-05记录，产品构建入口留S07。"
+      },
+      "implementation_method": "EvaluationReport构造与同源导出；handoff子模块处理工程格式/相对引用/文件读写，在宿主批准路径内",
+      "actual_implementation": null,
+      "behavior_source_ref": "docs/03_架构与契约/工程交接与打开.md",
+      "view_source_refs": {
+        "task_interaction": [
+          "docs/02_交互设计/交互流程与视图导航.json",
+          "docs/02_交互设计/首版表单与反馈.json"
+        ],
+        "structure_data": [
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "packages/domain/types.design.rs"
+        ],
+        "state_behavior": [
+          "docs/03_架构与契约/共享状态与所有权.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "packages/reporting/evaluation-report.contract.design.json",
+          "docs/03_架构与契约/工程交接与打开.md",
+          "docs/03_架构与契约/评估报告与数据导出.md"
+        ],
+        "interface_collaboration": [
+          "packages/commands/api.design.rs",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "packages/reporting/evaluation-report.contract.design.json",
+          "docs/03_架构与契约/工程交接与打开.md",
+          "docs/03_架构与契约/评估报告与数据导出.md"
+        ],
+        "presentation_UI": [
+          "docs/02_交互设计/工业工作台母版与字段细化.json",
+          "docs/02_交互设计/S04_可操作设计原型/README.md"
+        ],
+        "deployment_validation": [
+          "docs/03_架构与契约/首版技术栈与部署设计.json",
+          "docs/04_开发与验收/S05-05_关键架构实际试做.json",
+          "packages/reporting/evaluation-report.contract.design.json",
+          "docs/03_架构与契约/工程交接与打开.md",
+          "docs/03_架构与契约/评估报告与数据导出.md"
+        ]
+      }
+    },
+    {
+      "id": "commands",
+      "title": "共同操作/事务/任务分派",
+      "owner_window": "W00",
+      "technology_family": "Rust",
+      "planned_code_paths": [
+        "packages/commands"
+      ],
+      "code_dependencies": [
+        "domain",
+        "simulation",
+        "module_kit",
+        "packaging",
+        "reporting"
+      ],
+      "interface_summary": [
+        "现有18操作Envelope→实际结果/任务句柄/错误"
+      ],
+      "views": {
+        "task_interaction": "UI invoke与MCP IPC消费同一入口；完整参数/返回/逆操作取现行api.design.rs",
+        "structure_data": [
+          "现有18操作Envelope→实际结果/任务句柄/错误"
+        ],
+        "state_behavior": "不另建Engine；只在宿主授权上下文处理，对输入修订一次提交",
+        "interface_collaboration": "现行18个CommandsService签名、错误、Scope、任务/渲染/文件生命周期已由packages/commands/api.design.rs及公开操作JSON明确；本组件只按下列view_source_refs消费，不另立协议。",
+        "presentation_UI": "UI invoke与MCP IPC消费同一入口；完整参数/返回/逆操作S06-03",
+        "deployment_validation": "陈旧修订/取消/专业认可/同源导出的有限与实际接点案例；设计阶段具体版本/实际隔离试做取现行技术JSON与S05-05记录，产品构建入口留S07。"
+      },
+      "implementation_method": "共同边界验证/编辑事务/可逆草稿、调用业务库；RenderPort等实际I/O接点定义在本层，由宿主实现",
+      "actual_implementation": null,
+      "behavior_source_ref": "packages/commands/command-catalog.design.json",
+      "view_source_refs": {
+        "task_interaction": [
+          "docs/02_交互设计/交互流程与视图导航.json",
+          "docs/02_交互设计/首版表单与反馈.json"
+        ],
+        "structure_data": [
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "packages/domain/types.design.rs"
+        ],
+        "state_behavior": [
+          "docs/03_架构与契约/共享状态与所有权.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "packages/commands/command-catalog.design.json",
+          "docs/03_架构与契约/共享状态与所有权.json"
+        ],
+        "interface_collaboration": [
+          "packages/commands/api.design.rs",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "packages/commands/command-catalog.design.json",
+          "docs/03_架构与契约/共享状态与所有权.json"
+        ],
+        "presentation_UI": [
+          "docs/02_交互设计/工业工作台母版与字段细化.json",
+          "docs/02_交互设计/S04_可操作设计原型/README.md"
+        ],
+        "deployment_validation": [
+          "docs/03_架构与契约/首版技术栈与部署设计.json",
+          "docs/04_开发与验收/S05-05_关键架构实际试做.json",
+          "packages/commands/command-catalog.design.json",
+          "docs/03_架构与契约/共享状态与所有权.json"
+        ]
+      }
+    },
+    {
+      "id": "desktop_host",
+      "title": "唯一Windows宿主",
+      "owner_window": "W00",
+      "technology_family": "Tauri/Rust",
+      "planned_code_paths": [
+        "apps/planner/src-tauri"
+      ],
+      "code_dependencies": [
+        "commands",
+        "domain"
+      ],
+      "interface_summary": [
+        "UI invoke/用户域IPC→同一Commands；渲染回传→任务完成"
+      ],
+      "views": {
+        "task_interaction": "W00入口/主进程，W02—05面板不直接读改其内部存储",
+        "structure_data": [
+          "UI invoke/用户域IPC→同一Commands；渲染回传→任务完成"
+        ],
+        "state_behavior": "一个活动工程与任务表；编辑序列化，Worker读冻结输入；实际状态/结果归本宿主",
+        "interface_collaboration": "现行18个CommandsService签名、错误、Scope、任务/渲染/文件生命周期已由packages/commands/api.design.rs及公开操作JSON明确；本组件只按下列view_source_refs消费，不另立协议。",
+        "presentation_UI": "W00入口/主进程，W02—05面板不直接读改其内部存储",
+        "deployment_validation": "命名管道/事务/任务取消/文件与渲染接点实际试做留S05-05；设计阶段具体版本/实际隔离试做取现行技术JSON与S05-05记录，产品构建入口留S07。"
+      },
+      "implementation_method": "启动/关闭/项目切换/授权、IPC连接、CPU任务调度、UI渲染请求与回应关联",
+      "actual_implementation": null,
+      "behavior_source_ref": "docs/03_架构与契约/通用Agent接入与专业软件连接器.md",
+      "view_source_refs": {
+        "task_interaction": [
+          "docs/02_交互设计/交互流程与视图导航.json",
+          "docs/02_交互设计/首版表单与反馈.json"
+        ],
+        "structure_data": [
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "packages/domain/types.design.rs"
+        ],
+        "state_behavior": [
+          "docs/03_架构与契约/共享状态与所有权.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/04_开发与验收/特征细化/DRF04_Host授权合入.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "interface_collaboration": [
+          "packages/commands/api.design.rs",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/04_开发与验收/特征细化/DRF04_Host授权合入.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "presentation_UI": [
+          "docs/02_交互设计/工业工作台母版与字段细化.json",
+          "docs/02_交互设计/S04_可操作设计原型/README.md"
+        ],
+        "deployment_validation": [
+          "docs/03_架构与契约/首版技术栈与部署设计.json",
+          "docs/04_开发与验收/S05-05_关键架构实际试做.json",
+          "docs/04_开发与验收/特征细化/DRF04_Host授权合入.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ]
+      }
+    },
+    {
+      "id": "presentation",
+      "title": "设备/物品/三档呈现",
+      "owner_window": "W03",
+      "technology_family": "TypeScript/Three.js",
+      "planned_code_paths": [
+        "packages/presentation"
+      ],
+      "code_dependencies": [
+        "domain"
+      ],
+      "interface_summary": [
+        "只读修订/Run快照/媒体映射→Object3D/标签/帧"
+      ],
+      "views": {
+        "task_interaction": "W02场景容器消费对象构造/更新/拾取元数据；W03设备编辑消费同一外观",
+        "structure_data": [
+          "只读修订/Run快照/媒体映射→Object3D/标签/帧"
+        ],
+        "state_behavior": "只有表现和媒体游标，不生产；领域(x,y,z高)到Three(x,z,-y)",
+        "interface_collaboration": "现行18个CommandsService签名、错误、Scope、任务/渲染/文件生命周期已由packages/commands/api.design.rs及公开操作JSON明确；本组件只按下列view_source_refs消费，不另立协议。",
+        "presentation_UI": "W02场景容器消费对象构造/更新/拾取元数据；W03设备编辑消费同一外观",
+        "deployment_validation": "背底/机构/动作资产认可及NFR场景；动画/库存分离；设计阶段具体版本/实际隔离试做取现行技术JSON与S05-05记录，产品构建入口留S07。"
+      },
+      "implementation_method": "命名部件/GLB支持节点、阶段姿态和图片片段、代表物品/真实数量、LOD表现",
+      "actual_implementation": null,
+      "behavior_source_ref": "packages/presentation/README.md",
+      "view_source_refs": {
+        "task_interaction": [
+          "docs/02_交互设计/交互流程与视图导航.json",
+          "docs/02_交互设计/首版表单与反馈.json"
+        ],
+        "structure_data": [
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "packages/domain/types.design.rs"
+        ],
+        "state_behavior": [
+          "docs/03_架构与契约/共享状态与所有权.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "packages/presentation/README.md",
+          "docs/02_交互设计/设备时间轴与标签设计.md"
+        ],
+        "interface_collaboration": [
+          "packages/commands/api.design.rs",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "packages/presentation/README.md",
+          "docs/02_交互设计/设备时间轴与标签设计.md"
+        ],
+        "presentation_UI": [
+          "docs/02_交互设计/工业工作台母版与字段细化.json",
+          "docs/02_交互设计/S04_可操作设计原型/README.md"
+        ],
+        "deployment_validation": [
+          "docs/03_架构与契约/首版技术栈与部署设计.json",
+          "docs/04_开发与验收/S05-05_关键架构实际试做.json",
+          "packages/presentation/README.md",
+          "docs/02_交互设计/设备时间轴与标签设计.md"
+        ]
+      },
+      "equipment_model_quality_ref": "docs/02_交互设计/设备建模精度与表现验收规范.json"
+    },
+    {
+      "id": "ui_host",
+      "title": "共同调用与UI上下文",
+      "owner_window": "W00",
+      "technology_family": "React/TypeScript",
+      "planned_code_paths": [
+        "apps/planner/src/api",
+        "apps/planner/src/shared",
+        "apps/planner/src/host"
+      ],
+      "code_dependencies": [
+        "domain"
+      ],
+      "interface_summary": [
+        "同源DTO/响应/宿主通知→UI选择/草稿/任务呈现"
+      ],
+      "views": {
+        "task_interaction": "所有功能面板共享调用/上下文，S04导航/表单是实现依据",
+        "structure_data": [
+          "同源DTO/响应/宿主通知→UI选择/草稿/任务呈现"
+        ],
+        "state_behavior": "UI相机/选择/表单值不当Engine；任务/Run归属不重写",
+        "interface_collaboration": "现行18个CommandsService签名、错误、Scope、任务/渲染/文件生命周期已由packages/commands/api.design.rs及公开操作JSON明确；本组件只按下列view_source_refs消费，不另立协议。",
+        "presentation_UI": "所有功能面板共享调用/上下文，S04导航/表单是实现依据",
+        "deployment_validation": "两个面板同修订、冲突保留字段、旧Run/回看定位；实际原型另验；设计阶段具体版本/实际隔离试做取现行技术JSON与S05-05记录，产品构建入口留S07。"
+      },
+      "implementation_method": "typed invoke客户端、上下文提供/返回栈、不可变结果缓存与提交反馈；不导入具体功能面板",
+      "actual_implementation": null,
+      "behavior_source_ref": "docs/02_交互设计/交互流程与视图导航.json",
+      "view_source_refs": {
+        "task_interaction": [
+          "docs/02_交互设计/交互流程与视图导航.json",
+          "docs/02_交互设计/首版表单与反馈.json"
+        ],
+        "structure_data": [
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "packages/domain/types.design.rs"
+        ],
+        "state_behavior": [
+          "docs/03_架构与契约/共享状态与所有权.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/02_交互设计/时间轴主轴与子轴完整定义.json",
+          "docs/03_架构与契约/共享状态与所有权.json"
+        ],
+        "interface_collaboration": [
+          "packages/commands/api.design.rs",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/02_交互设计/时间轴主轴与子轴完整定义.json",
+          "docs/03_架构与契约/共享状态与所有权.json"
+        ],
+        "presentation_UI": [
+          "docs/02_交互设计/工业工作台母版与字段细化.json",
+          "docs/02_交互设计/S04_可操作设计原型/README.md"
+        ],
+        "deployment_validation": [
+          "docs/03_架构与契约/首版技术栈与部署设计.json",
+          "docs/04_开发与验收/S05-05_关键架构实际试做.json",
+          "docs/02_交互设计/时间轴主轴与子轴完整定义.json",
+          "docs/03_架构与契约/共享状态与所有权.json"
+        ]
+      }
+    },
+    {
+      "id": "shared_ui",
+      "title": "公共控件与工业主题",
+      "owner_window": "W02",
+      "technology_family": "React/TypeScript",
+      "planned_code_paths": [
+        "apps/planner/src/components",
+        "apps/planner/src/styles"
+      ],
+      "code_dependencies": [
+        "domain"
+      ],
+      "interface_summary": [
+        "值/单位/错误/只读/提交回调→公共字段、表格、对话框和主题；不读取业务store"
+      ],
+      "views": {
+        "task_interaction": "各业务面板复用字段、表格、对话框和工业主题；不承担画布导航。",
+        "structure_data": [
+          "明确value/unit/disabled/readOnly/error及onChange/onCommit，不携带Engine或Project可写store"
+        ],
+        "state_behavior": "仅控件内部焦点/展开/输入草稿；不持有生产状态或调用Commands。",
+        "interface_collaboration": "公共出口为components/index；只导入domain DTO及同目录控件；功能定位通过ui_host现有选择/上下文事件交由App组合。",
+        "presentation_UI": "共同工业风格与键盘/数值入口；画布相机、拾取、时间轴轨道保留在factory_ui。",
+        "deployment_validation": "AQ-03/05隔离TS消费者与正反依赖检查；真实前端运行按S07/S08准入。"
+      },
+      "implementation_method": "既有公共控件采用props与回调；业务查询、定位和命令由调用方或ui_host处理，不反向import任何feature。",
+      "actual_implementation": null,
+      "behavior_source_ref": "docs/03_架构与契约/全层组件与接点设计.md",
+      "view_source_refs": {
+        "task_interaction": [
+          "docs/02_交互设计/交互流程与视图导航.json",
+          "docs/02_交互设计/首版表单与反馈.json"
+        ],
+        "structure_data": [
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "packages/domain/types.design.rs"
+        ],
+        "state_behavior": [
+          "docs/03_架构与契约/共享状态与所有权.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/02_交互设计/时间轴主轴与子轴完整定义.json",
+          "docs/03_架构与契约/共享状态与所有权.json"
+        ],
+        "interface_collaboration": [
+          "packages/commands/api.design.rs",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/02_交互设计/时间轴主轴与子轴完整定义.json",
+          "docs/03_架构与契约/共享状态与所有权.json"
+        ],
+        "presentation_UI": [
+          "docs/02_交互设计/工业工作台母版与字段细化.json",
+          "docs/02_交互设计/S04_可操作设计原型/README.md"
+        ],
+        "deployment_validation": [
+          "docs/03_架构与契约/首版技术栈与部署设计.json",
+          "docs/04_开发与验收/S05-05_关键架构实际试做.json",
+          "docs/02_交互设计/时间轴主轴与子轴完整定义.json",
+          "docs/03_架构与契约/共享状态与所有权.json"
+        ]
+      }
+    },
+    {
+      "id": "factory_ui",
+      "title": "画布/业务/全厂时间轴",
+      "owner_window": "W02",
+      "technology_family": "React/TypeScript/Three.js",
+      "planned_code_paths": [
+        "apps/planner/src/features/factory",
+        "apps/planner/src/features/timeline",
+        "apps/planner/src/features/business",
+        "apps/planner/src/scene"
+      ],
+      "code_dependencies": [
+        "domain",
+        "ui_host",
+        "presentation",
+        "shared_ui"
+      ],
+      "interface_summary": [
+        "工程/Run DTO→两画布/三LOD/表单/定位"
+      ],
+      "views": {
+        "task_interaction": "S04两画布/业务/时间轴；公共字段与主题由shared_ui消费，业务实现不向其他feature暴露。",
+        "structure_data": [
+          "工程/Run DTO→两画布/三LOD/表单/定位"
+        ],
+        "state_behavior": "不拥有独立库存、调度和专业求解；只有可编辑输入/视图状态",
+        "interface_collaboration": "现行18个CommandsService签名、错误、Scope、任务/渲染/文件生命周期已由packages/commands/api.design.rs及公开操作JSON明确；本组件只按下列view_source_refs消费，不另立协议。",
+        "presentation_UI": "S04两画布/业务/时间轴；公共字段与主题由shared_ui消费，业务实现不向其他feature暴露。",
+        "deployment_validation": "获授权Figma及本人走查、当前NFR与实际功能接入；设计阶段具体版本/实际隔离试做取现行技术JSON与S05-05记录，产品构建入口留S07。"
+      },
+      "implementation_method": "场景投影/相机/手势/根变换预览与提交、时间轴输入与实际轨、组件集中",
+      "actual_implementation": null,
+      "behavior_source_ref": "docs/02_交互设计/首版表单与反馈.json",
+      "view_source_refs": {
+        "task_interaction": [
+          "docs/02_交互设计/交互流程与视图导航.json",
+          "docs/02_交互设计/首版表单与反馈.json"
+        ],
+        "structure_data": [
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "packages/domain/types.design.rs"
+        ],
+        "state_behavior": [
+          "docs/03_架构与契约/共享状态与所有权.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/02_交互设计/时间轴主轴与轨道组_监督细化.json",
+          "docs/02_交互设计/时间轴主轴与子轴完整定义.json"
+        ],
+        "interface_collaboration": [
+          "packages/commands/api.design.rs",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/02_交互设计/时间轴主轴与轨道组_监督细化.json",
+          "docs/02_交互设计/时间轴主轴与子轴完整定义.json"
+        ],
+        "presentation_UI": [
+          "docs/02_交互设计/工业工作台母版与字段细化.json",
+          "docs/02_交互设计/S04_可操作设计原型/README.md"
+        ],
+        "deployment_validation": [
+          "docs/03_架构与契约/首版技术栈与部署设计.json",
+          "docs/04_开发与验收/S05-05_关键架构实际试做.json",
+          "docs/02_交互设计/时间轴主轴与轨道组_监督细化.json",
+          "docs/02_交互设计/时间轴主轴与子轴完整定义.json"
+        ]
+      },
+      "equipment_model_quality_ref": "docs/02_交互设计/设备建模精度与表现验收规范.json"
+    },
+    {
+      "id": "authoring_ui",
+      "title": "九类/设备创作面板",
+      "owner_window": "W03",
+      "technology_family": "React/TypeScript",
+      "planned_code_paths": [
+        "apps/planner/src/features/modules",
+        "apps/planner/src/features/device-authoring"
+      ],
+      "code_dependencies": [
+        "domain",
+        "ui_host",
+        "presentation",
+        "shared_ui"
+      ],
+      "interface_summary": [
+        "类别描述/草稿→表单/预览/明确采用请求"
+      ],
+      "views": {
+        "task_interaction": "F01—10/F17；共享W02控件，W02不导入本功能内部模块",
+        "structure_data": [
+          "类别描述/草稿→表单/预览/明确采用请求"
+        ],
+        "state_behavior": "不直接调用Rust库或建独立生产时钟；实例与定义分层",
+        "interface_collaboration": "现行18个CommandsService签名、错误、Scope、任务/渲染/文件生命周期已由packages/commands/api.design.rs及公开操作JSON明确；本组件只按下列view_source_refs消费，不另立协议。 公共控件只从shared_ui公共出口导入，不导入factory/timeline/business内部；对象定位由ui_host上下文事件和App组合。",
+        "presentation_UI": "F01—10/F17；共享W02控件，W02不导入本功能内部模块",
+        "deployment_validation": "静态图→原生表现同业务、角色/连接重绑、新版本采用；设计阶段具体版本/实际隔离试做取现行技术JSON与S05-05记录，产品构建入口留S07。"
+      },
+      "implementation_method": "结构化类型表单/部件树/图片标签时间轴；Rust检查和采用经Commands",
+      "actual_implementation": null,
+      "behavior_source_ref": "docs/02_交互设计/自定义设备创作与采用.md",
+      "view_source_refs": {
+        "task_interaction": [
+          "docs/02_交互设计/交互流程与视图导航.json",
+          "docs/02_交互设计/首版表单与反馈.json"
+        ],
+        "structure_data": [
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "packages/domain/types.design.rs"
+        ],
+        "state_behavior": [
+          "docs/03_架构与契约/共享状态与所有权.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/02_交互设计/自定义设备创作与采用.md",
+          "packages/module-kit/device-editor-capabilities.design.json"
+        ],
+        "interface_collaboration": [
+          "packages/commands/api.design.rs",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/02_交互设计/自定义设备创作与采用.md",
+          "packages/module-kit/device-editor-capabilities.design.json"
+        ],
+        "presentation_UI": [
+          "docs/02_交互设计/工业工作台母版与字段细化.json",
+          "docs/02_交互设计/S04_可操作设计原型/README.md"
+        ],
+        "deployment_validation": [
+          "docs/03_架构与契约/首版技术栈与部署设计.json",
+          "docs/04_开发与验收/S05-05_关键架构实际试做.json",
+          "docs/02_交互设计/自定义设备创作与采用.md",
+          "packages/module-kit/device-editor-capabilities.design.json"
+        ]
+      }
+    },
+    {
+      "id": "packaging_ui",
+      "title": "专业结构/过程/认可绑定面板",
+      "owner_window": "W04",
+      "technology_family": "React/TypeScript",
+      "planned_code_paths": [
+        "apps/planner/src/features/packaging"
+      ],
+      "code_dependencies": [
+        "domain",
+        "ui_host",
+        "presentation",
+        "shared_ui"
+      ],
+      "interface_summary": [
+        "作业草稿/专业结果→3D过程/制造/认可/绑定入口"
+      ],
+      "views": {
+        "task_interaction": "F19/F20；复用W02控件与W03表现能力，实际算法走共同命令",
+        "structure_data": [
+          "作业草稿/专业结果→3D过程/制造/认可/绑定入口"
+        ],
+        "state_behavior": "界面不自己求几何或伪填人工认可；当前结果与新输入分开",
+        "interface_collaboration": "现行18个CommandsService签名、错误、Scope、任务/渲染/文件生命周期已由packages/commands/api.design.rs及公开操作JSON明确；本组件只按下列view_source_refs消费，不另立协议。 公共控件只从shared_ui公共出口导入，不导入factory/timeline/business内部；对象定位由ui_host上下文事件和App组合。",
+        "presentation_UI": "F19/F20；复用W02控件与W03表现能力，实际算法走共同命令",
+        "deployment_validation": "三机制/三变化/过程/制造/认可绑定五对象及改版复核；设计阶段具体版本/实际隔离试做取现行技术JSON与S05-05记录，产品构建入口留S07。"
+      },
+      "implementation_method": "结构编辑树/参数与过程选择、三态问题定位、显式用途认可和工位选择",
+      "actual_implementation": null,
+      "behavior_source_ref": "packages/packaging/README.md",
+      "view_source_refs": {
+        "task_interaction": [
+          "docs/02_交互设计/交互流程与视图导航.json",
+          "docs/02_交互设计/首版表单与反馈.json"
+        ],
+        "structure_data": [
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "packages/domain/types.design.rs"
+        ],
+        "state_behavior": [
+          "docs/03_架构与契约/共享状态与所有权.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/03_架构与契约/专业成果接入与软件在环.md",
+          "packages/packaging/consumer-device.design.json"
+        ],
+        "interface_collaboration": [
+          "packages/commands/api.design.rs",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/03_架构与契约/专业成果接入与软件在环.md",
+          "packages/packaging/consumer-device.design.json"
+        ],
+        "presentation_UI": [
+          "docs/02_交互设计/工业工作台母版与字段细化.json",
+          "docs/02_交互设计/S04_可操作设计原型/README.md"
+        ],
+        "deployment_validation": [
+          "docs/03_架构与契约/首版技术栈与部署设计.json",
+          "docs/04_开发与验收/S05-05_关键架构实际试做.json",
+          "docs/03_架构与契约/专业成果接入与软件在环.md",
+          "packages/packaging/consumer-device.design.json"
+        ]
+      }
+    },
+    {
+      "id": "delivery_agent_ui",
+      "title": "Agent/比较报告/交接面板",
+      "owner_window": "W05",
+      "technology_family": "React/TypeScript",
+      "planned_code_paths": [
+        "apps/planner/src/features/agent",
+        "apps/planner/src/features/reporting",
+        "apps/planner/src/features/handoff"
+      ],
+      "code_dependencies": [
+        "domain",
+        "ui_host",
+        "shared_ui"
+      ],
+      "interface_summary": [
+        "真实工具变更/Run/报告任务→用户可检查与导出"
+      ],
+      "views": {
+        "task_interaction": "F21/F23—27；分批编辑和≤3轮真实反馈；初案达标直交",
+        "structure_data": [
+          "真实工具变更/Run/报告任务→用户可检查与导出"
+        ],
+        "state_behavior": "不内置另一Agent运行时/Engine，不把对话文本当结果",
+        "interface_collaboration": "现行18个CommandsService签名、错误、Scope、任务/渲染/文件生命周期已由packages/commands/api.design.rs及公开操作JSON明确；本组件只按下列view_source_refs消费，不另立协议。 公共控件只从shared_ui公共出口导入，不导入factory/timeline/business内部；对象定位由ui_host上下文事件和App组合。",
+        "presentation_UI": "F21/F23—27；分批编辑和≤3轮真实反馈；初案达标直交",
+        "deployment_validation": "Codex/真实工具、四格式/重开与许可，当前连接未实现；设计阶段具体版本/实际隔离试做取现行技术JSON与S05-05记录，产品构建入口留S07。"
+      },
+      "implementation_method": "目标/来源/授权批次/任务进度、双主比较与缺项、同源报告和交接选择",
+      "actual_implementation": null,
+      "behavior_source_ref": "docs/03_架构与契约/目标驱动厂房生成.md",
+      "view_source_refs": {
+        "task_interaction": [
+          "docs/02_交互设计/交互流程与视图导航.json",
+          "docs/02_交互设计/首版表单与反馈.json"
+        ],
+        "structure_data": [
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "packages/domain/types.design.rs"
+        ],
+        "state_behavior": [
+          "docs/03_架构与契约/共享状态与所有权.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/03_架构与契约/目标驱动厂房生成.md",
+          "docs/03_架构与契约/评估报告与数据导出.md",
+          "docs/03_架构与契约/工程交接与打开.md"
+        ],
+        "interface_collaboration": [
+          "packages/commands/api.design.rs",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/03_架构与契约/目标驱动厂房生成.md",
+          "docs/03_架构与契约/评估报告与数据导出.md",
+          "docs/03_架构与契约/工程交接与打开.md"
+        ],
+        "presentation_UI": [
+          "docs/02_交互设计/工业工作台母版与字段细化.json",
+          "docs/02_交互设计/S04_可操作设计原型/README.md"
+        ],
+        "deployment_validation": [
+          "docs/03_架构与契约/首版技术栈与部署设计.json",
+          "docs/04_开发与验收/S05-05_关键架构实际试做.json",
+          "docs/03_架构与契约/目标驱动厂房生成.md",
+          "docs/03_架构与契约/评估报告与数据导出.md",
+          "docs/03_架构与契约/工程交接与打开.md"
+        ]
+      }
+    },
+    {
+      "id": "planner_shell",
+      "title": "同工程外壳与入口集成",
+      "owner_window": "W00",
+      "technology_family": "React/TypeScript",
+      "planned_code_paths": [
+        "apps/planner/src/App.tsx",
+        "apps/planner/src/main.tsx",
+        "apps/planner/index.html"
+      ],
+      "code_dependencies": [
+        "ui_host",
+        "factory_ui",
+        "authoring_ui",
+        "packaging_ui",
+        "delivery_agent_ui"
+      ],
+      "interface_summary": [
+        "各已认可面板→唯一活动工程布局"
+      ],
+      "views": {
+        "task_interaction": "用户受监督的Figma；全部面板挂到两常态画布",
+        "structure_data": [
+          "各已认可面板→唯一活动工程布局"
+        ],
+        "state_behavior": "只集成入口/状态提供者；不得变为六个独立工程",
+        "interface_collaboration": "现行18个CommandsService签名、错误、Scope、任务/渲染/文件生命周期已由packages/commands/api.design.rs及公开操作JSON明确；本组件只按下列view_source_refs消费，不另立协议。",
+        "presentation_UI": "用户受监督的Figma；全部面板挂到两常态画布",
+        "deployment_validation": "全任务导航/单活动工程；仍需授权和本人原型走查；设计阶段具体版本/实际隔离试做取现行技术JSON与S05-05记录，产品构建入口留S07。"
+      },
+      "implementation_method": "按S04节点树组合功能面板，生命周期通知/焦点/返回统一",
+      "actual_implementation": null,
+      "behavior_source_ref": "docs/02_交互设计/主流程与视图导航.md",
+      "view_source_refs": {
+        "task_interaction": [
+          "docs/02_交互设计/交互流程与视图导航.json",
+          "docs/02_交互设计/首版表单与反馈.json"
+        ],
+        "structure_data": [
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "packages/domain/types.design.rs"
+        ],
+        "state_behavior": [
+          "docs/03_架构与契约/共享状态与所有权.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/02_交互设计/主流程与视图导航.md",
+          "docs/02_交互设计/工业工作台母版与字段细化.json"
+        ],
+        "interface_collaboration": [
+          "packages/commands/api.design.rs",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/02_交互设计/主流程与视图导航.md",
+          "docs/02_交互设计/工业工作台母版与字段细化.json"
+        ],
+        "presentation_UI": [
+          "docs/02_交互设计/工业工作台母版与字段细化.json",
+          "docs/02_交互设计/S04_可操作设计原型/README.md"
+        ],
+        "deployment_validation": [
+          "docs/03_架构与契约/首版技术栈与部署设计.json",
+          "docs/04_开发与验收/S05-05_关键架构实际试做.json",
+          "docs/02_交互设计/主流程与视图导航.md",
+          "docs/02_交互设计/工业工作台母版与字段细化.json"
+        ]
+      }
+    },
+    {
+      "id": "mcp_bridge",
+      "title": "外部Agent本地协议桥",
+      "owner_window": "W05",
+      "technology_family": "Rust/rmcp；MCP stdio",
+      "planned_code_paths": [
+        "apps/mcp-bridge"
+      ],
+      "code_dependencies": [
+        "domain"
+      ],
+      "interface_summary": [
+        "MCP工具调用→用户域命名管道Envelope→宿主实际响应"
+      ],
+      "views": {
+        "task_interaction": "先验证当前Codex客户端；skills组织真实工具，其他客户端/插件仅经验证后称支持",
+        "structure_data": [
+          "MCP工具调用→用户域命名管道Envelope→宿主实际响应"
+        ],
+        "state_behavior": "只连接唯一已打开宿主，不创建Project/Engine副本",
+        "interface_collaboration": "现行18个CommandsService签名、错误、Scope、任务/渲染/文件生命周期已由packages/commands/api.design.rs及公开操作JSON明确；本组件只按下列view_source_refs消费，不另立协议。",
+        "presentation_UI": "先验证当前Codex客户端；skills组织真实工具，其他客户端/插件仅经验证后称支持",
+        "deployment_validation": "协议/连接/权限/无宿主与真实调用试做；三专业插件仍后置；设计阶段具体版本/实际隔离试做取现行技术JSON与S05-05记录，产品构建入口留S07。"
+      },
+      "implementation_method": "官方rmcp stdio与同源schema、Windows管道连接唯一Host；只有真实Commands能力被公布；具体依赖/部署取S05-04技术选型。",
+      "actual_implementation": null,
+      "behavior_source_ref": "docs/03_架构与契约/通用Agent接入与专业软件连接器.md",
+      "view_source_refs": {
+        "task_interaction": [
+          "docs/02_交互设计/交互流程与视图导航.json",
+          "docs/02_交互设计/首版表单与反馈.json"
+        ],
+        "structure_data": [
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "packages/domain/types.design.rs"
+        ],
+        "state_behavior": [
+          "docs/03_架构与契约/共享状态与所有权.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "integrations/agent/stdio-connector.design.json",
+          "docs/04_开发与验收/特征细化/DRF04_Host授权合入.json"
+        ],
+        "interface_collaboration": [
+          "packages/commands/api.design.rs",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "integrations/agent/stdio-connector.design.json",
+          "docs/04_开发与验收/特征细化/DRF04_Host授权合入.json"
+        ],
+        "presentation_UI": [
+          "docs/02_交互设计/工业工作台母版与字段细化.json",
+          "docs/02_交互设计/S04_可操作设计原型/README.md"
+        ],
+        "deployment_validation": [
+          "docs/03_架构与契约/首版技术栈与部署设计.json",
+          "docs/04_开发与验收/S05-05_关键架构实际试做.json",
+          "integrations/agent/stdio-connector.design.json",
+          "docs/04_开发与验收/特征细化/DRF04_Host授权合入.json"
+        ]
+      }
+    }
+  ],
+  "connections": [
+    {
+      "id": "CX01",
+      "title": "人工编辑共用命令",
+      "participants": [
+        "factory_ui",
+        "authoring_ui",
+        "packaging_ui",
+        "delivery_agent_ui",
+        "ui_host",
+        "desktop_host",
+        "commands"
+      ],
+      "contract_and_sequence": "Tauri invoke传同源Envelope，授权/修订核对后实际提交；UI请求不是直接改库存",
+      "requirement_basis": "Q06—12；F01—28",
+      "actual_result": null
+    },
+    {
+      "id": "CX02",
+      "title": "外部Agent同宿主",
+      "participants": [
+        "mcp_bridge",
+        "desktop_host",
+        "commands"
+      ],
+      "contract_and_sequence": "stdio桥连接已开宿主用户域命名管道，不自建Engine；tools/list只列实际能力",
+      "requirement_basis": "SF-11/17；P3-04",
+      "actual_result": null
+    },
+    {
+      "id": "CX03",
+      "title": "运行冻结/进度/事件",
+      "participants": [
+        "commands",
+        "simulation",
+        "desktop_host",
+        "ui_host",
+        "factory_ui"
+      ],
+      "contract_and_sequence": "冻结输入启动Worker，任务表关联结果，显示真实已形成状态或完成后回放；编辑不改当前Run",
+      "requirement_basis": "Q33；NFR08/09",
+      "actual_result": null
+    },
+    {
+      "id": "CX04",
+      "title": "九类采用/模板实例化",
+      "participants": [
+        "commands",
+        "module_kit",
+        "domain",
+        "ui_host",
+        "authoring_ui"
+      ],
+      "contract_and_sequence": "按类别载荷/版本/能力检查，生成新ID与角色/引用映射；种子单独确认，不复制Run库存",
+      "requirement_basis": "SF-04；Q20—29",
+      "actual_result": null
+    },
+    {
+      "id": "CX05",
+      "title": "3D对象与当前帧",
+      "participants": [
+        "presentation",
+        "factory_ui",
+        "ui_host",
+        "desktop_host",
+        "commands"
+      ],
+      "contract_and_sequence": "W03提供对象/部件/标签，W02拥有场景/相机/拾取；宿主RenderPort发指定修订/Run快照请求，UI回传关联帧，不返回旧图",
+      "requirement_basis": "SF-03/10；NFR01—04",
+      "actual_result": null
+    },
+    {
+      "id": "CX06",
+      "title": "纸包装进入工厂",
+      "participants": [
+        "commands",
+        "packaging",
+        "domain",
+        "packaging_ui",
+        "simulation"
+      ],
+      "contract_and_sequence": "实际专业结果→人的用途认可→消费者绑定→新工厂输入；专业不增库存，三态/制造/改版影响分别保存",
+      "requirement_basis": "IX-03；SF-12/13",
+      "actual_result": null
+    },
+    {
+      "id": "CX07",
+      "title": "报告同源渲染与四格式",
+      "participants": [
+        "commands",
+        "domain",
+        "reporting",
+        "desktop_host",
+        "ui_host",
+        "factory_ui",
+        "delivery_agent_ui"
+      ],
+      "contract_and_sequence": "Host先取得指定实际Run/条件/画面，再由reporting构造同源报告和四格式；Rust不能直接import TS renderer",
+      "requirement_basis": "SF-16；F24",
+      "actual_result": null
+    },
+    {
+      "id": "CX08",
+      "title": "保存/重开/交接",
+      "participants": [
+        "commands",
+        "reporting",
+        "desktop_host",
+        "ui_host",
+        "delivery_agent_ui"
+      ],
+      "contract_and_sequence": "W05 reporting/handoff子模块执行许可范围内格式/文件读写，W00宿主授权路径且唯一采用载入状态；相对引用/原文件保留",
+      "requirement_basis": "SF-14；F25/26",
+      "actual_result": null
+    },
+    {
+      "id": "CX09",
+      "title": "会话内可逆草稿",
+      "participants": [
+        "ui_host",
+        "desktop_host",
+        "commands",
+        "domain"
+      ],
+      "contract_and_sequence": "事务记录支持范围内可逆编辑，经新修订撤销；冲突不覆盖，认可/生产/外部文件不回滚",
+      "requirement_basis": "Q10；F27",
+      "actual_result": null
+    },
+    {
+      "id": "CX10",
+      "title": "任务取消和终态",
+      "participants": [
+        "ui_host",
+        "mcp_bridge",
+        "desktop_host",
+        "commands",
+        "simulation",
+        "packaging",
+        "reporting"
+      ],
+      "contract_and_sequence": "取消请求关联task_id和实际Worker，实际终态决定显示；已完成竞争不伪称取消或成功",
+      "requirement_basis": "NFR04/10/11；F22",
+      "actual_result": null
+    }
+  ],
+  "runtime_data_store": "宿主持有活动Project/当前草稿修订/会话可逆历史/任务表/实际Run与专业成果；模块库是版本数据，UI缓存是只读DTO，不新增持久化服务或第二Engine",
+  "render_service_boundary": "commands内定义实际必要RenderPort语义，由Host实现。Host送不可变输入快照及task/scene_revision到UI，UI完成实际绘制并回传关联图/元数据；缺renderer返回现有UnsupportedCapability及原因，不补假图。详细字段/回传机制S06-03；S05-05须实际接点试做",
+  "file_service_boundary": "用户选择路径/授权由Host校验；reporting/handoff子模块实现导入/保存/工程包格式与文件读写，唯Host加载为活动工程。W05不写W00宿主文件，W00消费W05生产者；不开新网络或独立库存",
+  "dependency_rules": [
+    "code_dependencies只表示编译/导入依赖；运行请求响应在connections，可有回传而不形成包导入循环",
+    "Rust包不import TypeScript；前端不直接import Rust运行对象，以同源DTO/命令和消息连接",
+    "公共类型及生成TS/schema只由domain/W00定义，所有功能前端消费同源；版本/完整结构S06落实",
+    "公共字段/表格/对话框/主题归shared_ui(W02，既有components/styles目录)；factory/authoring/packaging/delivery feature互不import；导航和选择通过ui_host公开上下文，由App组合。",
+    "P任务启动/验收依赖、S复审状态、MS成果与代码依赖分别处理；本项不新增barrier或派发"
+  ],
+  "future_boundary": "复杂路径/维修/建设/公用服务与其他专业仅边界说明；Unity/Blender/FreeCAD连接器不纳入首版实际能力；九类开放声明不冒充所有求解器",
+  "versions_and_full_types": "S05-04确定版本/部署/许可，S06-02/03/04完整类型/接口/算法；这些未完成不能以本项宣称全层设计冻结",
+  "source_records": [
+    {
+      "url": "https://v2.tauri.app/concept/architecture/",
+      "read_scope": "Introduction/JS API，Rust核心与WebView消息边界；不证明本产品运行"
+    },
+    {
+      "url": "https://v2.tauri.app/concept/inter-process-communication/",
+      "read_scope": "消息/commands与事件概述；单宿主与序列化是本项目额外设计"
+    },
+    {
+      "url": "https://c4model.com/diagrams/component",
+      "read_scope": "组件职责/技术与关系说明；仅参考分层表达，不声明C4认证"
+    }
+  ],
+  "actual_runtime": null,
+  "actual_Figma_or_frontend": null,
+  "review_ref": "docs/04_开发与验收/S05-01_包职责与依赖复审.json",
+  "task_component_projection": [
+    {
+      "task_id": "P0-01",
+      "component_ids": [
+        "desktop_host",
+        "domain",
+        "commands",
+        "planner_shell",
+        "ui_host"
+      ],
+      "actual_result": null
+    },
+    {
+      "task_id": "P0-02",
+      "component_ids": [
+        "domain",
+        "module_kit"
+      ],
+      "actual_result": null
+    },
+    {
+      "task_id": "P0-03",
+      "component_ids": [
+        "domain",
+        "commands",
+        "packaging",
+        "simulation"
+      ],
+      "actual_result": null
+    },
+    {
+      "task_id": "P1-01",
+      "component_ids": [
+        "simulation"
+      ],
+      "actual_result": null
+    },
+    {
+      "task_id": "P1-02",
+      "component_ids": [
+        "simulation"
+      ],
+      "actual_result": null
+    },
+    {
+      "task_id": "P1-03",
+      "component_ids": [
+        "simulation"
+      ],
+      "actual_result": null
+    },
+    {
+      "task_id": "P1-04",
+      "component_ids": [
+        "simulation"
+      ],
+      "actual_result": null
+    },
+    {
+      "task_id": "P1-05",
+      "component_ids": [
+        "simulation"
+      ],
+      "actual_result": null
+    },
+    {
+      "task_id": "P2-01",
+      "component_ids": [
+        "factory_ui",
+        "presentation",
+        "shared_ui"
+      ],
+      "actual_result": null
+    },
+    {
+      "task_id": "P2-02",
+      "component_ids": [
+        "simulation"
+      ],
+      "actual_result": null
+    },
+    {
+      "task_id": "P2-03",
+      "component_ids": [
+        "reporting",
+        "delivery_agent_ui",
+        "desktop_host",
+        "shared_ui"
+      ],
+      "actual_result": null
+    },
+    {
+      "task_id": "P2-04",
+      "component_ids": [
+        "factory_ui",
+        "simulation",
+        "shared_ui"
+      ],
+      "actual_result": null
+    },
+    {
+      "task_id": "P2-05",
+      "component_ids": [
+        "factory_ui",
+        "ui_host",
+        "commands",
+        "shared_ui"
+      ],
+      "actual_result": null
+    },
+    {
+      "task_id": "P2-06",
+      "component_ids": [
+        "reporting",
+        "delivery_agent_ui",
+        "shared_ui"
+      ],
+      "actual_result": null
+    },
+    {
+      "task_id": "P3-01",
+      "component_ids": [
+        "module_kit",
+        "authoring_ui",
+        "shared_ui"
+      ],
+      "actual_result": null
+    },
+    {
+      "task_id": "P3-02",
+      "component_ids": [
+        "presentation",
+        "authoring_ui",
+        "shared_ui"
+      ],
+      "actual_result": null
+    },
+    {
+      "task_id": "P3-03",
+      "component_ids": [
+        "presentation",
+        "authoring_ui",
+        "shared_ui"
+      ],
+      "actual_result": null
+    },
+    {
+      "task_id": "P3-04",
+      "component_ids": [
+        "mcp_bridge",
+        "delivery_agent_ui",
+        "commands",
+        "shared_ui"
+      ],
+      "actual_result": null
+    },
+    {
+      "task_id": "P4-01",
+      "component_ids": [
+        "module_kit",
+        "authoring_ui",
+        "shared_ui"
+      ],
+      "actual_result": null
+    },
+    {
+      "task_id": "P4-02",
+      "component_ids": [
+        "packaging",
+        "packaging_ui",
+        "shared_ui"
+      ],
+      "actual_result": null
+    },
+    {
+      "task_id": "P5-01",
+      "component_ids": [
+        "desktop_host",
+        "planner_shell",
+        "reporting"
+      ],
+      "actual_result": null
+    }
+  ],
+  "module_data_owners": {
+    "items": "W01",
+    "resources": "W01",
+    "tasks": "W01",
+    "operations": "W01",
+    "transport": "W01",
+    "devices": "W03",
+    "media": "W03",
+    "templates": "W03",
+    "professional": "W04"
+  },
+  "task_projection_rule": "component_ids列此任务实际生产者/消费者接点，不扩大原release_scope，P0-03仍只成果/认可/绑定部分",
+  "technical_selection_ref": "docs/03_架构与契约/首版技术栈与部署设计.json",
+  "shared_ui_contract": {
+    "public_entry": "apps/planner/src/components/index.ts",
+    "allowed_imports": [
+      "domain",
+      "own components/styles"
+    ],
+    "forbidden_feature_imports": [
+      "factory",
+      "timeline",
+      "business",
+      "modules",
+      "device-authoring",
+      "packaging",
+      "reporting",
+      "handoff",
+      "agent"
+    ],
+    "props": [
+      "value",
+      "unit",
+      "error",
+      "readOnly",
+      "disabled",
+      "onChange",
+      "onCommit"
+    ],
+    "business_actions": "调用方消费ui_host或Commands；公共控件不发业务请求",
+    "navigation": "ui_host既有选择/视图上下文传ObjectRef/RunId/时间；App组合功能面板；不新增业务API",
+    "migration": "仅改规划目录/依赖归属；目前无产品feature源码迁移。W02文件写权限不变。"
+  },
+  "architecture_quality_followup_ref": "docs/04_开发与验收/架构质量抽查修复.json",
+  "architecture_change_scenarios": [
+    {
+      "id": "CH01",
+      "stimulus": "公开已有受支持工艺耗时字段并改值",
+      "expected_locality": [
+        "module_kit",
+        "authoring_ui"
+      ],
+      "must_not_require": [
+        "新Engine/Domain字段",
+        "packaging",
+        "reporting"
+      ],
+      "verification": "canonical module Schema/真实绑定指针；保持唯一支持规则",
+      "proof_ref": "tools/architecture-quality-proof/output/aq03-aq05-change-result.json"
+    },
+    {
+      "id": "CH02",
+      "stimulus": "调整HTML报告表格排版",
+      "expected_locality": [
+        "reporting"
+      ],
+      "must_not_require": [
+        "simulation",
+        "domain",
+        "保存格式"
+      ],
+      "verification": "真实69数据行及所有可见文本在CSS变更前后相同",
+      "proof_ref": "tools/architecture-quality-proof/output/aq03-aq05-change-result.json"
+    },
+    {
+      "id": "CH03",
+      "stimulus": "公共数值控件增加可选precision",
+      "expected_locality": [
+        "shared_ui"
+      ],
+      "must_not_require": [
+        "factory_ui业务",
+        "Engine",
+        "报告指标算法"
+      ],
+      "verification": "三个隔离消费者在变更前后实际TS编译；禁止跨feature导入正反例",
+      "proof_ref": "tools/architecture-quality-proof/output/aq03-aq05-change-result.json"
+    }
+  ],
+  "equipment_model_quality_ref": "docs/02_交互设计/设备建模精度与表现验收规范.json"
+}

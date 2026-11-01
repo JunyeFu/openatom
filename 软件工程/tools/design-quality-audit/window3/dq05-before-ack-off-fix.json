@@ -1,0 +1,1365 @@
+{
+  "document_kind": "DQ05_window3_independent_actual_source_function_state_sequences",
+  "source_ref": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+  "source_observation": {
+    "mtime_ms": 1792029049221.7017,
+    "bytes": 98057,
+    "lines": 286
+  },
+  "actual_source_functions_executed": true,
+  "source_evidence": [
+    {
+      "line": 37,
+      "text": "function paperInput(p){return Object.fromEntries(Object.entries(p).filter(([k])=>!['angle','outcome','ack','bound'].includes(k)));}"
+    },
+    {
+      "line": 38,
+      "text": "function paperMatches(p=S.project.paper){return !!S.packResult&&JSON.stringify(S.packResult.input)===JSON.stringify(paperInput(p));}"
+    },
+    {
+      "line": 39,
+      "text": "function invalidatePaper(){S.project.paper.ack=false;S.project.paper.bound=false;}"
+    },
+    {
+      "line": 40,
+      "text": "function commit(kind,data){S.undo.push(copy(S.project));S.redo=[];if(kind==='pose'){Object.assign(S.project.devices.find(d=>d.id===S.selected),data);}else if(kind==='device'){S.project.instanceState[S.selected].config=copy(data);S.project.device=S.project.instanceState[S.selected].config;}else if(kind==='inputs'){S.project.order=copy(data.order);S.project.arrivals=copy(data.arrivals);}else S.project[kind]=copy(data);if(kind==='paper'&&!paperMatches())invalidatePaper();S.revision++;log('local_prototype_apply',kind);view.setProject(S.project);}"
+    },
+    {
+      "line": 41,
+      "text": "function restoreDraft(saved){const current=copy(S.project.paper);S.project=saved;const same=JSON.stringify(paperInput(current))===JSON.stringify(paperInput(S.project.paper));S.project.paper.ack=current.ack&&same&&paperMatches();S.project.paper.bound=current.bound&&same&&paperMatches();S.form=null;S.revision++;render();}"
+    },
+    {
+      "line": 245,
+      "text": "    case 'paper-check':if(S.form?.dirty&&!apply())return;S.project.paper.outcome=S.form?.data.outcome||S.project.paper.outcome;invalidatePaper();S.packResult={outcome:S.project.paper.outcome,productRevision:S.project.paper.productRevision,input:copy(paperInput(S.project.paper)),source_kind:'manual_expected',actual_provider:false};renderWorkspace();break;"
+    },
+    {
+      "line": 246,
+      "text": "    case 'paper-bind':if(S.form?.dirty||S.packResult?.outcome!=='pass'||!paperMatches()||!S.project.paper.ack){notice('不能绑定：需已应用输入、匹配几何/材料/机制的Pass及显式用途认可');return;}S.project.paper.bound=true;S.revision++;renderWorkspace();break;"
+    },
+    {
+      "line": 247,
+      "text": "    case 'paper-change':S.project.paper.productRevision='2.0.0';S.project.paper.ack=false;S.project.paper.bound=false;S.form=null;S.revision++;render();notice('产品改版，旧认可与绑定待复核');break;"
+    },
+    {
+      "line": 271,
+      "text": "document.addEventListener('change',e=>{const el=e.target;if(el.id==='media-mode'){S.project.media.mode=el.value;S.revision++;render();}if(el.id==='paper-outcome'){S.project.paper.outcome=el.value;if(S.form?.kind==='paper')S.form.data.outcome=el.value;S.packResult=null;invalidatePaper();}if(el.id==='paper-ack'){S.project.paper.ack=el.checked&&paperMatches()&&S.packResult.outcome==='pass';el.checked=S.project.paper.ack;}if(el.id==='unit-picker'){S.selectedUnit=el.value;renderWorkspace();}if(el.id==='agent-case'){S.agent.scenario=el.value;S.agent.accepted=el.value==='three'?6:2;S.agent.rounds=0;S.agent.stop=null;renderWorkspace();}if(el.id==='allow-repair'&&S.form){S.form.data.allowRepair=el.checked;S.form.dirty=true;}});"
+    }
+  ],
+  "harness": {
+    "only_import_and_browser_bootstrap_omitted": true,
+    "UI_DOM_SceneView_timers_stubbed": true,
+    "renderer_functions_stubbed": true,
+    "professional_functions_or_action_handlers_replaced": false,
+    "service_started": false,
+    "Figma_used": false,
+    "owner_tests_or_PASS_read": false
+  },
+  "oracle": {
+    "source": "independently stated lifecycle obligations, not prototype own paperMatches or owner test expected values",
+    "input_keys": [
+      "mechanism",
+      "width",
+      "depth",
+      "height",
+      "thickness",
+      "productRevision"
+    ],
+    "independent_result_snapshot_assertions": true
+  },
+  "harness_corrections": [
+    "Numeric geometric comparison uses numeric meaning, not UI storage string/number; full canonical DTO typing is outside this prototype probe.",
+    "Angle uses the actual fold-angle range listener; no nonexistent angle data-field control.",
+    "Undo of a nonprofessional edit uses the actual A01 rotate action; preview angle itself need not create undo history."
+  ],
+  "case_count": 18,
+  "passed": 17,
+  "failed": 1,
+  "cases": [
+    {
+      "id": "DQ05-width",
+      "meaning": "same product version: width change invalidates old effective approval/binding",
+      "passed": true,
+      "trace": [
+        {
+          "label": "old160/Pass/approved/bound",
+          "revision": 2,
+          "paper": {
+            "mechanism": "tuck_carton",
+            "width": 160,
+            "depth": 100,
+            "height": 80,
+            "thickness": 0.5,
+            "productRevision": "1.0.0",
+            "angle": 0,
+            "outcome": "pass",
+            "ack": true,
+            "bound": true
+          },
+          "form": null,
+          "result": {
+            "outcome": "pass",
+            "productRevision": "1.0.0",
+            "input": {
+              "mechanism": "tuck_carton",
+              "width": 160,
+              "depth": 100,
+              "height": 80,
+              "thickness": 0.5,
+              "productRevision": "1.0.0"
+            },
+            "source_kind": "manual_expected",
+            "actual_provider": false
+          },
+          "undo": 0,
+          "redo": 0,
+          "latest_notice": null
+        },
+        {
+          "label": "semantic change applied",
+          "revision": 3,
+          "paper": {
+            "mechanism": "tuck_carton",
+            "width": 200,
+            "depth": 100,
+            "height": 80,
+            "thickness": 0.5,
+            "productRevision": "1.0.0",
+            "angle": 0,
+            "outcome": "pass",
+            "ack": false,
+            "bound": false
+          },
+          "form": null,
+          "result": {
+            "outcome": "pass",
+            "productRevision": "1.0.0",
+            "input": {
+              "mechanism": "tuck_carton",
+              "width": 160,
+              "depth": 100,
+              "height": 80,
+              "thickness": 0.5,
+              "productRevision": "1.0.0"
+            },
+            "source_kind": "manual_expected",
+            "actual_provider": false
+          },
+          "undo": 1,
+          "redo": 0,
+          "latest_notice": "已应用到原型草稿；尚未保存"
+        },
+        {
+          "label": "stale bind attempted",
+          "revision": 3,
+          "paper": {
+            "mechanism": "tuck_carton",
+            "width": 200,
+            "depth": 100,
+            "height": 80,
+            "thickness": 0.5,
+            "productRevision": "1.0.0",
+            "angle": 0,
+            "outcome": "pass",
+            "ack": false,
+            "bound": false
+          },
+          "form": null,
+          "result": {
+            "outcome": "pass",
+            "productRevision": "1.0.0",
+            "input": {
+              "mechanism": "tuck_carton",
+              "width": 160,
+              "depth": 100,
+              "height": 80,
+              "thickness": 0.5,
+              "productRevision": "1.0.0"
+            },
+            "source_kind": "manual_expected",
+            "actual_provider": false
+          },
+          "undo": 1,
+          "redo": 0,
+          "latest_notice": "不能绑定：需已应用输入、匹配几何/材料/机制的Pass及显式用途认可"
+        }
+      ]
+    },
+    {
+      "id": "DQ05-thickness",
+      "meaning": "same product version: thickness change invalidates old effective approval/binding",
+      "passed": true,
+      "trace": [
+        {
+          "label": "old160/Pass/approved/bound",
+          "revision": 2,
+          "paper": {
+            "mechanism": "tuck_carton",
+            "width": 160,
+            "depth": 100,
+            "height": 80,
+            "thickness": 0.5,
+            "productRevision": "1.0.0",
+            "angle": 0,
+            "outcome": "pass",
+            "ack": true,
+            "bound": true
+          },
+          "form": null,
+          "result": {
+            "outcome": "pass",
+            "productRevision": "1.0.0",
+            "input": {
+              "mechanism": "tuck_carton",
+              "width": 160,
+              "depth": 100,
+              "height": 80,
+              "thickness": 0.5,
+              "productRevision": "1.0.0"
+            },
+            "source_kind": "manual_expected",
+            "actual_provider": false
+          },
+          "undo": 0,
+          "redo": 0,
+          "latest_notice": null
+        },
+        {
+          "label": "semantic change applied",
+          "revision": 3,
+          "paper": {
+            "mechanism": "tuck_carton",
+            "width": 160,
+            "depth": 100,
+            "height": 80,
+            "thickness": 0.8,
+            "productRevision": "1.0.0",
+            "angle": 0,
+            "outcome": "pass",
+            "ack": false,
+            "bound": false
+          },
+          "form": null,
+          "result": {
+            "outcome": "pass",
+            "productRevision": "1.0.0",
+            "input": {
+              "mechanism": "tuck_carton",
+              "width": 160,
+              "depth": 100,
+              "height": 80,
+              "thickness": 0.5,
+              "productRevision": "1.0.0"
+            },
+            "source_kind": "manual_expected",
+            "actual_provider": false
+          },
+          "undo": 1,
+          "redo": 0,
+          "latest_notice": "已应用到原型草稿；尚未保存"
+        },
+        {
+          "label": "stale bind attempted",
+          "revision": 3,
+          "paper": {
+            "mechanism": "tuck_carton",
+            "width": 160,
+            "depth": 100,
+            "height": 80,
+            "thickness": 0.8,
+            "productRevision": "1.0.0",
+            "angle": 0,
+            "outcome": "pass",
+            "ack": false,
+            "bound": false
+          },
+          "form": null,
+          "result": {
+            "outcome": "pass",
+            "productRevision": "1.0.0",
+            "input": {
+              "mechanism": "tuck_carton",
+              "width": 160,
+              "depth": 100,
+              "height": 80,
+              "thickness": 0.5,
+              "productRevision": "1.0.0"
+            },
+            "source_kind": "manual_expected",
+            "actual_provider": false
+          },
+          "undo": 1,
+          "redo": 0,
+          "latest_notice": "不能绑定：需已应用输入、匹配几何/材料/机制的Pass及显式用途认可"
+        }
+      ]
+    },
+    {
+      "id": "DQ05-mechanism",
+      "meaning": "same product version: mechanism change invalidates old effective approval/binding",
+      "passed": true,
+      "trace": [
+        {
+          "label": "old160/Pass/approved/bound",
+          "revision": 2,
+          "paper": {
+            "mechanism": "tuck_carton",
+            "width": 160,
+            "depth": 100,
+            "height": 80,
+            "thickness": 0.5,
+            "productRevision": "1.0.0",
+            "angle": 0,
+            "outcome": "pass",
+            "ack": true,
+            "bound": true
+          },
+          "form": null,
+          "result": {
+            "outcome": "pass",
+            "productRevision": "1.0.0",
+            "input": {
+              "mechanism": "tuck_carton",
+              "width": 160,
+              "depth": 100,
+              "height": 80,
+              "thickness": 0.5,
+              "productRevision": "1.0.0"
+            },
+            "source_kind": "manual_expected",
+            "actual_provider": false
+          },
+          "undo": 0,
+          "redo": 0,
+          "latest_notice": null
+        },
+        {
+          "label": "semantic change applied",
+          "revision": 3,
+          "paper": {
+            "mechanism": "tray_sleeve",
+            "width": 160,
+            "depth": 100,
+            "height": 80,
+            "thickness": 0.5,
+            "productRevision": "1.0.0",
+            "angle": 0,
+            "outcome": "pass",
+            "ack": false,
+            "bound": false
+          },
+          "form": null,
+          "result": {
+            "outcome": "pass",
+            "productRevision": "1.0.0",
+            "input": {
+              "mechanism": "tuck_carton",
+              "width": 160,
+              "depth": 100,
+              "height": 80,
+              "thickness": 0.5,
+              "productRevision": "1.0.0"
+            },
+            "source_kind": "manual_expected",
+            "actual_provider": false
+          },
+          "undo": 1,
+          "redo": 0,
+          "latest_notice": "已应用到原型草稿；尚未保存"
+        },
+        {
+          "label": "stale bind attempted",
+          "revision": 3,
+          "paper": {
+            "mechanism": "tray_sleeve",
+            "width": 160,
+            "depth": 100,
+            "height": 80,
+            "thickness": 0.5,
+            "productRevision": "1.0.0",
+            "angle": 0,
+            "outcome": "pass",
+            "ack": false,
+            "bound": false
+          },
+          "form": null,
+          "result": {
+            "outcome": "pass",
+            "productRevision": "1.0.0",
+            "input": {
+              "mechanism": "tuck_carton",
+              "width": 160,
+              "depth": 100,
+              "height": 80,
+              "thickness": 0.5,
+              "productRevision": "1.0.0"
+            },
+            "source_kind": "manual_expected",
+            "actual_provider": false
+          },
+          "undo": 1,
+          "redo": 0,
+          "latest_notice": "不能绑定：需已应用输入、匹配几何/材料/机制的Pass及显式用途认可"
+        }
+      ]
+    },
+    {
+      "id": "DQ05-depth",
+      "meaning": "same product version: depth change invalidates old effective approval/binding",
+      "passed": true,
+      "trace": [
+        {
+          "label": "old160/Pass/approved/bound",
+          "revision": 2,
+          "paper": {
+            "mechanism": "tuck_carton",
+            "width": 160,
+            "depth": 100,
+            "height": 80,
+            "thickness": 0.5,
+            "productRevision": "1.0.0",
+            "angle": 0,
+            "outcome": "pass",
+            "ack": true,
+            "bound": true
+          },
+          "form": null,
+          "result": {
+            "outcome": "pass",
+            "productRevision": "1.0.0",
+            "input": {
+              "mechanism": "tuck_carton",
+              "width": 160,
+              "depth": 100,
+              "height": 80,
+              "thickness": 0.5,
+              "productRevision": "1.0.0"
+            },
+            "source_kind": "manual_expected",
+            "actual_provider": false
+          },
+          "undo": 0,
+          "redo": 0,
+          "latest_notice": null
+        },
+        {
+          "label": "semantic change applied",
+          "revision": 3,
+          "paper": {
+            "mechanism": "tuck_carton",
+            "width": 160,
+            "depth": "125",
+            "height": 80,
+            "thickness": 0.5,
+            "productRevision": "1.0.0",
+            "angle": 0,
+            "outcome": "pass",
+            "ack": false,
+            "bound": false
+          },
+          "form": null,
+          "result": {
+            "outcome": "pass",
+            "productRevision": "1.0.0",
+            "input": {
+              "mechanism": "tuck_carton",
+              "width": 160,
+              "depth": 100,
+              "height": 80,
+              "thickness": 0.5,
+              "productRevision": "1.0.0"
+            },
+            "source_kind": "manual_expected",
+            "actual_provider": false
+          },
+          "undo": 1,
+          "redo": 0,
+          "latest_notice": "已应用到原型草稿；尚未保存"
+        },
+        {
+          "label": "stale bind attempted",
+          "revision": 3,
+          "paper": {
+            "mechanism": "tuck_carton",
+            "width": 160,
+            "depth": "125",
+            "height": 80,
+            "thickness": 0.5,
+            "productRevision": "1.0.0",
+            "angle": 0,
+            "outcome": "pass",
+            "ack": false,
+            "bound": false
+          },
+          "form": null,
+          "result": {
+            "outcome": "pass",
+            "productRevision": "1.0.0",
+            "input": {
+              "mechanism": "tuck_carton",
+              "width": 160,
+              "depth": 100,
+              "height": 80,
+              "thickness": 0.5,
+              "productRevision": "1.0.0"
+            },
+            "source_kind": "manual_expected",
+            "actual_provider": false
+          },
+          "undo": 1,
+          "redo": 0,
+          "latest_notice": "不能绑定：需已应用输入、匹配几何/材料/机制的Pass及显式用途认可"
+        }
+      ]
+    },
+    {
+      "id": "DQ05-height",
+      "meaning": "same product version: height change invalidates old effective approval/binding",
+      "passed": true,
+      "trace": [
+        {
+          "label": "old160/Pass/approved/bound",
+          "revision": 2,
+          "paper": {
+            "mechanism": "tuck_carton",
+            "width": 160,
+            "depth": 100,
+            "height": 80,
+            "thickness": 0.5,
+            "productRevision": "1.0.0",
+            "angle": 0,
+            "outcome": "pass",
+            "ack": true,
+            "bound": true
+          },
+          "form": null,
+          "result": {
+            "outcome": "pass",
+            "productRevision": "1.0.0",
+            "input": {
+              "mechanism": "tuck_carton",
+              "width": 160,
+              "depth": 100,
+              "height": 80,
+              "thickness": 0.5,
+              "productRevision": "1.0.0"
+            },
+            "source_kind": "manual_expected",
+            "actual_provider": false
+          },
+          "undo": 0,
+          "redo": 0,
+          "latest_notice": null
+        },
+        {
+          "label": "semantic change applied",
+          "revision": 3,
+          "paper": {
+            "mechanism": "tuck_carton",
+            "width": 160,
+            "depth": 100,
+            "height": 95,
+            "thickness": 0.5,
+            "productRevision": "1.0.0",
+            "angle": 0,
+            "outcome": "pass",
+            "ack": false,
+            "bound": false
+          },
+          "form": null,
+          "result": {
+            "outcome": "pass",
+            "productRevision": "1.0.0",
+            "input": {
+              "mechanism": "tuck_carton",
+              "width": 160,
+              "depth": 100,
+              "height": 80,
+              "thickness": 0.5,
+              "productRevision": "1.0.0"
+            },
+            "source_kind": "manual_expected",
+            "actual_provider": false
+          },
+          "undo": 1,
+          "redo": 0,
+          "latest_notice": "已应用到原型草稿；尚未保存"
+        },
+        {
+          "label": "stale bind attempted",
+          "revision": 3,
+          "paper": {
+            "mechanism": "tuck_carton",
+            "width": 160,
+            "depth": 100,
+            "height": 95,
+            "thickness": 0.5,
+            "productRevision": "1.0.0",
+            "angle": 0,
+            "outcome": "pass",
+            "ack": false,
+            "bound": false
+          },
+          "form": null,
+          "result": {
+            "outcome": "pass",
+            "productRevision": "1.0.0",
+            "input": {
+              "mechanism": "tuck_carton",
+              "width": 160,
+              "depth": 100,
+              "height": 80,
+              "thickness": 0.5,
+              "productRevision": "1.0.0"
+            },
+            "source_kind": "manual_expected",
+            "actual_provider": false
+          },
+          "undo": 1,
+          "redo": 0,
+          "latest_notice": "不能绑定：需已应用输入、匹配几何/材料/机制的Pass及显式用途认可"
+        }
+      ]
+    },
+    {
+      "id": "DQ05-reload-width",
+      "meaning": "changed input -> explicit matching sample -> new purpose acknowledgment -> bind",
+      "passed": true,
+      "trace": [
+        {
+          "label": "matching manual sample loaded",
+          "revision": 3,
+          "paper": {
+            "mechanism": "tuck_carton",
+            "width": 200,
+            "depth": 100,
+            "height": 80,
+            "thickness": 0.5,
+            "productRevision": "1.0.0",
+            "angle": 0,
+            "outcome": "pass",
+            "ack": false,
+            "bound": false
+          },
+          "form": null,
+          "result": {
+            "outcome": "pass",
+            "productRevision": "1.0.0",
+            "input": {
+              "mechanism": "tuck_carton",
+              "width": 200,
+              "depth": 100,
+              "height": 80,
+              "thickness": 0.5,
+              "productRevision": "1.0.0"
+            },
+            "source_kind": "manual_expected",
+            "actual_provider": false
+          },
+          "undo": 1,
+          "redo": 0,
+          "latest_notice": "已应用到原型草稿；尚未保存"
+        },
+        {
+          "label": "explicit acknowledgment then binding",
+          "revision": 4,
+          "paper": {
+            "mechanism": "tuck_carton",
+            "width": 200,
+            "depth": 100,
+            "height": 80,
+            "thickness": 0.5,
+            "productRevision": "1.0.0",
+            "angle": 0,
+            "outcome": "pass",
+            "ack": true,
+            "bound": true
+          },
+          "form": null,
+          "result": {
+            "outcome": "pass",
+            "productRevision": "1.0.0",
+            "input": {
+              "mechanism": "tuck_carton",
+              "width": 200,
+              "depth": 100,
+              "height": 80,
+              "thickness": 0.5,
+              "productRevision": "1.0.0"
+            },
+            "source_kind": "manual_expected",
+            "actual_provider": false
+          },
+          "undo": 1,
+          "redo": 0,
+          "latest_notice": "不能绑定：需已应用输入、匹配几何/材料/机制的Pass及显式用途认可"
+        }
+      ]
+    },
+    {
+      "id": "DQ05-reload-thickness",
+      "meaning": "changed input -> explicit matching sample -> new purpose acknowledgment -> bind",
+      "passed": true,
+      "trace": [
+        {
+          "label": "matching manual sample loaded",
+          "revision": 3,
+          "paper": {
+            "mechanism": "tuck_carton",
+            "width": 160,
+            "depth": 100,
+            "height": 80,
+            "thickness": 0.8,
+            "productRevision": "1.0.0",
+            "angle": 0,
+            "outcome": "pass",
+            "ack": false,
+            "bound": false
+          },
+          "form": null,
+          "result": {
+            "outcome": "pass",
+            "productRevision": "1.0.0",
+            "input": {
+              "mechanism": "tuck_carton",
+              "width": 160,
+              "depth": 100,
+              "height": 80,
+              "thickness": 0.8,
+              "productRevision": "1.0.0"
+            },
+            "source_kind": "manual_expected",
+            "actual_provider": false
+          },
+          "undo": 1,
+          "redo": 0,
+          "latest_notice": "已应用到原型草稿；尚未保存"
+        },
+        {
+          "label": "explicit acknowledgment then binding",
+          "revision": 4,
+          "paper": {
+            "mechanism": "tuck_carton",
+            "width": 160,
+            "depth": 100,
+            "height": 80,
+            "thickness": 0.8,
+            "productRevision": "1.0.0",
+            "angle": 0,
+            "outcome": "pass",
+            "ack": true,
+            "bound": true
+          },
+          "form": null,
+          "result": {
+            "outcome": "pass",
+            "productRevision": "1.0.0",
+            "input": {
+              "mechanism": "tuck_carton",
+              "width": 160,
+              "depth": 100,
+              "height": 80,
+              "thickness": 0.8,
+              "productRevision": "1.0.0"
+            },
+            "source_kind": "manual_expected",
+            "actual_provider": false
+          },
+          "undo": 1,
+          "redo": 0,
+          "latest_notice": "不能绑定：需已应用输入、匹配几何/材料/机制的Pass及显式用途认可"
+        }
+      ]
+    },
+    {
+      "id": "DQ05-reload-mechanism",
+      "meaning": "changed input -> explicit matching sample -> new purpose acknowledgment -> bind",
+      "passed": true,
+      "trace": [
+        {
+          "label": "matching manual sample loaded",
+          "revision": 3,
+          "paper": {
+            "mechanism": "tray_sleeve",
+            "width": 160,
+            "depth": 100,
+            "height": 80,
+            "thickness": 0.5,
+            "productRevision": "1.0.0",
+            "angle": 0,
+            "outcome": "pass",
+            "ack": false,
+            "bound": false
+          },
+          "form": null,
+          "result": {
+            "outcome": "pass",
+            "productRevision": "1.0.0",
+            "input": {
+              "mechanism": "tray_sleeve",
+              "width": 160,
+              "depth": 100,
+              "height": 80,
+              "thickness": 0.5,
+              "productRevision": "1.0.0"
+            },
+            "source_kind": "manual_expected",
+            "actual_provider": false
+          },
+          "undo": 1,
+          "redo": 0,
+          "latest_notice": "已应用到原型草稿；尚未保存"
+        },
+        {
+          "label": "explicit acknowledgment then binding",
+          "revision": 4,
+          "paper": {
+            "mechanism": "tray_sleeve",
+            "width": 160,
+            "depth": 100,
+            "height": 80,
+            "thickness": 0.5,
+            "productRevision": "1.0.0",
+            "angle": 0,
+            "outcome": "pass",
+            "ack": true,
+            "bound": true
+          },
+          "form": null,
+          "result": {
+            "outcome": "pass",
+            "productRevision": "1.0.0",
+            "input": {
+              "mechanism": "tray_sleeve",
+              "width": 160,
+              "depth": 100,
+              "height": 80,
+              "thickness": 0.5,
+              "productRevision": "1.0.0"
+            },
+            "source_kind": "manual_expected",
+            "actual_provider": false
+          },
+          "undo": 1,
+          "redo": 0,
+          "latest_notice": "不能绑定：需已应用输入、匹配几何/材料/机制的Pass及显式用途认可"
+        }
+      ]
+    },
+    {
+      "id": "DQ05-new-same-input-result",
+      "meaning": "reloading a new Pass sample for identical input does not borrow old result acknowledgment",
+      "passed": true,
+      "trace": [
+        {
+          "label": "new sample for same input",
+          "revision": 2,
+          "paper": {
+            "mechanism": "tuck_carton",
+            "width": 160,
+            "depth": 100,
+            "height": 80,
+            "thickness": 0.5,
+            "productRevision": "1.0.0",
+            "angle": 0,
+            "outcome": "pass",
+            "ack": false,
+            "bound": false
+          },
+          "form": null,
+          "result": {
+            "outcome": "pass",
+            "productRevision": "1.0.0",
+            "input": {
+              "mechanism": "tuck_carton",
+              "width": 160,
+              "depth": 100,
+              "height": 80,
+              "thickness": 0.5,
+              "productRevision": "1.0.0"
+            },
+            "source_kind": "manual_expected",
+            "actual_provider": false
+          },
+          "undo": 0,
+          "redo": 0,
+          "latest_notice": null
+        }
+      ]
+    },
+    {
+      "id": "DQ05-undo-after-change",
+      "meaning": "undo geometry must not recreate acknowledgment/binding from draft snapshot",
+      "passed": true,
+      "trace": [
+        {
+          "label": "undo to160",
+          "revision": 4,
+          "paper": {
+            "mechanism": "tuck_carton",
+            "width": 160,
+            "depth": 100,
+            "height": 80,
+            "thickness": 0.5,
+            "productRevision": "1.0.0",
+            "angle": 0,
+            "outcome": "pass",
+            "ack": false,
+            "bound": false
+          },
+          "form": null,
+          "result": {
+            "outcome": "pass",
+            "productRevision": "1.0.0",
+            "input": {
+              "mechanism": "tuck_carton",
+              "width": 160,
+              "depth": 100,
+              "height": 80,
+              "thickness": 0.5,
+              "productRevision": "1.0.0"
+            },
+            "source_kind": "manual_expected",
+            "actual_provider": false
+          },
+          "undo": 0,
+          "redo": 1,
+          "latest_notice": "已撤销草稿；样例/认可/下载文件未回滚"
+        }
+      ]
+    },
+    {
+      "id": "DQ05-undo-new-result",
+      "meaning": "undo160 after approved200 must not attach200 result/ack to160; redo creates no approval",
+      "passed": true,
+      "trace": [
+        {
+          "label": "undo to160 with200 result retained",
+          "revision": 5,
+          "paper": {
+            "mechanism": "tuck_carton",
+            "width": 160,
+            "depth": 100,
+            "height": 80,
+            "thickness": 0.5,
+            "productRevision": "1.0.0",
+            "angle": 0,
+            "outcome": "pass",
+            "ack": false,
+            "bound": false
+          },
+          "form": null,
+          "result": {
+            "outcome": "pass",
+            "productRevision": "1.0.0",
+            "input": {
+              "mechanism": "tuck_carton",
+              "width": 200,
+              "depth": 100,
+              "height": 80,
+              "thickness": 0.5,
+              "productRevision": "1.0.0"
+            },
+            "source_kind": "manual_expected",
+            "actual_provider": false
+          },
+          "undo": 0,
+          "redo": 1,
+          "latest_notice": "已撤销草稿；样例/认可/下载文件未回滚"
+        },
+        {
+          "label": "redo200 with no new acknowledgment",
+          "revision": 6,
+          "paper": {
+            "mechanism": "tuck_carton",
+            "width": 200,
+            "depth": 100,
+            "height": 80,
+            "thickness": 0.5,
+            "productRevision": "1.0.0",
+            "angle": 0,
+            "outcome": "pass",
+            "ack": false,
+            "bound": false
+          },
+          "form": null,
+          "result": {
+            "outcome": "pass",
+            "productRevision": "1.0.0",
+            "input": {
+              "mechanism": "tuck_carton",
+              "width": 200,
+              "depth": 100,
+              "height": 80,
+              "thickness": 0.5,
+              "productRevision": "1.0.0"
+            },
+            "source_kind": "manual_expected",
+            "actual_provider": false
+          },
+          "undo": 1,
+          "redo": 0,
+          "latest_notice": "不能绑定：需已应用输入、匹配几何/材料/机制的Pass及显式用途认可"
+        }
+      ]
+    },
+    {
+      "id": "DQ05-display-angle",
+      "meaning": "fold/open/range are declared viewing changes and keep same valid result/ack/binding",
+      "passed": true,
+      "trace": [
+        {
+          "label": "before visual range",
+          "revision": 2,
+          "paper": {
+            "mechanism": "tuck_carton",
+            "width": 160,
+            "depth": 100,
+            "height": 80,
+            "thickness": 0.5,
+            "productRevision": "1.0.0",
+            "angle": 20,
+            "outcome": "pass",
+            "ack": true,
+            "bound": true
+          },
+          "form": null,
+          "result": {
+            "outcome": "pass",
+            "productRevision": "1.0.0",
+            "input": {
+              "mechanism": "tuck_carton",
+              "width": 160,
+              "depth": 100,
+              "height": 80,
+              "thickness": 0.5,
+              "productRevision": "1.0.0"
+            },
+            "source_kind": "manual_expected",
+            "actual_provider": false
+          },
+          "undo": 0,
+          "redo": 0,
+          "latest_notice": null
+        },
+        {
+          "label": "view angle35 displayed",
+          "revision": 2,
+          "paper": {
+            "mechanism": "tuck_carton",
+            "width": 160,
+            "depth": 100,
+            "height": 80,
+            "thickness": 0.5,
+            "productRevision": "1.0.0",
+            "angle": 35,
+            "outcome": "pass",
+            "ack": true,
+            "bound": true
+          },
+          "form": {
+            "kind": "paper",
+            "data": {
+              "mechanism": "tuck_carton",
+              "width": 160,
+              "depth": 100,
+              "height": 80,
+              "thickness": 0.5,
+              "productRevision": "1.0.0",
+              "angle": 35,
+              "outcome": "pass",
+              "ack": true,
+              "bound": true
+            },
+            "base": 2,
+            "dirty": false
+          },
+          "result": {
+            "outcome": "pass",
+            "productRevision": "1.0.0",
+            "input": {
+              "mechanism": "tuck_carton",
+              "width": 160,
+              "depth": 100,
+              "height": 80,
+              "thickness": 0.5,
+              "productRevision": "1.0.0"
+            },
+            "source_kind": "manual_expected",
+            "actual_provider": false
+          },
+          "undo": 0,
+          "redo": 0,
+          "latest_notice": null
+        }
+      ]
+    },
+    {
+      "id": "DQ05-camera",
+      "meaning": "camera reset/back are pure display actions and do not clear valid professional state",
+      "passed": true,
+      "trace": [
+        {
+          "label": "camera actions",
+          "revision": 2,
+          "paper": {
+            "mechanism": "tuck_carton",
+            "width": 160,
+            "depth": 100,
+            "height": 80,
+            "thickness": 0.5,
+            "productRevision": "1.0.0",
+            "angle": 0,
+            "outcome": "pass",
+            "ack": true,
+            "bound": true
+          },
+          "form": null,
+          "result": {
+            "outcome": "pass",
+            "productRevision": "1.0.0",
+            "input": {
+              "mechanism": "tuck_carton",
+              "width": 160,
+              "depth": 100,
+              "height": 80,
+              "thickness": 0.5,
+              "productRevision": "1.0.0"
+            },
+            "source_kind": "manual_expected",
+            "actual_provider": false
+          },
+          "undo": 0,
+          "redo": 0,
+          "latest_notice": null
+        }
+      ]
+    },
+    {
+      "id": "DQ05-undo-unrelated-draft",
+      "meaning": "undo unrelated A01 layout rotation preserves current valid paper approval",
+      "passed": true,
+      "trace": [
+        {
+          "label": "undo unrelated device rotation",
+          "revision": 4,
+          "paper": {
+            "mechanism": "tuck_carton",
+            "width": 160,
+            "depth": 100,
+            "height": 80,
+            "thickness": 0.5,
+            "productRevision": "1.0.0",
+            "angle": 0,
+            "outcome": "pass",
+            "ack": true,
+            "bound": true
+          },
+          "form": null,
+          "result": {
+            "outcome": "pass",
+            "productRevision": "1.0.0",
+            "input": {
+              "mechanism": "tuck_carton",
+              "width": 160,
+              "depth": 100,
+              "height": 80,
+              "thickness": 0.5,
+              "productRevision": "1.0.0"
+            },
+            "source_kind": "manual_expected",
+            "actual_provider": false
+          },
+          "undo": 0,
+          "redo": 1,
+          "latest_notice": "已撤销草稿；样例/认可/下载文件未回滚"
+        }
+      ]
+    },
+    {
+      "id": "DQ05-fail",
+      "meaning": "non-Pass sample cannot acknowledge or bind",
+      "passed": true,
+      "trace": [
+        {
+          "label": "non-Pass acknowledgment/binding attempt",
+          "revision": 2,
+          "paper": {
+            "mechanism": "tuck_carton",
+            "width": 160,
+            "depth": 100,
+            "height": 80,
+            "thickness": 0.5,
+            "productRevision": "1.0.0",
+            "angle": 0,
+            "outcome": "fail",
+            "ack": false,
+            "bound": false
+          },
+          "form": null,
+          "result": {
+            "outcome": "fail",
+            "productRevision": "1.0.0",
+            "input": {
+              "mechanism": "tuck_carton",
+              "width": 160,
+              "depth": 100,
+              "height": 80,
+              "thickness": 0.5,
+              "productRevision": "1.0.0"
+            },
+            "source_kind": "manual_expected",
+            "actual_provider": false
+          },
+          "undo": 0,
+          "redo": 0,
+          "latest_notice": "不能绑定：需已应用输入、匹配几何/材料/机制的Pass及显式用途认可"
+        }
+      ]
+    },
+    {
+      "id": "DQ05-undetermined",
+      "meaning": "non-Pass sample cannot acknowledge or bind",
+      "passed": true,
+      "trace": [
+        {
+          "label": "non-Pass acknowledgment/binding attempt",
+          "revision": 2,
+          "paper": {
+            "mechanism": "tuck_carton",
+            "width": 160,
+            "depth": 100,
+            "height": 80,
+            "thickness": 0.5,
+            "productRevision": "1.0.0",
+            "angle": 0,
+            "outcome": "undetermined",
+            "ack": false,
+            "bound": false
+          },
+          "form": null,
+          "result": {
+            "outcome": "undetermined",
+            "productRevision": "1.0.0",
+            "input": {
+              "mechanism": "tuck_carton",
+              "width": 160,
+              "depth": 100,
+              "height": 80,
+              "thickness": 0.5,
+              "productRevision": "1.0.0"
+            },
+            "source_kind": "manual_expected",
+            "actual_provider": false
+          },
+          "undo": 0,
+          "redo": 0,
+          "latest_notice": "不能绑定：需已应用输入、匹配几何/材料/机制的Pass及显式用途认可"
+        }
+      ]
+    },
+    {
+      "id": "DQ05-revoke-current-use",
+      "meaning": "unchecking current purpose acknowledgment makes effective binding inactive",
+      "passed": false,
+      "error": "prototype must not still display active bound after acknowledgment is unchecked\n\ntrue !== false\n",
+      "trace": [
+        {
+          "label": "purpose acknowledgment unchecked",
+          "revision": 2,
+          "paper": {
+            "mechanism": "tuck_carton",
+            "width": 160,
+            "depth": 100,
+            "height": 80,
+            "thickness": 0.5,
+            "productRevision": "1.0.0",
+            "angle": 0,
+            "outcome": "pass",
+            "ack": false,
+            "bound": true
+          },
+          "form": null,
+          "result": {
+            "outcome": "pass",
+            "productRevision": "1.0.0",
+            "input": {
+              "mechanism": "tuck_carton",
+              "width": 160,
+              "depth": 100,
+              "height": 80,
+              "thickness": 0.5,
+              "productRevision": "1.0.0"
+            },
+            "source_kind": "manual_expected",
+            "actual_provider": false
+          },
+          "undo": 0,
+          "redo": 0,
+          "latest_notice": null
+        }
+      ]
+    },
+    {
+      "id": "DQ05-invalid-apply",
+      "meaning": "invalid pending width is not committed or treated as a newly computed sample",
+      "passed": true,
+      "trace": [
+        {
+          "label": "invalid calculation/sample request",
+          "revision": 2,
+          "paper": {
+            "mechanism": "tuck_carton",
+            "width": 160,
+            "depth": 100,
+            "height": 80,
+            "thickness": 0.5,
+            "productRevision": "1.0.0",
+            "angle": 0,
+            "outcome": "pass",
+            "ack": false,
+            "bound": false
+          },
+          "form": {
+            "kind": "paper",
+            "data": {
+              "mechanism": "tuck_carton",
+              "width": "",
+              "depth": 100,
+              "height": 80,
+              "thickness": 0.5,
+              "productRevision": "1.0.0",
+              "angle": 0,
+              "outcome": "pass",
+              "ack": true,
+              "bound": true
+            },
+            "base": 2,
+            "dirty": true
+          },
+          "result": {
+            "outcome": "pass",
+            "productRevision": "1.0.0",
+            "input": {
+              "mechanism": "tuck_carton",
+              "width": 160,
+              "depth": 100,
+              "height": 80,
+              "thickness": 0.5,
+              "productRevision": "1.0.0"
+            },
+            "source_kind": "manual_expected",
+            "actual_provider": false
+          },
+          "undo": 0,
+          "redo": 0,
+          "latest_notice": "必需项未完整：width"
+        }
+      ]
+    }
+  ],
+  "status": "blocker_independent_sequence_failed",
+  "actual_browser": false,
+  "actual_product_Host_or_Engine": false,
+  "actual_professional_solver": false,
+  "actual_human_or_industrial_acceptance": false
+}

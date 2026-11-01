@@ -1,0 +1,56 @@
+{
+  "batch": "B02-Q02",
+  "status": "accepted_by_AI",
+  "accepted_total_before_batch": 5,
+  "version_under_review": "1.1.0",
+  "equipment": [
+    {
+      "id": "suction-separator",
+      "input": "待分离的一张纸板，piece=1",
+      "output": "同一纸板，piece=1，presentation_state=separated",
+      "identity": "preserve",
+      "required_mechanism": "真空吸嘴与纸板上表面接触，升降后横移到出料带；auto末释放，unload空载复位"
+    },
+    {
+      "id": "paper-unwinder",
+      "input": "一批30m×0.5m×0.1mm纸材，卷装于可复用芯轴",
+      "output": "同一批30m纸材，presentation_state=unwound",
+      "identity": "preserve",
+      "required_mechanism": "实际持有纸材内的卷层递减、纸幅穿过导辊，auto末变为折叠收集的展开纸幅；不把纸材焊进设备模型"
+    },
+    {
+      "id": "paper-rewinder",
+      "input": "一批30m×0.5m×0.1mm展开纸幅",
+      "output": "同一批纸材，presentation_state=rolled",
+      "identity": "preserve",
+      "required_mechanism": "纸幅导入收卷轴，实际持有物的卷层递增；状态只由auto末的引擎物品属性改变"
+    },
+    {
+      "id": "slitter-rewinder",
+      "input": "一个30m×0.5m纸材卷批",
+      "output": "两个30m×0.25m的窄纸卷，各piece=1",
+      "identity": "transform_with_origin",
+      "required_mechanism": "一条纵切刀线、两条窄幅纸路和双收卷位；输出面积之和等于输入，无未声明废边"
+    },
+    {
+      "id": "rotary-sheet-cutter",
+      "input": "一个30m×0.5m纸材卷批",
+      "output": "60张0.5m×0.5m×0.1mm纸张，每张独立ItemId",
+      "identity": "transform_with_origin",
+      "required_mechanism": "横向回转刀与对刀辊、送纸导辊、逐张收纸位；不能用一个显示为60的纸箱代替60个真实输出物品"
+    }
+  ],
+  "batch_convention": "代表批数量以piece计，具体长度/幅宽/厚度另在ItemType声明并随Run冻结；本批不声称连续张力/材料力学求解。",
+  "presentation_state_contract": "ItemType声明的enum属性presentation_state选择同名物品媒体clip；同一状态下若声明state:phase clip，仅由当前实际持有Job的ActualMediaFrame驱动。Location、无Job、歧义Job不制造时钟。原closure媒体保持原有限状态行为。",
+  "acceptance": "逐机MQ八项、双LOD源重导出、接触、真实输出数量/来源、缺料/阶段资源/中断/输出堵塞、Native保存与新进程重开全部通过才计入。",
+  "formal_count_unchanged": false,
+  "source_progress": {
+    "ten_GLB_own_source_rebuild": "passed",
+    "product_decoder_views": 85,
+    "item_state_projection_checks": 6,
+    "typecheck": "passed",
+    "full_device_acceptance": "accepted_by_AI"
+  },
+  "accepted_increment": 5,
+  "formal_supported_device_count": 10
+}

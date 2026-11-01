@@ -1,0 +1,677 @@
+{
+  "document_kind": "DRF03_independent_readonly_S06_joint_semantic_design_review",
+  "reviewer": "复审窗口3",
+  "target_ref": "docs/04_开发与验收/S06-05_全层贯通设计与冻结复审.json",
+  "target_snapshot": {
+    "status": "in_progress_not_frozen",
+    "prerequisite_count": 29,
+    "unresolved_owner_gates": [
+      "S04-02视觉代审及FG01资源分类修正",
+      "独立窗口对五链/21任务联合复审结果回收"
+    ],
+    "actual_freeze": null
+  },
+  "status": "review_complete_no_additional_semantic_design_blocker_found",
+  "method": "逐条比对五链具体输入/因果效果/公共字段/真实源/独立预期/失败出口；21项逐项比对scope、六视图职责与具体有限验收。读取既有证据，不重跑已闭合核验；字段存在是必要辅助，不作为行为通过的唯一理由。",
+  "flows": [
+    {
+      "id": "F01",
+      "result": "no_additional_design_blocker",
+      "behavior_checked": [
+        "工程/方案编辑经新修订；库存从Scenario.initial_conditions/arrivals等明确输入建立，画布/模块定义不生成库存。",
+        "旧Run由id+input_ref和冻结输入解释；view_time只读取，computed_until_ms限制前缀；工作/等待半开区间与末刻事件不是同一种裁窗。",
+        "Wait/Claim/Phase关联真实execution/phase；computed_boundary续算替换而不叠加，结束标记不能仅按数值时间猜。"
+      ],
+      "fields": [
+        "RunResult.id/input_ref/computed_until_ms/whole_window_computed",
+        "WaitInterval.execution_ref/phase_ref/end_cause",
+        "ResourceClaim.phase_ref/interval_end_causes",
+        "PhaseWorkInterval.effective_progress_start_ms/effective_progress_end_ms"
+      ],
+      "expected_witness": "440/570秒、370—420等待与425返程分别作为完整手工事件对照；20项timeline包含截窗/末刻/结束原因。它们没有被改成实际Engine结果。",
+      "source_refs": [
+        "docs/03_架构与契约/调度与状态转换算法.json",
+        "docs/03_架构与契约/全层类型与工程格式.json#/timeline_runtime_contract",
+        "scenarios/从零搭建控制盒厂房/expected-timeline.design.json",
+        "tools/type-contract-proof/timeline-contract-cases.design.json"
+      ],
+      "later_gate": "实际Engine/产品时间轴与IX-01，不由DTO/代理原型代验。"
+    },
+    {
+      "id": "F02",
+      "result": "no_additional_design_blocker",
+      "behavior_checked": [
+        "同一Host/Commands及授权scope/base revision竞争提交；不信任外部自称认可，Actor私有授权与客户端JSON分离。",
+        "实际能力与缺场地/工时/日历先形成草稿；来源版本与创造预算守恒；撤销不回退累计创建预算。",
+        "初案目标已达只交单Run，FC06明确1capacityRun/0repair/0compare；不足才支持变量内最多3轮，FC07无变化不编辑/重跑，缺输入不伪称10000件。"
+      ],
+      "fields": [
+        "ScenarioInput.project_revision/scope",
+        "RunResult.goal_met/whole_window_computed",
+        "EvaluationReport.scenario_comparison",
+        "既有API request context project_revision/scope_revision与Host私有授权"
+      ],
+      "expected_witness": "GF02/03/04处理缺输入/缺模板/布局冲突；GF07+FC06是初案直交；FC07/08及后续不足分支不允许无效重跑或越权改字段。",
+      "source_refs": [
+        "docs/04_开发与验收/特征细化/DRF04_Host授权合入.json",
+        "integrations/agent/stdio-connector.design.json",
+        "scenarios/目标驱动建厂/acceptance.design.json",
+        "scenarios/目标驱动建厂/finite-cases.design.json"
+      ],
+      "later_gate": "实际Codex产品端到端调用/目标达成保留SF-17/IX关口；S05独立桌面/IPC试做不等同完整产品。"
+    },
+    {
+      "id": "F03",
+      "result": "no_additional_design_blocker",
+      "behavior_checked": [
+        "实际Template.adoption保存四源资源/准备/未认可声明/待匹配预设/延后seed/缺项，Project.template_adoptions持久承接；删除Issue不解除真正缺项。",
+        "完整layout/type/typed-obligation映射与明确资源绑定同一次提交；原0.1.0及七定义不改，BoardFinish0.2/template0.3为显式候选。",
+        "准备依已有Task/Route/同target-task-config真实marker首次执行并复用；phases与整段工时不叠加。released仅在本Job末有效阶段创建实际槽时施加；被阻塞结果仍属job，重试不再产出。",
+        "未选择实际匹配物品的PASS/PASS不是全局InspectionPreset；缺Product/BOM/Route/初始质量不得生成seed。当前模板本来是未齐输入草稿，这与设计字段缺口分开。"
+      ],
+      "fields": [
+        "TemplateSubset.adoption",
+        "ProjectState.template_adoptions",
+        "TemplateAdoption.resource_choices/preparation_bindings/imported_claims/inspection_presets/deferred_seed/missing_inputs",
+        "MaterialRoleQuantity.declared_output_quality",
+        "ImportDraft.proposed_data",
+        "TemplateInstantiation.subset"
+      ],
+      "expected_witness": "A4-04/06/09/15明确unresolved；A4-11/12/13检查生成槽/早放行/重试；A4-16/17映射重开；A4-19必须canonical_matched。19项并不是完整Host事务执行。",
+      "source_refs": [
+        "docs/04_开发与验收/特征细化/DRF03_C04_r4_公共增量.json",
+        "docs/04_开发与验收/特征细化/DRF03_C04_伴随材料消费契约.json",
+        "scenarios/九类模块采用/DRF03_C04_r4_独立预期.json",
+        "docs/04_开发与验收/特征细化/DRF03_C04_r4_核验结果.json"
+      ],
+      "later_gate": "实际九类产品加载/采用/新工程运行与用户接手，不由合法草稿或Shape通过代验。"
+    },
+    {
+      "id": "F04",
+      "result": "no_additional_design_blocker",
+      "behavior_checked": [
+        "公共compute_packaging_params及冻结Job明确材料/结构/局部接触/三机制三变化/过程/容差预算；整动作区间与连接保持不以终态取代。FixedPose指明part并校核保持，禁止跳到新Pose后Pass。",
+        "专业Fail、InvalidInput及Undetermined分开；必需目的/制造/可编辑内容非空覆盖，预算耗尽及不支持保持未知；材料/工时/库存不由几何或动画推断。",
+        "C02从工位声明的Job id/revision独立推导期望，而非待验artifact；完整profile→输入/实际结果→既有可信人工用途认可→精确消费者/operation绑定。ImportedProfessionalClaim无任何实际结果或认可字段。",
+        "C03按job_ref/step_id/progress/panel_id-Pose解释；专业u不是生产毫秒，有限样本不证明连续安全；旧Run/认可不被取消或新草稿反写。"
+      ],
+      "fields": [
+        "PackageStructureJob.revision/subject_ref/parts/steps/tolerance/budget",
+        "PackagingResult.job_ref/checks/supported_scope/outcome/process_poses/manufacturing_files/material_counts",
+        "ArtifactRecord.input_ref/result_ref/actual_outcome/evidence_origin",
+        "ArtifactAcknowledgment.accepted_scope/accepted_subject/decision_source",
+        "ConsumerBinding.expected_subject_revision/required_payload/operation_ref/acceptance_ref"
+      ],
+      "expected_witness": "原32几何/制造与6保持预期有Pass/Fail/Undetermined/输入拒绝；六构造Job和SVG回读只证明相应有限范围。C02原22/29/7及生成显式/未选/错类型反例涵盖缺范围/认可/结果/Job错配，不会缩小完整profile取通过。",
+      "source_refs": [
+        "packages/packaging/algorithm.design.json",
+        "docs/03_架构与契约/纸包装结构与过程算法.md",
+        "docs/03_架构与契约/纸包装数值与制造规则.md",
+        "docs/04_开发与验收/特征细化/DRF03_C02_专业绑定推导.json",
+        "tools/packaging-algorithm-proof/finite-expectations.json",
+        "tools/packaging-algorithm-proof/fixed-pose-expectations.json"
+      ],
+      "later_gate": "P4-02完整Rust专业内核/三机制完整真实算例/工业材料及真实工厂绑定；当前设计通过不替代。"
+    },
+    {
+      "id": "F05",
+      "result": "no_additional_design_blocker",
+      "behavior_checked": [
+        "供货目标不等库存；来源/在途/接收同ID及唯一holder，目的接受110秒与资源返程140秒分别发生；A/B最终125/205秒是完整事件手工预期。",
+        "比较相同起点/接受scope/观察窗，报告同源run_evaluations，未知成本保持null并列缺项；时间轴视点不裁剪完整Run总计。",
+        "跨目录重开保留版本、采用义务、合法资产与实际所选Run，缺依赖保存受保护草稿；无完整快照首版从共同起点重跑，不能承诺冷续跑或将其变为额外交付阻塞。",
+        "保存R不清R+1脏状态，同目标提交串行；Windows拒绝替换/保留旧文件是已有实际隔离接点，四格式69行/4页是type_fixture投影，不冒充产品printpdf或跨机结果。"
+      ],
+      "fields": [
+        "ScenarioInput.supplies",
+        "RunResult.transport/acceptance_events",
+        "EvaluationReport.run_evaluations/observation_window/scenario_comparison/module_versions/editable_project_ref/missing_conditions",
+        "CostEvaluation.inputs/lines/missing_conditions",
+        "ProjectState.template_adoptions",
+        "FileRef.path"
+      ],
+      "expected_witness": "两厂A/B事件表、模板交接原三模板90/150等手工时间，以及同源导出/保存接点各自独立标证据层；实际四格式回读不能替原产品接手/跨机预期。",
+      "source_refs": [
+        "scenarios/两厂房装配包装/expected-events.design.json",
+        "scenarios/模板与交接/expected-template-handoff.design.json",
+        "docs/04_开发与验收/特征细化/DRF05_完整定义.json",
+        "docs/04_开发与验收/特征细化/DRF05_四格式试做/projection-result.json",
+        "docs/04_开发与验收/特征细化/DRF05_四格式试做/save-contact-result.json"
+      ],
+      "later_gate": "S09/S11实际产品四格式、另一目录/机器、第三人接手、真实版本材料与IX证据。"
+    }
+  ],
+  "task_design_matrix_review": [
+    {
+      "task_id": "P0-01",
+      "view_count": 6,
+      "result": "no_additional_design_blocker",
+      "behavior_witness": "共同工程/Commands/撤销新修订/目录重开，旧Run与认可不回滚；独立Windows试做不是产品启动验收。",
+      "actual_source_refs": [
+        "docs/03_架构与契约/首版类型格式与操作契约.md",
+        "packages/module-kit/category-contracts.design.json",
+        "packages/domain/factory-generation.design.json",
+        "docs/03_架构与契约/全层类型与工程格式.json",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json"
+      ],
+      "independent_product_expectation": "实际Windows启动与断网普通编辑；对象/连接/单位重开一致；构建和重开用实际命令记录，不能只跑无依赖Rust烟测",
+      "view_check": "各任务scope/具体算法输入/共同类型与操作/实际原型入口/有限验收有明确连接；六视图不是六份实现文件，shared schema承担类型并通过各具体源细化行为。",
+      "product_status_preserved": "planned",
+      "actual_product_result": null
+    },
+    {
+      "task_id": "P0-02",
+      "view_count": 6,
+      "result": "no_additional_design_blocker",
+      "behavior_witness": "BOM/订单/路线/身份/holder/预留分开，未来到料不计当前库存，取消未开工不删除在制。",
+      "actual_source_refs": [
+        "docs/01_业务需求/订单工艺与物料分配.md",
+        "packages/domain/business-objects.design.json",
+        "scenarios/真实业务设计/business-inputs.design.json",
+        "docs/03_架构与契约/全层类型与工程格式.json",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json"
+      ],
+      "independent_product_expectation": "以真实业务输入构造/保存/重开数据；重复分配被拒绝，取消不删除在制，未到料不成为当前库存",
+      "view_check": "各任务scope/具体算法输入/共同类型与操作/实际原型入口/有限验收有明确连接；六视图不是六份实现文件，shared schema承担类型并通过各具体源细化行为。",
+      "product_status_preserved": "planned",
+      "actual_product_result": null
+    },
+    {
+      "task_id": "P0-03",
+      "view_count": 6,
+      "result": "no_additional_design_blocker",
+      "behavior_witness": "计算/认可/绑定/执行四对象；产品变化按精确输入及用途复核，建设/投用/服务后置。",
+      "actual_source_refs": [
+        "packages/domain/professional-artifact-binding.design.json",
+        "docs/03_架构与契约/专业成果接入与软件在环.md",
+        "docs/03_架构与契约/全层类型与工程格式.json",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json",
+        "packages/packaging/consumer-device.design.json",
+        "docs/04_开发与验收/特征细化/DRF03_C02_专业绑定推导.json",
+        "docs/04_开发与验收/特征细化/DRF03_C02_实际工位定义与生成接入.json"
+      ],
+      "independent_product_expectation": "未实际计算不生成通过结果；r2只使受影响绑定待复核，r1用途保留；首版不要求建设/投用/服务求解",
+      "view_check": "各任务scope/具体算法输入/共同类型与操作/实际原型入口/有限验收有明确连接；六视图不是六份实现文件，shared schema承担类型并通过各具体源细化行为。",
+      "product_status_preserved": "planned",
+      "actual_product_result": null
+    },
+    {
+      "task_id": "P1-01",
+      "view_count": 6,
+      "result": "no_additional_design_blocker",
+      "behavior_witness": "齐套一次取得及唯一库存/资源；单厂局部不扩到未实施跨厂运输，箱内身份保留。",
+      "actual_source_refs": [
+        "scenarios/两厂房装配包装/project.design.json",
+        "docs/01_业务需求/订单工艺与物料分配.md",
+        "docs/03_架构与契约/调度与状态转换算法.json",
+        "docs/03_架构与契约/全层类型与工程格式.json",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json"
+      ],
+      "independent_product_expectation": "从两厂房输入抽取明确单厂局部（运输边界不启用）；缺PCB等待、齐套消耗一次、共享人员互斥、箱内身份保留；完整跨厂125/205秒在P2-02验收",
+      "view_check": "各任务scope/具体算法输入/共同类型与操作/实际原型入口/有限验收有明确连接；六视图不是六份实现文件，shared schema承担类型并通过各具体源细化行为。",
+      "product_status_preserved": "planned",
+      "actual_product_result": null
+    },
+    {
+      "task_id": "P1-02",
+      "view_count": 6,
+      "result": "no_additional_design_blocker",
+      "behavior_witness": "并行汇合/配比、UNKNOWN不放行、同ID有限返工与重新检查；隔离不自动报废。",
+      "actual_source_refs": [
+        "scenarios/并行汇合与返工/project.design.json",
+        "scenarios/并行汇合与返工/cases.design.json",
+        "docs/03_架构与契约/调度与状态转换算法.json",
+        "docs/03_架构与契约/全层类型与工程格式.json",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json"
+      ],
+      "independent_product_expectation": "三组并行案例实际运行；145/175秒等手算只作对照，UNKNOWN不放行、返工不换ID、隔离不自动报废",
+      "view_check": "各任务scope/具体算法输入/共同类型与操作/实际原型入口/有限验收有明确连接；六视图不是六份实现文件，shared schema承担类型并通过各具体源细化行为。",
+      "product_status_preserved": "planned",
+      "actual_product_result": null
+    },
+    {
+      "task_id": "P1-03",
+      "view_count": 6,
+      "result": "no_additional_design_blocker",
+      "behavior_witness": "job/phase资源与日历分别持有，5/30/5人员仅10秒；完整440/570跨厂归IX，不提前扩大单任务。",
+      "actual_source_refs": [
+        "scenarios/真实业务设计/business-inputs.design.json",
+        "scenarios/真实业务设计/expected-business.design.json",
+        "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+        "docs/03_架构与契约/调度与状态转换算法.json",
+        "docs/03_架构与契约/全层类型与工程格式.json",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json"
+      ],
+      "independent_product_expectation": "实际单件5/30/5例在45秒完成、人员仅占10秒；独立到料/容量输入核对未来库存和持有。440/570秒及小车370—420等待/425返程转归IX-01，不要求本步先实现P2-02",
+      "view_check": "各任务scope/具体算法输入/共同类型与操作/实际原型入口/有限验收有明确连接；六视图不是六份实现文件，shared schema承担类型并通过各具体源细化行为。",
+      "product_status_preserved": "planned",
+      "actual_product_result": null
+    },
+    {
+      "task_id": "P1-04",
+      "view_count": 6,
+      "result": "no_additional_design_blocker",
+      "behavior_witness": "同终点205秒不称最优；A/B迟延5/45与人员135/160区别，未完成C=null。",
+      "actual_source_refs": [
+        "scenarios/真实业务设计/business-inputs.design.json",
+        "scenarios/真实业务设计/expected-business.design.json",
+        "docs/03_架构与契约/调度与状态转换算法.json",
+        "docs/03_架构与契约/全层类型与工程格式.json",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json"
+      ],
+      "independent_product_expectation": "实际A先B后与反序：完整接受终点205秒，单单迟延5/45秒、W-A135/160秒；未完成C=null，不因总终点相同称最优",
+      "view_check": "各任务scope/具体算法输入/共同类型与操作/实际原型入口/有限验收有明确连接；六视图不是六份实现文件，shared schema承担类型并通过各具体源细化行为。",
+      "product_status_preserved": "planned",
+      "actual_product_result": null
+    },
+    {
+      "task_id": "P1-05",
+      "view_count": 6,
+      "result": "no_additional_design_blocker",
+      "behavior_witness": "待判/复检/实际放行与显式报废分别；2成品1报废不退零件或双计身份。",
+      "actual_source_refs": [
+        "scenarios/真实业务设计/business-inputs.design.json",
+        "scenarios/真实业务设计/expected-business.design.json",
+        "docs/01_业务需求/换单班次与质量处置.md",
+        "docs/03_架构与契约/调度与状态转换算法.json",
+        "docs/03_架构与契约/全层类型与工程格式.json",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json"
+      ],
+      "independent_product_expectation": "80秒待判与复检分别可见；最终2成品1报废、缺1，物品不重复计数且报废不退零件",
+      "view_check": "各任务scope/具体算法输入/共同类型与操作/实际原型入口/有限验收有明确连接；六视图不是六份实现文件，shared schema承担类型并通过各具体源细化行为。",
+      "product_status_preserved": "planned",
+      "actual_product_result": null
+    },
+    {
+      "task_id": "P2-01",
+      "view_count": 6,
+      "result": "no_additional_design_blocker",
+      "behavior_witness": "同工程两画布/三档/自由对象/静态冲突定位；视角与模型缩放不改数量、尺寸、实际状态。",
+      "actual_source_refs": [
+        "docs/02_交互设计/完整操作流程与方案交付.md",
+        "docs/03_架构与契约/目标驱动厂房生成.md",
+        "../设计预览/当前交互规格.md",
+        "docs/03_架构与契约/全层类型与工程格式.json",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json"
+      ],
+      "independent_product_expectation": "用最小串并联工程实际编辑、移动/连接、切画布与LOD；按当前交互规格检查原生模型不同角度和默认视图复位；高度/占地/间距冲突定位，缺参数未判定；渲染读取同一修订，独立3D试样不代产品验收",
+      "view_check": "各任务scope/具体算法输入/共同类型与操作/实际原型入口/有限验收有明确连接；六视图不是六份实现文件，shared schema承担类型并通过各具体源细化行为。",
+      "product_status_preserved": "planned",
+      "actual_product_result": null
+    },
+    {
+      "task_id": "P2-02",
+      "view_count": 6,
+      "result": "no_additional_design_blocker",
+      "behavior_witness": "150不发200；真实收货/资源返程分开，接收受阻保留货物/占用。",
+      "actual_source_refs": [
+        "scenarios/两厂房装配包装/project.design.json",
+        "scenarios/两厂房装配包装/expected-events.design.json",
+        "docs/01_业务需求/物流与布局业务.md",
+        "docs/03_架构与契约/调度与状态转换算法.json",
+        "docs/03_架构与契约/全层类型与工程格式.json",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json"
+      ],
+      "independent_product_expectation": "150库存不发200；两厂房125/205秒完整事件核对，110秒接受与140秒返程分开；接收受阻不丢货、不提前释放车辆",
+      "view_check": "各任务scope/具体算法输入/共同类型与操作/实际原型入口/有限验收有明确连接；六视图不是六份实现文件，shared schema承担类型并通过各具体源细化行为。",
+      "product_status_preserved": "planned",
+      "actual_product_result": null
+    },
+    {
+      "task_id": "P2-03",
+      "view_count": 6,
+      "result": "no_additional_design_blocker",
+      "behavior_witness": "同起点A/B与合法包/版本；缺行为保草稿，无快照默认起点重跑而非强制冷续跑。",
+      "actual_source_refs": [
+        "scenarios/两厂房装配包装/variants.design.json",
+        "docs/03_架构与契约/工程交接与打开.md",
+        "scenarios/模板与交接/expected-template-handoff.design.json",
+        "docs/03_架构与契约/全层类型与工程格式.json",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json"
+      ],
+      "independent_product_expectation": "实际A/B比较/重开/改供料再跑；缺行为不伪造结果。完整快照续跑仅当软件明确支持且数据完整时检查；首版无此能力可从初始重跑，不能因无快照阻止工程交付",
+      "view_check": "各任务scope/具体算法输入/共同类型与操作/实际原型入口/有限验收有明确连接；六视图不是六份实现文件，shared schema承担类型并通过各具体源细化行为。",
+      "product_status_preserved": "planned",
+      "actual_product_result": null
+    },
+    {
+      "task_id": "P2-04",
+      "view_count": 6,
+      "result": "no_additional_design_blocker",
+      "behavior_witness": "同Run主轴、输入与结果分开、等待/phase进度/物品定位；拖动与LOD不重放生产。",
+      "actual_source_refs": [
+        "scenarios/从零搭建控制盒厂房/project.design.json",
+        "scenarios/从零搭建控制盒厂房/expected-timeline.design.json",
+        "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+        "docs/03_架构与契约/调度与状态转换算法.json",
+        "docs/03_架构与契约/全层类型与工程格式.json",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json"
+      ],
+      "independent_product_expectation": "完整基线440秒、到料延迟570秒，370—420秒待接收/425秒车辆可再用等全部保留；检验完整事件/数量/归属而非只终点，LOD/回看不改结果",
+      "view_check": "各任务scope/具体算法输入/共同类型与操作/实际原型入口/有限验收有明确连接；六视图不是六份实现文件，shared schema承担类型并通过各具体源细化行为。",
+      "product_status_preserved": "planned",
+      "actual_product_result": null
+    },
+    {
+      "task_id": "P2-05",
+      "view_count": 6,
+      "result": "no_additional_design_blocker",
+      "behavior_witness": "表单和时间轴改同一Scenario/Project输入，撤销产生新修订；旧Run/认可/外部动作不变。",
+      "actual_source_refs": [
+        "docs/02_交互设计/业务界面与方案评审.md",
+        "scenarios/真实业务设计/business-inputs.design.json",
+        "docs/03_架构与契约/全层类型与工程格式.json",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json"
+      ],
+      "independent_product_expectation": "两画布不变；面板与时间轴改同一释放/交期/来料/阶段输入，从同起点重跑；成本缺项不阻止时间彩排",
+      "view_check": "各任务scope/具体算法输入/共同类型与操作/实际原型入口/有限验收有明确连接；六视图不是六份实现文件，shared schema承担类型并通过各具体源细化行为。",
+      "product_status_preserved": "planned",
+      "actual_product_result": null
+    },
+    {
+      "task_id": "P2-06",
+      "view_count": 6,
+      "result": "no_additional_design_blocker",
+      "behavior_witness": "同EvaluationReport四格式/指定scope；未知成本与C=null，初案单Run达标不强造比较。",
+      "actual_source_refs": [
+        "packages/reporting/evaluation-report.contract.design.json",
+        "docs/01_业务需求/指标成本与决策口径.md",
+        "docs/03_架构与契约/评估报告与数据导出.md",
+        "docs/03_架构与契约/调度与状态转换算法.json",
+        "docs/03_架构与契约/全层类型与工程格式.json",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json"
+      ],
+      "independent_product_expectation": "同源数值/单位/范围一致；C和未知成本保持null，单RunId达标不要求修正；无实际运行只设计说明，专业图/结果不伪造",
+      "view_check": "各任务scope/具体算法输入/共同类型与操作/实际原型入口/有限验收有明确连接；六视图不是六份实现文件，shared schema承担类型并通过各具体源细化行为。",
+      "product_status_preserved": "planned",
+      "actual_product_result": null
+    },
+    {
+      "task_id": "P3-01",
+      "view_count": 6,
+      "result": "no_additional_design_blocker",
+      "behavior_witness": "九类真实载荷/消费者、版本明确采用；运输与专业各自模式，上传脚本不执行、不自动发布。",
+      "actual_source_refs": [
+        "packages/module-kit/category-contracts.design.json",
+        "scenarios/九类模块采用/expected-category-adoption.design.json",
+        "scenarios/设备创作与采用/inputs.design.json",
+        "docs/03_架构与契约/全层类型与工程格式.json",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json"
+      ],
+      "independent_product_expectation": "九类逐类新建/修改/导入/采用/重开；运输样例接P2-02，专业定义只列实际能力；不执行上传任意脚本、不自动发布",
+      "view_check": "各任务scope/具体算法输入/共同类型与操作/实际原型入口/有限验收有明确连接；六视图不是六份实现文件，shared schema承担类型并通过各具体源细化行为。",
+      "product_status_preserved": "planned",
+      "actual_product_result": null
+    },
+    {
+      "task_id": "P3-02",
+      "view_count": 6,
+      "result": "no_additional_design_blocker",
+      "behavior_witness": "受控媒体/完整模型、真实phase有效进度驱动；表现不决定工时/库存，不支持动作明示。",
+      "actual_source_refs": [
+        "docs/02_交互设计/设备时间轴与标签设计.md",
+        "scenarios/设备创作与采用/expected-authoring.design.json",
+        "docs/03_架构与契约/全层类型与工程格式.json",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json"
+      ],
+      "independent_product_expectation": "换图片/GIF/GLB不改数量/时间/资源；暂停/阶段等待保持真实状态，不支持动作明示而非伪造执行",
+      "view_check": "各任务scope/具体算法输入/共同类型与操作/实际原型入口/有限验收有明确连接；六视图不是六份实现文件，shared schema承担类型并通过各具体源细化行为。",
+      "product_status_preserved": "planned",
+      "actual_product_result": null
+    },
+    {
+      "task_id": "P3-03",
+      "view_count": 6,
+      "result": "no_additional_design_blocker",
+      "behavior_witness": "素材顺序与时长可编辑但观看不增产；壳2/PCB1完成1后等待，完成与已移交独立。",
+      "actual_source_refs": [
+        "modules/devices/manual-assembly/presentation/timeline.json",
+        "scenarios/设备创作与采用/inputs.design.json",
+        "scenarios/设备创作与采用/expected-authoring.design.json",
+        "docs/03_架构与契约/全层类型与工程格式.json",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json"
+      ],
+      "independent_product_expectation": "壳体2/PCB1例完成1件后等待；观看循环不增产，完成与已移交独立；改工时与阶段输入一致，实际操作有结果",
+      "view_check": "各任务scope/具体算法输入/共同类型与操作/实际原型入口/有限验收有明确连接；六视图不是六份实现文件，shared schema承担类型并通过各具体源细化行为。",
+      "product_status_preserved": "planned",
+      "actual_product_result": null
+    },
+    {
+      "task_id": "P3-04",
+      "view_count": 6,
+      "result": "no_additional_design_blocker",
+      "behavior_witness": "同Host真实MCP边界、scope/revision竞争与预算；初案直交/不足最多3轮，专业连接器后置。",
+      "actual_source_refs": [
+        "docs/03_架构与契约/通用Agent接入与专业软件连接器.md",
+        "docs/03_架构与契约/目标驱动厂房生成.md",
+        "scenarios/目标驱动建厂/acceptance.design.json",
+        "docs/03_架构与契约/全层类型与工程格式.json",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json",
+        "docs/04_开发与验收/特征细化/DRF04_Host授权合入.json",
+        "integrations/agent/stdio-connector.design.json"
+      ],
+      "independent_product_expectation": "真实客户端调用同一工程，RevisionConflict不覆盖；初案真实达标单RunId四格式直交，另跑不足修正/说明；目标不写结果、图不冒充运行",
+      "view_check": "各任务scope/具体算法输入/共同类型与操作/实际原型入口/有限验收有明确连接；六视图不是六份实现文件，shared schema承担类型并通过各具体源细化行为。",
+      "product_status_preserved": "planned",
+      "actual_product_result": null
+    },
+    {
+      "task_id": "P4-01",
+      "view_count": 6,
+      "result": "no_additional_design_blocker",
+      "behavior_witness": "三通用声明模板/空工程/纸箱generation_profile；制造与装箱区别，种子单独明确，不冻结12对象数量门槛。",
+      "actual_source_refs": [
+        "modules/templates/machining-delivery/manifest.json",
+        "modules/templates/purchased-assembly/manifest.json",
+        "modules/templates/parallel-electromechanical/manifest.json",
+        "modules/templates/carton-factory/generation-profile.design.json",
+        "scenarios/模板与交接/expected-template-handoff.design.json",
+        "docs/03_架构与契约/全层类型与工程格式.json",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json",
+        "docs/04_开发与验收/特征细化/DRF04_Host授权合入.json",
+        "integrations/agent/stdio-connector.design.json"
+      ],
+      "independent_product_expectation": "同源引擎消费真实物品/资源；纸箱制造与装入现成箱区分；复制不带库存/订单；专业未实现明示；无冻结12对象数量门槛",
+      "view_check": "各任务scope/具体算法输入/共同类型与操作/实际原型入口/有限验收有明确连接；六视图不是六份实现文件，shared schema承担类型并通过各具体源细化行为。",
+      "product_status_preserved": "planned",
+      "actual_product_result": null
+    },
+    {
+      "task_id": "P4-02",
+      "view_count": 6,
+      "result": "no_additional_design_blocker",
+      "behavior_witness": "三机制三变化、全过程三态/预算、刀折胶与可编辑成果；完整profile/真实认可绑定，不由几何推工时/库存。",
+      "actual_source_refs": [
+        "docs/00_项目基线/技术与经济可行性.md",
+        "docs/03_架构与契约/专业成果接入与软件在环.md",
+        "packages/packaging/README.md",
+        "docs/03_架构与契约/全层类型与工程格式.json",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json",
+        "packages/packaging/consumer-device.design.json",
+        "docs/04_开发与验收/特征细化/DRF03_C02_专业绑定推导.json",
+        "docs/04_开发与验收/特征细化/DRF03_C03_过程样本语义.json"
+      ],
+      "independent_product_expectation": "三机制/三变化实际算例；干涉FAIL、预算不足Undetermined，不能只看终态；认可后影响包装、改版待复核；几何不推断防护/工时/库存",
+      "view_check": "各任务scope/具体算法输入/共同类型与操作/实际原型入口/有限验收有明确连接；六视图不是六份实现文件，shared schema承担类型并通过各具体源细化行为。",
+      "product_status_preserved": "planned",
+      "actual_product_result": null
+    },
+    {
+      "task_id": "P5-01",
+      "view_count": 6,
+      "result": "no_additional_design_blocker",
+      "behavior_witness": "17SF/3IX真实产品验收/复现/贡献/许可/跨机/视频与参赛发送分别；不以试做或研究PDF代软件。",
+      "actual_source_refs": [
+        "docs/00_项目基线/首版需求与验收.md",
+        "docs/05_开源与参赛/比赛设计要求.md",
+        "community/CONTRIBUTING.md",
+        "community/GOVERNANCE.md",
+        "docs/03_架构与契约/全层类型与工程格式.json",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json"
+      ],
+      "independent_product_expectation": "最终依赖闭包覆盖全部21任务；无后置阻塞、无以试做或研究PDF代软件；软件准备验收不假装报名审核/发送成功",
+      "view_check": "各任务scope/具体算法输入/共同类型与操作/实际原型入口/有限验收有明确连接；六视图不是六份实现文件，shared schema承担类型并通过各具体源细化行为。",
+      "product_status_preserved": "planned",
+      "actual_product_result": null
+    }
+  ],
+  "canonical_field_witness": {
+    "ProjectState": [
+      "revision",
+      "template_adoptions",
+      "module_refs",
+      "products",
+      "boms",
+      "routes",
+      "views"
+    ],
+    "ScenarioInput": [
+      "project_revision",
+      "scope",
+      "initial_conditions",
+      "arrivals",
+      "supplies",
+      "quality_presets",
+      "cost_inputs"
+    ],
+    "RunResult": [
+      "id",
+      "input_ref",
+      "computed_until_ms",
+      "whole_window_computed",
+      "events",
+      "phase_work_intervals",
+      "resource_claims",
+      "waits",
+      "acceptance_events",
+      "goal_met"
+    ],
+    "JobState": [
+      "execution_ref",
+      "input_refs",
+      "pending_outputs",
+      "phase_ref",
+      "finished_at_ms"
+    ],
+    "WaitInterval": [
+      "execution_ref",
+      "phase_ref",
+      "end_cause"
+    ],
+    "ResourceClaim": [
+      "phase_ref",
+      "intervals",
+      "interval_end_causes"
+    ],
+    "PhaseWorkInterval": [
+      "effective_progress_start_ms",
+      "effective_progress_end_ms",
+      "end_cause"
+    ],
+    "TemplateSubset": [
+      "adoption",
+      "locations",
+      "seed"
+    ],
+    "TemplateAdoption": [
+      "source_archive",
+      "resource_choices",
+      "preparation_bindings",
+      "imported_claims",
+      "inspection_presets",
+      "deferred_seed",
+      "missing_inputs"
+    ],
+    "MaterialRoleQuantity": [
+      "declared_output_quality",
+      "required_quality",
+      "port"
+    ],
+    "PackageStructureJob": [
+      "revision",
+      "subject_ref",
+      "parts",
+      "steps",
+      "tolerance",
+      "budget"
+    ],
+    "PackagingResult": [
+      "job_ref",
+      "supported_scope",
+      "checks",
+      "outcome",
+      "process_poses",
+      "manufacturing_files",
+      "material_counts",
+      "evidence_origin"
+    ],
+    "ArtifactRecord": [
+      "input_ref",
+      "result_ref",
+      "actual_outcome",
+      "evidence_origin"
+    ],
+    "ArtifactAcknowledgment": [
+      "accepted_scope",
+      "accepted_subject",
+      "decision_source"
+    ],
+    "ConsumerBinding": [
+      "expected_subject_revision",
+      "required_payload",
+      "operation_ref",
+      "acceptance_ref",
+      "requested_scope"
+    ],
+    "EvaluationReport": [
+      "run_refs",
+      "run_evaluations",
+      "scenario_comparison",
+      "module_versions",
+      "editable_project_ref",
+      "missing_conditions"
+    ],
+    "CostEvaluation": [
+      "inputs",
+      "lines",
+      "missing_conditions"
+    ],
+    "ImportDraft": [
+      "proposed_data",
+      "missing",
+      "conflicts"
+    ],
+    "TemplateInstantiation": [
+      "subset",
+      "mapped_bindings",
+      "proposed_objects",
+      "explicit_new_scenario_seed"
+    ]
+  },
+  "canonical_fields_checked": 93,
+  "matrix_identity_matches_current21": true,
+  "applicable_view_cells": 126,
+  "design_blockers": [],
+  "conclusion": "本次五条跨层语义及21任务六视图独立复审未发现新增设计阻塞。C01—C04/纸包装字段、作用时点、冻结版本、缺项/失败出口和预期能据其执行，不要求公共窗口补造真实输入。",
+  "prerequisite_gate": "S06-05本次读取仍in_progress_not_frozen；S04-02视觉/资源分类及独立复审归集由各拥有者实际收口后，窗口1决定全局冻结。本结果不替代这些前置状态。",
+  "evidence_layers": {
+    "actual_native_DTO_and_Schema": "current421TS/36API/timeline20",
+    "isolated_semantic_examples": "R4canonical19、S06-04原32/6及其他既有有限例",
+    "declared_independent_expectations": "440/570、125/205、模板时间/目标FC和业务/表现预期保持未产品执行标记",
+    "authorized_design_walkthrough": "AI_delegated S04五链，不标真人产品验收",
+    "actual_product_runtime": null
+  },
+  "remaining_later_gates": [
+    "S07-05实施准入",
+    "P/S08—S11实际产品/完整专业/性能/真实外部Agent/17SF与3IX",
+    "真实产品用户接手与本人/授权代理相应验收",
+    "实际另一机器重开/复现/交付",
+    "发布/参赛手续及回执独立据实记录"
+  ],
+  "root_report_or_public_progress_written": false,
+  "other_owner_sources_written": false,
+  "write_scope": [
+    "docs/04_开发与验收/特征细化/DRF03_S06联合只读复审.json"
+  ],
+  "closed_proofs_rerun": false
+}

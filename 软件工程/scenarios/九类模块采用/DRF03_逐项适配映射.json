@@ -1,0 +1,1102 @@
+{
+  "document_kind": "actual_legacy_to_candidate_field_materials_not_product_loader",
+  "source_schema_ref": "tools/type-contract-proof/output/schemas/module.schema.json",
+  "profile_ref": "scenarios/九类模块采用/DRF03_适配试做选项.json",
+  "fields": [
+    {
+      "category": "items",
+      "logical_field": "item_definition.unit",
+      "legacy_manifest_ref": "modules/items/shell-spec/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "ItemDefinition",
+          "fields": [
+            "unit"
+          ]
+        }
+      ],
+      "unit_rule": "类型UnitId；数量另有Quantity.unit",
+      "trial_status": "converted_or_explicit_optional_or_trial_choice",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/items/module.json",
+      "validation_rule": "明确数量维度；piece/kg不可隐式换算"
+    },
+    {
+      "category": "items",
+      "logical_field": "item_definition.tracking",
+      "legacy_manifest_ref": "modules/items/shell-spec/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "ItemDefinition",
+          "fields": [
+            "tracking"
+          ]
+        }
+      ],
+      "unit_rule": "无量纲枚举",
+      "trial_status": "converted_or_explicit_optional_or_trial_choice",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/items/module.json",
+      "validation_rule": "individual/batch只能声明一种；单件计数为整数"
+    },
+    {
+      "category": "items",
+      "logical_field": "item_definition.spec_ref",
+      "legacy_manifest_ref": "modules/items/shell-spec/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "ItemDefinition",
+          "fields": [
+            "spec_ref"
+          ]
+        }
+      ],
+      "unit_rule": "SubjectRevisionRef无量纲",
+      "trial_status": "converted_or_explicit_optional_or_trial_choice",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/items/module.json",
+      "validation_rule": "按id及revision精确解析；同名不合并"
+    },
+    {
+      "category": "items",
+      "logical_field": "item_definition.attributes",
+      "legacy_manifest_ref": "modules/items/shell-spec/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "ItemDefinition",
+          "fields": [
+            "attributes"
+          ]
+        }
+      ],
+      "unit_rule": "每个TypedValue沿对应schema单位",
+      "trial_status": "converted_or_explicit_optional_or_trial_choice",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/items/module.json",
+      "validation_rule": "key先有声明且类型/维数/枚举相符；无消费者只保存展示"
+    },
+    {
+      "category": "items",
+      "logical_field": "item_definition.attribute_schema",
+      "legacy_manifest_ref": "modules/items/shell-spec/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "ItemDefinition",
+          "fields": [
+            "attribute_schema"
+          ]
+        }
+      ],
+      "unit_rule": "有量纲声明unit；vector3三分量",
+      "trial_status": "converted_or_explicit_optional_or_trial_choice",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/items/module.json",
+      "validation_rule": "属性名唯一；不得冒充核心id/quantity/holder"
+    },
+    {
+      "category": "items",
+      "logical_field": "presentation_or_media_ref",
+      "legacy_manifest_ref": "modules/items/shell-spec/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "ItemDefinition",
+          "fields": [
+            "presentation_or_media_ref"
+          ]
+        }
+      ],
+      "unit_rule": "仅表现长度/坐标/缩放",
+      "trial_status": "converted_or_explicit_optional_or_trial_choice",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/items/module.json",
+      "validation_rule": "资产路径在授权包内，缺表现不产生默认业务值"
+    },
+    {
+      "category": "devices",
+      "logical_field": "placement",
+      "legacy_manifest_ref": "modules/devices/control-box-assembly/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "DeviceDefinition",
+          "fields": [
+            "placement"
+          ]
+        },
+        {
+          "rust_type": "DeviceInstance",
+          "fields": [
+            "pose"
+          ]
+        }
+      ],
+      "unit_rule": "实例Pose显式长度/坐标",
+      "trial_status": "converted_or_explicit_optional_or_trial_choice",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/devices/module.json",
+      "validation_rule": "运行冻结固定；编辑位置不改变规则/库存"
+    },
+    {
+      "category": "devices",
+      "logical_field": "parameters",
+      "legacy_manifest_ref": "modules/devices/control-box-assembly/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "ModuleDefinition",
+          "fields": [
+            "parameters"
+          ]
+        }
+      ],
+      "unit_rule": "各声明unit与目标叶一致",
+      "trial_status": "converted_or_explicit_optional_or_trial_choice",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/devices/module.json",
+      "validation_rule": "仅RFC6901公开叶；范围/枚举匹配；未填不得默认为0"
+    },
+    {
+      "category": "devices",
+      "logical_field": "ports",
+      "legacy_manifest_ref": "modules/devices/control-box-assembly/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "DeviceDefinition",
+          "fields": [
+            "ports"
+          ]
+        }
+      ],
+      "unit_rule": "物品Quantity单位/信号ValueKind/成果单位坐标",
+      "trial_status": "converted_or_explicit_optional_or_trial_choice",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/devices/module.json",
+      "validation_rule": "端口ID唯一、方向和kind相符；参数引用须存在"
+    },
+    {
+      "category": "devices",
+      "logical_field": "behavior OR operation_ref",
+      "legacy_manifest_ref": "modules/devices/control-box-assembly/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "DeviceDefinition",
+          "fields": [
+            "behavior"
+          ]
+        },
+        {
+          "rust_type": "BehaviorSources",
+          "fields": [
+            "inline",
+            "operation_ref",
+            "selected"
+          ]
+        }
+      ],
+      "unit_rule": "duration转整数ms；数量单位明确",
+      "trial_status": "converted_or_explicit_optional_or_trial_choice",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/devices/module.json",
+      "validation_rule": "仅执行selected来源；另一候选不叠加；builtin需真实支持"
+    },
+    {
+      "category": "devices",
+      "logical_field": "configuration",
+      "legacy_manifest_ref": "modules/devices/control-box-assembly/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "DeviceDefinition",
+          "fields": [
+            "configuration"
+          ]
+        }
+      ],
+      "unit_rule": "各TypedValue沿参数声明",
+      "trial_status": "converted_or_explicit_optional_or_trial_choice",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/devices/module.json",
+      "validation_rule": "覆盖只作用所选实例，未知参数/错误单位拒绝"
+    },
+    {
+      "category": "devices",
+      "logical_field": "presentation",
+      "legacy_manifest_ref": "modules/devices/control-box-assembly/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "DeviceDefinition",
+          "fields": [
+            "presentation"
+          ]
+        }
+      ],
+      "unit_rule": "只显示单位/坐标",
+      "trial_status": "converted_or_explicit_optional_or_trial_choice",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/devices/module.json",
+      "validation_rule": "无业务写入；锚点未绑只提示；外观不改footprint"
+    },
+    {
+      "category": "devices",
+      "logical_field": "operations",
+      "legacy_manifest_ref": "modules/devices/control-box-assembly/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "DeviceDefinition",
+          "fields": [
+            "operations"
+          ]
+        }
+      ],
+      "unit_rule": "无量纲动作枚举",
+      "trial_status": "converted_or_explicit_optional_or_trial_choice",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/devices/module.json",
+      "validation_rule": "只能请求Host实际允许命令；不eval上传脚本"
+    },
+    {
+      "category": "resources",
+      "logical_field": "resource_definition.kind",
+      "legacy_manifest_ref": "modules/resources/operator-role/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "ResourceDefinition",
+          "fields": [
+            "kind"
+          ]
+        }
+      ],
+      "unit_rule": "无量纲ResourceKind",
+      "trial_status": "converted_or_explicit_optional_or_trial_choice",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/resources/module.json",
+      "validation_rule": "首版只执行支持离散资源；service声明不授执行权"
+    },
+    {
+      "category": "resources",
+      "logical_field": "resource_definition.role",
+      "legacy_manifest_ref": "modules/resources/operator-role/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "ResourceDefinition",
+          "fields": [
+            "role"
+          ]
+        }
+      ],
+      "unit_rule": "无量纲角色ID",
+      "trial_status": "converted_or_explicit_optional_or_trial_choice",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/resources/module.json",
+      "validation_rule": "需求角色必须显式绑定实际资源，不按名字创建人"
+    },
+    {
+      "category": "resources",
+      "logical_field": "resource_definition.capacity",
+      "legacy_manifest_ref": "modules/resources/operator-role/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "ResourceDefinition",
+          "fields": [
+            "capacity"
+          ]
+        }
+      ],
+      "unit_rule": "明确person/vehicle/slot或货物单位",
+      "trial_status": "converted_or_explicit_optional_or_trial_choice",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/resources/module.json",
+      "validation_rule": "容量非负且离散计数为整数；车辆数和装载量分开"
+    },
+    {
+      "category": "resources",
+      "logical_field": "resource_definition.qualifications",
+      "legacy_manifest_ref": "modules/resources/operator-role/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "ResourceDefinition",
+          "fields": [
+            "qualifications"
+          ]
+        }
+      ],
+      "unit_rule": "无量纲资格ID集合",
+      "trial_status": "converted_or_explicit_optional_or_trial_choice",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/resources/module.json",
+      "validation_rule": "按任务要求包含资格；缺资格不自动补齐"
+    },
+    {
+      "category": "resources",
+      "logical_field": "resource_definition.default_calendar_ms",
+      "legacy_manifest_ref": "modules/resources/operator-role/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "ResourceDefinition",
+          "fields": [
+            "default_calendar_ms"
+          ]
+        }
+      ],
+      "unit_rule": "相对整数ms半开区间",
+      "trial_status": "converted_or_explicit_optional_or_trial_choice",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/resources/module.json",
+      "validation_rule": "end>start；采用时显式新建/复用Calendar；不复制claim"
+    },
+    {
+      "category": "resources",
+      "logical_field": "presentation",
+      "legacy_manifest_ref": "modules/resources/operator-role/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "ResourceDefinition",
+          "fields": [
+            "presentation"
+          ]
+        }
+      ],
+      "unit_rule": "显示长度与坐标",
+      "trial_status": "converted_or_explicit_optional_or_trial_choice",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/resources/module.json",
+      "validation_rule": "读取实际资源归属；走路动画不计工时"
+    },
+    {
+      "category": "tasks",
+      "logical_field": "task_definition.kind",
+      "legacy_manifest_ref": "modules/tasks/board-preparation/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "TaskDefinition",
+          "fields": [
+            "kind"
+          ]
+        }
+      ],
+      "unit_rule": "无量纲TaskKind",
+      "trial_status": "converted_or_explicit_optional_or_trial_choice",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/tasks/module.json",
+      "validation_rule": "准备/人工按真实能力；维修建设后置"
+    },
+    {
+      "category": "tasks",
+      "logical_field": "task_definition.target_role",
+      "legacy_manifest_ref": "modules/tasks/board-preparation/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "TaskDefinition",
+          "fields": [
+            "target_role"
+          ]
+        }
+      ],
+      "unit_rule": "无量纲角色/目标引用",
+      "trial_status": "converted_or_explicit_optional_or_trial_choice",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/tasks/module.json",
+      "validation_rule": "采用必须指向具体工程对象及当前配置"
+    },
+    {
+      "category": "tasks",
+      "logical_field": "task_definition.prerequisites",
+      "legacy_manifest_ref": "modules/tasks/board-preparation/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "TaskDefinition",
+          "fields": [
+            "prerequisites"
+          ]
+        }
+      ],
+      "unit_rule": "目标引用及相对时间",
+      "trial_status": "converted_or_explicit_optional_or_trial_choice",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/tasks/module.json",
+      "validation_rule": "结构化就绪条件精确解析，未满足进入等待"
+    },
+    {
+      "category": "tasks",
+      "logical_field": "task_definition.steps",
+      "legacy_manifest_ref": "modules/tasks/board-preparation/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "TaskDefinition",
+          "fields": [
+            "steps"
+          ]
+        },
+        {
+          "rust_type": "TaskStep",
+          "fields": [
+            "id",
+            "target_role",
+            "resources",
+            "duration",
+            "completion_markers"
+          ]
+        }
+      ],
+      "unit_rule": "每步工时整数ms、资源同单位",
+      "trial_status": "converted_or_explicit_optional_or_trial_choice",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/tasks/module.json",
+      "validation_rule": "step ID唯一；目标/资源/前置齐备；不另建时钟"
+    },
+    {
+      "category": "tasks",
+      "logical_field": "task_definition.resource_roles",
+      "legacy_manifest_ref": "modules/tasks/board-preparation/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "TaskDefinition",
+          "fields": [
+            "resource_roles"
+          ]
+        }
+      ],
+      "unit_rule": "Quantity及资格",
+      "trial_status": "converted_or_explicit_optional_or_trial_choice",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/tasks/module.json",
+      "validation_rule": "同阶段需求原子齐套，不把角色当实例"
+    },
+    {
+      "category": "tasks",
+      "logical_field": "task_definition.duration",
+      "legacy_manifest_ref": "modules/tasks/board-preparation/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "TaskDefinition",
+          "fields": [
+            "duration"
+          ]
+        }
+      ],
+      "unit_rule": "整数ms",
+      "trial_status": "converted_or_explicit_optional_or_trial_choice",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/tasks/module.json",
+      "validation_rule": "旧second显式乘1000，不能表示为整数ms则拒绝；0不触发无限循环"
+    },
+    {
+      "category": "tasks",
+      "logical_field": "task_definition.equipment_access",
+      "legacy_manifest_ref": "modules/tasks/board-preparation/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "TaskDefinition",
+          "fields": [
+            "equipment_access"
+          ]
+        }
+      ],
+      "unit_rule": "无量纲shared/exclusive",
+      "trial_status": "converted_or_explicit_optional_or_trial_choice",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/tasks/module.json",
+      "validation_rule": "排他访问占用对应设备资源；不从人claim推设备占用"
+    },
+    {
+      "category": "tasks",
+      "logical_field": "task_definition.completion_effect",
+      "legacy_manifest_ref": "modules/tasks/board-preparation/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "TaskDefinition",
+          "fields": [
+            "completion_effect"
+          ]
+        }
+      ],
+      "unit_rule": "无量纲支持作用",
+      "trial_status": "converted_or_explicit_optional_or_trial_choice",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/tasks/module.json",
+      "validation_rule": "仅目标就绪/标记；禁止生产物料；历史Run不回写"
+    },
+    {
+      "category": "operations",
+      "logical_field": "operation_definition.builtin",
+      "legacy_manifest_ref": "modules/operations/control-box-rule/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "OperationDefinition",
+          "fields": [
+            "builtin"
+          ]
+        }
+      ],
+      "unit_rule": "无量纲RuleKind",
+      "trial_status": "converted_or_explicit_optional_or_trial_choice",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/operations/module.json",
+      "validation_rule": "Host已实现规则才执行；设计名不是插件"
+    },
+    {
+      "category": "operations",
+      "logical_field": "operation_definition.item_roles",
+      "legacy_manifest_ref": "modules/operations/control-box-rule/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "OperationDefinition",
+          "fields": [
+            "item_roles"
+          ]
+        }
+      ],
+      "unit_rule": "无量纲角色ID",
+      "trial_status": "converted_or_explicit_optional_or_trial_choice",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/operations/module.json",
+      "validation_rule": "输入输出角色唯一且显式映射ItemType/端口"
+    },
+    {
+      "category": "operations",
+      "logical_field": "operation_definition.inputs/outputs",
+      "legacy_manifest_ref": "modules/operations/control-box-rule/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "OperationDefinition",
+          "fields": [
+            "inputs",
+            "outputs"
+          ]
+        }
+      ],
+      "unit_rule": "Quantity.value和unit",
+      "trial_status": "converted_or_explicit_optional_or_trial_choice",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/operations/module.json",
+      "validation_rule": "非负合法量；整件为整数；投入和产出身份按规则解释"
+    },
+    {
+      "category": "operations",
+      "logical_field": "operation_definition.resource_roles",
+      "legacy_manifest_ref": "modules/operations/control-box-rule/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "OperationDefinition",
+          "fields": [
+            "resource_roles"
+          ]
+        }
+      ],
+      "unit_rule": "每角色Quantity",
+      "trial_status": "converted_or_explicit_optional_or_trial_choice",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/operations/module.json",
+      "validation_rule": "资源/资格/日历匹配，共同Engine统一占用"
+    },
+    {
+      "category": "operations",
+      "logical_field": "operation_definition.duration OR phases",
+      "legacy_manifest_ref": "modules/operations/control-box-rule/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "OperationDefinition",
+          "fields": [
+            "duration",
+            "phases"
+          ]
+        }
+      ],
+      "unit_rule": "相对整数ms",
+      "trial_status": "converted_or_explicit_optional_or_trial_choice",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/operations/module.json",
+      "validation_rule": "单工时或明确phase计划，不能两套工时叠加；零段走同刻闭包"
+    },
+    {
+      "category": "operations",
+      "logical_field": "operation_definition.quality_and_routes",
+      "legacy_manifest_ref": "modules/operations/control-box-rule/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "OperationDefinition",
+          "fields": [
+            "quality_and_routes"
+          ]
+        }
+      ],
+      "unit_rule": "枚举/计数无量纲",
+      "trial_status": "converted_or_explicit_optional_or_trial_choice",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/operations/module.json",
+      "validation_rule": "来源缺失不得自动PASS；返工次数/分路有明确界限"
+    },
+    {
+      "category": "operations",
+      "logical_field": "operation_definition.identity_policy",
+      "legacy_manifest_ref": "modules/operations/control-box-rule/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "OperationDefinition",
+          "fields": [
+            "identity_policy"
+          ]
+        }
+      ],
+      "unit_rule": "无量纲IdentityPolicy",
+      "trial_status": "converted_or_explicit_optional_or_trial_choice",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/operations/module.json",
+      "validation_rule": "转换新ID保来源；装配新ID保组成；检查/返工保原ID；包装保contents"
+    },
+    {
+      "category": "transport",
+      "logical_field": "parameters/ports",
+      "legacy_manifest_ref": "modules/transport/batch-transport/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "ModuleDefinition",
+          "fields": [
+            "parameters"
+          ]
+        },
+        {
+          "rust_type": "TransportDefinition",
+          "fields": [
+            "ports"
+          ]
+        }
+      ],
+      "unit_rule": "公开工时ms及货物单位",
+      "trial_status": "converted_or_explicit_optional_or_trial_choice",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/transport/module.json",
+      "validation_rule": "端口/源目的均存在；参数只控制已选规则"
+    },
+    {
+      "category": "transport",
+      "logical_field": "behavior.builtin",
+      "legacy_manifest_ref": "modules/transport/batch-transport/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "TransportDefinition",
+          "fields": [
+            "builtin"
+          ]
+        }
+      ],
+      "unit_rule": "无量纲TransportBuiltin",
+      "trial_status": "converted_or_explicit_optional_or_trial_choice",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/transport/module.json",
+      "validation_rule": "首版固定时间，路径动力学/交通求解后置"
+    },
+    {
+      "category": "transport",
+      "logical_field": "behavior.batch_capacity",
+      "legacy_manifest_ref": "modules/transport/batch-transport/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "TransportDefinition",
+          "fields": [
+            "batch_capacity"
+          ]
+        }
+      ],
+      "unit_rule": "货物Quantity.unit",
+      "trial_status": "converted_or_explicit_optional_or_trial_choice",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/transport/module.json",
+      "validation_rule": "与被运物品量纲一致；不能当车辆实例数量"
+    },
+    {
+      "category": "transport",
+      "logical_field": "behavior.resources",
+      "legacy_manifest_ref": "modules/transport/batch-transport/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "TransportDefinition",
+          "fields": [
+            "resources"
+          ]
+        }
+      ],
+      "unit_rule": "角色Quantity",
+      "trial_status": "converted_or_explicit_optional_or_trial_choice",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/transport/module.json",
+      "validation_rule": "绑定实际载具/工人，返程释放按原规则"
+    },
+    {
+      "category": "transport",
+      "logical_field": "behavior.times",
+      "legacy_manifest_ref": "modules/transport/batch-transport/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "TransportDefinition",
+          "fields": [
+            "times"
+          ]
+        }
+      ],
+      "unit_rule": "loading/outbound/unloading/returning整数ms",
+      "trial_status": "converted_or_explicit_optional_or_trial_choice",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/transport/module.json",
+      "validation_rule": "分别明示工时；缺值为缺项不补0"
+    },
+    {
+      "category": "transport",
+      "logical_field": "behavior.acceptance_conditions",
+      "legacy_manifest_ref": "modules/transport/batch-transport/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "TransportDefinition",
+          "fields": [
+            "acceptance_conditions"
+          ]
+        }
+      ],
+      "unit_rule": "容量单位及质量/就绪枚举",
+      "trial_status": "converted_or_explicit_optional_or_trial_choice",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/transport/module.json",
+      "validation_rule": "到达非接受；阻塞仍保留货物/载具；接受时点按既有规则"
+    },
+    {
+      "category": "transport",
+      "logical_field": "behavior.identity_policy",
+      "legacy_manifest_ref": "modules/transport/batch-transport/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "TransportDefinition",
+          "fields": [
+            "identity_policy"
+          ]
+        }
+      ],
+      "unit_rule": "无量纲保货物身份",
+      "trial_status": "converted_or_explicit_optional_or_trial_choice",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/transport/module.json",
+      "validation_rule": "同货物ID只转持有者，不复制供应/运输件"
+    },
+    {
+      "category": "transport",
+      "logical_field": "presentation",
+      "legacy_manifest_ref": "modules/transport/batch-transport/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "TransportDefinition",
+          "fields": [
+            "presentation"
+          ]
+        }
+      ],
+      "unit_rule": "显示单位/坐标",
+      "trial_status": "converted_or_explicit_optional_or_trial_choice",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/transport/module.json",
+      "validation_rule": "动画结束不产生卸货接受/释放事件"
+    },
+    {
+      "category": "templates",
+      "logical_field": "project",
+      "legacy_manifest_ref": "modules/templates/parallel-electromechanical/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "TemplateDefinition",
+          "fields": [
+            "project"
+          ]
+        }
+      ],
+      "unit_rule": "授权包内相对FileRef",
+      "trial_status": "inner_template_preserved_blocking",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/templates/module.json",
+      "validation_rule": "读取Versioned<TemplateSubset>，旧project.design非直接运行格式"
+    },
+    {
+      "category": "templates",
+      "logical_field": "project.module_refs",
+      "legacy_manifest_ref": "modules/templates/parallel-electromechanical/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "TemplateSubset",
+          "fields": [
+            "module_refs"
+          ]
+        }
+      ],
+      "unit_rule": "精确ModuleRef无单位",
+      "trial_status": "inner_template_preserved_blocking",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/templates/module.json",
+      "validation_rule": "依赖按id/version全闭包，不取latest；循环引用拒绝"
+    },
+    {
+      "category": "templates",
+      "logical_field": "project.layout_scope/halls/lines/connections",
+      "legacy_manifest_ref": "modules/templates/parallel-electromechanical/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "TemplateSubset",
+          "fields": [
+            "layout_scope",
+            "halls",
+            "lines",
+            "connections"
+          ]
+        }
+      ],
+      "unit_rule": "厂房m、Pose按显式单位",
+      "trial_status": "inner_template_preserved_blocking",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/templates/module.json",
+      "validation_rule": "新命名空间重写全部内部引用；只将外部角色显式复用"
+    },
+    {
+      "category": "templates",
+      "logical_field": "project.resources/item_types/role_bindings",
+      "legacy_manifest_ref": "modules/templates/parallel-electromechanical/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "TemplateSubset",
+          "fields": [
+            "resource_requirements",
+            "item_types",
+            "role_requirements",
+            "suggested_role_bindings"
+          ]
+        }
+      ],
+      "unit_rule": "类型/资源各自单位",
+      "trial_status": "inner_template_preserved_blocking",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/templates/module.json",
+      "validation_rule": "展示新建与复用差异；禁止同名自动合并"
+    },
+    {
+      "category": "templates",
+      "logical_field": "project.initial_stock/demand",
+      "legacy_manifest_ref": "modules/templates/parallel-electromechanical/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "TemplateSubset",
+          "fields": [
+            "seed"
+          ]
+        }
+      ],
+      "unit_rule": "初始Quantity、到料/交期ms",
+      "trial_status": "inner_template_preserved_blocking",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/templates/module.json",
+      "validation_rule": "已有工程默认不带；仅用户明确新方案种子；不恢复旧Run"
+    },
+    {
+      "category": "templates",
+      "logical_field": "generation_profile",
+      "legacy_manifest_ref": "modules/templates/parallel-electromechanical/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "TemplateDefinition",
+          "fields": [
+            "generation_profile"
+          ]
+        }
+      ],
+      "unit_rule": "目标/场地m与明确指标单位",
+      "trial_status": "inner_template_preserved_blocking",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/templates/module.json",
+      "validation_rule": "只调用真实库/专业能力；缺模板列缺项"
+    },
+    {
+      "category": "professional",
+      "logical_field": "professional_contract.input_fields",
+      "legacy_manifest_ref": "modules/professional/machining-producer/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "ProfessionalDefinition",
+          "fields": [
+            "input_fields"
+          ]
+        }
+      ],
+      "unit_rule": "DataFieldDeclaration单位",
+      "trial_status": "converted_or_explicit_optional_or_trial_choice",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/professional/module.json",
+      "validation_rule": "required字段/类型/范围齐备才调用；纸包装为真实PackageStructureJob"
+    },
+    {
+      "category": "professional",
+      "logical_field": "professional_contract.output_artifact_type/output_fields",
+      "legacy_manifest_ref": "modules/professional/machining-producer/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "ProfessionalDefinition",
+          "fields": [
+            "output_artifact_type",
+            "output_fields"
+          ]
+        }
+      ],
+      "unit_rule": "输出单位/坐标/版本明确",
+      "trial_status": "converted_or_explicit_optional_or_trial_choice",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/professional/module.json",
+      "validation_rule": "文件/类型/产品/用途匹配；设计expected不能填实际result"
+    },
+    {
+      "category": "professional",
+      "logical_field": "professional_contract.intended_modes",
+      "legacy_manifest_ref": "modules/professional/machining-producer/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "ProfessionalDefinition",
+          "fields": [
+            "intended_modes"
+          ]
+        }
+      ],
+      "unit_rule": "无量纲ProfessionalMode",
+      "trial_status": "converted_or_explicit_optional_or_trial_choice",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/professional/module.json",
+      "validation_rule": "设计可声明，不加入真实能力"
+    },
+    {
+      "category": "professional",
+      "logical_field": "professional_contract.available_modes/producer_status",
+      "legacy_manifest_ref": "modules/professional/machining-producer/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "ProviderCapability",
+          "fields": [
+            "available_modes",
+            "producer_status"
+          ]
+        }
+      ],
+      "unit_rule": "Host只读能力",
+      "trial_status": "converted_or_explicit_optional_or_trial_choice",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/professional/module.json",
+      "validation_rule": "来自ProviderCapability；草稿/released不扩大支持"
+    },
+    {
+      "category": "professional",
+      "logical_field": "professional_contract.unit/coordinate_frame/scope",
+      "legacy_manifest_ref": "modules/professional/machining-producer/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "ProfessionalDefinition",
+          "fields": [
+            "unit",
+            "coordinate_frame",
+            "scope"
+          ]
+        }
+      ],
+      "unit_rule": "明确长度与右手坐标，scope精确token",
+      "trial_status": "converted_or_explicit_optional_or_trial_choice",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/professional/module.json",
+      "validation_rule": "不得前缀猜范围/自动换模式；转换须明确"
+    },
+    {
+      "category": "professional",
+      "logical_field": "acceptance/consumer_binding",
+      "legacy_manifest_ref": "modules/professional/machining-producer/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "ProjectState",
+          "fields": [
+            "acknowledgments",
+            "bindings"
+          ]
+        }
+      ],
+      "unit_rule": "版本引用及无量纲用途集合",
+      "trial_status": "converted_or_explicit_optional_or_trial_choice",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/professional/module.json",
+      "validation_rule": "真实成果/匹配人工认可/所需全Pass后才绑定，计算/认可/绑定均不产库存"
+    },
+    {
+      "category": "media",
+      "logical_field": "presentation.kind/path OR media_ref",
+      "legacy_manifest_ref": "modules/media/editable-bench/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "Presentation",
+          "fields": [
+            "kind",
+            "source"
+          ]
+        }
+      ],
+      "unit_rule": "本地支持格式与长度单位",
+      "trial_status": "converted_or_explicit_optional_or_trial_choice",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/media/module.json",
+      "validation_rule": "路径在授权包内；不按.glb扩展名假定外部资源齐备"
+    },
+    {
+      "category": "media",
+      "logical_field": "presentation.unit/coordinate_frame/scale",
+      "legacy_manifest_ref": "modules/media/editable-bench/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "Presentation",
+          "fields": [
+            "unit",
+            "coordinate_frame",
+            "scale"
+          ]
+        }
+      ],
+      "unit_rule": "GLB米/Y-up；纸构mm/Z-up显式变换",
+      "trial_status": "converted_or_explicit_optional_or_trial_choice",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/media/module.json",
+      "validation_rule": "显示缩放不改物理包络，非均匀缩放不进入专业Job"
+    },
+    {
+      "category": "media",
+      "logical_field": "presentation.nodes/poses/actions",
+      "legacy_manifest_ref": "modules/media/editable-bench/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "Presentation",
+          "fields": [
+            "nodes",
+            "poses",
+            "actions"
+          ]
+        }
+      ],
+      "unit_rule": "局部TRS显式单位",
+      "trial_status": "converted_or_explicit_optional_or_trial_choice",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/media/module.json",
+      "validation_rule": "按稳定节点/索引绑定；树无环；name可重名"
+    },
+    {
+      "category": "media",
+      "logical_field": "presentation.timeline",
+      "legacy_manifest_ref": "modules/media/editable-bench/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "Presentation",
+          "fields": [
+            "timeline"
+          ]
+        }
+      ],
+      "unit_rule": "设备过程u∈[0,1]；帧/提示时长ms",
+      "trial_status": "converted_or_explicit_optional_or_trial_choice",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/media/module.json",
+      "validation_rule": "过程编辑/专业预览/Run时间轴三者分开；不推生产完成"
+    },
+    {
+      "category": "media",
+      "logical_field": "presentation.anchor_roles/port_anchors",
+      "legacy_manifest_ref": "modules/media/editable-bench/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "Presentation",
+          "fields": [
+            "tags",
+            "anchor_roles",
+            "port_anchors"
+          ]
+        }
+      ],
+      "unit_rule": "归一图坐标或显式3D坐标",
+      "trial_status": "converted_or_explicit_optional_or_trial_choice",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/media/module.json",
+      "validation_rule": "锚点读允许字段；物品/信号/artifact端口不可混绑"
+    },
+    {
+      "category": "media",
+      "logical_field": "presentation.lod",
+      "legacy_manifest_ref": "modules/media/editable-bench/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "Presentation",
+          "fields": [
+            "lod"
+          ]
+        }
+      ],
+      "unit_rule": "无量纲档位",
+      "trial_status": "converted_or_explicit_optional_or_trial_choice",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/media/module.json",
+      "validation_rule": "三档同对象/同状态；聚合不丢真实成员身份"
+    },
+    {
+      "category": "media",
+      "logical_field": "presentation.production_effect",
+      "legacy_manifest_ref": "modules/media/editable-bench/manifest.json",
+      "canonical_carriers": [
+        {
+          "rust_type": "Presentation",
+          "fields": [
+            "production_effect"
+          ]
+        }
+      ],
+      "unit_rule": "none",
+      "trial_status": "converted_or_explicit_optional_or_trial_choice",
+      "candidate_ref": "scenarios/九类模块采用/adapter-output/media/module.json",
+      "validation_rule": "不允许动画、标签或缩放提交数量/认可/时钟"
+    }
+  ],
+  "common_mapping": {
+    "id/version/title/definition_state": "data.definition unchanged",
+    "category": "data.definition.payload.category",
+    "contribution": "typed author/license/asset rights; unresolved placeholders become null with blocking issue and raw archive",
+    "parameters": "type→value_type, explicit parameter_aliases, duration→integer ms typed container",
+    "attribute_schema": "type→value_type, shape=3→[3], explicit source basis"
+  },
+  "original_manifests_modified": false
+}

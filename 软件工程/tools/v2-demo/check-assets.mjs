@@ -1,0 +1,13 @@
+import {build} from 'vite';
+import {fileURLToPath,pathToFileURL} from 'node:url';
+import {resolve} from 'node:path';
+import {mkdir} from 'node:fs/promises';
+import {spawnSync} from 'node:child_process';
+const source=fileURLToPath(new URL('.',import.meta.url));
+const root=resolve(source,'../..'),input=resolve(process.argv[2]),output=resolve(process.argv[3]);
+await mkdir(output,{recursive:true});
+await build({configFile:false,root:source,logLevel:'warn',ssr:{noExternal:true},build:{ssr:resolve(source,'check-assets.ts'),outDir:resolve(output,'scene-parser'),emptyOutDir:false,minify:false,rollupOptions:{output:{entryFileNames:'check.mjs'}}}});
+const adapter=pathToFileURL(resolve(root,'tests/planner/presentation/pixel-decoder.mjs')).href;
+const result=spawnSync(process.execPath,[resolve(output,'scene-parser/check.mjs'),input,resolve(output,'scene-receipt.json'),adapter],{stdio:'inherit',windowsHide:true});
+if(result.error)throw result.error;
+process.exitCode=result.status;

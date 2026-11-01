@@ -1,0 +1,427 @@
+{
+  "planned_runtime_contract": "packages/reporting/execution-report.contract.design.json",
+  "session_row_prefix": [
+    "report_id",
+    "project_id",
+    "session_id",
+    "execution_epoch_id",
+    "execution_revision",
+    "observation_frontier"
+  ],
+  "nulls": "empty CSV numeric cells with known/missing-condition columns; JSON null remains null, PDF/HTML say unknown with reason",
+  "nested_values": "typed JSON cells, normal CSV quoting; do not stringify numbers through float or translate missing to zero",
+  "tables": [
+    {
+      "id": "report_context",
+      "source": "report",
+      "columns": [
+        "report_id",
+        "project_id",
+        "export_project_revision",
+        "contract_version",
+        "generated_at_utc"
+      ]
+    },
+    {
+      "id": "execution_sources",
+      "source": "sessions",
+      "columns": [
+        "read_origin",
+        "session_id",
+        "execution_epoch_id",
+        "host_context_session_id",
+        "execution_revision",
+        "observation_frontier",
+        "input_project_revision",
+        "scenario_id",
+        "scenario_revision",
+        "source_mode",
+        "clock_started",
+        "observed_until_host_ms",
+        "requested_cutoff_reached",
+        "goal_at_snapshot",
+        "goal_at_cutoff",
+        "lifecycle",
+        "cloud_published_revision"
+      ],
+      "column_sources": {
+        "read_origin": "source.read_origin",
+        "session_id": "source.identity.session_id",
+        "execution_epoch_id": "source.identity.execution_epoch_id",
+        "host_context_session_id": "source.identity.host_context_session_id",
+        "execution_revision": "source.execution_revision",
+        "observation_frontier": "source.observation_frontier",
+        "input_project_revision": "snapshot.project_input_ref.project_revision",
+        "scenario_id": "snapshot.project_input_ref.scenario_id",
+        "scenario_revision": "snapshot.project_input_ref.scenario_revision",
+        "source_mode": "snapshot.provenance.mode",
+        "clock_started": "snapshot.coverage.clock_started",
+        "observed_until_host_ms": "snapshot.coverage.observed_until_host_ms",
+        "requested_cutoff_reached": "snapshot.coverage.requested_cutoff_reached",
+        "goal_at_snapshot": "snapshot.goal_at_snapshot",
+        "goal_at_cutoff": "snapshot.goal_at_cutoff",
+        "lifecycle": "snapshot.lifecycle.state",
+        "cloud_published_revision": "source.delivery.cloud_published_revision"
+      }
+    },
+    {
+      "id": "accepted_by_scope",
+      "source": "sessions.metrics.accepted",
+      "columns": [
+        "product_ref",
+        "unit",
+        "destination",
+        "acceptance_stage",
+        "known",
+        "coefficient",
+        "decimal_places",
+        "missing_conditions"
+      ],
+      "column_sources": {
+        "product_ref": "scope.product_ref",
+        "unit": "scope.unit",
+        "destination": "scope.destination",
+        "acceptance_stage": "scope.stage",
+        "known": "accepted_quantity != null",
+        "coefficient": "accepted_quantity.value.coefficient or null",
+        "decimal_places": "accepted_quantity.value.decimal_places or null"
+      }
+    },
+    {
+      "id": "command_counts",
+      "source": "sessions.metrics.commands",
+      "columns": [
+        "attempt_count",
+        "started_attempt_count",
+        "device_completed_attempt_count",
+        "accepted_logical_work_count",
+        "unresolved_command_count"
+      ]
+    },
+    {
+      "id": "logical_work_and_attempts",
+      "source": "sessions.snapshot.logical_work/attempts",
+      "columns": [
+        "kind",
+        "logical_job_id",
+        "command_id",
+        "phase_id",
+        "attempt_ordinal",
+        "selected_binding_id",
+        "target_device_boot_id",
+        "state",
+        "decision_host_ms",
+        "decision_reason",
+        "candidate_details_json"
+      ],
+      "column_sources": {
+        "kind": "logical_work or attempt row tag",
+        "logical_job_id": "logical_work.logical_job_id or attempt.attempt.logical_job_id",
+        "command_id": "logical_work.current_attempt.command_id or attempt.attempt.command_id",
+        "phase_id": "logical_work.current_attempt.phase_id or attempt.attempt.phase_id",
+        "attempt_ordinal": "logical_work.current_attempt.attempt_ordinal or attempt.attempt.attempt_ordinal",
+        "selected_binding_id": "logical_work.latest_dispatch_decision.selected_binding_id or attempt.dispatch_decision.selected_binding_id",
+        "decision_host_ms": "latest_dispatch_decision.decision_host_ms or dispatch_decision.decision_host_ms",
+        "decision_reason": "latest_dispatch_decision.reason or dispatch_decision.reason",
+        "candidate_details_json": "latest_dispatch_decision.candidates or dispatch_decision.candidates; null when absent",
+        "target_device_boot_id": "attempt.target_device_boot_id for attempt rows; null for logical_work rows (current attempt resolved through matching attempt row)"
+      }
+    },
+    {
+      "id": "receipt_admissions",
+      "source": "sessions.snapshot.receipt_admissions",
+      "columns": [
+        "receipt_id",
+        "decision",
+        "admission_execution_revision",
+        "host_admission_sequence",
+        "host_received_elapsed_ms",
+        "business_effect_committed",
+        "reason"
+      ],
+      "column_sources": {
+        "admission_execution_revision": "execution_revision"
+      }
+    },
+    {
+      "id": "resource_claims",
+      "source": "sessions.snapshot.business_facts.resource_claims",
+      "columns": [
+        "resource_id",
+        "job_id",
+        "units",
+        "interval_index",
+        "interval_start_ms",
+        "interval_end_ms",
+        "is_open",
+        "view_boundary"
+      ],
+      "column_sources": {
+        "resource_id": "claim.resource_id",
+        "job_id": "claim.job_id",
+        "units": "claim.units",
+        "interval_index": "index in claim.intervals",
+        "interval_start_ms": "claim.intervals[index].start_ms",
+        "interval_end_ms": "claim.intervals[index].end_ms",
+        "is_open": "index == open_interval_index",
+        "view_boundary": "outer view_boundary when open, actual_release for closed intervals"
+      }
+    },
+    {
+      "id": "work_timings",
+      "source": "sessions.snapshot.timings",
+      "columns": [
+        "job_id",
+        "command_id",
+        "host_confirmed_reservation_ms",
+        "host_confirmed_occupation_ms",
+        "nominal_work_ms",
+        "device_reported_duration_ms",
+        "physical_effective_work_ms",
+        "missing_conditions"
+      ]
+    },
+    {
+      "id": "waiting",
+      "source": "sessions.metrics.waiting",
+      "columns": [
+        "logical_job_id",
+        "queued_wait_ms",
+        "pre_start_wait_ms",
+        "output_wait_ms",
+        "reconciliation_wait_ms",
+        "missing_conditions"
+      ]
+    },
+    {
+      "id": "state_history",
+      "source": "sessions.history.records",
+      "columns": [
+        "record_sequence",
+        "record_execution_revision",
+        "at_host_ms",
+        "object_kind",
+        "object_id",
+        "typed_state_json"
+      ],
+      "column_sources": {
+        "record_execution_revision": "execution_revision",
+        "object_kind": "object.kind",
+        "object_id": "item.id / job.job_id / device.binding.device_id / logical_work.logical_job_id / attempt.attempt.command_id",
+        "typed_state_json": "object.data"
+      }
+    },
+    {
+      "id": "module_versions_and_rights",
+      "source": "sessions.module_versions/asset_rights",
+      "columns": [
+        "row_kind",
+        "module_id",
+        "module_version",
+        "asset_ref",
+        "source",
+        "license",
+        "redistribution_confirmed"
+      ],
+      "column_sources": {
+        "row_kind": "module_version or asset_rights",
+        "module_id": "module_version.id or asset_rights.module_ref.id",
+        "module_version": "module_version.version or asset_rights.module_ref.version",
+        "asset_ref": "asset_rights.rights.asset_ref",
+        "source": "asset_rights.rights.source",
+        "license": "asset_rights.rights.license",
+        "redistribution_confirmed": "asset_rights.rights.redistribution_confirmed"
+      }
+    },
+    {
+      "id": "issues",
+      "source": "report,session and prediction metrics/comparison conditions",
+      "columns": [
+        "source_path",
+        "code",
+        "object_ref",
+        "field_path",
+        "message",
+        "affected_conclusions"
+      ],
+      "column_sources": {
+        "affected_conclusions": "Issue.blocks",
+        "source_path": "canonical report typed source path"
+      }
+    },
+    {
+      "id": "comparison",
+      "source": "comparison",
+      "columns": [
+        "baseline_session_id",
+        "baseline_execution_epoch_id",
+        "baseline_execution_revision",
+        "baseline_observation_frontier",
+        "candidate_session_id",
+        "candidate_execution_epoch_id",
+        "candidate_execution_revision",
+        "candidate_observation_frontier",
+        "status",
+        "condition_key",
+        "matches",
+        "detail",
+        "completion_delta_ms",
+        "accepted_delta_direction",
+        "accepted_delta_coefficient",
+        "accepted_delta_decimal_places",
+        "accepted_delta_unit"
+      ],
+      "column_sources": {
+        "baseline_*": "comparison.baseline and matching sessions[0].source stamp",
+        "candidate_*": "comparison.candidate and matching sessions[1].source stamp",
+        "condition_key": "conditions[].key",
+        "matches": "conditions[].matches",
+        "detail": "conditions[].detail",
+        "accepted_delta_direction": "accepted_delta.direction",
+        "accepted_delta_coefficient": "accepted_delta.magnitude.value.coefficient",
+        "accepted_delta_decimal_places": "accepted_delta.magnitude.value.decimal_places",
+        "accepted_delta_unit": "accepted_delta.magnitude.unit"
+      }
+    },
+    {
+      "id": "prediction_sources",
+      "source": "prediction_comparison.prediction",
+      "columns": [
+        "run_id",
+        "input_project_revision",
+        "scenario_id",
+        "scenario_revision",
+        "provenance",
+        "evidence_origin",
+        "clock_basis",
+        "time_reference_json",
+        "window_start_ms",
+        "window_end_ms",
+        "computed_until_sim_ms",
+        "computation_status",
+        "whole_window_computed",
+        "goal_met",
+        "target_quantity_json",
+        "target_reached_at_sim_ms",
+        "module_versions_json"
+      ],
+      "column_sources": {
+        "run_id": "source.run_id",
+        "input_project_revision": "source.input_ref.project_revision",
+        "scenario_id": "source.input_ref.scenario_id",
+        "scenario_revision": "source.input_ref.scenario_revision",
+        "time_reference_json": "time_reference",
+        "window_start_ms": "window.start_ms",
+        "window_end_ms": "window.end_ms",
+        "target_quantity_json": "target_quantity",
+        "module_versions_json": "module_versions"
+      }
+    },
+    {
+      "id": "prediction_accepted_by_scope",
+      "source": "prediction_comparison.prediction.accepted",
+      "columns": [
+        "run_id",
+        "product_ref",
+        "unit",
+        "destination",
+        "acceptance_stage",
+        "known",
+        "coefficient",
+        "decimal_places",
+        "missing_conditions"
+      ],
+      "column_sources": {
+        "run_id": "prediction_comparison.prediction.source.run_id",
+        "product_ref": "scope.product_ref",
+        "unit": "scope.unit",
+        "destination": "scope.destination",
+        "acceptance_stage": "scope.stage",
+        "known": "accepted_quantity != null",
+        "coefficient": "accepted_quantity.value.coefficient or null",
+        "decimal_places": "accepted_quantity.value.decimal_places or null"
+      }
+    },
+    {
+      "id": "prediction_comparison",
+      "source": "prediction_comparison",
+      "columns": [
+        "prediction_run_id",
+        "execution_read_origin",
+        "execution_session_id",
+        "execution_epoch_id",
+        "execution_revision",
+        "status",
+        "comparison_scope_json",
+        "condition_key",
+        "matches",
+        "detail",
+        "completion_delta_ms",
+        "accepted_delta_direction",
+        "accepted_delta_coefficient",
+        "accepted_delta_decimal_places",
+        "accepted_delta_unit"
+      ],
+      "column_sources": {
+        "prediction_run_id": "prediction.source.run_id",
+        "execution_read_origin": "execution.read_origin",
+        "execution_session_id": "execution.identity.session_id",
+        "execution_epoch_id": "execution.identity.execution_epoch_id",
+        "execution_revision": "execution.execution_revision",
+        "comparison_scope_json": "comparison_scope",
+        "condition_key": "conditions[].key",
+        "matches": "conditions[].matches",
+        "detail": "conditions[].detail",
+        "accepted_delta_direction": "accepted_delta.direction",
+        "accepted_delta_coefficient": "accepted_delta.magnitude.value.coefficient",
+        "accepted_delta_decimal_places": "accepted_delta.magnitude.value.decimal_places",
+        "accepted_delta_unit": "accepted_delta.magnitude.unit"
+      }
+    },
+    {
+      "id": "prediction_waiting",
+      "source": "prediction_comparison.prediction.waiting",
+      "columns": [
+        "run_id",
+        "object_kind",
+        "object_id",
+        "covered_from_sim_ms",
+        "covered_until_sim_ms",
+        "known_sim_ms",
+        "source_intervals_json",
+        "missing_conditions"
+      ],
+      "column_sources": {
+        "run_id": "prediction_comparison.prediction.source.run_id",
+        "object_kind": "object_ref.kind",
+        "object_id": "object_ref.id",
+        "source_intervals_json": "source_intervals"
+      }
+    }
+  ],
+  "session_row_prefix_applies_to": [
+    "execution_sources",
+    "accepted_by_scope",
+    "command_counts",
+    "logical_work_and_attempts",
+    "receipt_admissions",
+    "resource_claims",
+    "work_timings",
+    "waiting",
+    "state_history",
+    "module_versions_and_rights",
+    "issues"
+  ],
+  "mapping_rule": "unmapped column takes same-named property from its declared row source; mixed row_kind absent fields are null; computed/renamed sources are explicit below",
+  "common_report_prefix": [
+    "report_id",
+    "project_id"
+  ],
+  "header_rule": "start with report/session prefix for the row scope, then append declared columns not already present; identical source-context fields emitted once; admission/record revisions remain renamed",
+  "global_issues": "global Issue rows leave session/epoch/R/F columns empty and retain exact source_path; do not invent a session",
+  "prediction_row_prefix": [
+    "report_id",
+    "project_id"
+  ],
+  "prediction_prefix_rule": "new prediction tables use actual Run/target execution keys; original session_row_prefix applies only existing execution-specific tables"
+}

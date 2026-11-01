@@ -68,12 +68,63 @@
     },
     "supported_shortfall_or_failed_check": {
       "action": "finite_authorized_change_then_recheck_and_new_run_comparison_when_run_exists",
-      "limits": "supported_variables_only_no_unbounded_search"
+      "limits": "supported_variables_only_no_unbounded_search",
+      "max_feedback_repair_rounds": 3,
+      "initial_run_counts_as_repair": false,
+      "stop_on_no_effective_change": true
     },
     "missing_inputs_scope_or_unrepairable": {
       "action": "preserve_draft_and_explain_conditions",
       "target_met": false
     },
     "repair_capability_acceptance": "independent_shortfall_case_not_every_successful_task"
+  },
+  "confirmed_design_choices": {
+    "selection_ref": "docs/00_项目基线/全量设计编码确认选择.json",
+    "checkpoint_requirements_ref": "docs/04_开发与验收/全量设计编码确认/SXX-XX_确认选择落实.json",
+    "question_ids": [
+      "Q04",
+      "Q08",
+      "Q09",
+      "Q27",
+      "Q34",
+      "Q45",
+      "Q46",
+      "Q47",
+      "Q48",
+      "Q49",
+      "Q50"
+    ],
+    "requirements": {
+      "Q04": "展示任务/模板/空工程三入口；按当前目标逐步补必要参数，允许保存草稿。",
+      "Q08": "提供位置/朝向/占地数值、可关网格吸附和超界高亮；LOD先明确手动切换。",
+      "Q09": "多选、编组/解组、整体移动、复制为新ID；连接/角色待重绑和种子供给单独确认。",
+      "Q27": "导出选定组合及角色需求；采用前预览新ID/引用/资源复用，种子供料和订单单独确认。",
+      "Q34": "缺项定位到对象/用途；完整结论受阻，可对已有支持且输入齐全的范围运行并明确标范围。",
+      "Q45": "先以你目前使用的Codex客户端为首个实际验证对象，其他客户端只在真实验证后声称支持。",
+      "Q46": "关键缺项集中询问，普通示例假设显式标注并可改；无数据不填虚构充足库存或产量。",
+      "Q47": "在本次选定草稿和字段范围内分批执行，展示变更；涉及超范围改动再由你决定。",
+      "Q48": "先限排期、可选模板布局与明确允许的设备实例数；工时/BOM/质量、人员增补和成本需明确授权。",
+      "Q49": "候选默认3轮，每轮真实检查/运行并保留变化；达标即停，关键缺项或无有效改动则说明。",
+      "Q50": "保存已完成草稿与缺项，给出人工创作/已有模块组合入口，不自行发明新工艺求解器。"
+    }
+  },
+  "allowed_repair_variables": {
+    "default": [
+      "schedule",
+      "selected_template_layout",
+      "explicitly_allowed_device_instance_count"
+    ],
+    "needs_explicit_authorization": [
+      "phase_duration",
+      "BOM",
+      "quality_rule",
+      "additional_personnel",
+      "cost_parameters"
+    ]
+  },
+  "first_client_validation_target": {
+    "name": "Codex",
+    "actual_compatibility_result": null
   }
 }

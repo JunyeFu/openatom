@@ -2,7 +2,8 @@
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>超级工厂 · 真实3D表现试样</title>
+  <title>超级工厂 · L03业务与3D试样</title>
+  <link rel="icon" href="data:,">
   <link rel="stylesheet" href="style.css">
   <script type="importmap">{"imports":{"three":"./vendor/three.module.js","three/addons/":"./vendor/addons/"}}</script>
 </head>
@@ -14,7 +15,7 @@
     <label>精度 <select id="quality"><option value="high">详细</option><option value="low">简化</option></select></label>
     <button data-view="iso">斜视</button><button data-view="work">工装细节</button><button data-view="front">正面</button><button data-view="back">背面</button><button data-view="top">俯视</button>
     <label><input id="shadow" type="checkbox" checked>阴影</label>
-    <button id="benchmark">测量10秒</button><button id="save">保存模型、画面与测量</button><button id="reopen">重开导出的GLB</button><button id="record">录制设备动作视频</button>
+    <button id="benchmark">测量10秒</button><button id="save">保存模型、画面与测量</button><button id="reopen">重开导出的GLB</button><button id="record">录制设备动作视频</button><button id="line-record">录制L03完整运行</button><button id="line-record-cancel" disabled>取消录制</button>
   </div>
   <section class="simulation-bar" aria-label="流水线业务仿真">
     <label>情景 <select id="line-scenario"><option value="baseline">六套交付 · PCB延迟到料 · 一次返工</option><option value="missing_pcb">缺PCB · 可补料恢复</option><option value="missing_quality">缺检验结果 · 可补充恢复</option><option value="output_blocked">托盘暂停接收至180秒</option><option value="reject">第五套复检失败隔离</option></select></label>
@@ -32,5 +33,6 @@
   <footer><span id="status" role="status">初始化真实三维场景…</span><span>自建示意几何与参数 · 非实测设备尺寸</span></footer>
   <textarea id="metrics-json" aria-label="完整测量JSON" readonly></textarea>
   <section id="record-result" hidden style="padding:16px"><p>设备部件动作预览 · 24秒 / 1920×1080 / 30帧每秒 · 尚未接业务仿真　<a href="output/device-motion.mp4" download>下载MP4</a></p><video id="record-video" controls preload="metadata" style="width:100%;max-width:1280px"></video></section>
+  <section id="line-record-result" hidden style="padding:16px"><p>L03完整业务运行 · 143秒 / 1920×1080 / 30帧每秒 · 八设备、返工、等待恢复、六套进入托盘　<a href="output/L03-full-run.mp4" download>下载MP4</a>　<a href="output/L03-full-run.json" download>业务事件与录制信息</a></p><video id="line-record-video" controls preload="metadata" poster="output/L03-full-run.poster.png" style="width:100%;max-width:1280px"></video></section>
   <script type="module" src="scene.js"></script>
 </body></html>

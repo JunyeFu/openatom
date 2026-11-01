@@ -103,7 +103,7 @@
       "duration_ms": 12000,
       "behavior": {
         "declaration": "pick_and_place",
-        "implementation_status": "required_not_implemented",
+        "implementation_status": "local_proof_only_not_product_runtime",
         "concurrency": 1,
         "repeat_mode": "continuous_when_ready",
         "inputs": [
@@ -194,7 +194,7 @@
       "duration_ms": 4000,
       "behavior": {
         "declaration": "fixed_device_transfer",
-        "implementation_status": "required_not_implemented",
+        "implementation_status": "local_proof_only_not_product_runtime",
         "concurrency": 1,
         "repeat_mode": "continuous_when_ready",
         "inputs": [
@@ -416,7 +416,7 @@
       "duration_ms": 4000,
       "behavior": {
         "declaration": "fixed_device_transfer",
-        "implementation_status": "required_not_implemented",
+        "implementation_status": "local_proof_only_not_product_runtime",
         "concurrency": 1,
         "repeat_mode": "continuous_when_ready",
         "inputs": [
@@ -559,7 +559,7 @@
       "duration_ms": 8000,
       "behavior": {
         "declaration": "seal_existing_package",
-        "implementation_status": "required_not_implemented",
+        "implementation_status": "local_proof_only_not_product_runtime",
         "concurrency": 1,
         "repeat_mode": "continuous_when_ready",
         "inputs": [
@@ -643,6 +643,329 @@
       ]
     }
   ],
+  "item_definitions": [
+    {
+      "alias": "shell",
+      "id": "superfactory.demo.item.shell",
+      "version": "0.1.0",
+      "category": "items",
+      "title": "控制盒壳体",
+      "definition_state": "design",
+      "contribution": {
+        "author": "本项目自建演示输入",
+        "license": "待项目许可确认",
+        "status": "local_proof_only"
+      },
+      "item_definition": {
+        "unit": "piece",
+        "tracking": "individual",
+        "quantity_is_instance_state": true,
+        "specification_basis": "自建演示规格；不采用另一壳体样例的100mm规格"
+      }
+    },
+    {
+      "alias": "pcb",
+      "id": "superfactory.demo.item.pcb",
+      "version": "0.1.0",
+      "category": "items",
+      "title": "控制板",
+      "definition_state": "design",
+      "contribution": {
+        "author": "本项目自建演示输入",
+        "license": "待项目许可确认",
+        "status": "local_proof_only"
+      },
+      "item_definition": {
+        "unit": "piece",
+        "tracking": "individual",
+        "quantity_is_instance_state": true,
+        "specification_basis": "自建演示规格；不采用另一壳体样例的100mm规格"
+      }
+    },
+    {
+      "alias": "fastener",
+      "id": "superfactory.demo.item.fastener",
+      "version": "0.1.0",
+      "category": "items",
+      "title": "PCB紧固件",
+      "definition_state": "design",
+      "contribution": {
+        "author": "本项目自建演示输入",
+        "license": "待项目许可确认",
+        "status": "local_proof_only"
+      },
+      "item_definition": {
+        "unit": "piece",
+        "tracking": "individual",
+        "quantity_is_instance_state": true,
+        "specification_basis": "自建演示规格；不采用另一壳体样例的100mm规格"
+      }
+    },
+    {
+      "alias": "carton",
+      "id": "superfactory.demo.item.carton",
+      "version": "0.1.0",
+      "category": "items",
+      "title": "控制盒包装纸箱",
+      "definition_state": "design",
+      "contribution": {
+        "author": "本项目自建演示输入",
+        "license": "待项目许可确认",
+        "status": "local_proof_only"
+      },
+      "item_definition": {
+        "unit": "piece",
+        "tracking": "individual",
+        "quantity_is_instance_state": true,
+        "specification_basis": "自建演示规格；不采用另一壳体样例的100mm规格"
+      }
+    },
+    {
+      "alias": "assembly",
+      "id": "superfactory.demo.item.assembly",
+      "version": "0.1.0",
+      "category": "items",
+      "title": "已装配控制盒",
+      "definition_state": "design",
+      "contribution": {
+        "author": "本项目自建演示输入",
+        "license": "待项目许可确认",
+        "status": "local_proof_only"
+      },
+      "item_definition": {
+        "unit": "piece",
+        "tracking": "individual",
+        "quantity_is_instance_state": true,
+        "specification_basis": "自建演示规格；不采用另一壳体样例的100mm规格",
+        "recipe": {
+          "shell": 1,
+          "pcb": 1,
+          "fastener": 4
+        },
+        "visual": "shared_control_box_geometry_1_to_1"
+      }
+    },
+    {
+      "alias": "package",
+      "id": "superfactory.demo.item.package",
+      "version": "0.1.0",
+      "category": "items",
+      "title": "控制盒包件",
+      "definition_state": "design",
+      "contribution": {
+        "author": "本项目自建演示输入",
+        "license": "待项目许可确认",
+        "status": "local_proof_only"
+      },
+      "item_definition": {
+        "unit": "piece",
+        "tracking": "individual",
+        "quantity_is_instance_state": true,
+        "specification_basis": "自建演示规格；不采用另一壳体样例的100mm规格",
+        "container": "carton",
+        "contents": "assembly",
+        "supported_closure_values": [
+          "open",
+          "sealed"
+        ],
+        "envelope_meter": [
+          0.49,
+          0.34,
+          0.36
+        ]
+      }
+    },
+    {
+      "alias": "sealing_tape",
+      "id": "superfactory.demo.item.sealing_tape",
+      "version": "0.1.0",
+      "category": "items",
+      "title": "封箱胶带",
+      "definition_state": "design",
+      "contribution": {
+        "author": "本项目自建演示输入",
+        "license": "待项目许可确认",
+        "status": "local_proof_only"
+      },
+      "item_definition": {
+        "unit": "meter",
+        "tracking": "quantity",
+        "quantity_is_instance_state": true,
+        "specification_basis": "自建演示规格；不采用另一壳体样例的100mm规格",
+        "quantity_resolution_meter": 0.001
+      }
+    }
+  ],
+  "resource_definitions": [
+    {
+      "document_kind": "typed_module_declaration_design_not_runtime",
+      "id": "community.operator-role",
+      "version": "0.1.0",
+      "category": "resources",
+      "title": "可共享操作人员角色",
+      "definition_state": "design",
+      "contribution": {
+        "author": "待填写",
+        "license": "待声明",
+        "assets": [],
+        "status": "design"
+      },
+      "resource_definition": {
+        "kind": "worker",
+        "role": "assembler",
+        "capacity": {
+          "value": 1,
+          "unit": "person"
+        },
+        "default_calendar_ms": [
+          [
+            0,
+            300000
+          ]
+        ],
+        "current_occupation_is_instance_state": true
+      }
+    },
+    {
+      "id": "superfactory.demo.role.inspector",
+      "version": "0.1.0",
+      "category": "resources",
+      "title": "检查人员",
+      "definition_state": "design",
+      "contribution": {
+        "author": "本项目自建演示输入",
+        "license": "待项目许可确认",
+        "status": "local_proof_only"
+      },
+      "resource_definition": {
+        "kind": "worker",
+        "role": "inspector",
+        "capacity": {
+          "value": 1,
+          "unit": "person"
+        },
+        "current_occupation_is_instance_state": true
+      }
+    },
+    {
+      "id": "superfactory.demo.role.repairer",
+      "version": "0.1.0",
+      "category": "resources",
+      "title": "返工人员",
+      "definition_state": "design",
+      "contribution": {
+        "author": "本项目自建演示输入",
+        "license": "待项目许可确认",
+        "status": "local_proof_only"
+      },
+      "resource_definition": {
+        "kind": "worker",
+        "role": "repairer",
+        "capacity": {
+          "value": 1,
+          "unit": "person"
+        },
+        "current_occupation_is_instance_state": true
+      }
+    },
+    {
+      "id": "superfactory.demo.role.packer",
+      "version": "0.1.0",
+      "category": "resources",
+      "title": "包装人员",
+      "definition_state": "design",
+      "contribution": {
+        "author": "本项目自建演示输入",
+        "license": "待项目许可确认",
+        "status": "local_proof_only"
+      },
+      "resource_definition": {
+        "kind": "worker",
+        "role": "packer",
+        "capacity": {
+          "value": 1,
+          "unit": "person"
+        },
+        "current_occupation_is_instance_state": true
+      }
+    }
+  ],
+  "resource_instances": [
+    {
+      "id": "W-ASSEMBLER-01",
+      "role": "assembler",
+      "definition_ref": {
+        "id": "community.operator-role",
+        "version": "0.1.0"
+      },
+      "capacity": 1,
+      "availability": "always_available_in_this_local_proof",
+      "calendar_adoption": "explicit_override_of_definition_default"
+    },
+    {
+      "id": "W-INSPECTOR-01",
+      "role": "inspector",
+      "definition_ref": {
+        "id": "superfactory.demo.role.inspector",
+        "version": "0.1.0"
+      },
+      "capacity": 1,
+      "availability": "always_available_in_this_local_proof",
+      "calendar_adoption": "explicit_override_of_definition_default"
+    },
+    {
+      "id": "W-REPAIRER-01",
+      "role": "repairer",
+      "definition_ref": {
+        "id": "superfactory.demo.role.repairer",
+        "version": "0.1.0"
+      },
+      "capacity": 1,
+      "availability": "always_available_in_this_local_proof",
+      "calendar_adoption": "explicit_override_of_definition_default"
+    },
+    {
+      "id": "W-PACKER-01",
+      "role": "packer",
+      "definition_ref": {
+        "id": "superfactory.demo.role.packer",
+        "version": "0.1.0"
+      },
+      "capacity": 1,
+      "availability": "always_available_in_this_local_proof",
+      "calendar_adoption": "explicit_override_of_definition_default"
+    }
+  ],
+  "item_bindings": {
+    "shell": {
+      "id": "superfactory.demo.item.shell",
+      "version": "0.1.0"
+    },
+    "pcb": {
+      "id": "superfactory.demo.item.pcb",
+      "version": "0.1.0"
+    },
+    "fastener": {
+      "id": "superfactory.demo.item.fastener",
+      "version": "0.1.0"
+    },
+    "carton": {
+      "id": "superfactory.demo.item.carton",
+      "version": "0.1.0"
+    },
+    "assembly": {
+      "id": "superfactory.demo.item.assembly",
+      "version": "0.1.0"
+    },
+    "package": {
+      "id": "superfactory.demo.item.package",
+      "version": "0.1.0"
+    },
+    "sealing_tape": {
+      "id": "superfactory.demo.item.sealing_tape",
+      "version": "0.1.0"
+    }
+  },
   "pallet": {
     "id": "PAL01",
     "category": "resources",

@@ -1,0 +1,415 @@
+{
+  "document_kind": "DRF03_complete_existing_feature_definition_not_new_backlog",
+  "id": "DRF03",
+  "date": "2026-10-14 Asia/Shanghai",
+  "status": "C01_C02_C03_C04_owned_design_deltas_publicly_merged_and_canonical_consumers_rechecked_real_inputs_and_runtime_gates_retained",
+  "P_refs": [
+    "P0-03",
+    "P3-01",
+    "P4-02"
+  ],
+  "S_refs": [
+    "S03-03",
+    "S05-03",
+    "S06-04",
+    "S06-05"
+  ],
+  "dispatch_ref": "docs/04_开发与验收/重要特征细化统筹与派发.json",
+  "identity_preserved": {
+    "SF": 17,
+    "P_selected": 21,
+    "S": 60,
+    "Q": "Q01—Q64"
+  },
+  "definition_source": "packages/module-kit/category-contracts.design.json",
+  "field_coverage": {
+    "categories": 9,
+    "payload_fields": 61,
+    "common_fields": 10,
+    "each_payload_field_has": [
+      "canonical_carriers",
+      "unit_rule",
+      "validation_rule",
+      "reference_rule",
+      "instantiation_rule",
+      "sample_ref",
+      "canonical_shape_fixture_ref",
+      "version_rule"
+    ],
+    "mapping_source": "packages/domain/module-field-bindings.design.json"
+  },
+  "category_instantiation": {
+    "items": "先采用ItemType规格；仅显式ScenarioInput初始输入创建物品。",
+    "devices": "ModuleAdoption.new_instances中的Device对象，冻结module_ref、pose、configuration和RoleBindings。",
+    "resources": "显式Resource对象及Calendar；角色不自动复制人数，当前占用不在定义。",
+    "tasks": "采用任务精确版本和target/resource映射，现有就绪/准备/工艺消费者接入；不得凭instantiate_as字符串新建调度器。",
+    "operations": "DeviceInstance.operation_binding或RouteStep.operation_ref明确版本，端口/物品/资源角色须逐项解析。",
+    "transport": "选实际运输设备/载具/源目的和货物；仅绑定计划，不在采用时创建货物或运行结果。",
+    "templates": "InstantiateTemplate给proposed_objects/mapped_bindings，重映射内部ID；新Scenario种子单独显式选择。",
+    "professional": "采用提供者契约只登记定义；实际计算、成果、人工认可和adopt_artifact分别调用。",
+    "media": "通过目标实例presentation_override或选定定义默认绑定；不改变业务规则和库存。"
+  },
+  "professional_lifecycle_ref": "packages/packaging/adoption-lifecycle.design.json",
+  "professional_version_effects": [
+    {
+      "change": "instance_title_or_display_only",
+      "artifact": "原成果不变",
+      "acknowledgment": "原认可不变",
+      "binding": "用途/条件未变则保留",
+      "new_run": "冻结新Project修订",
+      "old_run": "始终读原RunInputRef",
+      "test": "R09"
+    },
+    {
+      "change": "media_or_LOD_only",
+      "artifact": "原几何成果不变",
+      "acknowledgment": "不产生新认可",
+      "binding": "仅表现修改不破坏业务绑定",
+      "new_run": "引用新表现版本或实例override",
+      "old_run": "旧表现/定义保持冻结",
+      "test": "R09"
+    },
+    {
+      "change": "subject_revision_r1_to_r2",
+      "artifact": "r1成果保留，不改成r2",
+      "acknowledgment": "r1用途认可保留",
+      "binding": "r2目标不能沿用r1绑定，派生needs_review不覆盖原记录",
+      "new_run": "所请求产品版本逐项校核",
+      "old_run": "匹配r1旧Run仍有效",
+      "test": "R01"
+    },
+    {
+      "change": "material_thickness_geometry_fold_path_or_clearance",
+      "artifact": "新Job修订/冻结输入及新artifact ID",
+      "acknowledgment": "不得将旧认可复制为新成果认可",
+      "binding": "即使产品仍r1，也比较所需材料/几何/用途条件，受影响绑定复核",
+      "new_run": "明确采用新成果后再冻结",
+      "old_run": "旧计算结果不重算回填",
+      "test": "R22"
+    },
+    {
+      "change": "budget_or_numeric_profile",
+      "artifact": "新冻结计算输入；不覆盖原结果",
+      "acknowledgment": "新成果重新明确认可",
+      "binding": "不能从加大预算推断新Pass，旧相符成果可明确继续采用",
+      "new_run": "用实际选定成果与输入",
+      "old_run": "保留原预算/未知原因",
+      "test": "R05"
+    },
+    {
+      "change": "operation_version_or_required_payload",
+      "artifact": "原成果仍保留",
+      "acknowledgment": "按新用途判断原认可覆盖；不自动扩scope",
+      "binding": "requested_scope/required_payload/operation_ref重新匹配",
+      "new_run": "新工艺版本写入冻结输入",
+      "old_run": "原工艺/成果保持",
+      "test": "R03"
+    },
+    {
+      "change": "consumer_or_station_configuration",
+      "artifact": "不自动修改artifact",
+      "acknowledgment": "若原认可条件限定工位/姿态则复核",
+      "binding": "只影响该consumer及实际依赖条件，不全局禁用r1",
+      "new_run": "目标引用必须仍存在且匹配",
+      "old_run": "冻结旧对象与绑定",
+      "test": "R02"
+    },
+    {
+      "change": "new_same_subject_artifact",
+      "artifact": "新旧ID并存，不按latest覆盖",
+      "acknowledgment": "仅引用明确选中的artifact ID",
+      "binding": "选择新ID需新匹配认可；不因新Fail删除旧合法成果",
+      "new_run": "冻结显式选择",
+      "old_run": "原ID保持",
+      "test": "R01"
+    },
+    {
+      "change": "definition_upgrade",
+      "artifact": "不改旧专业成果",
+      "acknowledgment": "专业依赖实变才受影响",
+      "binding": "仅明确选择的实例/依赖；端口/单位不相容则整个事务不提交",
+      "new_run": "使用明确精确版本",
+      "old_run": "不重绑当前库latest",
+      "test": "R11"
+    }
+  ],
+  "applicable_views": {
+    "task_interaction": "原P0-03部分/P3-01/P4-02；九类创作→检查→预览→采用→导出，专业计算→认可→绑定→运行。",
+    "structure_data": "原61载荷+10共同字段/现行Rust映射；定义、草稿、实例、Run与成果版本不混用。",
+    "state_behavior": "采用计划非持久运行状态；Host原子提交；Engine唯一生产归属；专业三态汇总和人工门明确。",
+    "interface_integration": "18操作及现有编辑命令不扩项；C01—C04公共差异已合入。实际ImportDraft/TemplateInstantiation/Project/template/source和19canonical消费者已复核。",
+    "ui_presentation": "71字段表单已经接入，由窗口2维护完整S04线；窗口1唯一写公共合同，本窗口仅更新拥有者消费者。",
+    "deployment_validation": "现行Rust/serde/schemars/ts-rs/parry3d-f640.31.1/受控媒体子集；不安装依赖。Schema/有限参考与实际Host/原型/本人分层。"
+  },
+  "call_sequence": [
+    {
+      "stage": "discover",
+      "request": "describe_capabilities / query_module_library / get_context",
+      "return": "真实操作/providers/允许scope与当前修订",
+      "failure": "空能力或缺引用显示缺项，不用released/intended_modes替代。"
+    },
+    {
+      "stage": "import",
+      "request": "import_package(selected_file_ref,import_policy)→get_task",
+      "return": "ImportDraft；AdoptImportedDraft前只暂存",
+      "failure": "取消/IO失败不提交工程；保留可说明的缺文件/许可项。"
+    },
+    {
+      "stage": "author",
+      "request": "apply_commands(CreateDefinitionDraft/PutDefinition/SetDeclaredParameter); get_object; 适用render_view",
+      "return": "EditCommit/issues及明确版本预览",
+      "failure": "草稿可缺值；没有公开check_definition操作；实例配置与定义默认分开。"
+    },
+    {
+      "stage": "adopt_or_upgrade",
+      "request": "同一apply_commands(AdoptModule/InstantiateTemplate与明确PutObject)",
+      "return": "原子EditCommit和一个新Project revision",
+      "failure": "InvalidInput/MissingReference/RevisionConflict不部分提交；取消/返回保留本地差异。"
+    },
+    {
+      "stage": "compute",
+      "request": "PutPackagingJob后compute_packaging→get_task；cancel_task只用实际能力",
+      "return": "真实PackagingResult/ArtifactRecord",
+      "failure": "Fail/Undetermined为正常专业结果；取消/未执行不能写完整Pass。"
+    },
+    {
+      "stage": "human_acknowledgment",
+      "request": "可信人工apply_commands(RecordArtifactAcknowledgment)",
+      "return": "指定artifact/产品/用途认可",
+      "failure": "外部Agent不能自造HumanStatement；其绑定只引用既有人认可。"
+    },
+    {
+      "stage": "bind",
+      "request": "adopt_artifact(artifact_id,acceptance_ref,consumer_ref,operation_ref,requested_scope,base_revision)",
+      "return": "BindingCommit；不产库存",
+      "failure": "校核实际来源/冻结输入/版本/用途/内容/认可/消费者；缺一不合格绑定。"
+    },
+    {
+      "stage": "run_and_inspect",
+      "request": "run_scenario→get_task/get_run(Summary/Events/ObjectsAt/FullResult)",
+      "return": "同一RunInputRef的已计算范围",
+      "failure": "旧Run不读当前草稿；专业预览/动画结束不当生产完成。"
+    },
+    {
+      "stage": "export_and_reopen",
+      "request": "export_package→get_task；save_project沿原入口",
+      "return": "真实文件后才称导出；另一目录重开仍待实际执行",
+      "failure": "缺文件/依赖/再分发权利逐项列明；不自动发布或下载。"
+    }
+  ],
+  "ui_contract": {
+    "owner": "复审窗口2；71字段表单映射已接入，本轮不重做。",
+    "form_refs": [
+      "F01",
+      "F02",
+      "F03",
+      "F04",
+      "F05",
+      "F06",
+      "F07",
+      "F08",
+      "F09",
+      "F10",
+      "F19"
+    ],
+    "fields": [
+      "精确来源/版本",
+      "单位/坐标",
+      "必填/不支持缺项",
+      "库默认和实例覆盖",
+      "新增/复用及角色映射",
+      "升级差异",
+      "artifact/认可/绑定独立身份",
+      "三态与真实证据范围"
+    ],
+    "states": {
+      "empty": "未选择，不建实例；返回库/工程选择。",
+      "draft_missing": "保留缺项草稿，定位字段；不可执行该缺项范围。",
+      "preview_loading": "显示冻结版本/任务；取消回原选择，不删除旧认可。",
+      "unsupported": "具体缺能力；回编辑或另选真实提供者，不降级模式。",
+      "adoption_preview": "新ID/复用/种子/单位差异可审阅；取消不提交。",
+      "conflict": "保留预览；显示base/current修订，刷新后显式重新应用。",
+      "nonpass_result": "保留反例/未覆盖区间/预算与缺制造内容；复制冻结输入成新草稿。",
+      "binding_needs_review": "只显示受影响目标及条件差异；旧匹配订单可继续使用。",
+      "old_run_readonly": "读该Run冻结定义/成果；定位同Run，编辑另开当前草稿。"
+    },
+    "layout": "窗口菜单控制dock，下方工具，默认160px时间轴及独立描述dock；不恢复顶部工具/250px固定轴/Figma。"
+  },
+  "timeline_contract": {
+    "source_ref": "docs/02_交互设计/时间轴主轴与子轴完整定义.json",
+    "factory": "同一Run相对整数ms/共享view_time_ms；TC01/TC02由W00解决，不从定义猜历史。",
+    "device_media": "编辑u、实际有效工作进度和生产毫秒分开；等待/日历关闭不按墙钟推进。",
+    "professional": "actual PackagingProcessSample step_id/progress/panel_id-Pose tied to frozen job_ref; production uses canonical phase_work_intervals/frontier, not preview hints",
+    "description": "显示原Run/定义版本或artifact/job_ref、step/u、三态和限制，不补伪开始/完成。",
+    "case_refs": [
+      "R18",
+      "R19"
+    ],
+    "public_gap_refs": [],
+    "runtime_contract_ref": "docs/03_架构与契约/全层类型与工程格式.json#/timeline_runtime_contract",
+    "TC01_TC02_status": "merged_canonical_types_consumers_not_actual_product_execution",
+    "selected_wait_claim_end_aliases": "本轮选定设计，窗口1合入前不称canonical/运行已支持；只在明确映射时改别名，不改原时间数值和结论。"
+  },
+  "technical_decisions": {
+    "loader": "沿现行Rust/serde、schemars、ts-rs及现有锁版本；授权本地文件/声明解析，无上传脚本。",
+    "versions": "SemVer2语法+项目精确固定；同id/version不同内容拒绝，不加hash/缓存平台。",
+    "parameters": "RFC6901只写真实公开叶，旧dot/bracket显式适配。",
+    "geometry": "沿已验证S06-04区间方法及parry3d-f640.31.1，不换内核或库。",
+    "media": "受控PNG/JPEG/图序列/GIF/GLB2/原生节点；GLB米/Y-up且name非唯一，显示变换不改专业尺寸。"
+  },
+  "primary_sources": [
+    {
+      "url": "https://semver.org/spec/v2.0.0.html",
+      "read_scope": "1—4/10：已发布内容不可原地改，0.y.z开发期，metadata不用于优先级；精确固定是项目决定。"
+    },
+    {
+      "url": "https://www.rfc-editor.org/rfc/rfc6901.html",
+      "read_scope": "3—4：token转义及按结构定位，不提供写入权限。"
+    },
+    {
+      "url": "https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html",
+      "read_scope": "3.4单位/坐标及name非唯一、GLB外部资源；只支持项目所选子集。"
+    }
+  ],
+  "finite_expectations_ref": "scenarios/九类模块采用/DRF03_有限独立预期.json",
+  "verification_ref": "scenarios/九类模块采用/DRF03_静态与有限参考结果.json",
+  "cross_owner_requests": [
+    "DRF03-C01",
+    "DRF03-C02",
+    "DRF03-C03",
+    "DRF03-C04"
+  ],
+  "evidence": {
+    "document_static": "本轮定义/现行Schema/有限参考按输出记录。",
+    "S06_04_preserved": "原32+6保持预期、16数值原语、6构造Job、SVG，仅原有限范围。",
+    "real_prototype": null,
+    "actual_Host": null,
+    "actual_product_runtime": null,
+    "human_walkthrough": null
+  },
+  "actual_result": null,
+  "public_progress_changed": false,
+  "product_tasks_changed": false,
+  "owned_delivery_files": [
+    "packages/module-kit/category-contracts.design.json",
+    "packages/packaging/README.md",
+    "packages/packaging/algorithm.design.json",
+    "packages/packaging/adoption-lifecycle.design.json",
+    "docs/03_架构与契约/九类协议与采用设计.md",
+    "docs/03_架构与契约/九类模块清单与消费者.md",
+    "docs/03_架构与契约/专业作业与模块接口.md",
+    "docs/03_架构与契约/专业成果接入与软件在环.md",
+    "docs/03_架构与契约/纸包装结构与过程算法.md",
+    "docs/03_架构与契约/纸包装数值与制造规则.md",
+    "scenarios/九类模块采用/README.md",
+    "scenarios/九类模块采用/DRF03_有限独立预期.json",
+    "scenarios/九类模块采用/DRF03_核对细化.py",
+    "scenarios/九类模块采用/DRF03_静态与有限参考结果.json",
+    "docs/04_开发与验收/特征细化/DRF03_公共消费者交接.json",
+    "docs/04_开发与验收/特征细化/DRF03_完整定义.json",
+    "docs/04_开发与验收/特征细化/DRF03_完整定义.md",
+    "docs/04_开发与验收/特征细化/DRF03_缺口与修复.json",
+    "docs/04_开发与验收/特征细化/DRF03_缺口与修复.md",
+    "packages/packaging/consumer-device.design.json",
+    "packages/packaging/sources/presentation/native-scene.json",
+    "docs/04_开发与验收/特征细化/DRF03_C01_逐类原子采用.json",
+    "docs/04_开发与验收/特征细化/DRF03_C02_专业绑定推导.json",
+    "docs/04_开发与验收/特征细化/DRF03_C02_实际工位定义与生成接入.json",
+    "docs/04_开发与验收/特征细化/DRF03_C02_消费者参数片段.json",
+    "docs/04_开发与验收/特征细化/DRF03_C03_过程样本Rust片段.rs",
+    "docs/04_开发与验收/特征细化/DRF03_C03_过程样本Schema片段.json",
+    "docs/04_开发与验收/特征细化/DRF03_C03_过程样本语义.json",
+    "docs/04_开发与验收/特征细化/DRF03_C04_模板内层最小失败.json",
+    "docs/04_开发与验收/特征细化/DRF03_C04_适配试做与内层模板交接.json",
+    "docs/04_开发与验收/特征细化/DRF03_公共合入消费者复核.json",
+    "docs/04_开发与验收/特征细化/DRF03_第二轮具体增量.md",
+    "docs/04_开发与验收/特征细化/DRF03_第二轮验证记录.json",
+    "scenarios/九类模块采用/DRF03_C02_声明核验结果.json",
+    "scenarios/九类模块采用/DRF03_C02_显式工位作业选择.request.json",
+    "scenarios/九类模块采用/DRF03_C02_核验声明.py",
+    "scenarios/九类模块采用/DRF03_C03_正式结果载体夹具.json",
+    "scenarios/九类模块采用/DRF03_device-upgrade.request.json",
+    "scenarios/九类模块采用/DRF03_task-route.request.json",
+    "scenarios/九类模块采用/DRF03_transport-scenario.request.json",
+    "scenarios/九类模块采用/DRF03_旧清单适配试做.py",
+    "scenarios/九类模块采用/DRF03_第二轮核验.py",
+    "scenarios/九类模块采用/DRF03_第二轮核验结果.json",
+    "scenarios/九类模块采用/DRF03_第二轮独立预期.json",
+    "scenarios/九类模块采用/DRF03_适配字段规则.json",
+    "scenarios/九类模块采用/DRF03_适配试做结果.json",
+    "scenarios/九类模块采用/DRF03_适配试做选项.json",
+    "scenarios/九类模块采用/DRF03_逐项适配映射.json",
+    "scenarios/九类模块采用/adapter-output/devices/module.json",
+    "scenarios/九类模块采用/adapter-output/items/module.json",
+    "scenarios/九类模块采用/adapter-output/media/module.json",
+    "scenarios/九类模块采用/adapter-output/operations/module.json",
+    "scenarios/九类模块采用/adapter-output/professional/module.json",
+    "scenarios/九类模块采用/adapter-output/resources/module.json",
+    "scenarios/九类模块采用/adapter-output/tasks/module.json",
+    "scenarios/九类模块采用/adapter-output/templates/module.json",
+    "scenarios/九类模块采用/adapter-output/transport/module.json",
+    "scenarios/九类模块采用/adapter-output/devices/sources/manifest.design.json",
+    "scenarios/九类模块采用/adapter-output/devices/sources/presentation/native-scene.json",
+    "scenarios/九类模块采用/adapter-output/items/sources/manifest.design.json",
+    "scenarios/九类模块采用/adapter-output/media/sources/manifest.design.json",
+    "scenarios/九类模块采用/adapter-output/media/sources/assets/native-scene.json",
+    "scenarios/九类模块采用/adapter-output/operations/sources/manifest.design.json",
+    "scenarios/九类模块采用/adapter-output/professional/sources/manifest.design.json",
+    "scenarios/九类模块采用/adapter-output/resources/sources/manifest.design.json",
+    "scenarios/九类模块采用/adapter-output/tasks/sources/manifest.design.json",
+    "scenarios/九类模块采用/adapter-output/templates/sources/manifest.design.json",
+    "scenarios/九类模块采用/adapter-output/templates/sources/project.design.json",
+    "scenarios/九类模块采用/adapter-output/transport/sources/manifest.design.json"
+  ],
+  "verification_summary": {
+    "owned_files": 19,
+    "JSON_parsed": 8,
+    "Python_AST": 1,
+    "local_links": 108,
+    "category_fields": 61,
+    "common_fields": 10,
+    "shape_checks": 18,
+    "finite_independent_expectations": 22,
+    "matched": true,
+    "public_process_identity_gap": "observed_and_handed_off_C03",
+    "real_Host_or_product": null,
+    "protected_sources_written": false,
+    "snapshot": "first_round_only; current third-round verification is latest_verification_ref"
+  },
+  "current_ownership_ref": "docs/04_开发与验收/本机并行窗口计划.json#/current_design_reassignment",
+  "shared_public_owner": "复审窗口1",
+  "second_round_refs": [
+    "docs/04_开发与验收/特征细化/DRF03_C01_逐类原子采用.json",
+    "docs/04_开发与验收/特征细化/DRF03_C02_专业绑定推导.json",
+    "docs/04_开发与验收/特征细化/DRF03_C02_消费者参数片段.json",
+    "docs/04_开发与验收/特征细化/DRF03_C03_过程样本语义.json",
+    "docs/04_开发与验收/特征细化/DRF03_C03_过程样本Rust片段.rs",
+    "docs/04_开发与验收/特征细化/DRF03_C03_过程样本Schema片段.json",
+    "docs/04_开发与验收/特征细化/DRF03_C04_适配试做与内层模板交接.json"
+  ],
+  "second_round_evidence_ref": "scenarios/九类模块采用/DRF03_第二轮核验结果.json",
+  "consumer_recheck_ref": "docs/04_开发与验收/特征细化/DRF03_公共合入消费者复核.json",
+  "actual_consumer_definition_ref": "packages/packaging/consumer-device.design.json",
+  "remaining_integration_refs": [],
+  "latest_verification_ref": "docs/04_开发与验收/特征细化/DRF03_C04_r4_核验结果.json",
+  "third_round_ref": "docs/04_开发与验收/特征细化/DRF03_第三轮具体增量.md",
+  "third_round_evidence": {
+    "current_canonical_TS_files": 411,
+    "new_finite_cases": 21,
+    "all_matched": true,
+    "source_leaf_dispositions": 492,
+    "template_locations": 12,
+    "template_connections": 18,
+    "local_definitions": 7,
+    "outer_module_schema": "passed",
+    "template_schema": "passed",
+    "public_companion_integration": "pending",
+    "real_geometry_Product_BOM_Route": "missing",
+    "actual_Host_or_Engine": null
+  },
+  "fourth_round_delta_ref": "docs/04_开发与验收/特征细化/DRF03_C04_r4_公共增量.json",
+  "fourth_round_proof_ref": "docs/04_开发与验收/特征细化/DRF03_C04_r4_核验结果.json",
+  "current_report_ref": "docs/04_开发与验收/特征细化/DRF03_C04_r4_交接.md",
+  "current_six_design_view_ref": "docs/04_开发与验收/特征细化/DRF03_六类设计视图与冻结交接.json",
+  "remaining_design_gaps": []
+}

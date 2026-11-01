@@ -1,0 +1,235 @@
+{
+  "document_kind": "native_stdio_Host_connection_and_result_consumer_design_not_product_connector",
+  "version": "DRF04-4-RR-managed-consumer",
+  "date": "2026-10-15",
+  "API_ref": "docs/03_架构与契约/公开操作与宿主调用契约.json",
+  "owner_rule": "复审窗口1/W00 edits shared API/Host; window4 owns this connector definition; window2 owns S04/docs02",
+  "bootstrap": {
+    "command": "actual packaged native mcp-bridge.exe; no shell",
+    "args": [
+      "--host-pipe",
+      "<Host-issued endpoint>",
+      "--host-instance-id",
+      "<actual Host instance>"
+    ],
+    "argv_status": "implemented by the actual superfactory-mcp-bridge native executable; existing stdio/managed-Host process evidence retained; current full GF/Codex acceptance remains separate",
+    "Host_authority": "Host UI authorizes the current connection/session/project/draft/fields. Startup names select an endpoint; they are not edit/file grants.",
+    "Codex_configuration": "command/args in a deliberately user-configured stdio entry after executable and Host exist; no global config changes in this batch",
+    "native_fixture_launch": "existing architecture-proof exe spawns its own bridge mode with args bridge + actual fixture pipe via rmcp TokioChildProcess; this real tested launch is not the planned product argv or a Codex client"
+  },
+  "connection_sequence": [
+    "Host creates current-logon SID explicit DACL pipe with remote clients rejected; actual peer identity comes from Windows connection/process token, never JSON SID/origin",
+    "Bridge opens exactly the Host-issued endpoint; IpcHello wire_version=1/expected_host_instance_id",
+    "Host verifies peer process/current session, registers a fresh real connection, always treats named-pipe callers as ExternalAgent, resolves explicit UI-granted scope",
+    "IpcWelcome gives host_instance_id/client_session_id/API0.1/frame cap; session IDs correlate but do not alone authenticate",
+    "Each u32-LE length + UTF-8 IPC frame verifies Host/session/version and corresponding operation; MCP stdio remains newline JSON-RPC",
+    "CommandsService receives injected HostCallContext including canonical HostEditGrant records and current ResolvedCallScope; no body grant/caller is accepted",
+    "Common bridge decoder first resolves canonical ApiOutcome.Managed via managed_results into the complete original Response<R>; validate expected operation/schema/request/context and actual Run identity, then publish MCP content. tools/list still exposes only actual supported business tools; no resources/read or extra business operation."
+  ],
+  "lifecycle": {
+    "not_connected": "no alternate Host/project/Engine or automatic retry; return concrete transport/NoActiveProject condition",
+    "admission": "seven long actions return TaskHandle. Business result is get_task.result from matching originating_operation, not initial Ok",
+    "disconnect_before_reply": "edit/run admission may be ambiguous; preserve local proposal/last confirmed repair count and stop automatic work. Do not resend request_id as an idempotency token. Accepted tasks remain Host-owned",
+    "reconnect": "fresh authenticated connection and explicit actual Host scope; old file tokens and handles do not restore authority. Read existing known TaskId after reauthorization; unknown admission requires Host/user reconciliation, not a fabricated ID",
+    "cancel_request": "outstanding MCP request may use notifications/cancelled; after TaskHandle call business cancel_task action=cancel and then get_task. Optional MCP Tasks extension not assumed",
+    "terminal_race": "Completed wins after real output/commit; CancelRequested remains pending; Failed/Cancelled preserve supported known prefix only",
+    "view_controls": "UI playback pause/seek does not change compute task; pause_calculation/resume_calculation/step_next_timestamp only from actual allowed_controls",
+    "switch_close": "real task terminal/dirty decision then revoke old connection/project grants; delayed result stays on originating scope and cannot overwrite new current view",
+    "disconnect_image_leases": "close connection-owned image handles without business cancel; already admitted work remains Host-owned; no resubmit or second Engine. Business continuation is modeled here, not actual Host execution."
+  },
+  "managed_render_return": {
+    "selected_mechanism": "Host duplicates a read-only managed image file handle into the authenticated bridge process; bridge never opens a caller/AssetRef arbitrary path",
+    "delta_ref": "docs/04_开发与验收/特征细化/DRF04_受管画面IPC合入.delta.rs",
+    "wire_change_status": "Canonical managed_assets already merged; canonical managed_results/ApiOutcome.Managed also merged by AQ01. Bridge must unwrap JSON first, then associate image lease. Historical411TS/8 shape cases are not product runtime.",
+    "Host_validation": "completed TaskState.result Render -> actual scene.file AssetRef(id,path,kind) -> Host result registry; same actual task/scope and frozen requested_scope_revision; check scene.scene_revision and allowed image asset",
+    "read_capability": "GetNamedPipeClientProcessId/real process handle and token establish target bridge PID; DuplicateHandle grants read-only access, non-inherited. No read permission follows from a path string or ID alone",
+    "bridge_validation": "Authenticated matching Host/session and stable reply scope; completed render task/id and exact AssetRef; attachment scope/revision equals original Task input/requested revision and actual scene revision. Current editor revision may be newer. Duplicate target is actual verified OS bridge PID; consume only known owned readonly lease, no arbitrary numeric handle/path. Metadata/length/identity mismatch returns no bytes and closes that known lease.",
+    "old_revision": "old task's matching frozen capture can be returned as an old-revision result; it cannot silently become a newer editor preview",
+    "errors": "missing/foreign grant PermissionDenied; actual renderer unavailable UnsupportedCapability; managed read/length failure IoFailure; malformed IPC closes that connection before dispatch. Do not send stale image as success",
+    "payload": "image bytes travel via managed read handle, not base64 inside the 1MiB IPC JSON frame; supported PNG/JPEG content only for actual render image. No path in MCP output needed",
+    "canonical_schema_ref": "tools/type-contract-proof/output/schemas/api-all-types.schema.json#/properties/ipc_task_response",
+    "identity_model_ref": "docs/04_开发与验收/特征细化/DRF04_H04-02有限模型.json"
+  },
+  "timeline_read": {
+    "public_status": "TC01/TC02, RunResult.computed_until_ms and Events end-point membership merged and verified from current source",
+    "fields": "JobState.execution_ref; WaitInterval.execution_ref/phase_ref; RunResult.phase_work_intervals/computed_until_ms",
+    "Events": "point events use start_ms<=at_ms<=end_ms at observer window end; duration intervals remain [start,end); stable pagination even for interval=null",
+    "task_relation": "one Run/input/frontier; no nominal phase inference, partial prefix stays partial; get_run ObjectsAt only at computed frontier or earlier"
+  },
+  "actual_trials": {
+    "native_stdio_pipe_ref": "docs/04_开发与验收/特征细化/DRF04_stdio-proof/output/native-trial-result.json",
+    "readonly_asset_handle_ref": "docs/04_开发与验收/特征细化/DRF04_stdio-proof/output/managed-asset-result.json",
+    "actual_scope": "Historical real rmcp/Windows pipe/readonly handle and OS peer/token subsets; real isolated Tauri2.12.3/WebView2/Three0.186.1 shared-state and PNG-return fixture; new9 OS managed-JSON consumer cases and Codex disabled-recipe decoding only. No product Host/Engine/18 operations/Codex business task.",
+    "dependencies_installed": false,
+    "locks_modified": false,
+    "new_identity_lifecycle_ref": "docs/04_开发与验收/特征细化/DRF04_stdio-proof/output/attachment-lifecycle-result.json",
+    "new_subset": "14 new canonical frame Schema + OS fixture PID/handle flags/CloseHandle/EOF cases; old tests not replayed; trusted context/business continuation are finite models, no real named-pipe peer/Host/Renderer/Codex",
+    "pipe_peer_identity_ref": "docs/04_开发与验收/特征细化/DRF04_stdio-proof/output/pipe-peer-identity-result.json",
+    "pipe_peer_identity_subset": {
+      "ref": "docs/04_开发与验收/特征细化/DRF04_stdio-proof/output/pipe-peer-identity-result.json",
+      "status": "passed",
+      "cases_passed": 3,
+      "proves": "actual two-process Windows pipe peer PID/session and process token user/logon/session identity; spoofed body ignored for authority; wrong expected instance denied; actual EOF and known own handles/process cleanup",
+      "does_not_prove": "product session registry/grants, full canonical handshake, Renderer/managed result or task/business continuation, Codex or S05 acceptance"
+    },
+    "desktop_fixture_ref": "docs/04_开发与验收/特征细化/DRF04_S05-desktop-proof/handoff-result.json",
+    "RR_managed_consumer_ref": "tools/design-quality-audit/report-linked/window4/output/managed-consumer-result.json",
+    "RR_Codex_recipe_ref": "tools/design-quality-audit/report-linked/window4/output/codex-recipe-result.json",
+    "dependencies_installed_in_RR": false,
+    "RR_paid_model_or_global_Codex_config_action": false
+  },
+  "remaining_reproducible_contacts": [
+    {
+      "id": "SC01",
+      "precondition": "W00 Host/bridge available under stage authorization",
+      "exercise": "use proposed actual command/argv; initialize/list/call get_context; verify OS peer + IpcHello/Welcome and matching actual Project grant",
+      "expected": "canonical Host/session/Scope, no self-declared grant or fallback",
+      "actual_result": null
+    },
+    {
+      "id": "SC02",
+      "precondition": "canonical Commands authorization compiler",
+      "exercise": "execute HA01..HA15 positive/negative and HAX01..HAX10 against all actual branches including whole-object/import/history effects",
+      "expected": "atomic PermissionDenied; cumulative count/reused resource/array identity remain exact",
+      "actual_result": null
+    },
+    {
+      "id": "SC03",
+      "precondition": "actual render_view/result registry and peer-authenticated canonical attachment transport; carrier already merged",
+      "exercise": "render R, read get_task image; edit to R+1, return R marked old; foreign task/asset/revision rejected; no arbitrary path reads",
+      "expected": "actual PNG/JPEG + matching RenderOutput; active preview never covered by stale frame",
+      "actual_result": null
+    },
+    {
+      "id": "SC04",
+      "precondition": "actual task admission/worker",
+      "exercise": "disconnect after admission, cancel before terminal and after completion, reconnect with revoked old grant",
+      "expected": "no automatic resubmission; true terminal; old file authority unusable",
+      "actual_result": null
+    },
+    {
+      "id": "SC05",
+      "precondition": "actual Codex and complete GF inputs",
+      "exercise": "GF-07 single-run direct delivery and independent GF-05 at most three accepted repairs/no-op stop; same-run timeline/report",
+      "expected": "editable package/four formats actual files; true scope/units/accepted output, not modeled fixture evidence",
+      "actual_result": null
+    }
+  ],
+  "primary_sources": [
+    {
+      "url": "https://developers.openai.com/codex/mcp",
+      "use": "command-launched stdio/configuration; product configuration not installed"
+    },
+    {
+      "url": "https://modelcontextprotocol.io/specification/2025-11-25/basic/utilities/cancellation",
+      "use": "outstanding requests versus optional protocol Tasks; application TaskHandle managed by existing tools"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/ipc/named-pipe-security-and-access-rights",
+      "use": "explicit DACL and logon SID; default descriptor insufficient for current-session design"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-getnamedpipeclientprocessid",
+      "use": "OS-known client PID, not body claim"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/api/handleapi/nf-handleapi-duplicatehandle",
+      "use": "actual selected cross-process handle mechanism; internal IPC integration still proposed"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-getnamedpipeserverprocessid",
+      "use": "actual pipe peer API executed in new isolated Windows trial"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-getnamedpipeclientsessionid",
+      "use": "actual pipe peer API executed in new isolated Windows trial"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-getnamedpipeserversessionid",
+      "use": "actual pipe peer API executed in new isolated Windows trial"
+    }
+  ],
+  "actual_product_connector": null,
+  "actual_Codex_interop": null,
+  "actual_result": null,
+  "S05_preparation_ref": "docs/04_开发与验收/特征细化/DRF04_S05接点准备.json",
+  "S04_UI_delivery_ref": "docs/04_开发与验收/特征细化/DRF04_H04-04界面绑定.json",
+  "C02_generation_ref": "docs/04_开发与验收/特征细化/DRF04_C02生成接入.md",
+  "managed_json_return": {
+    "authority_ref": "docs/03_架构与契约/大结果传输设计.md",
+    "canonical_fields": "ApiOutcome<R>::Managed(ManagedJsonResultRef) + IpcResponseFrame<R>.managed_results:IpcManagedResultAttachment[]",
+    "frame_limit_bytes": 1048576,
+    "selection": "Host captures the complete original Response<R> at the same state boundary, releases business lock, and selects managed only when complete UTF8 IPC frame including attachments exceeds cap. No truncation or synthetic pagination.",
+    "file_payload": "Immutable full original Response<R>; outcome ok/error only, no nested managed. response_schema_ref is the original operation catalog type identifier, never a caller-selected path.",
+    "OS_read": "Host authenticates actual pipe peer and scope, opens a fresh GENERIC_READ file at offset0 per response, then non-inherited DuplicateHandle to actual bridge PID. Only the authenticated, known owned lease may be read/closed.",
+    "before_read": [
+      "Host/session/wire/operation bind to outstanding request",
+      "Exactly one matching result_id; handle_value equals trusted ownership record",
+      "response_schema_ref equals original operation response_schema_ref; outer request_id/context match authorized request",
+      "Native file size equals exact declared byte_length"
+    ],
+    "after_read": [
+      "Read exactly byte_length and actual EOF",
+      "Parse full corresponding Response<R> schema; prohibit recursive managed",
+      "Inner api_version/request_id/context equal outer header",
+      "For get_run ok response also match requested RunId, frozen input_ref and computed frontier; original error requires no invented Run"
+    ],
+    "MCP": "Keep small typed outer Response in structuredContent; include full original Response as application/json EmbeddedResource text at superfactory-result://<result_id>. Embedded text is immediately usable; do not return only a link or invent resources/read.",
+    "error_semantics": "Derive MCP isError from recovered original outcome.error, never from outer managed status alone. A valid managed PermissionDenied remains an error; it cannot be treated as successful business admission or retried as a new request.",
+    "failure_cleanup": "Wrong identity/type/nested outcome/read/length/parse failure emits no partial or successful resource. Report concrete MCP transport/tool failure using existing operation error semantics; do not forge a Host ApiError response. Always close only the known owned lease. Transfer cancellation closes lease but creates no TaskId or business Cancelled result; no automatic resubmit, no Run mutation.",
+    "post_unwrap_image": "Only after full typed get_task response is recovered, validate existing managed_assets against the original completed render Task/Asset/Scope/requested and scene revision. JSON capability never grants image/path authority.",
+    "new_consumer_proof_ref": "tools/design-quality-audit/report-linked/window4/output/managed-consumer-result.json",
+    "product_decoder_implementation": null
+  },
+  "current_RR_review_ref": "docs/04_开发与验收/特征细化/RR_窗口4_报告关联核验.json",
+  "native_implementation": {
+    "task": "P3-04",
+    "status": "actual_native_process_slice_not_full_product_acceptance",
+    "source_refs": [
+      "apps/mcp-bridge/src/",
+      "integrations/agent/runtime/",
+      "apps/planner/src-tauri/src/agent_pipe.rs",
+      "apps/planner/src-tauri/src/project_api.rs"
+    ],
+    "consumer_ref": "tests/delivery/mcp/process_client.py",
+    "execution_receipt_ref": "docs/04_开发与验收/整包派发/P3-04_整包执行.json",
+    "actual_Codex_interop": null,
+    "full_GF_acceptance": null,
+    "remaining_shared_Host_interfaces": [],
+    "original_design_and_fixture_evidence_retained": true,
+    "native_lifecycle_consumers": {
+      "producer": "packages/commands/src/host_authority.rs",
+      "consumers": [
+        "ProjectApiState shared-authority wrappers",
+        "AgentPipeState EOF/revoke cleanup",
+        "main-window agent_update_connection_authority",
+        "main-window agent_grant_task_access"
+      ],
+      "status": "actual_native84_original44_preserved_bridge8_and_unchanged_independent13_passed",
+      "old_ids_and_original_responses_preserved": true,
+      "file_tokens_not_inherited": true,
+      "full_Codex_human_GF_acceptance": null
+    }
+  },
+  "current_product_UI": {
+    "date": "2026-10-17",
+    "entry": "Agent → 连接、权限与任务…",
+    "source": "apps/planner/src/features/agent/AgentWorkspace.tsx",
+    "private_adapter": "apps/planner/src/services/agentConnection.ts",
+    "current_project_only": "same native managed ProjectApiState and verified Windows peer; pending scope choice does not itself grant authority",
+    "dirty_busy": "exact UI identity and actual unapplied field differences; unmount clear; old response cannot overwrite replacement identity",
+    "controlled_UI_result": "10/10; tests/delivery/mcp/output/full-package-20261017/agent-ui/result.json",
+    "actual_Native_UI_acceptance": null
+  },
+  "current_client_launcher": {
+    "path": "integrations/agent/clients/codex-session.py",
+    "mode": "per-process config overrides; --ignore-user-config; --ephemeral; read-only local command sandbox",
+    "login": "requires existing ChatGPT login; no account/key creation or global config write",
+    "actual_model_run": {
+      "executed": true,
+      "connected_superfactory_business": false,
+      "reason": "actual Native startup panic in missing CheckFactoryDraft capability mapping; pending source repair",
+      "receipt": ".work/whole-packages/p304-20261017/codex-readonly-plan-01/actual/codex/client-receipt.json"
+    }
+  }
+}

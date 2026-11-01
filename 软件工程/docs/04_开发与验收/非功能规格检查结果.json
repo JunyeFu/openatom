@@ -1,6 +1,6 @@
 {
   "check_kind": "S03_04_static_specification_and_synthetic_math_not_performance",
-  "date": "2026-10-13 Asia/Shanghai",
+  "date": "2026-10-15 Asia/Shanghai",
   "status": "passed_static_specification_and_finite_math",
   "NFR_rows": 11,
   "task_owners_and_SF_refs": "passed",
@@ -45,9 +45,202 @@
         "accepted_1200": 3000
       },
       "verdict": "passed_finite_design_math_only"
+    },
+    {
+      "id": "STAT-06",
+      "result": {
+        "attempts": 100,
+        "p95_ms": 100,
+        "failed_attempts": 1,
+        "missing_evidence_attempts": 0
+      },
+      "verdict": "fail_for_synthetic_math_only"
+    },
+    {
+      "id": "STAT-07",
+      "result": {
+        "attempts": 100,
+        "p95_ms": null,
+        "failed_attempts": 0,
+        "missing_evidence_attempts": 1
+      },
+      "verdict": "not_evaluable"
+    },
+    {
+      "id": "STAT-08",
+      "result": [
+        {
+          "professional_outcome": "Fail",
+          "experience": "target_met"
+        },
+        {
+          "professional_outcome": "Pass",
+          "experience": "target_not_met"
+        },
+        {
+          "professional_outcome": "Undetermined",
+          "experience": "not_completed"
+        }
+      ],
+      "verdict": "passed_finite_design_math_only"
+    },
+    {
+      "id": "STAT-09",
+      "result": [
+        "fail",
+        "not_evaluable",
+        "pass"
+      ],
+      "verdict": "passed_finite_design_math_only"
+    },
+    {
+      "id": "STAT-10",
+      "result": [
+        "not_executed",
+        "not_evaluable",
+        "fail",
+        "not_evaluable",
+        "pass"
+      ],
+      "verdict": "passed_finite_design_math_only"
     }
   ],
   "machine_read": "inventory_only",
+  "confirmed_choices_covered": {
+    "Q11": [
+      "NFR-08"
+    ],
+    "Q12": [
+      "NFR-03"
+    ],
+    "Q17": [
+      "NFR-09"
+    ],
+    "Q18": [
+      "NFR-09"
+    ],
+    "Q19": [
+      "NFR-01",
+      "NFR-02",
+      "NFR-03"
+    ],
+    "Q42": [
+      "NFR-10"
+    ],
+    "Q51": [
+      "NFR-06"
+    ],
+    "Q52": [
+      "NFR-06"
+    ],
+    "Q56": [
+      "NFR-06",
+      "NFR-09"
+    ],
+    "Q58": [
+      "NFR-01"
+    ]
+  },
+  "measurement_matrix": {
+    "fps_conditions_per_round": 16,
+    "fps_rounds": 3,
+    "fps_observation_windows": 48,
+    "editor_variants": 2,
+    "editor_actions": 3,
+    "editor_rounds": 3,
+    "attempts_per_editor_group": 100,
+    "editor_attempts_total": 1800,
+    "save_open_variants": 4,
+    "attempts_per_save_open_variant_per_load": 5,
+    "save_open_attempts_total": 40
+  },
+  "confirmed_choice_and_timing_checks": "passed_static_specification",
+  "readiness_and_result_classification_checks": "passed_static_specification_and_finite_cases",
+  "minimal_measurement_record_checks": "passed_static_specification",
+  "required_check_group_count": 38,
+  "required_check_groups": {
+    "NFR-01": {
+      "baseline_environment": "两个负载、固定素材、画布和本机候选一致",
+      "two_machine_compatibility": "两台Win11 x64同候选启动/新进程重开/普通离线闭环"
+    },
+    "NFR-02": {
+      "fps_matrix": "16条件各3有效轮，全部48窗口"
+    },
+    "NFR-03": {
+      "editor_latency": "两负载×三动作×三轮×100次，全部1800次",
+      "keyboard_equivalence": "8类任务键盘/数值替代及焦点",
+      "text_scaling": "100/150/200%文本可读可操作",
+      "non_color_state": "文字/图标可区分状态"
+    },
+    "NFR-04": {
+      "real_receipt": "四类实际任务逐类三轮×100合法请求",
+      "real_overlap": "四类实际任务重叠区间内三动作各三轮×100次",
+      "cancel_completion_race": "各支持类真实取消与完成先胜的独立预期",
+      "honest_progress": "真实阶段/数量或不确定进度",
+      "local_caller_timing": "适用的现有本机工具请求/响应与Renderer通知/帧分别按同钟测量"
+    },
+    "NFR-05": {
+      "directory_save_open": "两负载×四变体×五次，全部40次"
+    },
+    "NFR-06": {
+      "successful_reopen": "身份/对象/引用/版本/专业认可和绑定一致",
+      "write_failure_retention": "展开NFR06-F01：写入失败返回Failed/IoFailure/dirty且无本次成功输出；原目标project.json及全部旧引用完整可重开，新半写内容不当正式版本。",
+      "commit_failure_retention": "同组展开NFR06-F02旧根仍有效、NFR06-F03恢复成功、NFR06-F04预定恢复失败；前两者须原目标完整重开，F04须实际保留清单及完整旧引用证据、位置报告和独立原根健康判定。正确降级不算正常保存成功；旧内容确认丢失为fail，证据不足不pass。",
+      "unknown_version": "未知格式明确拒绝且保留状态",
+      "missing_module": "缺模块引用明确报告且保留状态",
+      "missing_asset": "缺固定素材明确报告且保留状态"
+    },
+    "NFR-07": {
+      "fresh_offline_session": "断网新进程普通编辑/模拟/保存重开",
+      "four_offline_formats": "PDF/HTML/CSV/JSON均本地导出可读",
+      "unavailable_external_model": "实际不可用明确显示，本地流程可继续"
+    },
+    "NFR-08": {
+      "same_revision_conflict": "同R编辑只有先处理者提交",
+      "run_immutability": "旧Run仍归旧输入",
+      "dirty_project_switch": "保存/丢弃/留在三分支及单活动上下文",
+      "old_callback_ownership": "旧回调/历史/授权不写新工程"
+    },
+    "NFR-09": {
+      "repeated_runs": "两负载各三次，同冻结初始条件",
+      "view_independence": "两画布/三LOD/回看/动画不改业务结果",
+      "all_identities": "全部3000身份与实际事件/holder一致",
+      "representative_queries": "每线首中末件在0/600/1200秒可定位，代表显示标注",
+      "staff_phases": "phase_calendar人员/阶段/占用符合原独立预期"
+    },
+    "NFR-10": {
+      "professional_outcomes": "完整专业范围内成功/不满足/预算不足对照",
+      "budget_usage": "预算单位/实际消耗及三态原因一致",
+      "acknowledgment_boundary": "认可/绑定与取消/失败分开",
+      "responsive_check": "NFR-04真实状态/进度/取消正确"
+    },
+    "NFR-11": {
+      "media_progress": "实际支持媒体导入/处理的状态、耗时和取消",
+      "delivery_progress": "实际工程封装及四格式导出的状态、耗时和取消",
+      "result_attribution": "成功/失败/取消结果与候选/输入/Run范围一致"
+    }
+  },
+  "coordinate_mapping_checks": {
+    "status": "passed_finite_coordinate_reasoning",
+    "positions": 120,
+    "rotation_determinant": 1,
+    "actual_renderer_execution": null
+  },
+  "readiness_and_clock_boundaries": "NFR02_to05_benchmark_ready_only_local_tool_clock_and_new_process_open_explicit",
+  "existing_staff_expected_values_preserved": true,
+  "editor_attempt_plan_checks": {
+    "status": "passed_finite_plan_not_runtime",
+    "distinct_device_targets": 60,
+    "attempts_per_action_per_round": 100,
+    "baseline_attempts_unchanged": 1800,
+    "actual_execution": null
+  },
+  "measurement_type_binding_checks": {
+    "status": "passed_static_field_mapping",
+    "type_contract_ref": "docs/03_架构与契约/全层类型与工程格式.json",
+    "logical_fields": 21,
+    "carrier_bindings": 32
+  },
   "actual_product_runtime": null,
   "actual_performance_result": null,
   "errors": []

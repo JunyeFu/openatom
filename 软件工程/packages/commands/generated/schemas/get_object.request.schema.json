@@ -1,0 +1,611 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Request",
+  "type": "object",
+  "properties": {
+    "api_version": {
+      "$ref": "#/$defs/ApiVersion"
+    },
+    "operation": {
+      "$ref": "#/$defs/GetObjectTag"
+    },
+    "params": {
+      "$ref": "#/$defs/GetObjectParams"
+    },
+    "project_id": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ProjectId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "request_id": {
+      "$ref": "#/$defs/ObjectId"
+    },
+    "scope": {
+      "$ref": "#/$defs/ApiScope"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "api_version",
+    "request_id",
+    "project_id",
+    "scope",
+    "operation",
+    "params"
+  ],
+  "$defs": {
+    "ApiScope": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "workspace"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "project"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "data": {
+              "$ref": "#/$defs/ModuleId"
+            },
+            "kind": {
+              "type": "string",
+              "const": "definition_draft"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "data"
+          ]
+        }
+      ]
+    },
+    "ApiVersion": {
+      "type": "string",
+      "enum": [
+        "0.1"
+      ]
+    },
+    "FiniteNumber": {
+      "type": "number",
+      "format": "double"
+    },
+    "GetObjectParams": {
+      "type": "object",
+      "properties": {
+        "node_index": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SafeUint"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "object_id": {
+          "$ref": "#/$defs/ObjectRef"
+        },
+        "source": {
+          "$ref": "#/$defs/ObjectSource"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "object_id",
+        "source"
+      ]
+    },
+    "GetObjectTag": {
+      "type": "string",
+      "enum": [
+        "get_object"
+      ]
+    },
+    "LayoutRegion": {
+      "type": "object",
+      "properties": {
+        "clearance_m": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FiniteNumber"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "kind": {
+          "$ref": "#/$defs/LayoutRegionKind"
+        },
+        "polygon_m": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Vec2"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "polygon_m",
+        "kind"
+      ]
+    },
+    "LayoutRegionKind": {
+      "type": "string",
+      "enum": [
+        "usable",
+        "keep_out",
+        "static_lane"
+      ]
+    },
+    "ModuleId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "ModuleRef": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/ModuleId"
+        },
+        "version": {
+          "$ref": "#/$defs/VersionId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "version"
+      ]
+    },
+    "ObjectId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "ObjectKind": {
+      "type": "string",
+      "enum": [
+        "project",
+        "scenario",
+        "run",
+        "definition_draft",
+        "packaging_job",
+        "asset",
+        "native_scene",
+        "item_type",
+        "item",
+        "location",
+        "hall",
+        "line",
+        "device",
+        "resource",
+        "calendar",
+        "product",
+        "bom",
+        "route",
+        "connection",
+        "order",
+        "task",
+        "job",
+        "supply",
+        "transport",
+        "artifact",
+        "module",
+        "report"
+      ]
+    },
+    "ObjectRef": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "kind": {
+          "$ref": "#/$defs/ObjectKind"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "id"
+      ]
+    },
+    "ObjectSource": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "draft"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "data": {
+              "type": "object",
+              "properties": {
+                "at_ms": {
+                  "$ref": "#/$defs/SafeUint"
+                },
+                "run_id": {
+                  "$ref": "#/$defs/RunId"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "run_id",
+                "at_ms"
+              ]
+            },
+            "kind": {
+              "type": "string",
+              "const": "run_snapshot"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "data"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "data": {
+              "type": "object",
+              "properties": {
+                "module_ref": {
+                  "$ref": "#/$defs/ModuleRef"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "module_ref"
+              ]
+            },
+            "kind": {
+              "type": "string",
+              "const": "module_version"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "data"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "data": {
+              "type": "object",
+              "properties": {
+                "at_ms": {
+                  "$ref": "#/$defs/SafeUint"
+                },
+                "module_ref": {
+                  "$ref": "#/$defs/ModuleRef"
+                },
+                "run_id": {
+                  "$ref": "#/$defs/RunId"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "run_id",
+                "at_ms",
+                "module_ref"
+              ]
+            },
+            "kind": {
+              "type": "string",
+              "const": "run_module_version"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "data"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "data": {
+              "type": "object",
+              "properties": {
+                "base_revision": {
+                  "$ref": "#/$defs/SafeUint"
+                },
+                "choices": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/$defs/TemplatePreparationChoices"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "module_ref": {
+                  "$ref": "#/$defs/ModuleRef"
+                },
+                "seed": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/$defs/TemplateSeedSelection"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "module_ref",
+                "base_revision"
+              ]
+            },
+            "kind": {
+              "type": "string",
+              "const": "template_preview"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "data"
+          ]
+        }
+      ]
+    },
+    "ProjectId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "QualityState": {
+      "type": "string",
+      "enum": [
+        "unchecked",
+        "pending",
+        "released",
+        "rejected"
+      ]
+    },
+    "RelativeFilePath": {
+      "type": "string",
+      "pattern": "^(?!\\.{1,2}(?:/|$))[^/\\\\:\\u0000]+(?:/(?!\\.{1,2}(?:/|$))[^/\\\\:\\u0000]+)*$"
+    },
+    "RunId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "SafeUint": {
+      "type": "integer",
+      "format": "uint64",
+      "maximum": 9007199254740991,
+      "minimum": 0
+    },
+    "ScenarioId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "SiteEnvelope": {
+      "type": "object",
+      "properties": {
+        "clearance_m": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FiniteNumber"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "height_m": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FiniteNumber"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "length_m": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FiniteNumber"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "regions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/LayoutRegion"
+          }
+        },
+        "usable_polygon_m": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Vec2"
+          }
+        },
+        "width_m": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FiniteNumber"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "regions",
+        "usable_polygon_m"
+      ]
+    },
+    "TemplatePreparationChoices": {
+      "type": "object",
+      "properties": {
+        "include_example_product": {
+          "type": "boolean"
+        },
+        "namespace": {
+          "type": "string"
+        },
+        "resources": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[^\\u0000]+$": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/ObjectId"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        "reuse_items": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[^\\u0000]+$": {
+              "$ref": "#/$defs/ObjectId"
+            }
+          }
+        },
+        "site_envelope": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SiteEnvelope"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source_project": {
+          "$ref": "#/$defs/RelativeFilePath"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "source_project",
+        "namespace",
+        "resources",
+        "reuse_items",
+        "include_example_product"
+      ]
+    },
+    "TemplateSeedSelection": {
+      "type": "object",
+      "properties": {
+        "adopt_declared_inspection_results": {
+          "type": "boolean"
+        },
+        "demand": {
+          "type": "boolean"
+        },
+        "initial_quality": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[^\\u0000]+$": {
+              "$ref": "#/$defs/QualityState"
+            }
+          }
+        },
+        "scenario_id": {
+          "$ref": "#/$defs/ScenarioId"
+        },
+        "supply": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "scenario_id",
+        "supply",
+        "demand",
+        "initial_quality",
+        "adopt_declared_inspection_results"
+      ]
+    },
+    "Vec2": {
+      "type": "object",
+      "properties": {
+        "x": {
+          "$ref": "#/$defs/FiniteNumber"
+        },
+        "y": {
+          "$ref": "#/$defs/FiniteNumber"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y"
+      ]
+    },
+    "VersionId": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)(?:\\.(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*)?(?:\\+[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?$"
+    }
+  }
+}

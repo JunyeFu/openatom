@@ -1,0 +1,186 @@
+{
+  "document_kind": "P0_02_current_Scenario_directory_persistence",
+  "window": "实现窗口4",
+  "task_id": "P0-02",
+  "within_original_step": 1,
+  "date": "2026-10-16",
+  "status": "store_20_and_F03_post_fix_regression_passed_final_global_proof_verified",
+  "scope_ref": "docs/04_开发与验收/P0-02_业务输入与引用切片.json",
+  "allowed_written_files": [
+    "packages/commands/src/project_store.rs",
+    "docs/04_开发与验收/P0-02_输入引用_窗口4.json"
+  ],
+  "private_API": {
+    "ProjectArchive": "project/manifest/files保留，新增scenarios:BTreeMap<ScenarioId,ScenarioInput>，仅当前ScenarioInput角色",
+    "write_project_archive": "(&Path,&ProjectDraft,Option<&ProjectArchive>,&AtomicBool)->Result<ProjectArchive,ApiError>",
+    "read_project_archive": "(&Path)->Result<ProjectArchive,ApiError>，签名不变",
+    "wire_changed": false
+  },
+  "implemented": [
+    "读取只把DocumentRole::ScenarioInput投影为当前scenarios；FrozenRunScenario/SupportingFile保留bytes但不混入当前",
+    "当前Scene ID唯一、map key/对象ID/活动Project index和project_revision对应；仅冻结副本不能替代缺失当前输入；已报告缺引用草稿及required文件规则延续",
+    "保存Project和当前draft.scenarios实际内容到同一新代，manifest重写当前ScenarioInput索引及其精确revision；序数文件名，不用OpaqueID拼路径",
+    "新/改/删Scenario随同一个根提交；旧backing订单不覆盖新草稿；取消/失败沿原Windows事务语义",
+    "旧Run文件引用、Evaluation精确ScenarioRevisionRef、保留Project的Scenario绑定及其他文件引用形成仍需的旧文档集合，旧当前文档转换SupportingFile，原Frozen角色不变",
+    "无引用旧当前文档不进入新根，但不物理删除旧根数据；异目录新代避开实际仍需携带的旧代路径，防止覆盖冻结bytes",
+    "消费business_inputs.missing_module(Route /steps/i/operation_ref)与business_inputs.missing_device_module(Device /module_ref)：精确code、实际owner、typed ModuleRef target ID匹配；不解析message，不放宽required文档"
+  ],
+  "original_13_tests": {
+    "input_and_expectations_preserved": true,
+    "adaptation": "旧ProjectState测试调用用仅测试helper包装成ProjectDraft；业务输入和断言不缩小，Host拥有的Scenario绑定元数据随新结构修订更新",
+    "prior_passed_ref": "docs/04_开发与验收/P0-01_保存历史_窗口4.json"
+  },
+  "new_test_names": [
+    "current_scenario_create_update_and_unreferenced_delete_share_the_root_transaction",
+    "changed_current_orders_survive_another_directory_without_reusing_backing_orders",
+    "deleting_current_scenario_preserves_old_run_and_evaluation_revision_without_reactivating_it",
+    "retained_scenario_roles_cannot_satisfy_a_missing_current_index",
+    "scenario_and_project_both_remain_old_when_the_real_root_replace_fails",
+    "located_route_and_device_module_gaps_roundtrip_without_fabricating_required_files",
+    "located_module_gap_requires_the_exact_code_actual_owner_and_typed_pointer"
+  ],
+  "new_finite_expectations": [
+    "当前Scene创建和修改随Project同新代；无历史引用的删除不再出现在当前索引或新根，旧磁盘数据仍在",
+    "当前订单数量17、due=null及业务引用异目录重开保持；旧backing订单不能复用，新代避开真正保留旧Scene占用的目录",
+    "删除当前Scene后旧Run/Evaluation及FrozenRunScenario精确revision和bytes保持，返回当前map为空",
+    "仅Supporting/Frozen副本不能满足活动Scenario索引；map key伪装另一ID在写入前拒绝",
+    "真实Windows共享锁迫使根替换失败后，Project、Scene、根及旧Scene bytes均保持原值",
+    "Route/Device两个真实缺模块Issue按实际owner+typed pointer恢复缺口目标，可保存/重开明确缺口草稿，不生成模块索引或字节；仍required的缺模块文件读取必须失败",
+    "错误code/不存在owner/非ModuleRef字段/越界指针和其他target不能以该Issue放过未报告缺引用"
+  ],
+  "validation": {
+    "expected_before_execution": true,
+    "original_store_tests": 13,
+    "new_store_tests": 7,
+    "total_store_tests": 20,
+    "format": "rustfmt --edition 2024 assigned source only passed after W6-IN-F03 fix",
+    "cargo_execution": {
+      "executor": "统筹W00集中执行；本窗口仅核读最终proof与raw，未重跑Cargo",
+      "command": "npm.cmd run test:rust",
+      "exit_code": 0,
+      "proof_ref": ".work/p0-02-inputs/verification/result.json",
+      "stdout_ref": ".work/p0-02-inputs/verification/workspace-tests.stdout.txt",
+      "stderr_ref": ".work/p0-02-inputs/verification/workspace-tests.stderr.txt",
+      "workspace_tests_passed": 107,
+      "workspace_tests_failed": 0,
+      "store_tests_passed": 20,
+      "store_tests_failed": 0,
+      "store_test_names": [
+        "project_store::tests::a_retained_filename_without_the_old_identity_is_not_a_recovery_source",
+        "project_store::tests::actual_replacefile_sharing_failure_parses_and_preserves_the_old_root",
+        "project_store::tests::actual_retained_root_is_restored_when_root_was_moved",
+        "project_store::tests::all_roles_nine_modules_and_related_bytes_survive_another_directory",
+        "project_store::tests::cancellation_before_commit_keeps_old_root_and_old_generation",
+        "project_store::tests::changed_current_orders_survive_another_directory_without_reusing_backing_orders",
+        "project_store::tests::current_scenario_create_update_and_unreferenced_delete_share_the_root_transaction",
+        "project_store::tests::deleting_current_scenario_preserves_old_run_and_evaluation_revision_without_reactivating_it",
+        "project_store::tests::explicitly_reported_draft_gaps_do_not_excuse_missing_required_documents",
+        "project_store::tests::included_bytes_cannot_overwrite_an_old_root_referenced_path",
+        "project_store::tests::initial_and_second_generation_reopen_without_overwriting_old_data",
+        "project_store::tests::junction_escape_is_rejected_by_actual_directory_handles",
+        "project_store::tests::located_module_gap_requires_the_exact_code_actual_owner_and_typed_pointer",
+        "project_store::tests::located_route_and_device_module_gaps_roundtrip_without_fabricating_required_files",
+        "project_store::tests::restoration_failure_retains_recoverable_files_and_does_not_claim_intact_root",
+        "project_store::tests::retained_scenario_roles_cannot_satisfy_a_missing_current_index",
+        "project_store::tests::scenario_and_project_both_remain_old_when_the_real_root_replace_fails",
+        "project_store::tests::stale_backing_does_not_reuse_a_committed_or_orphan_generation",
+        "project_store::tests::typed_root_required_fields_versions_roles_and_revision_are_enforced",
+        "project_store::tests::windows_path_components_casefold_and_file_directory_collisions_are_rejected"
+      ]
+    },
+    "actual_result": {
+      "status": "passed",
+      "Scenario_current_generation_create_edit_delete_and_cross_directory": "passed",
+      "retained_Run_Evaluation_and_Scenario_role_separation": "passed",
+      "real_Windows_root_replace_failure_keeps_Project_and_Scenario": "passed",
+      "typed_Route_Device_missing_module_consumption": "passed",
+      "F03_actual_Host_regression": "passed in window5 independent integration test",
+      "post_fix_proof_ref": ".work/p0-02-inputs/verification/result.json",
+      "original_store_13_preserved": true
+    },
+    "executor": "统筹集中Cargo，当前窗口按派发未自行运行",
+    "old_79_regression": "已按最终raw逐名核对旧79 Rust及旧31 native均为新107/56的子集",
+    "post_W6_IN_F03_execution": {
+      "status": "passed",
+      "proof_ref": ".work/p0-02-inputs/verification/result.json",
+      "integration_test": "put_remove_get_business_kinds_use_the_actual_host_and_sync_scenario_refs",
+      "source_ref": "packages/commands/tests/business_input_host.rs"
+    },
+    "post_fix_regression_owner": "窗口5独立回归已由统筹实际集中执行通过；窗口6最终独立接收归其拥有者，不在本窗改公共finding状态"
+  },
+  "public_configuration_lock_or_other_window_files_modified": false,
+  "whole_P0_02_done_claimed": false,
+  "business_frontend_or_Figma_modified": false,
+  "limitations": "本窗store与F03源修复已由最终修后实际运行验证；整项P0-02及原步骤2/3未验收，窗口6独立复审与公共接收状态由统筹和拥有者维护。",
+  "consumer_fix": {
+    "authority": "统筹本轮明确的checker/store真实接点委托，公共DTO不加字段",
+    "route": {
+      "code": "business_inputs.missing_module",
+      "owner": "实际Route",
+      "field_path": "/steps/i/operation_ref"
+    },
+    "device": {
+      "code": "business_inputs.missing_device_module",
+      "owner": "实际Device",
+      "field_path": "/module_ref"
+    },
+    "resolution": "只读对应类型化对象的ModuleRef并匹配所需Module ID；消息文字不参与判断",
+    "required_document_missing": "仍MissingReference，不生成来源或文件",
+    "execution_result": {
+      "status": "passed",
+      "proof_ref": ".work/p0-02-inputs/verification/result.json",
+      "store_tests": 20
+    },
+    "scenario": {
+      "finding_id": "W6-IN-F03",
+      "code": "business_inputs.missing_scenario",
+      "owner": "实际Project对象，ObjectId值须等于当前ProjectId",
+      "field_path": "仅/scenario_refs/i，RFC6901指针解析现行Project中的typed ScenarioId并匹配请求的缺失target ID",
+      "no_message_parsing": true,
+      "stale_issue_or_refs_removal_workaround": false,
+      "required_closure_relaxed": false,
+      "actual_regression_owner": "实现窗口5补导入重算→显式采用缺口→编辑→保存→重开；统筹修后集中执行",
+      "actual_result": {
+        "status": "passed",
+        "executor": "窗口5独立测试／统筹集中执行",
+        "test": "put_remove_get_business_kinds_use_the_actual_host_and_sync_scenario_refs",
+        "stdout_ref": ".work/p0-02-inputs/verification/workspace-tests.stdout.txt",
+        "confirmed_flow": "legacy直接Scenario Issue在import重算后消失；canonical Project+/scenario_refs/i Issue保留；显式采用缺口、编辑、实际保存、异目录导入重开保留引用及canonical Issue",
+        "required_document_policy": "必需文件缺失仍拒绝，原相关回归通过；不制造Scenario或删除refs"
+      }
+    }
+  },
+  "W6_IN_F03_repair": {
+    "finding_ref": "docs/04_开发与验收/P0-02_输入引用_窗口6.json",
+    "status": "source_fix_and_actual_runtime_regression_verified",
+    "change": "reported_missing在直接target规则之外，消费精确missing_scenario+实际Project owner+限定typed pointer；不删引用、不保留过期business_inputs Issue绕过",
+    "required_document_policy": "read_root/validate_archive的required文档缺失仍MissingReference，未修改",
+    "private_API_or_wire_changed": false,
+    "source_format": "rustfmt --edition 2024 assigned source only passed",
+    "tests_rerun_by_this_window": false,
+    "post_fix_execution": {
+      "status": "passed",
+      "executor": "窗口5独立测试／统筹集中执行",
+      "test": "put_remove_get_business_kinds_use_the_actual_host_and_sync_scenario_refs",
+      "stdout_ref": ".work/p0-02-inputs/verification/workspace-tests.stdout.txt",
+      "confirmed_flow": "legacy直接Scenario Issue在import重算后消失；canonical Project+/scenario_refs/i Issue保留；显式采用缺口、编辑、实际保存、异目录导入重开保留引用及canonical Issue",
+      "required_document_policy": "必需文件缺失仍拒绝，原相关回归通过；不制造Scenario或删除refs"
+    }
+  },
+  "global_acceptance_evidence": {
+    "status": "passed",
+    "proof_ref": ".work/p0-02-inputs/verification/result.json",
+    "workspace_Rust_tests": 107,
+    "schemas": 20,
+    "schema_cases": 48,
+    "actual_desktop_same_managed_Host_checks": 56,
+    "old_79_Rust_retained_by_name": true,
+    "old_31_native_retained_by_name": true,
+    "all_check_exit_codes": 0,
+    "typecheck_and_desktop_build": "passed",
+    "pre_fix_proof_ref": ".work/p0-02-inputs/pre-review-fix-verification/",
+    "pre_fix_proof_used_for_post_fix_pass": false,
+    "this_window_role": "store实现、20组存储测试、F03消费规则源修复；全局检查为统筹执行证据",
+    "whole_P0_02_or_original_steps_2_3_accepted": false
+  }
+}

@@ -1,0 +1,267 @@
+{
+  "document_kind": "S06_03_independent_typed_public_API_review_not_product_execution",
+  "checkpoint": "S06-03",
+  "date": "2026-10-14 Asia/Shanghai",
+  "status": "passed_document_specification",
+  "spec_ref": "docs/03_架构与契约/公开操作与宿主调用契约.json",
+  "report_md_ref": "docs/04_开发与验收/S06-03_公开操作与宿主调用契约复审.md",
+  "criteria": [
+    {
+      "id": "C01",
+      "subject": "首版身份与范围保持",
+      "status": "passed_design_or_isolated_contract_proof",
+      "basis": "18操作/MCP名字、21任务/7后置、17SF/11NFR、三专业机制/三变化不变；无第19操作或额外宿主。"
+    },
+    {
+      "id": "C02",
+      "subject": "有类型函数与Schema可编译",
+      "status": "passed_design_or_isolated_contract_proof",
+      "basis": "18具体CommandsService签名、36操作Schema/类型往返、全部派生TS实际检查；API独立源消费domain。"
+    },
+    {
+      "id": "C03",
+      "subject": "请求头与形状一致",
+      "status": "passed_design_or_isolated_contract_proof",
+      "basis": "6头字段与必需可空project_id一致；28冻结输入由实际Rust解析及Draft2020-12共同检验，九类定义均有正例。"
+    },
+    {
+      "id": "C04",
+      "subject": "作用域和编辑原子性明确",
+      "status": "passed_design_or_isolated_contract_proof",
+      "basis": "注入身份/解析Scope与外部Body分开；Project/定义修订、15命令、只读运行、删除关联与一次采用明确。"
+    },
+    {
+      "id": "C05",
+      "subject": "长任务和IO完成结果明确",
+      "status": "passed_design_or_isolated_contract_proof",
+      "basis": "真实接收TaskHandle与get_task完成产物分开；冻结R、实际进度、取消竞争及Workspace文件任务归属可执行。"
+    },
+    {
+      "id": "C06",
+      "subject": "专业与认可边界明确",
+      "status": "passed_design_or_isolated_contract_proof",
+      "basis": "正常Fail/Undetermined不是API错误；成果/目的/版本/消费者匹配，外部Agent不能伪造人工认可或资产权利。"
+    },
+    {
+      "id": "C07",
+      "subject": "Windows与MCP契约具体",
+      "status": "passed_design_or_isolated_contract_proof",
+      "basis": "既定Rust/rmcp、stdio与管道身份/实例/会话/撤销、长度/UTF8帧明确；26有限准入模型与5字节帧案例通过，未冒充真实Host认证。"
+    },
+    {
+      "id": "C08",
+      "subject": "真实消费者/任务包引用一致",
+      "status": "passed_design_or_isolated_contract_proof",
+      "basis": "21项各有操作生产/消费映射，原文/分类协议/目录/生成源引用同一API，不猜字段或自动派发。"
+    },
+    {
+      "id": "C09",
+      "subject": "证据与产品实现分开",
+      "status": "passed_design_or_isolated_contract_proof",
+      "basis": "规范/实际隔离证明通过；18处理器仍planned/未实现，Figma、产品API、实际完整桌面帧及SF/IX结果留空。"
+    }
+  ],
+  "closed_findings": [
+    {
+      "id": "F63-01",
+      "before": "Scope只以工程ID表达、不能正确定位定义草稿",
+      "correction": "引入Workspace/Project/DefinitionDraft目标、独立修订与解析后的Host Scope。"
+    },
+    {
+      "id": "F63-02",
+      "before": "18参数/输出只列名称，缺字段与具体签名",
+      "correction": "定义全部Request/Response、18服务签名、15编辑联合和36派生操作Schema。"
+    },
+    {
+      "id": "F63-03",
+      "before": "计算控制未进入既有cancel_task参数",
+      "correction": "保留名字，明确取消/计算暂停/恢复/下一完整同刻步；实际控制目录决定可用性。"
+    },
+    {
+      "id": "F63-04",
+      "before": "文件操作可能等到最终完成才回执",
+      "correction": "导入/保存/封装/报告先回真实任务；最终产物分支和提交取消竞争明确。"
+    },
+    {
+      "id": "F63-05",
+      "before": "打开工程前任务无法关联必需的ProjectId",
+      "correction": "TaskScope.Workspace使用已认证会话；解析/明确采用分开，不造虚假工程。"
+    },
+    {
+      "id": "F63-06",
+      "before": "声明许可/人工认可可能被外来Body当授权",
+      "correction": "Host记录身份/文件用途/认可；Agent与外来声明不授予新权利。"
+    },
+    {
+      "id": "F63-07",
+      "before": "IPC只列传输候选，缺帧/实例/会话规则",
+      "correction": "采用已选Rust桥及具体长度/UTF8/上限/握手/关闭规则，实际5帧反例。"
+    },
+    {
+      "id": "F63-08",
+      "before": "nullable项目头的Rust/Schema口径不同",
+      "correction": "实测修复：必需键、显式null、缺键拒绝，实际Rust与标准Schema28例一致。"
+    },
+    {
+      "id": "F63-09",
+      "before": "旧目录输出标签与真实Rust输出不一致",
+      "correction": "目录改为精确admission_output与completed_task_output_type，消费者不猜TaskHandle别名。"
+    },
+    {
+      "id": "F63-10",
+      "before": "消费者和启动生成源仍将公共字段留到以后",
+      "correction": "直接更新原文、分类协议、21任务输入/镜像/工量和启动生成源；独立通过不自动派发。"
+    }
+  ],
+  "verification": {
+    "status": "passed_actual_typed_API_schema_and_finite_protocol_proof",
+    "checkpoint": "S06-03",
+    "operations": 18,
+    "service_signatures": 18,
+    "operation_schema_documents": 36,
+    "typed_fixture_roundtrips": 36,
+    "native_and_schema_shape_cases": [
+      {
+        "id": "P01_unknown_API_version",
+        "native_and_schema_accepted": false
+      },
+      {
+        "id": "P02_unknown_operation",
+        "native_and_schema_accepted": false
+      },
+      {
+        "id": "P03_empty_request_id",
+        "native_and_schema_accepted": false
+      },
+      {
+        "id": "P04_missing_required_nullable_header",
+        "native_and_schema_accepted": false
+      },
+      {
+        "id": "P05_missing_params",
+        "native_and_schema_accepted": false
+      },
+      {
+        "id": "P06_operation_params_mismatch",
+        "native_and_schema_accepted": false
+      },
+      {
+        "id": "P07_caller_authority_in_body",
+        "native_and_schema_accepted": false
+      },
+      {
+        "id": "P08_invalid_scope_shape",
+        "native_and_schema_accepted": false
+      },
+      {
+        "id": "P09_runtime_item_edit_forbidden",
+        "native_and_schema_accepted": false
+      },
+      {
+        "id": "P10_unsafe_revision_integer",
+        "native_and_schema_accepted": false
+      },
+      {
+        "id": "P11_human_approval_claim_in_header",
+        "native_and_schema_accepted": false
+      },
+      {
+        "id": "P12_unknown_control_action",
+        "native_and_schema_accepted": false
+      },
+      {
+        "id": "P13_arbitrary_path_in_file_ref",
+        "native_and_schema_accepted": false
+      },
+      {
+        "id": "P14_provider_flags_in_definition",
+        "native_and_schema_accepted": false
+      },
+      {
+        "id": "P15_media_stock_effect",
+        "native_and_schema_accepted": false
+      },
+      {
+        "id": "P16_workspace_null_header",
+        "native_and_schema_accepted": true
+      },
+      {
+        "id": "P17_typed_items_definition",
+        "native_and_schema_accepted": true
+      },
+      {
+        "id": "P18_typed_devices_definition",
+        "native_and_schema_accepted": true
+      },
+      {
+        "id": "P19_typed_resources_definition",
+        "native_and_schema_accepted": true
+      },
+      {
+        "id": "P20_typed_tasks_definition",
+        "native_and_schema_accepted": true
+      },
+      {
+        "id": "P21_typed_operations_definition",
+        "native_and_schema_accepted": true
+      },
+      {
+        "id": "P22_typed_transport_definition",
+        "native_and_schema_accepted": true
+      },
+      {
+        "id": "P23_typed_templates_definition",
+        "native_and_schema_accepted": true
+      },
+      {
+        "id": "P24_typed_professional_definition",
+        "native_and_schema_accepted": true
+      },
+      {
+        "id": "P25_typed_media_definition",
+        "native_and_schema_accepted": true
+      },
+      {
+        "id": "P26_pause_calculation_shape",
+        "native_and_schema_accepted": true
+      },
+      {
+        "id": "P27_resume_calculation_shape",
+        "native_and_schema_accepted": true
+      },
+      {
+        "id": "P28_step_next_timestamp_shape",
+        "native_and_schema_accepted": true
+      }
+    ],
+    "policy_model_cases": 26,
+    "byte_framing_cases": 5,
+    "resolved_schema_refs": 4080,
+    "actual_product_API_execution": null,
+    "real_Host_authorization": false,
+    "product_operations_implemented": 0,
+    "frontend_or_Figma": null,
+    "errors": []
+  },
+  "actual_product_runtime": null,
+  "actual_product_API_execution": null,
+  "actual_frontend_or_Figma": null,
+  "product_operations_implemented": 0,
+  "external_actions": [],
+  "public_merge_status": "merged_and_verified_current_static_consumers",
+  "open_evidence": [
+    "S04真实Figma/可点击原型/用户走查",
+    "S05-05实际Host invoke到正确场景帧",
+    "S06-04完整专业算法/数值依赖和S06-05贯通冻结",
+    "S07/S08产品Host/MCP/完整业务处理器及真实运行验收"
+  ],
+  "current_progress_ref": "docs/04_开发与验收/软件开发流程与当前成熟度评估.json",
+  "cross_file_verification": {
+    "status": "passed_static_current_consumers",
+    "result_ref": "docs/04_开发与验收/主线同步检查结果.json",
+    "files_checked": 2222,
+    "checked_local_references": 3456,
+    "errors": [],
+    "actual_product_runtime": null
+  }
+}

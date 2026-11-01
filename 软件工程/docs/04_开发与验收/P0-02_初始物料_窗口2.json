@@ -1,0 +1,366 @@
+{
+  "document_kind": "P0_02_initial_material_pure_diagnostics_window2",
+  "date": "2026-10-16 Asia/Shanghai",
+  "task_id": "P0-02",
+  "within_original_step": 2,
+  "authority_ref": "docs/04_开发与验收/P0-02_初始物料与分配输入切片.json#/parallel_dispatch/1",
+  "status": "W6_M_F01_corrected_scope_shared_verified_source_frozen_pending_independent_acceptance",
+  "allowed_files": [
+    "packages/domain/src/material_inputs.rs",
+    "packages/domain/src/business_inputs.rs",
+    "docs/04_开发与验收/P0-02_初始物料_窗口2.json"
+  ],
+  "interface": "check_material_inputs(project: &ProjectState, scenario: &ScenarioInput) -> Vec<Issue>",
+  "fixed_expectations": [
+    "初始10、未来到料5、供货目标20和需求8分别保留；精确类型/单位/物品和位置资源引用缺口按实际Scenario字段定位，运输缺模块唯一code与store一致",
+    "软计划可空物品或引用已声明未来物品且不排他；硬模式须现存ProductionTask和起点实物，pending不改released，committed及运行holder不伪造恢复",
+    "同源10分配4+6合法、4+7超额；重复allocation ID及单条重复item refs不算独立实物；输入不拆分",
+    "多源同类型版本单位全量10+2=12合法，部分4、混版本或单位均具名阻断；材料量不按成品需求封顶；精确整数十进制预算",
+    "容器双向闭包、唯一父、无环；components仅引用同一起点或同次Arrival组内的真实唯一已转化来源，唯一父、同条不重复、无自含/环；来源不能兼任物理容器关系或起点硬预留源，普通Location仅保留历史位置；未知来源具名缺证，不补物品",
+    "原9组检查语义及名称保留；每Scenario组合纯检查并保持输入不变；实际Host/历史/归档/原生验证归指定窗口与W00"
+  ],
+  "transport_issue_contract": {
+    "code": "business_inputs.material_missing_transport_module",
+    "owner": "actual ScenarioInput.id",
+    "field_path": "/supplies/i/transport_ref",
+    "blocks": [
+      "execution",
+      "complete_conclusion"
+    ],
+    "store_window_notified": true
+  },
+  "verification": [
+    {
+      "command": "rustfmt --edition 2024 packages/domain/src/material_inputs.rs",
+      "exit_code": 0,
+      "executed_by": "实现窗口2",
+      "scope": "W6-M-F01修正后的本窗源；未运行Cargo，等待W00集中验证"
+    },
+    {
+      "key": "format",
+      "command": "cargo fmt -p sf-domain -p sf-commands -p sf-desktop-host -- --check",
+      "started_at": "2026-10-16T00:51:32.9405585+08:00",
+      "finished_at": "2026-10-16T00:51:33.4022506+08:00",
+      "exit_code": 0,
+      "stdout_ref": ".work/p0-02-stock/verification/format.stdout.txt",
+      "stderr_ref": ".work/p0-02-stock/verification/format.stderr.txt",
+      "executed_by": "W00",
+      "consumed_by_window2": "post-composition-fix receipt and raw stdout read back"
+    },
+    {
+      "key": "workspace-tests",
+      "command": "npm.cmd run test:rust",
+      "started_at": "2026-10-16T00:51:33.4201191+08:00",
+      "finished_at": "2026-10-16T00:52:10.1415174+08:00",
+      "exit_code": 0,
+      "stdout_ref": ".work/p0-02-stock/verification/workspace-tests.stdout.txt",
+      "stderr_ref": ".work/p0-02-stock/verification/workspace-tests.stderr.txt",
+      "distinct_tests_executed": 124,
+      "executed_by": "W00",
+      "consumed_by_window2": "post-composition-fix receipt and raw stdout read back"
+    },
+    {
+      "key": "generate-contracts",
+      "command": "npm.cmd run generate:contracts",
+      "started_at": "2026-10-16T00:52:10.1543861+08:00",
+      "finished_at": "2026-10-16T00:52:28.5709624+08:00",
+      "exit_code": 0,
+      "stdout_ref": ".work/p0-02-stock/verification/generate-contracts.stdout.txt",
+      "stderr_ref": ".work/p0-02-stock/verification/generate-contracts.stderr.txt",
+      "executed_by": "W00",
+      "consumed_by_window2": "post-composition-fix receipt and raw stdout read back"
+    },
+    {
+      "key": "typecheck",
+      "command": "npm.cmd run typecheck",
+      "started_at": "2026-10-16T00:52:28.5726415+08:00",
+      "finished_at": "2026-10-16T00:52:29.5803074+08:00",
+      "exit_code": 0,
+      "stdout_ref": ".work/p0-02-stock/verification/typecheck.stdout.txt",
+      "stderr_ref": ".work/p0-02-stock/verification/typecheck.stderr.txt",
+      "executed_by": "W00",
+      "consumed_by_window2": "post-composition-fix receipt and raw stdout read back"
+    },
+    {
+      "key": "schema-consumer",
+      "command": "C:/Users/fujunye/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe -B -X utf8 tools/检查工程与Command边界.py --output .work/p0-02-stock/schema-validation-result.json",
+      "started_at": "2026-10-16T00:52:29.5816788+08:00",
+      "finished_at": "2026-10-16T00:52:31.3228207+08:00",
+      "exit_code": 0,
+      "stdout_ref": ".work/p0-02-stock/verification/schema-consumer.stdout.txt",
+      "stderr_ref": ".work/p0-02-stock/verification/schema-consumer.stderr.txt",
+      "executed_by": "W00",
+      "consumed_by_window2": "post-composition-fix receipt and raw stdout read back"
+    },
+    {
+      "key": "desktop-build",
+      "command": "cargo build -p sf-desktop-host --bin superfactory --locked",
+      "started_at": "2026-10-16T00:52:31.3244991+08:00",
+      "finished_at": "2026-10-16T00:52:49.7564332+08:00",
+      "exit_code": 0,
+      "stdout_ref": ".work/p0-02-stock/verification/desktop-build.stdout.txt",
+      "stderr_ref": ".work/p0-02-stock/verification/desktop-build.stderr.txt",
+      "executed_by": "W00",
+      "consumed_by_window2": "post-composition-fix receipt and raw stdout read back"
+    },
+    {
+      "key": "desktop-host-smoke",
+      "command": ".\\target\\debug\\superfactory.exe --p0-01-host-smoke",
+      "started_at": "2026-10-16T00:52:49.7580386+08:00",
+      "finished_at": "2026-10-16T00:52:50.9873068+08:00",
+      "exit_code": 0,
+      "stdout_ref": ".work/p0-02-stock/verification/desktop-host-smoke.stdout.txt",
+      "stderr_ref": ".work/p0-02-stock/verification/desktop-host-smoke.stderr.txt",
+      "executed_by": "W00",
+      "consumed_by_window2": "post-composition-fix receipt and raw stdout read back"
+    }
+  ],
+  "actual_result": {
+    "executed_by": "W00",
+    "receipt_ref": ".work/p0-02-stock/verification/result.json",
+    "workspace_stdout_ref": ".work/p0-02-stock/verification/workspace-tests.stdout.txt",
+    "native_stdout_ref": ".work/p0-02-stock/verification/desktop-host-smoke.stdout.txt",
+    "verification_started_at": "2026-10-16T00:51:32.9405585+08:00",
+    "verification_finished_at": "2026-10-16T00:52:50.9873068+08:00",
+    "workspace_test_count": 124,
+    "new_material_pure_groups_passed": 6,
+    "new_material_test_output": [
+      "test material_inputs::tests::multiple_hard_sources_require_exact_full_same_type_version_and_unit ... ok",
+      "test material_inputs::tests::partial_hard_claims_use_source_budget_without_splitting_input ... ok",
+      "test material_inputs::tests::soft_future_plans_are_nonexclusive_and_hard_sources_are_initial_only ... ok",
+      "test material_inputs::tests::combined_business_diagnostics_preserve_drafts_and_scenario_scope ... ok",
+      "test material_inputs::tests::six_input_kinds_stay_separate_and_reference_gaps_are_located ... ok",
+      "test material_inputs::tests::container_closure_and_component_origins_are_separate ... ok"
+    ],
+    "old_business_pure_groups_passed": 9,
+    "old_business_test_output": [
+      "test business_inputs::tests::decimal_allocation_overrun_is_exact_below_float_resolution ... ok",
+      "test business_inputs::tests::units_and_piece_integrality_are_explicit ... ok",
+      "test business_inputs::tests::bom_consumption_must_belong_to_the_selected_product_route ... ok",
+      "test business_inputs::tests::complete_exact_business_references_have_no_input_issues ... ok",
+      "test business_inputs::tests::scenario_index_and_document_identity_do_not_silently_repair ... ok",
+      "test business_inputs::tests::task_allocation_references_and_demand_limits_are_checked ... ok",
+      "test business_inputs::tests::route_gaps_cycles_and_escaped_binding_pointers_are_located ... ok",
+      "test business_inputs::tests::missing_quantity_due_and_legacy_orders_preserve_input ... ok",
+      "test business_inputs::tests::old_subject_revision_is_not_silently_upgraded ... ok"
+    ],
+    "old_107_Rust_names_and_multiplicities_preserved": true,
+    "schema_count": 20,
+    "schema_cases_passed": 48,
+    "schema_result_ref": ".work/p0-02-stock/schema-validation-result.json",
+    "same_managed_host_native_checks_passed": 82,
+    "old_56_native_check_names_preserved": true,
+    "native_stdout_json_lines": 1,
+    "receipt_native_equals_full_raw_JSON": true,
+    "managed_host_instance_id": "desktop-host-69372",
+    "ui_session_id": "desktop-main-ui",
+    "corrected_composition_cases_executed_in_original_pure_group": true,
+    "independent_host_composition_regression_output": "test container_holder_and_composition_relations_are_input_graphs_without_duplicate_physical_ownership ... ok",
+    "native_source_owner": "实现窗口3；本窗未改project_api.rs",
+    "source_changed_after_shared_validation": false,
+    "runtime_stock_or_split_or_execution_admission_proved": false,
+    "whole_P0_02_done": false
+  },
+  "historical_verification_before_W6_M_F01": [
+    {
+      "command": "rustfmt --edition 2024 packages/domain/src/material_inputs.rs",
+      "exit_code": 0,
+      "executed_by": "实现窗口2"
+    },
+    {
+      "command": "rustfmt --edition 2024 packages/domain/src/business_inputs.rs",
+      "exit_code": 0,
+      "executed_by": "实现窗口2"
+    },
+    {
+      "key": "format",
+      "command": "cargo fmt -p sf-domain -p sf-commands -p sf-desktop-host -- --check",
+      "started_at": "2026-10-16T00:30:13.7720248+08:00",
+      "finished_at": "2026-10-16T00:30:14.8044553+08:00",
+      "exit_code": 0,
+      "stdout_ref": ".work/p0-02-stock/pre-composition-fix-verification/format.stdout.txt",
+      "stderr_ref": ".work/p0-02-stock/pre-composition-fix-verification/format.stderr.txt",
+      "executed_by": "W00",
+      "consumed_by_window2": "current result and raw stdout actual readback"
+    },
+    {
+      "key": "workspace-tests",
+      "command": "npm.cmd run test:rust",
+      "started_at": "2026-10-16T00:30:14.8363223+08:00",
+      "finished_at": "2026-10-16T00:31:31.9664697+08:00",
+      "exit_code": 0,
+      "stdout_ref": ".work/p0-02-stock/pre-composition-fix-verification/workspace-tests.stdout.txt",
+      "stderr_ref": ".work/p0-02-stock/pre-composition-fix-verification/workspace-tests.stderr.txt",
+      "distinct_tests_executed": 124,
+      "executed_by": "W00",
+      "consumed_by_window2": "current result and raw stdout actual readback"
+    },
+    {
+      "key": "generate-contracts",
+      "command": "npm.cmd run generate:contracts",
+      "started_at": "2026-10-16T00:31:31.9840040+08:00",
+      "finished_at": "2026-10-16T00:32:02.2490634+08:00",
+      "exit_code": 0,
+      "stdout_ref": ".work/p0-02-stock/pre-composition-fix-verification/generate-contracts.stdout.txt",
+      "stderr_ref": ".work/p0-02-stock/pre-composition-fix-verification/generate-contracts.stderr.txt",
+      "executed_by": "W00",
+      "consumed_by_window2": "current result and raw stdout actual readback"
+    },
+    {
+      "key": "typecheck",
+      "command": "npm.cmd run typecheck",
+      "started_at": "2026-10-16T00:32:02.2519157+08:00",
+      "finished_at": "2026-10-16T00:32:03.5873030+08:00",
+      "exit_code": 0,
+      "stdout_ref": ".work/p0-02-stock/pre-composition-fix-verification/typecheck.stdout.txt",
+      "stderr_ref": ".work/p0-02-stock/pre-composition-fix-verification/typecheck.stderr.txt",
+      "executed_by": "W00",
+      "consumed_by_window2": "current result and raw stdout actual readback"
+    },
+    {
+      "key": "schema-consumer",
+      "command": "C:/Users/fujunye/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe -B -X utf8 tools/检查工程与Command边界.py --output .work/p0-02-stock/schema-validation-result.json",
+      "started_at": "2026-10-16T00:32:03.5890032+08:00",
+      "finished_at": "2026-10-16T00:32:05.9640594+08:00",
+      "exit_code": 0,
+      "stdout_ref": ".work/p0-02-stock/pre-composition-fix-verification/schema-consumer.stdout.txt",
+      "stderr_ref": ".work/p0-02-stock/pre-composition-fix-verification/schema-consumer.stderr.txt",
+      "executed_by": "W00",
+      "consumed_by_window2": "current result and raw stdout actual readback"
+    },
+    {
+      "key": "desktop-build",
+      "command": "cargo build -p sf-desktop-host --bin superfactory --locked",
+      "started_at": "2026-10-16T00:32:05.9659618+08:00",
+      "finished_at": "2026-10-16T00:32:33.5792148+08:00",
+      "exit_code": 0,
+      "stdout_ref": ".work/p0-02-stock/pre-composition-fix-verification/desktop-build.stdout.txt",
+      "stderr_ref": ".work/p0-02-stock/pre-composition-fix-verification/desktop-build.stderr.txt",
+      "executed_by": "W00",
+      "consumed_by_window2": "current result and raw stdout actual readback"
+    },
+    {
+      "key": "desktop-host-smoke",
+      "command": ".\\target\\debug\\superfactory.exe --p0-01-host-smoke",
+      "started_at": "2026-10-16T00:32:33.5818105+08:00",
+      "finished_at": "2026-10-16T00:32:35.0660731+08:00",
+      "exit_code": 0,
+      "stdout_ref": ".work/p0-02-stock/pre-composition-fix-verification/desktop-host-smoke.stdout.txt",
+      "stderr_ref": ".work/p0-02-stock/pre-composition-fix-verification/desktop-host-smoke.stderr.txt",
+      "executed_by": "W00",
+      "consumed_by_window2": "current result and raw stdout actual readback"
+    }
+  ],
+  "historical_actual_result_before_W6_M_F01": {
+    "executed_by": "W00",
+    "receipt_ref": ".work/p0-02-stock/pre-composition-fix-verification/result.json",
+    "workspace_stdout_ref": ".work/p0-02-stock/pre-composition-fix-verification/workspace-tests.stdout.txt",
+    "native_stdout_ref": ".work/p0-02-stock/pre-composition-fix-verification/desktop-host-smoke.stdout.txt",
+    "workspace_test_count": 124,
+    "new_material_pure_groups_passed": 6,
+    "new_material_test_output": [
+      "test material_inputs::tests::multiple_hard_sources_require_exact_full_same_type_version_and_unit ... ok",
+      "test material_inputs::tests::partial_hard_claims_use_source_budget_without_splitting_input ... ok",
+      "test material_inputs::tests::soft_future_plans_are_nonexclusive_and_hard_sources_are_initial_only ... ok",
+      "test material_inputs::tests::six_input_kinds_stay_separate_and_reference_gaps_are_located ... ok",
+      "test material_inputs::tests::container_closure_and_component_origins_are_separate ... ok",
+      "test material_inputs::tests::combined_business_diagnostics_preserve_drafts_and_scenario_scope ... ok"
+    ],
+    "old_business_pure_groups_passed": 9,
+    "old_business_test_output": [
+      "test business_inputs::tests::decimal_allocation_overrun_is_exact_below_float_resolution ... ok",
+      "test business_inputs::tests::bom_consumption_must_belong_to_the_selected_product_route ... ok",
+      "test business_inputs::tests::task_allocation_references_and_demand_limits_are_checked ... ok",
+      "test business_inputs::tests::units_and_piece_integrality_are_explicit ... ok",
+      "test business_inputs::tests::route_gaps_cycles_and_escaped_binding_pointers_are_located ... ok",
+      "test business_inputs::tests::scenario_index_and_document_identity_do_not_silently_repair ... ok",
+      "test business_inputs::tests::complete_exact_business_references_have_no_input_issues ... ok",
+      "test business_inputs::tests::old_subject_revision_is_not_silently_upgraded ... ok",
+      "test business_inputs::tests::missing_quantity_due_and_legacy_orders_preserve_input ... ok"
+    ],
+    "old_107_Rust_names_and_multiplicities_preserved": true,
+    "same_managed_host_native_checks_passed": 82,
+    "old_56_native_check_names_preserved": true,
+    "native_stdout_json_lines": 1,
+    "receipt_native_equals_full_raw_JSON": true,
+    "managed_host_instance_id": "desktop-host-67064",
+    "ui_session_id": "desktop-main-ui",
+    "native_source_owner": "实现窗口3；本窗未改project_api.rs",
+    "source_changed_after_shared_validation": false,
+    "runtime_stock_or_split_or_execution_admission_proved": false,
+    "whole_P0_02_done": false
+  },
+  "boundaries": {
+    "source_edit_scope_only": true,
+    "new_DTO": false,
+    "inventory_or_runtime_split": false,
+    "execution_admission_proved": false,
+    "native_or_business_frontend_changed": false,
+    "whole_P0_02_done": false
+  },
+  "implementation": {
+    "source": "packages/domain/src/material_inputs.rs",
+    "integration": "business_inputs.rs逐Scenario调用check_material_inputs",
+    "existing_nine_groups_preserved": true,
+    "fixture_reuse": "仅cfg(test) helper可见性供同crate复用，无公共wire类型改变",
+    "new_pure_test_groups": [
+      "six_input_kinds_stay_separate_and_reference_gaps_are_located",
+      "soft_future_plans_are_nonexclusive_and_hard_sources_are_initial_only",
+      "partial_hard_claims_use_source_budget_without_splitting_input",
+      "multiple_hard_sources_require_exact_full_same_type_version_and_unit",
+      "container_closure_and_component_origins_are_separate",
+      "combined_business_diagnostics_preserve_drafts_and_scenario_scope"
+    ],
+    "transport_issue_contract_preserved": true,
+    "scope_of_item_identity": "每Scenario的起点和未来申报物品身份唯一；不跨Scenario混合",
+    "container_origin": "每个起点/Arrival声明各自闭合，不能借未来容器或内容形成当前持有关系",
+    "components": "只引用同一起点或同次Arrival的真实唯一源；唯一组成父、无重复/自含/环。来源已转化，不能同时作物理容器关系或起点硬预留源，普通Location仅保留历史来源位置；不造RuntimeItem；soft_plan仍允许非排他未来引用",
+    "hard_math": "只对有效硬模式的实际起点源用u128十进制量校核份额；多源单位/版本不一致时不求和；不按成品需求数量封顶",
+    "no_runtime_mutation": true,
+    "source_frozen": true
+  },
+  "pending_verification": {
+    "executor": "W00",
+    "entry": "tools/p0-02-stock/verify.ps1",
+    "no_parallel_Cargo_run_by_this_window": true,
+    "pure_expected_groups": "旧9＋新6",
+    "native_owner": "实现窗口3；本窗未改project_api.rs",
+    "regression_requirement": "旧107 Rust和56 native按名字保留",
+    "current_actual_test_result": "post_composition_fix_shared_verification_passed_and_raw_read_back",
+    "independent_review_owner": "窗口6；未代其关闭finding"
+  },
+  "handoff": {
+    "status": "corrected_scope_verified_ready_for_W00_and_independent_acceptance",
+    "source_frozen": true,
+    "only_assigned_source_and_own_JSON_changed_for_correction": true,
+    "remaining_scope": "运行Host准入、Worker起点拆批、Engine/真实库存及整项步骤2仍未接通/未验收",
+    "only_own_JSON_updated_after_shared_verification": true
+  },
+  "composition_correction": {
+    "finding": "W6-M-F01",
+    "reason": "旧正例把未来future5当作初始装配体的合法组成来源，未执行同组已转化来源规则；旧124/82通过不能证明修正后源已通过",
+    "interface_changed": false,
+    "new_DTO": false,
+    "runtime_mutation": false,
+    "six_original_test_group_names_preserved": true,
+    "written_positive_cases": [
+      "初始同组组成及历史Location保留",
+      "同次Arrival内组成",
+      "历史组成来源和未来来源仍可被非排他soft_plan引用"
+    ],
+    "written_negative_cases": [
+      "初始引用未来Arrival组成源",
+      "跨不同Arrival组成源",
+      "同装配体重复组成源",
+      "同源多组成父",
+      "组成环与自含",
+      "组成源兼任容器内容或容器父",
+      "组成源被起点硬预留再次使用"
+    ],
+    "input_preservation": "新增分支逐次比较project/scenario序列化快照，检查不改输入；原6组名称保留，不新增测试组掩盖旧预期修正",
+    "execution_status": "post_fix_124_Rust_20_schemas_48_cases_82_same_Host_checks_passed_raw_read_back",
+    "full_P0_02_package_complete": false,
+    "current_proof_ref": ".work/p0-02-stock/verification/result.json",
+    "prior_proof_ref": ".work/p0-02-stock/pre-composition-fix-verification/result.json"
+  }
+}

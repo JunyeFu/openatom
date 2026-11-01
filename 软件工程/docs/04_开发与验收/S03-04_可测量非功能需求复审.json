@@ -1,7 +1,7 @@
 {
   "document_kind": "S03_04_independent_nonfunctional_review_not_runtime_performance",
   "checkpoint": "S03-04",
-  "date": "2026-10-13 Asia/Shanghai",
+  "date": "2026-10-14 Asia/Shanghai",
   "status": "passed_document_specification",
   "spec_ref": "docs/01_业务需求/非功能需求与测量验收.json",
   "report_md_ref": "docs/04_开发与验收/S03-04_可测量非功能需求复审.md",
@@ -22,13 +22,13 @@
       "id": "C03",
       "subject": "环境与采样",
       "status": "passed_document_or_finite_reasoning",
-      "basis": "只读记录实际机器库存，实际WebView/GPU/会话/画布条件仍待验证；每LOD/运行与运动窗口预热/采样/重复，动作100样本/存取5次均明确"
+      "basis": "只读记录实际机器库存，实际WebView/GPU/会话/画布条件仍待验证；每LOD/真实结果回放与运动窗口预热/采样/重复，动作100样本/存取5次均明确"
     },
     {
       "id": "C04",
       "subject": "计时终点与统计",
       "status": "passed_document_or_finite_reasoning",
-      "basis": "FPS有实际正确画面证据，rAF仅辅助；UI到可见帧、保存到提交/打开到可编辑正确帧，单调时间原点分开；p95 nearest-rank逐类逐轮，存取逐次判"
+      "basis": "有效提交到Host确认后的正确呈现；同一时钟分段，固定尝试数、失败优先、无效环境整轮保留；nearest-rank及存取逐次判，11例有限数学核对。"
     },
     {
       "id": "C05",
@@ -40,13 +40,49 @@
       "id": "C06",
       "subject": "长任务/专业/大媒体边界",
       "status": "passed_document_or_finite_reasoning",
-      "basis": "立即状态具体化到本地反馈200ms口径，不新增整体求解/网络时长承诺；专业有限预算三态/取消不伪成功，大媒体单列不冒充3秒"
+      "basis": "四类真实长任务各组采样与实际重叠、取消竞争明确；完整纸包装30秒体验目标不等于硬超时/专业Pass；大媒体和网络等待单列。"
     },
     {
       "id": "C07",
       "subject": "实测与文档分离、责任及消费者",
       "status": "passed_document_or_finite_reasoning",
-      "basis": "11条NFR有窗口/既有任务/SF/步骤/判定；6数学例仅静态验证。状态只精准合入S03-04，其余复审与实际完成不自动推进"
+      "basis": "11条NFR责任/输入/步骤/判定与SF/P追踪和生成任务包同步；实际结果全部未执行，其他状态和信用保持。"
+    },
+    {
+      "id": "C08",
+      "subject": "最新用户选择落到可执行检查",
+      "status": "passed_document_or_finite_reasoning",
+      "basis": "10个相关Q选择均有对应NFR：键盘/缩放、人员/真实身份、两机兼容、未保存/切换、格式/重跑与完整专业体验试做。"
+    },
+    {
+      "id": "C09",
+      "subject": "完整测量组合与消费者无冲突",
+      "status": "passed_document_or_finite_reasoning",
+      "basis": "48窗口/1800编辑/40存取数学一致；角色、任务和SF/NFR消费者同步；S03-01功能正文与其他复审行保持。"
+    },
+    {
+      "id": "C10",
+      "subject": "准入、环境失败和汇总一致",
+      "status": "passed_document_or_finite_reasoning",
+      "basis": "本机基准与两机兼容分开；已确认失败不被环境异常覆盖；四状态按必需子项汇总；最小测量记录字段明确。"
+    },
+    {
+      "id": "C11",
+      "subject": "坐标、前置及必需子检查可执行",
+      "status": "passed_document_or_finite_reasoning",
+      "basis": "120旧位置映射/逆变换和旋转朝向核对；04/05本机前置、本地/新进程时钟明确；38组及四类真实输入来源明确，旧指标和实际空槽保留。"
+    },
+    {
+      "id": "C12",
+      "subject": "公共入口与本项现行记录一致",
+      "status": "passed_document_or_finite_reasoning",
+      "basis": "直接更新S03-04公共主段及成熟度对应行，不覆盖其他检查项或任务状态；当前累计取唯一成熟度源，不用初次13/47当当前值。"
+    },
+    {
+      "id": "C13",
+      "subject": "逐次采样、现行字段绑定及历史状态不冲突",
+      "status": "passed_document_or_finite_reasoning",
+      "basis": "固定非空编辑计划与S06-02字段映射可直接消费；公共旧累计明确为历史。本项性能仍未实测。"
     }
   ],
   "closed_findings": [
@@ -58,17 +94,92 @@
     {
       "id": "F34-02",
       "before": "响应/存取起止点、p95算法/分组、重复与失败样本口径未明确",
-      "correction": "到可见正确帧/实际提交/可编辑首帧结束，单调时钟分开，逐类逐轮100样本/3轮和存取4变体各5次；六数学例核对临界值"
+      "correction": "到可见正确帧/实际提交/可编辑首帧结束，单调时钟分开，逐类逐轮100样本/3轮和存取4变体各5次；六数学例核对临界值；用户输入早于IPC标记，存取从调用方开始请求计时，避免从较晚步骤缩短响应"
     },
     {
       "id": "F34-03",
       "before": "帧率回调/真正呈现、长任务/普通编辑、专业/大素材与3秒目标容易混用",
-      "correction": "需Frames/正确画面证据，rAF仅诊断；长任务接收/网络等待/求解预算/大媒体分别记录，不降低既有目标或声称最低硬件"
+      "correction": "需Frames/正确画面证据，rAF仅诊断；长任务接收/网络等待/求解预算/大媒体分别记录，不降低既有目标或声称最低硬件；真实Run回放与原生计算分开，不为FPS测试新增墙钟驱动引擎或实时仿真调度"
     },
     {
       "id": "F34-04",
       "before": "离线/失败保存/并发编辑与确定性虽有契约，缺同一非功能项的可执行检查",
       "correction": "11条独立规范包含真实步骤、观察和判定，沿用旧持久化/base_revision与单一Engine，不新增业务或运行API"
+    },
+    {
+      "id": "F34-05",
+      "before": "选择块已有Q11/12/17/18/42/51/52/56/58，但执行正文未完整落实。",
+      "correction": "保留11原ID：两机兼容、8类键盘任务/3档文本、单活动工程切换、3000身份/人员阶段核对及专业完整检查体验进入各条规范。"
+    },
+    {
+      "id": "F34-06",
+      "before": "参数反馈终点可能只显示输入框新值；长任务混用Agent/native/Renderer时钟，失败可能从p95样本移除。",
+      "correction": "以有效提交开始、Host确认新修订后的正确帧结束；外部工具同客户端请求/响应、本地Renderer通知/可见帧分别测，不跨时钟相减。固定100次预期操作，实际错误优先判fail。"
+    },
+    {
+      "id": "F34-07",
+      "before": "负载/LOD/重复虽写明，测试组合和总样本未锁定；多厂房静止状态可能被错误当主动帧率。",
+      "correction": "明确16条件×3=48窗口、1800编辑/40存取；回放0—600秒/暂停600秒、多厂房2种运动；冻结输入重置，掉帧造成间隔不可删。"
+    },
+    {
+      "id": "F34-08",
+      "before": "纸包装30秒候选目标只在选择和追踪描述中，缺完整检查样本和独立体验结论。",
+      "correction": "AC-12/PREP-PACKAGING输入冻结后逐输入3次完整检查，target_met/target_not_met/not_completed与专业三态分开，不强制30秒超时或少做检查。"
+    },
+    {
+      "id": "F34-09",
+      "before": "媒体长任务/人员显示的生产者责任缺W03与P1-03；独立复审和Agent入口保留13/47旧累计易误作当前值。",
+      "correction": "补实际既有任务责任并同步SF/NFR/P映射；累计19/41标为上次复审快照，当前进度取成熟度唯一源；原信用保持，其他检查项不被覆盖。"
+    },
+    {
+      "id": "F34-10",
+      "before": "NFR-02要求NFR-01整体通过，与允许本机先测、第二台另做兼容冲突。",
+      "correction": "NFR-01拆清benchmark_ready/compatibility_ready；帧率及编辑只依赖本机基准就绪，两机证据仍是整体通过条件。"
+    },
+    {
+      "id": "F34-11",
+      "before": "无效环境直接判not_evaluable可能覆盖已有失败；整项/部分未执行状态的汇总未定义。",
+      "correction": "明确已确认失败优先、全部未开始、部分证据不足、全部通过的顺序，增加环境优先及必需项汇总有限反例。"
+    },
+    {
+      "id": "F34-12",
+      "before": "独立记录及Agent入口旧累计未明确快照；测量原始记录缺最小字段内容。",
+      "correction": "旧累计标记复审时快照、当前进度引用唯一成熟度源；规定每组/每次测量最小字段与缺测留空，不新增产品API。"
+    },
+    {
+      "id": "F34-13",
+      "before": "基准旧位置按宽/高/深排列，生成规格按X宽/Y深/Z高；缺显式映射可能导致设备位置或高度错用、轴交换镜像。",
+      "correction": "在benchmark.coordinate_contract明确元组→工厂Pose→Y-up渲染及逆变换；端口/包络/路径同变换，保留60设备原值与产量预期；120位置和旋转行列式+1有限核对。"
+    },
+    {
+      "id": "F34-14",
+      "before": "总规则允许NFR-02至05只依赖本机就绪，但04/05前置未写明；本地工具目标与网络、新进程工程打开与程序启动仍可混用。",
+      "correction": "04/05前置明确benchmark_ready；同机工具往返和Renderer呈现分别计时，网络另记；新进程壳就绪后开始工程打开计时，禁止预加载该工程，不新增启动SLA。"
+    },
+    {
+      "id": "F34-15",
+      "before": "四状态汇总未给每项必须完成的组索引；48/1800/40容易被当完整测试量，长任务四类输入未逐类指向准备来源。",
+      "correction": "把现有11项步骤列为38个必需组，组内展开原轮次/分支；记录subcheck_id。四类长任务输入与生产者/来源明确；Q42体验及诊断单列，不新增产品需求或API。"
+    },
+    {
+      "id": "F34-16",
+      "before": "公共S03-04主段还显示初次13/47、下一项S03-03和六例；与当前成熟度和独立规格冲突。",
+      "correction": "直接更新现行主段、成熟度S03-04行和JSON证据；旧累计只保留在标明历史的记录内，当前数量/下一项取唯一成熟度源。重复复审不增计数。"
+    },
+    {
+      "id": "F34-17",
+      "before": "编辑100次只有动作类别，没有统一逐次目标和前状态，可能重复已选中/已打开对象或同值编辑。",
+      "correction": "在唯一规格中固定60设备循环、详情每次关闭返回、2/3秒交替与计时前准备；失败保留，不以无变化操作凑样本。"
+    },
+    {
+      "id": "F34-18",
+      "before": "测量规格仍写S06将落实结构，未直接指向已形成的S06-02字段绑定。",
+      "correction": "规范和11项追踪直接引用measurement_records映射/派生Schema；沿用现有两种测试记录，不修改公共类型或API。"
+    },
+    {
+      "id": "F34-19",
+      "before": "公共入口较早再复审段落中的19/41使用当前措辞，易与唯一成熟度源冲突。",
+      "correction": "明确标记当次历史快照；现行进度仍只从成熟度源读取，本项不重复增加通过计数。"
     }
   ],
   "static_verification": {
@@ -76,7 +187,7 @@
     "command": "python tools/检查非功能规格.py",
     "result_ref": "docs/04_开发与验收/非功能规格检查结果.json",
     "NFR_rows": 11,
-    "math_cases": 6,
+    "math_cases": 11,
     "load_profile": {
       "halls": 3,
       "devices": 60,
@@ -84,7 +195,78 @@
       "variants": 2
     },
     "errors": [],
-    "actual_performance_result": null
+    "actual_performance_result": null,
+    "confirmed_choices_covered": {
+      "Q11": [
+        "NFR-08"
+      ],
+      "Q12": [
+        "NFR-03"
+      ],
+      "Q17": [
+        "NFR-09"
+      ],
+      "Q18": [
+        "NFR-09"
+      ],
+      "Q19": [
+        "NFR-01",
+        "NFR-02",
+        "NFR-03"
+      ],
+      "Q42": [
+        "NFR-10"
+      ],
+      "Q51": [
+        "NFR-06"
+      ],
+      "Q52": [
+        "NFR-06"
+      ],
+      "Q56": [
+        "NFR-06",
+        "NFR-09"
+      ],
+      "Q58": [
+        "NFR-01"
+      ]
+    },
+    "measurement_matrix": {
+      "fps_conditions_per_round": 16,
+      "fps_rounds": 3,
+      "fps_observation_windows": 48,
+      "editor_variants": 2,
+      "editor_actions": 3,
+      "editor_rounds": 3,
+      "attempts_per_editor_group": 100,
+      "editor_attempts_total": 1800,
+      "save_open_variants": 4,
+      "attempts_per_save_open_variant_per_load": 5,
+      "save_open_attempts_total": 40
+    },
+    "readiness_and_result_classification_checks": "passed_static_specification_and_finite_cases",
+    "minimal_measurement_record_checks": "passed_static_specification",
+    "required_check_group_count": 38,
+    "coordinate_mapping_checks": {
+      "status": "passed_finite_coordinate_reasoning",
+      "positions": 120,
+      "rotation_determinant": 1,
+      "actual_renderer_execution": null
+    },
+    "readiness_and_clock_boundaries": "NFR02_to05_benchmark_ready_only_local_tool_clock_and_new_process_open_explicit",
+    "editor_attempt_plan_checks": {
+      "status": "passed_finite_plan_not_runtime",
+      "distinct_device_targets": 60,
+      "attempts_per_action_per_round": 100,
+      "baseline_attempts_unchanged": 1800,
+      "actual_execution": null
+    },
+    "measurement_type_binding_checks": {
+      "status": "passed_static_field_mapping",
+      "type_contract_ref": "docs/03_架构与契约/全层类型与工程格式.json",
+      "logical_fields": 21,
+      "carrier_bindings": 32
+    }
   },
   "numeric_targets_preserved": true,
   "protected_functional_sources": [
@@ -104,12 +286,45 @@
   "actual_machine_inventory_read": true,
   "external_actions": [],
   "open_evidence": [
-    "S06具体计时/Frame trace关联、真实Project映射与完整保存字段落实",
-    "S07/S08真实基准工程、固定模型许可/几何统计及Windows候选形成",
-    "S09/P5实际GPU/会话/素材/帧与延时/存取/离线/并发验证",
-    "目标用户/第三人/真实课程参赛材料和完整按期事实"
+    "S06-02测量类型已落实；真实WebView2采样接点与任务接口、纸包装完整输入/容差/预算仍须后续设计和执行。",
+    "S07/S08真实NFR-B60工程、已认可固定模型/许可和Windows候选",
+    "S09/P5全部实际测量矩阵、交互/人员/身份/切换子检查与两台Win11机器闭环",
+    "真实外部Agent、专业完整流程、用户/第三人接手和实际比赛材料"
   ],
   "maturity_effect": {
+    "completion_credit": [
+      1,
+      1
+    ],
+    "evidence_credit": [
+      0.5,
+      0.5
+    ],
+    "S03": [
+      100.0,
+      70.0
+    ],
+    "formal_reviews": 19,
+    "pending_reviews": 41,
+    "pending_design_reviews": 11,
+    "earliest_pending_checkpoint": "S04-02",
+    "other_checkpoint_rows_unchanged": true,
+    "interpretation": "2026-10-14上次S03-04复审完成时的累计快照，不作为当前项目累计；本轮不增加重复通过计数。"
+  },
+  "view_time_not_simulation_time": true,
+  "cross_file_verification": {
+    "command": "python tools/检查主线同步.py",
+    "result_ref": "docs/04_开发与验收/主线同步检查结果.json",
+    "status": "passed_static_structure_and_local_references",
+    "product_runtime_or_performance": null,
+    "checked_local_references": 3333,
+    "mapping_status": "passed_static_acceptance_trace",
+    "references_checked_in_acceptance_trace": 172,
+    "errors": [],
+    "interpretation": "此前跨文件检查快照；本轮结果在current_cross_file_verification登记。"
+  },
+  "latest_review_scope": "继承原11NFR与现有性能目标；本次补齐编辑逐次采样、现行测量类型映射和历史状态标识，不扩大首版功能或实测声明。",
+  "initial_review_maturity_effect": {
     "completion_credit": [
       1,
       1
@@ -126,6 +341,69 @@
     "pending_reviews": 47,
     "pending_design_reviews": 17,
     "earliest_pending_checkpoint": "S03-03",
-    "other_checkpoint_rows_unchanged": true
+    "other_checkpoint_rows_unchanged": true,
+    "interpretation": "2026-10-13初次复审时的历史累计，不作为当前状态。"
+  },
+  "confirmed_choices_covered": {
+    "Q11": [
+      "NFR-08"
+    ],
+    "Q12": [
+      "NFR-03"
+    ],
+    "Q17": [
+      "NFR-09"
+    ],
+    "Q18": [
+      "NFR-09"
+    ],
+    "Q19": [
+      "NFR-01",
+      "NFR-02",
+      "NFR-03"
+    ],
+    "Q42": [
+      "NFR-10"
+    ],
+    "Q51": [
+      "NFR-06"
+    ],
+    "Q52": [
+      "NFR-06"
+    ],
+    "Q56": [
+      "NFR-06",
+      "NFR-09"
+    ],
+    "Q58": [
+      "NFR-01"
+    ]
+  },
+  "current_progress_ref": "docs/04_开发与验收/软件开发流程与当前成熟度评估.json",
+  "current_cross_file_verification": {
+    "status": "passed_static_structure_and_local_references",
+    "command": "python tools/检查主线同步.py",
+    "result_ref": "docs/04_开发与验收/主线同步检查结果.json",
+    "checked_local_references": 3358,
+    "mapping_status": "passed_static_acceptance_trace",
+    "references_checked_in_acceptance_trace": 173,
+    "actual_product_runtime": null,
+    "errors": [],
+    "interpretation": "上次全项目检查快照；本轮单项验证另在scoped_cross_file_verification记录，不把其他正在设计中的项视作通过。"
+  },
+  "scoped_cross_file_verification": {
+    "status": "passed_current_NFR_and_acceptance_trace_not_whole_project_gate",
+    "commands": [
+      "python tools/检查非功能规格.py",
+      "python tools/检查需求验收追踪.py"
+    ],
+    "result_refs": [
+      "docs/04_开发与验收/非功能规格检查结果.json",
+      "docs/04_开发与验收/需求验收追踪检查结果.json"
+    ],
+    "scope": "本次S03-04源、S06-02测量字段映射、11项NFR追踪及相关公共入口；不重审其他正在推进的设计项。",
+    "checked_input_expected_and_result_references": 185,
+    "actual_product_runtime": null,
+    "errors": []
   }
 }

@@ -1,0 +1,188 @@
+{
+  "document_kind": "DRF05_complete_feature_definition_design_only",
+  "date": "2026-10-14 Asia/Shanghai",
+  "assignment_ref": "docs/04_开发与验收/重要特征细化统筹与派发.json#DRF05",
+  "feature": "方案比较、四格式评估、保存交接与贡献",
+  "P_refs": [
+    "P2-03",
+    "P2-06",
+    "P5-01"
+  ],
+  "S_refs": [
+    "S03-05",
+    "S06-02",
+    "S06-03",
+    "S06-05",
+    "S11-01",
+    "S11-03"
+  ],
+  "baseline_identity": "retain original17SF/21P/60S/Q01-Q64",
+  "decision_state": "r3共同字段与拥有者消费已复核，公共同步剩余0；type_fixture四格式读回、4页PDF检查、HTML实际浏览器呈现及2项隔离Windows文件接点已取得；产品/恢复/跨机仍待实做",
+  "source_refs": [
+    "docs/01_业务需求/指标成本与决策口径.md",
+    "docs/03_架构与契约/评估报告与数据导出.md",
+    "docs/03_架构与契约/工程交接与打开.md",
+    "packages/reporting/README.md",
+    "packages/reporting/evaluation-report.contract.design.json",
+    "docs/05_开源与参赛/社区贡献与版本维护.md",
+    "community/CONTRIBUTING.md",
+    "community/GOVERNANCE.md",
+    "scenarios/模板与交接/expected-template-handoff.design.json",
+    "docs/02_交互设计/时间轴主轴与子轴完整定义.json",
+    "docs/04_开发与验收/编码任务包与AI实现审查.md",
+    "docs/00_项目基线/首版任务选择.json",
+    "packages/domain/types.design.rs",
+    "packages/commands/api.design.rs",
+    "docs/03_架构与契约/全层类型与工程格式.json",
+    "docs/03_架构与契约/调度与状态转换算法.json",
+    "packages/reporting/public-delta.design.json",
+    "docs/04_开发与验收/特征细化/DRF05_增量正反例.json",
+    "docs/04_开发与验收/特征细化/DRF05_公共增量.design.rs"
+  ],
+  "six_views": [
+    {
+      "view": "任务与交互",
+      "definition_refs": [
+        "docs/01_业务需求/指标成本与决策口径.md",
+        "docs/03_架构与契约/评估报告与数据导出.md",
+        "docs/03_架构与契约/工程交接与打开.md",
+        "docs/05_开源与参赛/社区贡献与版本维护.md"
+      ],
+      "triggers": [
+        "比较两个存量实际Run",
+        "选报告模式/格式",
+        "保存当前R",
+        "交接/打开/修改/从头重跑",
+        "准备本地贡献候选"
+      ],
+      "success": "冻结输入对应已知结果；全部所选输出提交；精确版本可编辑包；本地显式采用",
+      "human_decisions": [
+        "变更变量与范围",
+        "保存/放弃/取消离开",
+        "许可资产/替换",
+        "版本采用",
+        "具体外部提交/发布授权"
+      ]
+    },
+    {
+      "view": "结构与数据",
+      "definition_refs": [
+        "packages/reporting/evaluation-report.contract.design.json#/public_field_mapping",
+        "packages/reporting/evaluation-report.contract.design.json#/format_version_mapping",
+        "packages/reporting/evaluation-report.contract.design.json#/csv_projection",
+        "docs/04_开发与验收/特征细化/DRF05_缺口与修复.json#/handoffs"
+      ],
+      "ownership": "domain/Commands/Host公共源；reporting只持冻结上下文和排版投影；机器本地视图偏好不入包",
+      "public_status": "r3全部19载体/union及精确枚举已读当前Rust/Schema/TS确认；本窗不写共同源"
+    },
+    {
+      "view": "状态与行为",
+      "definition_refs": [
+        "packages/reporting/evaluation-report.contract.design.json#/time_and_partial_result",
+        "packages/reporting/evaluation-report.contract.design.json#/comparison",
+        "packages/reporting/evaluation-report.contract.design.json#/export_lifecycle",
+        "docs/03_架构与契约/工程交接与打开.md"
+      ],
+      "states": [
+        "design_without_run",
+        "actual_consistent_prefix",
+        "actual_whole_window",
+        "strict/controlled_changes/side_by_side_only",
+        "dirty/saving/saved_R_still_dirty_Rplus1/failed/cancelled",
+        "private_import_draft/explicit_adoption",
+        "local_candidate/verified_candidate/authorized_publish/actual_published"
+      ],
+      "rules": "末刻点闭包/区间半开；TC01/TC02真实阶段等待；根清单保存提交；计算端帽不是完成"
+    },
+    {
+      "view": "接口与协作",
+      "definition_refs": [
+        "packages/commands/api.design.rs",
+        "docs/04_开发与验收/特征细化/DRF05_缺口与修复.json"
+      ],
+      "call_chain": [
+        "get_run Summary/FullResult授权一致结果；Events interval:null不按时间过滤",
+        "compare_runs -> RunComparison",
+        "export_evaluation -> TaskHandle -> get_task -> TaskOutput::Evaluation",
+        "save_project -> TaskHandle -> SavedProject",
+        "export_package HandoffProject -> TaskHandle -> ExportPackage",
+        "import_package OpenProject -> TaskHandle -> ImportDraft -> apply_commands AdoptImportedDraft",
+        "cancel_task仅按actual allowed_controls"
+      ],
+      "errors": [
+        "InvalidInput",
+        "MissingReference",
+        "RevisionConflict",
+        "PermissionDenied",
+        "UnsupportedSchema",
+        "UnsupportedCapability",
+        "IoFailure",
+        "Cancelled"
+      ],
+      "boundary": "既有18操作，UI/Agent同Commands"
+    },
+    {
+      "view": "界面与表现",
+      "definition_refs": [
+        "docs/03_架构与契约/评估报告与数据导出.md",
+        "docs/03_架构与契约/工程交接与打开.md",
+        "docs/02_交互设计/时间轴主轴与子轴完整定义.json"
+      ],
+      "consumer_owner": "表单定义已接入；docs02/实际视觉与S04-02/04/05归复审窗口2",
+      "requirements": [
+        "同屏主比两方案，额外方案保留列表",
+        "共同条件/变化/不可比/null原因",
+        "设计/前缀/完整标签和末刻点",
+        "等待定位同Run，打开工程是独立导入动作",
+        "下方工具；窗口菜单dock显隐；时间轴默认160px；描述独立",
+        "表单错误保留所选Run；切工程处理dirty/Task departure"
+      ],
+      "actual_visual_or_prototype": null
+    },
+    {
+      "view": "部署与验证",
+      "definition_refs": [
+        "docs/03_架构与契约/首版技术栈与部署设计.json",
+        "packages/reporting/evaluation-report.contract.design.json#/technology_sources",
+        "docs/04_开发与验收/特征细化/DRF05_独立预期.json",
+        "scenarios/模板与交接/expected-template-handoff.design.json"
+      ],
+      "selected_versions": [
+        "printpdf0.12.8直接分页",
+        "csv1.4.0",
+        "Source Han Sans CN2.005R/OFL1.1，实际字体文件仍待选定试做",
+        "Versioned schema1.0",
+        "Windows11 x64目标"
+      ],
+      "validation_entry": "python docs/04_开发与验收/特征细化/DRF05_核对独立预期.py",
+      "evidence_split": [
+        "JSON/映射/引用静态",
+        "有限独立数学",
+        "实际原型另列待取得",
+        "实际产品运行另列待取得",
+        "本人/第三人/跨机另列待取得",
+        "公开发布/手续回执另列未发生"
+      ],
+      "delta_validation_entry": "python docs/04_开发与验收/特征细化/DRF05_复核增量消费者.py"
+    }
+  ],
+  "finite_cases_ref": "docs/04_开发与验收/特征细化/DRF05_独立预期.json",
+  "handoff_cases_ref": "scenarios/模板与交接/expected-template-handoff.design.json#/drf05_handoff_cases",
+  "gap_ref": "docs/04_开发与验收/特征细化/DRF05_缺口与修复.json",
+  "static_validation_ref": "docs/04_开发与验收/特征细化/DRF05_验证结果.json",
+  "actual_result": null,
+  "actual_product_runtime": null,
+  "actual_user_walkthrough": null,
+  "actual_publish_or_push": null,
+  "coding_package_state": "draft_not_dispatchable",
+  "revision": "DRF05-r3",
+  "public_delta_ref": "packages/reporting/public-delta.design.json",
+  "delta_examples_ref": "docs/04_开发与验收/特征细化/DRF05_增量正反例.json",
+  "consumer_recheck_ref": "docs/04_开发与验收/特征细化/DRF05_消费者复核.json",
+  "isolated_projection_ref": "docs/04_开发与验收/特征细化/DRF05_四格式试做/projection-result.json",
+  "save_reference_ref": "docs/04_开发与验收/特征细化/DRF05_四格式试做/save-reference-result.json",
+  "remaining_public_delta": [],
+  "new_design_decisions_pending": [],
+  "html_browser_ref": "docs/04_开发与验收/特征细化/DRF05_四格式试做/html-browser-result.json",
+  "save_contact_ref": "docs/04_开发与验收/特征细化/DRF05_四格式试做/save-contact-result.json"
+}

@@ -1,0 +1,527 @@
+{
+  "document_kind": "superfactory_v2_managed_deployment_and_runtime_closure_design_not_execution_authority",
+  "date": "2026-10-26",
+  "implementation_allowed": true,
+  "runtime_verified": false,
+  "markdown_ref": "docs/06_v2.0设计与开发控制/托管部署配置与交付闭包设计.md",
+  "contract_version": "sf.execution/2.0-draft11",
+  "decision": {
+    "id": "V2-A11",
+    "state": "sealos_account_access_verified_actual_resources_pending",
+    "provider": "Sealos + managed PostgreSQL",
+    "selection_assumption": "用户2026-10-26接受推荐国产替代并回复准备好了；已只读核验Sealos北京A区工作空间，当前采用Sealos作为部署目标。",
+    "scope": "一个云HTTP进程＋托管PG；Native唯一Engine架构不变；当前只读接入已验证，代码实施按主计划开放门推进，付费资源尚未创建。",
+    "user_confirmation": {
+      "date": "2026-10-26",
+      "timezone": "Asia/Shanghai",
+      "request": "准备好了",
+      "scope": "accept recommended Sealos account preparation; paid resource creation and spending not performed"
+    }
+  },
+  "views": {
+    "task_interaction": "用户仍从原云面板准备/运行/查看；部署profile及秘密由受管配置准备，无新增云运维向导",
+    "structure_data": "原15业务表＋DB16迁移元数据；健康探测无项目数据；Windows包包含固定解释器/脚本/原资源",
+    "state_behavior": "migrate成功→serve就绪；重启读取原DB；SIGTERM排空；未知提交按原身份核对",
+    "interface_collaboration": "C01-C20保持；OP01仅平台GET/healthz；Native通过既有Host边界，不直连DB",
+    "ui_consumer": "显示脱敏连接及实际来源；未配置不伪装云连接，不影响原本地Run；部署状态不等于设备资格",
+    "deployment_verification": "Linux纯云服务构建、TLS/迁移/重启及干净Windows实际随包链；后端/百万规模/原样本均保留"
+  },
+  "reference_profile": {
+    "workspace": "Hobby",
+    "region": "singapore",
+    "service": {
+      "type": "web",
+      "runtime": "docker",
+      "plan": "1c-2g",
+      "cpu": 1,
+      "ram_gib": 2,
+      "numInstances": 1,
+      "autoDeployTrigger": "off",
+      "dockerfilePath": "apps/cloud-service/Dockerfile",
+      "dockerContext": ".",
+      "preDeployCommand": "/opt/superfactory/sf-cloud-service migrate",
+      "dockerCommand": "/opt/superfactory/sf-cloud-service serve",
+      "healthCheckPath": "/healthz",
+      "maxShutdownDelaySeconds": 30,
+      "rootDir": "软件工程"
+    },
+    "postgres": {
+      "plan": "0.5c-1g",
+      "cpu": 0.5,
+      "ram_gib": 1,
+      "postgresMajorVersion": "18",
+      "minor_version": "provider-maintained; actual SHOW server_version before acceptance groups",
+      "diskSizeGB": 10,
+      "storageAutoscalingEnabled": false,
+      "connectionPool": "none",
+      "ipAllowList": "must use actual service egress CIDRs from selected account; omitted/allow-all is not the selected deployment profile",
+      "actual_resource_id": null
+    },
+    "app_connection_pool": {
+      "crate": "deadpool-postgres",
+      "max_size_per_instance": 8,
+      "normal_instances": 1,
+      "temporary_rolling_instances": 2,
+      "two_instances_plus_migration_connections": 17,
+      "provider_connection_limit_from_plan": 100
+    },
+    "persistence": "所有业务表及原始数据在托管PG；容器本地盘不存数据库/活动占位；媒体继续由Native冻结归档持有",
+    "load_scope": "先完整百万generated事件，再执行独立10设备各1条/秒30分钟及原30+30查询/聚合组；完整结果/延迟/实际配置均记录，不用缩样本承诺达标",
+    "local_ports": "本轮无本地监听；未来本地调试按全局端口注册表；PaaS PORT由平台注入，不把默认10000占为本地端口",
+    "blueprint_path_from_repo_root": "软件工程/deploy/render.yaml",
+    "repository_root_evidence": "git rev-parse -> D:/Agent/ICNSD-KEL/大作业/02_竞赛作品/超级工厂; workspace is 软件工程",
+    "provider": "Render",
+    "state": "superseded_platform_reference_not_current_deployment_target"
+  },
+  "tls": {
+    "native_and_device": "固定HTTPS云入口；reqwest保持TLS验证并禁跨主机带凭据重定向；设备urllib/ssl使用受信根和无重定向处理，不接受工程任意URL",
+    "postgres_path": "参考选型使用同region数据库external完整DNS endpoint及服务egress IP allowlist；内网TLS文档不支持verify-full，故不以关闭验证换取内网路径",
+    "postgres_driver": "tokio-postgres Config固定SslMode::Require，MakeTlsConnector由native_tls生成；系统CA+证书/hostname验证及SNI保持，最低TLS1.2；不给公网连接NoTls/invalid-cert fallback",
+    "url": "DATABASE_URL为PaaS私有运行秘密，完整hostname用于证书验证/SNI；不复制到Native/Renderer/报告；服务不输出带密码的URL",
+    "runtime_libraries": "Linux构建需要OpenSSL开发库/pkg-config，运行镜像需要OpenSSL运行库和CA；具体基础镜像元数据/锁解析/编译尚未通过，不据版本文档宣称互通"
+  },
+  "build_and_dependencies": {
+    "cloud_crate": "apps/cloud-service",
+    "cloud_direct_local_dependencies": [
+      "sf-domain"
+    ],
+    "must_not_link_as_runtime_owners": [
+      "sf-commands",
+      "sf-simulation",
+      "sf-reporting",
+      "Tauri/Native Host"
+    ],
+    "current_source_evidence": [
+      "packages/domain/Cargo.toml only serde/serde_json/schemars/ts-rs",
+      "RunInputRef already packages/domain/src/models.rs:2150",
+      "Issue already packages/domain/src/models.rs:745",
+      "packages/commands depends on simulation/reporting/windows-sys; no need to move Host to cloud"
+    ],
+    "shared_types": "L24 domain/cloud_execution.rs只放云端/执行纯DTO；Host请求封套、Task、实际调用者权限继续留commands，不建立domain到commands的依赖",
+    "future_build_command": "cargo build --locked --release -p sf-cloud-service (Linux build stage, after lock update permitted)",
+    "builder_image_candidate": "rust:1.97.0-bookworm",
+    "runtime_image_candidate": "debian:bookworm-slim",
+    "image_availability_verified": false,
+    "image_metadata_observation": "Docker CLI29.8.0只读版本可用；rust tag元数据查询18秒超时，debian manifest查询EOF；无pull/build/container，不能断言tag不存在",
+    "selected_dependency_candidates": [
+      {
+        "name": "axum",
+        "version": "0.8.9",
+        "features": "Tokio JSON HTTP"
+      },
+      {
+        "name": "reqwest",
+        "version": "0.13.5",
+        "features": "default-features=false; json/query/rustls for Native"
+      },
+      {
+        "name": "tokio-postgres",
+        "version": "0.7.18",
+        "features": "with-serde_json-1 + with-chrono-0_4"
+      },
+      {
+        "name": "postgres-native-tls",
+        "version": "0.5.3",
+        "features": "MakeTlsConnector"
+      },
+      {
+        "name": "native-tls",
+        "version": "0.2.18",
+        "features": "platform default secure validation"
+      },
+      {
+        "name": "deadpool-postgres",
+        "version": "0.14.2",
+        "features": "rt_tokio_1"
+      },
+      {
+        "name": "chrono",
+        "version": "0.4.45",
+        "features": "domain CloudTimestamp parse/UTC formatting; custom serde/schema/TS wrapper; Cargo feature/lock resolution pending"
+      }
+    ],
+    "workspace_change": "复用现有Rust1.97/serde/Tokio；v2准入后一次落实新依赖及Tokio time/process/signal特性和Cargo.lock；当前不安装、不改锁",
+    "secrets": "构建不消费DATABASE_URL或token；只在serve/migrate进程运行时读取受管环境，镜像/构建日志不含秘密",
+    "context": "软件工程/.dockerignore拟仅放行现有Rust workspace成员清单/src/必要build.rs和cloud配置/迁移/Dockerfile，保持Cargo成员可解析；-p只编译cloud-service依赖。排除.work/output/target/node_modules/媒体/Native运行时/实际秘密，不使用整个父仓库作为Docker context",
+    "time_design_ref": "docs/06_v2.0设计与开发控制/数据查询与规模验收设计.json"
+  },
+  "configuration": {
+    "environment": [
+      {
+        "name": "PORT",
+        "secret": false,
+        "producer": "PaaS",
+        "consumer": "serve listen0.0.0.0:PORT"
+      },
+      {
+        "name": "DATABASE_URL",
+        "secret": true,
+        "producer": "selected managed PG external endpoint",
+        "consumer": "migrate/serve TLS pool only"
+      },
+      {
+        "name": "SF_CLOUD_AUTH_TOKENS_JSON",
+        "secret": true,
+        "producer": "deployment private configuration",
+        "consumer": "existing principal catalog: scoped_reader/operator/host_gateway/device/generated_load_producer with fixed exact scopes"
+      }
+    ],
+    "bindings": "固定/opt/superfactory/config/demo-bindings.json持有非秘密project/device/definition/action/dataset-purpose映射，来自v1最终工程真实ID；初始迁移种子与运行授权消费同一内容",
+    "native": "Native私有cloud连接配置含实际地址/本地到云项目映射/原Gateway及设备凭据；H08只返脱敏结果；配置与SQLite journal在私有运行目录，不进入交付ZIP或工程导出",
+    "missing": "服务缺配置或迁移未就绪不对外ready；Native缺云配置/解释器时对应能力不可用或准备失败，原本地行为保持"
+  },
+  "migration": {
+    "transaction_id": "TX13",
+    "table_id": "DB16",
+    "table": "schema_migrations",
+    "expected_schema_version": 1,
+    "lock": "pg_advisory_xact_lock(53023001) within migration transaction",
+    "steps": [
+      "begin并取事务级迁移锁",
+      "建立/读取schema_migrations；版本1返回原已应用结果，未知版本停止部署",
+      "空版本时执行001_initial.sql的15业务表/约束/必要索引及固定项目/设备/两非执行dataset种子",
+      "同事务写version1及applied_at后commit",
+      "未知提交重查原schema版本，不覆盖已存输入/命令/事件；失败完整回滚"
+    ],
+    "rollback": "本轮仅新库初始迁移；业务rollback只回退兼容版本服务，不能删除DB或执行破坏性down。未来不兼容schema变更不在本切片自动处理"
+  },
+  "operational_endpoint": {
+    "id": "OP01",
+    "method": "GET",
+    "path": "/healthz",
+    "authorization": "public/platform probe with no project data",
+    "ready": {
+      "status": 204,
+      "body": "empty",
+      "conditions": [
+        "expected schema version1",
+        "pool actual SELECT1 succeeds",
+        "trusted binding/auth configuration loaded"
+      ]
+    },
+    "not_ready": {
+      "status": 503,
+      "body": "empty"
+    },
+    "scope": "部署路由准入消费者；不是新增业务API，不提供session/boot/secret/version完整调试数据"
+  },
+  "shutdown": {
+    "signal": "SIGTERM",
+    "application_drain_seconds": 20,
+    "platform_shutdown_delay_seconds": 30,
+    "steps": [
+      "停止接新请求/ready置false",
+      "在20秒内等待原短事务和HTTP完成，结束连接并退出",
+      "被中断/未收到响应的原请求保持unknown，调用者查询/复发原身份；不新建epoch或重置Host资源"
+    ],
+    "data_rule": "云服务无Engine；滚动两实例仍按DB原锁/唯一键竞争，不把新实例视为新生产会话"
+  },
+  "windows_delivery": {
+    "current_tauri_evidence": "apps/planner/src-tauri/tauri.conf.json bundle.active=false；资源表存在不证明cargo release已复制资源",
+    "python_selected": "CPython3.14.9 Windows x64 embeddable from official release; not the current local3.14.7 runtime",
+    "download_extract_import_verified": false,
+    "resource_root": "Native actual resource_dir()/v2-devices; portable layout must be proved after packaging",
+    "layout": [
+      "v2-devices/python/ official Python executable/DLL/stdlib ZIP and native modules",
+      "v2-devices/python/python314._pth: python314.zip, ., ../scripts; no import site",
+      "v2-devices/scripts/virtual_device.py",
+      "v2-devices/scripts/journal.py",
+      "v2-devices/scripts/devices.demo.json (no secrets)",
+      "v2-devices/licenses/ official license and bundled notices"
+    ],
+    "launch": "Native固定随包python.exe，-I -B -X utf8 + trusted script path；不搜PATH、不运行上传脚本，秘密仍走私有stdin",
+    "preparation": "H01外部副作用前核对可信解释器/脚本及stdlib ssl/urllib/sqlite3/journal导入可用；失败明确报准备失败；SQLite实际版本以随包实测记录，不照抄本机3.53.1",
+    "packager": "tools/release-preparation/package_v2.py：显式modules/startup-library.json消费精确闭包；缺省沿用原启动登记。源码/资源接入已在私有范围验证，当前主线合并及重建Native后最终组包另验。",
+    "acceptance": "保留无全局Python、移动目录、TLS/SQLite journal、两独立设备进程及同一Host要求；R1已验结果复用；新1.3启动接点与最终独立Native离线/保存重开取当前原包remaining_work，不由资源ZIP存在填通过。",
+    "desktop_resource_profile": {
+      "reception_ref": ".work/v2-full-target-20261028/runtime-resource-reception.json",
+      "independent_review_ref": "F:/SuperFactory-v2-full-target-20261027/runtime-resource-review/independent-review.json",
+      "profile": "paper-packaging-runtime",
+      "profile_path": "modules/startup-library.json",
+      "template_exact_version": "1.3.0",
+      "producer": "tools/v2-demo/prepare_factory_template.py --runtime-profile --version 1.3.0 --resource-root <read-only-resource-root> --output-root <new-output-root>",
+      "support_directory_rule": "Derived module output path is relative to output modules root; input-resource/output roots may differ; legal unregistered actual resource regression retained.",
+      "Native_adapter": "apps/planner/src-tauri/src/project_api.rs::ProjectApiState::register_bundled_library",
+      "shared_production_consumer": "packages/commands/src/host_library.rs::ProjectHost::register_bundled_library",
+      "required_entries": "847 exact module/template identities;92paper devices and184LOD media are retained",
+      "failure_rule": "Malformed profile, escaped directory, mismatched exact identity or missing required resource fails; do not fallback to legacy when explicit profile exists.",
+      "legacy_behavior": "No profile retains exact original83-directory registration body; old R1 self-contained archive retains3Runs,6frozen inputs and7exact module versions.",
+      "resource_verified_zip_bytes": 210221036,
+      "same_input_payload_reduction_percent": 56.29229952956112,
+      "frozen_exe_limitation": "Current source-validation ZIP carries old fixed executable; it is not a rebuilt profile-capable Native release.",
+      "public_types_or_device_DTO_changed": false,
+      "final_Native_verified": false,
+      "physical_hardware_or_all92_routes_claimed": false,
+      "source_merge_ref": "F:/SuperFactory-v2-full-target-20261027/runtime-resource-review/combined-core17-reviewed.patch",
+      "active_G03_parent_wiring": "Separate review after protected writer handback; keep current form/source/Task/export behavior."
+    }
+  },
+  "budget": {
+    "currency": "USD",
+    "price_checked_on": "2026-10-26",
+    "monthly_items": [
+      {
+        "item": "Hobby workspace",
+        "usd": 0
+      },
+      {
+        "item": "Web1c-2g",
+        "usd": 25
+      },
+      {
+        "item": "PG0.5c-1g",
+        "usd": 19
+      },
+      {
+        "item": "PG10GB x0.30",
+        "usd": 3
+      }
+    ],
+    "monthly_baseline_usd": 47,
+    "estimate_hours": 48,
+    "assumed_month_hours": 720,
+    "estimated_compute_storage_48h_usd": 3.1333333333333333,
+    "suggested_demo_reserve_usd": 10,
+    "estimate_scope": "参考30天月折算，非实际账单/平台消费上限；税费、汇兑、超额带宽/构建、其他资源及运行超过48小时另计；账户配额未确认",
+    "lifetime": "资源从实际创建计费；web停止不代表所有DB/存储费用归零。演示后先决定保留/导出所需数据，不能为了预算自动删除数据库",
+    "authorization": "仅参考设计；没有账号登录、绑卡、开通、资源创建、部署或实际付费授权动作",
+    "provider": "Render",
+    "state": "superseded_render_estimate_not_a_sealos_quote"
+  },
+  "source_locations": [
+    "L01",
+    "L04",
+    "L05",
+    "L23",
+    "L24",
+    "L27",
+    "L28",
+    "L31",
+    "L63",
+    "L64",
+    "L65",
+    "L66",
+    "L67"
+  ],
+  "source_references": [
+    {
+      "url": "https://render.com/pricing",
+      "used_for": "参考套餐月价：Hobby0、Web1c-2g25、PG0.5c-1g19美元；PG存储0.30美元/GB月，实际账单未取得"
+    },
+    {
+      "url": "https://render.com/docs/compute-plans",
+      "used_for": "当前plan ID及CPU/RAM；使用当前名称而非过时默认假设"
+    },
+    {
+      "url": "https://render.com/docs/postgresql-upgrading",
+      "used_for": "PostgreSQL18可用，平台会进行小版本维护；实际小版本须部署后读取"
+    },
+    {
+      "url": "https://render.com/docs/postgresql-creating-connecting",
+      "used_for": "内部TLS自签约束与外部完整域名/SNI连接；参考配置选外部验证证书的TLS"
+    },
+    {
+      "url": "https://render.com/docs/blueprint-spec",
+      "used_for": "Docker context/path、manual deploy、region、diskSizeGB、PG major、allowlist等实际字段"
+    },
+    {
+      "url": "https://render.com/docs/docker",
+      "used_for": "Docker支持pre-deploy；秘密不作构建参数使用"
+    },
+    {
+      "url": "https://render.com/docs/deploys",
+      "used_for": "pre-deploy独立实例与SIGTERM/默认30秒结束期"
+    },
+    {
+      "url": "https://render.com/docs/health-checks",
+      "used_for": "平台HTTP探测消费者；204/503选择是本项目设计"
+    },
+    {
+      "url": "https://docs.rs/postgres-native-tls/0.5.3/postgres_native_tls/",
+      "used_for": "PG TLS适配器候选"
+    },
+    {
+      "url": "https://docs.rs/native-tls/0.2.18/native_tls/",
+      "used_for": "native TLS候选；Linux使用OpenSSL"
+    },
+    {
+      "url": "https://docs.rs/native-tls/latest/native_tls/struct.TlsConnectorBuilder.html",
+      "used_for": "根证书/hostname/SNI验证默认及TLS最低版本"
+    },
+    {
+      "url": "https://docs.rs/deadpool-postgres/latest/deadpool_postgres/",
+      "used_for": "Tokio连接池候选和rt_tokio_1"
+    },
+    {
+      "url": "https://www.python.org/downloads/release/python-3149/",
+      "used_for": "CPython3.14.9及Windows64位embeddable发行项"
+    },
+    {
+      "url": "https://docs.python.org/3.14/using/windows.html#the-embeddable-package",
+      "used_for": "随包解释器及受限._pth；不依赖系统Python"
+    },
+    {
+      "url": "https://render.com/docs/faq",
+      "used_for": "计算/存储按秒计费，实际账单及配额须账户核对"
+    },
+    {
+      "url": "https://render.com/docs/outbound-bandwidth",
+      "used_for": "参考Hobby配额与超额网络费用；估算不视为消费限额"
+    },
+    {
+      "url": "https://render.com/docs/monorepo-support",
+      "used_for": "rootDir=软件工程后dockerContext与dockerfilePath相对此目录；Blueprint路径仍相对真实Git根"
+    }
+  ],
+  "pending": [
+    "Sealos账号实际报价/余额和具体付费资源确认",
+    "可构建云服务、基础镜像/依赖锁解析及镜像发布入口",
+    "平台实际支持PG版本、连接/TLS与迁移运行",
+    "官方Python解释器和Native随包闭包验证",
+    "实际v2生成契约/Host/设备消费者与典型流程验证"
+  ],
+  "design_cases": [
+    {
+      "id": "DEP01",
+      "trigger": "PG证书链/主机名不匹配、缺CA或试图降级明文",
+      "expected": "连接/准备明确失败；Require+实际证书及hostname验证生效，不能回退NoTls",
+      "runtime_result": null
+    },
+    {
+      "id": "DEP02",
+      "trigger": "首次迁移失败、提交响应丢失或两个迁移进程竞争",
+      "expected": "TX13锁及事务保证15业务表/种子/版本1一起提交；原版本重查，重复不覆盖；未知版本阻止部署",
+      "runtime_result": null
+    },
+    {
+      "id": "DEP03",
+      "trigger": "服务在C02/C04/C06提交前后被重启或SIGTERM",
+      "expected": "客户端查/复发原身份；数据库保留实际提交结果，Host不新建Engine/epoch、不重复生产",
+      "runtime_result": null
+    },
+    {
+      "id": "DEP04",
+      "trigger": "已生成百万数据且已有18000采集数据后重启服务",
+      "expected": "相应固定dataset/前沿/查询结果保持；未落盘进程状态不冒充持久化；实际数量按原验收记录",
+      "runtime_result": null
+    },
+    {
+      "id": "DEP05",
+      "trigger": "平台探测到DB不可达或schema版本错误",
+      "expected": "OP01为503且无敏感正文；schema1及可用连接的实际SELECT1后才204，健康不代替业务验收",
+      "runtime_result": null
+    },
+    {
+      "id": "DEP06",
+      "trigger": "云秘密误入镜像构建/Native演示ZIP/工程导出或权限映射缺失",
+      "expected": "交付不含实际秘密，部署只用私有运行配置；未配置Native云功能不可用但原本地行为保留",
+      "runtime_result": null
+    },
+    {
+      "id": "DEP07",
+      "trigger": "没有全局Python的Windows上移动演示目录后启动",
+      "expected": "实际随包3.14.9导入ssl/urllib/sqlite3和journal；真实HTTPS/事务可用，两独立设备；缺文件则H01失败，不用PATH补假通过",
+      "runtime_result": null
+    },
+    {
+      "id": "DEP08",
+      "trigger": "Linux服务构建与短暂双实例滚动部署",
+      "expected": "仅cloud-service+纯domain及所需依赖；无Host/Engine/Renderer启动；8连接/实例预算及DB原事务并发成立",
+      "runtime_result": null
+    }
+  ],
+  "sealos_readiness": {
+    "checked_at_utc": "2026-10-26T15:24:44.814979+00:00",
+    "scope": "read_only_account_and_local_engine_preflight",
+    "provider": "Sealos",
+    "api_server": "https://bja.sealos.run:6443",
+    "namespace": "ns-61j010p3",
+    "credential_storage": "existing user-private kubeconfig; no credentials copied into project or output",
+    "tls_verified": true,
+    "create_permissions_verified": [
+      "deployments.apps",
+      "services",
+      "ingresses.networking.k8s.io",
+      "secrets",
+      "configmaps",
+      "jobs.batch",
+      "clusters.apps.kubeblocks.io"
+    ],
+    "existing_deployments_services_ingresses_pvcs": 0,
+    "existing_database_clusters": 0,
+    "namespace_quota": {
+      "cpu_limit_cores": "16",
+      "memory_limit": "64Gi",
+      "pods": "20",
+      "storage_requests": "100Gi"
+    },
+    "quota_is_not_purchased_capacity_or_balance": true,
+    "default_container_limits": {
+      "cpu": "50m",
+      "memory": "64Mi",
+      "ephemeral_storage": "100Mi"
+    },
+    "required_action": "explicitly configure application and database resource requests/limits; do not inherit the small container defaults",
+    "postgres_versions": "cluster-scoped clusterversions list forbidden to tenant; inspect supported versions through account database UI/API during deployment preparation; no cluster-admin access requested",
+    "docker_engine_version": "29.9.2",
+    "account_balance_verified": true,
+    "paid_resources_created": false,
+    "deployment_verified": false,
+    "pending": [
+      "Generate and independently verify actual hosted1M generated_load rows",
+      "Then ten distinct real Native-managed telemetry profiles1Hz1800s and original60 query groups",
+      "Actual H11 MCP and >200-row hosted multi-page export",
+      "100 actual frame/visibility latency samples",
+      "Final release/materials"
+    ],
+    "actual_deployment_receipt": ".work/v2-implementation-20261026/sealos-live-deploy/receipt.json"
+  },
+  "sealos_target": {
+    "region": "Beijing A; verified existing account endpoint",
+    "namespace": "ns-61j010p3",
+    "service": {
+      "runtime": "existing Docker image",
+      "replicas": 1,
+      "planned_cpu_limit": "1",
+      "planned_memory_limit": "2Gi",
+      "health_path": "/healthz",
+      "resource_state": "actual_running",
+      "origin": "https://sf-task8-61j010p3-20261027.sealosbja.site",
+      "image_digest_ref": "harbor.bja.sealos.run/ns-61j010p3/sf-cloud-service@sha256:672a29466d3074f5aa49e718db834a73b7545dbd6ff403eb1cc7ae917183dc3a"
+    },
+    "postgres": {
+      "major_version": 16,
+      "version_rule": "Actual running PG16.4 confirmed with SELECT version(); builtinTLS CA/SAN and backend sessions verified",
+      "planned_cpu_limit": "1",
+      "planned_memory_limit": "2Gi",
+      "planned_storage": "20Gi",
+      "resource_state": "actual_running",
+      "actual_server_version": "PostgreSQL 16.4 (Ubuntu 16.4-1.pgdg22.04+1) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0, 64-bit"
+    },
+    "database_tls": "Actual builtin CA + SAN matching stable single-pod headless DNS; SSL_CERT_FILE mounted; backend actualTLS1.3 observed",
+    "billing": {
+      "currency": "shellCoin",
+      "quote_verified": true,
+      "balance_verified": true,
+      "resource_creation_performed": true,
+      "actual_budget_ref": ".work/v2-implementation-20261026/sealos-price-query/actual-budget.json"
+    },
+    "source_refs": [
+      "https://sealos.run/docs/guides/app-management",
+      "https://sealos.run/en/docs/getting-started/create-database"
+    ]
+  },
+  "historical_design_implementation_flags": {
+    "date": "2026-10-26",
+    "implementation_allowed": true,
+    "runtime_verified": false
+  },
+  "implementation_status_ref": "docs/06_v2.0设计与开发控制/开发控制计划.json#/packages",
+  "current_implementation_packages": [
+    "V2-02",
+    "V2-03",
+    "V2-11"
+  ],
+  "status_projection_updated_at_utc": "2026-10-27T01:45:48.535491+00:00",
+  "runtime_verification_scope": "runtime_verified仅为本文全部设计用例通过声明；当前局部真实证据和剩余动作取主计划，不把设计期禁止实施作为现行限制。"
+}

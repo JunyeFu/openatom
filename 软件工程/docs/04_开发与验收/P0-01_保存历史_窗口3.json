@@ -1,0 +1,158 @@
+{
+  "document_kind": "P0_01_window3_pure_ProjectHistory_implementation",
+  "task_id": "P0-01",
+  "covered_original_steps": [
+    3,
+    4
+  ],
+  "owner": "实现窗口3",
+  "role": "W02",
+  "dispatch_ref": "docs/04_开发与验收/P0-01_保存重开与会话历史切片.json#/parallel_dispatch/2",
+  "interface_ref": "docs/04_开发与验收/P0-01_保存重开与会话历史切片.json#/private_implementation_interfaces/history_module",
+  "status": "implemented_unit_tests_passed",
+  "source_ref": "packages/commands/src/project_history.rs",
+  "public_private_API": [
+    "new()->Self",
+    "reset(&mut self,&ProjectState)",
+    "record(&mut self,&ProjectState,&ProjectState)",
+    "undo_candidate(&self,&ProjectState)->Result<ProjectState,ApiError>",
+    "redo_candidate(&self,&ProjectState)->Result<ProjectState,ApiError>",
+    "commit_undo(&mut self,&ProjectState,&ProjectState)",
+    "commit_redo(&mut self,&ProjectState,&ProjectState)",
+    "availability(&self)->HistoryAvailability"
+  ],
+  "invariants": [
+    "历史仅保存前后ProjectState及Project身份/头修订；不自建领域字段。",
+    "candidate先校核Project身份/历史头，再读取栈，只推导不移动；返回revision=current。",
+    "commit回调为可信成功事务；要求before为当前历史头、after同Project且为Host提供的新单调修订。",
+    "普通record清redo；reset清旧工程历史；save不属于历史API。",
+    "不持有Host创建账本/Task/磁盘/Run对象；授权、非可逆效果及当前认可保护由Host整合。"
+  ],
+  "error_policy": {
+    "cross_project_or_empty": "InvalidInput，不泄漏另一工程头",
+    "head_mismatch": "RevisionConflict(expected=current.revision,actual=history_head)",
+    "commit_callback_misuse": "内部可信事务不变量断言；输入请求必须由Host先校核，回调不直接接用户报文。"
+  },
+  "specification_before_execution": true,
+  "cases": [
+    {
+      "id": "PH-01",
+      "test": "empty_history_and_reset_never_invent_an_undo",
+      "expected": "new/reset空历史均不可撤销/重做，不凭当前Project伪造快照。",
+      "actual": {
+        "executed": true,
+        "passed": true,
+        "raw_output": "test project_history::tests::empty_history_and_reset_never_invent_an_undo ... ok"
+      }
+    },
+    {
+      "id": "PH-02",
+      "test": "candidates_and_revision_failures_leave_history_unconsumed",
+      "expected": "反复candidate或stale头冲突不动栈；commit_undo后才从undo转redo并更新头，旧修订即使undo栈空仍先冲突。",
+      "actual": {
+        "executed": true,
+        "passed": true,
+        "raw_output": "test project_history::tests::candidates_and_revision_failures_leave_history_unconsumed ... ok"
+      }
+    },
+    {
+      "id": "PH-03",
+      "test": "host_supplies_monotonic_revisions_across_multiple_undo_and_redo",
+      "expected": "A10→B11→C12，多次候选沿用current修订；Host填100/101/102/103，历史不自增/回用旧修订，顺序B/A/B/C。",
+      "actual": {
+        "executed": true,
+        "passed": true,
+        "raw_output": "test project_history::tests::host_supplies_monotonic_revisions_across_multiple_undo_and_redo ... ok"
+      }
+    },
+    {
+      "id": "PH-04",
+      "test": "an_ordinary_committed_branch_discards_redo_only_after_record",
+      "expected": "撤销后普通record新分支清redo，下一undo返回新分支前状态而非旧redo结果。",
+      "actual": {
+        "executed": true,
+        "passed": true,
+        "raw_output": "test project_history::tests::an_ordinary_committed_branch_discards_redo_only_after_record ... ok"
+      }
+    },
+    {
+      "id": "PH-05",
+      "test": "another_project_cannot_reuse_matching_revision_history",
+      "expected": "不同工程即使修订相同也InvalidInput且不带旧工程修订；旧工程历史未被消费。",
+      "actual": {
+        "executed": true,
+        "passed": true,
+        "raw_output": "test project_history::tests::another_project_cannot_reuse_matching_revision_history ... ok"
+      }
+    },
+    {
+      "id": "PH-06",
+      "test": "reset_clears_old_project_history_and_establishes_the_new_head",
+      "expected": "工程切换reset清undo/redo及旧头；新工程后续record和candidate只属于新身份/当前头。",
+      "actual": {
+        "executed": true,
+        "passed": true,
+        "raw_output": "test project_history::tests::reset_clears_old_project_history_and_establishes_the_new_head ... ok"
+      }
+    }
+  ],
+  "verification_command": "cargo test -p sf-commands --locked --lib project_history::tests",
+  "format_command": "rustfmt --edition 2024 packages/commands/src/project_history.rs",
+  "actual_execution": {
+    "executor": "统筹W00",
+    "command": "npm.cmd run test:rust",
+    "stdout_ref": ".work/p0-01-persistence-history/verification/workspace-tests.stdout.txt",
+    "stderr_ref": ".work/p0-01-persistence-history/verification/workspace-tests.stderr.txt",
+    "actual_history_unit_output": [
+      "test project_history::tests::empty_history_and_reset_never_invent_an_undo ... ok",
+      "test project_history::tests::an_ordinary_committed_branch_discards_redo_only_after_record ... ok",
+      "test project_history::tests::another_project_cannot_reuse_matching_revision_history ... ok",
+      "test project_history::tests::candidates_and_revision_failures_leave_history_unconsumed ... ok",
+      "test project_history::tests::reset_clears_old_project_history_and_establishes_the_new_head ... ok",
+      "test project_history::tests::host_supplies_monotonic_revisions_across_multiple_undo_and_redo ... ok"
+    ],
+    "history_passed": 6,
+    "history_failed": 0,
+    "workspace_passed": 79,
+    "workspace_failed": 0,
+    "original_49_regression_preserved": true,
+    "local_duplicate_Cargo_execution": false,
+    "evidence_read_from_actual_logs": true,
+    "source_frozen_by_coordinator_for_execution": true
+  },
+  "actual_result": {
+    "implemented": true,
+    "unit_tests_executed": 6,
+    "passed": 6,
+    "failed": 0,
+    "pure_module_scope_complete": true
+  },
+  "allowed_write_files": [
+    "packages/commands/src/project_history.rs",
+    "docs/04_开发与验收/P0-01_保存历史_窗口3.json"
+  ],
+  "other_source_or_shared_task_config_lock_written": false,
+  "whole_P0_01_complete": false,
+  "current_test_entry_dependency": null,
+  "self_review": {
+    "fixed_API": "8个约定方法及原ApiError/HistoryAvailability，未另定义字段/错误族。",
+    "candidate_order": "先Project身份/头修订，再查栈；空栈不遮蔽stale冲突。",
+    "atomic_history_move": "候选只读；commit先校核可信前后身份/单调新修订，再pop/push并改头；record仅在成功回调清redo。",
+    "ownership": "仅ProjectState前后快照/身份头，不持有Host私有任务/文件/创建账本/Run；非可逆保护交Host。",
+    "format": "rustfmt --edition 2024实际exit0；尚非Cargo编译/单测通过。",
+    "new_confirmed_defects": []
+  },
+  "coordinator_compile_receipt": {
+    "source_thread": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+    "actual_notice": "第一次集中check现已通过；history/store/native全部正式lib可编译。",
+    "level": "actual_integrated_library_compile",
+    "unit_tests_passed_by_this_receipt": false
+  },
+  "Host_authorization_integration_verification_by_this_window": false,
+  "Host_authorization_integration_owner": "W00实际Host整合与全量接收；本窗只交纯模块与单测，不把模块结果单独称为Host/桌面/磁盘完整验收。",
+  "source_observation": {
+    "path": "packages/commands/src/project_history.rs",
+    "bytes": 12622,
+    "mtime_ns": 1792077181524258500
+  }
+}

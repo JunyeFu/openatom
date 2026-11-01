@@ -1,0 +1,34 @@
+import {createRequire} from 'node:module';
+import {spawn} from 'node:child_process';
+import {createInterface} from 'node:readline';
+import {writeFile} from 'node:fs/promises';
+import {fileURLToPath} from 'node:url';
+import assert from 'node:assert/strict';
+const require=createRequire('C:/Users/fujunye/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/package.json'),{chromium}=require('playwright');
+const root=new URL('../../../',import.meta.url),out=new URL('scenarios/图片时间轴/runtime/whole-20261017/current-core-results/',root),results=[];
+const browser=await chromium.launch({headless:true,executablePath:'C:/Users/fujunye/AppData/Local/ms-playwright/chromium-1243/chrome-win64/chrome.exe'});
+async function check(name,run){
+ const child=spawn(fileURLToPath(new URL('core_consumer.exe',out)),[fileURLToPath(root)],{windowsHide:true,stdio:['pipe','pipe','pipe']}),queue=[],calls=[],errors=[];let readyResolve,readyReject,stderr='',serial=Promise.resolve();
+ const started=new Promise((resolve,reject)=>{readyResolve=resolve;readyReject=reject;});child.stderr.on('data',c=>stderr+=c);child.on('exit',code=>{if(code){const error=new Error(stderr);readyReject(error);for(const q of queue.splice(0))q.reject(error);}});
+ createInterface({input:child.stdout}).on('line',line=>{const reply=JSON.parse(line);if(reply.ready)readyResolve(reply);else queue.shift()?.resolve(reply);});
+ const rpc=request=>{const p=serial.then(()=>new Promise((resolve,reject)=>{queue.push({resolve:reply=>{calls.push({request,reply});resolve(reply);},reject});child.stdin.write(JSON.stringify(request)+'\n');}));serial=p;return p;};
+ const ready=await started,page=await browser.newPage({viewport:{width:1500,height:1100}});page.setDefaultTimeout(10000);page.on('pageerror',error=>errors.push(String(error)));
+ await page.route('**/__p303_core*',route=>Promise.resolve(route.request().method()==='GET'?ready:rpc(route.request().postDataJSON())).then(reply=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(reply)})));
+ const editor=page.getByRole('region',{name:'图片时间轴编辑'}),button=name=>editor.getByRole('button',{name,exact:true}),read=()=>page.evaluate(()=>window.__p303.read()),evidence=()=>page.evaluate(()=>window.__p303.evidence),dialog=editor.getByRole('dialog',{name:'未保存表现输入'});
+ const localOrder=()=>editor.locator('.sf-p303-clips > li > button:first-child').allTextContents();
+ async function savedRun(){const reply=await rpc({kind:'dispatch',request:{api_version:'0.1',request_id:crypto.randomUUID(),project_id:ready.snapshot.project.id,scope:{kind:'project'},operation:'get_run',params:{run_id:ready.formal_run.id,query:{kind:'full_result'}}}});assert.equal(reply.outcome.status,'ok');return reply.outcome.data.data;}
+ async function commit(version='0.1.1'){await editor.getByRole('textbox',{name:'提交版本',exact:true}).fill(version);await button('明确提交精确版本').click();await editor.getByRole('status').filter({hasText:'精确版本已提交'}).waitFor();}
+ try{
+  await page.goto('http://127.0.0.1:8922/@fs/'+fileURLToPath(root).replaceAll('\\','/').replace(/\/$/,'')+'/scenarios/图片时间轴/runtime/preview.html');await editor.waitFor();await button('保存到当前草稿').waitFor();
+  await run({page,editor,button,read,evidence,dialog,localOrder,ready,rpc,savedRun,commit});assert.deepEqual(errors,[]);results.push({name,status:'passed',calls,errors,stderr});console.log('PASS '+name);
+ }catch(error){results.push({name,status:'failed',error:String(error),stack:error.stack,calls,errors,stderr});process.exitCode=1;console.log('FAIL '+name+': '+error);}
+ finally{await page.screenshot({path:fileURLToPath(new URL('whole-20261017/state-'+results.length+'.png',out)),fullPage:true});await page.close();child.stdin.end();}
+}
+try{
+ await check('actual callback clean-open is not dirty; raw range/version/model and real save/commit busy are reported precisely',async({page,editor,button,read,evidence,dialog,ready,savedRun})=>{
+  await page.waitForFunction(()=>window.__p303.evidence.editorStates.length>0);let states=(await evidence()).editorStates;assert.ok(states.every(s=>!s.dirty&&!s.busy),'opening clean panel alone must never mark input dirty');assert.ok(states.at(-1).identity.includes(ready.draft.summary.draft_id));await editor.getByRole('textbox',{name:'片段终点u',exact:true}).fill('.25');await page.waitForFunction(()=>window.__p303.evidence.editorStates.at(-1)?.dirty);assert.equal((await evidence()).editorStates.at(-1).busy,false);await button('重读保存载荷').click();await editor.getByRole('dialog',{name:'并发草稿核对'}).waitFor();await editor.getByRole('button',{name:'返回保留原输入',exact:true}).click();assert.equal((await evidence()).editorStates.at(-1).dirty,true);await button('应用连续区间').click();await page.evaluate(()=>window.__p303.holdDefinitionRead());await button('保存到当前草稿').click();await page.waitForFunction(()=>window.__p303.evidence.heldReadCaptured);assert.equal((await evidence()).editorStates.at(-1).busy,true);await page.evaluate(()=>window.__p303.releaseDefinitionRead());await page.waitForFunction(()=>{const s=window.__p303.evidence.editorStates.at(-1);return s&&!s.busy&&!s.dirty;});await editor.getByRole('textbox',{name:'提交版本',exact:true}).fill('0.1.1');await page.waitForFunction(()=>window.__p303.evidence.editorStates.at(-1).dirty);await button('明确提交精确版本').click();await editor.getByRole('status').filter({hasText:'精确版本已提交'}).waitFor();await page.waitForFunction(()=>{const s=window.__p303.evidence.editorStates.at(-1);return !s.busy&&!s.dirty;});assert.deepEqual(await savedRun(),ready.formal_run);
+ });
+ await check('actual editor discard/unmount clears only its identity state and never changes saved R or old Run',async({page,editor,button,read,evidence,dialog,ready,savedRun})=>{
+  await page.waitForFunction(()=>window.__p303.evidence.editorStates.length>0);const id=(await evidence()).editorStates.at(-1).identity,before=(await read()).draft.summary.revision;await editor.getByRole('textbox',{name:'提交版本',exact:true}).fill('0.1.1');await page.waitForFunction(()=>window.__p303.evidence.editorStates.at(-1).dirty);await button('关闭编辑器').click();await dialog.getByRole('button',{name:'返回继续编辑',exact:true}).click();assert.equal((await evidence()).editorStates.at(-1).dirty,true);await button('关闭编辑器').click();await dialog.getByRole('button',{name:'明确放弃本地输入并关闭',exact:true}).click();await editor.waitFor({state:'detached'});const state=(await evidence()).editorStates.at(-1);assert.deepEqual(state,{identity:id,dirty:false,busy:false});assert.equal((await read()).draft.summary.revision,before);assert.deepEqual(await savedRun(),ready.formal_run);
+ });
+}finally{await browser.close();await writeFile(new URL('whole-20261017/state-result.json',out),JSON.stringify({checks:results,Host_or_Engine_mock:false,React_StrictMode:true,Native:false,actual_Callbacks_in_Production_Editor:true},null,2));}

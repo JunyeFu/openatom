@@ -1,0 +1,303 @@
+{
+  "document_kind": "independent_original_expectations_before_execution",
+  "whole_task_done": false,
+  "human_acceptance": false,
+  "source_task_snapshot": {
+    "id": "P2-01",
+    "disposition": "required",
+    "scope": "流水线/多厂房两画布、三档LOD、单击详情、自由布置与编组连接、真实3D及静态场地检查展示；本次会话内草稿撤销/重做，经共同Commands形成新修订，不回滚当前运行/认可/外部动作",
+    "release_dependencies": [
+      "P1-01"
+    ],
+    "status": "planned",
+    "implementation_owner": "user_with_ai_windows",
+    "acceptance_owner": "user",
+    "actual_result": null,
+    "requirement_ids": [
+      "SF-03",
+      "SF-08",
+      "SF-17"
+    ],
+    "release_acceptance": "点击开详情；缩放三档且不改运行状态；整线移动保留内部布局；布局变换用于显示/路径/包络，不只是镜头变化；用户可新增/配置/连接设备形成串并联产线，连接有物品/端口含义；当前固定时间运输不按画布距离推算；目标生成草案检查场地边界、设备占地/高度/模板声明间距与静态通道，工艺/物料端口可达且类型/单位相容；缺参数未判定，冲突定位；不缩小显示代替尺寸检查，不当动态交通或机电布线验证。；草稿编辑撤销/重做正确且产生新修订；旧Run/库存/认可不变，修订冲突不覆盖，新编辑清除失效redo，跨工程不串历史",
+    "release_paths": [
+      "apps/planner",
+      "packages/presentation"
+    ],
+    "implementation_dependencies": [
+      "P1-01"
+    ],
+    "execution_plan": {
+      "input_refs": [
+        "docs/02_交互设计/完整操作流程与方案交付.md",
+        "docs/03_架构与契约/目标驱动厂房生成.md",
+        "../设计预览/当前交互规格.md",
+        "docs/03_架构与契约/全层类型与工程格式.json",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json"
+      ],
+      "inputs": [
+        "共同工程、Commands和基础运行状态；设备/场地尺寸与端口"
+      ],
+      "outputs": [
+        "两画布/三LOD的真实3D编辑视图",
+        "对象/线组编辑及静态布局/端口检查",
+        "与业务ID/修订对应的真实渲染"
+      ],
+      "steps": [
+        "落实流水线/多厂房画布、点击详情与编组移动；完整原生3D可环绕/平移/缩放并恢复默认斜视，不把相机缩放当设备页入口",
+        "通过共同命令编辑对象/连接并检查场地",
+        "从实际结果绘制状态，保证缩放不改库存",
+        "接入本会话草稿撤销/重做：共同命令/修订冲突、redo分支与工程切换；与当前Run/人工认可/磁盘副作用分开"
+      ],
+      "verification_method": "用最小串并联工程实际编辑、移动/连接、切画布与LOD；按当前交互规格检查原生模型不同角度和默认视图复位；高度/占地/间距冲突定位，缺参数未判定；渲染读取同一修订，独立3D试样不代产品验收",
+      "actual_result": null
+    },
+    "dependency_reasons": {
+      "P1-01": "消费唯一Engine、稳定事件顺序及RunResult基础；齐套消耗/转换、资源互斥和输出待移交，用于本任务的两画布/三LOD的真实3D编辑视图"
+    },
+    "accountable_owner": "user",
+    "planned_window_id": "W02",
+    "parallel_plan_ref": "docs/04_开发与验收/本机并行窗口计划.json",
+    "coding_package_ref": "docs/04_开发与验收/编码任务包/P2-01.md",
+    "coding_protocol_ref": "docs/04_开发与验收/编码任务包与AI实现审查.md",
+    "effort_estimate_ref": "docs/04_开发与验收/任务框架与工量里程碑.json#P2-01",
+    "deliverable_milestone_id": "MS-07",
+    "phase_exit_ref": "docs/04_开发与验收/阶段实现计划.json#P2",
+    "acceptance_trace_ids": [
+      "SF-03",
+      "SF-08",
+      "SF-17",
+      "NFR-01",
+      "NFR-02",
+      "NFR-03"
+    ],
+    "confirmed_question_ids": [
+      "Q02",
+      "Q03",
+      "Q04",
+      "Q06",
+      "Q07",
+      "Q08",
+      "Q09",
+      "Q10",
+      "Q12",
+      "Q13",
+      "Q18",
+      "Q19"
+    ],
+    "confirmed_design_requirements": [
+      {
+        "question_id": "Q02",
+        "selected_text": "以八设备总装检查包装线讲平台，再贯通纸包装、跨厂与Agent；完整SF验收均保留。"
+      },
+      {
+        "question_id": "Q03",
+        "selected_text": "中文界面、中文说明与报告；稳定ID和代码保持英文，不增加整套国际化。"
+      },
+      {
+        "question_id": "Q04",
+        "selected_text": "展示任务/模板/空工程三入口；按当前目标逐步补必要参数，允许保存草稿。"
+      },
+      {
+        "question_id": "Q06",
+        "selected_text": "中部3D画布、右侧对象属性、可收起模块库和底部时间轴；专业/比较/报告进入同工程工作台。"
+      },
+      {
+        "question_id": "Q07",
+        "selected_text": "单击选择/详情；右键拖动环绕、中键平移、滚轮缩放；对象移动旋转用明确操控器。"
+      },
+      {
+        "question_id": "Q08",
+        "selected_text": "提供位置/朝向/占地数值、可关网格吸附和超界高亮；LOD先明确手动切换。"
+      },
+      {
+        "question_id": "Q09",
+        "selected_text": "多选、编组/解组、整体移动、复制为新ID；连接/角色待重绑和种子供给单独确认。"
+      },
+      {
+        "question_id": "Q10",
+        "selected_text": "加入本次会话内草稿编辑的撤销/重做；生产结果、人工认可和外部发布不能用它倒退。"
+      },
+      {
+        "question_id": "Q12",
+        "selected_text": "常用操作有键盘入口/可见焦点，属性文本可缩放；3D操作提供数值或按钮替代，状态不只靠颜色。"
+      },
+      {
+        "question_id": "Q13",
+        "selected_text": "先认可代表设备的整体轮廓、背底结构、关键机构、材质与实际动作，再复用到产线和60设备基准。"
+      },
+      {
+        "question_id": "Q18",
+        "selected_text": "全部身份真实追踪，画面允许明确标识的代表物品/批次聚合；任一件可定位和看经历。"
+      },
+      {
+        "question_id": "Q19",
+        "selected_text": "接受作为候选验收目标，使用NFR-B60和已写采样协议；模型质量不靠暗降级达标，实测失败后报告取舍。"
+      }
+    ],
+    "confirmed_undo_requirement": {
+      "supported_scope": "本次会话的当前工程/定义草稿中对象、参数、连接、排期和受支持创作编辑；当前生产、真实结果、专业认可和外部动作不回滚。",
+      "revision_policy": "undo/redo经同一Commands成为新的草稿修订；遵守base_revision冲突检查，不倒拨共享修订号，不覆盖别人修改。",
+      "file_policy": "撤销工程引用/采用只影响草稿，不物理删除导入资产，不回滚已落盘文件、发布或购买。",
+      "history_policy": "限定本次会话；新的编辑使失效的redo分支清空，切换工程不串用；文本框优先本地文本撤销。",
+      "acceptance_expectations": [
+        "编辑对象/参数/连接后撤销与重做的草稿状态正确",
+        "撤销不改变当前RunId结果、生产时钟、实际库存及认可",
+        "共享修订冲突时不覆盖新状态",
+        "新编辑后不能重做已失效分支，跨工程历史不混用"
+      ]
+    },
+    "incremental_effort_due_to_Q10": {
+      "status": "included_in_current_original_task_budget_engineering_estimate_not_measured",
+      "existing_budget_includes_Q10": true,
+      "framework_owner": "W00",
+      "human_hours": [
+        1,
+        2
+      ],
+      "window_active_hours": [
+        2,
+        4
+      ],
+      "basis": "场景移动/旋转/连接批次消费共同历史；当前Run与相机状态隔离。",
+      "contract_refs": [
+        "packages/commands/api.design.rs",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json",
+        "docs/03_架构与契约/共享状态与所有权.json"
+      ]
+    },
+    "confirmed_design_input_refs": [
+      "docs/00_项目基线/全量设计编码确认选择.json",
+      "docs/04_开发与验收/全量设计编码确认/SXX-XX_确认选择落实.json"
+    ]
+  },
+  "exact_read_contract": {
+    "task_id": "P2-01",
+    "observed_gap": "Current get_object(module,Draft) rejects if more than one exact version is declared, and public ObjectRef carries ID but no version. Real device ports/presentation must come from its exact ModuleRef, not latest or an ambiguous ID.",
+    "type_delta": "ObjectSource::ModuleVersion { module_ref: ModuleRef }, wire kind=module_version",
+    "preserved": "Old draft/run_snapshot request shapes,18 operation names and API0.1 remain.",
+    "admission": "Only object.kind=module with matching module ID; Project scope and current project exact module_refs membership plus actual loaded exact package required. No private/unreferenced/latest/name lookup, no edit grants, no arbitrary-source access.",
+    "consumer": "P2-01 actual renderer/port and definition display reads exact device/module source; all rendered states continue to share Project/Run.",
+    "status": "actual_Host_source_tests_and_both_codegen_passed_independent_reception_pending",
+    "source_refs": [
+      "packages/commands/src/api.rs",
+      "packages/commands/api.design.rs"
+    ],
+    "saved_Run_discovery": {
+      "task_id": "P2-01",
+      "observed_gap": "ProjectState has no Run IDs, get_context active_run_id is null and tasks are session-owned; a real frontend reopening a saved project cannot discover its frozen historical Runs.",
+      "field": "ProjectContext.run_summaries:Vec<RunSummary>",
+      "compatibility": "Absent reads empty; empty omitted on write, preserving existing empty-context fixtures. No operation name/API version change.",
+      "authority": "Only actual stored Runs visible in the authorized active Project; workspace without a visible Project and definition_draft get an empty list. Exact frozen input, time/acceptance scope, status/known frontier and unknown accepted values must come from the same existing summary producer used by get_run; no inferred output or other-project/session payload.",
+      "consumer": "P2-01 actual Run selector and same frozen-source rendering; P2-03 can select old RunIds without reading private file paths.",
+      "status": "actual_Host_source_tests_and_both_codegen_passed_independent_reception_pending"
+    },
+    "actual_checks": {
+      "Host_tests_ref": ".work/whole-packages/comparison-host-final-second.stdout.txt",
+      "commands_groups_passed": 174,
+      "Schema_cases": 87,
+      "Schema_ref": ".work/whole-packages/p201-read-schema.json",
+      "old_fixture_shapes_preserved": true,
+      "native_product_UI_acceptance": false
+    }
+  },
+  "manual_cases": {
+    "hierarchy": {
+      "line_translation": [
+        10,
+        20,
+        1
+      ],
+      "line_z_degrees": 90,
+      "device_local": [
+        2,
+        3,
+        4
+      ],
+      "device_hall_expected": [
+        7,
+        22,
+        5
+      ],
+      "hall_translation": [
+        100,
+        200,
+        5
+      ],
+      "hall_z_degrees": 90,
+      "device_world_expected": [
+        78,
+        207,
+        10
+      ],
+      "move_line_translation_delta": [
+        8,
+        -4,
+        2
+      ],
+      "moved_device_hall_expected": [
+        15,
+        18,
+        7
+      ],
+      "device_local_unchanged": true
+    },
+    "concave_floor": {
+      "polygon": [
+        [
+          0,
+          0
+        ],
+        [
+          6,
+          0
+        ],
+        [
+          6,
+          2
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          0,
+          6
+        ]
+      ],
+      "inside_point": [
+        1,
+        5
+      ],
+      "outside_point_inside_bbox": [
+        5,
+        5
+      ],
+      "polygon_not_bbox": true
+    },
+    "camera": {
+      "right_drag": "orbit",
+      "middle_drag": "pan",
+      "wheel": "zoom",
+      "reset": "default_oblique",
+      "no_business_mutation": true
+    },
+    "unknowns": {
+      "unknown_height": "flat_declared_footprint_no_invented_extrusion",
+      "missing_presentation": "explicit_missing_not_actual_equipment_model",
+      "uncomputed_history": "no_final_items_backfill",
+      "incompatible_scope": "no_substitution"
+    },
+    "run_history": "actual stored summaries after directory/ZIP reopening, frozen old Project/Scenario/module versions; no session task inference",
+    "undo": "new revisions; no old Run/inventory/acknowledgment/disk rollback; stale revision rejected; new edit clears redo; project switch separates history"
+  },
+  "browser_path": {
+    "classification": "Browser plugin not available",
+    "fallback": "installed regular Playwright only; no dependency installation",
+    "scope": "browser preview / isolated real component are separate from actual native UI; no mock Tauri/Host"
+  },
+  "actual_result": null
+}

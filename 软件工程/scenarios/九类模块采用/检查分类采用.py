@@ -66,7 +66,9 @@ add('media_replacement',dict(anchor_role_bindings={'input':'shell','output':'ass
     visual_ports_to_bind=['pcb','fastener'],behavior_changed=False,quantity_changed=False,
     missing_visual_anchor_is_not_missing_material_port=True))
 policy=json.loads((ROOT/'modules/templates/parallel-electromechanical/project.design.json').read_text(encoding='utf-8'))['import_policy']
-assert 'stock_and_demand_zero' in policy['into_existing_project']
+assert all(token in policy['into_existing_project'] for token in [
+    'preserve_existing_stock_and_demand', 'without_sample_stock_or_demand',
+    'seed_requires_explicit_choice_in_new_scenario'])
 add('template_import',dict(definitions_and_layout=True,current_stock_copied=False,current_demand_copied=False))
 transport=records['transport']['behavior'];assert transport['identity_policy']=='preserve_cargo_ids'
 add('transport_rule_import',dict(new_vehicle_created=False,new_cargo_created=False,vehicle_binding_required=True,

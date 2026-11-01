@@ -1,0 +1,600 @@
+{
+  "document_kind": "DRF06_observed_gaps_local_repairs_and_exact_owner_handoffs",
+  "date": "2026-10-14",
+  "refinement_revision": "DRF06-2a",
+  "task_id": "DRF06",
+  "local_status": "closed_common_business_design_and_current_canonical_consumers_35_checks_passed",
+  "local_repairs": [
+    {
+      "id": "DRF06-G01",
+      "kind": "observed_definition_drift",
+      "before": "业务文使用product_revision/release_at/due_at及S03旧拟议契约表述",
+      "after": "公开字段对齐OrderLine.product_ref/release_at_ms/due_at_ms/Quantity；案例格式仍draft-1设计输入",
+      "files": [
+        "docs/01_业务需求/订单工艺与物料分配.md",
+        "scenarios/真实业务设计/business-inputs.design.json"
+      ],
+      "state": "repaired_local"
+    },
+    {
+      "id": "DRF06-G02",
+      "kind": "observed_scope_drift",
+      "before": "物流文把后置路径求解/专用覆盖层、质量文维修使用权写进当前流程",
+      "after": "首版只声明固定时间批次/容量/日历和现行画布；维修/公用服务/交通不进入本轮",
+      "files": [
+        "docs/01_业务需求/物流与布局业务.md",
+        "docs/01_业务需求/换单班次与质量处置.md"
+      ],
+      "state": "repaired_local"
+    },
+    {
+      "id": "DRF06-G03",
+      "kind": "observed_dispatch_ambiguity",
+      "before": "返工返回检验按到达同队列；未分材料FIFO与候选优先序",
+      "after": "材料FIFO；含返工/准备/后续阶段的候选遵循ALG-02，原等优先例时序保持",
+      "files": [
+        "docs/01_业务需求/并行汇合与检验返工.md"
+      ],
+      "state": "repaired_local"
+    },
+    {
+      "id": "DRF06-G04",
+      "kind": "definition_missing_finite_inputs",
+      "before": "无跨日/卸载班次/多原因/部分结果和批次容器的独立毫秒边界例",
+      "after": "保留B01—B06，增加B07—B18及8个时间轴实例；原6业务变体预期不改",
+      "files": [
+        "scenarios/真实业务设计/business-rule-boundaries.design.json",
+        "docs/04_开发与验收/特征细化/DRF06_时间轴独立预期.json"
+      ],
+      "state": "repaired_local"
+    },
+    {
+      "id": "DRF06-G05",
+      "kind": "definition_missing_exact_bindings",
+      "before": "原业务工时表无明确执行设备/步骤及phase归属；UNKNOWN持有人可能按末态猜",
+      "after": "execution_design补设备/步骤、job/phase、运输接受与报废位置语义；TC01/02使用可核对预期",
+      "files": [
+        "scenarios/真实业务设计/business-inputs.design.json",
+        "docs/04_开发与验收/特征细化/DRF06_时间轴独立预期.json"
+      ],
+      "state": "closed_current_execution_phase_claim_wait_bindings_static_verified"
+    },
+    {
+      "id": "DRF06-G06",
+      "kind": "current_round_common_business_semantics",
+      "before": "共同算法/业务对象仍缺每段结束、初始预留/拆分和完成包络的明确语义",
+      "after": "本窗已直接写共同算法.md/json、business-objects与真实业务消费者；6组最小字段正反例delta交窗口1",
+      "files": [
+        "docs/03_架构与契约/调度与状态转换算法.json",
+        "packages/domain/business-objects.design.json",
+        "docs/04_开发与验收/特征细化/DRF06_公共字段合入delta.json"
+      ],
+      "state": "closed_common_sources_and_current_parallel_array_consumers_static_verified"
+    }
+  ],
+  "public_handoffs": [
+    {
+      "id": "DRF06-H01",
+      "related_request": "TC01",
+      "gap_kind": "observed_public_contract_missing",
+      "owner": "复审窗口1（本轮共同合同）",
+      "files": [
+        "packages/domain/types.design.rs",
+        "packages/domain/type-inventory.design.json",
+        "packages/domain/module-field-bindings.design.json",
+        "packages/commands/api.design.rs",
+        "tools/type-contract-proof/output/schemas",
+        "tools/type-contract-proof/output/typescript",
+        "tools/type-contract-proof/output/api-schemas"
+      ],
+      "field_changes": [
+        {
+          "path": "JobState.execution_ref",
+          "current": "当前Rust/timeline_runtime_contract已合入；本窗消费当前字段和结束语义，不执行产品",
+          "expected": "沿TC01的JobExecutionRef；project_device {device_id,route_step_id,execution_capacity_ref}或definition_cycle {module_ref}",
+          "unit": "ID/ref",
+          "before_DRF06_1": "无执行设备/路线步骤字段；只有task_ref/operation_ref"
+        },
+        {
+          "path": "WaitInterval.execution_ref / WaitInterval.phase_ref",
+          "current": "当前Rust/timeline_runtime_contract已合入；本窗消费当前字段和结束语义，不执行产品",
+          "expected": "沿TC01，Engine已知候选设备才绑定；phase_ref指被阻塞阶段，不取最终Job.phase_ref猜历史",
+          "unit": "ID/ref",
+          "before_DRF06_1": "仅object_ref/interval/reasons"
+        },
+        {
+          "path": "ResourceClaim.phase_ref",
+          "current": "当前Rust/timeline_runtime_contract已合入；本窗消费当前字段和结束语义，不执行产品",
+          "expected": "Option<PhaseId>；phase claim填实际phase，job/transport为None；复用同一资源的不同阶段claim分别可定位，不复制容量占用",
+          "unit": "ID",
+          "before_DRF06_1": "只有kind=phase，无所属phase身份"
+        },
+        {
+          "path": "JobState.finished_at_ms / JobState.state",
+          "current": "当前Rust/timeline_runtime_contract已合入；本窗消费当前字段和结束语义，不执行产品",
+          "expected": "最后phase完成先产出候选槽；输出/质量待交仍finished_at_ms=None并waiting_output。只有该作业所有声明输出成功移交、应释放job资源后才completed并填finished_at_ms；有效工作结束取TC02/PhaseCompleted",
+          "unit": "relative ms",
+          "before_DRF06_1": "字段存在，未在业务消费中明确有效阶段结束与成功移交的作业包络边界"
+        },
+        {
+          "path": "ResourceClaim.interval_end_causes",
+          "current": "当前Rust/timeline_runtime_contract已合入；本窗消费当前字段和结束语义，不执行产品",
+          "expected": "現行intervals为Vec<IntervalMs>，interval_end_causes为Vec<ClaimIntervalEndCause>，等长同序，不嵌套改型",
+          "unit": "ms/enum"
+        }
+      ],
+      "producer": "simulation冻结路线/角色绑定和实际取得记录",
+      "consumers": [
+        "factory_ui设备/阶段/等待行",
+        "presentation姿态",
+        "authoring_ui检查器",
+        "reporting容量与人员占用"
+      ],
+      "acceptance_refs": [
+        "DRF06-T01",
+        "DRF06-T03",
+        "B18",
+        "DRF06-T07.output_wait_job"
+      ],
+      "merge_acceptance": "两个设备复用同一模块仍分行；35—40秒wait属于unload；CNC一次容量占45秒，W-C占10秒；人员不制造O",
+      "status": "closed_current_design_contract_and_local_consumers_product_runtime_pending",
+      "actual_result": null,
+      "previous_status_DRF06_1": "pending_owner_merge",
+      "current_revision": "DRF06-2a",
+      "canonical_merged_paths": [
+        "JobState.execution_ref",
+        "WaitInterval.execution_ref",
+        "WaitInterval.phase_ref"
+      ],
+      "remaining_delta_paths": [],
+      "local_semantics_written": [
+        "JobState.finished_at_ms/state/pending_outputs -> ALG-07/business-objects"
+      ],
+      "canonical_contract_ref": "docs/03_架构与契约/全层类型与工程格式.json#/timeline_runtime_contract",
+      "merge_evidence_ref": "tools/type-contract-proof/output/timeline-contract-proof-result.json",
+      "local_verification_ref": "docs/04_开发与验收/特征细化/DRF06_静态与有限计算核验.json"
+    },
+    {
+      "id": "DRF06-H02",
+      "related_request": "TC02",
+      "gap_kind": "observed_public_contract_missing",
+      "owner": "复审窗口1（本轮共同合同）",
+      "files": [
+        "packages/domain/types.design.rs",
+        "packages/domain/type-inventory.design.json",
+        "packages/domain/module-field-bindings.design.json",
+        "packages/commands/api.design.rs",
+        "tools/type-contract-proof/output/schemas",
+        "tools/type-contract-proof/output/typescript",
+        "tools/type-contract-proof/output/api-schemas",
+        "docs/03_架构与契约/调度与状态转换算法.json",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json"
+      ],
+      "field_changes": [
+        {
+          "path": "RunResult.phase_work_intervals",
+          "current": "当前Rust/timeline_runtime_contract已合入；本窗消费当前字段和结束语义，不执行产品",
+          "expected": "Vec<PhaseWorkInterval>，逐字采用TC02的job_id/phase_id/interval/effective_progress_start_ms/effective_progress_end_ms/end_cause",
+          "unit": "relative integer ms",
+          "before_DRF06_1": "无阶段有效工作历史集合；jobs仅末态有效进度"
+        },
+        {
+          "path": "PhaseWorkInterval.effective_progress_start_ms/end_ms",
+          "current": "当前Rust/timeline_runtime_contract已合入；本窗消费当前字段和结束语义，不执行产品",
+          "expected": "同(job_id,phase_id)累计有效时间；T01每新phase从0开始，T02恢复从5000续到8000；等待/停工不增加",
+          "unit": "effective ms",
+          "before_DRF06_1": "TC02拟议语义未有业务实例验证"
+        },
+        {
+          "path": "SimulationEventPayload.PhaseCompleted + SimulationEvent.subject",
+          "current": "当前Rust/timeline_runtime_contract已合入；本窗消费当前字段和结束语义，不执行产品",
+          "expected": "零时长阶段事件subject为所属job；由job.execution_ref定位设备；不制造1ms区间",
+          "unit": "point ms",
+          "before_DRF06_1": "仅PhaseId payload，无生产者配对规则"
+        }
+      ],
+      "producer": "simulation在一致边界记录已实际工作的阶段段",
+      "consumers": [
+        "factory_ui工作条和B集合",
+        "presentation阶段有效进度",
+        "authoring_ui运行标签",
+        "reporting有效工作"
+      ],
+      "acceptance_refs": [
+        "DRF06-T01",
+        "DRF06-T02",
+        "B10",
+        "B11",
+        "B12",
+        "B17"
+      ],
+      "merge_acceptance": "pause_resume两有效段5—10/20—23秒；截20秒为computed_boundary，闭包完成35秒才phase_completed",
+      "status": "closed_current_design_contract_and_local_consumers_product_runtime_pending",
+      "actual_result": null,
+      "previous_status_DRF06_1": "pending_owner_merge",
+      "current_revision": "DRF06-2a",
+      "proof_refs": [
+        "tools/type-contract-proof/output/timeline-contract-proof-result.json",
+        "docs/03_架构与契约/全层类型与工程格式.json#/timeline_runtime_contract"
+      ],
+      "remaining_delta_paths": [],
+      "canonical_contract_ref": "docs/03_架构与契约/全层类型与工程格式.json#/timeline_runtime_contract",
+      "merge_evidence_ref": "tools/type-contract-proof/output/timeline-contract-proof-result.json",
+      "local_verification_ref": "docs/04_开发与验收/特征细化/DRF06_静态与有限计算核验.json"
+    },
+    {
+      "id": "DRF06-H03",
+      "related_request": "TC01/TC02",
+      "gap_kind": "observed_endpoint_semantics_missing",
+      "owner": "复审窗口1（本轮共同合同）",
+      "files": [
+        "packages/domain/types.design.rs",
+        "packages/domain/type-inventory.design.json",
+        "packages/domain/module-field-bindings.design.json",
+        "packages/commands/api.design.rs",
+        "tools/type-contract-proof/output/schemas",
+        "tools/type-contract-proof/output/typescript",
+        "tools/type-contract-proof/output/api-schemas",
+        "docs/03_架构与契约/调度与状态转换算法.json"
+      ],
+      "field_changes": [
+        {
+          "path": "WaitInterval.end_cause",
+          "current": "当前Rust/timeline_runtime_contract已合入；本窗消费当前字段和结束语义，不执行产品",
+          "expected": "WaitEndCause=condition_changed|resolved|observation_end|computed_boundary；同刻实际结束先胜、完整窗仍未解observation_end、前缀/暂停/取消computed_boundary",
+          "unit": "enum",
+          "before_DRF06_1": "interval.end_ms无法区分原因变化、解除和计算/观察窗截断；WaitChanged仍是同结构"
+        },
+        {
+          "path": "WaitInterval.reasons / WaitReason.next_known_boundary_ms",
+          "current": "当前Rust/timeline_runtime_contract已合入；本窗消费当前字段和结束语义，不执行产品",
+          "expected": "B09同一段并列missing_material/calendar；下一边界10/20秒只是已知可改变条件的事件，不承诺届时开工",
+          "unit": "integer ms|null",
+          "before_DRF06_1": "已有多原因结构，缺各独立实例"
+        }
+      ],
+      "producer": "simulation等待重评与结果封口",
+      "consumers": [
+        "factory_ui等待端帽/描述",
+        "reporting等待并集与未完成",
+        "presentation过程停点"
+      ],
+      "acceptance_refs": [
+        "B09",
+        "B16",
+        "DRF06-T03",
+        "DRF06-T06"
+      ],
+      "merge_acceptance": "B09总20秒；U等待止于观察窗不能宣称已解；部分结果不补完未知等待",
+      "status": "closed_current_design_contract_and_local_consumers_product_runtime_pending",
+      "actual_result": null,
+      "previous_status_DRF06_1": "pending_owner_merge",
+      "current_revision": "DRF06-2a",
+      "remaining_delta_paths": [],
+      "canonical_contract_ref": "docs/03_架构与契约/全层类型与工程格式.json#/timeline_runtime_contract",
+      "merge_evidence_ref": "tools/type-contract-proof/output/timeline-contract-proof-result.json",
+      "local_verification_ref": "docs/04_开发与验收/特征细化/DRF06_静态与有限计算核验.json"
+    },
+    {
+      "id": "DRF06-H04",
+      "related_request": "S03-02/S06-02",
+      "gap_kind": "observed_input_path_missing",
+      "owner": "复审窗口1（本轮共同合同）",
+      "files": [
+        "packages/domain/types.design.rs",
+        "packages/domain/type-inventory.design.json",
+        "packages/domain/module-field-bindings.design.json",
+        "packages/commands/api.design.rs",
+        "tools/type-contract-proof/output/schemas",
+        "tools/type-contract-proof/output/typescript",
+        "tools/type-contract-proof/output/api-schemas",
+        "packages/domain/business-objects.design.json",
+        "docs/03_架构与契约/全层类型与工程格式.json"
+      ],
+      "field_changes": [
+        {
+          "path": "InitialConditions.material_allocations",
+          "current": "当前Rust/timeline_runtime_contract已合入；本窗消费当前字段和结束语义，不执行产品",
+          "expected": "Vec<MaterialAllocation>仅soft_plan/hard_reserved；硬task明确、单源部分/多源整量、逐源总量不超/不重叠、质量预留不绕领用；详delta",
+          "unit": "Quantity与ID",
+          "before_DRF06_1": "只有items/initial_setup_families/declared_quality_decisions，MaterialAllocation仅运行结果可见"
+        },
+        {
+          "path": "ScenarioInput.initial_conditions / apply_commands PutObject(Scenario)",
+          "current": "当前Rust/timeline_runtime_contract已合入；本窗消费当前字段和结束语义，不执行产品",
+          "expected": "复用既有一次提交和修订校验，先检完整输入再冻结；不是新增Reserve API或绕过Commands直接写运行库存",
+          "unit": "revision",
+          "before_DRF06_1": "编辑入口已有，可是无类型化预留输入字段"
+        }
+      ],
+      "producer": "订单/物料表单与授权Agent方案编辑，经Host冻结",
+      "consumers": [
+        "simulation齐套与预留",
+        "factory_ui库存/缺项",
+        "reporting投入和余量"
+      ],
+      "acceptance_refs": [
+        "B01",
+        "B07"
+      ],
+      "merge_acceptance": "先前显式硬预留可保存重开/进入冻结Run；取得失败仍保留原预留；不自动运行内撤单",
+      "status": "closed_current_design_contract_and_local_consumers_product_runtime_pending",
+      "actual_result": null,
+      "previous_status_DRF06_1": "pending_owner_merge",
+      "current_revision": "DRF06-2a",
+      "remaining_delta_paths": [],
+      "canonical_contract_ref": "docs/03_架构与契约/全层类型与工程格式.json#/timeline_runtime_contract",
+      "merge_evidence_ref": "tools/type-contract-proof/output/timeline-contract-proof-result.json",
+      "local_verification_ref": "docs/04_开发与验收/特征细化/DRF06_静态与有限计算核验.json"
+    },
+    {
+      "id": "DRF06-H05",
+      "related_request": "S03-02/S06-02",
+      "gap_kind": "observed_split_relation_missing",
+      "owner": "复审窗口1（本轮共同合同）",
+      "files": [
+        "packages/domain/types.design.rs",
+        "packages/domain/type-inventory.design.json",
+        "packages/domain/module-field-bindings.design.json",
+        "packages/commands/api.design.rs",
+        "tools/type-contract-proof/output/schemas",
+        "tools/type-contract-proof/output/typescript",
+        "tools/type-contract-proof/output/api-schemas",
+        "packages/domain/business-objects.design.json"
+      ],
+      "field_changes": [
+        {
+          "path": "RuntimeItem.split_from_ref",
+          "current": "当前Rust/timeline_runtime_contract已合入；本窗消费当前字段和结束语义，不执行产品",
+          "expected": "Option<ObjectId>指源批次；源记录为transformed且不再计自由库存，子数量不重叠、总量守恒、holder唯一；稳定子ID来自源ID/分配逻辑ID/拆分序",
+          "unit": "ID与原物品Quantity.unit",
+          "before_DRF06_1": "仅composition_refs/contents；二者是组成/容器关系，不能准确表达批次拆分"
+        },
+        {
+          "path": "ALG-03 batch split transaction / MaterialAllocation.item_refs",
+          "current": "当前Rust/timeline_runtime_contract已合入；本窗消费当前字段和结束语义，不执行产品",
+          "expected": "完整取得/预留划分成功事务才提交拆分；初始部分硬预留在Run起点初始化为可追源子数量；分配引用转为实际子批，失败不再拆一次",
+          "unit": "integer piece",
+          "before_DRF06_1": "规定来源关系但公共结果无字段"
+        }
+      ],
+      "producer": "simulation批次划分和齐套取得",
+      "consumers": [
+        "factory_ui物品追踪",
+        "presentation容器链",
+        "reporting材料归属"
+      ],
+      "acceptance_refs": [
+        "B07",
+        "B08"
+      ],
+      "merge_acceptance": "10=4+6，不计源10再加子10；装箱2件接受2而不是箱+内容3",
+      "status": "closed_current_design_contract_and_local_consumers_product_runtime_pending",
+      "actual_result": null,
+      "previous_status_DRF06_1": "pending_owner_merge",
+      "current_revision": "DRF06-2a",
+      "remaining_delta_paths": [],
+      "canonical_contract_ref": "docs/03_架构与契约/全层类型与工程格式.json#/timeline_runtime_contract",
+      "merge_evidence_ref": "tools/type-contract-proof/output/timeline-contract-proof-result.json",
+      "local_verification_ref": "docs/04_开发与验收/特征细化/DRF06_静态与有限计算核验.json"
+    },
+    {
+      "id": "DRF06-H06",
+      "related_request": "S06-01",
+      "gap_kind": "precision_and_cross_consumer_alignment",
+      "owner": "复审窗口6（本窗实际修共同算法/业务源）",
+      "files": [
+        "docs/03_架构与契约/调度与状态转换算法.json",
+        "docs/03_架构与契约/调度与状态转换算法.md",
+        "packages/domain/business-objects.design.json"
+      ],
+      "field_changes": [
+        {
+          "path": "ALG-02 / ALG-08",
+          "current": "当前Rust/timeline_runtime_contract已合入；本窗消费当前字段和结束语义，不执行产品",
+          "expected": "本窗口已改：材料FIFO；作业含返工继承任务优先序。原hold_station人员全job持有，不能按phase结束释放。提前或失配质量决定不应用未来物品",
+          "unit": "rules",
+          "before_DRF06_1": "公共算法已有候选优先序；业务旧文把返工队列和普通材料FIFO混写"
+        },
+        {
+          "path": "ALG-09 departure_windows / logistics calendars",
+          "current": "当前Rust/timeline_runtime_contract已合入；本窗消费当前字段和结束语义，不执行产品",
+          "expected": "整数点t映射[t,t+1ms)装载开始机会，depart在load完成；B14到达110/卸载120—125/返回135秒；无隐式接收或窗外发车",
+          "unit": "ms",
+          "before_DRF06_1": "样例departures_ms为点而公共为IntervalMs；卸载日历边界缺业务实例"
+        },
+        {
+          "path": "ALG-10 / ALG-12 daily boundary",
+          "current": "当前Rust/timeline_runtime_contract已合入；本窗消费当前字段和结束语义，不执行产品",
+          "expected": "B13接受日按[d,d+86400000)，午夜不重置WIP/需求/载具；期末事件闭包含end，interval统计仍[start,end)",
+          "unit": "ms",
+          "before_DRF06_1": "跨日接受未有独立预期"
+        },
+        {
+          "path": "ALG-08 scrap / ALG-10 nonpartial",
+          "current": "当前Rust/timeline_runtime_contract已合入；本窗消费当前字段和结束语义，不执行产品",
+          "expected": "scrap_record是处置记录，实际holder保留隔离库位、仍占物理空间；OrderAccepted不释放库位，B16目标不足是正确业务结果",
+          "unit": "piece/capacity",
+          "before_DRF06_1": "规则已保留holder，原质量预期scrap_record标签可被误读成物理移交"
+        }
+      ],
+      "producer": "本窗已按当前授权写共同算法和业务消费者；没有写公共Rust/API",
+      "consumers": [
+        "simulation",
+        "factory_ui",
+        "reporting",
+        "Agent"
+      ],
+      "acceptance_refs": [
+        "B13",
+        "B14",
+        "B15",
+        "B16",
+        "DRF06-T03",
+        "DRF06-T05"
+      ],
+      "merge_acceptance": "同步共同算法及相应消费者语义，保留所有原冻结expected值",
+      "status": "closed_current_design_contract_and_local_consumers_product_runtime_pending",
+      "actual_result": null,
+      "previous_status_DRF06_1": "pending_owner_merge",
+      "current_revision": "DRF06-2a",
+      "actual_written_files": [
+        "docs/03_架构与契约/调度与状态转换算法.md",
+        "docs/03_架构与契约/调度与状态转换算法.json",
+        "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+        "packages/domain/business-objects.design.json",
+        "docs/01_业务需求/订单工艺与物料分配.md",
+        "docs/01_业务需求/并行汇合与检验返工.md",
+        "docs/01_业务需求/换单班次与质量处置.md",
+        "docs/01_业务需求/物流与布局业务.md"
+      ],
+      "remaining_delta_paths": [],
+      "canonical_contract_ref": "docs/03_架构与契约/全层类型与工程格式.json#/timeline_runtime_contract",
+      "merge_evidence_ref": "tools/type-contract-proof/output/timeline-contract-proof-result.json",
+      "local_verification_ref": "docs/04_开发与验收/特征细化/DRF06_静态与有限计算核验.json"
+    },
+    {
+      "id": "DRF06-H07",
+      "related_request": "S06-03/TL02/TL07",
+      "gap_kind": "query_boundary_consumer_alignment",
+      "owner": "复审窗口1（本轮共同合同）",
+      "files": [
+        "packages/commands/api.design.rs",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json",
+        "docs/02_交互设计/时间轴主轴与子轴完整定义.json"
+      ],
+      "field_changes": [
+        {
+          "path": "RunQuery.Events.interval / RunQuery.FullResult / RunQuery.ObjectsAt",
+          "current": "当前Rust/timeline_runtime_contract已合入；本窗消费当前字段和结束语义，不执行产品",
+          "expected": "沿当前get_run合同：同快照FullResult/Events，观察窗末点闭包包含，持续区间半开；Scope/分页不取消，ObjectsAt<=该快照computed_until_ms",
+          "unit": "relative ms",
+          "before_DRF06_1": "Events区间半开，观察窗末闭包事件可能不在[start,end)页内"
+        },
+        {
+          "path": "RunQuery.ObjectsAt return semantics",
+          "current": "当前Rust/timeline_runtime_contract已合入；本窗消费当前字段和结束语义，不执行产品",
+          "expected": "同Run该时点闭包后状态；缺历史说明未知/实际Issue，不返末态冒充历史；迟到/异Run回复不替换当前轴",
+          "unit": "readonly snapshot",
+          "before_DRF06_1": "RunObjectsPage含run_id/at_ms，但全量历史对象不能从final_items推"
+        }
+      ],
+      "producer": "Host结果读取，UI同源投影",
+      "consumers": [
+        "factory_ui期末接受点",
+        "presentation回看对象",
+        "reporting边界接受"
+      ],
+      "acceptance_refs": [
+        "B12",
+        "B17",
+        "DRF06-T07"
+      ],
+      "merge_acceptance": "end点不遗漏、不算两次；不扩大Events过滤也不新增第19操作",
+      "status": "closed_current_design_contract_and_local_consumers_product_runtime_pending",
+      "actual_result": null,
+      "previous_status_DRF06_1": "pending_owner_merge",
+      "current_revision": "DRF06-2a",
+      "remaining_delta_paths": [],
+      "canonical_contract_ref": "docs/03_架构与契约/全层类型与工程格式.json#/timeline_runtime_contract",
+      "merge_evidence_ref": "tools/type-contract-proof/output/timeline-contract-proof-result.json",
+      "local_verification_ref": "docs/04_开发与验收/特征细化/DRF06_静态与有限计算核验.json"
+    },
+    {
+      "id": "DRF06-H08",
+      "related_request": "TC02/S06-03",
+      "gap_kind": "observed_partial_snapshot_horizon_missing",
+      "owner": "复审窗口1（本轮共同合同）",
+      "files": [
+        "packages/domain/types.design.rs",
+        "packages/domain/type-inventory.design.json",
+        "packages/domain/module-field-bindings.design.json",
+        "packages/commands/api.design.rs",
+        "tools/type-contract-proof/output/schemas",
+        "tools/type-contract-proof/output/typescript",
+        "tools/type-contract-proof/output/api-schemas",
+        "docs/03_架构与契约/调度与状态转换算法.json",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json"
+      ],
+      "field_changes": [
+        {
+          "path": "RunResult.computed_until_ms",
+          "current": "当前Rust/timeline_runtime_contract已合入；本窗消费当前字段和结束语义，不执行产品",
+          "expected": "Option<SimTimeMs>，值为该返回快照已完成同刻闭包的边界，与该快照phase/wait/claims/events一致；起点闭包前None，whole_window_computed=true时等于window.end_ms",
+          "unit": "relative integer ms",
+          "before_DRF06_1": "RunSummary有此字段，FullResult的RunResult没有；运行中两次读取可跨不同计算边界"
+        },
+        {
+          "path": "ALG-12 cancel/partial read boundary",
+          "current": "当前Rust/timeline_runtime_contract已合入；本窗消费当前字段和结束语义，不执行产品",
+          "expected": "取消请求记cancel_requested；封口/对外结果在当前有限同刻闭包完成后确认，保留已有事实。暂停/单步/部分FullResult均不能发布半个闭包的边界或混入更晚状态；completed先胜仍沿原契约",
+          "unit": "compute state",
+          "before_DRF06_1": "取消允许原子转换边界，未明确对外快照的同刻闭包一致性"
+        },
+        {
+          "path": "RunSummary / RunView.Full consumers",
+          "current": "当前Rust/timeline_runtime_contract已合入；本窗消费当前字段和结束语义，不执行产品",
+          "expected": "以收到FullResult自带边界画该快照；同Run新Summary不能为旧FullResult补数据。无完整快照保持已确认视图，不能推名义完工",
+          "unit": "snapshot",
+          "before_DRF06_1": "UI可能只持较早Summary边界"
+        }
+      ],
+      "producer": "simulation一致快照 + Host只读结果返回",
+      "consumers": [
+        "factory_ui阶段/等待开放端",
+        "presentation回看",
+        "reporting部分结果"
+      ],
+      "acceptance_refs": [
+        "B12",
+        "B17",
+        "DRF06-T02"
+      ],
+      "merge_acceptance": "20秒部分快照仅15秒auto有效工作；35秒闭包才完成，UI/报告不能拼接两个边界",
+      "status": "closed_current_design_contract_and_local_consumers_product_runtime_pending",
+      "actual_result": null,
+      "previous_status_DRF06_1": "pending_owner_merge",
+      "current_revision": "DRF06-2a",
+      "remaining_delta_paths": [],
+      "canonical_contract_ref": "docs/03_架构与契约/全层类型与工程格式.json#/timeline_runtime_contract",
+      "merge_evidence_ref": "tools/type-contract-proof/output/timeline-contract-proof-result.json",
+      "local_verification_ref": "docs/04_开发与验收/特征细化/DRF06_静态与有限计算核验.json"
+    }
+  ],
+  "evidence_gaps": [
+    {
+      "kind": "prototype_and_human",
+      "status": "pending_original_stage_evidence",
+      "required": "S04-02/04/05由窗口2继续；本人实际走查证据只能用户取得，本窗不代填",
+      "actual_result": null
+    },
+    {
+      "kind": "product_runtime",
+      "status": "not_started_not_authorized",
+      "required": "仍按S06-05冻结/S07与本批准入条件执行产品运行；当前有限核验不能关17SF/IX任务",
+      "actual_result": null
+    }
+  ],
+  "verification_ref": "docs/04_开发与验收/特征细化/DRF06_静态与有限计算核验.json",
+  "public_progress_or_projection_modified": false,
+  "actual_product_runtime": null,
+  "actual_result": null,
+  "current_ownership": {
+    "common_Rust_API_schema_TS": "复审窗口1",
+    "common_scheduler_and_business_objects": "复审窗口6",
+    "S04": "复审窗口2",
+    "original_P_planned_window_status": "不变"
+  },
+  "selected_delta_ref": "docs/04_开发与验收/特征细化/DRF06_公共字段合入delta.json",
+  "no_repeated_pending_TC01_TC02": true,
+  "C01_alignment_ref": "docs/04_开发与验收/特征细化/DRF03_C01_逐类原子采用.json",
+  "current_canonical_consumer_verification": {
+    "status": "passed_35_static_finite_checks",
+    "public_native_finite_cases_read": 20,
+    "proof_ref": "docs/04_开发与验收/特征细化/DRF06_静态与有限计算核验.json",
+    "current_shape": "intervals + interval_end_causes ordinal_pairing",
+    "C01_lowering_aligned": true,
+    "split_parent": "full_source_transformed_all_children_conserved",
+    "actual_product_runtime": null
+  }
+}

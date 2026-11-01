@@ -775,5 +775,275 @@
       },
       "actual_result": null
     }
-  ]
+  ],
+  "refinement_ref": "docs/04_开发与验收/特征细化/DRF05_完整定义.json",
+  "drf05_handoff_cases": [
+    {
+      "id": "DRF05-HFC01",
+      "name": "save_revision_during_edit",
+      "input": {
+        "frozen_revision": 7,
+        "current_revision_at_finish": 8
+      },
+      "manual_expected": {
+        "saved_revision": 7,
+        "current_revision": 8,
+        "still_dirty": true,
+        "old_Run_input_rewritten": false
+      },
+      "actual_result": null
+    },
+    {
+      "id": "DRF05-HFC02",
+      "name": "write_failure_before_manifest",
+      "input": {
+        "old_generation": 1,
+        "prepared_new_generation": 2,
+        "error": "IoFailure before root commit"
+      },
+      "manual_expected": {
+        "committed_generation": 1,
+        "still_dirty": true,
+        "new_generation_is_success": false,
+        "old_data_overwritten": false
+      },
+      "actual_result": null
+    },
+    {
+      "id": "DRF05-HFC03",
+      "name": "cancel_commit_race",
+      "input": {
+        "cancel_before_commit": true,
+        "second_trial_commit_wins": true
+      },
+      "manual_expected": {
+        "first_task": "cancelled",
+        "first_old_manifest_retained": true,
+        "second_task": "completed",
+        "completed_file_rollback": false
+      },
+      "actual_result": null
+    },
+    {
+      "id": "DRF05-HFC04",
+      "name": "move_relative_resources",
+      "input": {
+        "from": "author-dir",
+        "to": "receiver-dir",
+        "module_ref": "cnc@0.1.0",
+        "asset_path": "assets/a000001/cnc.png"
+      },
+      "manual_expected": {
+        "same_id_and_version": true,
+        "path_base": "receiver-dir",
+        "absolute_author_path_required": false,
+        "auto_download": false
+      },
+      "actual_result": null
+    },
+    {
+      "id": "DRF05-HFC05",
+      "name": "same_version_conflict",
+      "input": {
+        "package_module": "cnc@0.1.0",
+        "local_module": "cnc@0.1.0",
+        "payload_differs": true
+      },
+      "manual_expected": {
+        "explicit_conflict": true,
+        "silent_latest_replacement": false,
+        "global_library_overwritten": false
+      },
+      "actual_result": null
+    },
+    {
+      "id": "DRF05-HFC06",
+      "name": "unknown_schema_open",
+      "input": {
+        "schema_version": "99.0",
+        "active_project_dirty": true
+      },
+      "manual_expected": {
+        "error": "UnsupportedSchema",
+        "original_package_preserved": true,
+        "active_project_replaced": false,
+        "dirty_preserved": true
+      },
+      "actual_result": null
+    },
+    {
+      "id": "DRF05-HFC07",
+      "name": "missing_behavior_draft",
+      "input": {
+        "missing": "required OperationDefinition",
+        "accept_missing_as_draft": true
+      },
+      "manual_expected": {
+        "editable_valid_layout": true,
+        "affected_job_executable": false,
+        "zero_duration_invented": false,
+        "complete_factory_result_claim": false
+      },
+      "actual_result": null
+    },
+    {
+      "id": "DRF05-HFC08",
+      "name": "foreign_rights_declaration",
+      "input": {
+        "redistribution_confirmed_in_package": true,
+        "host_authorized_export": false
+      },
+      "manual_expected": {
+        "include_asset_in_handoff": false,
+        "include_asset_in_community": false,
+        "replacement_and_impact_listed": true
+      },
+      "actual_result": null
+    },
+    {
+      "id": "DRF05-HFC09",
+      "name": "old_run_and_new_revision",
+      "input": {
+        "old_run_input_revision": 3,
+        "new_scenario_revision": 4,
+        "action": "modify supply then restart"
+      },
+      "manual_expected": {
+        "old_run_input_revision": 3,
+        "new_run_input_revision": 4,
+        "old_final_items_seed_initial_stock": false,
+        "new_run_id_required": true,
+        "old_result_readonly": true
+      },
+      "actual_result": null
+    },
+    {
+      "id": "DRF05-HFC10",
+      "name": "timeline_private_preferences",
+      "input": {
+        "timeline_group_overrides_on_author": true,
+        "receiver_has_local_preferences": false
+      },
+      "manual_expected": {
+        "preferences_in_project_package": false,
+        "receiver_grouping": "frozen project automatic grouping",
+        "default_timeline_height_px": 160,
+        "description_independent_dock": true,
+        "stock_or_clock_changed": false
+      },
+      "actual_result": null
+    },
+    {
+      "id": "DRF05-HFC11",
+      "name": "actual_cross_machine_entry",
+      "input": {
+        "target": "Windows11 x64 other machine",
+        "external_provider_available": false
+      },
+      "manual_expected": {
+        "claim_other_machine_test_passed_without_execution": false,
+        "missing_provider_disclosed": true,
+        "automatic_declared_mode_downgrade": false,
+        "restart_policy": "restart_from_initial_input"
+      },
+      "actual_result": null
+    },
+    {
+      "id": "DRF05-HFC12",
+      "name": "adoption_and_publication",
+      "input": {
+        "local_candidate_checked": true,
+        "issue_PR_sent": false,
+        "user_publish_authorized": false
+      },
+      "manual_expected": {
+        "explicit_local_adoption_allowed": true,
+        "published": false,
+        "submission_URL": null,
+        "community_count_invented": false
+      },
+      "actual_result": null
+    },
+    {
+      "id": "DRF05-HFC13",
+      "name": "zip_escape_and_collision",
+      "input": {
+        "member_examples": [
+          "../outside",
+          "C:/outside",
+          "A/file.json",
+          "a/FILE.json"
+        ],
+        "symlink_to_outside": true
+      },
+      "manual_expected": {
+        "adoption_rejected": true,
+        "files_written_outside_stage": false,
+        "active_project_replaced": false
+      },
+      "actual_result": null
+    },
+    {
+      "id": "DRF05-HFC14",
+      "name": "replacefile_failure_recovery",
+      "input": {
+        "error_code": 1176,
+        "old_preservation_path_supplied": true,
+        "restore_root_succeeds": false
+      },
+      "manual_expected": {
+        "task": "failed",
+        "error": "IoFailure",
+        "still_dirty": true,
+        "show_old_root_intact_claim": false,
+        "report_actual_recoverable_location": true
+      },
+      "actual_result": null
+    },
+    {
+      "id": "DRF05-HFC15",
+      "name": "same_target_ordered_commits",
+      "input": {
+        "admission_order": [
+          7,
+          8
+        ],
+        "worker_finish_order": [
+          8,
+          7
+        ],
+        "commit_order": [
+          7,
+          8
+        ]
+      },
+      "manual_expected": {
+        "commit_order": [
+          7,
+          8
+        ],
+        "last_committed_revision": 8,
+        "R7_while_edit_R8_still_dirty": true
+      },
+      "actual_result": null
+    },
+    {
+      "id": "DRF05-HFC16",
+      "name": "replace_failed_restored_old_root",
+      "input": {
+        "replace_failed": true,
+        "old_preservation_valid": true,
+        "restore_succeeds": true
+      },
+      "manual_expected": {
+        "task": "failed",
+        "error": "IoFailure",
+        "old_root_restored": true,
+        "still_dirty": true,
+        "new_generation_claimed_saved": false
+      },
+      "actual_result": null
+    }
+  ],
+  "refinement_generation_note": "原10例与HFC01-HFC14数值不变；本轮追加HFC15顺序提交/HFC16恢复成功。窗口1更新生成器保留refinement_ref/drf05_handoff_cases/refinement_generation_note；本窗口未运行覆写生成器或产品。"
 }

@@ -1,0 +1,4226 @@
+{
+  "project": {
+    "setup_policies": [],
+    "id": "P1",
+    "revision": 1,
+    "title": "two-hall source explicitly mapped to one local hall",
+    "time_reference": {
+      "label": "self-built original seconds explicitly converted to milliseconds",
+      "origin_iso8601": null,
+      "timezone": null
+    },
+    "item_types": [
+      {
+        "id": "shell",
+        "revision": "r1",
+        "title": "shell",
+        "unit": "piece",
+        "tracking": "individual",
+        "spec_ref": null,
+        "attributes": {},
+        "attribute_schema": []
+      },
+      {
+        "id": "pcb",
+        "revision": "r1",
+        "title": "pcb",
+        "unit": "piece",
+        "tracking": "individual",
+        "spec_ref": null,
+        "attributes": {},
+        "attribute_schema": []
+      },
+      {
+        "id": "assembly",
+        "revision": "r1",
+        "title": "assembly",
+        "unit": "piece",
+        "tracking": "individual",
+        "spec_ref": null,
+        "attributes": {},
+        "attribute_schema": []
+      },
+      {
+        "id": "carton",
+        "revision": "r1",
+        "title": "carton",
+        "unit": "piece",
+        "tracking": "individual",
+        "spec_ref": null,
+        "attributes": {},
+        "attribute_schema": []
+      },
+      {
+        "id": "package",
+        "revision": "r1",
+        "title": "package",
+        "unit": "piece",
+        "tracking": "individual",
+        "spec_ref": null,
+        "attributes": {},
+        "attribute_schema": []
+      }
+    ],
+    "locations": [
+      {
+        "id": "cargo-source",
+        "title": "cargo-source",
+        "hall_id": "H-A",
+        "position": {
+          "translation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0,
+            "w": 1.0
+          },
+          "scale": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          },
+          "unit": "meter",
+          "coordinate_frame": "right_handed_z_up"
+        },
+        "capacity": {
+          "value": {
+            "coefficient": 200,
+            "decimal_places": 0
+          },
+          "unit": "piece"
+        },
+        "accepted_item_types": [
+          "assembly"
+        ],
+        "purpose": "input",
+        "ordinary_issue_enabled": true
+      },
+      {
+        "id": "cargo-destination",
+        "title": "cargo-destination",
+        "hall_id": "H-A",
+        "position": {
+          "translation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0,
+            "w": 1.0
+          },
+          "scale": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          },
+          "unit": "meter",
+          "coordinate_frame": "right_handed_z_up"
+        },
+        "capacity": {
+          "value": {
+            "coefficient": 200,
+            "decimal_places": 0
+          },
+          "unit": "piece"
+        },
+        "accepted_item_types": [
+          "assembly"
+        ],
+        "purpose": "output",
+        "ordinary_issue_enabled": true
+      }
+    ],
+    "halls": [
+      {
+        "id": "H-A",
+        "title": "single local hall; no implicit transport",
+        "width_m": 20,
+        "depth_m": 10,
+        "height_m": 4,
+        "origin": {
+          "translation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0,
+            "w": 1.0
+          },
+          "scale": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          },
+          "unit": "meter",
+          "coordinate_frame": "right_handed_z_up"
+        },
+        "input_locations": [
+          "cargo-source"
+        ],
+        "output_locations": [
+          "cargo-destination"
+        ]
+      }
+    ],
+    "lines": [],
+    "devices": [],
+    "resources": [
+      {
+        "id": "T1",
+        "definition_ref": {
+          "id": "w5.resource.vehicle",
+          "version": "0.1.0"
+        },
+        "title": "T1",
+        "kind": "vehicle",
+        "role": "carrier",
+        "capacity": {
+          "value": {
+            "coefficient": 1,
+            "decimal_places": 0
+          },
+          "unit": "vehicle"
+        },
+        "qualifications": [],
+        "calendar_id": "ALL",
+        "home_location": "cargo-source",
+        "presentation": null
+      }
+    ],
+    "calendars": [
+      {
+        "id": "ALL",
+        "title": "explicit 0-240000ms",
+        "intervals": [
+          {
+            "start_ms": 0,
+            "end_ms": 240000
+          }
+        ],
+        "source": "user_provided"
+      }
+    ],
+    "products": [],
+    "boms": [],
+    "routes": [],
+    "connections": [],
+    "module_refs": [
+      {
+        "id": "fixture.assemble",
+        "version": "0.1.0"
+      },
+      {
+        "id": "fixture.pack",
+        "version": "0.1.0"
+      },
+      {
+        "id": "fixture.worker",
+        "version": "0.1.0"
+      },
+      {
+        "id": "fixture.machine",
+        "version": "0.1.0"
+      },
+      {
+        "id": "fixture.assembly-station",
+        "version": "0.1.0"
+      },
+      {
+        "id": "fixture.pack-station",
+        "version": "0.1.0"
+      },
+      {
+        "id": "w5.transport.assembly",
+        "version": "0.1.0"
+      },
+      {
+        "id": "w5.resource.vehicle",
+        "version": "0.1.0"
+      }
+    ],
+    "scenario_refs": [
+      "CARGO-whole-batch-short"
+    ],
+    "artifact_refs": [],
+    "acknowledgments": [],
+    "bindings": [],
+    "views": {
+      "normal_canvas": "line_canvas",
+      "selected_hall": "H-A",
+      "selected_objects": [],
+      "lod": "detailed",
+      "line_camera": {
+        "eye": {
+          "x": 5.0,
+          "y": -5.0,
+          "z": 5.0
+        },
+        "target": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "zoom": 1.0,
+        "coordinate_frame": "right_handed_y_up",
+        "unit": "meter"
+      },
+      "multi_hall_camera": {
+        "eye": {
+          "x": 5.0,
+          "y": -5.0,
+          "z": 5.0
+        },
+        "target": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "zoom": 1.0,
+        "coordinate_frame": "right_handed_y_up",
+        "unit": "meter"
+      }
+    },
+    "generation_context": null,
+    "sources": [],
+    "issues": [],
+    "template_adoptions": []
+  },
+  "scenario": {
+    "quality_presets": [],
+    "id": "CARGO-whole-batch-short",
+    "revision": 1,
+    "project_revision": 1,
+    "title": "Independent explicit cargo whole-batch-short",
+    "time_reference": {
+      "label": "self-built original seconds explicitly converted to milliseconds",
+      "origin_iso8601": null,
+      "timezone": null
+    },
+    "window": {
+      "start_ms": 0,
+      "end_ms": 240000
+    },
+    "initial_conditions": {
+      "items": [
+        {
+          "id": "cargo-0",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-1",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-2",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-3",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-4",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-5",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-6",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-7",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-8",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-9",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-10",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-11",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-12",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-13",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-14",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-15",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-16",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-17",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-18",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-19",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-20",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-21",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-22",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-23",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-24",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-25",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-26",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-27",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-28",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-29",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-30",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-31",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-32",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-33",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-34",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-35",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-36",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-37",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-38",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-39",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-40",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-41",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-42",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-43",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-44",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-45",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-46",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-47",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-48",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-49",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-50",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-51",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-52",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-53",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-54",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-55",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-56",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-57",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-58",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-59",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-60",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-61",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-62",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-63",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-64",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-65",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-66",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-67",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-68",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-69",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-70",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-71",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-72",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-73",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-74",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-75",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-76",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-77",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-78",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-79",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-80",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-81",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-82",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-83",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-84",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-85",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-86",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-87",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-88",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-89",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-90",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-91",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-92",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-93",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-94",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-95",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-96",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-97",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-98",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-99",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-100",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-101",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-102",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-103",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-104",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-105",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-106",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-107",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-108",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-109",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-110",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-111",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-112",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-113",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-114",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-115",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-116",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-117",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-118",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-119",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-120",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-121",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-122",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-123",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-124",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-125",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-126",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-127",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-128",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-129",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-130",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-131",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-132",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-133",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-134",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-135",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-136",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-137",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-138",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-139",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-140",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-141",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-142",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-143",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-144",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-145",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-146",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-147",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-148",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        },
+        {
+          "id": "cargo-149",
+          "item_type_ref": {
+            "id": "assembly",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "holder": {
+            "kind": "location",
+            "id": "cargo-source"
+          },
+          "quality": "released",
+          "components": [],
+          "contents": [],
+          "source": "user_provided"
+        }
+      ],
+      "initial_setup_families": {},
+      "declared_quality_decisions": [],
+      "material_allocations": []
+    },
+    "orders": [],
+    "production_tasks": [],
+    "arrivals": [],
+    "supplies": [
+      {
+        "id": "SUPPLY",
+        "source": "cargo-source",
+        "destination": "cargo-destination",
+        "item_type_ref": {
+          "id": "assembly",
+          "revision": "r1"
+        },
+        "target_quantity": {
+          "value": {
+            "coefficient": 200,
+            "decimal_places": 0
+          },
+          "unit": "piece"
+        },
+        "window": {
+          "start_ms": 0,
+          "end_ms": 240000
+        },
+        "transport_ref": {
+          "id": "w5.transport.assembly",
+          "version": "0.1.0"
+        },
+        "resources": {
+          "carrier": "T1"
+        },
+        "departure_windows": [
+          {
+            "start_ms": 0,
+            "end_ms": 240000
+          }
+        ],
+        "allow_partial_load": false
+      }
+    ],
+    "parameter_overrides": [],
+    "scope": [],
+    "issues": [],
+    "cost_inputs": []
+  },
+  "definitions": [
+    {
+      "id": "fixture.assemble",
+      "version": "0.1.0",
+      "title": "fixture.assemble",
+      "definition_state": "runtime_candidate",
+      "contribution": {
+        "author": null,
+        "license": null,
+        "assets": []
+      },
+      "parameters": [],
+      "attribute_schema": [],
+      "payload": {
+        "category": "operations",
+        "data": {
+          "builtin": "assemble",
+          "item_roles": [
+            "shell",
+            "pcb",
+            "assembly"
+          ],
+          "inputs": [
+            {
+              "role": "shell",
+              "quantity": {
+                "value": {
+                  "coefficient": 1,
+                  "decimal_places": 0
+                },
+                "unit": "piece"
+              },
+              "port": "shell",
+              "required_quality": [
+                "released"
+              ],
+              "declared_output_quality": null
+            },
+            {
+              "role": "pcb",
+              "quantity": {
+                "value": {
+                  "coefficient": 1,
+                  "decimal_places": 0
+                },
+                "unit": "piece"
+              },
+              "port": "pcb",
+              "required_quality": [
+                "released"
+              ],
+              "declared_output_quality": null
+            }
+          ],
+          "outputs": [
+            {
+              "role": "assembly",
+              "quantity": {
+                "value": {
+                  "coefficient": 1,
+                  "decimal_places": 0
+                },
+                "unit": "piece"
+              },
+              "port": "assembled",
+              "required_quality": [],
+              "declared_output_quality": "released"
+            }
+          ],
+          "resource_roles": [
+            {
+              "role": "worker",
+              "quantity": {
+                "value": {
+                  "coefficient": 1,
+                  "decimal_places": 0
+                },
+                "unit": "person"
+              },
+              "qualifications": []
+            }
+          ],
+          "duration": {
+            "value": 60000,
+            "unit": "millisecond",
+            "basis": "user_provided",
+            "source_ref": null
+          },
+          "phases": [],
+          "hold_on_output_wait": [],
+          "quality_and_routes": null,
+          "identity_policy": "assembly_with_composition",
+          "family": null,
+          "pack_identity": null
+        }
+      }
+    },
+    {
+      "id": "fixture.pack",
+      "version": "0.1.0",
+      "title": "fixture.pack",
+      "definition_state": "runtime_candidate",
+      "contribution": {
+        "author": null,
+        "license": null,
+        "assets": []
+      },
+      "parameters": [],
+      "attribute_schema": [],
+      "payload": {
+        "category": "operations",
+        "data": {
+          "builtin": "pack",
+          "item_roles": [
+            "product",
+            "carton",
+            "package"
+          ],
+          "inputs": [
+            {
+              "role": "product",
+              "quantity": {
+                "value": {
+                  "coefficient": 1,
+                  "decimal_places": 0
+                },
+                "unit": "piece"
+              },
+              "port": "product",
+              "required_quality": [
+                "released"
+              ],
+              "declared_output_quality": null
+            },
+            {
+              "role": "carton",
+              "quantity": {
+                "value": {
+                  "coefficient": 1,
+                  "decimal_places": 0
+                },
+                "unit": "piece"
+              },
+              "port": "carton",
+              "required_quality": [
+                "released"
+              ],
+              "declared_output_quality": null
+            }
+          ],
+          "outputs": [
+            {
+              "role": "package",
+              "quantity": {
+                "value": {
+                  "coefficient": 1,
+                  "decimal_places": 0
+                },
+                "unit": "piece"
+              },
+              "port": "packed",
+              "required_quality": [],
+              "declared_output_quality": "released"
+            }
+          ],
+          "resource_roles": [
+            {
+              "role": "worker",
+              "quantity": {
+                "value": {
+                  "coefficient": 1,
+                  "decimal_places": 0
+                },
+                "unit": "person"
+              },
+              "qualifications": []
+            }
+          ],
+          "duration": {
+            "value": 15000,
+            "unit": "millisecond",
+            "basis": "user_provided",
+            "source_ref": null
+          },
+          "phases": [],
+          "hold_on_output_wait": [],
+          "quality_and_routes": null,
+          "identity_policy": "container_with_contents",
+          "family": null,
+          "pack_identity": {
+            "output_role": "package",
+            "container_material_roles": [
+              "carton"
+            ],
+            "content_roles": [
+              "product"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "fixture.worker",
+      "version": "0.1.0",
+      "title": "fixture.worker",
+      "definition_state": "runtime_candidate",
+      "contribution": {
+        "author": null,
+        "license": null,
+        "assets": []
+      },
+      "parameters": [],
+      "attribute_schema": [],
+      "payload": {
+        "category": "resources",
+        "data": {
+          "kind": "worker",
+          "role": "worker",
+          "capacity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "person"
+          },
+          "qualifications": [],
+          "default_calendar_ms": [
+            {
+              "start_ms": 0,
+              "end_ms": 240000
+            }
+          ],
+          "presentation": null
+        }
+      }
+    },
+    {
+      "id": "fixture.machine",
+      "version": "0.1.0",
+      "title": "fixture.machine",
+      "definition_state": "runtime_candidate",
+      "contribution": {
+        "author": null,
+        "license": null,
+        "assets": []
+      },
+      "parameters": [],
+      "attribute_schema": [],
+      "payload": {
+        "category": "resources",
+        "data": {
+          "kind": "fixture",
+          "role": "execution_capacity",
+          "capacity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "slot"
+          },
+          "qualifications": [],
+          "default_calendar_ms": [
+            {
+              "start_ms": 0,
+              "end_ms": 240000
+            }
+          ],
+          "presentation": null
+        }
+      }
+    },
+    {
+      "id": "fixture.assembly-station",
+      "version": "0.1.0",
+      "title": "fixture.assembly-station",
+      "definition_state": "runtime_candidate",
+      "contribution": {
+        "author": null,
+        "license": null,
+        "assets": []
+      },
+      "parameters": [],
+      "attribute_schema": [],
+      "payload": {
+        "category": "devices",
+        "data": {
+          "placement": "fixed_during_simulation",
+          "ports": [
+            {
+              "id": "shell",
+              "direction": "input",
+              "payload": {
+                "kind": "material",
+                "data": {
+                  "item_role": "shell",
+                  "unit": "piece",
+                  "quantity_rule": null
+                }
+              }
+            },
+            {
+              "id": "pcb",
+              "direction": "input",
+              "payload": {
+                "kind": "material",
+                "data": {
+                  "item_role": "pcb",
+                  "unit": "piece",
+                  "quantity_rule": null
+                }
+              }
+            },
+            {
+              "id": "assembled",
+              "direction": "output",
+              "payload": {
+                "kind": "material",
+                "data": {
+                  "item_role": "assembly",
+                  "unit": "piece",
+                  "quantity_rule": null
+                }
+              }
+            }
+          ],
+          "behavior": {
+            "inline": null,
+            "operation_ref": {
+              "id": "fixture.assemble",
+              "version": "0.1.0"
+            },
+            "selected": "operation_ref"
+          },
+          "configuration": {},
+          "presentation": null,
+          "operations": []
+        }
+      }
+    },
+    {
+      "id": "fixture.pack-station",
+      "version": "0.1.0",
+      "title": "fixture.pack-station",
+      "definition_state": "runtime_candidate",
+      "contribution": {
+        "author": null,
+        "license": null,
+        "assets": []
+      },
+      "parameters": [],
+      "attribute_schema": [],
+      "payload": {
+        "category": "devices",
+        "data": {
+          "placement": "fixed_during_simulation",
+          "ports": [
+            {
+              "id": "product",
+              "direction": "input",
+              "payload": {
+                "kind": "material",
+                "data": {
+                  "item_role": "product",
+                  "unit": "piece",
+                  "quantity_rule": null
+                }
+              }
+            },
+            {
+              "id": "carton",
+              "direction": "input",
+              "payload": {
+                "kind": "material",
+                "data": {
+                  "item_role": "carton",
+                  "unit": "piece",
+                  "quantity_rule": null
+                }
+              }
+            },
+            {
+              "id": "packed",
+              "direction": "output",
+              "payload": {
+                "kind": "material",
+                "data": {
+                  "item_role": "package",
+                  "unit": "piece",
+                  "quantity_rule": null
+                }
+              }
+            }
+          ],
+          "behavior": {
+            "inline": null,
+            "operation_ref": {
+              "id": "fixture.pack",
+              "version": "0.1.0"
+            },
+            "selected": "operation_ref"
+          },
+          "configuration": {},
+          "presentation": null,
+          "operations": []
+        }
+      }
+    },
+    {
+      "id": "w5.transport.assembly",
+      "version": "0.1.0",
+      "title": "w5.transport.assembly",
+      "definition_state": "runtime_candidate",
+      "contribution": {
+        "author": null,
+        "license": null,
+        "assets": []
+      },
+      "parameters": [],
+      "attribute_schema": [],
+      "payload": {
+        "category": "transport",
+        "data": {
+          "ports": [
+            {
+              "id": "source",
+              "direction": "input",
+              "payload": {
+                "kind": "material",
+                "data": {
+                  "item_role": "cargo",
+                  "unit": "piece",
+                  "quantity_rule": null
+                }
+              }
+            },
+            {
+              "id": "destination",
+              "direction": "output",
+              "payload": {
+                "kind": "material",
+                "data": {
+                  "item_role": "cargo",
+                  "unit": "piece",
+                  "quantity_rule": null
+                }
+              }
+            }
+          ],
+          "builtin": "transport",
+          "batch_capacity": {
+            "value": {
+              "coefficient": 200,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "resources": [
+            {
+              "role": "carrier",
+              "quantity": {
+                "value": {
+                  "coefficient": 1,
+                  "decimal_places": 0
+                },
+                "unit": "vehicle"
+              },
+              "qualifications": []
+            }
+          ],
+          "times": {
+            "loading": {
+              "value": 10000,
+              "unit": "millisecond",
+              "basis": "user_provided",
+              "source_ref": null
+            },
+            "outbound": {
+              "value": 30000,
+              "unit": "millisecond",
+              "basis": "user_provided",
+              "source_ref": null
+            },
+            "unloading": {
+              "value": 10000,
+              "unit": "millisecond",
+              "basis": "user_provided",
+              "source_ref": null
+            },
+            "returning": {
+              "value": 30000,
+              "unit": "millisecond",
+              "basis": "user_provided",
+              "source_ref": null
+            }
+          },
+          "acceptance_conditions": [
+            {
+              "kind": "capacity",
+              "target_role": null,
+              "required_value": null
+            },
+            {
+              "kind": "quality_released",
+              "target_role": null,
+              "required_value": null
+            }
+          ],
+          "identity_policy": "preserve_cargo_ids",
+          "presentation": null
+        }
+      }
+    },
+    {
+      "id": "w5.resource.vehicle",
+      "version": "0.1.0",
+      "title": "explicit actual cart capacity",
+      "definition_state": "runtime_candidate",
+      "contribution": {
+        "author": null,
+        "license": null,
+        "assets": []
+      },
+      "parameters": [],
+      "attribute_schema": [],
+      "payload": {
+        "category": "resources",
+        "data": {
+          "kind": "vehicle",
+          "role": "carrier",
+          "capacity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "vehicle"
+          },
+          "qualifications": [],
+          "default_calendar_ms": [
+            {
+              "start_ms": 0,
+              "end_ms": 240000
+            }
+          ],
+          "presentation": null
+        }
+      }
+    }
+  ],
+  "input_ref": {
+    "project_id": "P1",
+    "project_revision": 1,
+    "scenario_id": "CARGO-whole-batch-short",
+    "scenario_revision": 1,
+    "frozen_project_file": {
+      "path": "frozen/project.json",
+      "kind": "project"
+    },
+    "frozen_scenario_file": {
+      "path": "frozen/scenario.json",
+      "kind": "scenario"
+    }
+  }
+}

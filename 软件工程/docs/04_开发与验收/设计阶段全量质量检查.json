@@ -1,0 +1,892 @@
+{
+  "document_kind": "S01_S06_full_design_quality_audit_and_defect_list_not_product_acceptance",
+  "audited_on": "2026-10-15 Asia/Shanghai",
+  "status": "completed_repair_and_independent_review",
+  "authority": "用户：类比抽检发现的问题形成专用检查skills并完成对整个设计阶段的检查并制定缺陷清单",
+  "scope": {
+    "stages": [
+      "S01",
+      "S02",
+      "S03",
+      "S04",
+      "S05",
+      "S06"
+    ],
+    "checkpoint_count": 30,
+    "registered_source_entries": 171,
+    "missing_registered_sources": [],
+    "coverage_meaning": "全部30检查项逐项核对适用设计决定及下游消费者；171是登记入口数，不代表逐字重读所有历史附件或穷尽全部输入。",
+    "source_inventory_ref": "tools/design-quality-audit/output/source-inventory.json",
+    "source_designs_repaired_here": true,
+    "public_acceptance_or_product_status_changed_here": false,
+    "Figma_or_product_started_here": false,
+    "Figma_current_authority": "复审窗口2保留用户另轮直接授权的Figma制作，本轮DQ修复同步依据；不表示产品编码。"
+  },
+  "skill": {
+    "name": "superfactory-design-quality-audit",
+    "installed_path": "C:/Users/fujunye/.codex/skills/superfactory-design-quality-audit/SKILL.md",
+    "routing": "C:/Users/fujunye/.codex/skills/superfactory-dev-entry/SKILL.md",
+    "structural_validation": "quick_validate.py passed using existing Python3.14/PyYAML; bundled3.12 lacks PyYAML, no dependency installed",
+    "real_material_validation_ref": "tools/design-quality-audit/output/forward-test-s04.json",
+    "forward_test_result": "独立按新skill覆盖S04五项，并以实际源码状态序列发现3个原套件漏检的P2；已据此补充后续变化序列检查。",
+    "families": {
+      "DQ-C": "契约完整性：输入、输出、状态和边界是否闭合",
+      "DQ-S": "现行依据一致性：唯一拥有者及MD/JSON/投影是否同义",
+      "DQ-M": "信息隐藏：依赖、状态所有权和真正消费者是否合理",
+      "DQ-P": "算法成本：负载、停止、取消与结论是否有依据",
+      "DQ-L": "变更局部性：合理修改能否限制在应有模块，旧结果是否失配"
+    }
+  },
+  "summary": {
+    "reviewed_checkpoints": 30,
+    "open_defects": 0,
+    "priority_counts": {
+      "P1": 0,
+      "P2": 5,
+      "P3": 0
+    },
+    "regressed_AQ_findings": [],
+    "judgment": "S01—S06初检覆盖30项，确认的5个P2均已修复，并经实际浏览器、有限文件验证及专业/交互/跨层独立复核关闭。修前反例与修后证据分别保留。",
+    "acceptance_implication": "原30项设计冻结基础上接受本轮DQ修订；21项产品任务仍planned，任务包仍draft_not_dispatchable，原产品运行、真实用户及平台验证门槛保留。",
+    "closed_defects": 5,
+    "open_priority_counts": {
+      "P1": 0,
+      "P2": 0,
+      "P3": 0
+    }
+  },
+  "findings": [
+    {
+      "id": "DQ-01",
+      "priority": "P2",
+      "status": "closed_after_repair_and_independent_review",
+      "origin": "new_instance_of_AQ02_source_consistency_family",
+      "family": [
+        "DQ-S"
+      ],
+      "title": "现行工作入口残留冻结前的待审数量、工作预算和未接收说明",
+      "affected_checkpoints": [
+        "S01-05",
+        "S02-03",
+        "S02-04",
+        "S02-05",
+        "S06-05"
+      ],
+      "evidence": [
+        {
+          "path": "docs/04_开发与验收/本机并行窗口计划.md",
+          "line": 163,
+          "observed": "当前13项通过/47项待复审、最早S03-03、完整设计余17项"
+        },
+        {
+          "path": "docs/00_项目基线/技术与经济可行性.md",
+          "line": 91,
+          "observed": "当前余15项，仍列设计24—40小时和最终报告3—5小时"
+        },
+        {
+          "path": "docs/04_开发与验收/阶段实现计划.md",
+          "line": 167,
+          "observed": "MS-01实际用户接收尚未登记；最终选题PDF仍用冻结后将生成的口径"
+        },
+        {
+          "path": "docs/04_开发与验收/完整设计与执行准入.json",
+          "json_pointer": "/design_freeze/currently_passed_design_reviews",
+          "observed": 30
+        },
+        {
+          "path": "docs/04_开发与验收/任务框架与工量里程碑.json",
+          "json_pointer": "/shared_work",
+          "observed": "E-DESIGN和E-TOPIC-PDF已实际交付，剩余预算0；remaining_human_hours=115—189"
+        },
+        {
+          "path": "docs/04_开发与验收/任务框架与工量里程碑.json",
+          "json_pointer": "/milestones/1/status",
+          "observed": "accepted_design_milestone，明确为授权AI设计接收而非真人试用"
+        }
+      ],
+      "counterexample": "新窗口按本机并行窗口计划当前段会将S03-03重新列最早待审；按准入JSON应进入S07准备。按可行性当前预算段又会把已交付设计/报告算入剩余投入。它们不是带历史标题的原复审证据。",
+      "impact": "工作定位和剩余投入判断可能重复；源文件入口仍需读者自行判断哪段过期。",
+      "recommendation": "当前摘要改为引用现行准入与工量JSON，或由同源投影生成；旧数量/预算加明确历史标签。只更新当前说明，不回写历史评审或未知实际工时。",
+      "owner": "W00 / 准入、任务框架和工作入口文档拥有者",
+      "closure_criteria": [
+        "现行入口均表达30项设计复审、下一S07、已交付25页报告及正确剩余预算",
+        "保留授权AI接收与真人/产品证据的区别",
+        "用同一读取问题核对MD/JSON不再得到相反待办"
+      ],
+      "probe_ref": "tools/design-quality-audit/output/audit-probe-result.json#/confirmed_counterexamples/0",
+      "repair": {
+        "changes": [
+          "可行性当前工量改为消费tasks/shared_work/totals，已交付设计和25页报告不重复计剩余。",
+          "本机窗口MD现行状态改30设计冻结、S07起待做；旧14页和派发改为明确历史。",
+          "阶段计划MD明确MS-01至04授权AI设计接收、报告已交付，产品阶段仍planned。",
+          "成熟度S01-05当前工量注记与窗口JSON最新报告页数/完成投影同步，不改历史复审和信用。"
+        ],
+        "changed_refs": [
+          "docs/00_项目基线/技术与经济可行性.md",
+          "docs/04_开发与验收/本机并行窗口计划.md",
+          "docs/04_开发与验收/阶段实现计划.md",
+          "docs/04_开发与验收/软件开发流程与当前成熟度评估.json",
+          "docs/04_开发与验收/本机并行窗口计划.json"
+        ],
+        "independent_recheck_ref": "docs/04_开发与验收/特征细化/DQ_跨层独立复核.json",
+        "actual_product_runtime": null,
+        "closed_at": "2026-10-15T10:07:47+08:00",
+        "verification_refs": [
+          "docs/04_开发与验收/特征细化/DQ_跨层独立复核.json",
+          "tools/design-quality-audit/window6/cross-layer-result.json"
+        ]
+      }
+    },
+    {
+      "id": "DQ-02",
+      "priority": "P2",
+      "status": "closed_after_repair_and_independent_review",
+      "origin": "new_missing_acceptance_decision",
+      "family": [
+        "DQ-C",
+        "DQ-S"
+      ],
+      "title": "保存替换后恢复失败的分支尚未落入NFR-06的可判定验收",
+      "affected_checkpoints": [
+        "S03-04",
+        "S03-05",
+        "S05-02",
+        "S06-02",
+        "S06-03",
+        "S06-05"
+      ],
+      "evidence": [
+        {
+          "path": "docs/01_业务需求/非功能需求与测量验收.json",
+          "json_pointer": "/requirements/5/procedure/1",
+          "line": 360,
+          "observed": "写入或清单替换失败，验证旧有效版本仍可打开"
+        },
+        {
+          "path": "docs/01_业务需求/非功能需求与测量验收.json",
+          "json_pointer": "/test_execution_contract/required_check_groups/NFR-06",
+          "observed": "仅write_failure_retention和commit_failure_retention，未展开恢复成功/恢复失败"
+        },
+        {
+          "path": "docs/03_架构与契约/全层类型与工程格式.json",
+          "json_pointer": "/storage/replacement_recovery/existing_target_steps/4",
+          "observed": "恢复失败保留可恢复文件并报告IoFailure、位置与dirty，不声称旧根完好"
+        },
+        {
+          "path": "docs/03_架构与契约/工程交接与打开.md",
+          "line": 113,
+          "observed": "恢复成功仍Failed；恢复失败保留可恢复文件，由人选择恢复/新目标"
+        },
+        {
+          "path": "packages/reporting/save_commit.reference.py",
+          "line": 51,
+          "observed": "已有有限参考包含replacement_failed_restore_failed，old_root=not_claimed_intact"
+        }
+      ],
+      "counterexample": "输入R7/currentR8、replace_ok=false、restore_ok=false，现有参考正确返回Failed/IoFailure/dirty和可恢复文件位置；NFR未明确此时从原根还是从保留文件打开、需要哪些恢复证据、故障处理符合预期与工程健康可交付如何分别判定。不能仅凭'失败保留旧有效工程'得出唯一验收结论。",
+      "impact": "实现者和验收者可能对同一恢复失败分支作不同判定；也可能把正确的降级报告误记为正常保存成功。",
+      "recommendation": "沿用既有NFR-06和保存状态，展开写入失败、替换失败且旧根有效、恢复成功、恢复失败四种出口；明确原根/保留清单的可打开方式与内容完整证据。故障处理是否符合预期与旧工程是否恢复健康分开判，不能降低普通失败保留要求。无需增加新API或灾备系统。",
+      "owner": "W00 / NFR与公共保存契约；W05提供文件消费者及可打开证据",
+      "closure_criteria": [
+        "NFR MD/JSON、required_check_groups与保存契约对恢复两分支有同义判据",
+        "有限参考明确匹配哪个预期出口；真实Windows恢复证据未执行仍保留后续门槛",
+        "恢复失败不声称原根完好、不标保存成功；普通失败保留及可恢复内容检查不被删掉"
+      ],
+      "probe_ref": "tools/design-quality-audit/output/audit-probe-result.json#/confirmed_counterexamples/1",
+      "limits": "本轮执行的是已有有限状态参考，未注入Windows1176/1177，未证实真实数据丢失。",
+      "repair": {
+        "changes": [
+          "按窗口5精确交接合入NFR06-F01至F04，沿用原11NFR/38组。",
+          "写入/原根有效/恢复成功/恢复失败各有明确打开位置、完整旧引用检查和终态。",
+          "故障处理、旧内容保留、原目标健康与正常保存结果分别判断，预定恢复失败负例不冒称健康交付。",
+          "有限文件验证与真实Windows1176/1177、产品Save/Open证据分开；actual_result保持null。"
+        ],
+        "changed_refs": [
+          "docs/01_业务需求/非功能需求与测量验收.json",
+          "docs/01_业务需求/非功能需求与测量验收.md",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/工程交接与打开.md",
+          "packages/reporting/save_commit.reference.py"
+        ],
+        "verification_refs": [
+          "docs/04_开发与验收/特征细化/DQ02_保存修复交接.json",
+          "tools/design-quality-audit/window5/output/dq02-result.json",
+          "docs/04_开发与验收/特征细化/DQ_跨层独立复核.json",
+          "tools/design-quality-audit/window6/cross-layer-result.json",
+          "tools/design-quality-audit/window6/nfr-alignment-result.json"
+        ],
+        "actual_product_runtime": null,
+        "closed_at": "2026-10-15T10:07:47+08:00"
+      }
+    },
+    {
+      "id": "DQ-03",
+      "priority": "P2",
+      "status": "closed_after_repair_and_independent_review",
+      "origin": "new_confirmed_prototype_consumer_defect",
+      "family": [
+        "DQ-C"
+      ],
+      "title": "切换设备的未应用字段对话框缺少应用后切换",
+      "affected_checkpoints": [
+        "S04-01",
+        "S04-04",
+        "S04-05"
+      ],
+      "evidence": [
+        {
+          "path": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+          "line": 58
+        },
+        {
+          "path": "docs/02_交互设计/交互流程与视图导航.json",
+          "json_pointer": "/editing_policy/close_dirty_form"
+        }
+      ],
+      "counterexample": "编辑A01未应用后选择ROB01，实际selectDevice只产生selection-discard和dialog-close；同一规范要求应用/丢弃/留在三分支。",
+      "impact": "用户不能在该切换点直接应用当前字段后离开，和切面板路径不一致。",
+      "recommendation": "加入应用后切换动作；仅应用成功才更换选中对象，冲突/缺项保留原字段和对象。",
+      "owner": "S04原型拥有者 / 后续W02，消费共同编辑契约",
+      "closure_criteria": [
+        "A01修改后选择ROB01，应用/丢弃/留在三分支均实际验证",
+        "应用失败不切换、不丢字段"
+      ],
+      "probe_ref": "tools/design-quality-audit/output/probe-s04-result.json",
+      "forward_test_id": "S04-DQ-01",
+      "limits": "原型消费者缺陷，不是产品Host/Engine运行缺陷。",
+      "repair": {
+        "changes": [
+          "设备切换提供应用后切换、丢弃后切换和留在当前三分支。",
+          "字段不全、越界或修订冲突时保留原对象、表单和历史；应用成功才转移选择。"
+        ],
+        "verification_refs": [
+          "docs/04_开发与验收/特征细化/DQ_S04修复验收.json",
+          "docs/02_交互设计/S04_可操作设计原型/output/dq-state/result.json",
+          "docs/04_开发与验收/特征细化/DQ_跨层独立复核.json",
+          "docs/04_开发与验收/特征细化/DQ03_DQ04_交互独立复核.json",
+          "tools/design-quality-audit/window4/output/probe-result.json"
+        ],
+        "changed_refs": [
+          "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+          "docs/02_交互设计/S04_可操作设计原型/dq-state-regression.cjs",
+          "docs/02_交互设计/S04_可操作设计原型/verify-browser.cjs",
+          "docs/02_交互设计/S04_可操作设计原型/delegated-walkthrough.cjs"
+        ],
+        "closed_at": "2026-10-15T10:20:34+08:00",
+        "actual_product_runtime": null
+      }
+    },
+    {
+      "id": "DQ-04",
+      "priority": "P2",
+      "status": "closed_after_repair_and_independent_review",
+      "origin": "new_confirmed_prototype_state_defect",
+      "family": [
+        "DQ-C",
+        "DQ-S"
+      ],
+      "title": "打开新工程快照后撤销会恢复旧工程",
+      "affected_checkpoints": [
+        "S04-01",
+        "S04-04",
+        "S04-05"
+      ],
+      "evidence": [
+        {
+          "path": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+          "line": 268,
+          "observed": "替换S.project但未清S.undo/S.redo，也未处理原未保存离开决定"
+        },
+        {
+          "path": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+          "line": 192,
+          "observed": "undo使用旧S.undo，restoreDraft会整个替换S.project"
+        },
+        {
+          "path": "docs/02_交互设计/交互流程与视图导航.json",
+          "json_pointer": "/editing_policy/undo"
+        },
+        {
+          "path": "docs/03_架构与契约/共享状态与所有权.json",
+          "json_pointer": "/states/11",
+          "observed": "可逆历史按会话和Scope隔离"
+        }
+      ],
+      "counterexample": "A工程产生撤销历史→打开C快照→撤销，实际C-imported-project被替换成A-previous-project。",
+      "impact": "新工程会被旧工程历史覆盖；原型的工程切换、未保存提示与历史归属不能据此验收。",
+      "recommendation": "替换前处理保存/丢弃/留在；成功打开时清旧undo/redo及相关旧工程临时状态，读取失败维持原工程。",
+      "owner": "S04原型拥有者 / 后续W02 ui_host，消费W00会话状态契约",
+      "closure_criteria": [
+        "A有历史和未保存改动时打开C，三个离开选择正确",
+        "成功打开C后undo/redo不能恢复A；打开失败保留A及其可用历史"
+      ],
+      "probe_ref": "tools/design-quality-audit/output/probe-s04-result.json",
+      "forward_test_id": "S04-DQ-02",
+      "limits": "实际原型函数隔离执行；未执行浏览器及正式工程持久化。",
+      "repair": {
+        "changes": [
+          "候选工程读入通过后，依次处理未应用表单和未保存草稿的离开选择；读取失败或留在当前保留原工程和可用历史。",
+          "成功替换工程清除旧undo/redo、Run/作业结果、选中物件、设备定义草稿及待定操作。",
+          "旧查帧与定义确认回调不能将A工程内容写回C工程；在C新建的历史仍可撤销重做。"
+        ],
+        "verification_refs": [
+          "docs/04_开发与验收/特征细化/DQ_S04修复验收.json",
+          "docs/02_交互设计/S04_可操作设计原型/output/dq-state/result.json",
+          "docs/04_开发与验收/特征细化/DQ_跨层独立复核.json",
+          "docs/04_开发与验收/特征细化/DQ03_DQ04_交互独立复核.json",
+          "tools/design-quality-audit/window4/output/probe-result.json"
+        ],
+        "changed_refs": [
+          "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+          "docs/02_交互设计/S04_可操作设计原型/dq-state-regression.cjs",
+          "docs/02_交互设计/S04_可操作设计原型/verify-browser.cjs",
+          "docs/02_交互设计/S04_可操作设计原型/delegated-walkthrough.cjs"
+        ],
+        "closed_at": "2026-10-15T10:20:34+08:00",
+        "actual_product_runtime": null
+      }
+    },
+    {
+      "id": "DQ-05",
+      "priority": "P2",
+      "status": "closed_after_repair_and_independent_review",
+      "origin": "new_confirmed_prototype_lifecycle_defect",
+      "family": [
+        "DQ-C",
+        "DQ-L"
+      ],
+      "title": "同产品版本修改包装几何后仍沿用旧样例认可与绑定",
+      "affected_checkpoints": [
+        "S04-03",
+        "S04-04",
+        "S04-05"
+      ],
+      "evidence": [
+        {
+          "path": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+          "line": 37,
+          "observed": "commit/apply替换paper输入，未使旧packResult/ack/bound失配"
+        },
+        {
+          "path": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+          "line": 235,
+          "observed": "绑定以旧packResult及产品版本判有效，未涵盖几何修改"
+        },
+        {
+          "path": "packages/packaging/adoption-lifecycle.design.json",
+          "json_pointer": "/professional_version_effects/3",
+          "line": 81,
+          "observed": "材料/厚度/几何/折叠路径/净空间变化，即使产品仍r1，受影响绑定也须复核"
+        }
+      ],
+      "counterexample": "宽160、产品1.0.0的Pass样例完成认可和绑定→宽改200并应用，实际ack=true、bound=true且packResult仍原Pass。",
+      "impact": "修改后的图示结构显示旧样例的有效认可绑定，掩盖专业生命周期已规定的失配；纯产品版本检查不充分。",
+      "recommendation": "以原型明确冻结的包装输入身份判断结果是否匹配；材料/几何/机制等用途相关变化使旧认可不能自动覆盖新输入。重新明确载入匹配结果及认可后才允许绑定；纯显示变化保留。",
+      "owner": "S04原型拥有者，消费W04专业生命周期与W00绑定契约",
+      "closure_criteria": [
+        "同产品版本分别修改宽度、厚度和机制，验证旧有效认可/绑定失配",
+        "仅相机或明确的过程预览角度变化不误清专业认可",
+        "原型仍明确样例范围，不为修复此缺陷伪造专业计算"
+      ],
+      "probe_ref": "tools/design-quality-audit/output/probe-s04-result.json",
+      "forward_test_id": "S04-DQ-03",
+      "limits": "只要求原型状态一致，不要求本轮实现真实包装求解；未推断产品专业内核缺陷。",
+      "repair": {
+        "changes": [
+          "结果冻结实际专业输入；同版本宽度、厚度或机制变化使当前有效认可与绑定失效，纯观看角度和相机变化保留匹配状态。",
+          "只有已应用、匹配当前输入的Pass样例可经显式认可绑定；Fail、Undetermined、缺结果或脏表单均拒绝。",
+          "取消当前用途认可同时解除有效绑定并产生未保存修订；undo、旧表单同值应用及预览不能恢复已取消的动作标志。",
+          "普通paper提交保留当前ack/bound，再按实际输入匹配决定失效；重新明确认可后仍可绑定。样例继续标manual_expected/actual_provider=false，历史真实认可记录语义不变。"
+        ],
+        "verification_refs": [
+          "docs/04_开发与验收/特征细化/DQ_S04修复验收.json",
+          "docs/02_交互设计/S04_可操作设计原型/output/dq-state/result.json",
+          "docs/04_开发与验收/特征细化/DQ_跨层独立复核.json",
+          "docs/04_开发与验收/特征细化/DQ05_专业独立复核.json",
+          "tools/design-quality-audit/window3/dq05-result.json"
+        ],
+        "changed_refs": [
+          "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+          "docs/02_交互设计/S04_可操作设计原型/dq-state-regression.cjs",
+          "docs/02_交互设计/S04_可操作设计原型/verify-browser.cjs",
+          "docs/02_交互设计/S04_可操作设计原型/delegated-walkthrough.cjs"
+        ],
+        "closed_at": "2026-10-15T10:20:34+08:00",
+        "actual_product_runtime": null
+      }
+    }
+  ],
+  "coverage": [
+    {
+      "id": "S01-01",
+      "name": "用户、任务和产品边界",
+      "source": "docs/00_项目基线/用户任务与产品边界.md",
+      "consumer": "docs/00_项目基线/用户任务与需求映射.json",
+      "checked": "七UT的输入/人的决定/可观察输出；两画布与共同生产真值；九类及首版边界",
+      "finding_ids": [],
+      "conclusion": "本轮未发现新增缺陷"
+    },
+    {
+      "id": "S01-02",
+      "name": "行业需求与原文支撑",
+      "source": "docs/00_项目基线/行业需求与原文支撑.md",
+      "consumer": "docs/00_项目基线/用户任务与需求映射.json",
+      "checked": "原文范围/时效和推论边界；任务存在与目标用户频次/净收益分开；没有将来源数当市场证明",
+      "finding_ids": [],
+      "conclusion": "本轮未发现新增缺陷；目标用户直接证据仍为明示后续门槛"
+    },
+    {
+      "id": "S01-03",
+      "name": "课程与比赛适配",
+      "source": "docs/00_项目基线/课程与比赛适配.md",
+      "consumer": "docs/00_项目基线/课程与比赛要求映射.json",
+      "checked": "首版真实Agent任务、赛道/代码/介绍/视频与评估输出分开；内部及官方截止分开，资格/提交未伪填",
+      "finding_ids": [],
+      "conclusion": "本轮未发现新增缺陷；不重新认证外部资格或提交状态"
+    },
+    {
+      "id": "S01-04",
+      "name": "完整工作链竞品与差异",
+      "source": "docs/00_项目基线/完整工作链竞品与差异.md",
+      "consumer": "docs/00_项目基线/首版任务选择.json",
+      "checked": "逐产品完整链、强近邻/简单办法、共同输入与T1—T3质量先于净工时；C1—C3追到任务",
+      "finding_ids": [],
+      "conclusion": "本轮未发现新增缺陷；实际同数据竞品对照未执行"
+    },
+    {
+      "id": "S01-05",
+      "name": "技术与经济可行性证明",
+      "source": "docs/00_项目基线/技术与经济可行性.md",
+      "consumer": "docs/04_开发与验收/任务框架与工量里程碑.json",
+      "checked": "TF局部/产品证据边界；人时与窗时分账，经济假设/未知值；现行剩余工量投影",
+      "finding_ids": [
+        "DQ-01"
+      ],
+      "conclusion": "本轮相关缺陷已修复并独立复核；原初检：发现现行工量段过期，技术与经济未实证的边界已明示",
+      "initial_conclusion": "发现现行工量段过期，技术与经济未实证的边界已明示"
+    },
+    {
+      "id": "S02-01",
+      "name": "首个版本冻结清单",
+      "source": "docs/00_项目基线/首版任务选择.json",
+      "consumer": "docs/04_开发与验收/tasks.json",
+      "checked": "21选定/7后置、P0-03部分范围、17SF与实际状态planned；不把原型/试做计产品完成",
+      "finding_ids": [],
+      "conclusion": "本轮未发现新增缺陷"
+    },
+    {
+      "id": "S02-02",
+      "name": "任务拆解与依赖",
+      "source": "docs/00_项目基线/首版任务选择.json",
+      "consumer": "docs/04_开发与验收/编码任务包/任务包索引.json",
+      "checked": "启动/完整验收两种DAG均21节点无环；P5发布闭包覆盖其余20任务；21包设计可定位但不可派发",
+      "finding_ids": [],
+      "conclusion": "本轮未发现新增缺陷"
+    },
+    {
+      "id": "S02-03",
+      "name": "本机并行窗口切分与协作计划",
+      "source": "docs/04_开发与验收/本机并行窗口计划.md",
+      "consumer": "docs/04_开发与验收/本机并行窗口计划.json",
+      "checked": "六角色唯一主责、公共合同写入例外、同目录协作；当前派发与设计接收状态",
+      "finding_ids": [
+        "DQ-01"
+      ],
+      "conclusion": "本轮相关缺陷已修复并独立复核；原初检：发现当前摘要仍将已闭设计列为待审",
+      "initial_conclusion": "发现当前摘要仍将已闭设计列为待审"
+    },
+    {
+      "id": "S02-04",
+      "name": "工量与成果里程碑框架",
+      "source": "docs/04_开发与验收/任务框架与工量里程碑.json",
+      "consumer": "docs/00_项目基线/技术与经济可行性.md",
+      "checked": "逐任务与共同工作精确相加115—189本人小时；未填实际工时、不按窗口数推期限；当前消费者投影",
+      "finding_ids": [
+        "DQ-01"
+      ],
+      "conclusion": "本轮相关缺陷已修复并独立复核；原初检：JSON预算算术一致，外围现行摘要未完全更新",
+      "initial_conclusion": "JSON预算算术一致，外围现行摘要未完全更新"
+    },
+    {
+      "id": "S02-05",
+      "name": "阶段闭环及退出条件",
+      "source": "docs/04_开发与验收/阶段实现计划.json",
+      "consumer": "docs/04_开发与验收/阶段实现计划.md",
+      "checked": "S/P/MS三轴、SF-15材料后关避免验收循环、失败保留及已接收成果变化复核；MS-01当前状态",
+      "finding_ids": [
+        "DQ-01"
+      ],
+      "conclusion": "本轮相关缺陷已修复并独立复核；原初检：出口规则可定位，MD仍残留未接收与将交报告说明",
+      "initial_conclusion": "出口规则可定位，MD仍残留未接收与将交报告说明"
+    },
+    {
+      "id": "S03-01",
+      "name": "用户任务与功能需求",
+      "source": "docs/00_项目基线/首版需求与验收.md",
+      "consumer": "docs/04_开发与验收/首版需求验收追踪.json",
+      "checked": "七UT/17SF有实际生产者、输入/输出和正常/不足出口；Agent初案达标不强造第二Run",
+      "finding_ids": [],
+      "conclusion": "本轮未发现新增缺陷"
+    },
+    {
+      "id": "S03-02",
+      "name": "业务对象、规则及异常路径",
+      "source": "packages/domain/business-objects.design.json",
+      "consumer": "docs/03_架构与契约/调度与状态转换算法.json",
+      "checked": "holder、预留拆分、一次领料、品质/返工/报废、到达/接受/返程分离；等待与有效时间分开",
+      "finding_ids": [],
+      "conclusion": "本轮未发现新增缺陷"
+    },
+    {
+      "id": "S03-03",
+      "name": "模块与外部成果边界",
+      "source": "packages/module-kit/category-contracts.design.json",
+      "consumer": "docs/03_架构与契约/九类协议与采用设计.md",
+      "checked": "九类定义/采用/运行三个动作、typed字段及角色、行为与外观分离、专业成果/认可/库存分开",
+      "finding_ids": [],
+      "conclusion": "本轮未发现新增缺陷"
+    },
+    {
+      "id": "S03-04",
+      "name": "可测量非功能需求",
+      "source": "docs/01_业务需求/非功能需求与测量验收.json",
+      "consumer": "docs/03_架构与契约/全层类型与工程格式.json",
+      "checked": "11NFR/38必需组，失败优先、两机与本机测试前置、同钟采样、专业体验与三态分开；保存恢复出口",
+      "finding_ids": [
+        "DQ-02"
+      ],
+      "conclusion": "本轮相关缺陷已修复并独立复核；原初检：恢复失败分支的验收方式未展开",
+      "initial_conclusion": "恢复失败分支的验收方式未展开"
+    },
+    {
+      "id": "S03-05",
+      "name": "首版需求ID、优先级与验收追踪",
+      "source": "docs/04_开发与验收/首版需求验收追踪.json",
+      "consumer": "docs/04_开发与验收/阶段实现计划.json",
+      "checked": "17SF的case/生产者/证据owner可解析，11NFR/3IX不漏；具体故障分支是否进入原验收",
+      "finding_ids": [
+        "DQ-02"
+      ],
+      "conclusion": "本轮相关缺陷已修复并独立复核；原初检：索引结构覆盖，保存恢复分支仍须随NFR源补判据",
+      "initial_conclusion": "索引结构覆盖，保存恢复分支仍须随NFR源补判据"
+    },
+    {
+      "id": "S04-01",
+      "name": "主流程和视图导航",
+      "source": "docs/02_交互设计/交互流程与视图导航.json",
+      "consumer": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+      "checked": "两画布、详情/返回、未应用字段三选择、撤销Scope；实际函数状态序列",
+      "finding_ids": [
+        "DQ-03",
+        "DQ-04"
+      ],
+      "conclusion": "本轮相关缺陷已修复并独立复核；原初检：原型未完整消费导航和会话历史契约",
+      "initial_conclusion": "原型未完整消费导航和会话历史契约"
+    },
+    {
+      "id": "S04-02",
+      "name": "视觉预览与连续任务画面",
+      "source": "docs/02_交互设计/工业工作台母版与字段细化.json",
+      "consumer": "docs/02_交互设计/S04-02_drawio母版_20261014/industrial-workbench-master.drawio",
+      "checked": "实际26页母版、固定上下栏/中央画布/左右伸缩与底部双dock、VP03及150%文字现有图像；Figma暂停",
+      "finding_ids": [],
+      "conclusion": "本轮未发现新增视觉设计缺陷"
+    },
+    {
+      "id": "S04-03",
+      "name": "关键表单、反馈与等待解释",
+      "source": "docs/02_交互设计/首版表单与反馈.json",
+      "consumer": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+      "checked": "28表单111组71子字段可解析、只读/未知和等待状态；修改包装输入后的结果归属",
+      "finding_ids": [
+        "DQ-05"
+      ],
+      "conclusion": "本轮相关缺陷已修复并独立复核；原初检：包装几何变更的认可失配未被原型表达",
+      "initial_conclusion": "包装几何变更的认可失配未被原型表达"
+    },
+    {
+      "id": "S04-04",
+      "name": "可点击/可运行交互原型",
+      "source": "docs/02_交互设计/连续任务与原型制作依据.json",
+      "consumer": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+      "checked": "24帧五链范围和样例标记；实际原函数的选择、打开/撤销、包装变更三序列",
+      "finding_ids": [
+        "DQ-03",
+        "DQ-04",
+        "DQ-05"
+      ],
+      "conclusion": "本轮相关缺陷已修复并独立复核；原初检：确认三个原型状态一致性缺陷",
+      "initial_conclusion": "确认三个原型状态一致性缺陷"
+    },
+    {
+      "id": "S04-05",
+      "name": "负责人实际原型走查",
+      "source": "docs/02_交互设计/S04_可操作设计原型/output/delegated-walkthrough/walkthrough-result.json",
+      "consumer": "docs/02_交互设计/S04_可操作设计原型/verify-browser.cjs",
+      "checked": "用户直接授权AI、旧8项缺陷与16套件断言范围；旧通过未涵盖本轮状态反例",
+      "finding_ids": [
+        "DQ-03",
+        "DQ-04",
+        "DQ-05"
+      ],
+      "conclusion": "本轮相关缺陷已修复并独立复核；原初检：原证据保持实际范围，新增状态序列需补修后复查",
+      "initial_conclusion": "原证据保持实际范围，新增状态序列需补修后复查"
+    },
+    {
+      "id": "S05-01",
+      "name": "包职责与依赖",
+      "source": "docs/03_架构与契约/全层组件与接点.json",
+      "consumer": "docs/04_开发与验收/编码任务包/任务包索引.json",
+      "checked": "16组件DAG、shared_ui仅依domain、业务UI不依factory_ui；21任务六视图和当前依赖消费者",
+      "finding_ids": [],
+      "conclusion": "本轮未发现AQ-03耦合回归"
+    },
+    {
+      "id": "S05-02",
+      "name": "共享状态与所有权",
+      "source": "docs/03_架构与契约/共享状态与所有权.json",
+      "consumer": "docs/03_架构与契约/公开操作与宿主调用契约.json",
+      "checked": "18状态唯一Host/Worker、修订、撤销、暂停/取消/完成竞争；保存R和当前R+1分开及恢复出口",
+      "finding_ids": [
+        "DQ-02"
+      ],
+      "conclusion": "本轮相关缺陷已修复并独立复核；原初检：公共状态有恢复分支，NFR消费者未展开判定；原型历史缺陷见DQ-04",
+      "initial_conclusion": "公共状态有恢复分支，NFR消费者未展开判定；原型历史缺陷见DQ-04"
+    },
+    {
+      "id": "S05-03",
+      "name": "九类协议及消费者",
+      "source": "docs/03_架构与契约/九类协议与采用设计.md",
+      "consumer": "packages/module-kit/category-contracts.design.json",
+      "checked": "完整采用顺序、同id/version内容冲突、精确角色和参数绑定、许可资产与本地贡献；不自动升级/运行",
+      "finding_ids": [],
+      "conclusion": "本轮未发现新增缺陷"
+    },
+    {
+      "id": "S05-04",
+      "name": "首版技术栈和部署形态",
+      "source": "docs/03_架构与契约/首版技术栈与部署设计.json",
+      "consumer": "docs/04_开发与验收/S05-05_关键架构实际试做.json",
+      "checked": "Rust原生桥/同Host，WebView2离线前置、具体工具版本与许可来源、S07真实锁/构建/第二机边界",
+      "finding_ids": [],
+      "conclusion": "本轮未发现新增缺陷；未将既有依赖资料当最新版本推荐或发布证明"
+    },
+    {
+      "id": "S05-05",
+      "name": "关键架构的实际试做",
+      "source": "docs/04_开发与验收/S05-05_关键架构实际试做.json",
+      "consumer": "docs/04_开发与验收/特征细化/DRF04_S05-desktop-proof/output/desktop-result.json",
+      "checked": "实际Tauri invoke/stdio/管道同fixture修订竞争、R7真实帧与当前R8、取消/错误/退出；与产品18操作分开",
+      "finding_ids": [],
+      "conclusion": "实际隔离接点证据可消费，当前产品门槛保留；未重复重跑桌面试做"
+    },
+    {
+      "id": "S06-01",
+      "name": "调度、归属及状态转换规则",
+      "source": "docs/03_架构与契约/调度与状态转换算法.json",
+      "consumer": "packages/domain/types.design.rs",
+      "checked": "14算法同刻闭包、阶段日历、预留拆分、品质游标、结果槽一次移交、日边界、Claim/Wait/Phase前缀截断",
+      "finding_ids": [],
+      "conclusion": "本轮未发现新增规则或字段矛盾"
+    },
+    {
+      "id": "S06-02",
+      "name": "具体类型/持久化格式",
+      "source": "docs/03_架构与契约/全层类型与工程格式.json",
+      "consumer": "packages/commands/api.design.rs",
+      "checked": "整数/精确十进制/可空/版本和上下文校验、相对路径及根提交、FrozenRun/专业输入不混；恢复分支消费者",
+      "finding_ids": [
+        "DQ-02"
+      ],
+      "conclusion": "本轮相关缺陷已修复并独立复核；原初检：保存载体和恢复语义存在，验收投影缺一分支",
+      "initial_conclusion": "保存载体和恢复语义存在，验收投影缺一分支"
+    },
+    {
+      "id": "S06-03",
+      "name": "函数接口、参数返回和错误契约",
+      "source": "docs/03_架构与契约/公开操作与宿主调用契约.json",
+      "consumer": "packages/commands/api.design.rs",
+      "checked": "18操作请求/返回Schema可定位；Task接收/完成、Scope/授权与当前能力、managed完整响应及只读句柄生命周期；文件失败返回",
+      "finding_ids": [
+        "DQ-02"
+      ],
+      "conclusion": "本轮相关缺陷已修复并独立复核；原初检：未发现AQ-01传输机制回归；恢复失败与NFR判定仍需对齐",
+      "initial_conclusion": "未发现AQ-01传输机制回归；恢复失败与NFR判定仍需对齐"
+    },
+    {
+      "id": "S06-04",
+      "name": "所选专业算法及依赖实现细节",
+      "source": "packages/packaging/algorithm.design.json",
+      "consumer": "docs/03_架构与契约/纸包装数值与制造规则.md",
+      "checked": "局部同ID双面许可、连续包含界/严格Fail、连接与展开制造、三机制/变化、有限搜索/取消/成本；读取独立32例及18组实际参考边界",
+      "finding_ids": [],
+      "conclusion": "本轮未发现新增算法设计缺陷；完整Rust/三机制实际校准仍属既定产品门槛"
+    },
+    {
+      "id": "S06-05",
+      "name": "可复算输入与预期结果",
+      "source": "docs/04_开发与验收/S06-05_全层贯通设计与冻结复审.json",
+      "consumer": "docs/04_开发与验收/编码任务包/任务包索引.json",
+      "checked": "五链、21任务126视图单元、93字段见证/24工程明细；新反例能否被旧静态/有限套件发现；冻结后AQ消费",
+      "finding_ids": [
+        "DQ-01",
+        "DQ-02",
+        "DQ-03",
+        "DQ-04",
+        "DQ-05"
+      ],
+      "conclusion": "本轮相关缺陷已修复并独立复核；原初检：原冻结历史保留；本轮跨层检查确认5个待修问题，旧通过不能覆盖新增反例",
+      "initial_conclusion": "原冻结历史保留；本轮跨层检查确认5个待修问题，旧通过不能覆盖新增反例"
+    }
+  ],
+  "AQ_regression_review": [
+    {
+      "id": "AQ-01",
+      "conclusion": "未发现当前设计回归",
+      "evidence": "大结果传输设计、ApiOutcome::Managed与原操作Schema/实际1.3MB响应及637字节帧证据相符；产品客户端仍待真实接入",
+      "rerun_here": false
+    },
+    {
+      "id": "AQ-02",
+      "conclusion": "外围投影同类遗漏已修复并独立复核",
+      "evidence": "DQ-01已关闭；当前预算、30项冻结、25页报告和阶段状态投影一致，原AQ关闭记录保留。",
+      "rerun_here": false
+    },
+    {
+      "id": "AQ-03",
+      "conclusion": "未发现当前依赖回归",
+      "evidence": "本轮16组件DAG与shared_ui依赖实际读取核对",
+      "rerun_here": true
+    },
+    {
+      "id": "AQ-04",
+      "conclusion": "未发现当前成本合同回归",
+      "evidence": "当前1/2048/512明确采用参考档，64/50000/8192探索档不伪装已标定；18组参考结果范围保留",
+      "rerun_here": false
+    },
+    {
+      "id": "AQ-05",
+      "conclusion": "三个有限变更场景未发现当前合同回归",
+      "evidence": "读取实际变更输入/结果与检查脚本断言；新DQ-05补充修改后旧结果失配的另一维度；DQ-05当前输入、取消认可及旧表单组合状态已修复并以21条独立序列关闭。",
+      "rerun_here": false
+    }
+  ],
+  "verification": {
+    "structural_probe_ref": "tools/design-quality-audit/output/audit-probe-result.json",
+    "state_sequence_probe_ref": "tools/design-quality-audit/output/probe-s04-result.json",
+    "independent_forward_review_ref": "tools/design-quality-audit/output/forward-test-s04.json",
+    "commands": [
+      "python tools/检查非功能规格.py",
+      "python tools/检查主线同步.py",
+      "python tools/design-quality-audit/check_repairs.py",
+      "python tools/design-quality-audit/render_report.py"
+    ],
+    "interpretation": "实际Chrome16组、独立交互22条及专业21条状态序列通过；四故障出口有限文件证据通过，公共规格与主线同步通过。这是设计修复接收，不是产品Host/Engine、真实Windows1176/1177或工业用途验收。",
+    "new_dependencies_installed": false,
+    "actual_browser_execution": true,
+    "actual_product_runtime": null,
+    "initial_commands": [
+      "python C:/Users/fujunye/.codex/skills/superfactory-design-quality-audit/scripts/collect_scope.py --root . --output tools/design-quality-audit/output/source-inventory.json",
+      "python C:/Users/fujunye/.codex/skills/.system/skill-creator/scripts/quick_validate.py C:/Users/fujunye/.codex/skills/superfactory-design-quality-audit",
+      "python tools/design-quality-audit/audit_probes.py",
+      "node tools/design-quality-audit/probe_s04.cjs",
+      "python tools/design-quality-audit/render_report.py"
+    ],
+    "repair_closure_ref": "tools/design-quality-audit/output/repair-closure-result.json",
+    "actual_browser_ref": "docs/02_交互设计/S04_可操作设计原型/output/dq-state/result.json",
+    "initial_audit_actual_browser_execution": false,
+    "subsequent_prototype_review_ref": "docs/04_开发与验收/首版原型逻辑贯通复审.json"
+  },
+  "preserved_later_gates": [
+    {
+      "id": "G01",
+      "scope": "S01目标用户/竞品/经济证据",
+      "remaining": "真实任务频次与人工负担、同数据同质量竞品对照及净收益；文档已明示，非本轮新增设计缺陷"
+    },
+    {
+      "id": "G02",
+      "scope": "S07—S09产品实施与正确性",
+      "remaining": "真实构建/锁/入口、18操作及Engine、实际Codex客户端、17SF/3IX/11NFR；21任务仍planned、任务包draft_not_dispatchable"
+    },
+    {
+      "id": "G03",
+      "scope": "专业与恢复实际证据",
+      "remaining": "完整Rust三机制/三变化、非凸裁剪/区间包含及完整Job成本校准；Windows1176/1177恢复等实际接点按既定后续条件取得"
+    },
+    {
+      "id": "G04",
+      "scope": "发布、真人与外部事项",
+      "remaining": "第二Win11机器/第三人接手和真实目标用户、实际发布许可清单与比赛资格/提交；授权AI原型走查不替代这些证据"
+    }
+  ],
+  "repair_order": [
+    "DQ-04",
+    "DQ-05",
+    "DQ-03",
+    "DQ-02",
+    "DQ-01"
+  ],
+  "repair_scope_rule": "本清单不是第二份产品backlog；修复依附原S项及现行文件拥有者。用户随后已明确授权统筹各复审窗口，本轮完整完成修复。",
+  "repair_round": {
+    "authority": "用户：统筹分派完整任务到各个复审窗口，本轮完整完成修复",
+    "status": "completed",
+    "design_scope_only": true,
+    "source_design_repairs_authorized": true,
+    "product_coding_authorized": false,
+    "assignments": [
+      {
+        "window": "复审窗口1",
+        "thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+        "scope": "DQ-01修复、DQ-02公共NFR合入、接点协调与全量最终关闭",
+        "write_scope": "当前公共入口/准入/NFR/全量质量检查、tools/design-quality-audit本级探针；不与窗口2/5重叠源",
+        "status": "completed_and_received_for_this_DQ_round",
+        "delivery_ref": "tools/design-quality-audit/output/repair-closure-result.json"
+      },
+      {
+        "window": "复审窗口2",
+        "thread_id": "01a11f4e-f8a4-7a62-9d23-24834761b07e",
+        "scope": "完整修复DQ-03/04/05及实际浏览器回归；保留当前用户直接授权的Figma任务并同步依据",
+        "write_scope": "S04原型/测试/实际走查及对应Figma批次；公共合同和全量检查不写",
+        "delivery_ref": "docs/04_开发与验收/特征细化/DQ_S04修复验收.json",
+        "status": "completed_and_received_for_this_DQ_round"
+      },
+      {
+        "window": "复审窗口3",
+        "thread_id": "01a13589-e1b0-73d2-aaae-c69be89c5b0f",
+        "scope": "DQ-05专业生命周期边界与修后独立状态序列核验",
+        "write_scope": "本轮独立复核JSON及tools/design-quality-audit/window3；原型/公共源只读",
+        "delivery_ref": "docs/04_开发与验收/特征细化/DQ05_专业独立复核.json",
+        "status": "completed_and_received_for_this_DQ_round"
+      },
+      {
+        "window": "复审窗口4",
+        "thread_id": "01a1396d-bb0e-7e93-8ad5-b3465048d09a",
+        "scope": "DQ-03/04选择/打开/未保存/撤销隔离的修后独立复核",
+        "write_scope": "本轮独立复核JSON及tools/design-quality-audit/window4；原型/公共源只读",
+        "delivery_ref": "docs/04_开发与验收/特征细化/DQ03_DQ04_交互独立复核.json",
+        "status": "completed_and_received_for_this_DQ_round"
+      },
+      {
+        "window": "复审窗口5",
+        "thread_id": "01a1396d-d905-75e2-a5c5-7db3cd9b36a2",
+        "scope": "DQ-02保存四故障出口、消费者修正/有限验证及公共NFR精确交接",
+        "write_scope": "packages/reporting/save_commit.reference.py、工程交接与打开.md、本轮交接JSON及tools/design-quality-audit/window5；公共NFR由统筹合入",
+        "delivery_ref": "docs/04_开发与验收/特征细化/DQ02_保存修复交接.json",
+        "status": "completed_and_received_for_this_DQ_round"
+      },
+      {
+        "window": "复审窗口6",
+        "thread_id": "01a1396d-f9d8-7ac0-ae86-b93a5d28b7ac",
+        "scope": "修后S01—S06跨层独立复核及原生产/时间轴/产品准入边界",
+        "write_scope": "本轮独立复核JSON及tools/design-quality-audit/window6；被审源和公共状态只读",
+        "delivery_ref": "docs/04_开发与验收/特征细化/DQ_跨层独立复核.json",
+        "status": "completed_and_received_for_this_DQ_round"
+      }
+    ],
+    "completion_rule": "所有5项实际源修复、必要有限/浏览器验证、独立专业/交互/跨层复核及公共同步完成后才关闭；不以派发或旧passed记录代替结果。",
+    "completed_at": "2026-10-15T10:20:34+08:00",
+    "remaining_findings": [],
+    "closure_ref": "tools/design-quality-audit/output/repair-closure-result.json",
+    "separate_Figma_batch": "窗口2另获用户直接授权的Figma批次独立按S04交付验收；其任务整体进展不改变本轮DQ已关闭结论。"
+  }
+}

@@ -1,0 +1,302 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "HostExportExecutionReportRequest",
+  "type": "object",
+  "properties": {
+    "api_version": {
+      "$ref": "#/$defs/ApiVersion"
+    },
+    "operation": {
+      "$ref": "#/$defs/HostExportExecutionReportRequestOperation"
+    },
+    "params": {
+      "$ref": "#/$defs/HostExportExecutionReportRequestParams"
+    },
+    "project_id": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ProjectId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "request_id": {
+      "$ref": "#/$defs/ObjectId"
+    },
+    "scope": {
+      "$ref": "#/$defs/HostProjectScope"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "api_version",
+    "request_id",
+    "project_id",
+    "scope",
+    "operation",
+    "params"
+  ],
+  "$defs": {
+    "ApiVersion": {
+      "type": "string",
+      "enum": [
+        "0.1"
+      ]
+    },
+    "ExecutionContractVersion": {
+      "type": "string",
+      "enum": [
+        "sf.execution/2.0-draft11"
+      ]
+    },
+    "ExecutionEpochId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "ExecutionIdentity": {
+      "type": "object",
+      "properties": {
+        "execution_epoch_id": {
+          "$ref": "#/$defs/ExecutionEpochId"
+        },
+        "host_context_session_id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "project_id": {
+          "$ref": "#/$defs/ProjectId"
+        },
+        "session_id": {
+          "$ref": "#/$defs/ExecutionSessionId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "session_id",
+        "execution_epoch_id",
+        "project_id",
+        "host_context_session_id"
+      ]
+    },
+    "ExecutionReportDestination": {
+      "type": "object",
+      "properties": {
+        "purpose": {
+          "$ref": "#/$defs/ExecutionReportDestinationPurpose"
+        },
+        "selection_id": {
+          "$ref": "#/$defs/ObjectId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "selection_id",
+        "purpose"
+      ]
+    },
+    "ExecutionReportDestinationPurpose": {
+      "type": "string",
+      "enum": [
+        "export_execution_report"
+      ]
+    },
+    "ExecutionReportSource": {
+      "type": "object",
+      "properties": {
+        "execution_revision": {
+          "$ref": "#/$defs/SafeUint"
+        },
+        "identity": {
+          "$ref": "#/$defs/ExecutionIdentity"
+        },
+        "read_origin": {
+          "$ref": "#/$defs/ExecutionReportSourceReadOrigin"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "read_origin",
+        "identity",
+        "execution_revision"
+      ]
+    },
+    "ExecutionReportSourceReadOrigin": {
+      "type": "string",
+      "enum": [
+        "host",
+        "cloud"
+      ]
+    },
+    "ExecutionSessionId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "HostExportExecutionReportRequestOperation": {
+      "type": "string",
+      "enum": [
+        "export_execution_report"
+      ]
+    },
+    "HostExportExecutionReportRequestParams": {
+      "type": "object",
+      "properties": {
+        "execution_contract_version": {
+          "$ref": "#/$defs/ExecutionContractVersion"
+        },
+        "formats": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/HostExportExecutionReportRequestParamsFormatsItem"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "prediction": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PredictionExecutionLink"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "revision": {
+          "$ref": "#/$defs/SafeUint"
+        },
+        "selected_destination_ref": {
+          "$ref": "#/$defs/ExecutionReportDestination"
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ExecutionReportSource"
+          },
+          "maxItems": 2,
+          "minItems": 1
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "execution_contract_version",
+        "revision",
+        "sources",
+        "formats",
+        "selected_destination_ref",
+        "prediction"
+      ]
+    },
+    "HostExportExecutionReportRequestParamsFormatsItem": {
+      "type": "string",
+      "enum": [
+        "pdf",
+        "html",
+        "csv",
+        "json"
+      ]
+    },
+    "HostProjectScope": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "$ref": "#/$defs/HostProjectScopeKind"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ]
+    },
+    "HostProjectScopeKind": {
+      "type": "string",
+      "enum": [
+        "project"
+      ]
+    },
+    "ObjectId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "PredictionExecutionLink": {
+      "type": "object",
+      "properties": {
+        "execution": {
+          "$ref": "#/$defs/ExecutionReportSource"
+        },
+        "prediction": {
+          "$ref": "#/$defs/PredictionRunReference"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "prediction",
+        "execution"
+      ]
+    },
+    "PredictionRunReference": {
+      "type": "object",
+      "properties": {
+        "input_ref": {
+          "$ref": "#/$defs/ReportRunInputRef"
+        },
+        "run_id": {
+          "$ref": "#/$defs/RunId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "run_id",
+        "input_ref"
+      ]
+    },
+    "ProjectId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "ReportRunInputRef": {
+      "type": "object",
+      "properties": {
+        "project_id": {
+          "$ref": "#/$defs/ProjectId"
+        },
+        "project_revision": {
+          "$ref": "#/$defs/SafeUint"
+        },
+        "scenario_id": {
+          "$ref": "#/$defs/ScenarioId"
+        },
+        "scenario_revision": {
+          "$ref": "#/$defs/SafeUint"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "project_id",
+        "project_revision",
+        "scenario_id",
+        "scenario_revision"
+      ]
+    },
+    "RunId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "SafeUint": {
+      "type": "integer",
+      "format": "uint64",
+      "maximum": 9007199254740991,
+      "minimum": 0
+    },
+    "ScenarioId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    }
+  }
+}

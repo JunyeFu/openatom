@@ -1,0 +1,122 @@
+{
+  "document_kind": "P0_01_steps3_4_window5_persistence_history_integration_tests",
+  "date": "2026-10-15 Asia/Shanghai",
+  "owner": "实现窗口5",
+  "status": "eight_host_integration_groups_passed_in_central_workspace_run",
+  "dispatch_ref": "docs/04_开发与验收/P0-01_保存重开与会话历史切片.json",
+  "task_id": "P0-01",
+  "covered_original_steps": [
+    3,
+    4
+  ],
+  "owned_files": [
+    "packages/commands/tests/project_persistence_history.rs",
+    "docs/04_开发与验收/P0-01_保存历史_窗口5.json"
+  ],
+  "independent_expectations_fixed_before_implementation_execution": true,
+  "cases": [
+    {
+      "id": "W5-PH-01",
+      "test": "frozen_save_finishes_at_r_while_r_plus_one_stays_dirty_and_save_keeps_undo",
+      "expected": "真实Save先Queued且无result；锁外Owned工作执行前仍可编辑R+1。完成只写冻结R，SavedProject报告R/current R+1/dirty；再存当前才clean；保存不清undo，undo递增修订且不倒退磁盘。 drain后尚未run仍Queued；实际run开始后、finish前为Running且无result，不提前虚报运行。",
+      "actual_result": "passed_in_final_central_workspace_run"
+    },
+    {
+      "id": "W5-PH-02",
+      "test": "copied_directory_import_is_staged_until_explicit_open_then_can_edit_and_save",
+      "expected": "复制完整实际目录后以Workspace Import(OpenProject)真实读取；TaskScope是Workspace会话、输入修订0；完成ImportDraft不替换当前脏工程。明确choices及departure后同ID/完整数据，历史清空，继续编辑并保存到新目录。 普通Project信息Issue的blocks为空时不要求accept_missing_as_draft，数据无损。 非空真子集、重复身份、非空重绑定分别拒绝；当前Project/修订/dirty保持，随后真实Undo/Redo证明历史未被消耗；全量明确确认仍可采用。",
+      "actual_result": "passed_in_final_central_workspace_run"
+    },
+    {
+      "id": "W5-PH-03",
+      "test": "corrupt_or_missing_required_documents_leave_project_revision_and_history_intact",
+      "expected": "坏根JSON与缺active_project文档分别实际读取失败；Task Failed且无成功result；当前Project/revision/dirty保持，之后undo仍能恢复原合法编辑。 有效manifest.missing非空或Project Issue.blocks非空：未明确接受拒绝，明确accept_missing_as_draft=true可采用；拒绝不动历史。 明确接受后get_context.issues仍可见原manifest缺项或工程阻断Issue。",
+      "actual_result": "passed_in_final_central_workspace_run"
+    },
+    {
+      "id": "W5-PH-04",
+      "test": "selected_directories_cannot_be_forged_repurposed_or_used_by_another_session",
+      "expected": "路径只经可信select_directory；未知token、purpose不符、无令牌授权的跨session请求拒绝，未排入I/O且工程/修订/磁盘不变。 外部会话持有可信登记的真实Import令牌、合法ImportPackage操作权限及同工程授权，仍不可排入Workspace OpenProject；上下文不宣传该操作，拒绝后无I/O且当前工程不变。",
+      "actual_result": "passed_in_final_central_workspace_run"
+    },
+    {
+      "id": "W5-PH-05",
+      "test": "cancel_before_io_preserves_old_root_but_committed_work_wins_late_cancel",
+      "expected": "Queued取消后真实工作不生成文件成功，旧根和dirty保留；工作已commit但Host尚未finish时的取消不能抹去文件提交，finish后Completed有SavedProject，再取消仍Completed。",
+      "actual_result": "passed_in_final_central_workspace_run"
+    },
+    {
+      "id": "W5-PH-06",
+      "test": "undo_redo_replays_batches_with_monotonic_revisions_and_new_edits_clear_redo",
+      "expected": "设置+PutObject同批可一次undo/redo；多次历史内容准确且每次新修订；stale拒绝不消耗堆栈，新普通编辑清redo；切工程后旧历史不可用。",
+      "actual_result": "passed_in_final_central_workspace_run"
+    },
+    {
+      "id": "W5-PH-07",
+      "test": "history_uses_current_undo_redo_branches_and_fields_not_original_edit_authority",
+      "expected": "只有原Set/Put分支不能Undo；有Undo但无受影响字段也拒绝。Project/revision/历史/ledger不变，随后具当前Undo/Redo及字段授权但无原Set分支的会话可以按原内容执行。",
+      "actual_result": "passed_in_final_central_workspace_run"
+    },
+    {
+      "id": "W5-PH-08",
+      "test": "undoing_creation_never_refunds_budget_and_redo_same_id_does_not_charge_twice",
+      "expected": "外部创建占额度；Undo删除对象但账本不退，另建ID拒绝且不破坏redo；Redo恢复同ID且账本不增。失败授权保持工程/修订/堆栈/账本。",
+      "actual_result": "passed_in_final_central_workspace_run"
+    }
+  ],
+  "contract_refs": [
+    "docs/04_开发与验收/P0-01_保存重开与会话历史切片.json#/private_implementation_interfaces",
+    "packages/commands/src/api.rs",
+    "packages/domain/src/models.rs",
+    "docs/03_架构与契约/公开操作与宿主调用契约.json",
+    "docs/03_架构与契约/全层类型与工程格式.json#/storage",
+    "docs/03_架构与契约/共享状态与所有权.json"
+  ],
+  "planned_command_after_source_ready": "cargo test -p sf-commands --locked --test project_persistence_history",
+  "source_ready_notification_received": true,
+  "actual_result": {
+    "initial_target_run": {
+      "runner": "实现窗口1集中执行",
+      "command": "cargo test -p sf-commands --test project_persistence_history --locked",
+      "passed": 6,
+      "failed": 2,
+      "failed_tests": [
+        "copied_directory_import_is_staged_until_explicit_open_then_can_edit_and_save",
+        "corrupt_or_missing_required_documents_leave_project_revision_and_history_intact"
+      ],
+      "observed_failure": "Host将该Import任务的明确全量对象/定义确认误判为不支持的子集；保留全量确认正例，已交核心拥有者修复。",
+      "stdout": ".work/p0-01-persistence-history/independent-tests.stdout.txt",
+      "stderr": ".work/p0-01-persistence-history/independent-tests.stderr.txt",
+      "coverage_note": "这是补入非法确认、UI-only及issues可见性断言前的首轮执行；新增断言待集中workspace回归。"
+    },
+    "local_static_check": "rustfmt --edition 2024 --check packages/commands/tests/project_persistence_history.rs",
+    "final_workspace_run": {
+      "runner": "实现窗口1集中执行，本窗只读取结果",
+      "command": "npm.cmd run test:rust",
+      "workspace_passed": 79,
+      "workspace_failed": 0,
+      "window5_passed": 8,
+      "window5_failed": 0,
+      "stdout": ".work/p0-01-persistence-history/verification/workspace-tests.stdout.txt",
+      "stderr": ".work/p0-01-persistence-history/verification/workspace-tests.stderr.txt",
+      "evidence_scope": "真实Rust Host dispatch、实际临时目录文件读写与会话历史；包含固定后的全量确认正例、非法subset/重复/重绑定负例、ExternalAgent Workspace Open UI-only负例及已接受缺口可见性断言。",
+      "remaining_scope": "整项P0-01与真实Tauri进程检查、人工验收由统筹接收，本窗不据Rust通过代报。"
+    }
+  },
+  "scope_limits": [
+    "只测试真实Rust ProjectHost与实际临时目录，不调用存储/历史纯函数代替dispatch。",
+    "目录由可信select_directory登记，wire中只传SelectedFileRef。",
+    "本窗不修改Host/store/history/Tauri实现、公共配置/锁/状态或其他窗口测试。",
+    "不重复旧49组；不启动业务前端/Figma，不提交或推送。",
+    "完整九类/已有专业与Run文档的无损携带、路径/链接安全和Windows具体失败型由store拥有者及统筹补齐，不用本最小工程代替全覆盖。"
+  ],
+  "whole_P0_01_done": false,
+  "actual_Tauri_startup": false,
+  "human_acceptance": null,
+  "central_verification": {
+    "runner": "实现窗口1",
+    "pending": false,
+    "instruction": "文件固定后由统筹统一运行workspace；本窗不另跑Cargo。",
+    "result": "final_workspace_rust_79_passed_0_failed_window5_8_passed"
+  }
+}

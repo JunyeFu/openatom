@@ -1,0 +1,1043 @@
+{
+  "document_kind": "P0_01_Host_slice_independent_review",
+  "task_id": "P0-01",
+  "within_original_step": 2,
+  "window": "实现窗口6",
+  "role": "只读独立复审",
+  "status": "passed_independent_review_for_authorized_P0_01_step2_minimal_Host_slice",
+  "authority_ref": "docs/04_开发与验收/P0-01_Host最小创建读取编辑切片.json#/parallel_dispatch",
+  "writable_files": [
+    "docs/04_开发与验收/P0-01_Host切片_窗口6.json"
+  ],
+  "baseline_refs": [
+    "docs/04_开发与验收/P0-01_Host最小创建读取编辑切片.json",
+    "packages/commands/src/api.rs",
+    "packages/domain/src/models.rs",
+    "docs/03_架构与契约/公开操作与宿主调用契约.json#/wire_contract",
+    "docs/03_架构与契约/公开操作与宿主调用契约.json#/edit_contract",
+    "docs/03_架构与契约/公开操作与宿主调用契约.json#/error_contract",
+    "docs/03_架构与契约/共享状态与所有权.json#/revision_scopes",
+    "docs/04_开发与验收/特征细化/DRF04_Host授权合入.json"
+  ],
+  "review_stage": {
+    "expectations_fixed_before_reviewing_actual_Host_results": true,
+    "actual_core_implementation_reviewed": true,
+    "cargo_executed": false,
+    "resume_condition": "本轮独立复审已接收；后续原步骤3/4须按统筹新的明确切片继续，不在本窗扩展。",
+    "missing_implementation_is_not_a_confirmed_defect": true,
+    "final_sources_and_execution_evidence_reviewed": true
+  },
+  "host_entry_agreement": {
+    "constructor": "sf_commands::ProjectHost::new(host_instance_id:ObjectId, ui_session_id:ObjectId) -> Self",
+    "dispatch": "host.dispatch(&session_id, ApiRequest) -> serde_json::Value; frozen Response<R> wire",
+    "external_registration": "host.register_external_session(HostCallContext) -> Result<(), ApiError>; trusted Host only; ExternalAgent only",
+    "ledger_observation": "host.caller_context(&session_id) -> Option<&HostCallContext>; readonly observation of committed created_objects",
+    "identity": "真实会话注册表提供caller；Request JSON不包含caller、grants或客户端声明的归一化effects。",
+    "error_precedence": [
+      "typed parse",
+      "actual connection and scope",
+      "stale known scope revision",
+      "complete candidate authorization",
+      "reference and business validation"
+    ],
+    "supported_operations": [
+      "describe_capabilities",
+      "get_context",
+      "get_object",
+      "apply_commands"
+    ],
+    "supported_commands": [
+      "Workspace InteractiveUi CreateProject",
+      "Project SetProjectSettings",
+      "Project PutObject(ItemType)",
+      "Project RemoveObject(ItemType)"
+    ],
+    "initial_project_revision": 1,
+    "commit_rule": "成功批次只增加一次工程修订；候选工程、修订和当前grant创建账本共同提交。"
+  },
+  "fixture_conventions": {
+    "isolation": "各案例从独立新Host开始，只有案例内明确列出的步骤连续执行。P为本案例CreateProject真实返回的ProjectId，R为当时真实工程修订；不预造P或复制另一状态模型。",
+    "identities": {
+      "host": "w6-host",
+      "ui": "w6-ui",
+      "external": "w6-agent",
+      "unknown": "w6-unregistered"
+    },
+    "time_reference": {
+      "label": "W6 finite origin",
+      "origin_iso8601": null,
+      "timezone": null
+    },
+    "item_a": {
+      "id": "w6-item-a",
+      "revision": "w6-subject-r1",
+      "title": "A",
+      "unit": "count",
+      "tracking": "individual",
+      "spec_ref": null,
+      "attributes": {},
+      "attribute_schema": []
+    },
+    "item_b": "复制item_a全部字段，仅id=w6-item-b、title=B。",
+    "settings": "从真实工程读取title/time_reference/generation_context/sources；仅修改案例指定字段，其他字段原样传回。",
+    "normal_request": "api_version=0.1；request_id为每次非空独立ID；Workspace显式project_id=null；Project使用真实P；apply_commands显式base_revision；get_object使用Draft与node_index=null。",
+    "grants": "只经可信Host入口注册ExternalAgent。指定allowed_operations、granted_project=P、TaskScope.Edit(EditScope.Project(P))及本案例所需branch/object/field/create授权；未列字段和目标均不授权。",
+    "create_allowance": "需要创建时，kind=ItemType，预算按案例固定；fields明确覆盖item_a完整初始值所需的叶，包括空集合；created_objects初始为空。后续字段变更仍按案例授权。",
+    "snapshots": "比较真实Host读取的工程、get_context修订及caller_context内grant.created_objects；不接受测试私有副本替代真实Host状态。",
+    "denial_invariant": "拒绝不得改变工程、修订、创建账本；错误不得泄露未授权工程内容或机器路径。"
+  },
+  "finite_expectations": [
+    {
+      "id": "W6-H01",
+      "focus": "UI创建与真实读回",
+      "setup": "全新Host，无活动工程。",
+      "stimulus": [
+        "w6-ui调用Workspace get_context，selection=[]。",
+        "w6-ui调用Workspace apply_commands，project_id=null、base_revision=null、commands仅CreateProject，title=W6 P，使用fixture time_reference、departure=Stay。",
+        "捕获返回P；用Project get_context与get_object(Project P, Draft)读回。"
+      ],
+      "expected": [
+        "初始上下文project=null，不伪造工程。",
+        "创建成功，EditCommit.previous_revision=null、new_revision=1；返回真实P，后续工程和上下文均对应P/1。",
+        "Response保留api_version/request_id及真实host/session上下文；未创建库存、Run或专业结果。"
+      ],
+      "status": "reviewed_against_frozen_source_and_available_execution_evidence",
+      "actual_result": {
+        "review_method": "只读真实实现、直接Host/适配测试及W00实际执行日志；不是另写状态模型",
+        "evidence": [
+          "host_creation_read_edit.rs",
+          "native managed_host_starts_without_project/create/read"
+        ],
+        "execution_ref": ".work/p0-01-host/verification/result.json",
+        "individual_case_newly_executed_by_window6": false,
+        "individual_case_runtime_pass_count_claimed": false
+      }
+    },
+    {
+      "id": "W6-H02",
+      "focus": "脏工程切换与旧授权失效",
+      "setup": "创建P并经成功编辑形成dirty；注册仅授权P的外部会话。",
+      "stimulus": [
+        "UI在Workspace请求CreateProject，departure=Stay。",
+        "UI在Workspace请求CreateProject，departure=AlreadySaved，但P实际dirty。",
+        "UI在Workspace请求CreateProject，departure=DiscardAfterTasksTerminal；本切片无活动长任务。",
+        "旧外部会话读取旧P，并尝试读取新Q。"
+      ],
+      "expected": [
+        "前两步均不得切换/丢弃dirty P；具体拒绝码按既有departure契约核对，不以客户端AlreadySaved声明替代真实保存状态。",
+        "明确丢弃后才创建不同身份Q，Q从修订1开始。",
+        "旧P授权不继承到Q，旧Scope不可继续访问；不将本案例视为保存重开验证。"
+      ],
+      "status": "reviewed_against_frozen_source_and_available_execution_evidence",
+      "actual_result": {
+        "review_method": "只读真实实现、直接Host/适配测试及W00实际执行日志；不是另写状态模型",
+        "evidence": [
+          "host_creation_read_edit.rs dirty Stay/AlreadySaved/discard and session revocation",
+          "ProjectHost::create"
+        ],
+        "execution_ref": ".work/p0-01-host/verification/result.json",
+        "individual_case_newly_executed_by_window6": false,
+        "individual_case_runtime_pass_count_claimed": false
+      }
+    },
+    {
+      "id": "W6-H03",
+      "focus": "真实会话身份与报文伪造",
+      "setup": "全新Host，并另建有活动工程的独立子场景。",
+      "stimulus": [
+        "以w6-unregistered调dispatch发送合法get_context。",
+        "在合法请求JSON额外加入caller/origin/edit_grants/session_id，再从实际解析入口提交。",
+        "可信register_external_session尝试注册origin=InteractiveUi的上下文。"
+      ],
+      "expected": [
+        "未注册会话PermissionDenied；无活动工程也不能先暴露其他错误或内容。",
+        "额外身份字段在解析边界InvalidInput；不能覆盖真实caller。",
+        "external注册入口拒绝InteractiveUi，不产生UI权限会话。"
+      ],
+      "status": "reviewed_against_frozen_source_and_available_execution_evidence",
+      "actual_result": {
+        "review_method": "只读真实实现、直接Host/适配测试及W00实际执行日志；不是另写状态模型",
+        "evidence": [
+          "host_authorization_atomicity.rs registration/wire identity tests",
+          "project_api.rs identity boundary tests and native checks"
+        ],
+        "execution_ref": ".work/p0-01-host/verification/result.json",
+        "individual_case_newly_executed_by_window6": false,
+        "individual_case_runtime_pass_count_claimed": false
+      }
+    },
+    {
+      "id": "W6-H04",
+      "focus": "无活动工程、跨工程与操作授权",
+      "setup": "先观察无工程UI，再在独立Host创建P；外部会话仅授权P和get_context。",
+      "stimulus": [
+        "无工程UI以Project Scope读取对象。",
+        "外部会话用不同ProjectId Q读取上下文。",
+        "外部会话对P发送get_object，操作未授予。",
+        "跨工程Q请求同时携带stale revision和不存在对象。"
+      ],
+      "expected": [
+        "已认证UI缺活动Project返回NoActiveProject。",
+        "跨工程和未授予操作均PermissionDenied。",
+        "跨工程优先于revision/对象存在性；错误与上下文均不泄露Q内容。"
+      ],
+      "status": "reviewed_against_frozen_source_and_available_execution_evidence",
+      "actual_result": {
+        "review_method": "只读真实实现、直接Host/适配测试及W00实际执行日志；不是另写状态模型",
+        "evidence": [
+          "host_scope_revision.rs no-active/foreign-project/disabled-operation tests",
+          "ProjectHost::admit"
+        ],
+        "execution_ref": ".work/p0-01-host/verification/result.json",
+        "individual_case_newly_executed_by_window6": false,
+        "individual_case_runtime_pass_count_claimed": false
+      }
+    },
+    {
+      "id": "W6-H05",
+      "focus": "Scope不混用与未实现分支",
+      "setup": "P当前修订R；真实UI调用。",
+      "stimulus": [
+        "已授权P下请求DefinitionDraft scope。",
+        "Workspace get_object、Project describe_capabilities等不允许的operation/scope组合。",
+        "正常Scope中调用本切片未实现的operation或PutObject非ItemType、Undo、Redo。"
+      ],
+      "expected": [
+        "未实现DefinitionDraft明确UnsupportedCapability，不借用Project修订执行。",
+        "非法Scope组合按正式Scope规则明确拒绝，不静默改Scope。",
+        "未实现操作/命令明确UnsupportedCapability，不声称成功。"
+      ],
+      "status": "reviewed_against_frozen_source_and_available_execution_evidence",
+      "actual_result": {
+        "review_method": "只读真实实现、直接Host/适配测试及W00实际执行日志；不是另写状态模型",
+        "evidence": [
+          "host_scope_revision.rs DefinitionDraft test",
+          "native known_unimplemented_operation_is_explicit",
+          "unsupported-batch tests"
+        ],
+        "execution_ref": ".work/p0-01-host/verification/result.json",
+        "individual_case_newly_executed_by_window6": false,
+        "individual_case_runtime_pass_count_claimed": false
+      }
+    },
+    {
+      "id": "W6-H06",
+      "focus": "修订冲突优先于候选授权",
+      "setup": "P由R成功编辑为R+1；外部会话有P/apply_commands，但没有指定目标字段授权。",
+      "stimulus": [
+        "以base_revision=R提交越权ItemType替换，目标还可同时不存在。",
+        "同一请求改为当前base_revision=R+1再提交。"
+      ],
+      "expected": [
+        "第一步RevisionConflict，expected_revision为请求R、actual_revision为真实R+1。",
+        "第二步才进入完整候选授权并PermissionDenied；不先泄露MissingReference。",
+        "两次均满足denial_invariant。"
+      ],
+      "status": "reviewed_against_frozen_source_and_available_execution_evidence",
+      "actual_result": {
+        "review_method": "只读真实实现、直接Host/适配测试及W00实际执行日志；不是另写状态模型",
+        "evidence": [
+          "host_scope_revision.rs stale revision tests",
+          "ProjectHost::apply revision check before candidate authorization"
+        ],
+        "execution_ref": ".work/p0-01-host/verification/result.json",
+        "individual_case_newly_executed_by_window6": false,
+        "individual_case_runtime_pass_count_claimed": false
+      }
+    },
+    {
+      "id": "W6-H07",
+      "focus": "必需修订与工作区创建边界",
+      "setup": "正常已创建P，另保留无工程Host；使用真实UI/已注册ExternalAgent。",
+      "stimulus": [
+        "Project apply_commands显式base_revision=null。",
+        "Workspace CreateProject带非null project_id或base_revision。",
+        "外部Agent在Workspace尝试CreateProject，哪怕allowed_operations含apply_commands。"
+      ],
+      "expected": [
+        "Project缺并发前提和Workspace错误头部按正式契约拒绝，不自动填当前修订。",
+        "外部Agent创建PermissionDenied，不能隐式切换工程。",
+        "拒绝均不改变活动工程或修订。"
+      ],
+      "status": "reviewed_against_frozen_source_and_available_execution_evidence",
+      "actual_result": {
+        "review_method": "只读真实实现、直接Host/适配测试及W00实际执行日志；不是另写状态模型",
+        "evidence": [
+          "host_authorization_atomicity.rs external Workspace creation denial",
+          "ProjectHost::apply/create header and base revision checks"
+        ],
+        "execution_ref": ".work/p0-01-host/verification/result.json",
+        "individual_case_newly_executed_by_window6": false,
+        "individual_case_runtime_pass_count_claimed": false
+      }
+    },
+    {
+      "id": "W6-H08",
+      "focus": "真实编辑批次与一次修订",
+      "setup": "P修订1；真实UI。",
+      "stimulus": [
+        "同一Project apply_commands(base_revision=1)依次SetProjectSettings(title=W6 edited)、PutObject(item_a)、PutObject(item_b)。",
+        "读回Project、ItemType A/B与get_context。",
+        "当前修订下RemoveObject(A)，再读取A。"
+      ],
+      "expected": [
+        "首批成功且只从1变为2，previous_revision=1/new_revision=2。",
+        "读回值与真实提交一致；上下文dirty与工程修订一致。",
+        "删除成功后从2变为3，A读取MissingReference，B仍存在。"
+      ],
+      "status": "reviewed_against_frozen_source_and_available_execution_evidence",
+      "actual_result": {
+        "review_method": "只读真实实现、直接Host/适配测试及W00实际执行日志；不是另写状态模型",
+        "evidence": [
+          "host_scope_revision.rs multi-command once-revision tests",
+          "host_creation_read_edit.rs actual readback",
+          "real remove/create budget tests"
+        ],
+        "execution_ref": ".work/p0-01-host/verification/result.json",
+        "individual_case_newly_executed_by_window6": false,
+        "individual_case_runtime_pass_count_claimed": false
+      }
+    },
+    {
+      "id": "W6-H09",
+      "focus": "整对象差异授权",
+      "setup": "UI先创建A；外部会话仅授权PutObject及A的/title，另对Project Settings仅授权/title。",
+      "stimulus": [
+        "PutObject(A)只改title。",
+        "以当前base_revision提交同一A，同时改title与unit。",
+        "SetProjectSettings只改title，然后另一次夹带time_reference.label变化。"
+      ],
+      "expected": [
+        "仅改已授权title成功，各成功批次只增一次修订。",
+        "夹带unit或time_reference叶均PermissionDenied。",
+        "不能因为整对象包含/title授权就放过其他改变；拒绝满足denial_invariant。"
+      ],
+      "status": "reviewed_against_frozen_source_and_available_execution_evidence",
+      "actual_result": {
+        "review_method": "只读真实实现、直接Host/适配测试及W00实际执行日志；不是另写状态模型",
+        "evidence": [
+          "host_authorization_atomicity.rs title leaf/unauthorized settings/atomic batch tests",
+          "ProjectHost::authorize_update"
+        ],
+        "execution_ref": ".work/p0-01-host/verification/result.json",
+        "individual_case_newly_executed_by_window6": false,
+        "individual_case_runtime_pass_count_claimed": false
+      }
+    },
+    {
+      "id": "W6-H10",
+      "focus": "替换删除叶与对象删除权限",
+      "setup": "A含可读属性x；外部仅授权A的/title，无属性删除权限，且can_remove=false。",
+      "stimulus": [
+        "整对象PutObject(A)改title同时删除attributes.x。",
+        "RemoveObject(A)，即使branches包含RemoveObject。"
+      ],
+      "expected": [
+        "删除未授权叶PermissionDenied；归一化须覆盖移除字段。",
+        "对象删除同时要求分支和can_remove，第二步PermissionDenied。",
+        "A、其属性、工程修订与账本不变。"
+      ],
+      "status": "reviewed_with_explicit_unsupported_container_effect_limit",
+      "actual_result": {
+        "review_method": "只读真实实现、直接Host/适配测试及W00实际执行日志；不是另写状态模型",
+        "evidence": [
+          "ProjectHost::authorize_update/authorize_remove",
+          "changed_leaves unsupported container replacement boundary",
+          "existing unauthorized leaf tests"
+        ],
+        "execution_ref": ".work/p0-01-host/verification/result.json",
+        "individual_case_newly_executed_by_window6": false,
+        "individual_case_runtime_pass_count_claimed": false
+      }
+    },
+    {
+      "id": "W6-H11",
+      "focus": "改ID不能借旧目标权限创建",
+      "setup": "A已存在；外部仅有A的/title授权，无创建预算。",
+      "stimulus": [
+        "复制A，改id为新B后PutObject，其他字段保持一致。",
+        "读取A及B。"
+      ],
+      "expected": [
+        "PermissionDenied；新ID按真实当前状态归一为创建，不能沿用A的字段权限。",
+        "A不变，B不存在，修订与账本不变。"
+      ],
+      "status": "reviewed_against_frozen_source_and_available_execution_evidence",
+      "actual_result": {
+        "review_method": "只读真实实现、直接Host/适配测试及W00实际执行日志；不是另写状态模型",
+        "evidence": [
+          "ProjectHost::apply target ID resolution and authorize_create",
+          "host_authorization_atomicity.rs create-only allowance cannot upsert existing target"
+        ],
+        "execution_ref": ".work/p0-01-host/verification/result.json",
+        "individual_case_newly_executed_by_window6": false,
+        "individual_case_runtime_pass_count_claimed": false
+      }
+    },
+    {
+      "id": "W6-H12",
+      "focus": "跨批累计创建预算与删除不退还",
+      "setup": "外部grant授权ItemType创建、删除A及B，max_new_objects=1，完整创建叶已授权。",
+      "stimulus": [
+        "创建A。",
+        "删除A。",
+        "当前修订下尝试创建不同新ID B。"
+      ],
+      "expected": [
+        "前两步成功，各增一次修订。",
+        "删除后created_objects仍包含A。",
+        "创建B PermissionDenied，预算按grant生命周期累计，B不存在，拒绝时修订/账本不变。"
+      ],
+      "status": "reviewed_against_frozen_source_and_available_execution_evidence",
+      "actual_result": {
+        "review_method": "只读真实实现、直接Host/适配测试及W00实际执行日志；不是另写状态模型",
+        "evidence": [
+          "host_authorization_atomicity.rs cumulative/deletion budget tests",
+          "deleted_created_identity_remains_advertised_and_restorable_without_budget_refund"
+        ],
+        "execution_ref": ".work/p0-01-host/verification/result.json",
+        "individual_case_newly_executed_by_window6": false,
+        "individual_case_runtime_pass_count_claimed": false
+      }
+    },
+    {
+      "id": "W6-H13",
+      "focus": "越权失败不提交候选或扣预算",
+      "setup": "外部有创建A所需完整授权与预算1，但无Project title编辑权限；P修订R。",
+      "stimulus": [
+        "单批先PutObject(A)，再SetProjectSettings改变title。",
+        "核对真实工程、修订与created_objects。",
+        "当前R下单独创建A。"
+      ],
+      "expected": [
+        "混合批次PermissionDenied。",
+        "A不存在、title不变、修订仍R、账本仍空。",
+        "后续单独创建A成功，证明失败候选未消耗预算。"
+      ],
+      "status": "reviewed_against_frozen_source_and_available_execution_evidence",
+      "actual_result": {
+        "review_method": "只读真实实现、直接Host/适配测试及W00实际执行日志；不是另写状态模型",
+        "evidence": [
+          "host_authorization_atomicity.rs legal creation followed by denied command rollback test",
+          "ProjectHost::apply candidate/ledger commit point"
+        ],
+        "execution_ref": ".work/p0-01-host/verification/result.json",
+        "individual_case_newly_executed_by_window6": false,
+        "individual_case_runtime_pass_count_claimed": false
+      }
+    },
+    {
+      "id": "W6-H14",
+      "focus": "不支持命令使整个批次失败",
+      "setup": "P修订R；UI及另一个已授权创建的外部子场景。",
+      "stimulus": [
+        "同批先PutObject(A)，再Undo或PutObject非ItemType。",
+        "读回工程、修订和外部创建账本。"
+      ],
+      "expected": [
+        "返回UnsupportedCapability，A不部分落库。",
+        "revision仍R，外部账本不变；不把已执行前缀当部分成功。"
+      ],
+      "status": "reviewed_against_frozen_source_and_available_execution_evidence",
+      "actual_result": {
+        "review_method": "只读真实实现、直接Host/适配测试及W00实际执行日志；不是另写状态模型",
+        "evidence": [
+          "host_authorization_atomicity.rs legal creation followed by unsupported command atomicity test",
+          "ProjectHost::apply deferred failure"
+        ],
+        "execution_ref": ".work/p0-01-host/verification/result.json",
+        "individual_case_newly_executed_by_window6": false,
+        "individual_case_runtime_pass_count_claimed": false
+      }
+    },
+    {
+      "id": "W6-H15",
+      "focus": "授权后引用错误仍原子失败",
+      "setup": "外部授权创建A、RemoveObject及不存在ItemType M的can_remove，预算1；P修订R。",
+      "stimulus": [
+        "单批先创建A，再RemoveObject(M)。",
+        "单独在当前R创建A。"
+      ],
+      "expected": [
+        "授权通过后MissingReference，M仅在其明确授权Scope中报出。",
+        "首批工程/修订/账本全不变，第二步A创建成功。",
+        "不把引用失败变成成功，也不预先提交创建账本。"
+      ],
+      "status": "reviewed_against_frozen_source_and_available_execution_evidence",
+      "actual_result": {
+        "review_method": "只读真实实现、直接Host/适配测试及W00实际执行日志；不是另写状态模型",
+        "evidence": [
+          "host_creation_read_edit.rs missing-reference batch rollback test",
+          "ProjectHost::apply deferred failure plus cloned ledger"
+        ],
+        "execution_ref": ".work/p0-01-host/verification/result.json",
+        "individual_case_newly_executed_by_window6": false,
+        "individual_case_runtime_pass_count_claimed": false
+      }
+    },
+    {
+      "id": "W6-H16",
+      "focus": "同基修订竞争与当前Host授权",
+      "setup": "UI和外部Agent均基于P/R准备不同的已授权标题；并在独立子场景保存一份旧HostCallContext副本。",
+      "stimulus": [
+        "先提交UI请求，再提交仍带R的Agent请求。",
+        "可信Host更新或撤销该session的权限后，用旧请求内容和旧本地context副本继续调用实际dispatch。"
+      ],
+      "expected": [
+        "首个提交成功为R+1，后一个RevisionConflict，不覆盖。",
+        "dispatch从当前Host会话记录取权限，旧副本/旧JSON不恢复授权。",
+        "不要求新增并发框架；核对已有短事务提交边界。"
+      ],
+      "status": "reviewed_against_frozen_source_and_available_execution_evidence",
+      "actual_result": {
+        "review_method": "只读真实实现、直接Host/适配测试及W00实际执行日志；不是另写状态模型",
+        "evidence": [
+          "host_scope_revision.rs stale/concurrent-base ordering",
+          "host_creation_read_edit.rs old external session revocation",
+          "ProjectHost session lookup and serialized Tauri Mutex"
+        ],
+        "execution_ref": ".work/p0-01-host/verification/result.json",
+        "individual_case_newly_executed_by_window6": false,
+        "individual_case_runtime_pass_count_claimed": false
+      }
+    },
+    {
+      "id": "W6-H17",
+      "focus": "能力目录真实且按当前grant过滤",
+      "setup": "新Host与P均观察；外部仅授予describe_capabilities/get_context，另设允许窄字段编辑的子场景。",
+      "stimulus": [
+        "UI Workspace describe_capabilities。",
+        "外部Workspace describe_capabilities。",
+        "对目录未支持操作作一次真实合法形状调用。"
+      ],
+      "expected": [
+        "UI仅列4项实际能力及本切片支持Scope/命令；无伪造provider/完整12类对象编辑。",
+        "外部目录与其当前allowed_operations及编辑授权一致；不把计划18项当已实现。",
+        "未支持操作明确UnsupportedCapability；目录不得与实际调用矛盾。"
+      ],
+      "status": "reviewed_against_frozen_source_and_available_execution_evidence",
+      "actual_result": {
+        "review_method": "只读真实实现、直接Host/适配测试及W00实际执行日志；不是另写状态模型",
+        "evidence": [
+          "capabilities_only_advertise_external_edits_with_a_usable_authorized_path",
+          "deleted_created_identity_remains_advertised_and_restorable_without_budget_refund",
+          "four real operations and emitted Schema refs"
+        ],
+        "execution_ref": ".work/p0-01-host/verification/result.json",
+        "individual_case_newly_executed_by_window6": false,
+        "individual_case_runtime_pass_count_claimed": false
+      }
+    },
+    {
+      "id": "W6-H18",
+      "focus": "Tauri真实消费者与测试独立性",
+      "setup": "统筹通知实现和结果就绪后才审查；本文件固定预期阶段不启动Cargo。",
+      "stimulus": [
+        "只读检查project_host.rs、Commands导出、project_api.rs、Tauri lib.rs和三份Host测试真实增量。",
+        "核对实际桌面--p0-01-host-smoke的启动链、请求、返回和进程结果。",
+        "核对测试调用真实ProjectHost/dispatch及实际Tauri入口，不以自写状态模型替代。"
+      ],
+      "expected": [
+        "实际Tauri入口从真实窗口与托管Host会话注入UI身份，客户端不能传caller伪造。",
+        "桌面烟测实际完成创建→读取→编辑→读回，经相同Host，成功提交修订可核对。",
+        "Rust测试、类型检查与桌面启动分别记录实际覆盖及结果；不能以编译通过代替桌面Host业务验证。"
+      ],
+      "status": "reviewed_against_frozen_source_and_available_execution_evidence",
+      "actual_result": {
+        "review_method": "只读真实实现、直接Host/适配测试及W00实际执行日志；不是另写状态模型",
+        "evidence": [
+          "Tauri managed state plus actual WebviewWindow identity source",
+          "four Tauri adapter tests",
+          "native desktop-host-66468 ten real checks"
+        ],
+        "execution_ref": ".work/p0-01-host/verification/result.json",
+        "individual_case_newly_executed_by_window6": false,
+        "individual_case_runtime_pass_count_claimed": false
+      }
+    }
+  ],
+  "review_delivery_rules": {
+    "findings": "就绪后只读复审；有缺陷时给P1/P2、真实文件与行号、影响和最小复现；不修代码、不反写有限预期迎合实现。",
+    "result_policy": "预期已固定不等于实现通过；当前未执行、不计通过数。公共任务状态由统筹维护。",
+    "excluded": [
+      "业务前端/Figma",
+      "保存重开",
+      "撤销重做实现",
+      "其他对象编辑",
+      "Engine运行",
+      "MCP管道认证实现",
+      "其他P任务"
+    ],
+    "tests_to_read_after_ready": [
+      "packages/commands/tests/host_scope_revision.rs",
+      "packages/commands/tests/host_authorization_atomicity.rs",
+      "packages/commands/tests/host_creation_read_edit.rs"
+    ]
+  },
+  "actual_result": {
+    "status": "passed_independent_review_for_authorized_scope",
+    "implementation_passed": true,
+    "findings_closed": [
+      "W6-HOST-F01",
+      "W6-HOST-F02",
+      "W6-HOST-F03"
+    ],
+    "open_confirmed_defects": 0,
+    "actual_workspace_tests": 49,
+    "actual_schema_count": 11,
+    "actual_schema_cases": 34,
+    "actual_native_checks": 10,
+    "current_verification_passed": true,
+    "source_and_execution_evidence_ref": ".work/p0-01-host/verification/result.json",
+    "independent_review_execution": "窗口6只读源码、测试和W00实际日志；未重复测试，未修改实现或公共状态",
+    "supported_operations": [
+      "describe_capabilities",
+      "get_context",
+      "get_object",
+      "apply_commands"
+    ],
+    "whole_task_done": false,
+    "human_acceptance": null
+  },
+  "implementation_review": {
+    "stage": "core_code_review_in_progress_final_evidence_pending",
+    "observed_source": "packages/commands/src/project_host.rs as observed after 2026-10-15T21:46:20+08:00 formatting/filter update",
+    "read_files": [
+      "packages/commands/src/project_host.rs",
+      "packages/commands/src/lib.rs",
+      "packages/commands/tests/host_scope_revision.rs",
+      "packages/commands/tests/host_authorization_atomicity.rs",
+      "packages/commands/tests/host_creation_read_edit.rs",
+      "apps/planner/src-tauri/src/lib.rs"
+    ],
+    "evidence_level": "真实控制流只读审查；尚未自行执行运行复现或接收最终独立测试/桌面进程结果。",
+    "observations": [
+      "Project候选与caller克隆中的创建账本只在成功路径统一写回；当前代码未见先提交预算再验证的路径。",
+      "普通缺失删除引用先暂存，支持命令授权完成后才返回；stale revision检查在候选授权之前。",
+      "外部数组修改、容器/标量替换明确拒绝；本阶段未确认object/null差异可绕过字段授权。",
+      "测试直接调用真实ProjectHost/dispatch；已有binary早于最新Host源码，未将这些旧binary输出作为当前代码验证。"
+    ],
+    "concurrent_fix_observed": {
+      "issue": "只用edit_grants非空过滤，旧工程grant仍显示apply_commands",
+      "result": "最新源码已加入current_grant与支持分支过滤，此旧形态不列为未修复发现；零实际对象/创建权限的剩余问题见F02。",
+      "runtime_reverified": false
+    },
+    "pending_checks": [
+      "两项代码路径的真实运行复现与修复回归",
+      "完整批次同时含不支持分支及越权命令时的错误优先顺序",
+      "三份最新Host测试结果",
+      "实际Tauri适配和原生桌面进程烟测"
+    ],
+    "final_acceptance": null
+  },
+  "findings": [
+    {
+      "id": "W6-HOST-F01",
+      "priority": "P2",
+      "status": "closed_after_source_and_actual_desktop_process_evidence_review",
+      "fix_recheck": {
+        "observed_source_time": "2026-10-15T21:47:44+08:00",
+        "actual_source_read": true,
+        "constructor_authority": "new() uses frozen_operations(), containing all 18 typed operation names",
+        "advertised_capabilities": "implemented_operations() still contains only describe_capabilities/get_context/get_object/apply_commands",
+        "query_path": "UI QueryModuleLibrary is no longer stopped by allowed_operations; Workspace admission or dispatch's unimplemented branch yields UnsupportedCapability",
+        "source_anchors": [
+          "ProjectHost::new",
+          "ProjectHost::admit",
+          "ProjectHost::dispatch",
+          "frozen_operations",
+          "implemented_operations"
+        ],
+        "runtime_regression_executed_by_window6": false,
+        "final_closure": {
+          "source_reverified": true,
+          "execution_ref": ".work/p0-01-host/verification/result.json#/native_host_smoke/checks",
+          "actual_check": "known_unimplemented_operation_is_explicit",
+          "observed_code": "UnsupportedCapability",
+          "actual_request_operation": "query_module_library",
+          "desktop_exit_code": 0,
+          "method": "只读审查现行源码及实际桌面进程已执行Response；未自行重复运行",
+          "current_version_confirmation": "最终22:04:49-22:04:50真实desktop-host-66468对已知但未实现query_module_library返回UnsupportedCapability"
+        }
+      },
+      "title": "实际UI调用未实现操作被误报为PermissionDenied",
+      "file": "packages/commands/src/project_host.rs",
+      "lines": [
+        103,
+        119,
+        128
+      ],
+      "evidence": "new()只把4个implemented_operations加入UI.allowed_operations；未实现操作先经admit检查allowed_operations，在dispatch的UnsupportedCapability分支前即返回PermissionDenied。",
+      "reproduce": [
+        "ProjectHost::new(host, ui)，以ui在Workspace调用合法ApiRequest::QueryModuleLibrary。",
+        "请求project_id=null；params={category_filters:[],industry:null,product_family:null,site_envelope:null,source_scope:[]}。",
+        "观察outcome.data.code；实际代码路径为PermissionDenied，切片及错误契约要求UnsupportedCapability。"
+      ],
+      "expected": "真实UI的未实现能力应明确UnsupportedCapability；不能以权限不足提示用户申请实际上不存在的能力。",
+      "runtime_executed": false,
+      "related_expectations": [
+        "W6-H05",
+        "W6-H17"
+      ],
+      "fix_owner": "W00",
+      "reviewer_changed_implementation": false
+    },
+    {
+      "id": "W6-HOST-F02",
+      "priority": "P2",
+      "status": "closed_after_restoration_fix_direct_dispatch_regression_and_current_full_verification",
+      "fix_recheck": {
+        "observed_source_time": "2026-10-15T21:50:31+08:00",
+        "actual_source_read": true,
+        "original_counterexample": "空PutObject branch且objects/creates均空：available_commands返回空，原F02形态的代码修复成立。",
+        "filter_coverage": "当前P与caller.granted_project一致；可编辑现有对象叶、可删除现有ItemType或完整创建叶加剩余预算，才列命令；apply_commands随真实命令列表过滤。",
+        "regression_read": {
+          "file": "packages/commands/src/project_host.rs",
+          "test": "capabilities_only_advertise_external_edits_with_a_usable_authorized_path",
+          "cases": [
+            "empty-put",
+            "parent-field",
+            "spent-create",
+            "title",
+            "create"
+          ],
+          "actual_Host_dispatch_used": true,
+          "executed_by_window6": false
+        },
+        "remaining_issue": {
+          "priority": "P2",
+          "title": "已记账ID可重建时能力目录仍隐藏put_object",
+          "files_and_lines": [
+            {
+              "file": "packages/commands/src/project_host.rs",
+              "lines": [
+                421,
+                430,
+                909,
+                920,
+                932
+              ]
+            },
+            {
+              "file": "packages/commands/src/project_host.rs",
+              "lines": [
+                1396,
+                1406,
+                1427
+              ]
+            }
+          ],
+          "evidence": "available_commands只用distinct created_objects数量<max_new_objects决定creation_path；authorize_create在already_created=true时跳过预算耗尽判断。目录与实际授权路径不一致。",
+          "reproduce": [
+            "在P登记grant：PutObject+RemoveObject、ItemType创建预算1、完整基线叶、A的can_remove=true。",
+            "实际创建A，再删除A。created_objects仍含A且工程无A，预算已耗尽。",
+            "describe_capabilities隐藏put_object/apply_commands；当前修订PutObject同ID A却经already_created=true成功。",
+            "现有spent-create用例把已记账ID放入ledger但工程中不存在它，断言目录为空，未提交该ID验证实际结果。"
+          ],
+          "expected": "目录应与当前实际可执行路径一致；保留distinct-ID累计与删除不退预算，不得为通过目录测试而重置账本。",
+          "runtime_executed": false
+        },
+        "final_closure": "closed; restoration regression again passed in final 49-test/10-native-check version",
+        "final_source_recheck": {
+          "host_source_last_write": "2026-10-15T21:50:31+08:00",
+          "catalog_condition": "distinct committed ItemType IDs < max_new_objects",
+          "dispatch_condition": "already_created OR remaining distinct-ID budget",
+          "source_still_contains_residual": true,
+          "total_tests_cover_residual_recreation": false,
+          "direct_runtime_reproduction_executed_by_window6": false
+        },
+        "restoration_fix_recheck": {
+          "host_source_last_write": "2026-10-15T21:57:51+08:00",
+          "code_ref": "packages/commands/src/project_host.rs#available_commands",
+          "condition": "完整ItemType创建叶 AND (distinct-ID余额 OR ledger存在当前工程中缺失的已记账ItemType ID)",
+          "authorization_unchanged": "authorize_create仍按already_created或剩余distinct-ID预算判定；删除不退预算",
+          "regression_ref": "packages/commands/src/project_host.rs#deleted_created_identity_remains_advertised_and_restorable_without_budget_refund",
+          "regression_actual_sequence": [
+            "createA success revision2",
+            "removeA success revision3",
+            "catalog advertises put_object and apply_commands",
+            "restoreA success revision4",
+            "createB PermissionDenied",
+            "ledger length1 and ID=A; project still revision4"
+          ],
+          "execution_log": ".work/p0-01-host/verification/workspace-tests.stdout.txt",
+          "observed_test_result": "test project_host::tests::deleted_created_identity_remains_advertised_and_restorable_without_budget_refund ... ok",
+          "current_core_lib_tests_passed": 4,
+          "old_spent_case": "原spent-create输入现先由真实UI创建already-created，只有已记账ID仍存在时才断言无可创建路径",
+          "verification_method": "只读源码和真实workspace测试stdout，不重复执行作者中间态",
+          "full_verification_pending": false,
+          "final_closure": {
+            "verification_ref": ".work/p0-01-host/verification/result.json",
+            "verification_status": "passed",
+            "workspace_distinct_tests": 49,
+            "core_tests": 4,
+            "direct_regression_result": "deleted_created_identity_remains_advertised_and_restorable_without_budget_refund ... ok",
+            "native_checks": 10,
+            "native_passed": true,
+            "final_run_finished": "2026-10-15T22:04:50+08:00",
+            "source_unchanged_since": "2026-10-15T21:57:51+08:00",
+            "method": "只读现行源码、真实回归stdout和全套实际结果；未自行重复执行"
+          }
+        }
+      },
+      "title": "能力过滤只看branch，零对象与零创建权限仍宣称可编辑",
+      "file": "packages/commands/src/project_host.rs",
+      "lines": [
+        282,
+        295,
+        351,
+        355
+      ],
+      "evidence": "当前修订已补current_grant及支持分支过滤，但未检查objects/fields/can_remove/creates。一个当前P下branches=[PutObject]、objects=[]、creates=[]的grant仍让目录列出apply_commands与put_object，所有实际PutObject均无法授权。",
+      "reproduce": [
+        "创建P；可信注册ExternalAgent，granted_project=P，allowed_operations=[DescribeCapabilities,ApplyCommands]。",
+        "edit_grants放一份scope=Edit(Project(P))、branches=[PutObject]、objects=[]、creates=[]、created_objects=[]的grant。",
+        "Workspace describe_capabilities返回apply_commands/put_object；P下创建或更新ItemType均PermissionDenied。"
+      ],
+      "expected": "能力目录应按当前实际可用编辑授权过滤；仅分支标签不能形成可执行的对象/创建能力。",
+      "runtime_executed": false,
+      "related_expectations": [
+        "W6-H17"
+      ],
+      "fix_owner": "W00",
+      "reviewer_changed_implementation": false
+    },
+    {
+      "id": "W6-HOST-F03",
+      "priority": "P2",
+      "status": "closed_after_header_classification_fix_and_current_execution_evidence_review",
+      "title": "Tauri将未知版本和未知操作统一误报InvalidInput",
+      "file": "apps/planner/src-tauri/src/project_api.rs",
+      "lines": [
+        42,
+        48
+      ],
+      "evidence": "dispatch_ui只调用serde_json::from_value<ApiRequest>，所有解析失败统一返回InvalidInput；没有按公开契约区分未知API版本和未知operation。",
+      "contract_ref": "docs/03_架构与契约/公开操作与宿主调用契约.json#/error_contract/unknown_header",
+      "base_request": {
+        "api_version": "0.1",
+        "request_id": "w6-header",
+        "project_id": null,
+        "scope": {
+          "kind": "workspace"
+        },
+        "operation": "get_context",
+        "params": {
+          "selection": []
+        }
+      },
+      "reproduce": [
+        "通过真实main窗口/dispatch_ui提交基准请求，仅将api_version改为0.2。代码路径返回InvalidInput；应为UnsupportedSchema。",
+        "独立新请求保留api_version=0.1，仅将operation改为w6_unknown_operation。代码路径返回InvalidInput；应为UnsupportedCapability。",
+        "保留额外caller/缺必需字段等原InvalidInput行为；不能把所有Serde失败改成UnsupportedCapability。"
+      ],
+      "expected": "未知版本、未知操作与真正结构/字段错误按冻结错误契约分别分类，保持冻结Response外壳。",
+      "runtime_executed": false,
+      "existing_tests": "project_api_rejects_wire_identity_and_malformed_requests只覆盖身份伪造/缺project_id/空输入/非main窗口；桌面烟测覆盖已知但未实现query，不覆盖未知头部。",
+      "fix_owner": "W00/实现窗口2",
+      "reviewer_changed_implementation": false,
+      "latest_recheck": {
+        "source_last_write": "2026-10-15T21:50:02+08:00",
+        "lines": [
+          42,
+          48
+        ],
+        "source_unchanged": true,
+        "current_total_verification_status": "passed",
+        "current_tests_do_not_cover_unknown_headers": true,
+        "exact_version_counterexample": {
+          "scope": {
+            "kind": "workspace"
+          },
+          "request_id": "w6-version",
+          "operation": "get_context",
+          "params": {
+            "selection": []
+          },
+          "api_version": "0.2",
+          "project_id": null
+        },
+        "version_expected": "UnsupportedSchema",
+        "version_actual_code_path": "InvalidInput",
+        "exact_operation_counterexample": {
+          "scope": {
+            "kind": "workspace"
+          },
+          "request_id": "w6-operation",
+          "operation": "w6_unknown_operation",
+          "params": {
+            "selection": []
+          },
+          "api_version": "0.1",
+          "project_id": null
+        },
+        "operation_expected": "UnsupportedCapability",
+        "operation_actual_code_path": "InvalidInput",
+        "runtime_reproduced_by_window6": false
+      },
+      "fix_recheck": {
+        "source_last_write": "2026-10-15T22:03:20+08:00",
+        "source_ref": "apps/planner/src-tauri/src/project_api.rs",
+        "header_classification": "字符串头先用现有ApiVersion/OperationName反序列化：未知版本UnsupportedSchema，未知operation UnsupportedCapability；未复制操作列表。",
+        "strict_body": "其他输入继续由完整ApiRequest拒绝；数字头和错误params仍InvalidInput。",
+        "identity": "非main仍在头部协商前PermissionDenied，未放宽UI身份。",
+        "regression": "project_api_unknown_headers_keep_frozen_errors_without_mutation",
+        "regression_cases": [
+          "version 0.2 UnsupportedSchema",
+          "unknown operation UnsupportedCapability",
+          "numeric version InvalidInput",
+          "numeric operation InvalidInput",
+          "wrong params InvalidInput",
+          "上述每例非main PermissionDenied",
+          "每次拒绝后同Host工程/修订/上下文不变"
+        ],
+        "reviewer_read_source_and_test": true,
+        "execution_for_this_source_verified_by_window6": true,
+        "prior_48_version_ref": ".work/p0-01-host/pre-header-classification-verification/result.json",
+        "final_current_result_pending": false,
+        "final_closure": {
+          "source_last_write": "2026-10-15T22:03:20+08:00",
+          "actual_test": "project_api_unknown_headers_keep_frozen_errors_without_mutation ... ok",
+          "actual_test_ref": ".work/p0-01-host/verification/workspace-tests.stdout.txt",
+          "test_execution": "W00执行workspace；窗口6只读源码、回归代码和实际stdout独立核对",
+          "workspace_tests": 49,
+          "tauri_adapter_tests": 4,
+          "native_checks": 10,
+          "native_host_instance": "desktop-host-66468",
+          "current_verification_ref": ".work/p0-01-host/verification/result.json",
+          "latest_validation_finished": "2026-10-15T22:04:50+08:00"
+        }
+      }
+    }
+  ],
+  "implementation_passed": true,
+  "whole_task_done": false,
+  "human_acceptance": null,
+  "final_review": {
+    "status": "passed_for_authorized_minimal_Host_slice",
+    "input_ref": "docs/04_开发与验收/P0-01_Host最小创建读取编辑切片.json",
+    "source_refs": [
+      "packages/commands/src/project_host.rs",
+      "packages/commands/src/lib.rs",
+      "apps/planner/src-tauri/src/project_api.rs",
+      "apps/planner/src-tauri/src/lib.rs"
+    ],
+    "source_and_test_results_read": true,
+    "verification_ref": ".work/p0-01-host/verification/result.json",
+    "actual_completed_checks": [
+      {
+        "key": "format",
+        "exit_code": 0,
+        "started_at": "2026-10-15T22:04:14.0231456+08:00",
+        "finished_at": "2026-10-15T22:04:14.4240484+08:00",
+        "stdout_ref": ".work/p0-01-host/verification/format.stdout.txt",
+        "stderr_ref": ".work/p0-01-host/verification/format.stderr.txt"
+      },
+      {
+        "key": "workspace-tests",
+        "exit_code": 0,
+        "started_at": "2026-10-15T22:04:14.4445025+08:00",
+        "finished_at": "2026-10-15T22:04:32.6734263+08:00",
+        "stdout_ref": ".work/p0-01-host/verification/workspace-tests.stdout.txt",
+        "stderr_ref": ".work/p0-01-host/verification/workspace-tests.stderr.txt"
+      },
+      {
+        "key": "generate-contracts",
+        "exit_code": 0,
+        "started_at": "2026-10-15T22:04:32.6764234+08:00",
+        "finished_at": "2026-10-15T22:04:35.9597363+08:00",
+        "stdout_ref": ".work/p0-01-host/verification/generate-contracts.stdout.txt",
+        "stderr_ref": ".work/p0-01-host/verification/generate-contracts.stderr.txt"
+      },
+      {
+        "key": "typecheck",
+        "exit_code": 0,
+        "started_at": "2026-10-15T22:04:35.9619011+08:00",
+        "finished_at": "2026-10-15T22:04:37.1986315+08:00",
+        "stdout_ref": ".work/p0-01-host/verification/typecheck.stdout.txt",
+        "stderr_ref": ".work/p0-01-host/verification/typecheck.stderr.txt"
+      },
+      {
+        "key": "schema-consumer",
+        "exit_code": 0,
+        "started_at": "2026-10-15T22:04:37.2004495+08:00",
+        "finished_at": "2026-10-15T22:04:38.6969094+08:00",
+        "stdout_ref": ".work/p0-01-host/verification/schema-consumer.stdout.txt",
+        "stderr_ref": ".work/p0-01-host/verification/schema-consumer.stderr.txt"
+      },
+      {
+        "key": "desktop-build",
+        "exit_code": 0,
+        "started_at": "2026-10-15T22:04:38.6986514+08:00",
+        "finished_at": "2026-10-15T22:04:49.9285733+08:00",
+        "stdout_ref": ".work/p0-01-host/verification/desktop-build.stdout.txt",
+        "stderr_ref": ".work/p0-01-host/verification/desktop-build.stderr.txt"
+      },
+      {
+        "key": "desktop-host-smoke",
+        "exit_code": 0,
+        "started_at": "2026-10-15T22:04:49.9305043+08:00",
+        "finished_at": "2026-10-15T22:04:50.9004087+08:00",
+        "stdout_ref": ".work/p0-01-host/verification/desktop-host-smoke.stdout.txt",
+        "stderr_ref": ".work/p0-01-host/verification/desktop-host-smoke.stderr.txt"
+      }
+    ],
+    "retained_execution": {
+      "workspace_distinct_tests": 49,
+      "workspace_failed": 0,
+      "host_independent_tests": 24,
+      "core_tests": 4,
+      "tauri_adapter_tests": 4,
+      "retained_boundary_tests": 17,
+      "schema_count": 11,
+      "schema_cases": 34,
+      "native_checks": 10,
+      "native_passed": true,
+      "native_host_instance": "desktop-host-66468",
+      "all_command_exit_codes_zero": true,
+      "generation_typecheck_desktop_build_passed": true,
+      "rerun_by_window6": false,
+      "actual_executor": "W00实际运行；窗口6只读独立复核真实源码/测试/原始执行证据"
+    },
+    "native_consumer_review": {
+      "managed_host": "lib.rs .manage(ProjectApiState::new()) supplies the state consumed by smoke() and project_api command",
+      "ui_identity": "project_api takes actual WebviewWindow plus managed state; dispatch_ui uses Host-owned ui_session_id and rejects non-main label",
+      "same_host_observed": "最终desktop-host-66468同一ProjectId完成创建修订1、编辑修订2、冲突/拒绝后保持修订2",
+      "actual_transport_limit": "原生进程启动及同托管state路径已执行；未声称业务前端操作或MCP外部进程认证"
+    },
+    "findings_closed": [
+      "W6-HOST-F01",
+      "W6-HOST-F02",
+      "W6-HOST-F03"
+    ],
+    "findings_open": [],
+    "why_passing_tests_are_insufficient": "已确认缺陷均有源码修复与真实针对性回归；本片仅接收已声明的Scope/对象/Command和宿主路径，不推定全产品或未支持编辑能力。",
+    "implementation_passed": true,
+    "whole_task_done": false,
+    "unchanged_expectations": 18,
+    "next_condition": "本片独立复审结束；下一实现切片取统筹的原步骤3保存重开派发。",
+    "prior_47_version_verification_ref": ".work/p0-01-host/pre-capability-restore-verification/result.json",
+    "prior_48_version_verification_ref": ".work/p0-01-host/pre-header-classification-verification/result.json",
+    "source_timestamps": [
+      {
+        "last_write": "2026-10-15T21:57:51.7961547+08:00",
+        "file": "packages/commands/src/project_host.rs"
+      },
+      {
+        "last_write": "2026-10-15T22:03:20.4486936+08:00",
+        "file": "apps/planner/src-tauri/src/project_api.rs"
+      },
+      {
+        "last_write": "2026-10-15T21:50:16.8924032+08:00",
+        "file": "apps/planner/src-tauri/src/lib.rs"
+      }
+    ],
+    "acceptance_limits": [
+      "四项操作仅在本片明确Scope/Project与ItemType对象/四类命令范围可用；不是完整18操作或12对象编辑",
+      "外部数组、稳定元素编辑与容器替换等未支持effects明确UnsupportedCapability；有限预期按源与实际覆盖审查，不额外宣称18套独立运行通过",
+      "工程仅内存；保存重开、撤销重做、Engine/库存/时钟未在本片接收",
+      "实际桌面进程和同managed Host已验证；无业务前端/Figma操作或MCP外部进程认证声称",
+      "implementation_passed仅指本片实现复审；P0-01整项和用户验收保持未完成/空"
+    ]
+  }
+}

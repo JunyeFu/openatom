@@ -1,0 +1,389 @@
+{
+  "document_kind": "S06_01_static_and_finite_design_checks_not_product_engine",
+  "checkpoint": "S06-01",
+  "status": "passed_static_specification_and_finite_reasoning",
+  "algorithm_rules": 14,
+  "logical_handoffs": 6,
+  "applicable_views": 6,
+  "finite_cases": [
+    {
+      "id": "SCHED-01",
+      "rules": [
+        "ALG-01",
+        "ALG-02"
+      ],
+      "result": [
+        "D",
+        "B",
+        "C",
+        "A"
+      ],
+      "status": "passed_finite_design_reasoning_not_product_Run"
+    },
+    {
+      "id": "SCHED-02",
+      "rules": [
+        "ALG-03"
+      ],
+      "result": {
+        "committed": false,
+        "stock": {
+          "shell": 1,
+          "pcb": 0
+        },
+        "capacity": 1
+      },
+      "status": "passed_finite_design_reasoning_not_product_Run"
+    },
+    {
+      "id": "SCHED-03",
+      "rules": [
+        "ALG-03",
+        "ALG-06"
+      ],
+      "result": {
+        "free": [
+          "D0"
+        ],
+        "ordinary_for_self": [
+          "D0",
+          "D3"
+        ],
+        "excluded_from_free_count": 4
+      },
+      "status": "passed_finite_design_reasoning_not_product_Run"
+    },
+    {
+      "id": "SCHED-04",
+      "rules": [
+        "ALG-04"
+      ],
+      "result": {
+        "phases": [
+          [
+            "load",
+            0,
+            5
+          ],
+          [
+            "auto",
+            5,
+            35
+          ],
+          [
+            "unload",
+            40,
+            45
+          ]
+        ],
+        "worker_active": 10,
+        "active": 40,
+        "waiting": 5,
+        "completion": 45
+      },
+      "status": "passed_finite_design_reasoning_not_product_Run"
+    },
+    {
+      "id": "SCHED-05",
+      "rules": [
+        "ALG-04"
+      ],
+      "result": null,
+      "status": "passed_finite_design_reasoning_not_product_Run"
+    },
+    {
+      "id": "SCHED-06",
+      "rules": [
+        "ALG-04"
+      ],
+      "result": {
+        "active_intervals": [
+          [
+            5,
+            10
+          ],
+          [
+            20,
+            23
+          ]
+        ],
+        "completion": 23,
+        "active": 8,
+        "waiting": 10,
+        "phase_resource_intervals": [
+          [
+            5,
+            10
+          ],
+          [
+            20,
+            23
+          ]
+        ],
+        "job_resource_interval": [
+          5,
+          23
+        ]
+      },
+      "status": "passed_finite_design_reasoning_not_product_Run"
+    },
+    {
+      "id": "SCHED-07",
+      "rules": [
+        "ALG-06",
+        "ALG-07"
+      ],
+      "result": {
+        "created": 1,
+        "transfers": 1,
+        "accepted_at": 40,
+        "wait_interval": [
+          20,
+          40
+        ],
+        "final_holder": "destination"
+      },
+      "status": "passed_finite_design_reasoning_not_product_Run"
+    },
+    {
+      "id": "SCHED-08",
+      "rules": [
+        "ALG-08"
+      ],
+      "result": [
+        "rework",
+        "isolate",
+        "pending",
+        "released"
+      ],
+      "status": "passed_finite_design_reasoning_not_product_Run"
+    },
+    {
+      "id": "SCHED-09",
+      "rules": [
+        "ALG-07",
+        "ALG-08"
+      ],
+      "result": {
+        "full": {
+          "holder": "inspection",
+          "resources_released": false,
+          "quality": "pending"
+        },
+        "after_declared_consumer_frees_slot": {
+          "holder": "pending_store",
+          "resources_released": true,
+          "quality": "pending"
+        }
+      },
+      "status": "passed_finite_design_reasoning_not_product_Run"
+    },
+    {
+      "id": "SCHED-10",
+      "rules": [
+        "ALG-10"
+      ],
+      "result": {
+        "nonpartial": {
+          "accepted_after_first": 0,
+          "accepted_after_second": 2,
+          "physical_received": 2,
+          "completion": 20,
+          "tardiness": 0
+        },
+        "partial": {
+          "accepted_after_first": 1,
+          "accepted_after_second": 2,
+          "completion": 20
+        },
+        "storage_count_after_acceptance": 2
+      },
+      "status": "passed_finite_design_reasoning_not_product_Run"
+    },
+    {
+      "id": "SCHED-11",
+      "rules": [
+        "ALG-04",
+        "ALG-07",
+        "ALG-09"
+      ],
+      "result": {
+        "arrived": 370,
+        "received": 420,
+        "carrier_available": 425,
+        "wait": [
+          370,
+          420
+        ],
+        "carrier_held": [
+          360,
+          425
+        ],
+        "same_cargo_identity": true
+      },
+      "status": "passed_finite_design_reasoning_not_product_Run"
+    },
+    {
+      "id": "SCHED-12",
+      "rules": [
+        "ALG-10",
+        "ALG-11",
+        "ALG-13"
+      ],
+      "result": {
+        "accepted": 1,
+        "occupied": 20,
+        "wait_union": 30
+      },
+      "status": "passed_finite_design_reasoning_not_product_Run"
+    },
+    {
+      "id": "SCHED-13",
+      "rules": [
+        "ALG-01",
+        "ALG-12",
+        "ALG-14"
+      ],
+      "result": {
+        "frozen_work_ms": 2,
+        "next_work_ms": 3,
+        "run_calculation_complete": true,
+        "target_complete": false,
+        "missing_target_quantity": 1,
+        "last_time": 10
+      },
+      "status": "passed_finite_design_reasoning_not_product_Run"
+    },
+    {
+      "id": "SCHED-14",
+      "rules": [
+        "ALG-01"
+      ],
+      "result": {
+        "acyclic_accepted": true,
+        "unbounded_rejected": true,
+        "finite_zero_work_output_count": 1
+      },
+      "status": "passed_finite_design_reasoning_not_product_Run"
+    },
+    {
+      "id": "SCHED-15",
+      "rules": [
+        "ALG-05"
+      ],
+      "result": [
+        false,
+        false,
+        false,
+        true
+      ],
+      "status": "passed_finite_design_reasoning_not_product_Run"
+    },
+    {
+      "id": "SCHED-16",
+      "rules": [
+        "ALG-03",
+        "ALG-09"
+      ],
+      "result": [
+        150,
+        0,
+        0
+      ],
+      "status": "passed_finite_design_reasoning_not_product_Run"
+    },
+    {
+      "id": "SCHED-17",
+      "rules": [
+        "ALG-01",
+        "ALG-05"
+      ],
+      "result": {
+        "setup": [
+          60,
+          75
+        ],
+        "assembly_earliest": 100,
+        "after_one_idle_setup_no_same_time_family_flip": true
+      },
+      "status": "passed_finite_design_reasoning_not_product_Run"
+    },
+    {
+      "id": "SCHED-18",
+      "rules": [
+        "ALG-13",
+        "ALG-14"
+      ],
+      "result": {
+        "eligible": [
+          true,
+          false,
+          false,
+          false
+        ],
+        "cost": null
+      },
+      "status": "passed_finite_design_reasoning_not_product_Run"
+    },
+    {
+      "id": "SCHED-19",
+      "rules": [
+        "ALG-01",
+        "ALG-04"
+      ],
+      "result": [
+        null,
+        40
+      ],
+      "status": "passed_finite_design_reasoning_not_product_Run"
+    },
+    {
+      "id": "SCHED-20",
+      "rules": [
+        "ALG-03",
+        "ALG-13"
+      ],
+      "result": {
+        "any_busy": 30,
+        "occupied_capacity_time": 40,
+        "available_capacity_time": 80,
+        "utilization": 0.5
+      },
+      "status": "passed_finite_design_reasoning_not_product_Run"
+    },
+    {
+      "id": "SCHED-21",
+      "rules": [
+        "ALG-01",
+        "ALG-04",
+        "ALG-06",
+        "ALG-07",
+        "ALG-12"
+      ],
+      "result": {
+        "step_at": 10,
+        "processed": [
+          "release",
+          "arrival",
+          "start",
+          "zero_done",
+          "transfer"
+        ],
+        "accepted": 1,
+        "resource_free": true,
+        "pending_output": 0,
+        "next_event_at": 20
+      },
+      "status": "passed_finite_design_reasoning_not_product_Run"
+    }
+  ],
+  "protected_old_expectation_checks": {
+    "six_business_variants": "matched_original_functions_without_writing_source",
+    "two_control_box_variants": "resource_holder_buffer_checks_440_570_425_preserved",
+    "two_hall_arithmetic": "125_205_110_140_preserved"
+  },
+  "actual_product_runtime": null,
+  "actual_product_cases_executed": 0,
+  "actual_frontend_or_Figma_started": false,
+  "errors": []
+}

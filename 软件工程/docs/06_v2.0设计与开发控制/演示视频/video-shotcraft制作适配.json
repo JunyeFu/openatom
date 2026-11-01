@@ -1,0 +1,540 @@
+{
+  "date": "2026-10-28",
+  "package": "V2-11",
+  "gap": "V2-11-G01",
+  "revision": "task8-shotcraft-design-20261028",
+  "mode": "自主自由创作的方法，当前仅环境与阶段0–3设计；不使用Ink Press固定模板，不提前放行采集/成片",
+  "product_brief": {
+    "audience": "竞赛评审，解释行业问题、任务8机制与实际正常使用流程",
+    "purpose": "赛事任务8核心功能与使用流程演示",
+    "promise": "跟着一张订单，看设备状态如何经过云数据与模型决策，变成可观察的接续生产。",
+    "core_case": {
+      "planned_scope": "四个独立软件设备端，经真实云服务执行双工序；软件在环，不是实体设备现场",
+      "case_roles": {
+        "A": "粗加工候选",
+        "B": "粗加工替代候选",
+        "C": "精整候选",
+        "D": "精整替代候选"
+      },
+      "planned_input_units": 12,
+      "planned_final_target_units": 12,
+      "logical_operations_per_unit": 2,
+      "planned_logical_jobs": 24,
+      "route": "粗加工A/B → 中间缓存 → 精整C/D → 最终成品",
+      "disturbance": "A已开工作业且尚有兼容待派工作时维护；在途工作按原规则结清，B承接未开始工作；新恢复状态被接受后A再接单",
+      "new_recording_actual_run_id": null,
+      "new_recording_actual_execution_id": null,
+      "new_recording_actual_accepted_units": null,
+      "new_recording_actual_command_attempts": null,
+      "new_recording_actual_result": null,
+      "historical_reference": "SF-v2.0.1-20261027-R1双工序实测，仅作输入及素材准备依据",
+      "auxiliary_case": "1.6.0本地纸包装/专业计算及有界Agent操作，明确分案例，不接续为主云Run",
+      "boundary": "不以92模型/31联线/本地100接受量冒充四设备云会话或92设备整厂云执行"
+    },
+    "duration_seconds": 360,
+    "fps": 30,
+    "resolution": [
+      1920,
+      1080
+    ],
+    "visual_words": [
+      "工业",
+      "准确",
+      "清楚"
+    ],
+    "must_show": [
+      "连接与当前设备状态",
+      "设备模型与双工序订单",
+      "同会话命令/反馈/维护改派/恢复",
+      "DaaS查询及独立消费/全量导出",
+      "时间轴/实际报告复盘",
+      "保存新进程恢复",
+      "有界Agent及专业能力短展示",
+      "实际交付入口"
+    ]
+  },
+  "requirements_to_execution": [
+    {
+      "requirement": "继承产品视觉与工业调性",
+      "decision": "从实际CSS提取字体/色板/布局；不借模板品牌或AI站点皮肤",
+      "shots": "all"
+    },
+    {
+      "requirement": "任务8真实闭环优先",
+      "decision": "保留订单故事与维护因果；装饰只为读懂信息",
+      "shots": [
+        "03",
+        "04",
+        "07",
+        "08",
+        "09",
+        "10",
+        "02",
+        "05",
+        "06",
+        "11"
+      ]
+    },
+    {
+      "requirement": "只更新设计",
+      "decision": "选择卡片、样片定位和帧预算，实际源帧保持空；不新增运行/录制/配音/最终导出",
+      "shots": "all"
+    },
+    {
+      "requirement": "真实软件行为不由动画制造",
+      "decision": "真实控件/结果来自录制；动画可圈注或作标识明确的机制示意",
+      "shots": "all"
+    }
+  ],
+  "visual_tokens": {
+    "source": "apps/planner/src/styles/workbench.css :root / titlebar / workspace-body / bottom-dock",
+    "font_family": [
+      "Microsoft YaHei UI",
+      "Microsoft YaHei",
+      "system-ui",
+      "sans-serif"
+    ],
+    "product_colors": {
+      "text": "#172e48",
+      "canvas_base": "#f4f7fa",
+      "panel": "#f9fbfd",
+      "header": "#e5edf5",
+      "border": "#bdcddc",
+      "primary": "#146bc2",
+      "muted": "#60778c",
+      "error": "#9c3425"
+    },
+    "editorial_extension": {
+      "focus_orange": "#ff8b2d",
+      "origin": "沿用已完成运镜试样的单处关注框；不是替换产品语义色"
+    },
+    "layout": "中央大画布、左右可伸缩栏、固定上下工具栏及主时间轴继续作为真实产品视觉；说明字卡用同字体与蓝灰配色",
+    "type_sizes_1080p": {
+      "chapter_title": 84,
+      "corner_label": 42,
+      "caption": 40,
+      "scope_note": 28
+    },
+    "motion": {
+      "character": "沉稳、准确、清楚",
+      "preset": "professional_trust_B2B",
+      "base_transition_frames": 21,
+      "easing": [
+        0,
+        0,
+        0.2,
+        1
+      ],
+      "overshoot": 1,
+      "squash": 0,
+      "camera_shake": 0,
+      "normal_reading_hold_frames": [
+        75,
+        150
+      ],
+      "perspective_for_data_tables": false
+    }
+  },
+  "styleframe_decision": {
+    "state": "not_newly_rendered",
+    "reason": "已有真实工业UI原片及40秒焦点试样，视觉语言已有约束；本轮按实际CSS窄调tokens，不为环境与脚本任务另造宣传片皮肤。当前工具静帧不是新脚本styleframe认可。"
+  },
+  "sequence_adaptation": {
+    "source": "C:\\Users\\fujunye\\.codex\\skills\\video-shotcraft\\references\\sequences\\promo-energy-arc.md",
+    "upstream_scope": "30–60秒产品宣传片默认骨架，文件明确可按产品偏离",
+    "our_scope": "6分钟竞赛产品演示，沿订单→生产→维护→结果→机制和数据服务→交付组织",
+    "kept": [
+      "主体动作≥3秒",
+      "重要信息落定后静止",
+      "功能展示与阅读呼吸交替",
+      "每个装饰性主手法只使用一次"
+    ],
+    "not_adopted": [
+      "强鼓点驱动全片",
+      "长品牌开场/发布会式收尾占比",
+      "四宫格信息轰炸",
+      "发牌/翻飞/闪白/抖屏堆砌"
+    ]
+  },
+  "library_scan": {
+    "cards": 124,
+    "styles": 150,
+    "method": "全部frontmatter生成索引按用途/能量/时长/限制筛选；选中卡全文已读",
+    "selected": [
+      {
+        "name": "title-demote-to-label",
+        "gallery_style_key": "title-demote-to-label",
+        "variant": "A",
+        "hero_shot_id": "01",
+        "card_ref": "C:\\Users\\fujunye\\.codex\\skills\\video-shotcraft\\references\\shots\\typography\\title-demote-to-label.md",
+        "demo_ref": "C:\\Users\\fujunye\\.codex\\skills\\video-shotcraft\\demos\\typography\\title-demote-to-label\\TitleDemoteToLabel.tsx",
+        "gallery_preview_url": "https://vincentwei1021.github.io/video-shotcraft/media/title-demote-to-label.mp4?v=1790980736888",
+        "review_state": "gallery_identity_and_full_card_reviewed_demo_timing_sections_reviewed",
+        "implementation_read_requirement": "完整逐镜头实现前再读准确demo全文及依赖；当前只做分镜，不声称已复现动态样片",
+        "official_preview_playback_performed_this_turn": false
+      },
+      {
+        "name": "cursor-flyover",
+        "gallery_style_key": "cursor-flyover",
+        "variant": "camera_path_adaptation_without_synthetic_UI_response",
+        "hero_shot_id": "05",
+        "card_ref": "C:\\Users\\fujunye\\.codex\\skills\\video-shotcraft\\references\\shots\\camera\\cursor-flyover.md",
+        "demo_ref": "C:\\Users\\fujunye\\.codex\\skills\\video-shotcraft\\demos\\camera\\cursor-flyover\\CursorFlyover.tsx",
+        "gallery_preview_url": "https://vincentwei1021.github.io/video-shotcraft/media/cursor-flyover.mp4?v=1790980736795",
+        "review_state": "gallery_identity_and_full_card_reviewed_demo_timing_sections_reviewed",
+        "implementation_read_requirement": "完整逐镜头实现前再读准确demo全文及依赖；当前只做分镜，不声称已复现动态样片",
+        "official_preview_playback_performed_this_turn": false
+      },
+      {
+        "name": "speed-ramp-freeze",
+        "gallery_style_key": "freeze-annotate",
+        "variant": "annotated_real_frame_hold",
+        "hero_shot_id": "09",
+        "card_ref": "C:\\Users\\fujunye\\.codex\\skills\\video-shotcraft\\references\\shots\\rhythm\\speed-ramp-freeze.md",
+        "demo_ref": "C:\\Users\\fujunye\\.codex\\skills\\video-shotcraft\\demos\\rhythm\\speed-ramp-freeze\\FreezeAnnotateReal.tsx",
+        "gallery_preview_url": "https://vincentwei1021.github.io/video-shotcraft/media/freeze-annotate.mp4?v=1790980736872",
+        "review_state": "gallery_identity_and_full_card_reviewed_demo_timing_sections_reviewed",
+        "implementation_read_requirement": "完整逐镜头实现前再读准确demo全文及依赖；当前只做分镜，不声称已复现动态样片",
+        "official_preview_playback_performed_this_turn": false
+      }
+    ],
+    "rejected": [
+      {
+        "name": "bezier-source-converge-merge",
+        "reason": "本卡会把来源节点吸收消失，与本项目四设备独立持续存在不符；机制段另用清晰闭环图示。"
+      },
+      {
+        "name": "spotlight-hero-card",
+        "reason": "剧场光束、悬浮和绕光会抢走工程字段；使用真实界面上的克制聚焦。"
+      },
+      {
+        "name": "timeline-travel",
+        "reason": "版本刻度卡片不是本项目真实主时间轴，不借其效果替代生产轨道。"
+      }
+    ]
+  },
+  "timeline": [
+    {
+      "shot_id": "01",
+      "display_order": 1,
+      "title": "一张订单，遇到设备维护",
+      "method": "selected_recipe_adaptation",
+      "card": "title-demote-to-label",
+      "gallery_style_key": "title-demote-to-label",
+      "variant": "A",
+      "visual_execution": "前6秒真实结果预览并标“片段预览”；6–10秒“维护之后”标题显影，静置至少20帧，再用26帧连续缩移落成左上小节标签；订单画面接续，不反复做大字特效。",
+      "sound_direction": "以片段预览结束处短停顿建立问题；标题落位后至少30帧不切镜。",
+      "from_frame": 0,
+      "duration_frames": 540,
+      "reading_hold_frames": 75,
+      "planned_inspection_frames": [
+        297,
+        510
+      ],
+      "inspection_state": "planned_not_rendered_new_script",
+      "source_frame_binding": null
+    },
+    {
+      "shot_id": "04",
+      "display_order": 2,
+      "title": "先认识订单和生产路线",
+      "method": "restrained_actual_footage_edit",
+      "card": null,
+      "gallery_style_key": null,
+      "variant": null,
+      "visual_execution": "正视订单及路线，按A/B→C/D→12件目标的方向引导。只使用真实配置；不让设备、文字或工件凭空组装成已生效界面。",
+      "sound_direction": "旁白分三句，最后至少75帧读清目标和两工序。",
+      "from_frame": 540,
+      "duration_frames": 750,
+      "reading_hold_frames": 75,
+      "planned_inspection_frames": [
+        952,
+        1260
+      ],
+      "inspection_state": "planned_not_rendered_new_script",
+      "source_frame_binding": null
+    },
+    {
+      "shot_id": "03",
+      "display_order": 3,
+      "title": "确认四台设备的当前状态",
+      "method": "restrained_actual_footage_edit",
+      "card": null,
+      "gallery_style_key": null,
+      "variant": null,
+      "visual_execution": "真实连接/绑定入口→四设备在线→A的新状态时点。普通PageCam式平移推近，不套卡片飞入或点击假反馈。",
+      "sound_direction": "保留真实新状态到达的关键前后；无意义等待可缩短并标注。",
+      "from_frame": 1290,
+      "duration_frames": 750,
+      "reading_hold_frames": 75,
+      "planned_inspection_frames": [
+        1702,
+        2010
+      ],
+      "inspection_state": "planned_not_rendered_new_script",
+      "source_frame_binding": null
+    },
+    {
+      "shot_id": "07",
+      "display_order": 4,
+      "title": "启动生产：从模型到一条命令",
+      "method": "restrained_actual_footage_edit",
+      "card": null,
+      "gallery_style_key": null,
+      "variant": null,
+      "visual_execution": "真实启动操作→同一作业的选择依据→命令接收→设备。相机不在点击时甩走，三处重点每处稳住再移交。",
+      "sound_direction": "声音只辅助实际动作，命令接收以后给观众核对时间。",
+      "from_frame": 2040,
+      "duration_frames": 900,
+      "reading_hold_frames": 75,
+      "planned_inspection_frames": [
+        2535,
+        2910
+      ],
+      "inspection_state": "planned_not_rendered_new_script",
+      "source_frame_binding": null
+    },
+    {
+      "shot_id": "08",
+      "display_order": 5,
+      "title": "跟着一件物品走完两道工序",
+      "method": "restrained_actual_footage_edit",
+      "card": null,
+      "gallery_style_key": null,
+      "variant": null,
+      "visual_execution": "以同一物品为锚点，在真实画布、工序/holder和回执之间接力；必要时同源画中画，不以自制路径动画代替物品实际状态。",
+      "sound_direction": "主要动作保持正常可读速度；最终接受量处静止不少于75帧。",
+      "from_frame": 2940,
+      "duration_frames": 1050,
+      "reading_hold_frames": 75,
+      "planned_inspection_frames": [
+        3517,
+        3960
+      ],
+      "inspection_state": "planned_not_rendered_new_script",
+      "source_frame_binding": null
+    },
+    {
+      "shot_id": "09",
+      "display_order": 6,
+      "title": "核心转折：A维护，B承接后续工作",
+      "method": "selected_recipe_adaptation",
+      "card": "speed-ramp-freeze",
+      "gallery_style_key": "freeze-annotate",
+      "variant": "annotated_real_frame_hold",
+      "visual_execution": "按维护上报→A不接新单→B的新命令顺序展示。段内第390–457帧计划做67帧定格回看，圈注维护状态；源画面和源时钟同时冻结，并显示“定格回看”，再继续真实后续片段。实际源帧尚未选定。",
+      "sound_direction": "维护前短停，定格处少说一句给读屏；不把暂停效果配成系统报警。",
+      "from_frame": 3990,
+      "duration_frames": 1200,
+      "reading_hold_frames": 75,
+      "planned_inspection_frames": [
+        4650,
+        5160
+      ],
+      "inspection_state": "planned_not_rendered_new_script",
+      "source_frame_binding": null
+    },
+    {
+      "shot_id": "10",
+      "display_order": 7,
+      "title": "恢复与结果：回到这张订单",
+      "method": "restrained_actual_footage_edit",
+      "card": null,
+      "gallery_style_key": null,
+      "variant": null,
+      "visual_execution": "真实恢复新状态→A重新接单→实际结果。主层对照目标与实际接受量，命令数次级列出；禁止自制0→12滚动数字冒充真实进度。",
+      "sound_direction": "结果处静止约3秒；用一句话回应开头，随后提出机制解释。",
+      "from_frame": 5190,
+      "duration_frames": 600,
+      "reading_hold_frames": 90,
+      "planned_inspection_frames": [
+        5520,
+        5760
+      ],
+      "inspection_state": "planned_not_rendered_new_script",
+      "source_frame_binding": null
+    },
+    {
+      "shot_id": "02",
+      "display_order": 8,
+      "title": "回看机制：数据怎样变成生产决策",
+      "method": "restrained_actual_footage_edit",
+      "card": null,
+      "gallery_style_key": null,
+      "variant": null,
+      "visual_execution": "以实际工作区作底，旁侧逐项对应上报/云数据/Host模型决策/命令/反馈；标“机制示意”。四个设备身份保持可见，云服务与唯一生产内核位置分开。",
+      "sound_direction": "语速回稳；不追求强拍或炫技加速。",
+      "from_frame": 5790,
+      "duration_frames": 660,
+      "reading_hold_frames": 75,
+      "planned_inspection_frames": [
+        6153,
+        6420
+      ],
+      "inspection_state": "planned_not_rendered_new_script",
+      "source_frame_binding": null
+    },
+    {
+      "shot_id": "05",
+      "display_order": 9,
+      "title": "刚才的生产数据可以查询",
+      "method": "selected_recipe_adaptation",
+      "card": "cursor-flyover",
+      "gallery_style_key": "cursor-flyover",
+      "variant": "camera_path_adaptation_without_synthetic_UI_response",
+      "visual_execution": "以真实数据页建立全貌，再按筛选条件→一条真实记录→下一页三站巡航。复用demo相机缓动与相机/指示分离方法；只跟随已录真实光标，不生成点击、数字或页面响应。每站阅读75–120帧后再移动。",
+      "sound_direction": "让旁白解释这些数据与刚才订单的关系，不逐格念字段。",
+      "from_frame": 6450,
+      "duration_frames": 900,
+      "reading_hold_frames": 75,
+      "planned_inspection_frames": [
+        6945,
+        7320
+      ],
+      "inspection_state": "planned_not_rendered_new_script",
+      "source_frame_binding": null
+    },
+    {
+      "shot_id": "06",
+      "display_order": 10,
+      "title": "同一份数据，独立读取并全量导出",
+      "method": "restrained_actual_footage_edit",
+      "card": null,
+      "gallery_style_key": null,
+      "variant": null,
+      "visual_execution": "真实界面/独立响应/导出文件依次按同一条记录或条件匹配；同一截止范围保持可读，不伪造终端结果或用生成记录拼成全量导出成功。",
+      "sound_direction": "每次只指一个对应字段，结果处停留。",
+      "from_frame": 7350,
+      "duration_frames": 600,
+      "reading_hold_frames": 75,
+      "planned_inspection_frames": [
+        7680,
+        7920
+      ],
+      "inspection_state": "planned_not_rendered_new_script",
+      "source_frame_binding": null
+    },
+    {
+      "shot_id": "11",
+      "display_order": 11,
+      "title": "回到维护时点，解释这次改派",
+      "method": "restrained_actual_footage_edit",
+      "card": null,
+      "gallery_style_key": null,
+      "variant": null,
+      "visual_execution": "真实主时间轴定位维护与接单时点，再看实际可用的比较/报告。原时间轴不改造成虚构版本长轴；报告缺片仍待补。",
+      "sound_direction": "说明原因后留出读图时间，不朗读整张日志。",
+      "from_frame": 7950,
+      "duration_frames": 750,
+      "reading_hold_frames": 75,
+      "planned_inspection_frames": [
+        8362,
+        8670
+      ],
+      "inspection_state": "planned_not_rendered_new_script",
+      "source_frame_binding": null
+    },
+    {
+      "shot_id": "12",
+      "display_order": 12,
+      "title": "保存之后，还能找回这次执行",
+      "method": "restrained_actual_footage_edit",
+      "card": null,
+      "gallery_style_key": null,
+      "variant": null,
+      "visual_execution": "保留实际保存完成→正常关闭→新OS进程重开的顺序。若省略等待，标“重新打开”；恢复只读历史不混成新派单。",
+      "sound_direction": "少用转场声；让恢复后的原记录承担结论。",
+      "from_frame": 8700,
+      "duration_frames": 600,
+      "reading_hold_frames": 75,
+      "planned_inspection_frames": [
+        9030,
+        9270
+      ],
+      "inspection_state": "planned_not_rendered_new_script",
+      "source_frame_binding": null
+    },
+    {
+      "shot_id": "13",
+      "display_order": 13,
+      "title": "扩展能力：纸包装结构计算",
+      "method": "restrained_actual_footage_edit",
+      "card": null,
+      "gallery_style_key": null,
+      "variant": null,
+      "visual_execution": "标“扩展能力”，从声明范围结果轻推到对应几何，不做高倾角导致尺寸/文字难读；用实际计算画面。",
+      "sound_direction": "用一段简洁口播解释用途，不扩成第二场长教程。",
+      "from_frame": 9300,
+      "duration_frames": 450,
+      "reading_hold_frames": 75,
+      "planned_inspection_frames": [
+        9547,
+        9720
+      ],
+      "inspection_state": "planned_not_rendered_new_script",
+      "source_frame_binding": null
+    },
+    {
+      "shot_id": "14",
+      "display_order": 14,
+      "title": "扩展能力：有界的Agent辅助",
+      "method": "restrained_actual_footage_edit",
+      "card": null,
+      "gallery_style_key": null,
+      "variant": null,
+      "visual_execution": "标“扩展能力”，一次有界请求→授权→真实工程变化；不使用假聊天打字或未发生的编辑动画。",
+      "sound_direction": "旁白与真实授权动作对齐，敏感凭据不入片。",
+      "from_frame": 9750,
+      "duration_frames": 600,
+      "reading_hold_frames": 75,
+      "planned_inspection_frames": [
+        10080,
+        10320
+      ],
+      "inspection_state": "planned_not_rendered_new_script",
+      "source_frame_binding": null
+    },
+    {
+      "shot_id": "15",
+      "display_order": 15,
+      "title": "交付：从演示到可以继续使用",
+      "method": "restrained_actual_footage_edit",
+      "card": null,
+      "gallery_style_key": null,
+      "variant": null,
+      "visual_execution": "真实最终候选交付入口短特写，落到项目图标/作者/经核对链接的静止尾卡；至少90帧可读，不做产品UI碎裂消失。",
+      "sound_direction": "末句落地后留白，默认无BGM，不人为制造发布会音量峰值。",
+      "from_frame": 10350,
+      "duration_frames": 450,
+      "reading_hold_frames": 90,
+      "planned_inspection_frames": [
+        10597,
+        10770
+      ],
+      "inspection_state": "planned_not_rendered_new_script",
+      "source_frame_binding": null
+    }
+  ],
+  "recipe_adaptations": {
+    "title-demote-to-label": "A式短业务标题，20帧站稳与26帧单次缩移保留；字体/色板改用实际产品；不以标题遮盖业务关键状态。",
+    "cursor-flyover": "只采用经过调校的相机与指示分离语法。真实录屏不重造SVG点击或伪UI响应；阅读停留扩至75–120帧，坐标与字体清晰度按实际素材重标。",
+    "freeze-annotate": "保留67帧定格和明确暂停信号，源画面/源时钟共冻；标“定格回看”。去除花哨白闪、手写署名和全屏噪声，圈注只对应已发生的维护事实。"
+  },
+  "sound_plan": {
+    "default_bgm": false,
+    "reason": "保留已定的中文讲解/读屏优先工业演示；上游强tech-house建议不作为本片要求",
+    "sfx": "画面锁定后再以SHOTS[id].from+offset钉帧；本轮不复制或混入音效，不拟造设备报警/实体车间声",
+    "narration": "沿用15段口语旁白及42条逐字字幕草稿；最终按真实声音对齐",
+    "future_bgm_if_selected": "再分析真实BPM/瞬态；未选BGM不安装或执行librosa，避免无效环境与工作"
+  },
+  "project_overrides": {
+    "user_scope_over_skill_default": "先只设计，所以不按pipeline自动进入采集/渲染；不恢复暂停任务1",
+    "commit_policy": "保留用户不自动commit/push的要求，上游逐镜commit建议不执行",
+    "agents": "当前不创建子Agent；技能中的成片独立终检属于未来真正制作交付阶段",
+    "media_truth": "可用图示解释机制，不能伪造命令、结果、授权或将历史多候选片段拼成当前连续执行",
+    "display": "未来可见预览/验收先检测实际主屏，多屏放副屏；本轮CLI渲染为自有隐藏浏览器，无用户工作窗口操作"
+  },
+  "environment_ref": "F:\\SuperFactory-v2-video-20261028\\shotcraft-setup\\environment-check.json",
+  "script_ref": "docs/06_v2.0设计与开发控制/演示视频/演示视频脚本.json",
+  "final_film_complete": false
+}

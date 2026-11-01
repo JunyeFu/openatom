@@ -1,0 +1,194 @@
+{
+  "document_kind": "DQ02_local_repair_and_exact_common_merge_handoff",
+  "date": "2026-10-15",
+  "owner": "复审窗口5",
+  "status": "local_repair_and_common_merge_independently_rechecked",
+  "finding_id": "DQ-02",
+  "public_ownership": "公共NFR JSON/MD、类型/状态/API/准入、全量质量清单由统筹唯一修改；本交接不关闭其状态或填产品actual_result。",
+  "count_invariant": {
+    "NFR_requirements": 11,
+    "required_check_groups": 38,
+    "new_required_groups": 0,
+    "NFR06_existing_groups": 6
+  },
+  "owned_changes": [
+    "packages/reporting/save_commit.reference.py",
+    "docs/03_架构与契约/工程交接与打开.md",
+    "tools/design-quality-audit/window5/check_dq02.py",
+    "tools/design-quality-audit/window5/output/dq02-result.json"
+  ],
+  "public_json_proposal": {
+    "target": "docs/01_业务需求/非功能需求与测量验收.json",
+    "apply_by": "统筹",
+    "patch_format": "RFC6902 operations; review then apply to current common file",
+    "operations": [
+      {
+        "op": "test",
+        "path": "/requirements/5/id",
+        "value": "NFR-06"
+      },
+      {
+        "op": "replace",
+        "path": "/requirements/5/procedure/1",
+        "value": "在测试目录预先固定旧有效工程身份及完整引用，按failure_exit_criteria安排NFR06-F01写入失败、NFR06-F02替换失败旧根有效、NFR06-F03替换失败恢复成功、NFR06-F04替换失败恢复失败；分别取终态/dirty/实际保留位置、指定原根或保留根的完整重开证据。F04故障处理符合预期不等于原目标健康或正常保存成功；普通失败保留要求不降低。"
+      },
+      {
+        "op": "replace",
+        "path": "/requirements/5/measurement/check",
+        "value": "按现有保存格式语义及完整文件引用实际打开核对；记录实际注入阶段/错误和原根/保留根位置。将故障处理、旧内容保留、原根健康与正常保存分开判定；有限文件解析不替代产品打开，未取得证据不填通过。"
+      },
+      {
+        "op": "replace",
+        "path": "/requirements/5/acceptance/rule",
+        "value": "正常保存须正确重开修改；NFR06-F01—F03须旧工程在原目标完整重开，且本次新R仍Failed/IoFailure/dirty。预定NFR06-F04须正确降级、保留并完整核对旧内容和报告实际位置，其故障处理通过不代表原目标健康或保存成功；无法证明保留内容完整为not_evaluable，确认旧内容丢失为fail。未知格式/缺项继续显式说明并保留原文件与当前活动工程。"
+      },
+      {
+        "op": "add",
+        "path": "/requirements/5/failure_exit_criteria",
+        "value": {
+          "scope": "既有有效工程的保存失败；首次保存继续按原initial_target契约，不虚构旧根。",
+          "branch_ids": [
+            "NFR06-F01",
+            "NFR06-F02",
+            "NFR06-F03",
+            "NFR06-F04"
+          ],
+          "common_terminal": "四出口均为Failed/IoFailure；无本次SavedProject/TaskOutput；活动工程修改保留、dirty=true；旧磁盘修订不算新R保存成功。",
+          "full_reopen": "从指定清单解析Versioned<PackageManifest>及冻结旧project_id/generation/project_revision；按DocumentEntry.role读取唯一活动工程及匹配修订；以原授权工程目录为基准，打开全部必需文档和传递文件/素材引用，按现行格式核对对象ID/数量/连接、精确模块版本、专业成果/认可/绑定和旧Run冻结输入/结果归属。缺项草稿、备份存在或仅清单可解析均不足。",
+          "branches": [
+            {
+              "id": "NFR06-F01",
+              "group": "write_failure_retention",
+              "trigger": "新代写入失败，尚未提交。",
+              "open_from": "原目标project.json",
+              "expected_old_content": "原根及全部旧引用完整可重开；新半写文件不成为正式版本。",
+              "project_health_required": "pass"
+            },
+            {
+              "id": "NFR06-F02",
+              "group": "commit_failure_retention",
+              "trigger": "替换失败但原根仍有效。",
+              "open_from": "按实际位置确认的原目标project.json",
+              "expected_old_content": "原根及全部旧引用完整可重开；不能从错误码或文件名推断根完好。",
+              "project_health_required": "pass"
+            },
+            {
+              "id": "NFR06-F03",
+              "group": "commit_failure_retention",
+              "trigger": "替换失败且原根失效，恢复操作成功。",
+              "open_from": "恢复后的原目标project.json",
+              "expected_old_content": "恢复后完整重开旧工程；仅恢复调用成功不足；新R仍失败。",
+              "project_health_required": "pass"
+            },
+            {
+              "id": "NFR06-F04",
+              "group": "commit_failure_retention",
+              "trigger": "替换后旧根不可用，旧根恢复操作也失败；此分支须预先安排为独立负例。",
+              "open_from": "实际保留的旧清单；引用基准仍是原工程目录。",
+              "expected_old_content": "保留实际尚存旧清单、完整旧代引用和新临时文件，报告授权目标内实际相对位置；保留清单与全部旧引用必须经完整重开验证，才能判旧内容保留通过。",
+              "project_health_required": "不得从正确降级或保留根可读推断原目标健康；按原根实际重开结果单独填fail或not_evaluable，未恢复时不得交付为正常可打开工程。"
+            }
+          ],
+          "recovery_failed_steps": [
+            "记录实际失败阶段/错误；检查原根、提交时指定的旧清单保留路径及新临时文件实际位置，保留全部尚存文件。",
+            "逐份解析实际旧清单候选，核对冻结旧身份，再以原工程目录为基准按full_reopen检查完整引用；不能只认预期备份名。",
+            "检查器可显式选择保留清单；实际软件仅认project.json时，复制原相对目录布局及实际旧文件到隔离副本，将已确认旧清单复制为副本project.json再打开，不覆盖原现场。文件检查不替代实际产品打开。",
+            "分别记录故障处理、旧内容保留、原根健康及正常保存结果。用户明确恢复或换目标后另做保存/重开，才重新判定该目标健康。"
+          ],
+          "judgments": {
+            "fault_handling_status": "正确Failed/IoFailure、无本次成功输出、dirty=true、保留会话修改及尚存文件、报告实际相对位置时pass；确认违背为fail，缺证据为not_evaluable。",
+            "old_content_retention_status": "F01—F03须原根完整重开；F04须实际保留清单和全部旧引用完整重开。确认缺文件/错身份/坏引用为fail，未检查或缺证据不能pass。",
+            "project_health_status": "仅原目标project.json及完整引用实际重开成功为pass；已知根不可用为fail；未取得必要证据为not_evaluable。保留根通过不转为原根通过。",
+            "normal_save_succeeded": "四种失败出口一律false；不以故障处理pass、恢复成功或旧内容可读替代正常保存成功。",
+            "branch_acceptance_status": "预先固定的出口与实际一致，且fault_handling_status和old_content_retention_status均pass，才可判该负例pass。F01—F03另须project_health_status=pass；F04负例可通过但该目标仍未就绪。",
+            "unexpected_failure": "普通写入/替换失败中意外出现恢复失败，不能改写独立预期为F04来通过；内容确认丢失为fail，正确报错不能覆盖。恢复成功但完整重开失败仍为fail。",
+            "aggregation": "沿既有fail优先/必需证据缺失not_evaluable规则。F04按预定负例判定只关闭该负例；NFR-06仍须原successful_reopen等全部必需组通过，且不可将失败目标当作健康交付。"
+          },
+          "record_binding": {
+            "runtime_wire_fields_added": 0,
+            "existing_fields": {
+              "condition_or_action": "仍属原组；在文本中标注本轮预定分支ID和失败阶段。",
+              "expected_outcome": "现有string：预先写分支ID、共同终态、打开位置及完整引用预期。",
+              "actual_outcome": "现有string/null：串写各独立判定和正常保存false；不得改为对象或新增运行字段。",
+              "evidence": "沿现有evidence.file_ref/missing_reason引用本轮详细检查材料；以下标签仅为材料内容。",
+              "attempt_status": "按branch_acceptance_status及原状态汇总规则；未开始仍not_executed。"
+            },
+            "evidence_labels": [
+              "branch_id",
+              "expected_old_identity",
+              "failure_stage_and_actual_error",
+              "original_root_open_evidence",
+              "retained_root_open_evidence",
+              "actual_relative_locations",
+              "old_files_preserved",
+              "fault_handling_status",
+              "old_content_retention_status",
+              "project_health_status",
+              "normal_save_succeeded",
+              "branch_acceptance_status"
+            ]
+          }
+        }
+      },
+      {
+        "op": "replace",
+        "path": "/test_execution_contract/required_check_groups/NFR-06/write_failure_retention",
+        "value": "展开NFR06-F01：写入失败返回Failed/IoFailure/dirty且无本次成功输出；原目标project.json及全部旧引用完整可重开，新半写内容不当正式版本。"
+      },
+      {
+        "op": "replace",
+        "path": "/test_execution_contract/required_check_groups/NFR-06/commit_failure_retention",
+        "value": "同组展开NFR06-F02旧根仍有效、NFR06-F03恢复成功、NFR06-F04预定恢复失败；前两者须原目标完整重开，F04须实际保留清单及完整旧引用证据、位置报告和独立原根健康判定。正确降级不算正常保存成功；旧内容确认丢失为fail，证据不足不pass。"
+      }
+    ],
+    "preserve": [
+      "NFR-06 actual_result=null/runtime_status=not_executed",
+      "原NFR-06 successful_reopen/unknown_version/missing_module/missing_asset及其他10项要求",
+      "原11项/38组与既有测量记录Schema"
+    ]
+  },
+  "public_markdown_proposal": {
+    "target": "docs/01_业务需求/非功能需求与测量验收.md",
+    "replace_from_heading": "### NFR-06 持久化完整性与失败保留",
+    "stop_before_heading": "### NFR-07 普通工作离线与接入边界",
+    "replacement_text": "### NFR-06 持久化完整性与失败保留\n\n责任：W00, W05；既有任务：P0-01, P2-03, P2-06, P5-01；相关需求：SF-01, SF-14, SF-16。\n\n**前置：**可完整重开的旧有效工程和新修订；冻结旧身份及引用，仅在测试目录执行。\n\n1. 保存重开比对对象ID/数量/连接、九类版本/资产引用、所选专业成果/认可/绑定；普通工程从共同起点新跑。\n2. 在测试目录预先固定旧有效工程身份及完整引用，按failure_exit_criteria安排NFR06-F01写入失败、NFR06-F02替换失败旧根有效、NFR06-F03替换失败恢复成功、NFR06-F04替换失败恢复失败；分别取终态/dirty/实际保留位置、指定原根或保留根的完整重开证据。F04故障处理符合预期不等于原目标健康或正常保存成功；普通失败保留要求不降低。\n3. 在工程副本分别测试未知格式版本、缺模块引用、缺固定素材：返回具体问题、保留原文件和当前活动工程，不静默清零/重置。成功重开从共同起点重跑，旧结果只读/回放，不承诺中途续跑。\n\n以下四分支仍归原两个必需组，不新增组计数：\n\n|分支ID|原必需组|预期出口与打开证据|\n|---|---|---|\n|NFR06-F01|write_failure_retention|新代写入失败，尚未提交。原目标project.json：原根及全部旧引用完整可重开；新半写文件不成为正式版本。|\n|NFR06-F02|commit_failure_retention|替换失败但原根仍有效。按实际位置确认的原目标project.json：原根及全部旧引用完整可重开；不能从错误码或文件名推断根完好。|\n|NFR06-F03|commit_failure_retention|替换失败且原根失效，恢复操作成功。恢复后的原目标project.json：恢复后完整重开旧工程；仅恢复调用成功不足；新R仍失败。|\n|NFR06-F04|commit_failure_retention|替换后旧根不可用，旧根恢复操作也失败；此分支须预先安排为独立负例。实际保留的旧清单；引用基准仍是原工程目录：保留实际尚存旧清单、完整旧代引用和新临时文件，报告授权目标内实际相对位置；保留清单与全部旧引用必须经完整重开验证，才能判旧内容保留通过。|\n\n**共同终态：**四出口均为Failed/IoFailure；无本次SavedProject/TaskOutput；活动工程修改保留、dirty=true；旧磁盘修订不算新R保存成功。\n\n**完整重开：**从指定清单解析Versioned<PackageManifest>及冻结旧project_id/generation/project_revision；按DocumentEntry.role读取唯一活动工程及匹配修订；以原授权工程目录为基准，打开全部必需文档和传递文件/素材引用，按现行格式核对对象ID/数量/连接、精确模块版本、专业成果/认可/绑定和旧Run冻结输入/结果归属。缺项草稿、备份存在或仅清单可解析均不足。\n\n**恢复失败检查顺序：**\n\n1. 记录实际失败阶段/错误；检查原根、提交时指定的旧清单保留路径及新临时文件实际位置，保留全部尚存文件。\n2. 逐份解析实际旧清单候选，核对冻结旧身份，再以原工程目录为基准按full_reopen检查完整引用；不能只认预期备份名。\n3. 检查器可显式选择保留清单；实际软件仅认project.json时，复制原相对目录布局及实际旧文件到隔离副本，将已确认旧清单复制为副本project.json再打开，不覆盖原现场。文件检查不替代实际产品打开。\n4. 分别记录故障处理、旧内容保留、原根健康及正常保存结果。用户明确恢复或换目标后另做保存/重开，才重新判定该目标健康。\n\n**独立判定：**\n\n- `fault_handling_status`：正确Failed/IoFailure、无本次成功输出、dirty=true、保留会话修改及尚存文件、报告实际相对位置时pass；确认违背为fail，缺证据为not_evaluable。\n- `old_content_retention_status`：F01—F03须原根完整重开；F04须实际保留清单和全部旧引用完整重开。确认缺文件/错身份/坏引用为fail，未检查或缺证据不能pass。\n- `project_health_status`：仅原目标project.json及完整引用实际重开成功为pass；已知根不可用为fail；未取得必要证据为not_evaluable。保留根通过不转为原根通过。\n- `normal_save_succeeded`：四种失败出口一律false；不以故障处理pass、恢复成功或旧内容可读替代正常保存成功。\n- `branch_acceptance_status`：预先固定的出口与实际一致，且fault_handling_status和old_content_retention_status均pass，才可判该负例pass。F01—F03另须project_health_status=pass；F04负例可通过但该目标仍未就绪。\n- `unexpected_failure`：普通写入/替换失败中意外出现恢复失败，不能改写独立预期为F04来通过；内容确认丢失为fail，正确报错不能覆盖。恢复成功但完整重开失败仍为fail。\n- `aggregation`：沿既有fail优先/必需证据缺失not_evaluable规则。F04按预定负例判定只关闭该负例；NFR-06仍须原successful_reopen等全部必需组通过，且不可将失败目标当作健康交付。\n\n**测量：**按现有保存格式语义及完整文件引用实际打开核对；记录实际注入阶段/错误和原根/保留根位置。将故障处理、旧内容保留、原根健康与正常保存分开判定；有限文件解析不替代产品打开，未取得证据不填通过。不新增checksum或灾备系统。\n\n**记录映射：**仍属原组；在文本中标注本轮预定分支ID和失败阶段。 现有string：预先写分支ID、共同终态、打开位置及完整引用预期。 现有string/null：串写各独立判定和正常保存false；不得改为对象或新增运行字段。 沿现有evidence.file_ref/missing_reason引用本轮详细检查材料；以下标签仅为材料内容。 按branch_acceptance_status及原状态汇总规则；未开始仍not_executed。\n\n**通过条件：**正常保存须正确重开修改；NFR06-F01—F03须旧工程在原目标完整重开，且本次新R仍Failed/IoFailure/dirty。预定NFR06-F04须正确降级、保留并完整核对旧内容和报告实际位置，其故障处理通过不代表原目标健康或保存成功；无法证明保留内容完整为not_evaluable，确认旧内容丢失为fail。未知格式/缺项继续显式说明并保留原文件与当前活动工程。\n\n**范围：**范围按现行临时写入/清单切换契约；不新增断电安全、通用灾备、运行快照续跑或跨版本迁移承诺。真实Windows1176/1177恢复和产品Save/Open证据另取，当前actual_result不代填。\n",
+    "required_group_index": "沿原NFR-06两个失败保留组；若索引有简述，与JSON组文本同步，不新建组。"
+  },
+  "common_storage_consistency": {
+    "source": "docs/03_架构与契约/全层类型与工程格式.json#/storage/replacement_recovery",
+    "existing_semantics_preserved": true,
+    "proposed_new_API_or_wire_fields": 0,
+    "note": "引用完整性证据细化位于NFR局部与文件消费者文档。若公共storage需补交叉引用，由统筹加入本局部判据链接；不复制类型库存、不改恢复原语。"
+  },
+  "finite_verification": {
+    "result": "tools/design-quality-audit/window5/output/dq02-result.json",
+    "command": "<bundled-python> -B tools/design-quality-audit/window5/check_dq02.py",
+    "branch_cases": 4,
+    "required_JSON_documents_per_complete_reopen": 20,
+    "nested_FileRefs_per_complete_reopen": 6,
+    "module_definitions_in_fixture": 9,
+    "rejected_existing_backup_cases": [
+      "missing_required_document",
+      "wrong_old_identity",
+      "missing_nested_reference"
+    ],
+    "judgment_negative_cases": [
+      "旧内容缺失：故障处理可pass但分支fail",
+      "旧内容未证：分支not_evaluable",
+      "恢复失败非预期：分支fail"
+    ],
+    "observations": "F01实际隔离写入错误183；F02为旧根有效的构造后置状态；F03/F04为构造根移位后分别执行隔离os.replace恢复成功/受阻。原根/保留根按实际文件完整读回。",
+    "ReplaceFileW_called": false,
+    "Windows_1176_1177_injected": false,
+    "product_Host_Save_Open": false,
+    "binary_asset_fixture_covered": false,
+    "cross_machine": false,
+    "actual_result_written": false
+  },
+  "coordinator_closure_condition": "合入上述NFR JSON/MD且保持38组，核对四ID/独立判定与文件消费者一致后，可关闭DQ-02的设计缺口；真实Windows故障恢复、产品打开与发布健康仍按原关口取证。",
+  "current_common_merge_recheck": {
+    "status": "passed",
+    "evidence": "tools/design-quality-audit/window5/output/common-merge-recheck.json",
+    "scope": "Current public NFR JSON/MD, storage cross reference, Q51 explanation; no product acceptance or public status write."
+  }
+}

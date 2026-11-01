@@ -1,0 +1,248 @@
+{
+  "document_kind": "DRF06_five_chain_business_static_and_finite_verification",
+  "status": "passed_business_design_and_finite_checks",
+  "date": "2026-10-14",
+  "check_count": 25,
+  "checks": [
+    {
+      "id": "original_five_chain_coverage",
+      "status": "passed_design_contract",
+      "flows": 5,
+      "P": 21,
+      "SF": 17,
+      "NFR": 11,
+      "IX": 3,
+      "actual_stage_frozen": false
+    },
+    {
+      "id": "X01_complete_pending_calendar_output",
+      "status": "passed_independent_finite_arithmetic",
+      "active_intervals_ms": [
+        [
+          5000,
+          10000
+        ],
+        [
+          20000,
+          23000
+        ]
+      ],
+      "output_wait_ms": [
+        23000,
+        40000
+      ],
+      "held_open_closed_capacity_ms": [
+        35000,
+        25000,
+        10000
+      ],
+      "utilization_fraction": [
+        5,
+        6
+      ],
+      "known_subtotal_CNY": 51,
+      "complete_total_CNY": null
+    },
+    {
+      "id": "X01_prefix_known_zero_unknown_cost",
+      "status": "passed_independent_finite_arithmetic",
+      "prefix_ms": 10000,
+      "known_acceptance_piece": 0,
+      "machine_end": "computed_boundary",
+      "worker_end": "released",
+      "known_subtotal_CNY": 15,
+      "unit_cost": null,
+      "unknown_material_rate_is_not_zero": true
+    },
+    {
+      "id": "X02_prepare_cargo_accept_endpoint_direct_delivery",
+      "status": "passed_independent_finite_arithmetic",
+      "prepared_jobs": 1,
+      "cargo_ids": [
+        "c1",
+        "c2",
+        "c3"
+      ],
+      "arrival_receive_return_ms": [
+        3000,
+        3500,
+        4000
+      ],
+      "accepted_piece": 3,
+      "required_comparisons": 0
+    },
+    {
+      "id": "C04-edge-01",
+      "status": "passed_actual_source_direction_type_receiver_capacity",
+      "from": "store-blank",
+      "to": "CNC01.input",
+      "destination_store": "store-blank"
+    },
+    {
+      "id": "C04-edge-02",
+      "status": "passed_actual_source_direction_type_receiver_capacity",
+      "from": "CNC01.output",
+      "to": "store-shell",
+      "destination_store": "store-shell"
+    },
+    {
+      "id": "C04-edge-03",
+      "status": "passed_actual_source_direction_type_receiver_capacity",
+      "from": "store-bare_pcb",
+      "to": "Board01.bare_board",
+      "destination_store": "store-bare_pcb"
+    },
+    {
+      "id": "C04-edge-04",
+      "status": "passed_actual_source_direction_type_receiver_capacity",
+      "from": "store-component",
+      "to": "Board01.component",
+      "destination_store": "store-component"
+    },
+    {
+      "id": "C04-edge-05",
+      "status": "passed_actual_source_direction_type_receiver_capacity",
+      "from": "Board01.mounted",
+      "to": "store-mounted_pcb",
+      "destination_store": "store-mounted_pcb"
+    },
+    {
+      "id": "C04-edge-06",
+      "status": "passed_actual_source_direction_type_receiver_capacity",
+      "from": "store-mounted_pcb",
+      "to": "BoardFinish01.input",
+      "destination_store": "store-mounted_pcb"
+    },
+    {
+      "id": "C04-edge-07",
+      "status": "passed_actual_source_direction_type_receiver_capacity",
+      "from": "BoardFinish01.output",
+      "to": "store-pcb",
+      "destination_store": "store-pcb"
+    },
+    {
+      "id": "C04-edge-08",
+      "status": "passed_actual_source_direction_type_receiver_capacity",
+      "from": "store-shell",
+      "to": "Assembly01.shell",
+      "destination_store": "store-shell"
+    },
+    {
+      "id": "C04-edge-09",
+      "status": "passed_actual_source_direction_type_receiver_capacity",
+      "from": "store-pcb",
+      "to": "Assembly01.pcb",
+      "destination_store": "store-pcb"
+    },
+    {
+      "id": "C04-edge-10",
+      "status": "passed_actual_source_direction_type_receiver_capacity",
+      "from": "store-fastener",
+      "to": "Assembly01.fastener",
+      "destination_store": "store-fastener"
+    },
+    {
+      "id": "C04-edge-11",
+      "status": "passed_actual_source_direction_type_receiver_capacity",
+      "from": "Assembly01.assembled",
+      "to": "store-assembly",
+      "destination_store": "store-assembly"
+    },
+    {
+      "id": "C04-edge-12",
+      "status": "passed_actual_source_direction_type_receiver_capacity",
+      "from": "store-assembly",
+      "to": "Inspection01.input",
+      "destination_store": "store-assembly"
+    },
+    {
+      "id": "C04-edge-13",
+      "status": "passed_actual_source_direction_type_receiver_capacity",
+      "from": "Inspection01.passed",
+      "to": "store-released",
+      "destination_store": "store-released"
+    },
+    {
+      "id": "C04-edge-14",
+      "status": "passed_actual_source_direction_type_receiver_capacity",
+      "from": "Inspection01.rework",
+      "to": "store-isolate",
+      "destination_store": "store-isolate"
+    },
+    {
+      "id": "C04-edge-15",
+      "status": "passed_actual_source_direction_type_receiver_capacity",
+      "from": "Inspection01.quarantine",
+      "to": "store-isolate",
+      "destination_store": "store-isolate"
+    },
+    {
+      "id": "C04-edge-16",
+      "status": "passed_actual_source_direction_type_receiver_capacity",
+      "from": "store-released",
+      "to": "Packing01.product",
+      "destination_store": "store-released"
+    },
+    {
+      "id": "C04-edge-17",
+      "status": "passed_actual_source_direction_type_receiver_capacity",
+      "from": "store-carton",
+      "to": "Packing01.carton",
+      "destination_store": "store-carton"
+    },
+    {
+      "id": "C04-edge-18",
+      "status": "passed_actual_source_direction_type_receiver_capacity",
+      "from": "Packing01.packed",
+      "to": "store-package",
+      "destination_store": "store-package"
+    },
+    {
+      "id": "C04_endpoint_semantic_and_authorization_counterexamples",
+      "status": "passed_finite_constraint_model",
+      "rejected": {
+        "missing_receiver_binding_admitted": false,
+        "wrong_direction_admitted": false,
+        "destination_location_store_mismatch_admitted": false,
+        "out_of_scope_adoption_admitted": false
+      },
+      "actual_Host_admission": null
+    },
+    {
+      "id": "X03_template_seed_site_binding_negative_paths",
+      "status": "passed_finite_contract_counterexamples",
+      "binding_admitted": [
+        true,
+        false,
+        false,
+        false
+      ],
+      "created_seed_stock": 0,
+      "site_pass": false
+    },
+    {
+      "id": "current_DTO_API_derived_consumer_and_preserved_expectations",
+      "status": "passed_readonly_static_source",
+      "C04_carriers": "canonical",
+      "B_cases": 18,
+      "manual_expected_timeline": 8,
+      "public_API_called": false
+    }
+  ],
+  "flows": 5,
+  "original_coverage": {
+    "P": 21,
+    "SF": 17,
+    "NFR": 11,
+    "IX": 3
+  },
+  "cross_feature_cases": 3,
+  "locations": 12,
+  "connections": 18,
+  "original_expectations_rewritten": false,
+  "actual_Engine": null,
+  "actual_Host": null,
+  "actual_product_runtime": null,
+  "actual_result": null,
+  "stage_gate_frozen": false
+}

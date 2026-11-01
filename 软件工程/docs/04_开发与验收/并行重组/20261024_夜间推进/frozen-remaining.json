@@ -1,0 +1,4458 @@
+{
+  "at": "2026-10-24T14:26:10.264Z",
+  "packages": [
+    {
+      "id": "P0-01",
+      "remaining_work": [
+        {
+          "within_original_step": 2,
+          "kind": "observed_defect",
+          "gap": "端口读取热点已窄修并过5项Host回归，但优化后时延、跨时点来源保留和实际Native消费者尚未接收。",
+          "locations": [
+            {
+              "path": "packages/commands/src/host_port_output.rs",
+              "symbol": "ProjectHost::stored_run_port_output / PortOutputSource"
+            },
+            {
+              "path": "packages/commands/src/host_run_history.rs",
+              "symbol": "ActualObjectCache.port_sources / actual_values"
+            },
+            {
+              "path": "apps/planner/src/services/factoryPresentation.ts",
+              "symbol": "projectFactoryPresentation"
+            },
+            {
+              "path": "apps/planner/src/features/factory/Workbench.tsx",
+              "symbol": "readFactoryObservation"
+            }
+          ],
+          "cause_or_requirement": "已证实：C26的75次完整观察触发4500次端口getter；每次重复解析冻结Project/模块并扫描同一不可变Run历史，端口IPC中位1028.341ms。新代码仅保留精确PortRef的冻结单位与记录索引，未新增业务状态；5项回归通过，尚无优化后性能通过结论。",
+          "input_refs": [
+            ".work/noncu-closeout-20261024/p001-port-read-hotspot/receipt.json",
+            ".work/cu-closeout-20261024/root-C26-frames-profile/receipt.json",
+            ".work/cu-closeout-20261024/root-B60-item-layout/saved/balanced",
+            ".work/cu-closeout-20261024/root-B60-item-layout/saved/dense"
+          ],
+          "actions": [
+            "复用已保存before探针及两份before结果，不重跑旧基线；用本次cargo产物的匹配依赖编译同一b60-port-read-host.rs。",
+            "对两个原r7保存Run执行同一组600000→0→1200000反向/重复seek，期间实际读完整观察以触发缓存时点重置；720个端口输出逐一对比before和原保存历史。",
+            "记录冷/暖getter时延，复用现有target合并一次必要Native构建，再验真实端口标签和场景；若仍有热点按实际trace修复。"
+          ],
+          "verification": {
+            "layer": "真实Host对照 → 普通Native；性能矩阵另由NFR主责收集",
+            "entrypoints": [
+              "tests/planner/p201-whole/b60-port-read-host.rs",
+              "packages/commands/tests/port_output_host.rs",
+              ".work/noncu-closeout-20261024/p001-port-read-hotspot/host-tests.log"
+            ],
+            "expected": [
+              "全部720个完成量/交接量/单位/RunId/时点与原始保存历史一致，反向seek和对象观察重置均不丢来源。",
+              "当前UI身份、Scope、修订和前沿拒绝不被缓存绕过；旧Run与存盘文件不变。",
+              "优化后实际耗时有原始值；Host耗时不冒充可见帧或FPS。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "NFR-03",
+            "NFR-02"
+          ],
+          "status": "pending"
+        },
+        {
+          "within_original_step": 2,
+          "kind": "verification_gap",
+          "gap": "P0适用的编辑可见反馈与无颜色/键盘/文字缩放覆盖尚未按原协议收齐；不是已证实缺CRUD功能。",
+          "locations": [
+            {
+              "path": "apps/planner/src/features/factory/Workbench.tsx",
+              "symbol": "edit / action / keyboard handlers",
+              "line": 631
+            },
+            {
+              "path": "apps/planner/src/services/projectHost.ts",
+              "symbol": "applyCommands",
+              "line": 130
+            },
+            {
+              "path": "apps/planner/src/features/business/BusinessEditor.tsx",
+              "symbol": "BusinessSession.submit",
+              "line": 78
+            },
+            {
+              "path": "apps/planner/src/features/modules/ModuleAuthoringWorkspace.tsx",
+              "symbol": "ModuleAuthoringWorkspace",
+              "line": 44
+            }
+          ],
+          "cause_or_requirement": "原NFR-03要求输入事件至Host确认后正确呈现帧的同钟证据。当前上述入口未提供这组完整UserTiming/Frames样本；C22共同字段100/150/200%和C18真实IME已通过，不应再列为未实现。完整九类创作和20业务分区归P3-01/P2-05。",
+          "input_refs": [
+            "docs/01_业务需求/非功能需求与测量验收.json#/requirements/2",
+            ".work/cu-closeout-20261024/root-P001-authoring-text200/receipt.json",
+            ".work/cu-closeout-20261024/root-P001-scenario-form/native-ime/receipt.json"
+          ],
+          "actions": [
+            "消费NFR-03唯一共享采样计划：2负载×3动作×3轮×100=1800次，P0只登记本包反馈出口，不另建重复矩阵。",
+            "先按已有8类键盘和文字缩放回执核对本次源码变更影响，只补未覆盖界面/状态；保留状态文字、单位、错误和100/150/200%主按钮可达的原预期。"
+          ],
+          "verification": {
+            "layer": "正式Native同钟Frames采样 + 原可用性缺项",
+            "entrypoints": [
+              "docs/04_开发与验收/剩余任务Todo.json#/shared_measurements/NFR-03",
+              "tests/planner/native-close/window-close.test.mjs",
+              "tests/planner/workspace-refresh/refresh-order.test.mjs"
+            ],
+            "expected": [
+              "每个固定100次组结果全部正确且nearest-rank p95≤200ms；不把输入框预览或IPC返回当正确帧。",
+              "IME/文本撤销优先、键盘等价与非颜色状态按原要求；已过共同定义表单不再重复。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "NFR-03",
+            "SF-01",
+            "SF-17"
+          ],
+          "status": "pending"
+        },
+        {
+          "within_original_step": 3,
+          "kind": "verification_gap",
+          "gap": "功能性保存/搬移/新进程重开已完成；缺原NFR-05的40次完整操作计时。",
+          "locations": [
+            {
+              "path": "apps/planner/src/services/projectHost.ts",
+              "symbol": "saveProject / stageOpen / adoptOpen",
+              "line": 217
+            },
+            {
+              "path": "apps/planner/src/features/factory/Workbench.tsx",
+              "symbol": "saveCurrentProject",
+              "line": 636
+            },
+            {
+              "path": "packages/commands/src/project_store.rs",
+              "symbol": "write_project_archive / read_project_archive",
+              "line": 1482
+            }
+          ],
+          "cause_or_requirement": "原测试要求2负载×4变体×5=40次；从调用方取得最终路径首次发请求，到完整提交反馈或固定资产可编辑正确首帧。现有功能回执没有40个同钟时延样本，不能据此认定I/O缺功能或再做普通搬移副本。",
+          "input_refs": [
+            "docs/01_业务需求/非功能需求与测量验收.json#/requirements/4",
+            ".work/cu-closeout-20261024/root-P001-asset-native/receipt.json",
+            ".work/cu-closeout-20261024/root-P001-scenario-form/native-typed-fields/receipt.json"
+          ],
+          "actions": [
+            "复用原两负载和精确资产，冻结2秒工时输入；预定新目录保存/更新保存/新应用进程打开/同进程重开各5次。",
+            "保留全部40次成功、失败、耗时和首帧条件；不清OS缓存、不称应用重启为磁盘冷启动。"
+          ],
+          "verification": {
+            "layer": "普通Native功能基础上的正式I/O测量",
+            "entrypoints": [
+              "docs/04_开发与验收/剩余任务Todo.json#/shared_measurements/NFR-05",
+              "tools/p0-01-host/check-native-saved.py"
+            ],
+            "expected": [
+              "每次内容正确且完整耗时≤3000ms；本项不是p95，失败不得删除。",
+              "旧Run/专业成果/精确模块与非空素材闭包保留；打开后可编辑而非空壳。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "NFR-05",
+            "SF-01",
+            "SF-14"
+          ],
+          "status": "pending"
+        },
+        {
+          "within_original_step": 3,
+          "kind": "verification_gap",
+          "gap": "NFR-06六组都有历史分层证据，尚缺原同候选条件的最终接收归并。",
+          "locations": [
+            {
+              "path": "packages/commands/src/project_store.rs",
+              "symbol": "write_project_archive_with_additions / replace_root / read_project_archive",
+              "line": 1628
+            },
+            {
+              "path": "apps/planner/src/services/windowClose.ts",
+              "symbol": "useWindowClose",
+              "line": 18
+            }
+          ],
+          "cause_or_requirement": "coverage.json明确因证据跨07/08/69/70候选保留not_evaluable；F01—F04、未知格式/缺模块/缺素材不是重新待开发功能。F04故障处理通过不等于原目标健康或保存成功；不新增必须复现1177的门槛。",
+          "input_refs": [
+            ".work/single-window-20261019/p001-closeout/nfr06-coverage.json",
+            ".work/single-window-20261019/p001-closeout/nfr06-controlled/validation.json",
+            ".work/cu-closeout-20261024/root-P001-asset-native/receipt.json"
+          ],
+          "actions": [
+            "先对照原六组与当前候选/受影响源码，引用全部可复用覆盖；只补原同候选要求未满足的实际消费者。",
+            "正常保存和预定失败分别取旧根/保留根完整重开、dirty及本次失败终态，不再设计新恢复系统或重复旧OS探针。"
+          ],
+          "verification": {
+            "layer": "正式持久化接收；既有Host/受控Native结果复用",
+            "entrypoints": [
+              "docs/04_开发与验收/剩余任务Todo.json#/shared_measurements/NFR-06",
+              "packages/commands/src/project_store.rs"
+            ],
+            "expected": [
+              "F01—F03旧工程在原根完整重开，新修订仍IoFailure/dirty；F04正确保留并指出旧内容位置，原根健康单列。",
+              "未知格式和缺引用显式拒绝，原文件与当前活动工程保持；不静默降级或替模块。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "NFR-06",
+            "SF-14"
+          ],
+          "status": "pending"
+        },
+        {
+          "within_original_step": 3,
+          "kind": "verification_gap",
+          "gap": "真实离线新进程编辑/运行/保存/重开及四格式链尚未取证。",
+          "locations": [
+            {
+              "path": "apps/planner/src/services/projectHost.ts",
+              "symbol": "nativeHostAvailable / stageOpen / runScenario / startEvaluationExport"
+            },
+            {
+              "path": "apps/planner/src/features/reporting/DeliveryWorkspace.tsx",
+              "symbol": "DeliveryWorkspace",
+              "line": 14
+            },
+            {
+              "path": "apps/planner/src/features/agent/AgentWorkspace.tsx",
+              "symbol": "AgentWorkspace"
+            },
+            {
+              "path": "apps/planner/src/services/mediaAssets.ts",
+              "symbol": "readMediaAsset",
+              "line": 18
+            }
+          ],
+          "cause_or_requirement": "已有本地成功运行和完整资产迁移不证明真实断网；原NFR-07要求请求轨迹/实际离线下完整链。外部模型不可用应明确显示，不能把真实指定客户端授权恢复为前置。",
+          "input_refs": [
+            "docs/01_业务需求/非功能需求与测量验收.json#/requirements/6",
+            ".work/cu-closeout-20261024/root-C17-report/receipt.json",
+            ".work/cu-closeout-20261024/root-P001-asset-native/media-consumer.json"
+          ],
+          "actions": [
+            "按允许的操作方式建立实际无网络条件和请求记录；如只能改变系统隐私/安全设置则保留待人工，不绕过。",
+            "新进程读取完整本地资产，执行普通编辑/实际Run/保存/另目录重开及PDF/HTML/CSV/JSON；只补离线消费者，不重复已收齐的26页报告阅读。"
+          ],
+          "verification": {
+            "layer": "真实离线普通Native及本地导出消费者",
+            "entrypoints": [
+              "docs/04_开发与验收/剩余任务Todo.json#/shared_measurements/NFR-07"
+            ],
+            "expected": [
+              "业务无必需CDN/远端依赖，资产和四格式可在本地读取。",
+              "外部模型不可用明确呈现，本地工作不等待模型、不伪报Agent成功。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "NFR-07",
+            "SF-01",
+            "SF-14"
+          ],
+          "status": "pending"
+        },
+        {
+          "within_original_step": 4,
+          "kind": "verification_gap",
+          "gap": "当前候选同字段并发、离开三分支及在途归属的普通Native最终联验未齐。",
+          "locations": [
+            {
+              "path": "apps/planner/src/features/factory/Workbench.tsx",
+              "symbol": "refresh / edit / departureChoice",
+              "line": 221
+            },
+            {
+              "path": "apps/planner/src/services/windowClose.ts",
+              "symbol": "useWindowClose",
+              "line": 18
+            },
+            {
+              "path": "packages/commands/src/project_host.rs",
+              "symbol": "check_departure / switch_epoch",
+              "line": 3862
+            }
+          ],
+          "cause_or_requirement": "当前C22程序侧146项Host与真实外部97原断言名/12具名切换均通过；普通双向设备参数冲突、stay/save/discard及刷新证据跨不同候选，原同候选汇合仍未齐。没有已确认的新逻辑失败，不添加人为延迟OS IPC条件。",
+          "input_refs": [
+            ".work/noncu-closeout-20261024/p001-C22-host/receipt.json",
+            ".work/noncu-closeout-20261024/p001-C22-external/receipt.json",
+            ".work/single-window-20261019/p001-closeout/nfr08-external-switch/coverage.json",
+            ".work/cu-closeout-20261024/root-P001-scenario-form/native-resource-location/receipt.json"
+          ],
+          "actions": [
+            "沿原设备L1-D01 height_m同R合法对抗，确认先胜者新R、另一方RevisionConflict且输入保留，明确重读/重基再提交。",
+            "在原测试副本按stay/save/discard与真实任务terminal后切换，核对单一活动Project、历史/授权撤销及旧回调不写B；不重复程序侧146/97组。",
+            "P2-01/P2-04负责指针/连接/时间轴取消和消费者历史，P0仅接收共同Commands的新修订与归属结果。"
+          ],
+          "verification": {
+            "layer": "当前普通Native原组合；Host/受控迟到回复证据复用",
+            "entrypoints": [
+              "tests/planner/workspace-refresh/refresh-order.test.mjs",
+              "tests/planner/native-close/window-close.test.mjs",
+              "docs/04_开发与验收/剩余任务Todo.json#/shared_measurements/NFR-08"
+            ],
+            "expected": [
+              "冲突不部分提交、不无声覆盖；undo/redo生成新修订、新编辑清redo，跨Project不串历史。",
+              "取消关闭/保存失败/任务非终态保留现场；旧Run、认可及落盘副作用不回滚。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "NFR-08",
+            "SF-01",
+            "SF-17"
+          ],
+          "status": "pending"
+        }
+      ],
+      "completed_reuse": [
+        {
+          "within_original_step": 1,
+          "scope": "共同Rust/TS/Schema与九类引用一致，当前无证实漂移；不再重复全Schema。",
+          "evidence_refs": [
+            ".work/single-window-20261019/p001-closeout/step1-contracts/validation.json"
+          ]
+        },
+        {
+          "within_original_step": 2,
+          "scope": "Host创建/读取/原子编辑/Scope和146检查、真实IME、资源/库位、日历/成本/来源、定义共同字段100/150/200%已过；C24/25/26几何和隐藏回看缺陷已闭合。",
+          "evidence_refs": [
+            ".work/noncu-closeout-20261024/p001-C22-host/receipt.json",
+            ".work/cu-closeout-20261024/root-P001-scenario-form/native-ime/receipt.json",
+            ".work/cu-closeout-20261024/root-P001-scenario-form/native-typed-fields/receipt.json",
+            ".work/cu-closeout-20261024/root-P001-authoring-text200/receipt.json",
+            ".work/cu-closeout-20261024/root-C26-timeline-clock/receipt.json"
+          ]
+        },
+        {
+          "within_original_step": 3,
+          "scope": "非空CC0贡献包、专业归档保存搬移新OS重开、524/166节点实际素材消费者、缺GLB保留负例已过，不重新制作副本。",
+          "evidence_refs": [
+            ".work/noncu-closeout-20261024/p001-professional-process/receipt.json",
+            ".work/cu-closeout-20261024/root-P001-asset-native/receipt.json",
+            ".work/cu-closeout-20261024/root-P001-asset-native/media-consumer.json"
+          ]
+        },
+        {
+          "within_original_step": 4,
+          "scope": "同批undo/redo、非空历史跨工程隔离、旧Run文件不变及程序侧真实外部切换已过；最终同候选普通Native联验另列。",
+          "evidence_refs": [
+            ".work/cu-closeout-20261024/root-P001-scenario-form/native-resource-location/receipt.json",
+            ".work/noncu-closeout-20261024/p001-C22-external/receipt.json"
+          ]
+        }
+      ],
+      "formal": {
+        "status": "in_progress",
+        "actual_result": null,
+        "whole_task_done": false
+      }
+    },
+    {
+      "id": "P0-02",
+      "remaining_work": [
+        {
+          "within_original_step": 1,
+          "kind": "verification_gap",
+          "gap": "原产品/订单/BOM/路线已接通；只补尚无普通Native证据的精确类型/实例引用字段。",
+          "locations": [
+            {
+              "path": "apps/planner/src/features/business/sections.ts",
+              "symbol": "sections: items / device_bindings / initial / allocations",
+              "line": 2
+            },
+            {
+              "path": "apps/planner/src/features/business/BusinessEditor.tsx",
+              "symbol": "BusinessSession.checkProposal / submit / runSaved",
+              "line": 68
+            },
+            {
+              "path": "apps/planner/src/features/business/draft.ts",
+              "symbol": "commitProposal",
+              "line": 43
+            }
+          ],
+          "cause_or_requirement": "缺对应界面提交与新Run冻结读回证据，尚未证实为实现错误；A/B/D已覆盖字段和F资源/库位/日历/成本/来源不重做。",
+          "input_refs": [
+            "scenarios/真实业务设计/business-inputs.design.json",
+            "docs/04_开发与验收/整包派发/P2-05_整包执行.json"
+          ],
+          "actions": [
+            "与P2-05剩余表单覆盖表共用一次操作，核对未覆盖的ItemType精确revision、设备Operation/角色绑定、InitialItem引用；实际预览差异后提交并明确新跑。",
+            "对照新Run input_ref/冻结Project与Scenario确认只采用新输入；在原Run切回时仍读原版本。"
+          ],
+          "verification": {
+            "layer": "ordinary_Native",
+            "entrypoints": [
+              "tests/planner/business/scenario-form.test.mjs",
+              "packages/commands/tests/business_input_host.rs"
+            ],
+            "expected": [
+              "精确版本与单位保持；未补引用以原field_path提示且不默认为可运行。",
+              "新输入只进入新Run；旧RunId、旧引用及实际库存不变。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "SF-05",
+            "SF-09"
+          ],
+          "status": "pending"
+        },
+        {
+          "within_original_step": 2,
+          "kind": "verification_gap",
+          "gap": "物品唯一持有、预留/质量/容器分离已有Host证据，Native尚缺预留冲突与容器输入的实际拒绝/读取链。",
+          "locations": [
+            {
+              "path": "packages/simulation/src/stock.rs",
+              "symbol": "plan_initial / Stock.plan / Stock.take",
+              "line": 35
+            },
+            {
+              "path": "apps/planner/src/features/business/BusinessEditor.tsx",
+              "symbol": "BusinessSession.submit",
+              "line": 78
+            },
+            {
+              "path": "apps/planner/src/features/business/BusinessRuntime.tsx",
+              "symbol": "BusinessRuntime:观察时点物品",
+              "line": 5
+            }
+          ],
+          "cause_or_requirement": "Host测试已消费真实输入；待补真实消费者显示和错误定位，不重写分配内核或新增另一套库存状态。",
+          "input_refs": [
+            "packages/commands/tests/fixtures/business-inputs/initial-stock.scenario.json",
+            "packages/commands/tests/fixtures/production/local-assembly-pack.json"
+          ],
+          "actions": [
+            "在独立已保存测试副本中使用initial/allocations原分区读取并提交原预留、容器双向关系场景。",
+            "尝试同一物品重复分配，核对实际诊断与原子拒绝/不可执行草稿边界；读取原Run同一物品ID的holder、lifecycle、quality、allocation。"
+          ],
+          "verification": {
+            "layer": "ordinary_Native",
+            "entrypoints": [
+              "packages/commands/tests/business_input_host.rs:initial_stock_future_supply_demand_and_plans_remain_separate_without_finished_quantity_cap",
+              "packages/commands/tests/business_input_host.rs:container_holder_and_composition_relations_are_input_graphs_without_duplicate_physical_ownership",
+              "packages/commands/tests/production_host.rs:actual_host_initial_batch_reservation_and_future_arrival_remain_distinct_after_relocation"
+            ],
+            "expected": [
+              "未来到料在边界前不存在；预留不增加当前库存，质量和holder独立。",
+              "容器contents不产生第二份自由库存；重复分配不能生成第二次合法领用。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "SF-06",
+            "SF-07",
+            "SF-08"
+          ],
+          "status": "pending"
+        },
+        {
+          "within_original_step": 3,
+          "kind": "verification_gap",
+          "gap": "取消业务需求后的实际Native新方案/WIP/旧Run对照尚未完整记录。",
+          "locations": [
+            {
+              "path": "apps/planner/src/features/business/BusinessEditor.tsx",
+              "symbol": "BusinessSession.checkProposal / submit / runSaved",
+              "line": 68
+            },
+            {
+              "path": "apps/planner/src/features/business/draft.ts",
+              "symbol": "commitProposal",
+              "line": 43
+            },
+            {
+              "path": "packages/simulation/src/engine.rs",
+              "symbol": "Engine.snapshot / objects_at",
+              "line": 1873
+            },
+            {
+              "path": "packages/commands/tests/production_host.rs",
+              "symbol": "a_new_cancellation_plan_keeps_other_reservations_and_old_run_then_survives_save_and_reopen",
+              "line": 140
+            }
+          ],
+          "cause_or_requirement": "生产表单提案+真实Host/Engine的取消、四Run、搬移及新进程已通过；缺界面消费者闭环。cancel_task只取消计算，不能代替取消订单/生产任务。",
+          "input_refs": [
+            ".work/cu-closeout-20261023/root-P002-reception/receipt.json",
+            ".work/business-input-closeout/delivery/combined-host-result.json"
+          ],
+          "actions": [
+            "沿用接收回执中的独立取消方案输入，在Native通过orders/tasks原分区明确取消未开工需求并运行新方案；已授权的测试副本动作仅按原范围执行。",
+            "在同一界面切换取消前/后Run，核对已开工物品仍归原Job、其他预留保留、旧Run冻结输入和接受结果不改；已过保存搬移不重复。"
+          ],
+          "verification": {
+            "layer": "ordinary_Native",
+            "entrypoints": [
+              "tests/planner/business/host-closeout.test.mjs",
+              "packages/commands/tests/production_host.rs:a_new_cancellation_plan_keeps_other_reservations_and_old_run_then_survives_save_and_reopen"
+            ],
+            "expected": [
+              "未开工需求不再生成新领用；已发生WIP和其他订单预留不删除。",
+              "新Run拥有新ID，旧四Run及其历史对象可读，UI区分业务取消和计算取消。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "SF-05",
+            "SF-08",
+            "SF-09"
+          ],
+          "status": "pending"
+        }
+      ],
+      "completed_reuse": [
+        {
+          "within_original_step": 1,
+          "scope": "产品/订单/BOM/路线共同类型、Host引用和C17 A/B/D已覆盖字段；不重跑全20分区。",
+          "evidence_refs": [
+            "docs/04_开发与验收/P0-02_业务输入与引用切片.json",
+            ".work/cu-closeout-20261024/root-C17-business-native/receipt.json",
+            ".work/cu-closeout-20261024/root-C17-business-native/B-receipt.json",
+            ".work/cu-closeout-20261024/root-C17-business-native/D-receipt.json"
+          ]
+        },
+        {
+          "within_original_step": 2,
+          "scope": "初始/未来供应/需求/WIP/预留/容器的真实Host生命周期与120秒B到料边界。",
+          "evidence_refs": [
+            "docs/04_开发与验收/P0-02_初始物料与分配输入切片.json",
+            ".work/cu-closeout-20261023/root-P002-reception/receipt.json",
+            ".work/cu-closeout-20261024/root-C17-business-native/B-receipt.json"
+          ]
+        },
+        {
+          "within_original_step": 3,
+          "scope": "取消未开工需求、4个Run、真实目录搬移和新进程旧WIP保留的表单提案/Host证据。",
+          "evidence_refs": [
+            ".work/cu-closeout-20261023/root-P002-reception/receipt.json"
+          ]
+        }
+      ],
+      "formal": {
+        "status": "in_progress",
+        "actual_result": null,
+        "whole_task_done": false
+      }
+    },
+    {
+      "id": "P0-03",
+      "remaining_work": [
+        {
+          "within_original_step": 2,
+          "kind": "verification_gap",
+          "gap": "产品改版后的失效绑定/拒绝运行尚缺普通Native完整链。",
+          "locations": [
+            {
+              "path": "apps/planner/src/features/packaging/PackagingWorkspace.tsx",
+              "symbol": "PackagingWorkspace:保存产品修改/实际绑定与复核诊断",
+              "line": 53
+            },
+            {
+              "path": "packages/commands/src/project_professional.rs",
+              "symbol": "prepare_artifact_binding",
+              "line": 347
+            },
+            {
+              "path": "apps/planner/src/features/packaging/model.ts",
+              "symbol": "saveProduct / adoptArtifact"
+            }
+          ],
+          "cause_or_requirement": "Host拒绝矩阵、Fail/Undetermined保存、Native三态及用途不可选已通过；未发现新实现错误。尚缺通过合法UI改版后看到诊断、明确尝试原运行入口的结果。",
+          "input_refs": [
+            ".work/cu-closeout-20261023/root-P003-reception/receipt.json",
+            "packages/commands/tests/noncu_p003_lifecycle.rs"
+          ],
+          "actions": [
+            "在原r1/r2有限工程中经“保存产品修改”提交受影响版本，读取实际binding诊断和精确产品/Artifact/Operation引用。",
+            "按现有合法入口尝试采用或运行，观察受影响绑定的待复核/拒绝；不可选项不造绕过UI再验。"
+          ],
+          "verification": {
+            "layer": "ordinary_Native",
+            "entrypoints": [
+              "packages/commands/tests/noncu_p003_lifecycle.rs:noncu_p003_rejection_matrix_and_undo_redo_keep_professional_facts_distinct",
+              "packages/commands/tests/professional_host.rs"
+            ],
+            "expected": [
+              "失效只作用于受影响产品/消费者用途；未受影响绑定保持。",
+              "Fail/Undetermined与只有editable_job用途不能当生产通过，不产生工厂库存。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "SF-12",
+            "SF-13",
+            "IX-03"
+          ],
+          "status": "pending"
+        },
+        {
+          "within_original_step": 3,
+          "kind": "verification_gap",
+          "gap": "精确旧版重新选择、改版待复核及新跑需并入IX-03一次Native合验。",
+          "locations": [
+            {
+              "path": "apps/planner/src/features/packaging/PackagingWorkspace.tsx",
+              "symbol": "PackagingWorkspace:将产品版本用于Job/明确为工位选择此执行Job/单独提交采用绑定",
+              "line": 53
+            },
+            {
+              "path": "packages/commands/src/project_professional.rs",
+              "symbol": "prepare_artifact_binding",
+              "line": 347
+            }
+          ],
+          "cause_or_requirement": "r1/r2、旧版显式重选和保存新进程Host已通过；C03已证明切换成果清空旧认可选择，不重复该操作。完整消费者链由P4-02主责，P0-03消费其原始结果。",
+          "input_refs": [
+            "docs/04_开发与验收/整包派发/P4-02_整包执行.json",
+            "scenarios/集成验收/runtime-host/ix03-lifecycle.json"
+          ],
+          "actions": [
+            "在P4-02主责IX-03同一场合验中，保留r1认可原用途，显式选择精确r2 Job/产品并核对所需新认可和工位绑定。",
+            "同场读取新Run执行所用Artifact/产品/Job版本；将结果引用回本步骤，不另跑一份IX-03。"
+          ],
+          "verification": {
+            "layer": "shared_Native_integration_owned_by_P4-02",
+            "entrypoints": [
+              "packages/commands/tests/noncu_p003_lifecycle.rs:noncu_p003_versions_explicit_old_reselection_and_fresh_process_reopen",
+              "docs/04_开发与验收/整包派发/P4-02_整包执行.json"
+            ],
+            "expected": [
+              "成果选择、认可记录、消费者绑定和实际执行为四个独立对象；切换结果不自动继承认可。",
+              "旧r1原用途仍可读取；新r2只按明确绑定被消费；历史Run不改。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "SF-12",
+            "SF-13",
+            "IX-03"
+          ],
+          "status": "pending"
+        }
+      ],
+      "completed_reuse": [
+        {
+          "within_original_step": 1,
+          "scope": "四对象/精确版本/认可用途定义；Fail/Undetermined存储与C03选择隔离、用途不可选。",
+          "evidence_refs": [
+            ".work/cu-closeout-20261023/root-P003-reception/receipt.json",
+            "docs/04_开发与验收/整包派发/P0-03_整包执行.json#/Root_C03_ordinary_Native_20261022"
+          ]
+        },
+        {
+          "within_original_step": 2,
+          "scope": "真实生产者Fail/Unknown、采用拒绝与认可/绑定分别保存的Host矩阵。",
+          "evidence_refs": [
+            ".work/cu-closeout-20261023/root-P003-reception/receipt.json"
+          ]
+        },
+        {
+          "within_original_step": 3,
+          "scope": "r1/r2显式旧版重选、迁移和新进程历史；C17新旧Run精确生成模块与修订只读。",
+          "evidence_refs": [
+            ".work/cu-closeout-20261023/root-P003-reception/receipt.json",
+            ".work/cu-closeout-20261024/root-C17-report/receipt.json"
+          ]
+        }
+      ],
+      "formal": {
+        "status": "in_progress",
+        "actual_result": null,
+        "whole_task_done": false
+      }
+    },
+    {
+      "id": "P1-01",
+      "remaining_work": [
+        {
+          "within_original_step": 2,
+          "kind": "verification_gap",
+          "gap": "原固定工序齐套/独占和B60资源代表查询的Native覆盖仍缺部分消费者记录。",
+          "locations": [
+            {
+              "path": "packages/simulation/src/engine.rs",
+              "symbol": "Engine.dispatch_one / resource_plan / acquire / release_claims",
+              "line": 933
+            },
+            {
+              "path": "packages/simulation/src/stock.rs",
+              "symbol": "Stock.plan / Stock.take",
+              "line": 299
+            },
+            {
+              "path": "apps/planner/src/features/business/BusinessRuntime.tsx",
+              "symbol": "BusinessRuntime:真实资源持有/观察时点物品",
+              "line": 5
+            },
+            {
+              "path": "apps/planner/src/features/timeline/projection.ts",
+              "symbol": "resourceUsage / observedItems",
+              "line": 283
+            }
+          ],
+          "cause_or_requirement": "Rust实际事件、两负载三次重跑与全部3000身份已有证据；C26又证明两负载全HD详细几何及隐藏时间轴播放连续性。缺对应时点的库存/资源消费者核对，不是引擎待实现。",
+          "input_refs": [
+            "packages/commands/tests/fixtures/production/local-assembly-pack.json",
+            ".work/cu-closeout-20261024/root-B60-item-layout/receipt.json",
+            ".work/cu-closeout-20261024/root-NFR09-host/receipt.json"
+          ],
+          "actions": [
+            "复用原已存Run，按原代表对象/时点在物品和资源详情核对缺PCB等待、齐套后生成一件装配体、同一人互斥、装盒contents及预留/在制分别显示。",
+            "对B60原两负载补尚缺的ID筛选/跟随/资源代表查询；不重算已保存Run，不删物品或降模型。"
+          ],
+          "verification": {
+            "layer": "ordinary_Native",
+            "entrypoints": [
+              "packages/commands/tests/production_host.rs",
+              "apps/planner/src/features/business/BusinessRuntime.tsx",
+              "apps/planner/src/features/timeline/RunTimeline.tsx"
+            ],
+            "expected": [
+              "每个物品只有一个holder；同一人不同时服务互斥作业。",
+              "当前库位量不混入未来到料/预留/WIP，全部3000身份可按ID查询，代表读数来自同一Run时点。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "SF-05",
+            "SF-06",
+            "SF-08",
+            "NFR-09"
+          ],
+          "status": "pending"
+        },
+        {
+          "within_original_step": 3,
+          "kind": "verification_gap",
+          "gap": "回看暂停/恢复/循环不改变生产事实的Native核对与共享正式性能仍未关闭。",
+          "locations": [
+            {
+              "path": "apps/planner/src/features/timeline/RunTimeline.tsx",
+              "symbol": "RunTimeline:playback timer/observation callback"
+            },
+            {
+              "path": "apps/planner/src/features/factory/Workbench.tsx",
+              "symbol": "readFactoryObservation"
+            },
+            {
+              "path": "packages/commands/src/host_run_history.rs",
+              "symbol": "ProjectHost.read_run_observation_ui",
+              "line": 185
+            },
+            {
+              "path": "apps/planner/src/services/factoryPresentation.ts",
+              "symbol": "projectFactoryPresentation",
+              "line": 263
+            }
+          ],
+          "cause_or_requirement": "C26隐藏播放计时器缺陷已关闭且不用重验同一序列；尚缺原NFR09业务独立性和正式NFR矩阵。Frames热点修复及48窗口由P0-01当前主线/P2-01共享消费，本包不重复采样。",
+          "input_refs": [
+            ".work/cu-closeout-20261024/root-C26-timeline-clock/receipt.json",
+            ".work/cu-closeout-20261024/root-NFR09-host/receipt.json",
+            "docs/01_业务需求/非功能需求与测量验收.json"
+          ],
+          "actions": [
+            "在上项同一保存Run暂停、恢复及显示循环，前后核对RunId、冻结输入、事件/接受量与3000身份；只改变观察时点。",
+            "消费P2-01/原NFR02正式结果及P0-01公共响应性结果，按同候选适用性汇合，不另建本包FPS矩阵。"
+          ],
+          "verification": {
+            "layer": "ordinary_Native_plus_shared_formal_NFR",
+            "entrypoints": [
+              "packages/commands/tests/noncu_timeline_host.rs",
+              "tests/planner/timeline/closeout-handlers.test.mjs",
+              "docs/04_开发与验收/整包派发/P2-01_整包执行.json"
+            ],
+            "expected": [
+              "动画循环、相机和播放控制不创建生产Job、库存或接受事件；同一时点倒放再读等值。",
+              "NFR02仍须原16条件×3轮、预热10s/采样60s及真实Frames；本包局部通过不代正式FPS。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "SF-08",
+            "NFR-01",
+            "NFR-02",
+            "NFR-09"
+          ],
+          "status": "pending"
+        }
+      ],
+      "completed_reuse": [
+        {
+          "within_original_step": 1,
+          "scope": "自主事件/齐套/互斥/物品状态转换已实现，原程序正确性和两负载三次重复保持。",
+          "evidence_refs": [
+            ".work/independent-closeout-20261020/main-production/validation.json",
+            ".work/cu-closeout-20261024/root-NFR09-host/receipt.json"
+          ]
+        },
+        {
+          "within_original_step": 2,
+          "scope": "C15工作人员五边界和C26原r7两负载完整HD详细模型已接收。",
+          "evidence_refs": [
+            ".work/cu-closeout-20261024/root-C15-native/staff-Native-receipt.json",
+            ".work/cu-closeout-20261024/root-C26-timeline-clock/receipt.json"
+          ]
+        },
+        {
+          "within_original_step": 3,
+          "scope": "全部3000身份、0/600/1200时点1746/3000接受量、保存和新进程；C26隐藏播放连续性。",
+          "evidence_refs": [
+            ".work/cu-closeout-20261024/root-B60-item-layout/receipt.json",
+            ".work/cu-closeout-20261024/root-NFR09-host/receipt.json",
+            ".work/cu-closeout-20261024/root-C26-timeline-clock/receipt.json"
+          ]
+        }
+      ],
+      "formal": {
+        "status": "in_progress",
+        "actual_result": null,
+        "whole_task_done": false
+      }
+    },
+    {
+      "id": "P1-02",
+      "remaining_work": [
+        {
+          "within_original_step": 1,
+          "kind": "verification_gap",
+          "gap": "A/Q/U原场景的普通Native并行汇合和资源占用尚未完整走查。",
+          "locations": [
+            {
+              "path": "packages/simulation/src/engine.rs",
+              "symbol": "Engine.dispatch_one / resource_plan / acquire",
+              "line": 933
+            },
+            {
+              "path": "packages/simulation/src/stock.rs",
+              "symbol": "Stock.plan / Stock.take",
+              "line": 299
+            },
+            {
+              "path": "apps/planner/src/features/timeline/projection.ts",
+              "symbol": "actualProjection / resourceUsage",
+              "line": 130
+            },
+            {
+              "path": "apps/planner/src/features/business/BusinessRuntime.tsx",
+              "symbol": "BusinessRuntime",
+              "line": 5
+            }
+          ],
+          "cause_or_requirement": "当前主线生产文件对照、6工程/12新进程/12旧Run及39历史查询已接收；缺Native消费者证据，不能把“待验证”写成重写并行内核。",
+          "input_refs": [
+            "packages/commands/tests/fixtures/production/p1-parallel-A.json",
+            "packages/commands/tests/fixtures/production/p1-parallel-Q.json",
+            "packages/commands/tests/fixtures/production/p1-parallel-U.json",
+            "packages/commands/tests/fixtures/production/p1-full-expectations.json",
+            ".work/cu-closeout-20261023/root-P102-reception/receipt.json"
+          ],
+          "actions": [
+            "读取原A/Q/U交付工程的已存Run，一次场景走查中核对并行前置全部完成才汇合、齐套原子领料、资源容量和等待定位。",
+            "同场记录物品ID及当前holder，供本包步骤2/3复用；不再生成第二轮同输入Run。"
+          ],
+          "verification": {
+            "layer": "ordinary_Native",
+            "entrypoints": [
+              "packages/commands/tests/production_host.rs:original_parallel_a_q_u_are_consumed_by_the_actual_host_with_frozen_times_quality_and_historical_objects",
+              "packages/commands/tests/fixtures/production/p1-full-expectations.json"
+            ],
+            "expected": [
+              "A成品在145/175秒，Q仅175秒一件，U无成品，均按原输入而非按画面推断。",
+              "同资源不超容量，未齐套不先消耗部分BOM，后续汇合不重复领用。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "SF-05",
+            "SF-06",
+            "SF-08"
+          ],
+          "status": "pending"
+        },
+        {
+          "within_original_step": 2,
+          "kind": "verification_gap",
+          "gap": "Q的有限返工/隔离与U的UNKNOWN等待需要实际界面读取其分支和身份。",
+          "locations": [
+            {
+              "path": "packages/simulation/src/engine.rs",
+              "symbol": "Engine.inspection_attempt / complete_inspection / route_quality",
+              "line": 1199
+            },
+            {
+              "path": "packages/simulation/src/quality.rs",
+              "symbol": "compile / outcome",
+              "line": 29
+            },
+            {
+              "path": "apps/planner/src/features/timeline/projection.ts",
+              "symbol": "actualProjection / waitContext",
+              "line": 114
+            }
+          ],
+          "cause_or_requirement": "实际Host已按原冻结预期验证；缺Native分支/计数及等待对象映射，未证实新代码错误。",
+          "input_refs": [
+            "packages/commands/tests/fixtures/production/p1-parallel-Q.json",
+            "packages/commands/tests/fixtures/production/p1-parallel-U.json",
+            "packages/commands/tests/fixtures/production/p1-full-expectations.json"
+          ],
+          "actions": [
+            "在步骤1同场景链中读Q返工前后同一ID、尝试计数和隔离位置；读U原缺失首检结果的等待、检验资源占用与阻塞后续。",
+            "记录原可见等待理由/关联对象与终态，未声明决定时不补PASS或自动报废。"
+          ],
+          "verification": {
+            "layer": "ordinary_Native",
+            "entrypoints": [
+              "packages/commands/tests/production_host.rs:original_parallel_a_q_u_are_consumed_by_the_actual_host_with_frozen_times_quality_and_historical_objects",
+              "packages/commands/tests/fixtures/production/p1-full-expectations.json"
+            ],
+            "expected": [
+              "Q：1件成品、1件隔离、1次返工、3次检验/3次质量决定；隔离不等于报废。",
+              "U：0成品、1待判、1等待检验员、0返工、1次检验/0次质量决定。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "SF-06",
+            "SF-08"
+          ],
+          "status": "pending"
+        },
+        {
+          "within_original_step": 3,
+          "kind": "verification_gap",
+          "gap": "将同一A/Q/U Native记录归并为分支、数量、资源、归属的完整对照。",
+          "locations": [
+            {
+              "path": "apps/planner/src/features/business/BusinessRuntime.tsx",
+              "symbol": "BusinessRuntime:整窗订单结果/真实接受事件/真实资源持有",
+              "line": 5
+            },
+            {
+              "path": "apps/planner/src/features/timeline/projection.ts",
+              "symbol": "observedItems / holderObject",
+              "line": 322
+            },
+            {
+              "path": "packages/commands/src/host_run_history.rs",
+              "symbol": "objects_at / read_run_observation_ui",
+              "line": 185
+            }
+          ],
+          "cause_or_requirement": "步骤1/2的同场景证据应一次消费；本步骤仅补未记录字段和归并，不能再重复执行A/Q/U或保存搬移。",
+          "input_refs": [
+            "packages/commands/tests/fixtures/production/p1-full-expectations.json",
+            ".work/cu-closeout-20261023/root-P102-reception/receipt.json"
+          ],
+          "actions": [
+            "依据步骤1/2同一批截图与对象读数，对齐原预期表全部字段；有确切缺字段才回到对应时点补读。",
+            "引用既有6工程保存/新进程、旧Run不变和39历史查询结果；不重复生命周期测试。"
+          ],
+          "verification": {
+            "layer": "Native_evidence_reconciliation_no_duplicate_run",
+            "entrypoints": [
+              "packages/commands/tests/fixtures/production/p1-full-expectations.json",
+              "packages/commands/tests/production_host.rs:original_parallel_a_q_u_are_consumed_by_the_actual_host_with_frozen_times_quality_and_historical_objects"
+            ],
+            "expected": [
+              "A：2成品、0隔离/待判、1次返工、3次检验/3次质量决定。",
+              "每个分支的物品ID/最终holder、资源占用与接受计数一致；未知和未达目标按原语义保留。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "SF-05",
+            "SF-06",
+            "SF-08"
+          ],
+          "status": "pending"
+        }
+      ],
+      "completed_reuse": [
+        {
+          "within_original_step": 1,
+          "scope": "当前主线并行汇合/原子齐套真实Host已接收，无内核待重写。",
+          "evidence_refs": [
+            ".work/cu-closeout-20261022/reception/p102-parallel/receipt.json",
+            ".work/cu-closeout-20261023/root-P102-reception/receipt.json"
+          ]
+        },
+        {
+          "within_original_step": 2,
+          "scope": "同ID有限返工、单有效检验出口与A/Q/U冻结质量预期Host已过。",
+          "evidence_refs": [
+            ".work/cu-closeout-20261023/root-P102-reception/receipt.json",
+            "packages/commands/tests/fixtures/production/p1-full-expectations.json"
+          ]
+        },
+        {
+          "within_original_step": 3,
+          "scope": "96生产文件一致、6交付工程/12新进程/12旧Run与39历史查询等值；不重跑保存搬移。",
+          "evidence_refs": [
+            ".work/cu-closeout-20261023/root-P102-reception/receipt.json"
+          ]
+        }
+      ],
+      "formal": {
+        "status": "in_progress",
+        "actual_result": null,
+        "whole_task_done": false
+      }
+    },
+    {
+      "id": "P2-01",
+      "remaining_work": [
+        {
+          "within_original_step": 1,
+          "kind": "verification_gap",
+          "gap": "两画布/三档LOD的相机、对象选择与键盘组合尚缺原矩阵对应的最终覆盖记录。",
+          "locations": [
+            {
+              "path": "apps/planner/src/scene/FactoryScene.tsx",
+              "symbol": "FactoryScene",
+              "line": 22
+            },
+            {
+              "path": "apps/planner/src/features/factory/Workbench.tsx",
+              "symbol": "Workbench",
+              "line": 25
+            }
+          ],
+          "cause_or_requirement": "已有Native90布局操作、C10七视图及C24–C26两负载几何通过；没有证实当前相机功能失效。原SF-03/Q07/Q12要求覆盖剩余组合，不能把有限七视图扩成所有组合。",
+          "input_refs": [
+            "docs/02_交互设计/完整操作流程与方案交付.md",
+            ".work/independent-closeout-20261020/native90/layout/validation.json",
+            ".work/cu-closeout-20261023/root-b60-105-native/receipt.json",
+            ".work/cu-closeout-20261024/root-C26-timeline-clock/receipt.json"
+          ],
+          "actions": [
+            "对照既有七视图与Native90记录，仅列出尚未覆盖的流水线/多厂房、三档LOD、单击/多选/键盘操作组合。",
+            "实际补未覆盖组合；共用P0-01的NFR-03键盘/文字/响应测量，不重复整套相机和已过几何检查。"
+          ],
+          "verification": {
+            "layer": "ordinary_Native_and_shared_formal_NFR",
+            "entrypoints": [
+              "tests/planner/p201-whole/layout.test.mjs",
+              "tests/planner/factory/closeout-layout-controls.test.mjs"
+            ],
+            "expected": [
+              "右键环绕、中键平移、滚轮缩放及默认斜视复位符合原操作规格；滚轮不打开设备页。",
+              "对象选择与详情绑定相同业务ID；LOD只改呈现，RunId、实际库存、旧事件不变。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "SF-03",
+            "SF-08",
+            "NFR-03"
+          ],
+          "status": "pending"
+        },
+        {
+          "within_original_step": 2,
+          "kind": "verification_gap",
+          "gap": "实际移动/旋转/框选中的取消与异常捕获丢失未完成普通Native核对。",
+          "locations": [
+            {
+              "path": "apps/planner/src/scene/layoutControls.ts",
+              "symbol": "attachLayoutControls",
+              "line": 13
+            },
+            {
+              "path": "apps/planner/src/scene/FactoryScene.tsx",
+              "symbol": "pointerCancel",
+              "line": 480
+            }
+          ],
+          "cause_or_requirement": "已修复且31项主线检查通过：TransformControls取消预览、匹配pointerId、正常松开仅提交一次。尚缺桌面真实指针层证据；不是待重写布局控制。",
+          "input_refs": [
+            ".work/cu-closeout-20261023/window3-P201-canvas-closeout/receipt.json",
+            "docs/04_开发与验收/P2-01_普通Native创建与布局连接验证.md"
+          ],
+          "actions": [
+            "在独立保存的布局测试副本分别开始移动、旋转和框选，执行Escape、pointercancel/实际失去capture的可用操作；不提交原工程。",
+            "核对取消后原Pose/修订未变、悬挂pointer-up不产生Command；补一次正常释放对照。"
+          ],
+          "verification": {
+            "layer": "ordinary_Native",
+            "entrypoints": [
+              "tests/planner/factory/closeout-layout-controls.test.mjs",
+              "tests/planner/factory/closeout-layout-harness.mjs"
+            ],
+            "expected": [
+              "取消恢复原显示并释放控制，相机可继续操作。",
+              "取消不写新修订；正常释放仅一次提案，之后的capture丢失不撤销已提交变换。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "SF-03",
+            "SF-17"
+          ],
+          "status": "pending"
+        },
+        {
+          "within_original_step": 3,
+          "kind": "verification_gap",
+          "gap": "NFR-02正式48窗口仍为0；接收P0公共Host修复后执行原FPS矩阵，修复不在本包重复实施。",
+          "locations": [
+            {
+              "path": "apps/planner/src/scene/FactoryScene.tsx",
+              "symbol": "updateFrame",
+              "line": 513
+            },
+            {
+              "path": "apps/planner/src/services/factoryPresentation.ts",
+              "symbol": "projectFactoryPresentation",
+              "line": 247
+            },
+            {
+              "path": "packages/commands/src/host_port_output.rs",
+              "symbol": "stored_run_port_output",
+              "line": 95
+            }
+          ],
+          "cause_or_requirement": "C26诊断trace记录75次观察/4500次端口读取，中位端口IPC完成1028.341ms；主窗口正在修复Host重复工作，尚不能写性能通过。已过FullHD模型和隐藏时间轴连续播放从待办移除。",
+          "input_refs": [
+            ".work/cu-closeout-20261024/root-C26-frames-profile/receipt.json",
+            ".work/cu-closeout-20261024/root-B60-item-layout/receipt.json",
+            "docs/01_业务需求/非功能需求与测量验收.json"
+          ],
+          "actions": [
+            "仅接收P0-01主窗口正在实施的端口热点修复及相关Host/Native结果，本包不重复改公共Host。",
+            "随后在原r7两保存Run、详细资产、1920×1080/DPR1下执行原16条件×3轮；P2-01是唯一FPS测量主责，P5引用结果，不把48窗口新增成P0关闭条件。"
+          ],
+          "verification": {
+            "layer": "actual_Native_Performance_formal_NFR",
+            "entrypoints": [
+              "tests/planner/p201-whole/b60-port-read-host.rs",
+              "tests/planner/p201-whole/verify-b60-layout.py",
+              "docs/01_业务需求/非功能需求与测量验收.json"
+            ],
+            "expected": [
+              "每轮暖机10秒后复位，采样60秒；回放0→600秒/10×或原15秒相机脚本。",
+              "每有效轮正确场景的实际呈现帧中位FPS≥30；掉帧/冻结等待不删除；无足够实际帧证据保持not_evaluable。",
+              "模型质量、物品身份、详细几何不以降级换达标。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "NFR-01",
+            "NFR-02"
+          ],
+          "status": "pending"
+        },
+        {
+          "within_original_step": 4,
+          "kind": "verification_gap",
+          "gap": "取消修复后的布局/连接操作仍缺原历史、冲突与跨工程负向组合的普通Native闭环。",
+          "locations": [
+            {
+              "path": "apps/planner/src/features/factory/Workbench.tsx",
+              "symbol": "commitLayout",
+              "line": 662
+            },
+            {
+              "path": "apps/planner/src/scene/layoutEditing.ts",
+              "symbol": "copyLayoutSelection",
+              "line": 90
+            }
+          ],
+          "cause_or_requirement": "Native90成功移动/旋转/撤销/重做与保存重开已过；当前差额是取消或冲突后不误入历史，以及不同工程不串历史。共用历史Host证据有效，无新内核缺陷依据。",
+          "input_refs": [
+            ".work/independent-closeout-20261020/native90/layout/validation.json",
+            "docs/03_架构与契约/共享状态与所有权.json"
+          ],
+          "actions": [
+            "沿步骤2同一测试副本补取消后撤销、正常提交后撤销/重做、冲突拒绝及切工程；消费P0-01同字段并发/历史共验结果，不另建历史实现。"
+          ],
+          "verification": {
+            "layer": "ordinary_Native_with_reused_Host",
+            "entrypoints": [
+              "tests/planner/factory/closeout-layout-controls.test.mjs",
+              "tests/planner/p201-whole/layout.test.mjs"
+            ],
+            "expected": [
+              "undo/redo形成新修订；冲突不覆盖；取消操作无历史条目。",
+              "旧Run、库存及已落盘结果不回滚，新编辑清失效redo，跨工程不串用。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "SF-17",
+            "NFR-08"
+          ],
+          "status": "pending"
+        }
+      ],
+      "completed_reuse": [
+        {
+          "within_original_step": 1,
+          "scope": "Native90实拖动/45度旋转/布局历史及C10七视图复用，不重跑成功路径。",
+          "evidence_refs": [
+            ".work/independent-closeout-20261020/native90/layout/validation.json",
+            ".work/cu-closeout-20261023/root-b60-105-native/receipt.json"
+          ]
+        },
+        {
+          "within_original_step": 2,
+          "scope": "布局取消修复31项主线程序检查已过，剩余仅实际桌面取消。",
+          "evidence_refs": [
+            ".work/cu-closeout-20261023/window3-P201-canvas-closeout/receipt.json"
+          ]
+        },
+        {
+          "within_original_step": 3,
+          "scope": "C24–C26两原r7 Run正确FullHD详细几何、C25场景保留与C26隐藏后播放连续性均已限定通过。",
+          "evidence_refs": [
+            ".work/cu-closeout-20261024/root-C26-timeline-clock/receipt.json",
+            ".work/noncu-closeout-20261024/p001-retained-scene/receipt.json"
+          ]
+        },
+        {
+          "within_original_step": 4,
+          "scope": "Native90成功布局undo/redo与保存重开复用。",
+          "evidence_refs": [
+            ".work/independent-closeout-20261020/native90/layout/validation.json"
+          ]
+        }
+      ],
+      "formal": {
+        "status": "in_progress",
+        "actual_result": null,
+        "whole_task_done": false
+      }
+    },
+    {
+      "id": "P1-03",
+      "remaining_work": [
+        {
+          "within_original_step": 1,
+          "kind": "verification_gap",
+          "gap": "未来到料的剩余原边界/接收受阻消费者需补读，已过120秒与初始库存分离不重做。",
+          "locations": [
+            {
+              "path": "packages/simulation/src/engine.rs",
+              "symbol": "Engine.try_arrival_one",
+              "line": 608
+            },
+            {
+              "path": "packages/simulation/src/stock.rs",
+              "symbol": "Stock.insert_group / objects_at",
+              "line": 200
+            },
+            {
+              "path": "apps/planner/src/features/timeline/projection.ts",
+              "symbol": "inputProjection / actualProjection",
+              "line": 241
+            }
+          ],
+          "cause_or_requirement": "B 120秒前后Native与原1500/4000/5000边界Host已经保留；缺剩余接收容量/重复接收可见证据，不是到料事件未实现。",
+          "input_refs": [
+            "packages/commands/tests/fixtures/production/p1-phase-calendar.json",
+            "packages/commands/tests/fixtures/production/p1-full-expectations.json",
+            ".work/cu-closeout-20261023/window3-P103-phases-closeout/receipt.json"
+          ],
+          "actions": [
+            "从已存原场景按剩余边界前后读同一物品ID；接收条件未满足时读等待及原持有，不把计划到达直接画成库存。",
+            "与P0-02初始/未来到料分离共用记录，已过B120秒不重新生成Run。"
+          ],
+          "verification": {
+            "layer": "ordinary_Native",
+            "entrypoints": [
+              "packages/commands/tests/business_input_host.rs:future_arrival_and_supply_gaps_are_located_drafts_without_synthesized_stock",
+              "packages/commands/tests/production_host.rs:actual_host_phase_run_keeps_45_seconds_10_worker_seconds_and_frozen_history_after_save_move_open"
+            ],
+            "expected": [
+              "到料边界前无可领库存；实际接收后同一身份只出现一次。",
+              "接收受阻保留真实等待/holder，不能静默复制物品或提前释放。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "SF-05",
+            "SF-08"
+          ],
+          "status": "pending"
+        },
+        {
+          "within_original_step": 2,
+          "kind": "verification_gap",
+          "gap": "阶段/日历矩阵剩余Native消费者与有详细声明的动画独立性尚未完整覆盖。",
+          "locations": [
+            {
+              "path": "packages/simulation/src/engine.rs",
+              "symbol": "Engine.resource_plan / start_phase / release_claims",
+              "line": 743
+            },
+            {
+              "path": "apps/planner/src/features/timeline/projection.ts",
+              "symbol": "resourceUsage / deviceDetailProjection",
+              "line": 222
+            },
+            {
+              "path": "apps/planner/src/services/factoryPresentation.ts",
+              "symbol": "projectFactoryPresentation / factoryWorkerLabel",
+              "line": 263
+            }
+          ],
+          "cause_or_requirement": "45/50/55秒D变体、暂停样例有效5000ms、机器10–70秒持有及C15五个工作人员边界已过；缺原其它阶段变体。无详细Presentation的fixture不能用缺素材提示代替动画通过。",
+          "input_refs": [
+            ".work/cu-closeout-20261023/window3-P103-phases-closeout/receipt.json",
+            ".work/cu-closeout-20261023/window3-P103-phases-closeout/delivery/Native接收步骤.md",
+            ".work/cu-closeout-20261024/root-NFR09-staff/receipt.json"
+          ],
+          "actions": [
+            "只补原original-phase、pause-interphase-output、nonpreemptive-control、auxiliary-busy等未覆盖场景的阶段前后读数；pause-aux-release既有证据复用。",
+            "含详细表现的暂停/恢复/循环共享P1-01和P3-03业务独立性结果；本包读取同一Run的阶段/资源映射，不另采一套动画数据。"
+          ],
+          "verification": {
+            "layer": "ordinary_Native",
+            "entrypoints": [
+              "packages/commands/tests/noncu_timeline_host.rs:timeline_phase_calendar_actual_worker",
+              "packages/commands/tests/noncu_timeline_host.rs:timeline_output_wait_after_last_phase_keeps_machine_and_pending_item",
+              "docs/04_开发与验收/整包派发/P3-03_整包执行.json"
+            ],
+            "expected": [
+              "原phase_calendar完成45000ms、有效40000ms、工作人员10000ms、等待5000ms；粗粒度连续40秒不可执行保持null。",
+              "暂停时累计有效进度不按墙钟增加；不可抢占声明、辅助资源释放及输出等待均按原场景保留。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "SF-05",
+            "SF-08",
+            "SF-10",
+            "NFR-09"
+          ],
+          "status": "pending"
+        },
+        {
+          "within_original_step": 3,
+          "kind": "verification_gap",
+          "gap": "原IX-01的两Run全链由P2-04主责，一次合验后回填阶段/日历消费者证据。",
+          "locations": [
+            {
+              "path": "packages/simulation/src/engine.rs",
+              "symbol": "Engine.resource_plan / accept_orders",
+              "line": 743
+            },
+            {
+              "path": "packages/simulation/src/transport.rs",
+              "symbol": "receive_transport_one / stage_reached",
+              "line": 561
+            },
+            {
+              "path": "apps/planner/src/features/timeline/projection.ts",
+              "symbol": "actualProjection / resourceUsage",
+              "line": 130
+            }
+          ],
+          "cause_or_requirement": "Host 440/570秒两Run及搬移保存已过；Native局部370–420等待/420接收/425返程不等于完整基线和延迟链。原P2-04主责，不在本包重跑一份IX-01。",
+          "input_refs": [
+            "packages/commands/tests/fixtures/production/p202-ix01-baseline.json",
+            "packages/commands/tests/fixtures/production/p202-ix01-delayed-pcb.json",
+            "scenarios/从零搭建控制盒厂房/expected-timeline.design.json"
+          ],
+          "actions": [
+            "消费P2-04同一次IX-01记录：基线及延迟各自RunId、完整物品身份、阶段资源/等待与客户接受时刻；本包只补其阶段/日历尚缺字段。"
+          ],
+          "verification": {
+            "layer": "shared_Native_integration_owned_by_P2-04",
+            "entrypoints": [
+              "packages/commands/tests/production_host.rs:original_two_hall_and_full_ix01_transport_runs_use_the_actual_host_and_survive_relocation",
+              "docs/04_开发与验收/整包派发/P2-04_整包执行.json"
+            ],
+            "expected": [
+              "完整接受分别440/570秒；小车370–420秒等待、425秒返程与接受分开。",
+              "两Run冻结输入和全部持有/资源量不互借，旧Run不改。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "SF-05",
+            "SF-08",
+            "SF-10",
+            "IX-01"
+          ],
+          "status": "pending"
+        }
+      ],
+      "completed_reuse": [
+        {
+          "within_original_step": 1,
+          "scope": "B120秒前后实际Native到料及原Host到料边界；不重复原到料正例。",
+          "evidence_refs": [
+            ".work/cu-closeout-20261024/root-C17-business-native/B-receipt.json",
+            ".work/cu-closeout-20261023/window3-P103-phases-closeout/receipt.json"
+          ]
+        },
+        {
+          "within_original_step": 2,
+          "scope": "pause-aux-release实际阶段/5000ms有效进度与机器10–70秒持有；C15人员五边界、C17 D45/50/55秒及35–45秒等待。",
+          "evidence_refs": [
+            "docs/04_开发与验收/整包派发/P1-03_整包执行.json#/Root_phase_Native_partial_20261023",
+            ".work/cu-closeout-20261024/root-C15-native/staff-Native-receipt.json",
+            ".work/cu-closeout-20261024/root-C17-business-native/D-receipt.json"
+          ]
+        },
+        {
+          "within_original_step": 3,
+          "scope": "7原阶段/物流工程完整Host历史、新进程读回与既有局部小车等待/返程观察。",
+          "evidence_refs": [
+            ".work/cu-closeout-20261023/window3-P103-phases-closeout/receipt.json",
+            ".work/cu-closeout-20261023/root-P103-reception/host-replay/host-result.json"
+          ]
+        }
+      ],
+      "formal": {
+        "status": "in_progress",
+        "actual_result": null,
+        "whole_task_done": false
+      }
+    },
+    {
+      "id": "P1-05",
+      "remaining_work": [
+        {
+          "within_original_step": 2,
+          "kind": "verification_gap",
+          "gap": "C副本移除manual-release-3后的第四Run分支尚未执行；只阻塞此分支。",
+          "locations": [
+            {
+              "path": "apps/planner/src/features/business/sections.ts",
+              "symbol": "sections:quality / decisions",
+              "line": 2
+            },
+            {
+              "path": "apps/planner/src/features/business/BusinessEditor.tsx",
+              "symbol": "BusinessSession.checkProposal / submit / runSaved",
+              "line": 68
+            },
+            {
+              "path": "packages/simulation/src/disposition.rs",
+              "symbol": "apply_declared_quality",
+              "line": 20
+            },
+            {
+              "path": "packages/simulation/src/engine.rs",
+              "symbol": "Engine.declared_source_matches / route_quality",
+              "line": 1167
+            }
+          ],
+          "cause_or_requirement": "C-receipt明确removal_executed=false且待动作时确认；前三Run接受[40,100]→[40,120]→[40,80]秒已保存。未发现新产品错误，尚缺明确移除决定后未自动放行的原分支。",
+          "input_refs": [
+            ".work/cu-closeout-20261024/root-C17-business-native/C-receipt.json",
+            ".work/cu-closeout-20261024/root-C17-business-native/saved-C-r3",
+            "packages/commands/tests/fixtures/quality/original-expectations.json"
+          ],
+          "actions": [
+            "实际桌面接续时先核对原确认范围：仅测试副本manual-release-3；无有效动作时确认不得移除，其他只读核对不受阻。",
+            "获该动作确认后仅移除此条决定、明确应用并新跑；保留其他质量决定、初始物品及三个历史Run。",
+            "同一第四Run观察中核对待判/缺决定限制、未自动PASS/报废与旧12份冻结Run文件不变；不重跑已完成的六质量工程保存搬移或2成品1报废缺1例。"
+          ],
+          "verification": {
+            "layer": "ordinary_Native",
+            "entrypoints": [
+              "packages/commands/tests/noncu_quality_lifecycle.rs:quality_modes_decisions_and_order_shortage_survive_saved_input_edits_and_new_processes",
+              "packages/commands/tests/p105_delivery_readback.rs"
+            ],
+            "expected": [
+              "缺明确有效决定不自动放行，不因时间结束变合格。",
+              "三个旧Run及[40,100]/[40,120]/[40,80]秒原接受记录不改；新Run另有ID和实际限制。",
+              "需要确认仅限测试副本该删除动作，不把整个P1-05或其他包标成阻塞。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "SF-06",
+            "SF-08"
+          ],
+          "status": "pending",
+          "requires_user_confirmation": true,
+          "confirmation_scope": "仅原saved-C-r3测试副本中的manual-release-3；旧Run/物品/其他决定保留。当前任务文档清理授权不等于删除业务记录授权。"
+        }
+      ],
+      "completed_reuse": [
+        {
+          "within_original_step": 1,
+          "scope": "hold/pending_store/full原六工程Host；Native old/new满库位保留物品、释放后同ID容器及80秒待判/复检已观察。",
+          "evidence_refs": [
+            ".work/cu-closeout-20261023/root-P105-reception/receipt.json",
+            ".work/cu-closeout-20261023/root-P105-reception/native-original-observation.json",
+            ".work/cu-closeout-20261023/root-P105-reception/native-hold-observation.json",
+            ".work/cu-closeout-20261023/root-P105-reception/native-full-observation.json"
+          ]
+        },
+        {
+          "within_original_step": 2,
+          "scope": "invalid声明不匹配限制、显式报废/隔离与C前三Run的放行/生效时间变化已观察；仅移除决定分支未执行。",
+          "evidence_refs": [
+            "docs/04_开发与验收/整包派发/P1-05_整包执行.json#/Root_invalid_Native_20261023",
+            ".work/cu-closeout-20261024/root-C17-business-native/C-receipt.json"
+          ]
+        },
+        {
+          "within_original_step": 3,
+          "scope": "orders Native已读2成品/1报废/订单缺1、未完成时刻null；isolation保存搬移/新进程及124999→125000ms同ID移交已过，删除重复待办。",
+          "evidence_refs": [
+            "docs/04_开发与验收/整包派发/P1-05_整包执行.json#/Root_orders_Native_20261023",
+            ".work/cu-closeout-20261023/root-P105-reception/native-isolation-save-move.json"
+          ]
+        }
+      ],
+      "formal": {
+        "status": "in_progress",
+        "actual_result": {
+          "status": "backend_verified_full_release_intake_pending",
+          "test_count": 156,
+          "original138_retained": true,
+          "original_quality_case": "two packages, one physical scrap, one outstanding; all original job intervals matched",
+          "result_ref": "#/implementation_progress/verification_summary",
+          "whole_task_done": false
+        },
+        "whole_task_done": false
+      }
+    },
+    {
+      "id": "P2-02",
+      "remaining_work": [
+        {
+          "within_original_step": 2,
+          "kind": "verification_gap",
+          "gap": "两厂房运输A/B及B13/B14/B16边界的完整普通Native对象投影未接收。",
+          "locations": [
+            {
+              "path": "packages/simulation/src/transport.rs",
+              "symbol": "receive_transport_one",
+              "line": 561
+            },
+            {
+              "path": "apps/planner/src/features/timeline/projection.ts",
+              "symbol": "actualProjection",
+              "line": 130
+            },
+            {
+              "path": "apps/planner/src/features/business/BusinessRuntime.tsx",
+              "symbol": "BusinessRuntime",
+              "line": 5
+            }
+          ],
+          "cause_or_requirement": "17个真实Host运输案例和17新进程已验证367历史时点、715持有、31车辆释放及328预留；当前缺口是实际两画布/详情消费者，不是未实现运输内核。",
+          "input_refs": [
+            "tests/simulation/p202-closeout/fixtures/halls-A.json",
+            "tests/simulation/p202-closeout/fixtures/halls-B.json",
+            "tests/simulation/p202-closeout/fixtures/B13.json",
+            "tests/simulation/p202-closeout/fixtures/B14.json",
+            "tests/simulation/p202-closeout/fixtures/B16.json",
+            ".work/cu-closeout-20261023/root-P202-reception/receipt.json"
+          ],
+          "actions": [
+            "用已有交付的保存工程和Run逐边界选时，核对对象详情、物品持有与车辆占用；不重跑17个已过Host案例。",
+            "A/B与短库存、接收受阻、并发下料等未覆盖显示共用同一边界记录，不为不同原包重复执行。"
+          ],
+          "verification": {
+            "layer": "ordinary_Native",
+            "entrypoints": [
+              "tests/simulation/p202-closeout/host_lifecycle.rs",
+              "tests/simulation/p202-closeout/reopen.rs",
+              "scenarios/两厂房装配包装/expected-events.design.json"
+            ],
+            "expected": [
+              "150库存不发200；货物ID贯穿预留/发出/在途/接受。",
+              "110秒接受可用于下游，140秒返程才释放运输资源；完整A/B终点125/205秒。",
+              "接收受阻不丢货、不提前记目的库存或释放车辆。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "SF-07",
+            "SF-08"
+          ],
+          "status": "pending"
+        },
+        {
+          "within_original_step": 3,
+          "kind": "integration_gap",
+          "gap": "IX-01/IX-02还缺同一Native输入—物流—等待定位的完整界面链。",
+          "locations": [
+            {
+              "path": "apps/planner/src/features/factory/Workbench.tsx",
+              "symbol": "commitBusiness",
+              "line": 881
+            },
+            {
+              "path": "apps/planner/src/features/timeline/projection.ts",
+              "symbol": "waitContext",
+              "line": 114
+            },
+            {
+              "path": "apps/planner/src/features/timeline/RunTimeline.tsx",
+              "symbol": "inspect",
+              "line": 183
+            }
+          ],
+          "cause_or_requirement": "IX-02三个Host父案例、9Run/6新进程与IX-01运输夹具已接收；不能把Host读回当界面全链通过。共享IX-01由P2-04、IX-02由P1-04主责一次执行。",
+          "input_refs": [
+            "tests/simulation/p202-closeout/fixtures/ix01-baseline.json",
+            "tests/simulation/p202-closeout/fixtures/ix01-delayed-pcb.json",
+            ".work/cu-closeout-20261023/root-IX02-reception/receipt.json",
+            "scenarios/两厂房装配包装/expected-events.design.json"
+          ],
+          "actions": [
+            "向P2-04原步骤3交付已接收的运输Run/物品/资源来源；直接引用其IX-01普通Native结果。",
+            "向P1-04原IX-02主链交付同一A/B保存Run；本包仅补物流编辑/两画布对象定位未覆盖部分，不再单独重跑完整IX。"
+          ],
+          "verification": {
+            "layer": "shared_ordinary_Native_integration",
+            "entrypoints": [
+              "tests/simulation/p202-closeout/host_lifecycle.rs",
+              "tests/simulation/p104-closeout/host_lifecycle.rs"
+            ],
+            "expected": [
+              "IX-01基线440秒/延迟570秒，370–420秒接收等待与425秒返程保持同一货物及资源来源。",
+              "IX-02 A/B客户接受205秒、迟延5/45秒及W-A135/160秒按原预期读取；目的接受与返程分离。",
+              "两画布、时间轴和详情共用RunId/时点，不按屏幕距离推算固定运输时长。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "IX-01",
+            "IX-02",
+            "SF-07",
+            "SF-08"
+          ],
+          "status": "pending"
+        }
+      ],
+      "completed_reuse": [
+        {
+          "within_original_step": 1,
+          "scope": "运输内核17真实Host案例和新进程读回完整接收；本步骤没有待重写代码。",
+          "evidence_refs": [
+            ".work/cu-closeout-20261023/root-P202-reception/receipt.json"
+          ]
+        },
+        {
+          "within_original_step": 2,
+          "scope": "原A/B、B13/B14/B16及持有/预留/释放数值已过Host；C13限定受阻/接受/返库Native观察只按原范围复用。",
+          "evidence_refs": [
+            ".work/cu-closeout-20261023/root-P202-reception/receipt.json",
+            "docs/04_开发与验收/整包派发/P2-02_整包执行.json"
+          ]
+        },
+        {
+          "within_original_step": 3,
+          "scope": "IX-02程序链与旧Run/历史新进程保持结果复用。",
+          "evidence_refs": [
+            ".work/cu-closeout-20261023/root-IX02-reception/receipt.json"
+          ]
+        }
+      ],
+      "formal": {
+        "status": "in_progress",
+        "actual_result": {
+          "status": "backend_verified_full_release_pending",
+          "verification_ref": "#/implementation_progress/current_verification_summary",
+          "backend_tests_passed": 138,
+          "whole_task_done": false,
+          "product_frontend_or_full_release_accepted": false
+        },
+        "whole_task_done": false
+      }
+    },
+    {
+      "id": "P1-04",
+      "remaining_work": [
+        {
+          "within_original_step": 1,
+          "kind": "verification_gap",
+          "gap": "订单释放/优先序与家族组合尚缺Native冻结输入覆盖，A/B已填字段复用。",
+          "locations": [
+            {
+              "path": "apps/planner/src/features/business/BusinessEditor.tsx",
+              "symbol": "BusinessSession.checkProposal / submit / runSaved",
+              "line": 68
+            },
+            {
+              "path": "apps/planner/src/features/business/draft.ts",
+              "symbol": "commitProposal / setupPoliciesEqual",
+              "line": 43
+            },
+            {
+              "path": "packages/simulation/src/setup.rs",
+              "symbol": "compile / prepare_family",
+              "line": 41
+            }
+          ],
+          "cause_or_requirement": "原Host与9Run/6新进程已接收，C17已覆盖A/B优先序、交期、换单；未证实新缺陷。只补原释放/家族/首件声明中尚无界面证据的组合。",
+          "input_refs": [
+            "packages/commands/tests/fixtures/production/p104-A-first.json",
+            "packages/commands/tests/fixtures/production/p104-B-first.json",
+            "scenarios/真实业务设计/expected-business.design.json"
+          ],
+          "actions": [
+            "与步骤3IX-02同批输入核对orders/tasks释放、显式优先序及setup矩阵/首件门槛；明确提交后读取新Run冻结输入。",
+            "不重做B已过20秒换单/2件目标，不把相同总终点解释成自动最优。"
+          ],
+          "verification": {
+            "layer": "ordinary_Native",
+            "entrypoints": [
+              "packages/commands/tests/production_host.rs:original_multi_order_priority_variants_use_actual_host_and_preserve_both_205_second_runs_after_save_move_open",
+              "tests/planner/business/setup-readback.test.mjs"
+            ],
+            "expected": [
+              "未释放任务不先领料；精确家族规则只作用于声明工位/序列。",
+              "当前输入提交不覆盖旧Run，订单引用产品精确revision。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "SF-05",
+            "SF-09"
+          ],
+          "status": "pending"
+        },
+        {
+          "within_original_step": 2,
+          "kind": "verification_gap",
+          "gap": "共料不可双分配、首件门槛与预留的Native投影需在原局部输入补验。",
+          "locations": [
+            {
+              "path": "packages/simulation/src/stock.rs",
+              "symbol": "plan_initial / Stock.plan / Stock.take",
+              "line": 35
+            },
+            {
+              "path": "packages/simulation/src/setup.rs",
+              "symbol": "start_article / release_article / commit_setup_one",
+              "line": 288
+            },
+            {
+              "path": "apps/planner/src/features/business/BusinessRuntime.tsx",
+              "symbol": "BusinessRuntime:等待条件与物品",
+              "line": 5
+            }
+          ],
+          "cause_or_requirement": "原无运输领料/换单和缺项Host结果已有；待核对真实UI错误/等待及物品引用，不重写调度或新增最优排程。",
+          "input_refs": [
+            "scenarios/真实业务设计/business-rule-boundaries.design.json",
+            "scenarios/真实业务设计/business-inputs.design.json"
+          ],
+          "actions": [
+            "按原共料/首件有限输入读取缺项、预留和等待详情；核对同一物品未被两个订单实际领用。",
+            "与P0-02重复分配拒绝共用一份记录，首件门槛按声明批准事件/条件释放，不按时间结束猜放行。"
+          ],
+          "verification": {
+            "layer": "ordinary_Native",
+            "entrypoints": [
+              "packages/commands/tests/production_host.rs:shared_unassigned_or_committed_demand_requires_explicit_replanning_without_mutating_the_host",
+              "packages/commands/tests/business_input_host.rs:material_allocation_semantic_gaps_commit_new_revision_with_execution_and_conclusion_blocks"
+            ],
+            "expected": [
+              "未齐套不局部先消耗；共料只有一个合法owner。",
+              "首件未放行保持等待，释放后只推进声明后续；缺项不制造库存。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "SF-05",
+            "SF-09"
+          ],
+          "status": "pending"
+        },
+        {
+          "within_original_step": 3,
+          "kind": "verification_gap",
+          "gap": "IX-02由本包主责补完整Native A/B客户接受、订单迟延、资源与返程。",
+          "locations": [
+            {
+              "path": "packages/simulation/src/engine.rs",
+              "symbol": "Engine.accept_orders",
+              "line": 1707
+            },
+            {
+              "path": "packages/simulation/src/transport.rs",
+              "symbol": "stage_reached / receive_transport_one",
+              "line": 561
+            },
+            {
+              "path": "apps/planner/src/features/business/BusinessRuntime.tsx",
+              "symbol": "BusinessRuntime:整窗实际订单结果/真实接受事件",
+              "line": 5
+            },
+            {
+              "path": "apps/planner/src/features/timeline/projection.ts",
+              "symbol": "resourceUsage / comparisonConditions",
+              "line": 283
+            }
+          ],
+          "cause_or_requirement": "IX-02主线3检查/9Run/6新进程与旧结果不变已通过；剩余是Native完整链，不是物流尚未接入。",
+          "input_refs": [
+            "packages/commands/tests/fixtures/production/p104-A-first.json",
+            "packages/commands/tests/fixtures/production/p104-B-first.json",
+            ".work/cu-closeout-20261023/root-IX02-reception/receipt.json",
+            "scenarios/真实业务设计/expected-business.design.json"
+          ],
+          "actions": [
+            "在原A先B后/B先A后已存工程各读取对应Run；一次核对每订单接受/未满足、完工/迟延、W-A占用、发运/接收/返程和全物品holder。",
+            "向P2-02/P2-03/P2-06回填同一原始记录引用，不为各包重复运行IX-02。"
+          ],
+          "verification": {
+            "layer": "shared_Native_integration_owned_by_P1-04",
+            "entrypoints": [
+              "packages/commands/tests/production_host.rs:original_multi_order_priority_variants_use_actual_host_and_preserve_both_205_second_runs_after_save_move_open",
+              "scenarios/真实业务设计/expected-business.design.json"
+            ],
+            "expected": [
+              "两方案客户接受终点均205秒，各订单迟延分别5/45秒；W-A占用分别135/160秒。",
+              "接收与小车返程独立；未完成订单completion/tardiness保持null，不写0或最优。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "SF-05",
+            "SF-09",
+            "IX-02"
+          ],
+          "status": "pending"
+        }
+      ],
+      "completed_reuse": [
+        {
+          "within_original_step": 1,
+          "scope": "订单释放/交期/优先序及家族准备Host与C17 A/B已覆盖输入。",
+          "evidence_refs": [
+            ".work/cu-closeout-20261023/root-IX02-reception/receipt.json",
+            ".work/cu-closeout-20261024/root-C17-business-native/receipt.json",
+            ".work/cu-closeout-20261024/root-C17-business-native/B-receipt.json"
+          ]
+        },
+        {
+          "within_original_step": 2,
+          "scope": "原无运输领料/换单/缺项结果及B20秒换单、2件目标；不重复已过字段。",
+          "evidence_refs": [
+            ".work/independent-closeout-20261020/main-production/validation.json",
+            ".work/cu-closeout-20261024/root-C17-business-native/B-receipt.json"
+          ]
+        },
+        {
+          "within_original_step": 3,
+          "scope": "IX-02实际Host 3检查/9Run/6新进程、两205秒Run及旧历史保持。",
+          "evidence_refs": [
+            ".work/cu-closeout-20261023/root-IX02-reception/receipt.json"
+          ]
+        }
+      ],
+      "formal": {
+        "status": "in_progress",
+        "actual_result": {
+          "status": "backend_verified_full_release_pending",
+          "verification_ref": "#/implementation_progress/current_verification_summary",
+          "backend_tests_passed": 138,
+          "whole_task_done": false,
+          "product_frontend_or_full_release_accepted": false
+        },
+        "whole_task_done": false
+      }
+    },
+    {
+      "id": "P2-03",
+      "remaining_work": [
+        {
+          "within_original_step": 1,
+          "kind": "verification_gap",
+          "gap": "比较面板未覆盖不可比、取消/失败前缀及缺失指标的实际消费者。",
+          "locations": [
+            {
+              "path": "apps/planner/src/features/comparison/ComparisonPanel.tsx",
+              "symbol": "compare",
+              "line": 23
+            },
+            {
+              "path": "apps/planner/src/features/comparison/model.ts",
+              "symbol": "prepareScenarioFork",
+              "line": 65
+            }
+          ],
+          "cause_or_requirement": "同起点比较和C17成功/修正报告已过；原比较验收还要求展示共同条件/变化及不可比原因。未证实比较算法有新缺陷，先补已实现行为的普通Native证据。",
+          "input_refs": [
+            "scenarios/两厂房装配包装/variants.design.json",
+            "packages/reporting/tests/comparison_acceptance.rs",
+            ".work/cu-closeout-20261024/root-C17-report/receipt.json"
+          ],
+          "actions": [
+            "选择已有取消前缀、不同观察窗或接受范围变化的原有限样例，检查同屏两方案共同条件与变化原因。",
+            "打开物品/等待定位，确认原Run可追溯；只补未覆盖负向消费者，不重导C17相同成功/修正报告。"
+          ],
+          "verification": {
+            "layer": "ordinary_Native",
+            "entrypoints": [
+              "packages/reporting/tests/comparison_acceptance.rs",
+              "packages/reporting/tests/comparison_units.rs"
+            ],
+            "expected": [
+              "不同窗口/接受范围不作严格改善结论；未完成C=null，不能改成迟延0。",
+              "已知完成时刻保持已知，不因不可比误标未知；旧RunId/冻结输入不覆盖。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "SF-09"
+          ],
+          "status": "pending"
+        },
+        {
+          "within_original_step": 2,
+          "kind": "verification_gap",
+          "gap": "工程接手正例已过，原保存/打开失败和离线完整组仍缺正式收口。",
+          "locations": [
+            {
+              "path": "apps/planner/src/services/projectHost.ts",
+              "symbol": "saveProject",
+              "line": 217
+            },
+            {
+              "path": "apps/planner/src/services/projectHost.ts",
+              "symbol": "adoptOpen",
+              "line": 242
+            },
+            {
+              "path": "apps/planner/src/features/factory/Workbench.tsx",
+              "symbol": "Workbench",
+              "line": 25
+            }
+          ],
+          "cause_or_requirement": "目录/ZIP Host真实搬移/新进程编辑、GF moved-r6普通Native及C20非空素材保存搬移/新进程媒体消费者均通过；原NFR-05/06/07完整组未闭合。旧TEMP/Win32-5根因未确认，不列作现行产品bug或重复正例任务。",
+          "input_refs": [
+            ".work/cu-closeout-20261023/root-P203-reception/receipt.json",
+            ".work/cu-closeout-20261024/root-C17-report/receipt.json",
+            ".work/cu-closeout-20261024/root-P001-asset-native/receipt.json",
+            ".work/cu-closeout-20261024/root-P001-asset-native/media-consumer.json",
+            "docs/01_业务需求/非功能需求与测量验收.json"
+          ],
+          "actions": [
+            "正例接手全部转为证据复用；本包仅消费P0-01主责的40次原Native I/O、六组保存恢复及实际离线结果。",
+            "在同一共享组补仍缺的缺行为/依赖或打开失败反馈，不能借表现替换制造合法专业/业务结果。"
+          ],
+          "verification": {
+            "layer": "shared_Native_NFR",
+            "entrypoints": [
+              "packages/commands/tests/p203_handoff_closeout.rs",
+              "docs/04_开发与验收/P0-01_NFR06受控恢复路径验证.md"
+            ],
+            "expected": [
+              "包内精确版本不被本机最新版替代；失败保留旧有效工程/Run。",
+              "NFR-05从原生调用到正确可编辑画面计时，不以Host片段替代≤3000ms整段要求。",
+              "实际断网时打开/编辑/Run/保存/重开与适用四格式消费者无需网络。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "NFR-05",
+            "NFR-06",
+            "NFR-07"
+          ],
+          "status": "pending"
+        },
+        {
+          "within_original_step": 3,
+          "kind": "verification_gap",
+          "gap": "设计包、结果包及未支持可恢复快照的能力文案仍需原交付界面最终对照。",
+          "locations": [
+            {
+              "path": "apps/planner/src/features/reporting/ReportPanel.tsx",
+              "symbol": "ReportPanel",
+              "line": 12
+            },
+            {
+              "path": "apps/planner/src/services/projectHost.ts",
+              "symbol": "startPackageExport",
+              "line": 278
+            }
+          ],
+          "cause_or_requirement": "原首版允许同起点重跑，完整快照续跑不是必需前置；缺口是输出能力与实际包内容一致，不能把保存Run回看写成恢复Engine续跑。",
+          "input_refs": [
+            "docs/03_架构与契约/工程交接与打开.md",
+            "scenarios/模板与交接/expected-template-handoff.design.json"
+          ],
+          "actions": [
+            "对照现有设计包和结果包的实际说明/清单完成能力核对；缺行为依赖拒绝或明确受限，缺表现按原可替换规则处理。",
+            "可恢复快照仅在原支持且有完整证据时验；当前不新增续跑实现任务。"
+          ],
+          "verification": {
+            "layer": "ordinary_Native_and_package_content_review",
+            "entrypoints": [
+              "packages/commands/tests/p203_handoff_closeout.rs",
+              "scenarios/模板与交接/expected-template-handoff.design.json"
+            ],
+            "expected": [
+              "未运行设计包没有实际产量；结果包能查看保存Run但不承诺当前引擎状态。",
+              "普通接手修改后从共同初始起点形成新Run，旧接受基数/事件不重复计入。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "SF-01",
+            "SF-14",
+            "NFR-11"
+          ],
+          "status": "pending"
+        }
+      ],
+      "completed_reuse": [
+        {
+          "within_original_step": 1,
+          "scope": "C17同起点成功/修正比较与报告、PDF-only均通过，不重算或重导。",
+          "evidence_refs": [
+            ".work/cu-closeout-20261024/root-C17-report/receipt.json",
+            ".work/cu-closeout-20261024/root-C17-report/pdf-only/receipt.json"
+          ]
+        },
+        {
+          "within_original_step": 2,
+          "scope": "原目录/ZIP Host搬移新进程及GF/非空CC0普通Native保存搬移重开已过，36文件/2许可证和旧Run保持。",
+          "evidence_refs": [
+            ".work/cu-closeout-20261023/root-P203-reception/receipt.json",
+            ".work/cu-closeout-20261024/root-P001-asset-native/receipt.json",
+            ".work/cu-closeout-20261024/root-P001-asset-native/media-consumer.json"
+          ]
+        },
+        {
+          "within_original_step": 3,
+          "scope": "既有目录/ZIP生命周期及非空实际媒体消费者复用；不恢复冷启动续跑门槛。",
+          "evidence_refs": [
+            ".work/cu-closeout-20261024/root-P001-asset-native/media-consumer.json"
+          ]
+        }
+      ],
+      "formal": {
+        "status": "in_progress",
+        "actual_result": null,
+        "whole_task_done": false
+      }
+    },
+    {
+      "id": "P2-04",
+      "remaining_work": [
+        {
+          "within_original_step": 2,
+          "kind": "verification_gap",
+          "gap": "时间尺/范围/输入拖动在异常capture丢失、Escape及Alt去吸附时的桌面负向结果尚未全部接收。",
+          "locations": [
+            {
+              "path": "apps/planner/src/features/timeline/RunTimeline.tsx",
+              "symbol": "cancel",
+              "line": 192
+            },
+            {
+              "path": "apps/planner/src/features/timeline/RunTimeline.tsx",
+              "symbol": "lostInput",
+              "line": 231
+            },
+            {
+              "path": "apps/planner/src/features/timeline/RunTimeline.tsx",
+              "symbol": "endRange",
+              "line": 250
+            }
+          ],
+          "cause_or_requirement": "异常捕获丢失取消修复已通过13项组件/处理器检查；普通时间尺/范围及370–420/420/425有限Native已过。剩余仅负向操作，不再验证已关闭的C26隐藏播放停止缺陷。",
+          "input_refs": [
+            ".work/cu-closeout-20261023/root-P204-reception/receipt.json",
+            ".work/independent-closeout-20261020/native91/validation.json",
+            ".work/cu-closeout-20261024/root-C26-timeline-clock/receipt.json"
+          ],
+          "actions": [
+            "在原测试副本对时间尺、范围及输入预览分别执行实际可触发capture丢失/Escape；随后松开不产生幽灵选时或Commands。",
+            "Alt临时关闭吸附后核对原ms输入；返回只读回看与输入层分离。"
+          ],
+          "verification": {
+            "layer": "ordinary_Native",
+            "entrypoints": [
+              "tests/planner/timeline/closeout-capture.test.mjs",
+              "tests/planner/timeline/closeout-handlers.test.mjs"
+            ],
+            "expected": [
+              "意外丢失只取消相应指针预览；正常完成后的capture丢失保留已成功选择。",
+              "取消不变Project/Scenario修订或旧Run，Alt只改吸附，不更改实际事件。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "SF-17"
+          ],
+          "status": "pending"
+        },
+        {
+          "within_original_step": 2,
+          "kind": "verification_gap",
+          "gap": "回看暂停、循环与物品跟随对真实生产结果独立性的原NFR-09组仍未闭合。",
+          "locations": [
+            {
+              "path": "apps/planner/src/features/timeline/RunTimeline.tsx",
+              "symbol": "seek",
+              "line": 168
+            },
+            {
+              "path": "apps/planner/src/features/timeline/projection.ts",
+              "symbol": "actualProjection",
+              "line": 130
+            },
+            {
+              "path": "apps/planner/src/features/factory/Workbench.tsx",
+              "symbol": "Workbench",
+              "line": 25
+            }
+          ],
+          "cause_or_requirement": "两负载三次Host重复、全3000身份及人员五边界Native已有结果；C26隐藏/重显保留播放通过。没有新的时钟业务错误证据，当前缺暂停/循环/显示开关不影响原Run的完整原要求。",
+          "input_refs": [
+            ".work/cu-closeout-20261024/root-NFR09-host/receipt.json",
+            ".work/cu-closeout-20261024/root-NFR09-staff/receipt.json",
+            ".work/cu-closeout-20261024/root-C15-native/staff-Native-receipt.json",
+            "docs/01_业务需求/非功能需求与测量验收.json"
+          ],
+          "actions": [
+            "共用P1-01原步骤3的NFR-09消费者组，补暂停/循环、跟随/不跟随及两画布/LOD切换。",
+            "读取0/600/1200秒原实际对象、人员声明地点/占用及事件，复用3000身份Host重复结果，不重跑Engine三次。"
+          ],
+          "verification": {
+            "layer": "shared_ordinary_Native_NFR09",
+            "entrypoints": [
+              "tests/planner/timeline/item-focus.test.mjs",
+              "tests/planner/timeline/timeline.test.mjs",
+              "docs/01_业务需求/非功能需求与测量验收.json"
+            ],
+            "expected": [
+              "任一原物品可定位与查询经历；画面可声明代表聚合但不丢业务身份。",
+              "暂停、循环和帧率/显示开关只改观看，不改变Run事件/接受量/资源工时；600秒接受1746、1200秒3000按原负载。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "NFR-09",
+            "SF-08"
+          ],
+          "status": "pending"
+        },
+        {
+          "within_original_step": 3,
+          "kind": "integration_gap",
+          "gap": "IX-01原基线/到料延迟两个Run的全部事件、物品持有和资源区间尚缺完整Native一次合验。",
+          "locations": [
+            {
+              "path": "apps/planner/src/features/timeline/projection.ts",
+              "symbol": "actualProjection",
+              "line": 130
+            },
+            {
+              "path": "apps/planner/src/features/timeline/projection.ts",
+              "symbol": "waitContext",
+              "line": 114
+            },
+            {
+              "path": "apps/planner/src/features/factory/Workbench.tsx",
+              "symbol": "commitTimeline",
+              "line": 864
+            }
+          ],
+          "cause_or_requirement": "P1-03阶段/到料与P2-02运输实际生产者及IX-01夹具已具备，不因依赖包未done阻止联验。有限370–420秒等待观察不能代两Run整体；当前未证实新Engine错误。",
+          "input_refs": [
+            "scenarios/从零搭建控制盒厂房/project.design.json",
+            "scenarios/从零搭建控制盒厂房/expected-timeline.design.json",
+            "tests/simulation/p202-closeout/fixtures/ix01-baseline.json",
+            "tests/simulation/p202-closeout/fixtures/ix01-delayed-pcb.json"
+          ],
+          "actions": [
+            "作为IX-01主责，在同一Native保存工程读原基线440秒和延迟570秒Run；将原步骤1尚缺的来料/作业/资源/物流/物品轨道映射一并核对。",
+            "点370–420秒等待定位持有物品/目的容量与车辆，读取420秒接受及425秒返程；检查两画布和对象详情同Run同一时点。",
+            "结果一次回写IX-01共享结果，P1-03/P2-02及报告消费者仅引用，不重复建立第二套案例。"
+          ],
+          "verification": {
+            "layer": "ordinary_Native_full_IX01",
+            "entrypoints": [
+              "tests/simulation/p202-closeout/host_lifecycle.rs",
+              "tests/planner/timeline/closeout-transaction-host.rs",
+              "scenarios/从零搭建控制盒厂房/expected-timeline.design.json"
+            ],
+            "expected": [
+              "基线完整客户接受440秒；到料延迟方案570秒，两RunId不同、原冻结输入和旧结果保留。",
+              "370–420秒等待目的接收，420秒货物交接后资源仍到425秒返程才释放。",
+              "全部事件、物品唯一持有与资源区间符合原expected-timeline，输入轨不是实际开工，折叠/定位不增产。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "IX-01",
+            "SF-05",
+            "SF-08",
+            "SF-09"
+          ],
+          "status": "pending"
+        }
+      ],
+      "completed_reuse": [
+        {
+          "within_original_step": 1,
+          "scope": "共同事件/资源/物流投影及Native91输入—时间轴有限链复用；尚缺映射统一在IX-01补，不单独重跑。",
+          "evidence_refs": [
+            ".work/independent-closeout-20261020/native91/validation.json",
+            ".work/cu-closeout-20261023/root-P204-reception/receipt.json"
+          ]
+        },
+        {
+          "within_original_step": 2,
+          "scope": "时间尺/范围常规操作、C26隐藏时钟修复和两原Run连续回看已过。",
+          "evidence_refs": [
+            ".work/cu-closeout-20261024/root-C26-timeline-clock/receipt.json",
+            ".work/cu-closeout-20261023/root-P204-reception/receipt.json"
+          ]
+        },
+        {
+          "within_original_step": 3,
+          "scope": "原IX-01运输数值夹具、Host和有限等待边界已接收。",
+          "evidence_refs": [
+            ".work/cu-closeout-20261023/root-P202-reception/receipt.json",
+            "docs/04_开发与验收/P2-04_普通Native时间轴与物流验证.md"
+          ]
+        }
+      ],
+      "formal": {
+        "status": "in_progress",
+        "actual_result": null,
+        "whole_task_done": false
+      }
+    },
+    {
+      "id": "P3-01",
+      "remaining_work": [
+        {
+          "within_original_step": 1,
+          "kind": "verification_gap",
+          "gap": "原13条首版预期中缺字段级消费者覆盖的有限项仍需接收；已过资源/任务/工艺/运输/纸包装/表现/模板完整链不再重做。",
+          "locations": [
+            {
+              "path": "apps/planner/src/features/modules/ModuleAuthoringWorkspace.tsx",
+              "symbol": "start",
+              "line": 129
+            },
+            {
+              "path": "apps/planner/src/services/moduleAuthoring.ts",
+              "symbol": "createAuthoringSamples",
+              "line": 133
+            },
+            {
+              "path": "apps/planner/src/features/modules/definitionSample.ts",
+              "symbol": "readDefinitionSampleRun",
+              "line": 20
+            }
+          ],
+          "cause_or_requirement": "已核对Native42资源、Native43任务/占用、Native47工艺/资源升级、Native48运输、Native50纸包装、Native51表现、Native54–62模板/种子等实际链均有通过回执。原13条预期没有完整一对一消费者接收矩阵，尚不能把全类原验收填通过；缺口是未覆盖具体预期，不是九类功能都未实现。",
+          "input_refs": [
+            "scenarios/九类模块采用/expected-category-adoption.design.json",
+            "packages/module-kit/category-contracts.design.json",
+            ".work/cu-closeout-20261024/root-P001-authoring-text200/receipt.json",
+            "tests/planner/authoring-host/original-expectations.json",
+            ".work/single-window-20261018/p301-native36/Native42-resource/validation.json",
+            ".work/single-window-20261018/p301-native36/Native43-task/adoption/validation.json",
+            ".work/single-window-20261018/p301-native36/Native43-task/adoption/resource-validation.json",
+            ".work/single-window-20261018/p301-native36/Native47-operation-quality/validation.json",
+            ".work/single-window-20261018/p301-native36/Native47-resource-upgrade/validation.json",
+            ".work/single-window-20261018/p301-native36/Native48-transport/validation.json",
+            ".work/single-window-20261018/p301-native36/Native50-paper/validation.json",
+            ".work/single-window-20261018/p301-native36/Native51-local-media/validation.json",
+            ".work/single-window-20261018/p301-native36/Native51-template/validation.json"
+          ],
+          "actions": [
+            "将上述已过链直接按原13条first_release_design_expectation复用；只对现有回执不能判定的物品piece/零库存、双行为源拒绝、特有载荷/消费者组合补实际证据，已有对应结果不再操作。",
+            "DefinitionCycle、静态检查与正式Project Run按实际支持分别判定；service_capacity和未实现专业提供者的后置求解不加入。"
+          ],
+          "verification": {
+            "layer": "ordinary_Native_and_existing_Host_evidence",
+            "entrypoints": [
+              "tests/planner/authoring-host/service.test.mjs",
+              "tests/planner/authoring/authoring.test.mjs",
+              "scenarios/九类模块采用/expected-category-adoption.design.json"
+            ],
+            "expected": [
+              "各类别入口保留自己的载荷、精确版本和能力，不统一借设备示例。",
+              "物品/资源/模板/素材导入不创建库存/当前占用/需求；任务导入不自动执行；服务/CNC后置求解不恢复。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "SF-04",
+            "SF-10",
+            "SF-11",
+            "SF-15"
+          ],
+          "status": "pending"
+        },
+        {
+          "within_original_step": 3,
+          "kind": "verification_gap",
+          "gap": "设备native65.device.p301@0.1.1贡献消费者的输出端点、独立保存和新进程读回未完成。",
+          "locations": [
+            {
+              "path": "apps/planner/src/features/modules/AdoptionPreparation.tsx",
+              "symbol": "AdoptionPreparation",
+              "line": 60
+            },
+            {
+              "path": "apps/planner/src/features/modules/ModuleAuthoringWorkspace.tsx",
+              "symbol": "adopt",
+              "line": 215
+            },
+            {
+              "path": "apps/planner/src/features/factory/ConnectionEditor.tsx",
+              "symbol": "ConnectionEditor",
+              "line": 29
+            },
+            {
+              "path": "apps/planner/src/services/projectHost.ts",
+              "symbol": "saveProject",
+              "line": 217
+            }
+          ],
+          "cause_or_requirement": "Native68已成功导出6文件4518字节ZIP；消费者仅临时观察到导入r20、CNC01采用r21、输入重接r22。M-01-output-output输出连接未应用、未另存，随后该进程不存在，临时状态不能算持久化完成。设备旧样例/正式Run、导出修复、C20非空素材完整移植已过，不重做这些动作。",
+          "input_refs": [
+            ".work/single-window-20261018/p301-native36/Native51-template/device/native67-contribution-validation.json",
+            ".work/single-window-20261018/p301-native36/Native51-template/device/native68-device-0.1.1-scoped-contribution.zip",
+            ".work/single-window-20261018/p301-native36/Native51-template/device/saved-r19-actual-project-run",
+            ".work/cu-closeout-20261024/root-P001-asset-native/receipt.json"
+          ],
+          "actions": [
+            "以保留的r19/77文档/5Run工程建立独立消费者，使用现成0.1.1 ZIP导入；仅CNC01明确采用原七角色映射。",
+            "明确核对输入和M-01-output-output两连接的精确instance/module@version/port，应用尚缺输出连接；此链同时满足原步骤2映射差额，仅执行一次。",
+            "独立保存消费者，正常退出后新OS进程重开，读回0.1.1与精确连接/角色；原来源、旧定义和5个旧Run保持。不重复已通过导出/样例/正式Run。"
+          ],
+          "verification": {
+            "layer": "ordinary_Native_save_new_OS_reopen",
+            "entrypoints": [
+              "tests/planner/authoring-host/committed-export.test.mjs",
+              "packages/commands/tests/operation_adoption_host.rs",
+              ".work/single-window-20261018/p301-native36/Native51-template/device/native67-contribution-validation.json"
+            ],
+            "expected": [
+              "目标仅CNC01为native65.device.p301@0.1.1；原七角色与两连接精确重绑，其他实例不自动升级。",
+              "新进程实际读回保存的定义/角色/端点，原5旧Run/冻结输入和源工程保留；未保存临时r20-r22不冒充结果。",
+              "导入仅定义不创造库存/需求/Run，取消采用不变原实例，声明与原许可保持。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "SF-04",
+            "SF-10",
+            "SF-11",
+            "SF-15"
+          ],
+          "status": "pending",
+          "also_covers_original_steps": [
+            2
+          ]
+        },
+        {
+          "within_original_step": 4,
+          "kind": "verification_gap",
+          "gap": "受影响九类草稿/采用的历史、同字段冲突与来源切换仍需普通Native联合接收。",
+          "locations": [
+            {
+              "path": "apps/planner/src/features/modules/ModuleAuthoringWorkspace.tsx",
+              "symbol": "history",
+              "line": 164
+            },
+            {
+              "path": "apps/planner/src/features/modules/ModuleAuthoringWorkspace.tsx",
+              "symbol": "navigate",
+              "line": 102
+            },
+            {
+              "path": "apps/planner/src/services/moduleAuthoring.ts",
+              "symbol": "createModuleAuthoringIO",
+              "line": 59
+            }
+          ],
+          "cause_or_requirement": "同Host同参数冲突、取消重基、保存/丢弃/留在已有有限Native，C22外部97原断言与12切换已过。这里只补未覆盖类别/修改路径，不新增必须特定延迟OS IPC方法。",
+          "input_refs": [
+            ".work/noncu-closeout-20261024/p001-C22-external/receipt.json",
+            "docs/03_架构与契约/共享状态与所有权.json",
+            "tests/planner/authoring-host/service.test.mjs"
+          ],
+          "actions": [
+            "沿上述缺类的真实草稿保存/采用操作补undo/redo、新编辑清redo、冲突拒绝与跨工程隔离。",
+            "读取P0-01共同旧回调/历史/授权组结果；对未受修改影响的外部程序证据直接复用。"
+          ],
+          "verification": {
+            "layer": "ordinary_Native_with_reused_program_boundaries",
+            "entrypoints": [
+              "tests/planner/authoring-host/service.test.mjs",
+              "tests/planner/authoring-host/committed-export.test.mjs"
+            ],
+            "expected": [
+              "草稿/Project双修订不混用，冲突保留输入且不覆盖。",
+              "旧回复不写新工程；undo/redo不倒拨Run、认可、已落盘文件或外部动作，跨工程不串历史。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "SF-17",
+            "NFR-08"
+          ],
+          "status": "pending"
+        }
+      ],
+      "completed_reuse": [
+        {
+          "within_original_step": 1,
+          "scope": "共同定义框架100/150/200%文字、键盘主按钮和media静态样例已过，不外推类别特有字段。",
+          "evidence_refs": [
+            ".work/cu-closeout-20261024/root-P001-authoring-text200/receipt.json"
+          ]
+        },
+        {
+          "within_original_step": 2,
+          "scope": "已有真实角色/端口消费者和C20共同Command采纳/变源拒绝复用。",
+          "evidence_refs": [
+            ".work/cu-closeout-20261024/root-P001-asset-native/media-consumer.json"
+          ]
+        },
+        {
+          "within_original_step": 3,
+          "scope": "CC0完整两模块四素材、36文件/2许可保存搬移新OS及详细/简化GLB消费者已完成。",
+          "evidence_refs": [
+            ".work/noncu-closeout-20261024/p001-asset-contribution/receipt.json",
+            ".work/cu-closeout-20261024/root-P001-asset-native/receipt.json",
+            ".work/cu-closeout-20261024/root-P001-asset-native/media-consumer.json"
+          ]
+        },
+        {
+          "within_original_step": 4,
+          "scope": "既有同Host冲突/取消重基/明确离开有限Native及C22外部来源隔离程序结果复用。",
+          "evidence_refs": [
+            ".work/noncu-closeout-20261024/p001-C22-external/receipt.json",
+            "docs/04_开发与验收/整包派发/P3-01_整包执行.json"
+          ]
+        },
+        {
+          "within_original_step": 1,
+          "scope": "资源/任务/工艺/运输/纸包装/表现/模板各自实际创作、样例、贡献或采用/新进程链按各原回执复用，不全类重做。",
+          "evidence_refs": [
+            ".work/single-window-20261018/p301-native36/Native42-resource/validation.json",
+            ".work/single-window-20261018/p301-native36/Native43-task/adoption/validation.json",
+            ".work/single-window-20261018/p301-native36/Native43-task/adoption/resource-validation.json",
+            ".work/single-window-20261018/p301-native36/Native47-operation-quality/validation.json",
+            ".work/single-window-20261018/p301-native36/Native47-resource-upgrade/validation.json",
+            ".work/single-window-20261018/p301-native36/Native48-transport/validation.json",
+            ".work/single-window-20261018/p301-native36/Native50-paper/validation.json",
+            ".work/single-window-20261018/p301-native36/Native51-local-media/validation.json",
+            ".work/single-window-20261018/p301-native36/Native51-template/validation.json"
+          ]
+        },
+        {
+          "within_original_step": 2,
+          "scope": "已过设备旧样例/正式Run、采用取消、双端口修复及其他类别明确映射复用；唯一未持久化设备0.1.1差额统一在步骤3。",
+          "evidence_refs": [
+            ".work/single-window-20261018/p301-native36/Native51-template/device/native67-runtime-validation.json",
+            ".work/single-window-20261018/p301-native36/Native51-template/device/native67-contribution-validation.json"
+          ]
+        }
+      ],
+      "formal": {
+        "status": "in_progress",
+        "actual_result": null,
+        "whole_task_done": false
+      }
+    },
+    {
+      "id": "P2-05",
+      "remaining_work": [
+        {
+          "within_original_step": 1,
+          "kind": "verification_gap",
+          "gap": "20分区剩余字段填值、单位/精确引用及边界缺普通Native证据。",
+          "locations": [
+            {
+              "path": "apps/planner/src/features/business/sections.ts",
+              "symbol": "sections",
+              "line": 2
+            },
+            {
+              "path": "apps/planner/src/features/business/BusinessEditor.tsx",
+              "symbol": "checkProposal",
+              "line": 68
+            },
+            {
+              "path": "apps/planner/src/features/business/SchemaForm.tsx",
+              "symbol": "SchemaField",
+              "line": 22
+            }
+          ],
+          "cause_or_requirement": "20分区探针只证明Schema/Command路由；A/B/D业务字段、C18资源/库位名称和日历/成本/来源已实际通过。未证实新表单bug，剩余是字段级实际覆盖。",
+          "input_refs": [
+            "scenarios/真实业务设计/business-inputs.design.json",
+            ".work/cu-closeout-20261023/root-P205-reception/receipt.json",
+            ".work/cu-closeout-20261024/root-P001-scenario-form/native-resource-location/receipt.json",
+            ".work/cu-closeout-20261024/root-P001-scenario-form/native-typed-fields/receipt.json"
+          ],
+          "actions": [
+            "按sections.ts二十分区对照已有回执，仅补未有实际填值证据的字段；优先初始物品/显式预留、物品类型、设备角色和精确版本。",
+            "核对ID/revision、单位、null和负边界；overrides保持原不支持说明，不恢复后置能力。",
+            "共同NFR-03八组键盘/文字及1800时延引用P0-01一次采样结果，已过C22共同定义文字不重跑。"
+          ],
+          "verification": {
+            "layer": "ordinary_Native_plus_shared_NFR03",
+            "entrypoints": [
+              "tests/planner/p205-closeout/handlers.test.mjs",
+              "tests/planner/p205-closeout/workflows.test.mjs",
+              "apps/planner/src/features/business/sections.ts"
+            ],
+            "expected": [
+              "预览只形成Command，明确应用才产生新修订；错误定位并保留原值。",
+              "初始输入不编辑当前库存，缺成本不阻止时间彩排，未知价格/币种保持null。",
+              "已过字段批次从待办移除；Schema路由不是填值—应用—读回的替代。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "SF-05",
+            "SF-06",
+            "SF-09",
+            "NFR-03"
+          ],
+          "status": "pending"
+        },
+        {
+          "within_original_step": 2,
+          "kind": "integration_gap",
+          "gap": "剩余字段的表单—时间轴双入口、取消及新Run消费者需一次合验。",
+          "locations": [
+            {
+              "path": "apps/planner/src/features/factory/Workbench.tsx",
+              "symbol": "commitBusiness",
+              "line": 881
+            },
+            {
+              "path": "apps/planner/src/features/factory/Workbench.tsx",
+              "symbol": "commitTimeline",
+              "line": 864
+            },
+            {
+              "path": "apps/planner/src/features/timeline/input.ts",
+              "symbol": "inputProposal",
+              "line": 12
+            }
+          ],
+          "cause_or_requirement": "A/B/D到料/换单/阶段日历有限链已过；未覆盖字段仍须证明读写同一Scenario。C副本manual-release-3删除仅阻塞该分支，不能阻塞其他字段；取消需求不是cancel_task。",
+          "input_refs": [
+            ".work/cu-closeout-20261024/root-C17-business-native/receipt.json",
+            ".work/cu-closeout-20261024/root-C17-business-native/C-receipt.json",
+            ".work/cu-closeout-20261024/root-C17-business-native/D-receipt.json"
+          ],
+          "actions": [
+            "选步骤1未覆盖且时间轴支持的释放/交期/到料/日历/阶段字段核对双入口同一修订及取消无Command。",
+            "P0-02/P1-05主责执行业务取消/质量分支，本包引用结果；C删决定取得该动作的有效确认后再执行。",
+            "完整物流合验分别引用IX-01/P2-04和IX-02/P1-04，不把同一场景在每个表单重复。"
+          ],
+          "verification": {
+            "layer": "shared_ordinary_Native_integration",
+            "entrypoints": [
+              "tests/planner/p205-closeout/workflows.test.mjs",
+              "tests/planner/timeline/closeout-transaction.test.mjs"
+            ],
+            "expected": [
+              "新方案从原初始输入形成新RunId，预览/取消/回看不修改旧结果。",
+              "到料119999/120000ms与阶段45/50/55秒已过结果复用。",
+              "UNKNOWN不自动放行，业务取消保留在制/旧版本。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "IX-01",
+            "IX-02",
+            "SF-05",
+            "SF-06",
+            "SF-09"
+          ],
+          "status": "pending"
+        },
+        {
+          "within_original_step": 4,
+          "kind": "verification_gap",
+          "gap": "未覆盖字段的显式离开、重基、提交在途与历史归属尚待Native汇合。",
+          "locations": [
+            {
+              "path": "apps/planner/src/features/business/BusinessEditor.tsx",
+              "symbol": "submit",
+              "line": 78
+            },
+            {
+              "path": "apps/planner/src/features/business/BusinessEditor.tsx",
+              "symbol": "discard",
+              "line": 98
+            },
+            {
+              "path": "apps/planner/src/features/business/BusinessEditor.tsx",
+              "symbol": "historyAction",
+              "line": 91
+            }
+          ],
+          "cause_or_requirement": "C18真实IME、同批undo/redo、非空历史跨工程已过；Host与外部迟到回复证据可复用。差额是剩余表单组合，不额外要求人为延迟OS IPC。",
+          "input_refs": [
+            ".work/cu-closeout-20261024/root-P001-scenario-form/native-ime/receipt.json",
+            ".work/cu-closeout-20261024/root-P001-scenario-form/native-resource-location/receipt.json",
+            ".work/cu-closeout-20261024/root-P001-scenario-form/native-typed-fields/receipt.json",
+            "docs/03_架构与契约/共享状态与所有权.json"
+          ],
+          "actions": [
+            "沿步骤1未覆盖字段补留在/丢弃、同字段冲突刷新重基及在途返回；共享P0-01历史/归属组一次执行。",
+            "补受影响字段的新编辑清redo和跨工程隔离，不重复C18已过字段。"
+          ],
+          "verification": {
+            "layer": "ordinary_Native_with_reused_Host",
+            "entrypoints": [
+              "tests/planner/p205-closeout/handlers.test.mjs",
+              "tests/planner/p205-closeout/session.mjs"
+            ],
+            "expected": [
+              "冲突保留输入且不覆盖新修订，重基明确预览后才应用。",
+              "undo/redo形成新修订，不回退Run、认可、磁盘或外部任务；旧响应不写新工程。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "SF-17",
+            "NFR-08"
+          ],
+          "status": "pending"
+        }
+      ],
+      "completed_reuse": [
+        {
+          "within_original_step": 1,
+          "scope": "A/B/D已填字段和C18资源/库位、日历/成本/来源批次及计价标签修复均移出活动执行。",
+          "evidence_refs": [
+            ".work/cu-closeout-20261024/root-C17-business-native/receipt.json",
+            ".work/cu-closeout-20261024/root-P001-scenario-form/native-typed-fields/receipt.json",
+            ".work/cu-closeout-20261024/root-P001-cost-label/receipt.json"
+          ]
+        },
+        {
+          "within_original_step": 2,
+          "scope": "已过表单—时间轴—新Run有限链复用。",
+          "evidence_refs": [
+            ".work/cu-closeout-20261024/root-C17-business-native/D-receipt.json"
+          ]
+        },
+        {
+          "within_original_step": 3,
+          "scope": "A/B/D及C前三Run数值和冻结保持复用，余差由原业务主责一次执行。",
+          "evidence_refs": [
+            ".work/cu-closeout-20261024/root-C17-business-native/receipt.json",
+            ".work/cu-closeout-20261024/root-C17-business-native/C-receipt.json"
+          ]
+        },
+        {
+          "within_original_step": 4,
+          "scope": "C18真实IME、同批历史、非空历史跨工程与保存搬移新OS结果复用。",
+          "evidence_refs": [
+            ".work/cu-closeout-20261024/root-P001-scenario-form/native-ime/receipt.json",
+            ".work/cu-closeout-20261024/root-P001-scenario-form/native-resource-location/receipt.json",
+            ".work/cu-closeout-20261024/root-P001-scenario-form/native-typed-fields/receipt.json"
+          ]
+        }
+      ],
+      "formal": {
+        "status": "in_progress",
+        "actual_result": null,
+        "whole_task_done": false
+      }
+    },
+    {
+      "id": "P3-02",
+      "remaining_work": [
+        {
+          "within_original_step": 1,
+          "kind": "verification_gap",
+          "gap": "最终登记模型的MQ-07/08联合效果及platform_reopen gate仍未逐项闭合。",
+          "locations": [
+            {
+              "path": "tools/check_model_quality.py",
+              "symbol": "def release_errors",
+              "line": 103
+            },
+            {
+              "path": "apps/planner/src/features/media/viewport.ts",
+              "symbol": "export class ModelViewport",
+              "line": 7
+            }
+          ],
+          "cause_or_requirement": "已有逐模型源导出/外观及MQ-01至06证据；visual/platform_reopen仍有pending。是接收覆盖缺口，未证实新几何bug，不需一律重建资产。",
+          "input_refs": [
+            "docs/02_交互设计/设备建模精度与表现验收规范.json",
+            "scenarios/媒体表现/model-quality-20261022/逐模型审查结果.json",
+            "modules/media/equipment-quality-v042/registration.json"
+          ],
+          "actions": [
+            "先按最终实际register_order确定精确ID/版本/GLB，仅补pending或与实际交付资产不匹配的gate/维度；同文件既有源和外观证据复用。",
+            "缺平台证据的选定模型在普通Native采用、看真实Run关键近景/动作并保存重开；仅修已观察缺陷。"
+          ],
+          "verification": {
+            "layer": "ordinary_Native_and_MQ",
+            "entrypoints": [
+              "tools/check_model_quality.py",
+              "scenarios/媒体表现/model-quality-20261022/逐模型审查结果.json"
+            ],
+            "expected": [
+              "每个最终选定模型有MQ-01至08的pass或具名not_applicable，以及source_export/visual/platform_reopen三gate；文件存在/节点数不是接收。",
+              "真人认可独立，不由AI补签。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "SF-03",
+            "SF-10",
+            "MQ-01",
+            "MQ-02",
+            "MQ-03",
+            "MQ-04",
+            "MQ-05",
+            "MQ-06",
+            "MQ-07",
+            "MQ-08"
+          ],
+          "status": "pending"
+        },
+        {
+          "within_original_step": 2,
+          "kind": "verification_gap",
+          "gap": "其余最终适用设备/附属件真实阶段随动未覆盖，代表1.0.5及四等待不重做。",
+          "locations": [
+            {
+              "path": "packages/presentation/src/phase.ts",
+              "symbol": "export function projectPhase",
+              "line": 3
+            },
+            {
+              "path": "packages/presentation/src/scene.ts",
+              "symbol": "export async function bindScene",
+              "line": 45
+            },
+            {
+              "path": "apps/planner/src/features/media/processItems.ts",
+              "symbol": "export function createProcessItemLayer",
+              "line": 48
+            }
+          ],
+          "cause_or_requirement": "实际来源为同Run快照/有效工时区间/持有。已过代表设备不能外推全部登记资产；未证实其余动作存在bug。",
+          "input_refs": [
+            "docs/02_交互设计/设备建模精度与表现验收规范.json",
+            ".work/cu-closeout-20261023/root-105-waits-native/receipt.json"
+          ],
+          "actions": [
+            "与上项MQ剩余清单同场补未覆盖load/auto/unload、阶段边界/中断/输出待接收、声明接触和移交，并反向seek。",
+            "记录Run/Job/时点/有效进度/锚点；没有真实Pose的transport继续明确unavailable。"
+          ],
+          "verification": {
+            "layer": "ordinary_Native",
+            "entrypoints": [
+              "tests/planner/media/media.test.mjs",
+              "tests/planner/media-line-grade/standard_host.rs"
+            ],
+            "expected": [
+              "等待保持合法阶段姿态，不提前空闲；缩放/LOD/观看不改库存/占用/工时。",
+              "人员仅显示实际声明位置/角色/占用，不从步行动画推导工时。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "SF-10",
+            "MQ-06",
+            "MQ-07",
+            "MQ-08"
+          ],
+          "status": "pending"
+        },
+        {
+          "within_original_step": 3,
+          "kind": "verification_gap",
+          "gap": "图片/GIF/GLB同一行为的跨素材实际对照仍缺完整接收。",
+          "locations": [
+            {
+              "path": "apps/planner/src/features/media/MediaPresentationView.tsx",
+              "symbol": "export function MediaPresentationView",
+              "line": 17
+            },
+            {
+              "path": "apps/planner/src/features/media/load.ts",
+              "symbol": "export async function resolveMedia",
+              "line": 9
+            }
+          ],
+          "cause_or_requirement": "20/80/20读数与几何恢复是有限回看，不代三种允许素材的完整同语义消费者。未证实业务状态随素材变化。",
+          "input_refs": [
+            "scenarios/设备创作与采用/expected-authoring.design.json",
+            ".work/cu-closeout-20261024/root-C16-GF-native/receipt.json"
+          ],
+          "actions": [
+            "使用已有相同冻结行为和许可明确图片/GIF/GLB，明确替换表现后比对实际事件、数量、有效工时及资源；保留旧Run。",
+            "素材读取/精确来源已通过程序检查复用，不改解码器或新增生产时钟。"
+          ],
+          "verification": {
+            "layer": "ordinary_Native_and_actual_Host",
+            "entrypoints": [
+              "tests/planner/media/media.test.mjs",
+              "tests/planner/media/shared-preview.test.mjs"
+            ],
+            "expected": [
+              "三种素材只改变呈现；事件顺序、库存、接受量和资源符合原独立预期。",
+              "未支持素材/动作明示；做完量/移交量独立。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "SF-10"
+          ],
+          "status": "pending"
+        },
+        {
+          "within_original_step": 3,
+          "kind": "verification_gap",
+          "gap": "NFR-11实际大素材加载状态/耗时/失败/取消尚缺；正式FPS消费共享矩阵。",
+          "locations": [
+            {
+              "path": "apps/planner/src/features/media/load.ts",
+              "symbol": "export async function resolveMedia",
+              "line": 9
+            },
+            {
+              "path": "apps/planner/src/features/media/MediaPresentationView.tsx",
+              "symbol": "async function create()",
+              "line": 61
+            }
+          ],
+          "cause_or_requirement": "原NFR-11要求记录实际字节/复杂度与结果，不设任意文件上限或内存SLA。C16 OOM已关，C26 Trace仅诊断，NFR-02正式0/48。",
+          "input_refs": [
+            "docs/01_业务需求/非功能需求与测量验收.json",
+            ".work/cu-closeout-20261024/root-C26-timeline-clock/receipt.json",
+            ".work/cu-closeout-20261024/root-C26-frames-profile/receipt.json"
+          ],
+          "actions": [
+            "记录最终实际大素材字节/节点、加载起止/状态、成功失败取消；只执行本媒体NFR-11子项，与编辑/导出子项共用回执。",
+            "NFR-02由P2-01统一48窗口，公共NFR-04由主责统一测，本包不复制。"
+          ],
+          "verification": {
+            "layer": "formal_NFR_shared_media",
+            "entrypoints": [
+              "docs/01_业务需求/非功能需求与测量验收.json",
+              "apps/planner/src/features/media/load.ts"
+            ],
+            "expected": [
+              "取消不是成功；候选/素材/条件/原始样本明确，无样本保持未验。",
+              "rAF/render次数或诊断Trace不代正式FPS。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "NFR-11",
+            "NFR-04",
+            "NFR-02"
+          ],
+          "status": "pending"
+        }
+      ],
+      "completed_reuse": [
+        {
+          "within_original_step": 1,
+          "scope": "1.0.5七视角/锚点、同条件MQ-05及C20包内详细524节点/简化166节点消费者已通过；不把节点数代质量。",
+          "evidence_refs": [
+            ".work/cu-closeout-20261023/root-MQ05-native/receipt.json",
+            ".work/cu-closeout-20261024/root-P001-asset-native/media-consumer.json"
+          ]
+        },
+        {
+          "within_original_step": 2,
+          "scope": "四等待、1.0.5实际持有/接触/交接/反向回看、保存搬移新进程已过；C16原OOM及C26隐藏时间轴停钟已修复复验。",
+          "evidence_refs": [
+            ".work/cu-closeout-20261023/root-105-waits-native/receipt.json",
+            ".work/cu-closeout-20261023/root-b60-105-native/receipt.json",
+            ".work/cu-closeout-20261024/root-C16-memory/Native-replay-receipt.json",
+            ".work/cu-closeout-20261024/root-C26-timeline-clock/receipt.json"
+          ]
+        }
+      ],
+      "formal": {
+        "status": "in_progress",
+        "actual_result": null,
+        "whole_task_done": false
+      }
+    },
+    {
+      "id": "P3-03",
+      "remaining_work": [
+        {
+          "within_original_step": 1,
+          "kind": "verification_gap",
+          "gap": "插图/批量插图、区间边界及已支持过渡保存重开后的普通Native画面尚未完整覆盖。",
+          "locations": [
+            {
+              "path": "apps/planner/src/features/presentation-editor/model.ts",
+              "symbol": "export function insertImages",
+              "line": 46
+            },
+            {
+              "path": "apps/planner/src/features/presentation-editor/model.ts",
+              "symbol": "export function interval",
+              "line": 58
+            },
+            {
+              "path": "apps/planner/src/features/presentation-editor/ImageTimelineEditor.tsx",
+              "symbol": "function save()",
+              "line": 87
+            }
+          ],
+          "cause_or_requirement": "代码/Host/组件已有，现有Native可定位证据集中重排/历史；不能据此宣称全部区间和过渡已看。未证实新编辑bug。",
+          "input_refs": [
+            "scenarios/设备创作与采用/inputs.design.json",
+            "scenarios/设备创作与采用/expected-authoring.design.json"
+          ],
+          "actions": [
+            "仅补未覆盖插入、区间上下界、过渡组合：草稿修改、共同命令提交、读回、普通保存重开。",
+            "非法/不支持输入应明确拒绝并保留本地内容；采用依然明确版本/实例，不重复已过重排/历史/冲突链。"
+          ],
+          "verification": {
+            "layer": "ordinary_Native",
+            "entrypoints": [
+              "tests/planner/presentation-editor/whole-batch.test.mjs",
+              "tests/planner/presentation-editor/noncu-full.test.mjs"
+            ],
+            "expected": [
+              "精确AssetRef、顺序、phase_ref/start/end/transition读回一致，画面匹配保存载荷。",
+              "无部分提交，不改冻结Run/库存或自动采用。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "SF-04",
+            "SF-11"
+          ],
+          "status": "pending"
+        },
+        {
+          "within_original_step": 2,
+          "kind": "verification_gap",
+          "gap": "真实交接后已移交量增长的标签消费者及未覆盖字段/热点组合仍需接收。",
+          "locations": [
+            {
+              "path": "apps/planner/src/services/presentationHost.ts",
+              "symbol": "export async function readActualPortOutputs",
+              "line": 108
+            },
+            {
+              "path": "apps/planner/src/features/presentation-editor/ImageTimelineEditor.tsx",
+              "symbol": "function canAction",
+              "line": 94
+            },
+            {
+              "path": "packages/presentation/src/dataFields.ts",
+              "symbol": "resolveMediaData",
+              "line": 74
+            }
+          ],
+          "cause_or_requirement": "0.6.92 Native已证completed=1/accepted=0，不重做该分支；该证据未覆盖真实交接后accepted增长和全部类型化字段/操作组合。Host精确Run/时间/PortRef/单位拒绝已过。",
+          "input_refs": [
+            ".work/cu-closeout-20261022/root-p303/saved-adopted-0692-r25",
+            "scenarios/图片时间轴/runtime/phase.input.json"
+          ],
+          "actions": [
+            "用已有实际交接事件Run补交接后增长边界，复用做完1/移交0；按既有字段目录只补未覆盖number/string字段和已实现操作。",
+            "未保存/过期声明、无实际执行端口、DefinitionCycle无实例端口继续具名不可用。"
+          ],
+          "verification": {
+            "layer": "ordinary_Native",
+            "entrypoints": [
+              "tests/planner/port-output-media/host.test.mjs",
+              "tests/planner/port-output-media/fields.test.mjs"
+            ],
+            "expected": [
+              "完成/移交分别匹配原Run实际记录，不新增库存；类型/单位/精确来源正确。",
+              "热点只执行当前声明并接线动作，Scope/Run/版本切换不误写。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "SF-10",
+            "SF-11"
+          ],
+          "status": "pending"
+        },
+        {
+          "within_original_step": 3,
+          "kind": "verification_gap",
+          "gap": "观看循环/暂停/查询的原NFR-09独立性与长媒体组仍需共享接收。",
+          "locations": [
+            {
+              "path": "apps/planner/src/features/media/MediaPresentationView.tsx",
+              "symbol": "export function MediaPresentationView",
+              "line": 17
+            },
+            {
+              "path": "packages/presentation/src/phase.ts",
+              "symbol": "export function projectPhase",
+              "line": 3
+            }
+          ],
+          "cause_or_requirement": "C26隐藏时间轴停钟已修复，但不代原完整显示独立性或NFR-11。现有缺料/持有/保存证据复用，不列为未开始。",
+          "input_refs": [
+            "docs/01_业务需求/非功能需求与测量验收.json",
+            ".work/cu-closeout-20261024/root-C26-timeline-clock/receipt.json"
+          ],
+          "actions": [
+            "与P1-01/P1-03的NFR-09同Run合验暂停/观看循环/查询前后事件、身份、接受量；本包仅接收媒体消费者。",
+            "NFR-02由P2-01一次测量，媒体NFR-11消费P3-02结果，不另跑48窗口。"
+          ],
+          "verification": {
+            "layer": "shared_Native_and_NFR",
+            "entrypoints": [
+              "docs/01_业务需求/非功能需求与测量验收.json",
+              "tests/planner/media/media.test.mjs"
+            ],
+            "expected": [
+              "观看只改显示时点，旧Run/库存/资源/接受量不变，真实缺PCB继续等待。",
+              "没有正式FPS或大媒体样本不写通过。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "NFR-09",
+            "NFR-02",
+            "NFR-04",
+            "NFR-11"
+          ],
+          "status": "pending"
+        }
+      ],
+      "completed_reuse": [
+        {
+          "within_original_step": 1,
+          "scope": "普通Native保存草稿重排和Undo/Redo恢复已过；批量插图顺序/AssetRef/阶段/行为程序检查复用。",
+          "evidence_refs": [
+            ".work/cu-closeout-20261022/root-p303/C07-draft-history-receipt.json",
+            "tests/planner/presentation-editor/whole-batch.test.mjs"
+          ]
+        },
+        {
+          "within_original_step": 2,
+          "scope": "0.6.92明确采用/三端口重连/路线更新/运行/保存新进程读回已过，做完1piece和移交0piece独立；配置/隔离预览热点已过。",
+          "evidence_refs": [
+            "docs/04_开发与验收/整包派发/P3-03_整包执行.json#/Root_C06_0692_adoption_20261022",
+            ".work/cu-closeout-20261022/root-p303/C07-hotspot-actions-receipt.json"
+          ]
+        },
+        {
+          "within_original_step": 3,
+          "scope": "实际阶段边界、四等待、1.0.5持有接触交接及保存搬移限定通过。",
+          "evidence_refs": [
+            ".work/cu-closeout-20261023/root-105-waits-native/receipt.json",
+            ".work/cu-closeout-20261023/root-b60-105-native/receipt.json"
+          ]
+        },
+        {
+          "within_original_step": 4,
+          "scope": "同Host过期修订冲突取消/重基保存、编辑器/系统关闭保护、redo分支及跨工程历史隔离已过，不重复这些链。",
+          "evidence_refs": [
+            ".work/cu-closeout-20261022/root-p303/conflict-C08/receipt.json",
+            ".work/cu-closeout-20261022/root-p303/C07-close-branch-receipt.json",
+            ".work/cu-closeout-20261022/root-p303/C07-project-switch-receipt.json"
+          ]
+        }
+      ],
+      "formal": {
+        "status": "in_progress",
+        "actual_result": null,
+        "whole_task_done": false
+      }
+    },
+    {
+      "id": "P4-01",
+      "remaining_work": [
+        {
+          "within_original_step": 3,
+          "kind": "integration_gap",
+          "gap": "本包四模板生命周期已通过；仅剩原P3-01/P1-04/P1-05关联消费者和release证据归并。",
+          "locations": [
+            {
+              "path": "packages/commands/src/host_template_composition.rs",
+              "symbol": "pub(super) fn prepare_composition",
+              "line": 262
+            },
+            {
+              "path": "apps/planner/src/features/modules/templateComposition.ts",
+              "symbol": "export function compositionInput",
+              "line": 21
+            },
+            {
+              "path": "apps/planner/src/features/modules/templateSave.ts",
+              "symbol": "export async function saveTemplateComposition",
+              "line": 6
+            }
+          ],
+          "cause_or_requirement": "Root接收回执明确剩余是原依赖及整体出口。未观察模板产品缺陷，不再列“模板Native未验”。",
+          "input_refs": [
+            ".work/cu-closeout-20261024/root-P401-native-reception/receipt.json",
+            "docs/04_开发与验收/整包派发/P3-01_整包执行.json",
+            "docs/04_开发与验收/整包派发/P1-04_整包执行.json",
+            "docs/04_开发与验收/整包派发/P1-05_整包执行.json"
+          ],
+          "actions": [
+            "接收原主责九类贡献/采用、订单质量未覆盖消费者结果并核对release依赖；不重做四模板导入/运行/保存。",
+            "最终候选若实际改变模板消费路径，仅补受影响检查；无改动直接复用C14闭环。"
+          ],
+          "verification": {
+            "layer": "shared_release_evidence_reception",
+            "entrypoints": [
+              "packages/commands/tests/noncu_templates_lifecycle.rs",
+              ".work/cu-closeout-20261024/root-P401-native-reception/receipt.json"
+            ],
+            "expected": [
+              "加工/电子仍是声明过程，不冒充专业求解/实测现场；纸箱制造与成品装箱区分。",
+              "关联出口有真实结果后才正式关闭；不新增技术测试或人签替代。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "SF-02",
+            "SF-04",
+            "SF-17"
+          ],
+          "status": "pending"
+        }
+      ],
+      "completed_reuse": [
+        {
+          "within_original_step": 1,
+          "scope": "三通用模板/纸箱配置的来源版本和声明输入已建立，未知现场保持未知，不复制在制/订单。",
+          "evidence_refs": [
+            ".work/independent-closeout-20261020/main-reception/validation.json"
+          ]
+        },
+        {
+          "within_original_step": 2,
+          "scope": "四模板采用与九类可编辑定义草稿实际Host消费者已接收。",
+          "evidence_refs": [
+            ".work/cu-closeout-20261023/root-P401-reception/receipt.json"
+          ]
+        },
+        {
+          "within_original_step": 3,
+          "scope": "四模板C14四工程/8进程、8新Run/8旧Run、编辑15秒日历后重跑及保存重开已Root普通Native接收；224原输入保留，不重复闭环。",
+          "evidence_refs": [
+            ".work/cu-closeout-20261024/root-P401-native-reception/receipt.json"
+          ]
+        }
+      ],
+      "formal": {
+        "status": "in_progress",
+        "actual_result": null,
+        "whole_task_done": false
+      }
+    },
+    {
+      "id": "P2-06",
+      "remaining_work": [
+        {
+          "within_original_step": 1,
+          "kind": "integration_gap",
+          "gap": "专业IX-03改版绑定与其余原负向口径的报告消费者尚缺最终整链核对。",
+          "locations": [
+            {
+              "path": "apps/planner/src/features/reporting/ReportPanel.tsx",
+              "symbol": "EvaluationView",
+              "line": 30
+            },
+            {
+              "path": "apps/planner/src/features/comparison/model.ts",
+              "symbol": "metricText",
+              "line": 17
+            }
+          ],
+          "cause_or_requirement": "接受量/区间并集/条件成本和C17成功/修正两报告已接收；剩余是原未覆盖取消/缺件/待判、专业非Pass与旧绑定失效结果的实际阅读。未发现要求重写报告算法的新失败。",
+          "input_refs": [
+            "packages/reporting/evaluation-report.contract.design.json",
+            "packages/reporting/tests/evaluation_acceptance.rs",
+            "docs/03_架构与契约/评估报告与数据导出.md",
+            ".work/cu-closeout-20261024/root-C17-report/receipt.json"
+          ],
+          "actions": [
+            "专业版本变化由P0-03/P4-02主责IX-03一次执行，本包消费其真实artifact/用途/绑定/结果及新旧Run。",
+            "仅补原尚未覆盖的取消、缺件、待判、未知金额和不可比消费者；已过单Run成功不强制添加修正Run。"
+          ],
+          "verification": {
+            "layer": "shared_Native_IX03_and_report_review",
+            "entrypoints": [
+              "packages/reporting/tests/evaluation_acceptance.rs",
+              "packages/reporting/tests/comparison_acceptance.rs"
+            ],
+            "expected": [
+              "未完整接受C=null而非迟延0；已知时刻不被不可比状态抹成未知。",
+              "人员/机器区间不双计、班次和占用计价不相加、缺价格币种null，不拼造完整总成本。",
+              "专业计算非Pass/未判定不因报告汇总或人工用途认可变成Pass；受影响绑定待复核，旧结果保持。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "IX-03",
+            "SF-09",
+            "SF-16"
+          ],
+          "status": "pending"
+        },
+        {
+          "within_original_step": 2,
+          "kind": "verification_gap",
+          "gap": "报告长任务取消/重叠/原子提交的适用完整组尚未被普通Native正式接收。",
+          "locations": [
+            {
+              "path": "apps/planner/src/features/reporting/useDeliveryTask.ts",
+              "symbol": "follow",
+              "line": 20
+            },
+            {
+              "path": "apps/planner/src/features/reporting/useDeliveryTask.ts",
+              "symbol": "cancel",
+              "line": 45
+            },
+            {
+              "path": "apps/planner/src/services/projectHost.ts",
+              "symbol": "startEvaluationExport",
+              "line": 274
+            }
+          ],
+          "cause_or_requirement": "实际四格式和PDF-only导出已完成，不再重导相同报告。原NFR-04/06/11尚缺当前适用的任务取消/并发/输出归属矩阵；Host发布原子性检查已有专用案例，缺证据不自动加新实现。",
+          "input_refs": [
+            ".work/cu-closeout-20261024/root-C17-report/receipt.json",
+            ".work/cu-closeout-20261024/root-C17-report/pdf-only/receipt.json",
+            "docs/01_业务需求/非功能需求与测量验收.json"
+          ],
+          "actions": [
+            "复用原发布Host取消/竞争/进程退出结果；普通Native长任务组由P0-01统一安排，补报告任务取消、重叠与文件选择的未覆盖组合。",
+            "失败或取消核对旧有效产物、最终目录和Task原结果；不将旧Win32-5未确证根因变成重复导出成功任务。"
+          ],
+          "verification": {
+            "layer": "shared_Native_task_and_IO_NFR",
+            "entrypoints": [
+              "packages/commands/tests/noncu_report_publication.rs",
+              "apps/planner/src/features/reporting/useDeliveryTask.ts",
+              "docs/01_业务需求/非功能需求与测量验收.json"
+            ],
+            "expected": [
+              "取消/失败不暴露半成品最终目录、不返回成功；竞争按原提交者胜负判定。",
+              "报告仍引用同一冻结Run/Report，重叠任务不串Project/路径/结果；进度与取消反馈符合原样本和阈值。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "NFR-04",
+            "NFR-06",
+            "NFR-11"
+          ],
+          "status": "pending"
+        },
+        {
+          "within_original_step": 3,
+          "kind": "verification_gap",
+          "gap": "已导出离线HTML仍缺搬移后真实浏览器执行与阅读记录。",
+          "locations": [
+            {
+              "path": "apps/planner/src/features/reporting/ReportPanel.tsx",
+              "symbol": "ReportPanel",
+              "line": 12
+            },
+            {
+              "path": "apps/planner/src/services/projectHost.ts",
+              "symbol": "startEvaluationExport",
+              "line": 274
+            }
+          ],
+          "cause_or_requirement": "C17中文字体、分页、26页视觉、15CSV/JSON同源和PDF-only均通过；HTML静态文件/引用核验不等于浏览器实际执行。现有策略限制未解决时应保留未验，不推断产品脚本坏。",
+          "input_refs": [
+            ".work/cu-closeout-20261024/root-C17-report/receipt.json",
+            ".work/cu-closeout-20261024/root-C17-report/pdf-only/receipt.json",
+            "docs/03_架构与契约/评估报告与数据导出.md"
+          ],
+          "actions": [
+            "使用现有已导出并搬移的HTML，按授权以普通浏览器打开，实际读取图像、导航、中文/分页和关键指标；不恢复已停止的Playwright产品测试。",
+            "实际离线请求检查由P0-01的NFR-07一次合验，结果共享P2-03/P5-01。若浏览器安全策略阻止，记录真实阻塞而非绕过。"
+          ],
+          "verification": {
+            "layer": "actual_browser_offline_consumer",
+            "entrypoints": [
+              "packages/commands/tests/noncu_report_publication.rs",
+              "packages/reporting/tests/readable_reports.rs"
+            ],
+            "expected": [
+              "搬移后HTML仅引用包内资源，真实浏览器无缺图/关键读取错误；PDF/HTML/CSV/JSON接受单位、RunId与时间一致。",
+              "不联网也能打开并阅读已含资源；未执行保持not_evaluable，不以静态核验填通过。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "SF-16",
+            "NFR-07",
+            "NFR-11"
+          ],
+          "status": "pending"
+        }
+      ],
+      "completed_reuse": [
+        {
+          "within_original_step": 1,
+          "scope": "原接受量、区间/条件成本程序证据及当前成功/修正Native阅读保持。",
+          "evidence_refs": [
+            ".work/cu-closeout-20261024/root-C17-report/receipt.json"
+          ]
+        },
+        {
+          "within_original_step": 2,
+          "scope": "C17四格式两任务实际导出及PDF-only通过，26页字体/分页与30CSV业务值、图/工程闭包不变，勿重导。",
+          "evidence_refs": [
+            ".work/cu-closeout-20261024/root-C17-report/receipt.json",
+            ".work/cu-closeout-20261024/root-C17-report/pdf-only/receipt.json"
+          ]
+        },
+        {
+          "within_original_step": 3,
+          "scope": "中文、跨页、单Run直交和搬移新进程工程结果复用；只剩真实离线HTML与未覆盖联合消费者。",
+          "evidence_refs": [
+            ".work/cu-closeout-20261024/root-C17-report/receipt.json"
+          ]
+        }
+      ],
+      "formal": {
+        "status": "in_progress",
+        "actual_result": null,
+        "whole_task_done": false
+      }
+    },
+    {
+      "id": "P3-04",
+      "remaining_work": [
+        {
+          "within_original_step": 2,
+          "kind": "verification_gap",
+          "gap": "最终生成工程九类声明、设备实例、时间轴/标签与实际采用之间尚缺逐项普通Native接收归并。",
+          "locations": [
+            {
+              "path": "integrations/agent/workflow.py",
+              "symbol": "def run_factory",
+              "line": 74
+            },
+            {
+              "path": "apps/planner/src/features/agent/AgentWorkspace.tsx",
+              "symbol": "export function AgentWorkspace",
+              "line": 35
+            },
+            {
+              "path": "apps/mcp-bridge/src/catalog.rs",
+              "symbol": "pub fn tools",
+              "line": 104
+            }
+          ],
+          "cause_or_requirement": "Python stdio20案例和真实渲染不是普通Native九类全部接收。DeviceDetail注册和footprint授权bug已修；未证实新桥接bug。9节点生成预览不能冒充完整工业模型认可。",
+          "input_refs": [
+            "scenarios/目标驱动建厂/acceptance.design.json",
+            ".work/cu-closeout-20261022/window6-agent/.work/delivery-r3/receipt.json"
+          ],
+          "actions": [
+            "用已交付GF工程逐类映射声明/版本/实例/端口和采用状态，只补未被原生观察的消费者。",
+            "生成与采用、外观预览与隔离周期分开；静态检查/真实3D/模拟引用同修订。"
+          ],
+          "verification": {
+            "layer": "ordinary_Native_consumer_reception",
+            "entrypoints": [
+              "integrations/agent/workflow.py",
+              "packages/commands/tests/full_gf_applicability.rs"
+            ],
+            "expected": [
+              "现有生成对象可继续编辑，新编辑进入下一修订/方案，不改当前Run。",
+              "缺模板/关键输入/尺寸冲突具名说明，目标不写成实际产量。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "SF-04",
+            "SF-10",
+            "SF-11",
+            "SF-16",
+            "SF-17"
+          ],
+          "status": "pending"
+        },
+        {
+          "within_original_step": 3,
+          "kind": "verification_gap",
+          "gap": "适用NFR-04/07/08与原release依赖尚未完整接收；GF已过直交/修正/报告不重跑。",
+          "locations": [
+            {
+              "path": "packages/commands/src/host_authority.rs",
+              "symbol": "pub fn update_external_session_authority",
+              "line": 21
+            },
+            {
+              "path": "apps/planner/src/services/agentConnection.ts",
+              "symbol": "export const revokeAgent",
+              "line": 42
+            },
+            {
+              "path": "integrations/agent/workflow.py",
+              "symbol": "def run_factory",
+              "line": 74
+            }
+          ],
+          "cause_or_requirement": "20案例与有限Native不代长任务正式计时、真实断网请求轨迹和最终UI归属。是原验收覆盖，非要求另建Engine或重写权限。",
+          "input_refs": [
+            "docs/01_业务需求/非功能需求与测量验收.json",
+            "scenarios/目标驱动建厂/acceptance.design.json",
+            ".work/cu-closeout-20261024/root-C17-report/receipt.json"
+          ],
+          "actions": [
+            "消费P0-01共享NFR-07/08及公共NFR-04，只补本Agent消费者缺项，记录实际授权/Scope/修订。",
+            "按既有20案例和Root回执逐行归并GF-01至07；已过行移出活动清单。真人GF-06单列，不增加指定客户端认证。"
+          ],
+          "verification": {
+            "layer": "shared_acceptance_reconciliation",
+            "entrypoints": [
+              "docs/01_业务需求/非功能需求与测量验收.json",
+              "packages/commands/tests/full_gf_applicability.rs"
+            ],
+            "expected": [
+              "进度/取消、离线、旧响应归属符合原条件，无额外代理权限。",
+              "初案达标无强制修改/第二Run；不足最多3有效修正轮，无输入或失败不称达标。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "SF-17",
+            "NFR-04",
+            "NFR-07",
+            "NFR-08"
+          ],
+          "status": "pending"
+        }
+      ],
+      "completed_reuse": [
+        {
+          "within_original_step": 1,
+          "scope": "真实MCP stdio/共同Host授权、修订、footprint整字段原子拒绝修复与能力发现已Root接收；不再要求指定Codex客户端认证。",
+          "evidence_refs": [
+            ".work/cu-closeout-20261022/window6-agent/.work/delivery-r3/receipt.json",
+            "docs/04_开发与验收/整包派发/P3-04_整包执行.json#/Root_r3_current_reception_20261022"
+          ]
+        },
+        {
+          "within_original_step": 2,
+          "scope": "真实Agent20案例/354具名检查与渲染反馈已接收；生成设备41/44/41对应20/80/20及几何恢复有限Native已过。",
+          "evidence_refs": [
+            ".work/cu-closeout-20261022/window6-agent/.work/delivery-r3/receipt.json",
+            ".work/cu-closeout-20261024/root-C16-GF-native/receipt.json"
+          ]
+        },
+        {
+          "within_original_step": 3,
+          "scope": "初案达标单Run直交、不足修正、普通Native四格式/PDF重导、GF搬移r6新进程接手及3旧Run保留已过。",
+          "evidence_refs": [
+            ".work/cu-closeout-20261024/root-C17-report/receipt.json",
+            ".work/cu-closeout-20261024/root-C17-report/pdf-only/receipt.json"
+          ]
+        }
+      ],
+      "formal": {
+        "status": "in_progress",
+        "actual_result": null,
+        "whole_task_done": false
+      }
+    },
+    {
+      "id": "P4-02",
+      "remaining_work": [
+        {
+          "within_original_step": 2,
+          "kind": "verification_gap",
+          "gap": "原3机制×3变化及补充套筒的普通Native可编辑输入、三态结果和过程显示尚未完整接收。",
+          "locations": [
+            {
+              "path": "apps/planner/src/features/packaging/PackagingWorkspace.tsx",
+              "symbol": "export function PackagingWorkspace",
+              "line": 53
+            },
+            {
+              "path": "apps/planner/src/features/packaging/ProcessViewport.tsx",
+              "symbol": "export function ProcessViewport",
+              "line": 11
+            },
+            {
+              "path": "apps/planner/src/features/packaging/model.ts",
+              "symbol": "export async function computeJob",
+              "line": 66
+            }
+          ],
+          "cause_or_requirement": "12案例是Host/新进程结果，不代普通Native可见过程；未证实新求解bug。历史2.9mm套筒制造重叠应保持Undetermined，新二进制网格候选另ID/修订，不覆盖反例。",
+          "input_refs": [
+            ".work/cu-closeout-20261023/root-P402-reception/receipt.json",
+            "packages/packaging/tests/support/noncu_cases.rs",
+            "packages/packaging/tests/fixtures/explicit-binary-grid-sleeve.job.json"
+          ],
+          "actions": [
+            "使用原冻结有效几何/材料/容差/预算，在Native读取修改/计算三机制和变化，核对真实Task/Result/Artifact及形成/开合/固定姿态直线取物样本。",
+            "已有12例数值结果作为独立预期复用；只补Native消费者，不缩范围或改容差将未判定变Pass。"
+          ],
+          "verification": {
+            "layer": "ordinary_Native",
+            "entrypoints": [
+              "packages/packaging/tests/integration_acceptance.rs",
+              "tests/planner/packaging/process.test.mjs",
+              "tests/planner/packaging/view.test.mjs"
+            ],
+            "expected": [
+              "三态及原因与原结果一致；缺过程样本具名不可用，不补画成功。",
+              "三类变化实际可编辑，专业结果不增加库存、不冒充现场工时。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "SF-12",
+            "SF-13"
+          ],
+          "status": "pending"
+        },
+        {
+          "within_original_step": 2,
+          "kind": "verification_gap",
+          "gap": "制造刀/折/胶SVG、材料面积/数量及导出的普通Native可见消费者尚未全验。",
+          "locations": [
+            {
+              "path": "apps/planner/src/features/packaging/ManufacturingPreview.tsx",
+              "symbol": "export function ManufacturingPreview",
+              "line": 13
+            },
+            {
+              "path": "apps/planner/src/features/packaging/ManufacturingExportForm.tsx",
+              "symbol": "export function ManufacturingExportForm",
+              "line": 7
+            },
+            {
+              "path": "packages/commands/src/host_manufacturing_export.rs",
+              "symbol": "pub fn export_manufacturing_package",
+              "line": 22
+            }
+          ],
+          "cause_or_requirement": "SVG/材料核心及导出服务已有程序证据，缺Native可见图层/对应输出；不是新增逐权利人审批。既有许可/NOTICE/来源和单次导出声明仍保留。",
+          "input_refs": [
+            ".work/cu-closeout-20261023/root-P402-reception/receipt.json",
+            "packages/commands/tests/noncu_packaging_lifecycle.rs"
+          ],
+          "actions": [
+            "在上项原制造结果查看真实SVG、刀/折/胶层、毫米单位/材料面积/数量，执行已支持导出。",
+            "使用来源明确的既有声明，缺许可或未许可输出保留明确缺失回执；不补造许可或新增外部逐素材确认。"
+          ],
+          "verification": {
+            "layer": "ordinary_Native",
+            "entrypoints": [
+              "tests/planner/packaging/manufacturing-export.test.mjs",
+              "tests/planner/packaging/manufacturing-service.test.mjs"
+            ],
+            "expected": [
+              "每部件SVG/材料/数量匹配同Artifact；截图不代可编辑制造文件。",
+              "取消/拒绝不假成功或部分覆盖；原输入和旧Run保留。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "SF-12",
+            "SF-13",
+            "NFR-11"
+          ],
+          "status": "pending"
+        },
+        {
+          "within_original_step": 2,
+          "kind": "verification_gap",
+          "gap": "NFR-10每个冻结有效输入3次完整检查体验及专业长任务NFR-04缺正式可见样本。",
+          "locations": [
+            {
+              "path": "apps/planner/src/features/packaging/model.ts",
+              "symbol": "export async function computeJob",
+              "line": 66
+            },
+            {
+              "path": "apps/planner/src/features/packaging/model.ts",
+              "symbol": "export function cancelPackagingTask",
+              "line": 62
+            },
+            {
+              "path": "packages/packaging/src/kernel.rs",
+              "symbol": "pub fn compute_packaging",
+              "line": 1028
+            }
+          ],
+          "cause_or_requirement": "30秒是体验目标，非硬终止或省略过程许可；整crate耗时、Host案例和组件检查不代调用提交至完整结果可见的3次样本。",
+          "input_refs": [
+            "docs/01_业务需求/非功能需求与测量验收.json",
+            "docs/04_开发与验收/首版需求验收追踪.json"
+          ],
+          "actions": [
+            "沿原PREP-PACKAGING/AC-12冻结输入逐输入记录3次提交至完整结果可见；完整正确、不满足、预算耗尽、取消分开记录。",
+            "专业响应/叠加/取消使用原NFR-04共享采样；不设3秒求解上限，不删过程以达30秒。"
+          ],
+          "verification": {
+            "layer": "formal_NFR",
+            "entrypoints": [
+              "docs/01_业务需求/非功能需求与测量验收.json",
+              "packages/packaging/tests/noncu_matrix.rs"
+            ],
+            "expected": [
+              "完整正确≤30000ms为target_met、超时为target_not_met；取消/预算不足/未完成为not_completed，独立于专业三态。",
+              "预算耗尽不Pass，实际进度/取消胜负和未完成范围如实。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "NFR-10",
+            "NFR-04"
+          ],
+          "status": "pending"
+        },
+        {
+          "within_original_step": 3,
+          "kind": "integration_gap",
+          "gap": "IX-03产品改版后的绑定待复核、拒绝继续消费与新结果重新采用尚缺完整Native合验。",
+          "locations": [
+            {
+              "path": "packages/commands/src/project_professional.rs",
+              "symbol": "pub fn prepare_artifact_binding",
+              "line": 347
+            },
+            {
+              "path": "apps/planner/src/features/packaging/PackagingWorkspace.tsx",
+              "symbol": "export function PackagingWorkspace",
+              "line": 53
+            },
+            {
+              "path": "apps/planner/src/features/packaging/model.ts",
+              "symbol": "export function saveProduct",
+              "line": 43
+            }
+          ],
+          "cause_or_requirement": "Host已有认可/绑定分离和变更影响拒绝；当前缺完整可见消费者，旧认可不代表新版绑定有效。真人用途认可不由测试记录生成。",
+          "input_refs": [
+            "docs/04_开发与验收/整包派发/P0-03_整包执行.json",
+            ".work/cu-closeout-20261023/root-P402-reception/receipt.json"
+          ],
+          "actions": [
+            "P0-03牵头一次IX-03，本包供真实专业结果/工位消费者，复用数值三态和旧版存档。",
+            "同链观察r1→r2受影响绑定待复核及实际拒绝，再显式为新版本计算、选择用途、采用；不改非受影响对象/旧Run。"
+          ],
+          "verification": {
+            "layer": "shared_IX03_ordinary_Native",
+            "entrypoints": [
+              "packages/commands/tests/professional_host.rs",
+              "packages/commands/tests/noncu_packaging_lifecycle.rs"
+            ],
+            "expected": [
+              "检查不自动认可，认可不自动绑定；旧认可/结果/Run保留。",
+              "用途或精确版本不满足时UI/Host如实拒绝；人签独立。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "IX-03",
+            "SF-12",
+            "SF-13"
+          ],
+          "status": "pending"
+        }
+      ],
+      "completed_reuse": [
+        {
+          "within_original_step": 1,
+          "scope": "专业三态算法、历史反例、12案例/24进程/24保留Run与保存新进程结果已接收，不重跑全部几何核。",
+          "evidence_refs": [
+            ".work/cu-closeout-20261023/root-P402-reception/receipt.json"
+          ]
+        },
+        {
+          "within_original_step": 2,
+          "scope": "三机制/三变化、历史套筒制造Undetermined及显式新候选Pass、预算/取消基础程序检查复用。",
+          "evidence_refs": [
+            ".work/cu-closeout-20261023/root-P402-reception/receipt.json",
+            "packages/packaging/tests/integration_acceptance.rs"
+          ]
+        },
+        {
+          "within_original_step": 3,
+          "scope": "四格式/15CSV、精确Job/Artifact/Run程序交接已过；专业归档真实搬移/新OS/编辑另存由P0-01接收，不重复存储闭包。",
+          "evidence_refs": [
+            ".work/cu-closeout-20261023/root-P402-reception/receipt.json",
+            ".work/noncu-closeout-20261024/p001-professional-process/receipt.json"
+          ]
+        }
+      ],
+      "formal": {
+        "status": "in_progress",
+        "actual_result": null,
+        "whole_task_done": false
+      }
+    },
+    {
+      "id": "P5-01",
+      "remaining_work": [
+        {
+          "within_original_step": 2,
+          "kind": "integration_gap",
+          "gap": "17SF/3IX/适用NFR/MQ最终技术出口仍缺样本；本包仅汇总主责有效结果。",
+          "locations": [
+            {
+              "path": "tools/release-preparation/inventory.py",
+              "symbol": "ROOT =",
+              "line": 13
+            },
+            {
+              "path": "tools/check_model_quality.py",
+              "symbol": "def selected_models",
+              "line": 145
+            }
+          ],
+          "cause_or_requirement": "原P5-01完整技术出口未关，局部通过不代全量。第二机、指定客户端认证、逐素材权利确认和第三人作为材料前置已取消，不重新放回技术待办。",
+          "input_refs": [
+            "docs/04_开发与验收/剩余任务Todo.json",
+            "docs/04_开发与验收/首版需求验收追踪.json",
+            "docs/01_业务需求/非功能需求与测量验收.json",
+            "docs/02_交互设计/设备建模精度与表现验收规范.json"
+          ],
+          "actions": [
+            "逐主责回执接收原SF/IX/NFR/MQ，仅保留无正确层次证据的出口，不复制各包测试矩阵。",
+            "当前候选汇合只重验真实受改动影响项；技术收口、官网三材料、人签/发布分别判定。"
+          ],
+          "verification": {
+            "layer": "shared_final_technical_reconciliation",
+            "entrypoints": [
+              "docs/04_开发与验收/首版需求验收追踪.json",
+              "docs/01_业务需求/非功能需求与测量验收.json"
+            ],
+            "expected": [
+              "每项通过有原条件/实际候选；NFR-02原48窗口仍未完成，不按诊断提高完成度。",
+              "原68步/7后置保留，原适用出口未验不标全产品100%。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "SF-01",
+            "SF-02",
+            "SF-03",
+            "SF-04",
+            "SF-05",
+            "SF-06",
+            "SF-07",
+            "SF-08",
+            "SF-09",
+            "SF-10",
+            "SF-11",
+            "SF-12",
+            "SF-13",
+            "SF-14",
+            "SF-15",
+            "SF-16",
+            "SF-17",
+            "IX-01",
+            "IX-02",
+            "IX-03",
+            "NFR-01",
+            "NFR-02",
+            "NFR-03",
+            "NFR-04",
+            "NFR-05",
+            "NFR-06",
+            "NFR-07",
+            "NFR-08",
+            "NFR-09",
+            "NFR-10",
+            "NFR-11",
+            "MQ-01",
+            "MQ-02",
+            "MQ-03",
+            "MQ-04",
+            "MQ-05",
+            "MQ-06",
+            "MQ-07",
+            "MQ-08"
+          ],
+          "status": "pending"
+        },
+        {
+          "within_original_step": 3,
+          "kind": "verification_gap",
+          "gap": "215秒本地影片尚缺普通播放器实际播放走查。",
+          "locations": [
+            {
+              "path": "tools/release-preparation/record-native.ps1",
+              "symbol": "param(",
+              "line": 4
+            },
+            {
+              "path": "tools/release-preparation/verify_pdf.py",
+              "symbol": "reader = PdfReader",
+              "line": 9
+            }
+          ],
+          "cause_or_requirement": "编码/离线逐帧审查和本地文件存在不代普通播放器验证；未确认成片有播放bug。C17十页PDF已逐页看过，不重新审旧版全部页面。",
+          "input_refs": [
+            ".work/cu-closeout-20261024/root-C16-video-reception/receipt.json",
+            ".work/cu-closeout-20261024/window6-C16-video/delivery/output/超级工厂_C16_核心流程_本地成片.mp4"
+          ],
+          "actions": [
+            "普通播放器打开既有成片，核对时长、开头/核心流程/保存重开/结尾，检查播放和寻址；实际失败才修或重制受影响片段。",
+            "保留C16录制身份和已核对C17对应范围，不称为C26或未冻结最终版完整实录。"
+          ],
+          "verification": {
+            "layer": "ordinary_player",
+            "entrypoints": [
+              ".work/cu-closeout-20261024/root-C16-video-reception/receipt.json"
+            ],
+            "expected": [
+              "正常播放/寻址、关键文字和流程可辨，内容匹配版本说明。",
+              "通过播放器不代表公开链接可访问或已正式提交。"
+            ]
+          },
+          "shared_acceptance_refs": [],
+          "status": "pending"
+        },
+        {
+          "within_original_step": 3,
+          "kind": "integration_gap",
+          "gap": "最终技术候选未冻结，冻结时需一次核对C17三材料与后续修复差异。",
+          "locations": [
+            {
+              "path": "tools/release-preparation/source_delivery.py",
+              "symbol": "def package",
+              "line": 241
+            },
+            {
+              "path": "tools/release-preparation/native_delivery.py",
+              "symbol": "def assemble",
+              "line": 13
+            },
+            {
+              "path": "tools/release-preparation/build-introduction.cjs",
+              "symbol": "const root",
+              "line": 6
+            }
+          ],
+          "cause_or_requirement": "C17本地材料确已接收，其后C26/Host修复仍在主线；不是“本地材料未开始”。最终候选未选，材料更新应条件触发，不每候选重包/重录。",
+          "input_refs": [
+            "docs/04_开发与验收/官方提交物交付口径.json",
+            ".work/cu-closeout-20261024/root-C17-delivery-reception/receipt.json"
+          ],
+          "actions": [
+            "统筹冻结最终可运行版本后核对源码/Windows/PDF/视频对应，只更新功能变化影响的源码包、文字截图或镜头。",
+            "缓存排除、完整闭包和C17独立运行证据复用；只补受影响运行/保存消费者，文档更新不触发构建。"
+          ],
+          "verification": {
+            "layer": "final_candidate_material_integration",
+            "entrypoints": [
+              "tools/release-preparation/source_delivery.py",
+              "tools/release-preparation/native_delivery.py",
+              "tools/release-preparation/test_source_delivery.py"
+            ],
+            "expected": [
+              "三材料标真实同版或明确可审阅对应，源码完整可运行、说明齐全，不含缓存/历史候选。",
+              "本地完成、仓库视频外部可访问和报名发送分别记录。"
+            ]
+          },
+          "shared_acceptance_refs": [
+            "SF-14",
+            "SF-15",
+            "SF-16"
+          ],
+          "status": "pending"
+        }
+      ],
+      "completed_reuse": [
+        {
+          "within_original_step": 1,
+          "scope": "源码缓存排除修复、许可证/NOTICE/来源说明和七指南已接收，不重做C12缓存修复与文档编写。",
+          "evidence_refs": [
+            ".work/cu-closeout-20261023/root-P501-cachefix-reception/receipt.json",
+            ".work/cu-closeout-20261024/root-C17-delivery-reception/receipt.json"
+          ]
+        },
+        {
+          "within_original_step": 3,
+          "scope": "固定C17源码bf2c094、独立Windows目录、10页PDF、七指南及215秒C16实录对应已接收；独立目录新进程读取r6/1200秒/3000物品已过。",
+          "evidence_refs": [
+            ".work/cu-closeout-20261024/root-C17-delivery-reception/receipt.json",
+            ".work/cu-closeout-20261024/root-C16-video-reception/receipt.json"
+          ]
+        }
+      ],
+      "formal": {
+        "status": "in_progress",
+        "actual_result": null,
+        "whole_task_done": false
+      }
+    }
+  ],
+  "gap_mappings": [
+    {
+      "task_id": "P0-01",
+      "original_step": 2,
+      "original_remaining_index": 0,
+      "gap": "端口读取热点已窄修并过5项Host回归，但优化后时延、跨时点来源保留和实际Native消费者尚未接收。",
+      "primary_execution_batch": "native",
+      "support_batches": []
+    },
+    {
+      "task_id": "P0-01",
+      "original_step": 2,
+      "original_remaining_index": 1,
+      "gap": "P0适用的编辑可见反馈与无颜色/键盘/文字缩放覆盖尚未按原协议收齐；不是已证实缺CRUD功能。",
+      "primary_execution_batch": "native",
+      "support_batches": []
+    },
+    {
+      "task_id": "P0-01",
+      "original_step": 3,
+      "original_remaining_index": 2,
+      "gap": "功能性保存/搬移/新进程重开已完成；缺原NFR-05的40次完整操作计时。",
+      "primary_execution_batch": "native",
+      "support_batches": []
+    },
+    {
+      "task_id": "P0-01",
+      "original_step": 3,
+      "original_remaining_index": 3,
+      "gap": "NFR-06六组都有历史分层证据，尚缺原同候选条件的最终接收归并。",
+      "primary_execution_batch": "native",
+      "support_batches": []
+    },
+    {
+      "task_id": "P0-01",
+      "original_step": 3,
+      "original_remaining_index": 4,
+      "gap": "真实离线新进程编辑/运行/保存/重开及四格式链尚未取证。",
+      "primary_execution_batch": "native",
+      "support_batches": []
+    },
+    {
+      "task_id": "P0-01",
+      "original_step": 4,
+      "original_remaining_index": 5,
+      "gap": "当前候选同字段并发、离开三分支及在途归属的普通Native最终联验未齐。",
+      "primary_execution_batch": "native",
+      "support_batches": []
+    },
+    {
+      "task_id": "P0-02",
+      "original_step": 1,
+      "original_remaining_index": 0,
+      "gap": "原产品/订单/BOM/路线已接通；只补尚无普通Native证据的精确类型/实例引用字段。",
+      "primary_execution_batch": "native",
+      "support_batches": [
+        "business"
+      ]
+    },
+    {
+      "task_id": "P0-02",
+      "original_step": 2,
+      "original_remaining_index": 1,
+      "gap": "物品唯一持有、预留/质量/容器分离已有Host证据，Native尚缺预留冲突与容器输入的实际拒绝/读取链。",
+      "primary_execution_batch": "native",
+      "support_batches": [
+        "business"
+      ]
+    },
+    {
+      "task_id": "P0-02",
+      "original_step": 3,
+      "original_remaining_index": 2,
+      "gap": "取消业务需求后的实际Native新方案/WIP/旧Run对照尚未完整记录。",
+      "primary_execution_batch": "native",
+      "support_batches": [
+        "business"
+      ]
+    },
+    {
+      "task_id": "P0-03",
+      "original_step": 2,
+      "original_remaining_index": 0,
+      "gap": "产品改版后的失效绑定/拒绝运行尚缺普通Native完整链。",
+      "primary_execution_batch": "native",
+      "support_batches": [
+        "professional"
+      ]
+    },
+    {
+      "task_id": "P0-03",
+      "original_step": 3,
+      "original_remaining_index": 1,
+      "gap": "精确旧版重新选择、改版待复核及新跑需并入IX-03一次Native合验。",
+      "primary_execution_batch": "native",
+      "support_batches": [
+        "professional"
+      ]
+    },
+    {
+      "task_id": "P1-01",
+      "original_step": 2,
+      "original_remaining_index": 0,
+      "gap": "原固定工序齐套/独占和B60资源代表查询的Native覆盖仍缺部分消费者记录。",
+      "primary_execution_batch": "native",
+      "support_batches": [
+        "business"
+      ]
+    },
+    {
+      "task_id": "P1-01",
+      "original_step": 3,
+      "original_remaining_index": 1,
+      "gap": "回看暂停/恢复/循环不改变生产事实的Native核对与共享正式性能仍未关闭。",
+      "primary_execution_batch": "native",
+      "support_batches": [
+        "business"
+      ]
+    },
+    {
+      "task_id": "P1-02",
+      "original_step": 1,
+      "original_remaining_index": 0,
+      "gap": "A/Q/U原场景的普通Native并行汇合和资源占用尚未完整走查。",
+      "primary_execution_batch": "native",
+      "support_batches": [
+        "business"
+      ]
+    },
+    {
+      "task_id": "P1-02",
+      "original_step": 2,
+      "original_remaining_index": 1,
+      "gap": "Q的有限返工/隔离与U的UNKNOWN等待需要实际界面读取其分支和身份。",
+      "primary_execution_batch": "native",
+      "support_batches": [
+        "business"
+      ]
+    },
+    {
+      "task_id": "P1-02",
+      "original_step": 3,
+      "original_remaining_index": 2,
+      "gap": "将同一A/Q/U Native记录归并为分支、数量、资源、归属的完整对照。",
+      "primary_execution_batch": "native",
+      "support_batches": [
+        "business"
+      ]
+    },
+    {
+      "task_id": "P2-01",
+      "original_step": 1,
+      "original_remaining_index": 0,
+      "gap": "两画布/三档LOD的相机、对象选择与键盘组合尚缺原矩阵对应的最终覆盖记录。",
+      "primary_execution_batch": "native",
+      "support_batches": [
+        "measurements"
+      ]
+    },
+    {
+      "task_id": "P2-01",
+      "original_step": 2,
+      "original_remaining_index": 1,
+      "gap": "实际移动/旋转/框选中的取消与异常捕获丢失未完成普通Native核对。",
+      "primary_execution_batch": "native",
+      "support_batches": [
+        "measurements"
+      ]
+    },
+    {
+      "task_id": "P2-01",
+      "original_step": 3,
+      "original_remaining_index": 2,
+      "gap": "NFR-02正式48窗口仍为0；接收P0公共Host修复后执行原FPS矩阵，修复不在本包重复实施。",
+      "primary_execution_batch": "native",
+      "support_batches": [
+        "measurements"
+      ]
+    },
+    {
+      "task_id": "P2-01",
+      "original_step": 4,
+      "original_remaining_index": 3,
+      "gap": "取消修复后的布局/连接操作仍缺原历史、冲突与跨工程负向组合的普通Native闭环。",
+      "primary_execution_batch": "native",
+      "support_batches": [
+        "measurements"
+      ]
+    },
+    {
+      "task_id": "P1-03",
+      "original_step": 1,
+      "original_remaining_index": 0,
+      "gap": "未来到料的剩余原边界/接收受阻消费者需补读，已过120秒与初始库存分离不重做。",
+      "primary_execution_batch": "native",
+      "support_batches": [
+        "business"
+      ]
+    },
+    {
+      "task_id": "P1-03",
+      "original_step": 2,
+      "original_remaining_index": 1,
+      "gap": "阶段/日历矩阵剩余Native消费者与有详细声明的动画独立性尚未完整覆盖。",
+      "primary_execution_batch": "native",
+      "support_batches": [
+        "business"
+      ]
+    },
+    {
+      "task_id": "P1-03",
+      "original_step": 3,
+      "original_remaining_index": 2,
+      "gap": "原IX-01的两Run全链由P2-04主责，一次合验后回填阶段/日历消费者证据。",
+      "primary_execution_batch": "native",
+      "support_batches": [
+        "business"
+      ]
+    },
+    {
+      "task_id": "P1-05",
+      "original_step": 2,
+      "original_remaining_index": 0,
+      "gap": "C副本移除manual-release-3后的第四Run分支尚未执行；只阻塞此分支。",
+      "primary_execution_batch": "native",
+      "support_batches": [
+        "business"
+      ]
+    },
+    {
+      "task_id": "P2-02",
+      "original_step": 2,
+      "original_remaining_index": 0,
+      "gap": "两厂房运输A/B及B13/B14/B16边界的完整普通Native对象投影未接收。",
+      "primary_execution_batch": "native",
+      "support_batches": [
+        "business"
+      ]
+    },
+    {
+      "task_id": "P2-02",
+      "original_step": 3,
+      "original_remaining_index": 1,
+      "gap": "IX-01/IX-02还缺同一Native输入—物流—等待定位的完整界面链。",
+      "primary_execution_batch": "native",
+      "support_batches": [
+        "business"
+      ]
+    },
+    {
+      "task_id": "P1-04",
+      "original_step": 1,
+      "original_remaining_index": 0,
+      "gap": "订单释放/优先序与家族组合尚缺Native冻结输入覆盖，A/B已填字段复用。",
+      "primary_execution_batch": "native",
+      "support_batches": [
+        "business"
+      ]
+    },
+    {
+      "task_id": "P1-04",
+      "original_step": 2,
+      "original_remaining_index": 1,
+      "gap": "共料不可双分配、首件门槛与预留的Native投影需在原局部输入补验。",
+      "primary_execution_batch": "native",
+      "support_batches": [
+        "business"
+      ]
+    },
+    {
+      "task_id": "P1-04",
+      "original_step": 3,
+      "original_remaining_index": 2,
+      "gap": "IX-02由本包主责补完整Native A/B客户接受、订单迟延、资源与返程。",
+      "primary_execution_batch": "native",
+      "support_batches": [
+        "business"
+      ]
+    },
+    {
+      "task_id": "P2-03",
+      "original_step": 1,
+      "original_remaining_index": 0,
+      "gap": "比较面板未覆盖不可比、取消/失败前缀及缺失指标的实际消费者。",
+      "primary_execution_batch": "native",
+      "support_batches": [
+        "reporting"
+      ]
+    },
+    {
+      "task_id": "P2-03",
+      "original_step": 2,
+      "original_remaining_index": 1,
+      "gap": "工程接手正例已过，原保存/打开失败和离线完整组仍缺正式收口。",
+      "primary_execution_batch": "native",
+      "support_batches": [
+        "reporting"
+      ]
+    },
+    {
+      "task_id": "P2-03",
+      "original_step": 3,
+      "original_remaining_index": 2,
+      "gap": "设计包、结果包及未支持可恢复快照的能力文案仍需原交付界面最终对照。",
+      "primary_execution_batch": "native",
+      "support_batches": [
+        "reporting"
+      ]
+    },
+    {
+      "task_id": "P2-04",
+      "original_step": 2,
+      "original_remaining_index": 0,
+      "gap": "时间尺/范围/输入拖动在异常capture丢失、Escape及Alt去吸附时的桌面负向结果尚未全部接收。",
+      "primary_execution_batch": "native",
+      "support_batches": [
+        "measurements"
+      ]
+    },
+    {
+      "task_id": "P2-04",
+      "original_step": 2,
+      "original_remaining_index": 1,
+      "gap": "回看暂停、循环与物品跟随对真实生产结果独立性的原NFR-09组仍未闭合。",
+      "primary_execution_batch": "native",
+      "support_batches": [
+        "measurements"
+      ]
+    },
+    {
+      "task_id": "P2-04",
+      "original_step": 3,
+      "original_remaining_index": 2,
+      "gap": "IX-01原基线/到料延迟两个Run的全部事件、物品持有和资源区间尚缺完整Native一次合验。",
+      "primary_execution_batch": "native",
+      "support_batches": [
+        "measurements"
+      ]
+    },
+    {
+      "task_id": "P3-01",
+      "original_step": 1,
+      "original_remaining_index": 0,
+      "gap": "原13条首版预期中缺字段级消费者覆盖的有限项仍需接收；已过资源/任务/工艺/运输/纸包装/表现/模板完整链不再重做。",
+      "primary_execution_batch": "native",
+      "support_batches": [
+        "modules"
+      ]
+    },
+    {
+      "task_id": "P3-01",
+      "original_step": 3,
+      "original_remaining_index": 1,
+      "gap": "设备native65.device.p301@0.1.1贡献消费者的输出端点、独立保存和新进程读回未完成。",
+      "primary_execution_batch": "native",
+      "support_batches": [
+        "modules"
+      ]
+    },
+    {
+      "task_id": "P3-01",
+      "original_step": 4,
+      "original_remaining_index": 2,
+      "gap": "受影响九类草稿/采用的历史、同字段冲突与来源切换仍需普通Native联合接收。",
+      "primary_execution_batch": "native",
+      "support_batches": [
+        "modules"
+      ]
+    },
+    {
+      "task_id": "P2-05",
+      "original_step": 1,
+      "original_remaining_index": 0,
+      "gap": "20分区剩余字段填值、单位/精确引用及边界缺普通Native证据。",
+      "primary_execution_batch": "native",
+      "support_batches": [
+        "business"
+      ]
+    },
+    {
+      "task_id": "P2-05",
+      "original_step": 2,
+      "original_remaining_index": 1,
+      "gap": "剩余字段的表单—时间轴双入口、取消及新Run消费者需一次合验。",
+      "primary_execution_batch": "native",
+      "support_batches": [
+        "business"
+      ]
+    },
+    {
+      "task_id": "P2-05",
+      "original_step": 4,
+      "original_remaining_index": 2,
+      "gap": "未覆盖字段的显式离开、重基、提交在途与历史归属尚待Native汇合。",
+      "primary_execution_batch": "native",
+      "support_batches": [
+        "business"
+      ]
+    },
+    {
+      "task_id": "P3-02",
+      "original_step": 1,
+      "original_remaining_index": 0,
+      "gap": "最终登记模型的MQ-07/08联合效果及platform_reopen gate仍未逐项闭合。",
+      "primary_execution_batch": "native",
+      "support_batches": [
+        "models"
+      ]
+    },
+    {
+      "task_id": "P3-02",
+      "original_step": 2,
+      "original_remaining_index": 1,
+      "gap": "其余最终适用设备/附属件真实阶段随动未覆盖，代表1.0.5及四等待不重做。",
+      "primary_execution_batch": "native",
+      "support_batches": [
+        "models"
+      ]
+    },
+    {
+      "task_id": "P3-02",
+      "original_step": 3,
+      "original_remaining_index": 2,
+      "gap": "图片/GIF/GLB同一行为的跨素材实际对照仍缺完整接收。",
+      "primary_execution_batch": "native",
+      "support_batches": [
+        "models"
+      ]
+    },
+    {
+      "task_id": "P3-02",
+      "original_step": 3,
+      "original_remaining_index": 3,
+      "gap": "NFR-11实际大素材加载状态/耗时/失败/取消尚缺；正式FPS消费共享矩阵。",
+      "primary_execution_batch": "native",
+      "support_batches": [
+        "models"
+      ]
+    },
+    {
+      "task_id": "P3-03",
+      "original_step": 1,
+      "original_remaining_index": 0,
+      "gap": "插图/批量插图、区间边界及已支持过渡保存重开后的普通Native画面尚未完整覆盖。",
+      "primary_execution_batch": "native",
+      "support_batches": []
+    },
+    {
+      "task_id": "P3-03",
+      "original_step": 2,
+      "original_remaining_index": 1,
+      "gap": "真实交接后已移交量增长的标签消费者及未覆盖字段/热点组合仍需接收。",
+      "primary_execution_batch": "native",
+      "support_batches": []
+    },
+    {
+      "task_id": "P3-03",
+      "original_step": 3,
+      "original_remaining_index": 2,
+      "gap": "观看循环/暂停/查询的原NFR-09独立性与长媒体组仍需共享接收。",
+      "primary_execution_batch": "native",
+      "support_batches": []
+    },
+    {
+      "task_id": "P4-01",
+      "original_step": 3,
+      "original_remaining_index": 0,
+      "gap": "本包四模板生命周期已通过；仅剩原P3-01/P1-04/P1-05关联消费者和release证据归并。",
+      "primary_execution_batch": "native",
+      "support_batches": [
+        "modules"
+      ]
+    },
+    {
+      "task_id": "P2-06",
+      "original_step": 1,
+      "original_remaining_index": 0,
+      "gap": "专业IX-03改版绑定与其余原负向口径的报告消费者尚缺最终整链核对。",
+      "primary_execution_batch": "native",
+      "support_batches": [
+        "reporting"
+      ]
+    },
+    {
+      "task_id": "P2-06",
+      "original_step": 2,
+      "original_remaining_index": 1,
+      "gap": "报告长任务取消/重叠/原子提交的适用完整组尚未被普通Native正式接收。",
+      "primary_execution_batch": "native",
+      "support_batches": [
+        "reporting"
+      ]
+    },
+    {
+      "task_id": "P2-06",
+      "original_step": 3,
+      "original_remaining_index": 2,
+      "gap": "已导出离线HTML仍缺搬移后真实浏览器执行与阅读记录。",
+      "primary_execution_batch": "native",
+      "support_batches": [
+        "reporting"
+      ]
+    },
+    {
+      "task_id": "P3-04",
+      "original_step": 2,
+      "original_remaining_index": 0,
+      "gap": "最终生成工程九类声明、设备实例、时间轴/标签与实际采用之间尚缺逐项普通Native接收归并。",
+      "primary_execution_batch": "native",
+      "support_batches": [
+        "modules"
+      ]
+    },
+    {
+      "task_id": "P3-04",
+      "original_step": 3,
+      "original_remaining_index": 1,
+      "gap": "适用NFR-04/07/08与原release依赖尚未完整接收；GF已过直交/修正/报告不重跑。",
+      "primary_execution_batch": "native",
+      "support_batches": [
+        "modules"
+      ]
+    },
+    {
+      "task_id": "P4-02",
+      "original_step": 2,
+      "original_remaining_index": 0,
+      "gap": "原3机制×3变化及补充套筒的普通Native可编辑输入、三态结果和过程显示尚未完整接收。",
+      "primary_execution_batch": "native",
+      "support_batches": [
+        "professional"
+      ]
+    },
+    {
+      "task_id": "P4-02",
+      "original_step": 2,
+      "original_remaining_index": 1,
+      "gap": "制造刀/折/胶SVG、材料面积/数量及导出的普通Native可见消费者尚未全验。",
+      "primary_execution_batch": "native",
+      "support_batches": [
+        "professional"
+      ]
+    },
+    {
+      "task_id": "P4-02",
+      "original_step": 2,
+      "original_remaining_index": 2,
+      "gap": "NFR-10每个冻结有效输入3次完整检查体验及专业长任务NFR-04缺正式可见样本。",
+      "primary_execution_batch": "native",
+      "support_batches": [
+        "professional"
+      ]
+    },
+    {
+      "task_id": "P4-02",
+      "original_step": 3,
+      "original_remaining_index": 3,
+      "gap": "IX-03产品改版后的绑定待复核、拒绝继续消费与新结果重新采用尚缺完整Native合验。",
+      "primary_execution_batch": "native",
+      "support_batches": [
+        "professional"
+      ]
+    },
+    {
+      "task_id": "P5-01",
+      "original_step": 2,
+      "original_remaining_index": 0,
+      "gap": "17SF/3IX/适用NFR/MQ最终技术出口仍缺样本；本包仅汇总主责有效结果。",
+      "primary_execution_batch": "native",
+      "support_batches": [
+        "reporting",
+        "measurements"
+      ]
+    },
+    {
+      "task_id": "P5-01",
+      "original_step": 3,
+      "original_remaining_index": 1,
+      "gap": "215秒本地影片尚缺普通播放器实际播放走查。",
+      "primary_execution_batch": "native",
+      "support_batches": [
+        "reporting",
+        "measurements"
+      ]
+    },
+    {
+      "task_id": "P5-01",
+      "original_step": 3,
+      "original_remaining_index": 2,
+      "gap": "最终技术候选未冻结，冻结时需一次核对C17三材料与后续修复差异。",
+      "primary_execution_batch": "native",
+      "support_batches": [
+        "reporting",
+        "measurements"
+      ]
+    }
+  ],
+  "starting_progress_ref": "docs/04_开发与验收/实现阶段完成度.json",
+  "candidate_ref": ".work/cu-closeout-20261024/root-C26-timeline-clock/candidate-C26.json",
+  "unbuilt_Host_repair_ref": ".work/noncu-closeout-20261024/p001-port-read-hotspot/receipt.json",
+  "formal_NFR_ref": "docs/01_业务需求/非功能需求与测量验收.json"
+}

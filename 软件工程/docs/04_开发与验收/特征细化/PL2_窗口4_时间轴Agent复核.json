@@ -1,0 +1,514 @@
+{
+  "document_kind": "PL2_window4_timeline_and_Agent_independent_continuity_review",
+  "status": "completed_all_five_findings_closed_in_original_function_sequence_scope",
+  "observed_at": "2026-10-15T03:04:05.894Z",
+  "source_last_modified": "2026-10-15T03:03:28.790Z",
+  "current_source_equals_consumed": true,
+  "authorized_scope": "Only new combinations beyond PL01..10/17 prior assertions; prior suites not executed. Manual sample values remain manual, not claimed production results.",
+  "command": "node tools/design-quality-audit/prototype-parallel/window4/probe-continuity.cjs",
+  "cases_passed": 11,
+  "cases_total": 11,
+  "findings": [
+    {
+      "id": "PL2-W4-01",
+      "status": "closed_in_isolated_sequence_scope",
+      "source_line": 231,
+      "case_ids": [
+        "W4-ARR-02"
+      ],
+      "priority": "P2",
+      "title": "动态输入冲突后重新核对仍使用旧预览修订",
+      "source_ref": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+      "counterexample": "ARR03=30s，仅选ARR03预览+5；原commit将ARR03改33触发新修订；点击提交出现冲突；conflict-rebase后再次点提交仍base旧值，ARR03保留33而非明确确认的35。",
+      "minimal_fix": "conflict-rebase成功时同步对应输入预览base，或提交已重定基的原arrivals表单；不得自动覆盖未核对差异。",
+      "contract_ref": "docs/02_交互设计/时间轴主轴与子轴完整定义.json#/sections/5",
+      "owner": "window2 S04 source; coordinator public record",
+      "actual_case_refs": [
+        "tools/design-quality-audit/prototype-parallel/window4/output/probe-result.json#/cases/1"
+      ],
+      "prior_source_line": 224,
+      "closed_by": "Actual original repaired source and unchanged case assertions",
+      "actual_recheck": [
+        {
+          "id": "W4-ARR-02",
+          "status": "passed",
+          "actual": {
+            "revision": 4,
+            "arrivals": [
+              {
+                "id": "ARR01",
+                "at": 10,
+                "quantity": 6
+              },
+              {
+                "id": "ARR02",
+                "at": 20,
+                "quantity": 6
+              },
+              {
+                "id": "ARR03",
+                "at": 35,
+                "quantity": 1
+              }
+            ],
+            "form": null,
+            "preview": null,
+            "inputBase": 3,
+            "explicitSelection": [
+              "ARR03"
+            ],
+            "axis": "factory",
+            "window": [
+              0,
+              600
+            ],
+            "viewTime": 0,
+            "event": "ARR02",
+            "pendingSeek": null,
+            "seekToken": 0,
+            "agent": {
+              "preview": null,
+              "built": false,
+              "rounds": 0,
+              "scenario": "initial",
+              "stop": null,
+              "accepted": null
+            },
+            "allowRepair": true,
+            "compute": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "PL2-W4-02",
+      "status": "closed_in_isolated_sequence_scope",
+      "source_line": 237,
+      "case_ids": [
+        "W4-AXIS-01"
+      ],
+      "priority": "P2",
+      "title": "设备子轴返回跳过流水线父上下文",
+      "source_ref": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+      "counterexample": "同一样例factory→axis-line(100–160)→axis-device(0–40)，在设备轴确认25s后Back直接factory，未回line(100–160)。",
+      "minimal_fix": "按实际进入层级保存/恢复父轴上下文，Back只回一层且保留用户确认的viewTime。",
+      "contract_ref": "docs/02_交互设计/时间轴主轴与子轴完整定义.json#/sections/7",
+      "owner": "window2 S04 source; coordinator public record",
+      "actual_case_refs": [
+        "tools/design-quality-audit/prototype-parallel/window4/output/probe-result.json#/cases/3"
+      ],
+      "prior_source_line": 230,
+      "closed_by": "Actual original repaired source and unchanged case assertions",
+      "actual_recheck": [
+        {
+          "id": "W4-AXIS-01",
+          "status": "passed",
+          "actual": {
+            "revision": 1,
+            "arrivals": [
+              {
+                "id": "ARR01",
+                "at": 10,
+                "quantity": 6
+              },
+              {
+                "id": "ARR02",
+                "at": 20,
+                "quantity": 6
+              }
+            ],
+            "form": null,
+            "preview": null,
+            "axis": "factory",
+            "window": [
+              0,
+              600
+            ],
+            "viewTime": 25,
+            "sample": "样例-L03-baseline",
+            "inputRevision": "frozen-L03-baseline",
+            "frontier": 600,
+            "partial": false,
+            "event": "job",
+            "job": null,
+            "endpoint": null,
+            "pendingSeek": null,
+            "seekToken": 3,
+            "agent": {
+              "preview": null,
+              "built": false,
+              "rounds": 0,
+              "scenario": "initial",
+              "stop": null,
+              "accepted": null
+            },
+            "allowRepair": true,
+            "compute": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "PL2-W4-03",
+      "status": "closed_in_isolated_sequence_scope",
+      "source_line": 173,
+      "case_ids": [
+        "W4-SAMPLE-01",
+        "W4-SAMPLE-02"
+      ],
+      "priority": "P2",
+      "title": "部分换样例入口未撤销旧选择及迟到定位",
+      "source_ref": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+      "counterexample": "DTC02载入后seek200待回复，再载入同名DTC02重置135；旧70ms回调仍把视图改200。另从delayed等待选中Job后载入calendar，selectedJob仍指向旧sample。",
+      "minimal_fix": "换样例入口沿loadSchedule的现有清理规则更新查询代次、pendingSeek及Job/Event/细化绑定；同Run续算保持合法既有时点，不把手工例变真实计算。",
+      "contract_ref": "docs/02_交互设计/时间轴主轴与子轴完整定义.json#/sections/7",
+      "owner": "window2 S04 source; coordinator public record",
+      "actual_case_refs": [
+        "tools/design-quality-audit/prototype-parallel/window4/output/probe-result.json#/cases/4",
+        "tools/design-quality-audit/prototype-parallel/window4/output/probe-result.json#/cases/5"
+      ],
+      "prior_source_line": 170,
+      "closed_by": "Actual original repaired source and unchanged case assertions",
+      "actual_recheck": [
+        {
+          "id": "W4-SAMPLE-01",
+          "status": "passed",
+          "actual": {
+            "revision": 1,
+            "arrivals": [
+              {
+                "id": "ARR01",
+                "at": 10,
+                "quantity": 6
+              },
+              {
+                "id": "ARR02",
+                "at": 20,
+                "quantity": 6
+              }
+            ],
+            "form": null,
+            "preview": null,
+            "axis": "factory",
+            "window": [
+              0,
+              600
+            ],
+            "viewTime": 135,
+            "sample": "手工-DTC02",
+            "inputRevision": "independent-DTC02",
+            "frontier": 300,
+            "partial": false,
+            "event": "",
+            "job": null,
+            "endpoint": null,
+            "pendingSeek": null,
+            "seekToken": 3,
+            "agent": {
+              "preview": null,
+              "built": false,
+              "rounds": 0,
+              "scenario": "initial",
+              "stop": null,
+              "accepted": null
+            },
+            "allowRepair": true,
+            "compute": null
+          }
+        },
+        {
+          "id": "W4-SAMPLE-02",
+          "status": "passed",
+          "actual": {
+            "revision": 1,
+            "arrivals": [
+              {
+                "id": "ARR01",
+                "at": 10,
+                "quantity": 6
+              },
+              {
+                "id": "ARR02",
+                "at": 20,
+                "quantity": 6
+              }
+            ],
+            "form": null,
+            "preview": null,
+            "axis": "device",
+            "window": [
+              0,
+              100
+            ],
+            "viewTime": 0,
+            "sample": "手工-DRF06-T01",
+            "inputRevision": "independent-DRF06-T01",
+            "frontier": 100,
+            "partial": false,
+            "event": "",
+            "job": null,
+            "endpoint": null,
+            "pendingSeek": null,
+            "seekToken": 4,
+            "agent": {
+              "preview": null,
+              "built": false,
+              "rounds": 0,
+              "scenario": "initial",
+              "stop": null,
+              "accepted": null
+            },
+            "allowRepair": true,
+            "compute": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "PL2-W4-04",
+      "status": "closed_in_isolated_sequence_scope",
+      "source_line": 261,
+      "case_ids": [
+        "W4-AGENT-01"
+      ],
+      "priority": "P2",
+      "title": "已应用的禁止修正未约束后续FC20交互",
+      "source_ref": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+      "counterexample": "目标表单取消allowRepair并实际apply；选择独立three轮次例，原rendered agent-repair按钮仍可点击，rounds从0到1，accepted从6到7。",
+      "minimal_fix": "UI按钮与agent-repair同时消费当前已应用allowRepair；禁修时保留草稿/已知轮次和结果，给出原因，不扩大公共操作。",
+      "contract_ref": "docs/03_架构与契约/目标驱动厂房生成.md:108",
+      "owner": "window2 S04 source; coordinator public record",
+      "actual_case_refs": [
+        "tools/design-quality-audit/prototype-parallel/window4/output/probe-result.json#/cases/7"
+      ],
+      "prior_source_line": 254,
+      "closed_by": "Actual original repaired source and unchanged case assertions",
+      "actual_recheck": [
+        {
+          "id": "W4-AGENT-01",
+          "status": "passed",
+          "actual": {
+            "button": {
+              "action": "agent-repair",
+              "disabled": true,
+              "label": "提交支持的修正轮"
+            },
+            "revision": 2,
+            "arrivals": [
+              {
+                "id": "ARR01",
+                "at": 10,
+                "quantity": 6
+              },
+              {
+                "id": "ARR02",
+                "at": 20,
+                "quantity": 6
+              }
+            ],
+            "form": {
+              "kind": "goal",
+              "data": {
+                "target": 2,
+                "window": 300,
+                "width": 24,
+                "length": 16,
+                "height": 4,
+                "unit": "piece",
+                "destination": "FG01",
+                "calendar": "CAL01",
+                "template": "purchased-assembly",
+                "allowRepair": false
+              },
+              "base": 2,
+              "dirty": false
+            },
+            "axis": "factory",
+            "window": [
+              0,
+              600
+            ],
+            "viewTime": 0,
+            "event": "ARR02",
+            "pendingSeek": null,
+            "seekToken": 0,
+            "agent": {
+              "preview": null,
+              "built": false,
+              "rounds": 0,
+              "scenario": "three",
+              "stop": null,
+              "accepted": 6
+            },
+            "allowRepair": false,
+            "compute": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "PL2-W4-05",
+      "status": "closed_in_isolated_sequence_scope",
+      "source_line": 262,
+      "case_ids": [
+        "W4-AGENT-02",
+        "W4-AGENT-03"
+      ],
+      "priority": "P2",
+      "title": "工作流已停止后无变化按钮重写终态原因",
+      "source_ref": "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+      "counterexample": "FC20取消后点击仍可用的agent-no-change，将user_cancelled_prototype_workflow改no_effective_change；预算三轮停止后同操作也覆盖finite_budget_exhausted。",
+      "minimal_fix": "当前已停止工作流的repair/no-change/cancel统一保留终态；显式切独立样例仍可开始新交互分支。",
+      "contract_ref": "docs/03_架构与契约/目标驱动厂房生成.md:108",
+      "owner": "window2 S04 source; coordinator public record",
+      "actual_case_refs": [
+        "tools/design-quality-audit/prototype-parallel/window4/output/probe-result.json#/cases/8",
+        "tools/design-quality-audit/prototype-parallel/window4/output/probe-result.json#/cases/9"
+      ],
+      "prior_source_line": 255,
+      "closed_by": "Actual original repaired source and unchanged case assertions",
+      "actual_recheck": [
+        {
+          "id": "W4-AGENT-02",
+          "status": "passed",
+          "actual": {
+            "revision": 1,
+            "arrivals": [
+              {
+                "id": "ARR01",
+                "at": 10,
+                "quantity": 6
+              },
+              {
+                "id": "ARR02",
+                "at": 20,
+                "quantity": 6
+              }
+            ],
+            "form": {
+              "kind": "goal",
+              "data": {
+                "target": 2,
+                "window": 300,
+                "width": 24,
+                "length": 16,
+                "height": 4,
+                "unit": "piece",
+                "destination": "FG01",
+                "calendar": "CAL01",
+                "template": "purchased-assembly",
+                "allowRepair": true
+              },
+              "base": 1,
+              "dirty": false
+            },
+            "axis": "factory",
+            "window": [
+              0,
+              600
+            ],
+            "viewTime": 0,
+            "event": "ARR02",
+            "pendingSeek": null,
+            "seekToken": 0,
+            "agent": {
+              "preview": null,
+              "built": false,
+              "rounds": 0,
+              "scenario": "three",
+              "stop": "user_cancelled_prototype_workflow",
+              "accepted": 6
+            },
+            "allowRepair": true,
+            "compute": null
+          }
+        },
+        {
+          "id": "W4-AGENT-03",
+          "status": "passed",
+          "actual": {
+            "revision": 1,
+            "arrivals": [
+              {
+                "id": "ARR01",
+                "at": 10,
+                "quantity": 6
+              },
+              {
+                "id": "ARR02",
+                "at": 20,
+                "quantity": 6
+              }
+            ],
+            "form": {
+              "kind": "goal",
+              "data": {
+                "target": 2,
+                "window": 300,
+                "width": 24,
+                "length": 16,
+                "height": 4,
+                "unit": "piece",
+                "destination": "FG01",
+                "calendar": "CAL01",
+                "template": "purchased-assembly",
+                "allowRepair": true
+              },
+              "base": 1,
+              "dirty": false
+            },
+            "axis": "factory",
+            "window": [
+              0,
+              600
+            ],
+            "viewTime": 0,
+            "event": "ARR02",
+            "pendingSeek": null,
+            "seekToken": 0,
+            "agent": {
+              "preview": null,
+              "built": false,
+              "rounds": 3,
+              "scenario": "three",
+              "stop": "finite_budget_exhausted",
+              "accepted": 9
+            },
+            "allowRepair": true,
+            "compute": null
+          }
+        }
+      ]
+    }
+  ],
+  "probe_result_ref": "tools/design-quality-audit/prototype-parallel/window4/output/probe-result.json",
+  "consumed_source_ref": "tools/design-quality-audit/prototype-parallel/window4/output/consumed-workbench.js",
+  "pre_fix_evidence": [
+    "tools/design-quality-audit/prototype-parallel/window4/output/pre-fix-result.json",
+    "tools/design-quality-audit/prototype-parallel/window4/output/pre-fix-workbench.js"
+  ],
+  "additional_source_parse_blocker": null,
+  "evidence_boundary": [
+    "Original target functions, input/change/click callbacks, generated workspace/timeline HTML and captured seek timers execute in Node VM. Unrelated definition-confirm function is outside the scoped source slice; full-file parse outcome is recorded, no missing brace inserted.",
+    "DOM/graphics are stubs; no actual browser, service restart, port modification or Figma operation.",
+    "All Run/FC20/package samples remain manual fixtures; this review flags state/permission/context mistakes only, not missing real Engine/Host/Agent as defects."
+  ],
+  "actual_browser_execution": false,
+  "actual_product_runtime": null,
+  "source_modified_here": false,
+  "public_fields_or_record_modified_here": false,
+  "next": "Deliver bounded original-function/HTML/callback evidence to coordinator; no source edits, service/browser/Figma operation or further scope expansion by window4.",
+  "coordinator_public_ids": {
+    "PL2-W4-01": "PR-10",
+    "PL2-W4-02": "PR-11",
+    "PL2-W4-03": "PR-12",
+    "PL2-W4-04": "PR-13",
+    "PL2-W4-05": "PR-14"
+  },
+  "repair_dispatch_status": "Coordinator routed PR10..14 to window2. Independent original11 sequences now pass; public closure belongs to coordinator.",
+  "remaining_blockers": [],
+  "current_source_evidence_ref": "tools/design-quality-audit/prototype-parallel/window4/output/current-source-result.json",
+  "prior_transient_parse_status": "Temporary incomplete owner edit observed before source stabilized; not counted as a new semantic finding; final full-script syntax check is clean.",
+  "final_recheck_after_coordinator_stable_source_notice": true,
+  "final_recheck_scope": "Original11 sequences and business assertions unchanged; none of these paths triggered the new project replacement-choice dialog. Other17/browser/flow suites were not rerun by window4."
+}

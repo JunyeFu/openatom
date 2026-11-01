@@ -1,0 +1,192 @@
+{
+  "document_kind": "exact_cross_owner_handoff_not_public_merge_or_task_dispatch",
+  "id": "DRF04",
+  "date": "2026-10-14",
+  "shared_files_modified_by_DRF04": false,
+  "requests": [
+    {
+      "id": "H04-01",
+      "owner": "复审窗口1/W00",
+      "kind": "canonical_private_authority_merged_consumer_validation",
+      "files": [
+        "packages/commands/api.design.rs",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json",
+        "docs/03_架构与契约/共享状态与所有权.json"
+      ],
+      "observed": "Initial round lacked Host object/field grants; current API contains all private HostEditBranch/FieldGrant/ObjectEditGrant/CreateAllowance/EditGrant and HostCallContext.edit_grants, merged and natively compiled by window1.",
+      "expected": "validate normalized candidate diff inside one Commands boundary before commit for all 15 EditCommand branches; whole ScenarioInput/definition writes, reused resources and adoption cannot change forbidden leaf fields. Allowed scheduling/selected layout/count cannot change duration/BOM/quality/hiring/cost. PermissionDenied with authorized field pointer; no partial commit.",
+      "not_new_wire": "no caller/grant fields accepted from Agent; same Commands takes actual UI/ExternalAgent context; no 19th operation",
+      "consumers": [
+        "Host/Commands dispatcher",
+        "Tauri UI submission",
+        "MCP bridge",
+        "module-kit adoption",
+        "simulation scenario admission",
+        "report output selection"
+      ],
+      "independent_cases": "HA01A/D..HA15A/D + HAX01..HAX10",
+      "status": "merged_canonical_private_contract_compiled_40_fixture_cases_passed_actual_Host_not_executed",
+      "canonical_private_fields": {
+        "HostCallContext.edit_grants": "Vec<HostEditGrant>",
+        "HostEditGrant": "id/scope/branches/objects/creates/source_versions/reusable_resources/created_objects",
+        "HostObjectEditGrant": "target/fields/can_remove",
+        "HostFieldGrant": "pointer + nullable pinned element_id",
+        "HostCreateAllowance": "kind/max_new_objects/fields"
+      },
+      "normalization_and_cases_ref": "docs/04_开发与验收/特征细化/DRF04_Host授权合入.json",
+      "verification_ref": "docs/04_开发与验收/特征细化/DRF04_授权差异核验.json"
+    },
+    {
+      "id": "H04-02",
+      "owner": "复审窗口1/W00 internal IPC merge; window4 connector; product bridge later existing W05",
+      "kind": "Host_stdio_connection_and_result_delivery_contact",
+      "files": [
+        "apps/mcp-bridge/README.md",
+        "packages/commands/api.design.rs",
+        "docs/03_架构与契约/公开操作与宿主调用契约.json"
+      ],
+      "observed": "canonical handshake/frame types exist; real executable/configuration/Host pipe and render FileRef-to-MCP content path have no product implementation",
+      "proposed_startup_contract": {
+        "command": "actual packaged mcp-bridge.exe, no shell wrapper",
+        "args": [
+          "--host-pipe",
+          "<Host-issued current-logon pipe>",
+          "--host-instance-id",
+          "<expected Host instance ID>"
+        ],
+        "ownership": "Host emits connection values; argv flags are proposed exact runtime CLI interface, not already implemented or installed config",
+        "handshake": "IpcHello(wire_version=1,expected_host_instance_id) -> IpcWelcome(host_instance_id,client_session_id,api_version,max_frame_bytes)"
+      },
+      "result_expected": "Completed RenderOutput resolves actual Host-managed asset; Host duplicates read-only file handle into OS-verified bridge PID; optional private IpcResponseFrame.managed_assets proposed in exact delta. Match task/asset/scope/frozen requested revision and scene revision; emit actual MCP image bytes plus canonical Response, close owned handle. No caller/AssetRef arbitrary path open.",
+      "failure_expected": "no Host/wrong instance -> explicit connection/NoActiveProject condition; revoke grant on disconnect; admitted task remains Host-owned; no second Engine/automatic resubmission",
+      "MCP_cancellation": "protocol request cancellation only for outstanding request; business cancellation after TaskHandle via cancel_task; no optional MCP Tasks promise",
+      "consumers": [
+        "Codex client configuration",
+        "native bridge",
+        "Host managed renderer/IO",
+        "Agent workflow",
+        "UI task notifications"
+      ],
+      "independent_cases": [
+        "FC11",
+        "FC12",
+        "FC13",
+        "FC19"
+      ],
+      "status": "canonical_carrier_merged_real_pipe_peer_identity_3_cases_passed_actual_product_Host_Renderer_Codex_unexecuted",
+      "connector_ref": "integrations/agent/stdio-connector.design.json",
+      "attachment_delta_ref": "docs/04_开发与验收/特征细化/DRF04_受管画面IPC合入.delta.rs",
+      "actual_native_refs": [
+        "docs/04_开发与验收/特征细化/DRF04_stdio-proof/output/native-trial-result.json",
+        "docs/04_开发与验收/特征细化/DRF04_stdio-proof/output/managed-asset-result.json"
+      ],
+      "new_evidence_ref": "docs/04_开发与验收/特征细化/DRF04_stdio-proof/output/attachment-lifecycle-result.json",
+      "native_shapes_ref": "tools/type-contract-proof/output/shared-handoff-check-result.json",
+      "S05_preparation_ref": "docs/04_开发与验收/特征细化/DRF04_S05接点准备.json",
+      "pipe_peer_identity_ref": "docs/04_开发与验收/特征细化/DRF04_stdio-proof/output/pipe-peer-identity-result.json",
+      "pipe_peer_identity_boundary": "product session registry/grants, full canonical handshake, Renderer/managed result or task/business continuation, Codex or S05 acceptance"
+    },
+    {
+      "id": "H04-03",
+      "owner": "复审窗口1/W00 canonical TC01/TC02; window4 Agent consumers; window2 UI",
+      "kind": "existing_timeline_gap_consumer_completion",
+      "existing_request_ids": [
+        "TC01",
+        "TC02"
+      ],
+      "files": [
+        "packages/domain/types.design.rs",
+        "packages/commands/api.design.rs",
+        "docs/03_架构与契约/调度与状态转换算法.json",
+        "docs/03_架构与契约/全层类型与工程格式.json"
+      ],
+      "expected_fields": {
+        "TC01": "JobState.execution_ref:JobExecutionRef; WaitInterval.execution_ref:Option<JobExecutionRef> and phase_ref:Option<PhaseId>. JobExecutionRef uses project_device(device_id,route_step_id,execution_capacity_ref) or definition_cycle(module_ref); preserve exact original TC01 proposal.",
+        "TC02": "RunResult.phase_work_intervals:Vec<PhaseWorkInterval> with job_id,phase_id,interval,effective_progress_start_ms,effective_progress_end_ms,end_cause(phase_completed|interrupted|computed_boundary); preserve exact original TC02 proposal."
+      },
+      "producer": "same Engine/Host frozen Run input and actual event/phase history",
+      "consumer_path": "get_run Summary/Events/FullResult/ObjectsAt -> timeline factory/line/device projections AND Agent shortfall explanation AND EvaluationReport.item_history/limitations",
+      "expected": "shared run_id/time/input; page coverage explicit; no final inventory as historical state; no nominal-duration reconstruction. End-boundary acceptance follows Engine same-timestamp closure, not clipped SVG geometry.",
+      "consumer_work_completed_here": [
+        "integrations/agent/skills/superfactory-workflow/SKILL.md",
+        "docs/03_架构与契约/目标驱动厂房生成.md",
+        "docs/04_开发与验收/特征细化/DRF04_完整定义.json"
+      ],
+      "independent_cases": [
+        "FC14",
+        "FC15",
+        "FC16"
+      ],
+      "status": "merged_canonical_TC01_TC02_frontier_and_closed_point_Events_owned_consumers_updated_actual_Engine_unexecuted",
+      "read_semantics": "RunResult.computed_until_ms matches Summary; FullResult has execution_ref/blocked phase/phase_work_intervals. Events point membership start<=at<=end; duration intervals [start,end); interval=null still scoped/paged.",
+      "source_ref": "docs/03_架构与契约/全层类型与工程格式.json#/timeline_runtime_contract"
+    },
+    {
+      "id": "H04-04",
+      "owner": "复审窗口2 all S04/docs02; window1 shared contract",
+      "kind": "precise_UI_data_and_return_contact",
+      "files": [
+        "docs/02_交互设计/首版表单与反馈.json",
+        "docs/02_交互设计/时间轴主轴与子轴完整定义.json",
+        "docs/02_交互设计/工业工作台母版与字段细化.json"
+      ],
+      "expected": "Goal form uses DRF04 field_bindings and profile canonical_bindings; incomplete goal remains form state until product/acceptance/calendar/geometry complete. Adoption preview shows exact version/new IDs/reused resource/seed supply/order choices. Progress reflects get_task state/unknown total. Direct initial success shows one Run without required compare; no-change and three-round stop show named reason and preserve draft.",
+      "visual": "bottom tools; Window menu (窗口菜单) controls 160px default timeline and separate readonly description dock. Synchronize older 时间轴主轴与子轴完整定义 sections TL03/TL08 and ui_transitions View-menu trigger text to latest user instruction; no old top toolbar/250px fixed dock.",
+      "return": "Object/wait references locate same Run; entering input form returns same selection; Back restores view layout without reversing current chosen time or Run. Unknown TC data shown as missing, not a fake phase bar.",
+      "consumers": [
+        "Agent entry",
+        "template adoption form",
+        "goal/progress/report form",
+        "timeline description/locate",
+        "mother and continuous states"
+      ],
+      "status": "32_bindings_6_expectations_delivered_user_authorized_delegated_S04_04_05_evidence_pending_window2",
+      "binding_ref": "docs/04_开发与验收/特征细化/DRF04_H04-04界面绑定.json",
+      "s04_delegated_walkthrough": {
+        "authorization_ref": "docs/04_开发与验收/完整设计与执行准入.json#/frontend_supervision/prototype_walkthrough_delegation",
+        "exact_request": "代替我完成S04-04/S04-05",
+        "thread_id": "01a11f4e-f8a4-7a62-9d23-24834761b07e",
+        "message_id": "01a13aec-61f5-7c82-9ef9-46d9a202d275",
+        "operator_kind": "user_authorized_AI",
+        "status": "actual_delegated_walkthrough_in_progress_no_pass_awarded",
+        "evidence_owner": "window2",
+        "gate_sync_owner": "window1",
+        "actual_delegated_walkthrough_result": null,
+        "personal_human_walkthrough_still_required": false
+      }
+    },
+    {
+      "id": "H04-05",
+      "owner": "复审窗口1/W00",
+      "kind": "projection_after_public_merge_not_admission",
+      "files": [
+        "docs/04_开发与验收/全量设计编码确认/SXX-XX_确认选择落实.json",
+        "docs/04_开发与验收/编码任务包/P3-04.md",
+        "docs/04_开发与验收/编码任务包/P4-01.md",
+        "docs/04_开发与验收/重要特征细化统筹与派发.json",
+        "tools/同步确认选择到任务.py"
+      ],
+      "expected": "Refresh original P3-04/P4-01/S references using current merged TC/private authority and delivered consumers; preserve 17SF/21P/60S/Q and actual_result. Original freeze/S07/user dispatch still control product task packages.",
+      "status": "SKILL_YAML_generator_fixed_3_isolated_cases_verified_by_window1_projection_owned_by_window1",
+      "skill_generator_contact": {
+        "observed": "Initial missing-block branch inserted inside YAML; current shared source now closes YAML frontmatter before insertion.",
+        "current_fixed_file": "current block is now after closed YAML header; existing-block replacement preserves this correction",
+        "expected": "when block absent in a skill, insert after closing YAML frontmatter; normal Markdown after first title. Validate current skill and a fresh-header fixture before shared generator run; do not move policy into YAML. Generator remains W00-owned.",
+        "status": "fixed_shared_source_and_3_isolated_examples_verified_by_window1"
+      }
+    }
+  ],
+  "actual_result": null,
+  "actual_product_runtime": null,
+  "current_ownership_ref": "docs/04_开发与验收/本机并行窗口计划.json#/current_design_reassignment",
+  "round": "DRF04-2",
+  "C02_generator_ref": "docs/04_开发与验收/特征细化/DRF04_C02生成接入.md",
+  "C02_result_ref": "docs/04_开发与验收/特征细化/DRF04_C02生成分支核验.json",
+  "latest_pipe_identity_and_S05_round": {
+    "pipe_trial_ref": "docs/04_开发与验收/特征细化/DRF04_stdio-proof/output/pipe-peer-identity-result.json",
+    "S05_preparation_ref": "docs/04_开发与验收/特征细化/DRF04_S05接点准备.json",
+    "old_trials_replayed": false,
+    "public_gate_write_owner": "window1",
+    "s04_actual_evidence_owner": "window2"
+  }
+}

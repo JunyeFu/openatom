@@ -1,0 +1,261 @@
+{
+  "document_kind": "v2_design_only",
+  "date": "2026-10-26",
+  "implementation_allowed": true,
+  "runtime_verified": false,
+  "contract_version": "sf.execution/2.0-draft11",
+  "markdown_ref": "docs/06_v2.0设计与开发控制/数据查询与规模验收设计.md",
+  "schema_ref": "docs/06_v2.0设计与开发控制/接口契约.schema.design.json",
+  "decision": "V2-A13",
+  "views": {
+    "task_interaction": "沿用数据查询页；验收者按固定输入/查询清单验证，无新性能操作面板",
+    "structure_data": "CloudTimestamp；telemetry每页dataset_id/selected_visible_frontier；DB08不可变原始行",
+    "state_behavior": "批次幂等、固定提交前沿和完整分页；采集不当作命令完成",
+    "interface_collaboration": "复用C04/C08/C11/C12与TX04/TX07/TX10，无新端点/表",
+    "ui_consumer": "实际云接收UTC、来源、固定前沿及查询是否完整；不拿发送时间证明端到端",
+    "deployment_verification": "百万、10路30min和查询30+30；后端规模/数据库验收保留"
+  },
+  "cloud_timestamp": {
+    "owner": "L24 sf-domain CloudTimestamp",
+    "internal": "chrono::DateTime<chrono::Utc>, candidate chrono0.4.45; explicit serde/schema/TS wrapper",
+    "input": "uppercase T; Z or known numeric offset; actual calendar; local and normalized UTC year0001..9999; 0..6 fraction digits; reject -00:00 and seconds60",
+    "output": "UTC YYYY-MM-DDTHH:MM:SS.ffffffZ, exactly6 fraction digits",
+    "database": "timestamptz(6); tokio-postgres0.7.18 with-chrono-0_4; no string timezone comparison",
+    "generation": "schema date-time+pattern and actual semantic parser; TS string; no ordinary String/default chrono serde equivalence claim",
+    "not_changed": "free-form device_timestamp, v1 external schemas and Host monotonic milliseconds",
+    "runtime_result": null
+  },
+  "query_semantics": {
+    "time_field": "cloud_received_at",
+    "window": "[received_from,received_until); equal empty; inverted422",
+    "normalization": "typed UTC; device_ids sorted/deduplicated; [] all authorized devices in selected dataset",
+    "event_kinds": [
+      "telemetry",
+      "generated_load"
+    ],
+    "exclude": [
+      "receipt"
+    ],
+    "raw_order": "ingress_id",
+    "minute": "UTC floor; nonempty groups; order bucket_start/device_id/source_mode; zero-based row_index",
+    "selection_stamp": [
+      "dataset_id",
+      "selected_visible_frontier",
+      "selected_device_ids"
+    ],
+    "frontier": "every page including empty/last; ingress<=F; F is committed prefix, not filtered row count",
+    "unsigned_cursor": "no authorization or original-issue authenticity; F<=current and valid filter/identity/position; consumer compares original F",
+    "page_limit": 200,
+    "device_membership": "[] resolves authorized present devices at fixed F, explicit authorized ids retained without rows; normalized cursor binds resolved set; every result echoes same actual set"
+  },
+  "write_semantics": {
+    "time": "DB clock_timestamp once after dataset lock/dedup per new TX04 event or TX10 batch; exact retry keeps original time; wall time may step backwards",
+    "batch_ordinal": "0..N-1; same batch requires exact N/order/canonical typed payload",
+    "exact_retry": "inserted0,reusedN; no frontier change",
+    "new_batch_collision": "any reused dataset/device_ref/sequence conflicts whole batch even equal payload; no successful all-reused under unstored new batch id",
+    "new_table_required": false
+  },
+  "generated_fixture": {
+    "event_count": 1000000,
+    "devices": 100,
+    "events_per_device": 10000,
+    "batch_count": 1000,
+    "events_per_batch": 1000,
+    "identity": "TX13 preseeded dedicated generated dataset; first import requires empty dataset; G000..G099 and batch-load-0000..0999; repeated measurement reuses original immutable fixture/batch identities",
+    "formula": {
+      "n": "0..999999",
+      "d": "n%100",
+      "device_ref": "G{d:03d}",
+      "device_sequence": "n//100+1",
+      "source_mode": "generated_load",
+      "observed_at": "2026-01-01T00:00:00.000000Z+(device_sequence-1)seconds; synthetic sender clock",
+      "metric": "status_sample",
+      "value": "(d+device_sequence)%1000",
+      "batch": "n//1000",
+      "ordinal": "n%1000"
+    },
+    "close": "quiesce generated dataset before timing; expected F0 from actual committed dataset row",
+    "oracle": "readonly raw DB export<=F0 plus generation formula; independent Python stdlib identity bitset/field check and UTC filter/group; not C08 or SQL aggregate as its own oracle",
+    "correctness": "all million identities once and exact fields; all raw API pages and full minute aggregate equal independent expected; no checksum layer",
+    "runtime_result": null,
+    "repeat": "No dataset creation endpoint: initial two nonexecution datasets come from same deployment configuration/TX13. Repeat query groups reuse fixed million and F0; no claim of newly inserting a million. A changed fixture needs separately configured initial deployment, no automatic DB reset."
+  },
+  "query_manifest": {
+    "freeze": "after raw DB export, before timed queries; deterministic recipes from actual stored UTC times; note actual platform/client/region, no credentials",
+    "raw_queries": 30,
+    "raw_recipe": "j0..29: G{j:03d}, sort10000 rows by(cloud_received_at,ingress); inclusive ranks1000+10j..1099+10j -> [lo_time,hi_time+1us); keep all timestamp ties",
+    "aggregate_queries": 30,
+    "aggregate_recipe": "all100 devices; sort million rows by(cloud_received_at,ingress); j0..29 inclusive ranks10000j..999999-10000j -> [lo_time,hi_time+1us); include ties; nominal spans1M..420000",
+    "performance": "API-only complete logical query; monotonic first request start through final page read/decoded; includes connection/queue/network/pages; compare precomputed expected separately; UI100 frames separate",
+    "warmup": "one fixed warmup per query kind, labelled before30+30; no individually warming measured queries or cache flushing requirement",
+    "order": "R00,A00,R01,A01..R29,A29; serial logical queries; keep all60 original outcomes; no dropping slow/failure or first-page-only timing",
+    "target_p95_ms": 2000,
+    "p95": "nearest rank ceil(0.95*30)=29 per group; any missing/failed/incorrect planned query prevents full group pass",
+    "runtime_result": null
+  },
+  "live_producers": {
+    "processes": 10,
+    "purpose": "telemetry_only; distinct dataset and per-process boot; not ten execution workers",
+    "rate_per_process_hz": 1,
+    "duration_seconds": 1800,
+    "events_per_process": 1800,
+    "total_unique": 18000,
+    "cadence": "own monotonic anchor after preflight; seq1..1800; actual sample creation and initial request start in own[k,k+1)second slot; run>=1800s; no burst catch-up for missed slots",
+    "retries": "same boot/sequence/payload; record actual attempts/ack; final counts alone not continuity proof; each new campaign uses new process boot identities; DB membership check isolates these10 boots/seq1..1800, not total historical dataset row count",
+    "cloud_minute_expectation": "actual DB receive timestamps; not forced60 per UTC minute at boundaries/jitter",
+    "overlap": "generated dataset loaded/quiesced first; queries may run in predeclared live interval; record actual overlap, no unexecuted concurrency claim",
+    "runtime_result": null
+  },
+  "source_locations": [
+    {
+      "id": "L24",
+      "future_change": "CloudTimestamp and two telemetry result fields; actual exporter consumes wrapper"
+    },
+    {
+      "id": "L27",
+      "future_change": "store.rs timestamp/batch; routes.rs normalized query/UTC/F; DB08 timestamptz(6)"
+    },
+    {
+      "id": "L31",
+      "future_change": "load_events.py generator; verify_daas.py raw oracle/manifest/all-page timing; not created now"
+    },
+    {
+      "id": "L32",
+      "future_change": "time/filter/prefix/retry/auth cases and Q03 after gates"
+    },
+    {
+      "id": "L30",
+      "future_change": "cloudProduction.ts typed selection/all-page consumers; appearance unchanged"
+    }
+  ],
+  "source_references": [
+    {
+      "url": "https://www.postgresql.org/docs/18/datatype-datetime.html",
+      "supports": "microsecond resolution"
+    },
+    {
+      "url": "https://www.postgresql.org/docs/18/functions-datetime.html",
+      "supports": "DB wall clock vs transaction time; explicit UTC truncation"
+    },
+    {
+      "url": "https://docs.rs/chrono/0.4.45/chrono/struct.DateTime.html",
+      "supports": "RFC3339 parse, UTC and selected fractional output"
+    },
+    {
+      "url": "https://docs.rs/tokio-postgres/0.7.18/tokio_postgres/index.html",
+      "supports": "with-chrono-0_4"
+    }
+  ],
+  "design_cases": [
+    {
+      "id": "DS01",
+      "trigger": "offset等价、7位小数、非法日期及秒60",
+      "expected": "UTC微秒规范；非法拒绝；from=until为空，反向422；Host时间独立",
+      "runtime_result": null
+    },
+    {
+      "id": "DS02",
+      "trigger": "混合事件及时间/分钟边界",
+      "expected": "排除receipt；云时间半开区间与UTC分钟；发送时间不代替入库时间",
+      "runtime_result": null
+    },
+    {
+      "id": "DS03",
+      "trigger": "分页中写入、空末页及篡改游标",
+      "expected": "各页同dataset/F且<=F；F越前沿/筛选冲突拒绝；unsigned游标不证明首次签发",
+      "runtime_result": null
+    },
+    {
+      "id": "DS04",
+      "trigger": "重试/缩短/追加/重排及跨batch复用身份",
+      "expected": "仅原批精确重试复用原时间；其他整批冲突不推进前沿",
+      "runtime_result": null
+    },
+    {
+      "id": "DS05",
+      "trigger": "百万输入缺失/重复/错内容，查询存在聚合bug",
+      "expected": "公式逐身份/字段核对DB原始导出；独立预期对完整API页；不能只看数量或自证聚合",
+      "runtime_result": null
+    },
+    {
+      "id": "DS06",
+      "trigger": "30+30查询跨页、报错或丢页",
+      "expected": "完整查询计时；60原样本保留；正确性/完整性均满足；p95第29项<=2秒",
+      "runtime_result": null
+    },
+    {
+      "id": "DS07",
+      "trigger": "最终18000条但断线/补发/漏采",
+      "expected": "验证10进程各1800实际1秒槽及发送；补发不修复连续性；不增加生产接受量",
+      "runtime_result": null
+    },
+    {
+      "id": "DS08",
+      "trigger": "空设备选择、无命中及跨范围查询",
+      "expected": "[]仅授权dataset内设备；无命中空结果仍含F；显式越权403；普通读者无DB权限",
+      "runtime_result": null
+    }
+  ],
+  "pending": [
+    "v1 final source/fixture and implementation gates",
+    "full standard schema/meta/format validation and actual Rust generation/roundtrip",
+    "actual DB export/API million scale/10 processes30min/60 queries",
+    "original100 correct-frame samples and actual clock endpoints remain separate"
+  ],
+  "design_checks": {
+    "formula_arithmetic": "pass_design_arithmetic_only",
+    "schema_local_refs": "pass_pointer_closure_only",
+    "all_runtime_results": null,
+    "actual_scripts_created": false
+  },
+  "data_export_design_ref": "docs/06_v2.0设计与开发控制/筛选数据导出设计.json",
+  "field_help": {
+    "consumer": "L29/L30固定字段帮助及独立API示例，不新增字段编辑器",
+    "quantity": "Quantity原coefficient/decimal_places与unit，不推断单位换算",
+    "host_ms": "Host会话经过毫秒，与虚拟ms/UTC分开",
+    "model_ms": "模型虚拟毫秒及实际computed frontier，不作现场性能",
+    "cloud_received_at": "首次云存储UTC微秒；不是设备自报或提交完成时间",
+    "device_timestamp": "原设备自报字符串；不跨钟相减",
+    "count": "每个聚合明确是事件数或命令状态数，不等于接受量",
+    "status_sample": "generated_load无量纲合成值；不是物理测量",
+    "waiting": "known_host_ms/known_sim_ms按各自来源/范围；null及缺项原因保留",
+    "state": "枚举/布尔无物理单位；明确字段含义及来源"
+  },
+  "historical_design_implementation_flags": {
+    "date": "2026-10-26",
+    "implementation_allowed": false,
+    "runtime_verified": false
+  },
+  "implementation_status_ref": "docs/06_v2.0设计与开发控制/开发控制计划.json#/packages",
+  "current_implementation_packages": [
+    "V2-02",
+    "V2-10"
+  ],
+  "status_projection_updated_at_utc": "2026-10-27T01:45:48.535491+00:00",
+  "runtime_verification_scope": "runtime_verified仅为本文全部设计用例通过声明；当前局部真实证据和剩余动作取主计划，不把设计期禁止实施作为现行限制。",
+  "current_result_presentation": {
+    "original_package": "V2-07",
+    "implementation_ref": "F:/SuperFactory-v2-full-target-20261027/integration-preview/integration-preview.json",
+    "components": [
+      "CloudDataExplorer.tsx",
+      "cloudDataPresentation.ts",
+      "cloudDataExplorer.css"
+    ],
+    "parent": "apps/planner/src/features/cloud/CloudProductionPanel.tsx",
+    "result_binding": "page.result (canonical DaaSQueryResult without conversion)",
+    "page_binding": "page.number (original fixed query/cursor chain)",
+    "unchanged": [
+      "query construction and first-page pin",
+      "continuation identity/frontier",
+      "canonical rows",
+      "H11 full fixed-filter export",
+      "Task recovery",
+      "unsaved input and leave protection"
+    ],
+    "private_presentation_browser_checks_reused": 47,
+    "new_parent_and_connection_affected_strict_typecheck_exit_code": 0,
+    "main_source_integrated": false,
+    "current_Native_verified": false,
+    "next_real_acceptance": "After actual protected writer handback, merge parent plus3components and use actual original Native query/minute switch/page scroll/column restore/H11 path; do not rerun unchanged million-input benchmark."
+  }
+}

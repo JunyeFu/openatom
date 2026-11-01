@@ -1,0 +1,183 @@
+{
+  "kind": "exact_material_preparation_branches",
+  "version": "1.0.0",
+  "package": "V2-05-G01",
+  "state": "declared_design_inputs",
+  "source": "bags-host03 actual frozen project/modules",
+  "hall_geometry_changed": false,
+  "AI_views_reused": true,
+  "branches": [
+    {
+      "id": "SHEETS",
+      "title": "500×500mm裁张原纸",
+      "devices": [
+        "paper-unwinder",
+        "paper-rewinder",
+        "rotary-sheet-cutter"
+      ],
+      "cycles": 1,
+      "yield_per_cycle": 60,
+      "load": 10,
+      "physical_balance": {
+        "input_rolls": 1,
+        "length_m": 30,
+        "width_m": 0.5,
+        "thickness_m": 0.0001,
+        "output_sheets": 60,
+        "sheet_length_m": 0.5,
+        "paper_volume_m3": 0.0015
+      },
+      "states": [
+        "rolled",
+        "unwound",
+        "rolled",
+        "sheet"
+      ],
+      "identity": "Unwinding and rewinding preserve one actual item; only cutting transforms it into sixty descendant sheets."
+    },
+    {
+      "id": "BOARDS",
+      "title": "500×200mm分切纸板",
+      "devices": [
+        "board-edge-trimmer",
+        "sheet-slitter"
+      ],
+      "cycles": 3,
+      "yield_per_cycle": 2,
+      "load": 2,
+      "physical_balance": {
+        "input_area_m2": 0.2376,
+        "trimmed_area_m2": 0.2,
+        "half_area_m2": 0.1,
+        "side_scrap_count": 2,
+        "side_scrap_area_m2": 0.0108,
+        "end_scrap_count": 2,
+        "end_scrap_area_m2": 0.008,
+        "thickness_m": 0.003
+      },
+      "states": [
+        "raw",
+        "trimmed",
+        "slit_half"
+      ],
+      "identity": "Trimmed board and slitter input have equal physical dimensions. wide_sheet is only an animation-state alias; no stock is resized."
+    },
+    {
+      "id": "CURED",
+      "title": "500×400mm固化上光纸板",
+      "devices": [
+        "varnish-coater",
+        "uv-curer"
+      ],
+      "cycles": 3,
+      "yield_per_cycle": 1,
+      "load": 1,
+      "physical_balance": {
+        "length_m": 0.5,
+        "width_m": 0.4,
+        "thickness_m": 0.0008,
+        "coating_volume_m3_per_board": 4e-06,
+        "coating_doses": 3
+      },
+      "states": [
+        "flat",
+        "varnished_wet",
+        "varnished_cured"
+      ],
+      "identity": "The same item passes coating and curing; UV requires varnished_wet and yields varnished_cured."
+    }
+  ],
+  "media": "Compose the accepted material geometries/animations; qualify every processing clip by its exact operation. Never replay an upstream animation at another device.",
+  "storage_layout": {
+    "shipping": {
+      "location": "PF-SHIPPING",
+      "origin_xy_m": [
+        -5.5,
+        -2.0
+      ],
+      "type_columns": 4,
+      "type_spacing_xy_m": [
+        3.0,
+        3.0
+      ],
+      "stack_columns": 3,
+      "stack_spacing_xy_m": [
+        0.65,
+        0.65
+      ],
+      "stacks": {
+        "PF-packed-case": [
+          1,
+          0.25
+        ],
+        "folder-gluer-output": [
+          3,
+          0.004
+        ],
+        "paper-core-grinder-output": [
+          1,
+          0.11
+        ],
+        "label-peeler-output": [
+          6,
+          0.002
+        ],
+        "PF-BAG-finished-bag": [
+          1,
+          0.21
+        ],
+        "rotary-sheet-cutter-output": [
+          10,
+          0.001
+        ],
+        "sheet-slitter-output": [
+          6,
+          0.005
+        ],
+        "varnish-coater-input": [
+          3,
+          0.002
+        ]
+      }
+    },
+    "process_buffers": {
+      "type_spacing_m": 0.7,
+      "stack_columns": 3,
+      "stack_spacing_m": 0.65,
+      "flat_paper_per_stack": 10,
+      "flat_paper_display_gap_m": 0.0005
+    },
+    "counts_qualities_and_holders_changed": false,
+    "visual_failure": "1.4 shared the first XY slots across product types; boxes/bags also used paper-thin stack pitch."
+  },
+  "resources": {
+    "vehicles": 3,
+    "dispatch_gate": 1,
+    "window_ms": 7200000
+  },
+  "expected": {
+    "manufacturing_jobs": 153,
+    "transport_trips": 105,
+    "accepted_orders": {
+      "PF-ORDER-CASE": 3,
+      "PF-ORDER-SLEEVE": 3,
+      "PF-ORDER-TUBE": 6,
+      "PF-ORDER-LABEL": 18,
+      "PF-ORDER-BAG": 3,
+      "PF-ORDER-SHEETS": 60,
+      "PF-ORDER-BOARDS": 6,
+      "PF-ORDER-CURED": 3
+    },
+    "connected_devices": 26,
+    "independent_cells": 66
+  },
+  "acceptance": [
+    "Declared paper area/volume and coating dose balance",
+    "Real transport and completed jobs from the original Host",
+    "Same item identity and required state across preserve operations",
+    "Missing coating cannot yield cured accepted boards",
+    "All existing five product orders, previous projects and Runs retained",
+    "Saved project/fresh Host reopen",
+    "Native material motion and exact template adoption remain separate required exits"
+  ]
+}

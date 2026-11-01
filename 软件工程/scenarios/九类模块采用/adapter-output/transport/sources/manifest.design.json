@@ -1,0 +1,138 @@
+{
+  "document_kind": "design_example_not_runtime_plugin",
+  "id": "community.batch-transport",
+  "version": "0.1.0",
+  "category": "transport",
+  "title": "单批次跨厂搬运与返程",
+  "parameters": [
+    {
+      "id": "loading_seconds",
+      "type": "duration",
+      "unit": "second",
+      "binding": "behavior.times.loading.value"
+    },
+    {
+      "id": "outbound_seconds",
+      "type": "duration",
+      "unit": "second",
+      "binding": "behavior.times.outbound.value"
+    },
+    {
+      "id": "unloading_seconds",
+      "type": "duration",
+      "unit": "second",
+      "binding": "behavior.times.unloading.value"
+    },
+    {
+      "id": "returning_seconds",
+      "type": "duration",
+      "unit": "second",
+      "binding": "behavior.times.returning.value"
+    }
+  ],
+  "ports": [
+    {
+      "id": "source",
+      "kind": "material",
+      "direction": "in",
+      "item": "assembly",
+      "unit": "piece"
+    },
+    {
+      "id": "destination",
+      "kind": "material",
+      "direction": "out",
+      "item": "assembly",
+      "unit": "piece"
+    }
+  ],
+  "behavior": {
+    "builtin": "transport",
+    "identity_policy": "preserve_cargo_ids",
+    "batch_capacity": {
+      "value": 1,
+      "unit": "piece"
+    },
+    "resources": [
+      {
+        "role": "carrier",
+        "quantity": 1
+      }
+    ],
+    "times": {
+      "loading": {
+        "value": 10,
+        "unit": "second"
+      },
+      "outbound": {
+        "value": 30,
+        "unit": "second"
+      },
+      "unloading": {
+        "value": 10,
+        "unit": "second"
+      },
+      "returning": {
+        "value": 30,
+        "unit": "second"
+      }
+    },
+    "timing_basis": "全部时长为自建演示假设；本例不含实际道路距离与驾驶约束",
+    "stages": [
+      {
+        "id": "loading",
+        "start": "reserve_source_cargo_and_carrier",
+        "finish": "loading_elapsed"
+      },
+      {
+        "id": "outbound",
+        "start": "remove_reserved_source_cargo_to_in_transit",
+        "finish": "outbound_elapsed"
+      },
+      {
+        "id": "unloading",
+        "start": "arrival_and_destination_space_available",
+        "finish": "receive_same_cargo_ids_after_unloading"
+      },
+      {
+        "id": "returning",
+        "start": "delivery_completed",
+        "finish": "carrier_available_at_origin_after_return"
+      }
+    ],
+    "resource_release": "returning_completed",
+    "delivery_time": "unloading_completed",
+    "blocked": "retain_cargo_and_carrier_until_destination_accepts"
+  },
+  "presentation": {
+    "media": {
+      "kind": "image",
+      "path": null
+    },
+    "states": [
+      "waiting",
+      "loading",
+      "outbound",
+      "unloading",
+      "returning"
+    ],
+    "lod": {
+      "detailed": "cargo_and_carrier_state",
+      "simplified": "flow_marker_and_quantity",
+      "region": "supply_relation_summary"
+    }
+  },
+  "operations": [
+    "configure",
+    "inspect",
+    "preview_cycle"
+  ],
+  "contribution": {
+    "author": "待填写",
+    "license": "待声明",
+    "assets": [],
+    "example": "两厂房装配包装",
+    "status": "design"
+  },
+  "definition_state": "design"
+}

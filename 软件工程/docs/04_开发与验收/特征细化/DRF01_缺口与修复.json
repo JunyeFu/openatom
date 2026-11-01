@@ -1,0 +1,214 @@
+{
+  "document_kind": "feature_observed_gaps_and_resolution",
+  "assignment": "DRF01",
+  "date": "2026-10-14",
+  "definition_ref": "docs/04_开发与验收/特征细化/DRF01_完整定义.json",
+  "observed_fixed": [
+    {
+      "id": "UI01",
+      "finding": "TL03/导航尾部使用视图菜单；现行母版已由窗口菜单管理dock。",
+      "resolution": "窗口菜单与window.*命令，描述左/时间轴右；视图保留相机/LOD/缩放。",
+      "files": [
+        "时间轴主轴与子轴完整定义.md/json",
+        "时间轴主轴与轨道组_监督细化.md/json",
+        "主流程与视图导航.md",
+        "交互流程与视图导航.json"
+      ]
+    },
+    {
+      "id": "UI02",
+      "finding": "旧Enter开描述和选行更新描述未限定隐藏行为，可能与母版保持关闭相冲突。",
+      "resolution": "选择只更新共享selected_event_ref，隐藏状态不变；显式按钮/窗口菜单才打开，重开恢复布局。",
+      "files": [
+        "时间轴主轴与子轴完整定义.md/json",
+        "交互流程与视图导航.json",
+        "首版表单与反馈.json"
+      ]
+    },
+    {
+      "id": "UI03",
+      "finding": "设备时间轴旧文仍称首版先支持固定周期，与已声明多阶段规则不一致。",
+      "resolution": "单阶段用全周期比例，多阶段按phase_id/有效进度；每phase分段，零时长不除零并沿完成事件选终姿态。",
+      "files": [
+        "设备时间轴与标签设计.md"
+      ]
+    },
+    {
+      "id": "UI04",
+      "finding": "设备文档把计算控制写为Worker能力，与现行Host allowed_controls不一致。",
+      "resolution": "只消费get_task.allowed_controls，回看控制归UI。",
+      "files": [
+        "设备时间轴与标签设计.md"
+      ]
+    },
+    {
+      "id": "UI06",
+      "finding": "时间轴完整定义描述区初宽320px与现行母版300px不一致。",
+      "resolution": "TL03、监督JSON及导航布局统一300px；自定义恢复尺寸仍按上次值。",
+      "files": [
+        "时间轴主轴与子轴完整定义.md/json",
+        "时间轴主轴与轨道组_监督细化.json",
+        "交互流程与视图导航.json"
+      ]
+    },
+    {
+      "id": "UI07",
+      "finding": "TL02写查询和统计都半开，与Engine观察窗末刻闭包包含接受事件冲突。",
+      "resolution": "区分持续区间半开与点事件末刻闭包；Events interval:null分页保留末刻，边界点标记，统计同源RunResult/EvaluationReport；新增DTC10。",
+      "files": [
+        "时间轴主轴与子轴完整定义.md/json"
+      ]
+    },
+    {
+      "id": "UI08",
+      "finding": "DRF03新71项字段规则尚未有本窗口表单的逐项消费者映射。",
+      "resolution": "71项契约引用逐项映射原111字段组；新增子字段规则、升级/专业认可/过程身份反馈，类型规则只引用源，不另建公共类型。",
+      "files": [
+        "首版表单与反馈.md/json"
+      ]
+    },
+    {
+      "id": "UI09",
+      "finding": "F23比较选择/差异与F24导出都按草稿编辑标记，可能把冻结差异/价格说明当可修改业务事实；字段组计数还停留106。",
+      "resolution": "F23选择为view_selection，差异/指标只读；F24为export_request，价格/未知源只读，前缀/完整标签同源；字段组计数修正111。接入DRF05-H07，实际视觉待原型。",
+      "files": [
+        "首版表单与反馈.md/json"
+      ]
+    }
+  ],
+  "definition_gaps_resolved": [
+    {
+      "id": "UI05",
+      "finding": "共享事件选择与AxisView字段可能被实现为两套独立可变选择。",
+      "resolution": "AxisView.selected_event_key明确为shared selected_event_ref投影，换Run清理旧选择/预览/定位归属；DTC07—09独立预期。"
+    }
+  ],
+  "pending_shared_requests": [
+    {
+      "id": "H-DRF01-02",
+      "owner": "W00/复审窗口2",
+      "request": "新24帧/母版落实window.timeline/window.timeline_description、描述左/轨道右及hidden selection；同步SXX生成、共享视图状态、缺口清单中的旧“视图菜单”文字；保留真实证据缺口。",
+      "source": "docs/02_交互设计/时间轴主轴与子轴完整定义.json#TL03/TL08/TL09",
+      "blocked_gaps": [
+        "DG03",
+        "DG04"
+      ],
+      "status": "pending_owner_integration"
+    },
+    {
+      "id": "H-DRF01-03",
+      "owner": "W00 routing to module-kit owner",
+      "request": "device-editor-capabilities.design.json顶层timeline.clock/duration_source须明确按binding_modes选择，不能把多阶段一律写成behavior.duration；phase_local每阶段分段、零时长用PhaseCompleted、等候保持有效进度。现binding_modes已具基础语义，完善顶层避免读取歧义。",
+      "source": "packages/module-kit/device-editor-capabilities.design.json#/timeline",
+      "blocked_gaps": [],
+      "status": "pending_owner_integration"
+    }
+  ],
+  "remaining_actual_evidence": [
+    {
+      "gap": "DG04",
+      "state": "pending_actual_clickable_prototype",
+      "dependency": "现行母版/五链与公共字段合入后，在授权工具/批次内实现实际交互；Figma保留暂停操作。"
+    },
+    {
+      "gap": "DG05",
+      "state": "pending_real_user_walkthrough",
+      "dependency": "先提供可操作原型，用户实际走查；AI不能代填。"
+    },
+    {
+      "gap": "DG06/DG07/DG08",
+      "state": "W00_existing_stage_gates",
+      "dependency": "实际桌面接点、全量冻结及21包准入更新，不能以文档修复关闭。"
+    }
+  ],
+  "checks": {
+    "state": "passed_owned_static_navigation_and_canonical_merge_sync",
+    "command": "python tools/检查交互导航.py --read-only",
+    "date": "2026-10-14",
+    "nodes": 20,
+    "normal_canvases": 2,
+    "SF": 17,
+    "operations": 18,
+    "forms": 28,
+    "field_groups": 111,
+    "finite_math_passed": [
+      "DTC01",
+      "DTC02",
+      "DTC03"
+    ],
+    "behavior_cases_pending": [
+      "DTC04",
+      "DTC05",
+      "DTC06",
+      "DTC07",
+      "DTC08",
+      "DTC09",
+      "DTC10",
+      "DTC11"
+    ],
+    "actual_prototype": null,
+    "actual_product_runtime": null,
+    "actual_human_walkthrough": null,
+    "field_contract_bindings": 71,
+    "MD_JSON_alignment": "timeline regenerated from current same JSON",
+    "business_fixture_refs": 8,
+    "current_master_state_pages": 20,
+    "whole_project_trace": "B01_B18_input_expected_refs_verified_in_existing_17_AC; not a whole-project check claim",
+    "manual_business_fixture_refs_verified": 8,
+    "master_XML_page_count": 20,
+    "report_mode_values_preserved": true,
+    "canonical_timeline_ref": "docs/03_架构与契约/全层类型与工程格式.json#/timeline_runtime_contract",
+    "canonical_finite_proof_cases": 13,
+    "Engine_or_Host_executed": false,
+    "public_TC01_TC02_pending_in_owned_consumers": false
+  },
+  "public_progress_changed": false,
+  "resolved_shared_requests": [
+    {
+      "id": "H-DRF01-01",
+      "owner": "W00/复审窗口2",
+      "request": "按TC01/TC02实际合入公共运行字段并统一Rust/Schema/TS/API、阶段算法与消费者；合入证据回写DRF02，不因派发改变原准入数。",
+      "source": "时间轴监督JSON#/public_contract_change_requests",
+      "blocked_gaps": [
+        "DG01",
+        "DG02"
+      ],
+      "status": "canonical_public_design_merged_finite_contract_proof_passed_actual_product_pending",
+      "resolution_ref": "docs/03_架构与契约/全层类型与工程格式.json#/timeline_runtime_contract"
+    },
+    {
+      "id": "H-DRF01-04",
+      "owner": "W00/复审窗口2",
+      "request": "公开调用文档明确既有Events interval:null不加时间过滤、仍受scope与分页权限限制；持续IntervalMs半开和观察窗末刻事件闭包分别解释，报告指标同源。无需新增公开操作。",
+      "source": "packages/commands/api.design.rs#RunQuery and 调度与状态转换算法.json#ALG-09/ALG-11",
+      "blocked_gaps": [
+        "DG03",
+        "DG04"
+      ],
+      "status": "canonical_public_design_merged_finite_contract_proof_passed_actual_product_pending",
+      "resolution_ref": "docs/03_架构与契约/全层类型与工程格式.json#/timeline_runtime_contract"
+    },
+    {
+      "id": "H-DRF01-05",
+      "owner": "W00/复审窗口2",
+      "request": "按业务责任接入既有17个AC，不增身份、不改实际结果；输入与预期都添加精确引用，并补对应procedure/expected。保持检查断言，不以跳过案例恢复通过。",
+      "detail_ref": "docs/04_开发与验收/特征细化/DRF01_公共追踪交接.json",
+      "blocked_gaps": [
+        "DG07",
+        "DG08"
+      ],
+      "status": "merged_existing_AC_refs_verified",
+      "resolution_ref": "docs/04_开发与验收/特征细化/DRF01_公共追踪交接.json"
+    }
+  ],
+  "public_contract_merge": {
+    "status": "canonical_public_types_merged_finite_proof_passed_product_execution_pending",
+    "canonical_ref": "docs/03_架构与契约/全层类型与工程格式.json#/timeline_runtime_contract",
+    "proof_ref": "tools/type-contract-proof/output/timeline-contract-proof-result.json",
+    "finite_case_count": 13,
+    "evidence_kind": "Rust_derived_TS_Schema_and_native_FullResult_finite_contract_proof",
+    "Engine_or_Host_executed": false,
+    "actual_product_runtime": null,
+    "actual_prototype": null
+  }
+}

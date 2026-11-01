@@ -1,0 +1,310 @@
+{
+  "document_kind": "S04_Figma_generation_basis_audit_and_workbench_layout_correction",
+  "date": "2026-10-14 Asia/Shanghai",
+  "status": "basis_corrected_Figma_not_modified_design_not_accepted",
+  "user_instruction": "Figma已升级，检查额度是否恢复，先不要操作Figma了；核对工业软件风格、中央大画布、左右伸缩与上下固定栏。",
+  "figma_mutations_this_turn": 0,
+  "quota_check": {
+    "connection": "Figma",
+    "plan": "Professional",
+    "seat": "Collab",
+    "team_key": "team::1618474521835639526",
+    "whoami_success": true,
+    "readonly_metadata_success": false,
+    "readonly_error": "You've reached the Figma MCP tool call limit for your Collab seat on the Professional plan.",
+    "quota_restored": false,
+    "remaining_numeric_calls": null,
+    "official_reference": "https://developers.figma.com/docs/figma-mcp-server/rate-limits-access/",
+    "official_rule": "View/Collab仍按月限制；提高MCP额度需要Dev/Full席位。whoami不受该读额度限制，因此whoami成功不代表文件读取额度恢复。",
+    "alternate_connection": "Primary requires reauthentication; not used for file actions"
+  },
+  "source_priority": [
+    {
+      "ref": "当前用户消息",
+      "authority": "最新明确要求；工业桌面风格、中央大画布、左右伸缩、上下固定栏"
+    },
+    {
+      "ref": "docs/04_开发与验收/全量设计编码确认/项目全量设计编码问答.json#Q06",
+      "authority": "已选A：中部3D、右属性、可收起库、底部时间轴、同工程工作台"
+    },
+    {
+      "ref": "docs/02_交互设计/主流程与视图导航.md",
+      "authority": "工程外壳/中部画布/左右面板/底部时间轴和同工程状态"
+    },
+    {
+      "ref": "../设计预览/多层视图与对象设计.md:4",
+      "authority": "浅色工程工作台、菜单工具栏、技术视口、属性、任务/物料表"
+    },
+    {
+      "ref": "../模块研究/从零搭建案例图包/整体母版提示词.md:5",
+      "authority": "原生工业桌面母版，禁止landing page和metric dashboard；旧英文和过期导航按现行中文两画布修正"
+    }
+  ],
+  "audit_scope": {
+    "reviewed": "现行本地设计源、生成器、上轮真实VP05截图及旧L03风格参考。",
+    "live_canvas_reread": false,
+    "reason": "本轮只读metadata仍被限流；没有重新获取Figma节点，也没有修改Figma。"
+  },
+  "findings": [
+    {
+      "id": "FA-01",
+      "severity": "P1",
+      "title": "生成输入丢失视觉与布局基线",
+      "evidence": [
+        {
+          "ref": "docs/02_交互设计/Figma批次_S04_20261014/build.py",
+          "line": 17,
+          "detail": "compact_frames只取id/title/form_ids/navigation_node/category；payload未传style、source_refs或工程外壳布局。"
+        }
+      ],
+      "effect": "制作依据保留了文字/表单覆盖，工业母版和布局没有成为实际生成输入。",
+      "resolution": "所有生成器必须消费本报告layout_contract和现行导航/业务源；原生成器不能直接继续扩批。",
+      "figma_fixed": false
+    },
+    {
+      "id": "FA-02",
+      "severity": "P1",
+      "title": "中央工作区在18个主帧退化为说明卡片",
+      "evidence": [
+        {
+          "ref": "docs/02_交互设计/Figma批次_S04_20261014/screens.js",
+          "line": 44,
+          "detail": "24主帧中仅VP03—07使用资产视口、VP08使用区域示意，其余18帧contentCard替代实际业务工作区。"
+        }
+      ],
+      "effect": "多厂房、包装、比较、报告等显示说明段落，未表现相应可执行工作台。",
+      "resolution": "中央保留真实画布/任务编辑视口或实际比较/报告内容；说明移到帮助/紧凑侧栏。",
+      "figma_fixed": false
+    },
+    {
+      "id": "FA-03",
+      "severity": "P1",
+      "title": "左右面板只有固定尺寸，没有伸缩状态",
+      "evidence": [
+        {
+          "ref": "docs/02_交互设计/Figma批次_S04_20261014/screens.js",
+          "line": 31,
+          "detail": "左224px，右416px；只设纵向滚动。未建收起/展开、宽度拖动、分隔柄和中央FILL状态。"
+        }
+      ],
+      "effect": "未落实Q06已确认可收起库，也未落实最新左右伸缩要求。",
+      "resolution": "统一工程外壳组件，左右展开/收起和宽度变化驱动中央剩余空间；滚动不是伸缩。",
+      "figma_fixed": false
+    },
+    {
+      "id": "FA-04",
+      "severity": "P1",
+      "title": "上下栏保留静态位置，丢失工业菜单工具与固定行为",
+      "evidence": [
+        {
+          "ref": "docs/02_交互设计/Figma批次_S04_20261014/screens.js",
+          "line": 29,
+          "detail": "72px品牌栏+60px深色案例条替代紧凑菜单/命令工具栏；底部仅固定坐标画时间条。"
+        }
+      ],
+      "effect": "上下位置不是完全不存在，但没有固定外壳/独立内容滚动的原型状态，也缺工程命令工具。",
+      "resolution": "当前用户进一步确认：顶部保留文件/编辑/视图等菜单和工程归属；常用工具移到底部；时间轴与描述独立停靠且可由窗口菜单隐藏。",
+      "figma_fixed": false
+    },
+    {
+      "id": "FA-05",
+      "severity": "P1",
+      "title": "按钮和属性卡片密度偏向网页",
+      "evidence": [
+        {
+          "ref": "docs/02_交互设计/Figma批次_S04_20261014/foundation.js",
+          "line": 17,
+          "detail": "200×44按钮、352×112属性卡片、较大留白；对照旧L03紧凑菜单/工具图标/树/属性行/任务表。"
+        }
+      ],
+      "effect": "配色延续灰白蓝青，但控件组织、密度和层级偏离工业工作台。",
+      "resolution": "紧凑命令按钮、树/库分类、属性行/折叠组/数据表；保留清楚文字和可读性，减少品牌/大卡片装饰。",
+      "figma_fixed": false
+    },
+    {
+      "id": "FA-06",
+      "severity": "P2",
+      "title": "准备检查只覆盖数量/引用，未覆盖工作台符合性",
+      "evidence": [
+        {
+          "ref": "docs/02_交互设计/Figma批次准备检查结果.json",
+          "line": 2,
+          "detail": "检查定义明确为文字准备，未检查工业风格、面板伸缩、固定栏或场景内容。"
+        }
+      ],
+      "effect": "24帧/28表单/70边准备通过不能说明生成界面正确。",
+      "resolution": "新增工作台验收项；保留历史静态结果，S04-02/04/05保持未通过。",
+      "figma_fixed": false
+    }
+  ],
+  "layout_contract": {
+    "authority": "Q06与当前用户明确布局要求；不改变业务/常态画布数量或公共API。",
+    "visual_family": "中文浅灰工业规划/工程桌面工作台；沿用旧L03/S04外壳，修正过期导航，不使用AI网站/宣传页/指标仪表盘样式。",
+    "shell": "一套共享工程工作台，包含顶栏、中央工作区、左右可伸缩面板、底部时间轴/状态区。",
+    "top_fixed": {
+      "role": "标题、文件/编辑/视图/工程/模块/仿真/窗口/帮助菜单、工程/修订/方案/Run归属；选择/移动等常用工具下置。",
+      "behavior": "固定在工程外壳顶部；面板内部滚动不带走顶部工具。"
+    },
+    "bottom_fixed": {
+      "role": "底部工具与状态常驻；默认160时间轴与300宽只读描述独立dock，组/设备细化使用同一底部面板。",
+      "behavior": "工具和状态常驻；时间轴/描述默认紧凑，可调高/调宽、滚动；顶部窗口菜单或各窗口X隐藏；两者关闭后中央填满剩余空间。"
+    },
+    "left_panel": {
+      "role": "项目对象树与可收起九类模块库；分类选择不是九个巨型网页按钮。",
+      "states": [
+        "expanded",
+        "collapsed"
+      ],
+      "width_adjustment": "可拖分隔柄调整宽度；原型至少展示窄/宽和收起/恢复状态。",
+      "preservation": "展开恢复原宽度与树选择；不创建新工程。"
+    },
+    "right_panel": {
+      "role": "所选对象的紧凑属性/折叠分组/实际编辑、专业/Agent/比较/交付面板。",
+      "states": [
+        "expanded",
+        "collapsed"
+      ],
+      "width_adjustment": "可拖分隔柄调整宽度；原型至少展示窄/宽和收起/恢复状态。",
+      "preservation": "保留未提交字段、所选对象与归属；原有脏字段离开规则适用。"
+    },
+    "central_workspace": {
+      "sizing": "填满左右面板与上下固定栏之间的剩余区域；伸缩改变可用视口，不更换工程/画布/LOD。",
+      "normal_canvases": [
+        "line_canvas",
+        "multi_hall_canvas"
+      ],
+      "content": "正常任务展示3D产线/厂房关系；对象/专业任务展示相应可编辑视口；比较和报告显示实际对照/报告结构。不得用通用说明卡片代替业务对象。",
+      "camera_preservation": "伸缩不重置相机、选择、观察时点；缩放只改变LOD。"
+    },
+    "controls": {
+      "density": "匹配工业母版的紧凑菜单、工具、树、属性行、表格；保留可缩放文本/可见焦点/数值替代。",
+      "exact_pixels": "不在本轮虚构认可的字号/宽度；具体视觉参数在监督下以一帧核对后再扩展。"
+    },
+    "prototype_proof": [
+      "左右同时展开",
+      "左收起/恢复",
+      "右收起/恢复",
+      "左右同时收起后的大画布",
+      "左右拖窄/拖宽",
+      "面板内容滚动而上下栏保留",
+      "详情返回与草稿/相机/选择保持"
+    ],
+    "state_ownership": "面板展开/宽度是呈现局部状态，不拥有Engine时间/库存，不在本轮新增公共API类型。",
+    "dock_windows_ref": "docs/02_交互设计/工业工作台母版与字段细化.json#/dock_behavior",
+    "timeline_ref": "docs/02_交互设计/时间轴主轴与子轴完整定义.json"
+  },
+  "producer_status": "现有build.py/screens.js/foundation.js已识别为偏离基线；resume-layout.js只处理局部裁切，不能完成此次风格与外壳纠偏。不得直接恢复这批生成器操作Figma。",
+  "current_pause": "Figma当前暂停写入；draw.io母版制作已由用户明确授权，不因旧Figma监督条款重复索取本轮授权。",
+  "shared_merge_request": "W00如需S06类型/任务包消费外壳状态，只引用本布局基线，在所属公共源核对；本轮未修改公共类型、准入或成熟度。",
+  "checkpoint_passed": {
+    "S04_02": false,
+    "S04_04": false,
+    "S04_05": false
+  },
+  "current_master": {
+    "tool": "draw.io",
+    "source_ref": "docs/02_交互设计/S04-02_drawio母版_20261014/industrial-workbench-master.drawio",
+    "presentation_ref": "docs/02_交互设计/工业工作台母版与字段细化.json",
+    "user_decision": "进入精细化卡片和字段核对修复细微缺陷并使用draw.io接过母版制作",
+    "status": "editable_refined_master_not_final_visual_acceptance",
+    "latest_user_decision": "重新读取设计要求并替换上下文，完成母版的进一步升级",
+    "state_pages": 20,
+    "timeline_definition_ref": "docs/02_交互设计/时间轴主轴与子轴完整定义.json"
+  },
+  "current_Figma_prototype": {
+    "file_key": "QBtchORv1wTdJI3ldYxexm",
+    "design_url": "https://www.figma.com/design/QBtchORv1wTdJI3ldYxexm?node-id=23-1282",
+    "prototype_url": "https://www.figma.com/proto/QBtchORv1wTdJI3ldYxexm?page-id=22-1278&node-id=23-1278&starting-point-node-id=23%3A1278&scaling=scale-down&content-scaling=fixed",
+    "page_id": "22:1278",
+    "main_frames": 24,
+    "support_states": 42,
+    "state_frames": 66,
+    "category_frames": 9,
+    "reactions_connected": 3419,
+    "native_text_nodes": 8723,
+    "component_instances": 4327,
+    "full_UI_flattened_image_allowed": false,
+    "actual_design_write": true,
+    "actual_prototype_interaction": "native_Figma_reactions_written_and_read_back",
+    "clickable_prototype_complete": true,
+    "visual_review_complete": true,
+    "visual_review_scope": "代表性画面截图；全部66状态结构与主画面图可达性核验，不等于逐控件实际点击",
+    "frame_node_ids": {
+      "VP01": "23:1278",
+      "VP02": "23:1279",
+      "VP03": "23:1280",
+      "VP04": "23:1281",
+      "VP05": "23:1282",
+      "VP06": "23:1283",
+      "VP07": "23:1284",
+      "VP08": "23:1285",
+      "VP09": "23:1286",
+      "VP10": "23:1287",
+      "VP11": "23:1288",
+      "VP12": "23:1289",
+      "VP13": "23:1290",
+      "VP14": "23:1291",
+      "VP15": "23:1292",
+      "VP16": "23:1293",
+      "VP17": "23:1294",
+      "VP18": "23:1295",
+      "VP19": "23:1296",
+      "VP20": "23:1297",
+      "VP21": "23:1298",
+      "VP22": "23:1299",
+      "VP23": "23:1300",
+      "VP24": "23:1301",
+      "CAT0": "23:1302",
+      "CAT1": "23:1303",
+      "CAT2": "23:1304",
+      "CAT3": "23:1305",
+      "CAT4": "23:1306",
+      "CAT5": "23:1307",
+      "CAT6": "23:1308",
+      "CAT7": "23:1309",
+      "CAT8": "23:1310",
+      "MENU文件": "23:1311",
+      "MENU编辑": "23:1312",
+      "MENU视图": "23:1313",
+      "MENU工程": "23:1314",
+      "MENU模块": "23:1315",
+      "MENU仿真": "23:1316",
+      "MENU窗口": "23:1317",
+      "MENU帮助": "23:1318",
+      "DOCK0": "23:1319",
+      "DOCK1": "23:1320",
+      "DOCK2": "23:1321",
+      "AXIS0": "26:4508",
+      "AXIS1": "26:4509",
+      "AXIS2": "26:4510",
+      "EDIT0": "26:4511",
+      "MEDIA0": "26:4512",
+      "PAPER0": "26:4513",
+      "PAPER1": "26:4514",
+      "REPORTPDF": "26:4515",
+      "REPORTCSV": "26:4516",
+      "REPORTJSON": "26:4517",
+      "CONFLICT": "26:4518",
+      "DIRTY": "26:4519",
+      "ADOPT": "26:4520",
+      "COLL0": "26:4521",
+      "COLL1": "26:4522",
+      "COLL2": "26:4523",
+      "SELDIRTY": "34:5120",
+      "OPENFIELDS": "34:5121",
+      "OPENUNSAVED": "34:5122",
+      "PKGACK": "34:5123",
+      "PKGBOUND": "34:5124",
+      "PKGREVIEW": "34:5125"
+    },
+    "verification_ref": "docs/02_交互设计/Figma批次_20261015/figma-structural-check.json",
+    "product_frontend_coding_authorized": false,
+    "actual_product_runtime": null,
+    "actual_user_walkthrough": null
+  },
+  "Figma_hold_superseded": {
+    "date": "2026-10-15",
+    "quote": "使用Figma完成前端原型制作",
+    "scope": "设计原型；draw.io继续保留为母版源，本地原型保留为实际交互验证源"
+  }
+}

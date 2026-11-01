@@ -1,0 +1,138 @@
+{
+  "document_kind": "template_instantiation_consumer_definition_not_runtime_schema",
+  "definition_version": "DRF04-1",
+  "date": "2026-10-14",
+  "canonical_domain_ref": "packages/domain/types.design.rs",
+  "canonical_api_ref": "packages/commands/api.design.rs",
+  "consumer_tasks": [
+    "P3-04",
+    "P4-01"
+  ],
+  "applies_to": [
+    "machining-delivery",
+    "purchased-assembly",
+    "parallel-electromechanical",
+    "carton-factory"
+  ],
+  "design_file_rule": "manifest/project.design/generation-profile are design declarations; explicitly compile to TemplateSubset/ScenarioInput/TemplateGenerationProfile; never deserialize them as Project file version 1.0",
+  "version_selection": {
+    "key": "ModuleRef.id + ModuleRef.version",
+    "same_key_different_content": "conflict; do not overwrite local definition",
+    "new_version": "preview affected targets, preserve old version/Run and explicitly adopt selected version",
+    "local_definition_freeze": "CommitDefinitionVersion does not adopt instances or publish remotely"
+  },
+  "command_binding": {
+    "operation": "apply_commands",
+    "command_kind": "instantiate_template",
+    "params_type": "TemplateInstantiation",
+    "fields": {
+      "template_ref": "exact ModuleRef",
+      "subset": "TemplateSubset, selected layout/resources/item/role requirements and optional design seed",
+      "mapped_bindings": "RoleBindings.item_types/resources/targets/ports after explicit choices",
+      "proposed_objects": "EditableProjectObject[] with fresh IDs and rewritten references",
+      "explicit_new_scenario_seed": "ScenarioInput|null; null before separate supply/order confirmation"
+    },
+    "revision": "current authorized Project base_revision; full candidate validation then one commit",
+    "result": "EditCommit.changed_objects + new_revision; no Run result or implicit stock creation"
+  },
+  "identity_rules": {
+    "fresh_objects": [
+      "Hall",
+      "Line",
+      "Device",
+      "Location",
+      "Calendar_if_new",
+      "Resource_if_explicitly_new",
+      "Product_if_new",
+      "Bom_if_new",
+      "Route_if_new",
+      "Connection",
+      "Scenario_if_seed_selected"
+    ],
+    "rewrite": [
+      "hall_id",
+      "line_id",
+      "LineGroup.members",
+      "boundary_ports.instance_id",
+      "connection endpoints",
+      "RoleBindings.targets/ports",
+      "scenario scope",
+      "seed destinations and references",
+      "product/bom/route internal references"
+    ],
+    "preserve": [
+      "ModuleRef.id/version",
+      "external references marked unresolved or explicitly bound",
+      "explicitly reused item/resource IDs",
+      "original Project and frozen Runs"
+    ],
+    "no_name_merge": true,
+    "external_ports": "retain role requirement until explicitly mapped; no connection by spatial proximity",
+    "preview_mapping": "old local ID -> proposed fresh ID is adoption preview; canonical API returns changed_objects, not a new public id-map operation"
+  },
+  "resource_rules": {
+    "explicit_reuse": "mapped_bindings.resources maps role to actual ResourceInstance.id; no new resource in proposed_objects for reused ID",
+    "match": "inspect actual role/qualifications/capacity unit/calendar; display mismatch as missing condition",
+    "claims": "one resource identity for shared roles; same job's duplicate declaration does not double capacity demand; distinct concurrent jobs still contend",
+    "preserve_on_reuse": [
+      "capacity",
+      "calendar_id",
+      "qualifications",
+      "home_location"
+    ],
+    "new_personnel": "requires explicit authorization; line copy or capacity goal does not imply hiring",
+    "missing_binding": "save draft and list unresolved role; do not fabricate a worker"
+  },
+  "seed_rules": {
+    "new_project": "show labeled demo conditions then explicit selection; not assumed actual site stock",
+    "into_existing_project": "layout/definitions by default; explicit_new_scenario_seed=null",
+    "supply_choice": "item type/spec/unit, quantity, location, arrival time and source explicitly selected",
+    "order_choice": "product revision, demand quantity/unit, destination/stage, release/due/window separately selected",
+    "canonical_seed": "TemplateSeed.initial_conditions/orders/arrivals -> new ScenarioInput; no edits to active Run",
+    "forbidden": [
+      "RuntimeItem",
+      "in_process inventory",
+      "ResourceClaim",
+      "TaskId",
+      "RunId results",
+      "human acknowledgment",
+      "provider available_modes",
+      "SelectedFileRef authority"
+    ],
+    "copy_again": "new IDs and independent seed choices; existing initial stock/orders remain unchanged"
+  },
+  "geometry_and_time": {
+    "site": "HallDesign.width_m(X)/depth_m(Y)/height_m(Z), m",
+    "seed_geometry": "three old plans have only assumed XY positions; absent heights/footprints/clearances stay unresolved",
+    "structure_to_site": "mm / 1000 -> m at explicit geometry binding only",
+    "time": "ScenarioInput WindowMs and Calendar/Arrival/Order relative millisecond fields",
+    "units": "Quantity.unit must match actual ItemType/unit and declared content conversion; never count bundle and carton twice"
+  },
+  "import_then_adopt": [
+    "Host-selected import_package reference with matching purpose",
+    "get_task completed TaskOutput.Import gives proposed data/conflicts/missing",
+    "preview ImportAcceptanceChoices.objects_to_create/module_versions/reused_bindings/selected_assets",
+    "apply_commands.AdoptImportedDraft with task_id and explicit choices; reject stale revision or out-of-scope choices",
+    "check adopted draft; get actual render/task output; run only supported complete scope"
+  ],
+  "errors": {
+    "stale_revision": "RevisionConflict, old state intact; read current context and reconcile",
+    "broken_internal_reference": "MissingReference with object/field pointer; no partial commit",
+    "unit_or_parameter_mismatch": "InvalidInput with RFC6901 field_errors",
+    "outside_granted_objects_fields_or_files": "PermissionDenied through same Commands for UI/MCP",
+    "unimplemented_mode": "UnsupportedCapability; preserve definition, no silent downgrade",
+    "unresolved_example_input": "named Issue/unknown check; not fake Pass"
+  },
+  "validation_ref": "scenarios/目标驱动建厂/finite-cases.design.json",
+  "actual_result": null,
+  "actual_product_instantiation": null,
+  "Host_authorization": {
+    "canonical_ref": "packages/commands/api.design.rs#HostEditGrant",
+    "status": "private_contract_merged_native_compiled_by_window1_actual_Host_not_executed",
+    "branch_expansion": "InstantiateTemplate/AdoptModule/AdoptImportedDraft all normalize into the same current Host grant check",
+    "create_budget": "cumulative distinct IDs in created_objects across one grant; splitting calls/delete/Undo do not refund; authorized Redo checks same ID",
+    "sources": "actual selected source_versions only; caller origin/source/grant fields are not authority",
+    "reuse": "mapped_bindings.resources IDs must be in reusable_resources; modifications require separate object leaf grants",
+    "cases_ref": "docs/04_开发与验收/特征细化/DRF04_授权有限案例.json"
+  }
+}

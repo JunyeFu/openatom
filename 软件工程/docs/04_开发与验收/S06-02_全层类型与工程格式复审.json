@@ -1,0 +1,183 @@
+{
+  "document_kind": "S06_02_type_format_review_with_actual_isolated_proofs_not_product_acceptance",
+  "checkpoint": "S06-02",
+  "date": "2026-10-14 Asia/Shanghai",
+  "status": "passed_document_specification",
+  "spec_ref": "docs/03_架构与契约/全层类型与工程格式.json",
+  "report_md_ref": "docs/04_开发与验收/S06-02_全层类型与工程格式复审.md",
+  "criteria": [
+    {
+      "id": "C01",
+      "subject": "首版全层完整类型",
+      "status": "passed_document_and_applicable_actual_proof",
+      "basis": "179结构／86枚举／13不透明ID均导出；业务、创作、专业、Agent、评估、保存及测试记录有具体字段；无核心任意JSON载荷。"
+    },
+    {
+      "id": "C02",
+      "subject": "同源Rust／TS／Schema",
+      "status": "passed_document_and_applicable_actual_proof",
+      "basis": "Rust1.97实际编译；278份派生TS经typescript7.0.2检查，13 Schema按Draft2020-12验证；告警／TS运行约束边界明确。"
+    },
+    {
+      "id": "C03",
+      "subject": "九类逻辑字段落地",
+      "status": "passed_document_and_applicable_actual_proof",
+      "basis": "61分类／10公共字段对应108具体载体字段并实际核对Rust／Schema，能力／认可字段的拥有者不同，分类联合唯一。"
+    },
+    {
+      "id": "C04",
+      "subject": "数量／单位／版本／坐标",
+      "status": "passed_document_and_applicable_actual_proof",
+      "basis": "安全整数、精确十进制、有限几何、单位／右手轴／相机、精确SemVer与不透明产品修订、Option与草稿就绪边界明确。"
+    },
+    {
+      "id": "C05",
+      "subject": "工程与所选文件格式",
+      "status": "passed_document_and_applicable_actual_proof",
+      "basis": "根PackageManifest与ProjectState分开，文件role区分活动／冻结输入；方案／九类／完整专业输入／制造／结果／评估／许可资产的格式和相对引用明确。"
+    },
+    {
+      "id": "C06",
+      "subject": "保存／打开／交付语义",
+      "status": "passed_document_and_applicable_actual_proof",
+      "basis": "新代内容先就绪再切清单；R/R+1、失败保留、暂存打开、缺项草稿、精确版本、旧结果只读、首版不续跑、ZIP路径边界有明确处理。"
+    },
+    {
+      "id": "C07",
+      "subject": "实际有限格式试做",
+      "status": "passed_document_and_applicable_actual_proof",
+      "basis": "20份Rust往返、20份标准Schema样例及约束反例；12文件／Windows原语／新目录ZIP／失败保留案例通过，不冒充产品运行或接手。"
+    },
+    {
+      "id": "C08",
+      "subject": "S03-04测量记录结构",
+      "status": "passed_document_and_applicable_actual_proof",
+      "basis": "原12组字段／9尝试字段逐一绑定MeasurementGroupRecord等具体字段；同钟与四状态保留，测试记录不成为新API／审计系统。"
+    },
+    {
+      "id": "C09",
+      "subject": "消费者与旧稿冲突消解",
+      "status": "passed_document_and_applicable_actual_proof",
+      "basis": "原类型／交接／domain／module-kit／包装／报告的实际原文和JSON直接同步；旧设计稿明示适配，21任务源及估量／派发投影消费同一ref。"
+    },
+    {
+      "id": "C10",
+      "subject": "范围／证据／后续关口",
+      "status": "passed_document_and_applicable_actual_proof",
+      "basis": "21任务／7后置／18操作不变，三机制／三变化不简化；S06-03/04/05、Figma／实际走查及桌面帧仍未关闭，不以类型证明运行。"
+    }
+  ],
+  "closed_findings": [
+    {
+      "id": "F62-01",
+      "before": "只有类型名／语义，完整Rust字段、同源Schema和TS未形成。",
+      "correction": "单源Rust全部公共类型实际编译／生成／TS检查与标准Schema验证。"
+    },
+    {
+      "id": "F62-02",
+      "before": "原模块61字段未逐一对应真实类型；能力与成果认可可混在上传定义。",
+      "correction": "61＋10字段映射实际核对，ProviderCapability只读，认可／绑定归工程。"
+    },
+    {
+      "id": "F62-03",
+      "before": "类型接受整数量范围而Schema漏上限；版本／小数／路径／相机轴语义可能不同。",
+      "correction": "修正Schemars try_from属性覆盖，标准负例拒绝超范围等值；十进制／SemVer／不透明修订与相机显式轴单位一致。"
+    },
+    {
+      "id": "F62-04",
+      "before": "原project.json既当工程数据又当清单，跨文件更新和冻结Run输入位置含糊。",
+      "correction": "单根清单＋新代文件，DocumentRole分活动与冻结输入，真实Windows失败保留试做。"
+    },
+    {
+      "id": "F62-05",
+      "before": "素材权利引用无独立定位索引，ID拼文件名及ZIP路径可能含混。",
+      "correction": "模块AssetRef定位和AssetRights事实分开；内部编号路径、相对重定位及Windows／ZIP边界明确。"
+    },
+    {
+      "id": "F62-06",
+      "before": "NFR最小记录仍只有概念字段，TS导出不等于实际编译。",
+      "correction": "21组／尝试逻辑字段有具体结构映射，TS7编译结果独立记录，不把测试记录当产品日志。"
+    }
+  ],
+  "verification": {
+    "status": "passed_actual_types_codegen_standard_schema_and_finite_storage_proof",
+    "checkpoint": "S06-02",
+    "record_types": 179,
+    "enum_types": 86,
+    "opaque_ID_types": 13,
+    "generated_TS_files": 278,
+    "schema_documents": 13,
+    "fixture_roundtrips": 20,
+    "category_fields_bound": 61,
+    "common_fields_bound": 10,
+    "concrete_carrier_fields_checked": 108,
+    "measurement_fields_bound": 21,
+    "schema_refs_resolved": 2521,
+    "actual_TS_compiler_status": "passed_actual_generated_DTO_type_check",
+    "persistence_cases": 12,
+    "consumer_tasks": 21,
+    "actual_product_runtime": null,
+    "product_operations_implemented": 0,
+    "actual_frontend_or_Figma": null,
+    "spec_ref": "docs/03_架构与契约/全层类型与工程格式.json",
+    "errors": []
+  },
+  "proof_refs": [
+    "tools/type-contract-proof/output/type-proof-result.json",
+    "tools/type-contract-proof/output/schema-validation-result.json",
+    "tools/type-contract-proof/output/typescript-check-result.json",
+    "tools/type-contract-proof/output/persistence-proof-result.json"
+  ],
+  "maturity_effect": {
+    "before_completion_credit": 0.5,
+    "completion_credit": 1,
+    "before_evidence_credit": 0.5,
+    "evidence_credit": 1,
+    "basis": "本检查项的完整类型／格式及所需隔离试做已取得；不是产品或其他检查项信用",
+    "progress_ref": "docs/04_开发与验收/软件开发流程与当前成熟度评估.json"
+  },
+  "open_evidence": [
+    "S06-03完整18操作／编辑命令与上下文／错误签名",
+    "S06-04完整纸包装方法／容差／预算／依赖",
+    "S06-05可复算运行输入／独立预期与全层联合走查",
+    "真实Figma视觉／原型／本人走查及S05-05桌面正确场景帧",
+    "S07实际准备及S08产品实现／NFR／接手／真实Agent"
+  ],
+  "actual_product_runtime": null,
+  "actual_product_operations_implemented": 0,
+  "actual_frontend_or_Figma": null,
+  "external_actions": [],
+  "cross_file_verification": {
+    "command": "python tools/检查主线同步.py",
+    "result_ref": "docs/04_开发与验收/主线同步检查结果.json",
+    "status": "passed_static_structure_and_local_references",
+    "checked_local_references": 3416,
+    "errors": [],
+    "actual_product_runtime": null
+  },
+  "current_verification": {
+    "status": "passed_actual_types_codegen_standard_schema_and_finite_storage_proof",
+    "checkpoint": "S06-02",
+    "record_types": 179,
+    "enum_types": 87,
+    "opaque_ID_types": 13,
+    "generated_TS_files": 385,
+    "schema_documents": 13,
+    "fixture_roundtrips": 20,
+    "category_fields_bound": 61,
+    "aggregate_schema_documents": 15,
+    "common_fields_bound": 10,
+    "concrete_carrier_fields_checked": 108,
+    "measurement_fields_bound": 21,
+    "schema_refs_resolved": 4734,
+    "actual_TS_compiler_status": "passed_actual_generated_DTO_type_check",
+    "persistence_cases": 12,
+    "consumer_tasks": 21,
+    "actual_product_runtime": null,
+    "product_operations_implemented": 0,
+    "actual_frontend_or_Figma": null,
+    "spec_ref": "docs/03_架构与契约/全层类型与工程格式.json",
+    "errors": []
+  },
+  "S06_03_consumer_update": "TaskScope/nullable selected_scope/Connection added in canonical domain; domain coverage preserved, API projections separate; no product runtime"
+}

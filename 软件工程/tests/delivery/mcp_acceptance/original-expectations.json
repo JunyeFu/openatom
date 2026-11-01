@@ -1,0 +1,621 @@
+{
+  "document_kind": "independent_frozen_wire_expectations_before_runtime",
+  "connector": {
+    "document_kind": "native_stdio_Host_connection_and_result_consumer_design_not_product_connector",
+    "version": "DRF04-4-RR-managed-consumer",
+    "date": "2026-10-15",
+    "API_ref": "docs/03_架构与契约/公开操作与宿主调用契约.json",
+    "owner_rule": "复审窗口1/W00 edits shared API/Host; window4 owns this connector definition; window2 owns S04/docs02",
+    "bootstrap": {
+      "command": "actual packaged native mcp-bridge.exe; no shell",
+      "args": [
+        "--host-pipe",
+        "<Host-issued endpoint>",
+        "--host-instance-id",
+        "<actual Host instance>"
+      ],
+      "argv_status": "selected proposed bridge CLI; no product executable implementing these flags exists yet",
+      "Host_authority": "Host UI authorizes the current connection/session/project/draft/fields. Startup names select an endpoint; they are not edit/file grants.",
+      "Codex_configuration": "command/args in a deliberately user-configured stdio entry after executable and Host exist; no global config changes in this batch",
+      "native_fixture_launch": "existing architecture-proof exe spawns its own bridge mode with args bridge + actual fixture pipe via rmcp TokioChildProcess; this real tested launch is not the planned product argv or a Codex client"
+    },
+    "connection_sequence": [
+      "Host creates current-logon SID explicit DACL pipe with remote clients rejected; actual peer identity comes from Windows connection/process token, never JSON SID/origin",
+      "Bridge opens exactly the Host-issued endpoint; IpcHello wire_version=1/expected_host_instance_id",
+      "Host verifies peer process/current session, registers a fresh real connection, always treats named-pipe callers as ExternalAgent, resolves explicit UI-granted scope",
+      "IpcWelcome gives host_instance_id/client_session_id/API0.1/frame cap; session IDs correlate but do not alone authenticate",
+      "Each u32-LE length + UTF-8 IPC frame verifies Host/session/version and corresponding operation; MCP stdio remains newline JSON-RPC",
+      "CommandsService receives injected HostCallContext including canonical HostEditGrant records and current ResolvedCallScope; no body grant/caller is accepted",
+      "Common bridge decoder first resolves canonical ApiOutcome.Managed via managed_results into the complete original Response<R>; validate expected operation/schema/request/context and actual Run identity, then publish MCP content. tools/list still exposes only actual supported business tools; no resources/read or extra business operation."
+    ],
+    "lifecycle": {
+      "not_connected": "no alternate Host/project/Engine or automatic retry; return concrete transport/NoActiveProject condition",
+      "admission": "seven long actions return TaskHandle. Business result is get_task.result from matching originating_operation, not initial Ok",
+      "disconnect_before_reply": "edit/run admission may be ambiguous; preserve local proposal/last confirmed repair count and stop automatic work. Do not resend request_id as an idempotency token. Accepted tasks remain Host-owned",
+      "reconnect": "fresh authenticated connection and explicit actual Host scope; old file tokens and handles do not restore authority. Read existing known TaskId after reauthorization; unknown admission requires Host/user reconciliation, not a fabricated ID",
+      "cancel_request": "outstanding MCP request may use notifications/cancelled; after TaskHandle call business cancel_task action=cancel and then get_task. Optional MCP Tasks extension not assumed",
+      "terminal_race": "Completed wins after real output/commit; CancelRequested remains pending; Failed/Cancelled preserve supported known prefix only",
+      "view_controls": "UI playback pause/seek does not change compute task; pause_calculation/resume_calculation/step_next_timestamp only from actual allowed_controls",
+      "switch_close": "real task terminal/dirty decision then revoke old connection/project grants; delayed result stays on originating scope and cannot overwrite new current view",
+      "disconnect_image_leases": "close connection-owned image handles without business cancel; already admitted work remains Host-owned; no resubmit or second Engine. Business continuation is modeled here, not actual Host execution."
+    },
+    "managed_render_return": {
+      "selected_mechanism": "Host duplicates a read-only managed image file handle into the authenticated bridge process; bridge never opens a caller/AssetRef arbitrary path",
+      "delta_ref": "docs/04_开发与验收/特征细化/DRF04_受管画面IPC合入.delta.rs",
+      "wire_change_status": "Canonical managed_assets already merged; canonical managed_results/ApiOutcome.Managed also merged by AQ01. Bridge must unwrap JSON first, then associate image lease. Historical411TS/8 shape cases are not product runtime.",
+      "Host_validation": "completed TaskState.result Render -> actual scene.file AssetRef(id,path,kind) -> Host result registry; same actual task/scope and frozen requested_scope_revision; check scene.scene_revision and allowed image asset",
+      "read_capability": "GetNamedPipeClientProcessId/real process handle and token establish target bridge PID; DuplicateHandle grants read-only access, non-inherited. No read permission follows from a path string or ID alone",
+      "bridge_validation": "Authenticated matching Host/session and stable reply scope; completed render task/id and exact AssetRef; attachment scope/revision equals original Task input/requested revision and actual scene revision. Current editor revision may be newer. Duplicate target is actual verified OS bridge PID; consume only known owned readonly lease, no arbitrary numeric handle/path. Metadata/length/identity mismatch returns no bytes and closes that known lease.",
+      "old_revision": "old task's matching frozen capture can be returned as an old-revision result; it cannot silently become a newer editor preview",
+      "errors": "missing/foreign grant PermissionDenied; actual renderer unavailable UnsupportedCapability; managed read/length failure IoFailure; malformed IPC closes that connection before dispatch. Do not send stale image as success",
+      "payload": "image bytes travel via managed read handle, not base64 inside the 1MiB IPC JSON frame; supported PNG/JPEG content only for actual render image. No path in MCP output needed",
+      "canonical_schema_ref": "tools/type-contract-proof/output/schemas/api-all-types.schema.json#/properties/ipc_task_response",
+      "identity_model_ref": "docs/04_开发与验收/特征细化/DRF04_H04-02有限模型.json"
+    },
+    "timeline_read": {
+      "public_status": "TC01/TC02, RunResult.computed_until_ms and Events end-point membership merged and verified from current source",
+      "fields": "JobState.execution_ref; WaitInterval.execution_ref/phase_ref; RunResult.phase_work_intervals/computed_until_ms",
+      "Events": "point events use start_ms<=at_ms<=end_ms at observer window end; duration intervals remain [start,end); stable pagination even for interval=null",
+      "task_relation": "one Run/input/frontier; no nominal phase inference, partial prefix stays partial; get_run ObjectsAt only at computed frontier or earlier"
+    },
+    "actual_trials": {
+      "native_stdio_pipe_ref": "docs/04_开发与验收/特征细化/DRF04_stdio-proof/output/native-trial-result.json",
+      "readonly_asset_handle_ref": "docs/04_开发与验收/特征细化/DRF04_stdio-proof/output/managed-asset-result.json",
+      "actual_scope": "Historical real rmcp/Windows pipe/readonly handle and OS peer/token subsets; real isolated Tauri2.12.3/WebView2/Three0.186.1 shared-state and PNG-return fixture; new9 OS managed-JSON consumer cases and Codex disabled-recipe decoding only. No product Host/Engine/18 operations/Codex business task.",
+      "dependencies_installed": false,
+      "locks_modified": false,
+      "new_identity_lifecycle_ref": "docs/04_开发与验收/特征细化/DRF04_stdio-proof/output/attachment-lifecycle-result.json",
+      "new_subset": "14 new canonical frame Schema + OS fixture PID/handle flags/CloseHandle/EOF cases; old tests not replayed; trusted context/business continuation are finite models, no real named-pipe peer/Host/Renderer/Codex",
+      "pipe_peer_identity_ref": "docs/04_开发与验收/特征细化/DRF04_stdio-proof/output/pipe-peer-identity-result.json",
+      "pipe_peer_identity_subset": {
+        "ref": "docs/04_开发与验收/特征细化/DRF04_stdio-proof/output/pipe-peer-identity-result.json",
+        "status": "passed",
+        "cases_passed": 3,
+        "proves": "actual two-process Windows pipe peer PID/session and process token user/logon/session identity; spoofed body ignored for authority; wrong expected instance denied; actual EOF and known own handles/process cleanup",
+        "does_not_prove": "product session registry/grants, full canonical handshake, Renderer/managed result or task/business continuation, Codex or S05 acceptance"
+      },
+      "desktop_fixture_ref": "docs/04_开发与验收/特征细化/DRF04_S05-desktop-proof/handoff-result.json",
+      "RR_managed_consumer_ref": "tools/design-quality-audit/report-linked/window4/output/managed-consumer-result.json",
+      "RR_Codex_recipe_ref": "tools/design-quality-audit/report-linked/window4/output/codex-recipe-result.json",
+      "dependencies_installed_in_RR": false,
+      "RR_paid_model_or_global_Codex_config_action": false
+    },
+    "remaining_reproducible_contacts": [
+      {
+        "id": "SC01",
+        "precondition": "W00 Host/bridge available under stage authorization",
+        "exercise": "use proposed actual command/argv; initialize/list/call get_context; verify OS peer + IpcHello/Welcome and matching actual Project grant",
+        "expected": "canonical Host/session/Scope, no self-declared grant or fallback",
+        "actual_result": null
+      },
+      {
+        "id": "SC02",
+        "precondition": "canonical Commands authorization compiler",
+        "exercise": "execute HA01..HA15 positive/negative and HAX01..HAX10 against all actual branches including whole-object/import/history effects",
+        "expected": "atomic PermissionDenied; cumulative count/reused resource/array identity remain exact",
+        "actual_result": null
+      },
+      {
+        "id": "SC03",
+        "precondition": "actual render_view/result registry and peer-authenticated canonical attachment transport; carrier already merged",
+        "exercise": "render R, read get_task image; edit to R+1, return R marked old; foreign task/asset/revision rejected; no arbitrary path reads",
+        "expected": "actual PNG/JPEG + matching RenderOutput; active preview never covered by stale frame",
+        "actual_result": null
+      },
+      {
+        "id": "SC04",
+        "precondition": "actual task admission/worker",
+        "exercise": "disconnect after admission, cancel before terminal and after completion, reconnect with revoked old grant",
+        "expected": "no automatic resubmission; true terminal; old file authority unusable",
+        "actual_result": null
+      },
+      {
+        "id": "SC05",
+        "precondition": "actual Codex and complete GF inputs",
+        "exercise": "GF-07 single-run direct delivery and independent GF-05 at most three accepted repairs/no-op stop; same-run timeline/report",
+        "expected": "editable package/four formats actual files; true scope/units/accepted output, not modeled fixture evidence",
+        "actual_result": null
+      }
+    ],
+    "primary_sources": [
+      {
+        "url": "https://developers.openai.com/codex/mcp",
+        "use": "command-launched stdio/configuration; product configuration not installed"
+      },
+      {
+        "url": "https://modelcontextprotocol.io/specification/2025-11-25/basic/utilities/cancellation",
+        "use": "outstanding requests versus optional protocol Tasks; application TaskHandle managed by existing tools"
+      },
+      {
+        "url": "https://learn.microsoft.com/en-us/windows/win32/ipc/named-pipe-security-and-access-rights",
+        "use": "explicit DACL and logon SID; default descriptor insufficient for current-session design"
+      },
+      {
+        "url": "https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-getnamedpipeclientprocessid",
+        "use": "OS-known client PID, not body claim"
+      },
+      {
+        "url": "https://learn.microsoft.com/en-us/windows/win32/api/handleapi/nf-handleapi-duplicatehandle",
+        "use": "actual selected cross-process handle mechanism; internal IPC integration still proposed"
+      },
+      {
+        "url": "https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-getnamedpipeserverprocessid",
+        "use": "actual pipe peer API executed in new isolated Windows trial"
+      },
+      {
+        "url": "https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-getnamedpipeclientsessionid",
+        "use": "actual pipe peer API executed in new isolated Windows trial"
+      },
+      {
+        "url": "https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-getnamedpipeserversessionid",
+        "use": "actual pipe peer API executed in new isolated Windows trial"
+      }
+    ],
+    "actual_product_connector": null,
+    "actual_Codex_interop": null,
+    "actual_result": null,
+    "S05_preparation_ref": "docs/04_开发与验收/特征细化/DRF04_S05接点准备.json",
+    "S04_UI_delivery_ref": "docs/04_开发与验收/特征细化/DRF04_H04-04界面绑定.json",
+    "C02_generation_ref": "docs/04_开发与验收/特征细化/DRF04_C02生成接入.md",
+    "managed_json_return": {
+      "authority_ref": "docs/03_架构与契约/大结果传输设计.md",
+      "canonical_fields": "ApiOutcome<R>::Managed(ManagedJsonResultRef) + IpcResponseFrame<R>.managed_results:IpcManagedResultAttachment[]",
+      "frame_limit_bytes": 1048576,
+      "selection": "Host captures the complete original Response<R> at the same state boundary, releases business lock, and selects managed only when complete UTF8 IPC frame including attachments exceeds cap. No truncation or synthetic pagination.",
+      "file_payload": "Immutable full original Response<R>; outcome ok/error only, no nested managed. response_schema_ref is the original operation catalog type identifier, never a caller-selected path.",
+      "OS_read": "Host authenticates actual pipe peer and scope, opens a fresh GENERIC_READ file at offset0 per response, then non-inherited DuplicateHandle to actual bridge PID. Only the authenticated, known owned lease may be read/closed.",
+      "before_read": [
+        "Host/session/wire/operation bind to outstanding request",
+        "Exactly one matching result_id; handle_value equals trusted ownership record",
+        "response_schema_ref equals original operation response_schema_ref; outer request_id/context match authorized request",
+        "Native file size equals exact declared byte_length"
+      ],
+      "after_read": [
+        "Read exactly byte_length and actual EOF",
+        "Parse full corresponding Response<R> schema; prohibit recursive managed",
+        "Inner api_version/request_id/context equal outer header",
+        "For get_run ok response also match requested RunId, frozen input_ref and computed frontier; original error requires no invented Run"
+      ],
+      "MCP": "Keep small typed outer Response in structuredContent; include full original Response as application/json EmbeddedResource text at superfactory-result://<result_id>. Embedded text is immediately usable; do not return only a link or invent resources/read.",
+      "error_semantics": "Derive MCP isError from recovered original outcome.error, never from outer managed status alone. A valid managed PermissionDenied remains an error; it cannot be treated as successful business admission or retried as a new request.",
+      "failure_cleanup": "Wrong identity/type/nested outcome/read/length/parse failure emits no partial or successful resource. Report concrete MCP transport/tool failure using existing operation error semantics; do not forge a Host ApiError response. Always close only the known owned lease. Transfer cancellation closes lease but creates no TaskId or business Cancelled result; no automatic resubmit, no Run mutation.",
+      "post_unwrap_image": "Only after full typed get_task response is recovered, validate existing managed_assets against the original completed render Task/Asset/Scope/requested and scene revision. JSON capability never grants image/path authority.",
+      "new_consumer_proof_ref": "tools/design-quality-audit/report-linked/window4/output/managed-consumer-result.json",
+      "product_decoder_implementation": null
+    },
+    "current_RR_review_ref": "docs/04_开发与验收/特征细化/RR_窗口4_报告关联核验.json"
+  },
+  "GF": {
+    "document_kind": "planned_agent_generation_acceptance_not_test_result",
+    "requirement_id": "SF-17",
+    "input_example": {
+      "industry": "paper_carton_manufacturing",
+      "product_family": "die_cut_fold_glued_paper_carton",
+      "daily_accepted_quantity": 10000,
+      "site_dimensions": null,
+      "production_calendar": null,
+      "source": "user_capability_example_not_actual_site_or_machine_data"
+    },
+    "template_ref": "modules/templates/carton-factory/manifest.json",
+    "required_steps": [
+      "describe_capabilities",
+      "get_context",
+      "query_module_library",
+      "apply_commands",
+      "check_factory_draft",
+      "render_view",
+      "run_scenario",
+      "get_task",
+      "get_run",
+      "export_evaluation",
+      "save_project"
+    ],
+    "cases": [
+      {
+        "id": "GF-01",
+        "condition": "supported_template_and_complete_labeled_inputs",
+        "expectation": "editable_nine_role_factory_with_layout_schedule_actual_run_and_report",
+        "actual_result": null,
+        "independent_cases": [
+          "FC01",
+          "FC03",
+          "FC04",
+          "FC24"
+        ]
+      },
+      {
+        "id": "GF-02",
+        "condition": "missing_calendar_or_cycle_or_site",
+        "expectation": "draft_and_named_missing_inputs_not_production_target_met",
+        "actual_result": null,
+        "independent_cases": [
+          "FC21"
+        ]
+      },
+      {
+        "id": "GF-03",
+        "condition": "no_matching_template",
+        "expectation": "explain_missing_scope_preserve_draft_not_fake_factory",
+        "actual_result": null,
+        "independent_cases": [
+          "FC21"
+        ]
+      },
+      {
+        "id": "GF-04",
+        "condition": "footprint_height_or_clearance_conflict",
+        "expectation": "object_specific_conflict_not_visual_scaling_bypass",
+        "actual_result": null,
+        "independent_cases": [
+          "FC03",
+          "FC24"
+        ]
+      },
+      {
+        "id": "GF-05",
+        "condition": "actual_accepted_output_below_target",
+        "expectation": "finite_supported_repair_and_new_run_comparison_or_inability_reason",
+        "actual_result": null,
+        "independent_cases": [
+          "FC07",
+          "FC08",
+          "FC09",
+          "FC20",
+          "FC22",
+          "FC23"
+        ]
+      },
+      {
+        "id": "GF-06",
+        "condition": "human_reopens_generated_project",
+        "expectation": "edit_and_rerun_same_objects_sources_and_bindings",
+        "actual_result": null,
+        "independent_cases": [
+          "FC04",
+          "FC05",
+          "FC10",
+          "FC17"
+        ]
+      },
+      {
+        "id": "GF-07",
+        "condition": "initial_draft_inputs_complete_checks_pass_and_actual_target_met",
+        "expectation": "direct_editable_project_and_four_format_delivery_one_actual_run_no_required_change_revised_run_or_comparison",
+        "actual_result": null,
+        "independent_cases": [
+          "FC06",
+          "FC02",
+          "FC15"
+        ]
+      }
+    ],
+    "result_formats": [
+      "pdf",
+      "html",
+      "csv",
+      "json"
+    ],
+    "runtime_available": false,
+    "actual_result": null,
+    "conditional_steps": {
+      "initial_target_met": "save_project_and_export_evaluation_without_repair_or_compare_runs",
+      "shortfall_or_failed_check": "finite_supported_authorized_repair_recheck_new_run_compare_when_prior_run_exists_or_named_inability",
+      "missing_scope_or_inputs": "preserve_draft_and_explain_without_target_met"
+    },
+    "generic_unit_examples": [
+      {
+        "product_family": "die_cut_fold_glued_paper_carton",
+        "accepted_unit": "piece",
+        "acceptance_scope": "declared_finished_goods_destination",
+        "count_rule": "bundle converted using declared carton contents counted once",
+        "accepted_item_type": "carton",
+        "display_label": "合格箱数"
+      },
+      {
+        "product_family": "purchased_parts_assembly",
+        "accepted_unit": "piece",
+        "acceptance_scope": "declared_qualified_assembly_destination",
+        "count_rule": "assembled product counted once; consumed components not added to accepted output"
+      }
+    ],
+    "generic_unit_examples_scope": "Contract walkthrough examples only, not frozen capacity inputs or executed runtime tests; both use the same goal_fields.",
+    "definition_ref": "docs/04_开发与验收/特征细化/DRF04_完整定义.json",
+    "finite_cases_ref": "scenarios/目标驱动建厂/finite-cases.design.json",
+    "call_examples_ref": "scenarios/目标驱动建厂/mcp-calls.design.json",
+    "instantiation_contract_ref": "modules/templates/instantiation.design.json",
+    "long_task_result_rule": "seven long actions return TaskHandle; get_task typed completion before reading Run/render/files; cancellation read actual terminal",
+    "feedback_repair_limit": {
+      "max_rounds": 3,
+      "initial_run_counts": false,
+      "no_effective_change_stops": true,
+      "max_capacity_runs": 4
+    },
+    "default_field_scope": "granted scheduling, selected layout and explicitly allowed device count; phase time/BOM/quality/hiring/cost and new supply require explicit field authorization",
+    "timeline_rule": "canonical TC01/TC02/frontier merged; read one Run; Events point end inclusive, durations half-open; no guessed history",
+    "authority_cases_ref": "docs/04_开发与验收/特征细化/DRF04_授权有限案例.json",
+    "connector_ref": "integrations/agent/stdio-connector.design.json",
+    "UI_binding_ref": "docs/04_开发与验收/特征细化/DRF04_H04-04界面绑定.json"
+  },
+  "host_authorization": {
+    "document_kind": "Host_private_authorization_delta_not_canonical_implementation",
+    "version": "DRF04-2",
+    "date": "2026-10-14",
+    "owner": "复审窗口1/W00",
+    "delta_ref": "docs/04_开发与验收/特征细化/DRF04_Host授权合入.delta.rs",
+    "canonical_API_ref": "packages/commands/api.design.rs",
+    "context_addition": "HostCallContext.edit_grants:Vec<HostEditGrant>; no Serialize/Deserialize/JsonSchema/TS derives and no ApiRequest members",
+    "private_fields": {
+      "HostEditGrant": "id,scope,branches,objects,creates,source_versions,reusable_resources,created_objects",
+      "HostObjectEditGrant": "target,fields,can_remove",
+      "HostFieldGrant": "pointer(RFC6901 leaf),element_id(nullable stable declared array entry ID)",
+      "HostCreateAllowance": "kind,max_new_objects(cumulative),fields"
+    },
+    "authority": "UI issues/revises grants from the existing authorized task/object/field choices; Host fetches current per-session record under short Commands transaction, never trusts client JSON or old cloned context",
+    "scope": "real session owns Workspace; EditScope stable Project/draft identity. Existing base_revision independently controls concurrency; Host updates definition scope revision after commit without increasing permissions",
+    "algorithm": [
+      "1. Parse the existing typed Request; reject extra caller/grant/unknown fields. Authenticate actual transport and resolve current Host scope/operation/file capability.",
+      "2. Verify expected base_revision under serialized Commands; origin-only commands and workspace departure obey existing UI/task/dirty rules.",
+      "3. Read only granted source definitions/staged task/history; expand all 15 branches into a complete candidate using current Host objects. No IO/Engine/real approval side effect yet.",
+      "4. Compute changes by typed stable identity. Arrays match declared entry IDs, never index/name alone; record changed RFC6901 leaf and pinned containing entry. Whole-object replace includes removed fields.",
+      "5. Check branch + target scope, existing target leaf/remove permission, distinct fresh create IDs/count and exact selected versions, all resource reuse references. A reusable ID does not grant editing its capacity/calendar/qualifications.",
+      "6. All create-source baseline/defaults come from actual selected module/template; transferred overrides, seed supplies/orders and imported objects still undergo authorization. Missing geometry/parameters remain named input gaps.",
+      "7. Validate complete candidate references/type/unit/range and original business rules; no partial success or error conversion to success.",
+      "8. Commit candidate, one revision/history update and current grant creation ledger together. Failure commits neither. Delete/Undo never refund; authorized Redo of the same tracked ID rechecks current grant."
+    ],
+    "new_object_rule": "max_new_objects is across one grant lifetime and all branches/batches, not per call. Fields in approved creation baseline explicitly covered by allowance; reused existing fields use object grants. Derived copy does not authorize new workers/supply/BOM/duration/quality changes.",
+    "parameter_rule": "instance configuration override vs draft definition default follow existing declared binding; time/BOM/quality/personnel/cost require explicit field grant, not a scheduling synonym",
+    "normalization_proof_limit": "finite cases are explicit Host-private effect projections, not wire requests or proof of the future Host compiler. No normalized effects/grant are accepted from clients.",
+    "error_precedence": "typed input InvalidInput/UnsupportedSchema first, real connection/scope PermissionDenied/NoActiveProject, stale known scope RevisionConflict, then whole candidate authorization PermissionDenied; references/business retain existing error families. No unauthorized object disclosure.",
+    "all_branches": [
+      {
+        "branch": "create_project",
+        "normalization": "UI Workspace only; normalize new Project/time reference and approved departure; no Agent implicit switch",
+        "origin_rule": "interactive_ui only",
+        "scope": "workspace",
+        "effect_types_checked": [
+          "create",
+          "set",
+          "remove",
+          "reuse",
+          "source_version",
+          "history/departure boundary"
+        ],
+        "denial": "PermissionDenied before any state/revision/history/creation-ledger commit",
+        "consumer": "same Commands; MCP tool switch or whole-object submission cannot bypass"
+      },
+      {
+        "branch": "put_object",
+        "normalization": "full canonical object diff; preserve stable array element IDs; no hidden quality/BOM/time/stock edits",
+        "origin_rule": "authenticated UI/ExternalAgent with same current grant",
+        "scope": "project",
+        "effect_types_checked": [
+          "create",
+          "set",
+          "remove",
+          "reuse",
+          "source_version",
+          "history/departure boundary"
+        ],
+        "denial": "PermissionDenied before any state/revision/history/creation-ledger commit",
+        "consumer": "same Commands; MCP tool switch or whole-object submission cannot bypass"
+      },
+      {
+        "branch": "remove_object",
+        "normalization": "explicit target delete, no implicit cascade; separately check every co-deleted reference",
+        "origin_rule": "authenticated UI/ExternalAgent with same current grant",
+        "scope": "project",
+        "effect_types_checked": [
+          "create",
+          "set",
+          "remove",
+          "reuse",
+          "source_version",
+          "history/departure boundary"
+        ],
+        "denial": "PermissionDenied before any state/revision/history/creation-ledger commit",
+        "consumer": "same Commands; MCP tool switch or whole-object submission cannot bypass"
+      },
+      {
+        "branch": "set_project_settings",
+        "normalization": "diff title/time_reference/generation_context/sources against current Project settings; no forged Run context",
+        "origin_rule": "authenticated UI/ExternalAgent with same current grant",
+        "scope": "project",
+        "effect_types_checked": [
+          "create",
+          "set",
+          "remove",
+          "reuse",
+          "source_version",
+          "history/departure boundary"
+        ],
+        "denial": "PermissionDenied before any state/revision/history/creation-ledger commit",
+        "consumer": "same Commands; MCP tool switch or whole-object submission cannot bypass"
+      },
+      {
+        "branch": "create_definition_draft",
+        "normalization": "normalize new draft identity/definition; no registration of actual provider capabilities or approval",
+        "origin_rule": "authenticated UI/ExternalAgent with same current grant",
+        "scope": "project",
+        "effect_types_checked": [
+          "create",
+          "set",
+          "remove",
+          "reuse",
+          "source_version",
+          "history/departure boundary"
+        ],
+        "denial": "PermissionDenied before any state/revision/history/creation-ledger commit",
+        "consumer": "same Commands; MCP tool switch or whole-object submission cannot bypass"
+      },
+      {
+        "branch": "put_definition",
+        "normalization": "full selected draft diff; exact identity/version; no mutation of published version or authority declarations",
+        "origin_rule": "authenticated UI/ExternalAgent with same current grant",
+        "scope": "definition_draft",
+        "effect_types_checked": [
+          "create",
+          "set",
+          "remove",
+          "reuse",
+          "source_version",
+          "history/departure boundary"
+        ],
+        "denial": "PermissionDenied before any state/revision/history/creation-ledger commit",
+        "consumer": "same Commands; MCP tool switch or whole-object submission cannot bypass"
+      },
+      {
+        "branch": "set_declared_parameter",
+        "normalization": "resolve parameter_id via current declaration to instance configuration or definition leaf; authorize that exact field and type/unit",
+        "origin_rule": "authenticated UI/ExternalAgent with same current grant",
+        "scope": "project",
+        "effect_types_checked": [
+          "create",
+          "set",
+          "remove",
+          "reuse",
+          "source_version",
+          "history/departure boundary"
+        ],
+        "denial": "PermissionDenied before any state/revision/history/creation-ledger commit",
+        "consumer": "same Commands; MCP tool switch or whole-object submission cannot bypass"
+      },
+      {
+        "branch": "adopt_module",
+        "normalization": "expand exact actual ModuleRef, targets/bindings/new_instances/explicit_seed; check every derived edit/create/reuse/seed",
+        "origin_rule": "authenticated UI/ExternalAgent with same current grant",
+        "scope": "project",
+        "effect_types_checked": [
+          "create",
+          "set",
+          "remove",
+          "reuse",
+          "source_version",
+          "history/departure boundary"
+        ],
+        "denial": "PermissionDenied before any state/revision/history/creation-ledger commit",
+        "consumer": "same Commands; MCP tool switch or whole-object submission cannot bypass"
+      },
+      {
+        "branch": "instantiate_template",
+        "normalization": "expand actual selected template/subset/proposed_objects/mapped_bindings; fresh IDs, selected versions, reuse and explicit Scenario seed",
+        "origin_rule": "authenticated UI/ExternalAgent with same current grant",
+        "scope": "project",
+        "effect_types_checked": [
+          "create",
+          "set",
+          "remove",
+          "reuse",
+          "source_version",
+          "history/departure boundary"
+        ],
+        "denial": "PermissionDenied before any state/revision/history/creation-ledger commit",
+        "consumer": "same Commands; MCP tool switch or whole-object submission cannot bypass"
+      },
+      {
+        "branch": "put_packaging_job",
+        "normalization": "diff canonical PackageStructureJob input only; resolve part/steps; saving produces no professional Pass/acceptance",
+        "origin_rule": "authenticated UI/ExternalAgent with same current grant",
+        "scope": "definition_draft",
+        "effect_types_checked": [
+          "create",
+          "set",
+          "remove",
+          "reuse",
+          "source_version",
+          "history/departure boundary"
+        ],
+        "denial": "PermissionDenied before any state/revision/history/creation-ledger commit",
+        "consumer": "same Commands; MCP tool switch or whole-object submission cannot bypass"
+      },
+      {
+        "branch": "record_artifact_acknowledgment",
+        "normalization": "trusted UI only; artifact/subject/use scope validated; client origin/decision_source does not authenticate",
+        "origin_rule": "interactive_ui only",
+        "scope": "project",
+        "effect_types_checked": [
+          "create",
+          "set",
+          "remove",
+          "reuse",
+          "source_version",
+          "history/departure boundary"
+        ],
+        "denial": "PermissionDenied before any state/revision/history/creation-ledger commit",
+        "consumer": "same Commands; MCP tool switch or whole-object submission cannot bypass"
+      },
+      {
+        "branch": "adopt_imported_draft",
+        "normalization": "Host-owned completed staged Task and authorized choices expand all effects; Workspace open UI only; import receipt alone never adoption",
+        "origin_rule": "authenticated UI/ExternalAgent with same current grant",
+        "scope": "project",
+        "effect_types_checked": [
+          "create",
+          "set",
+          "remove",
+          "reuse",
+          "source_version",
+          "history/departure boundary"
+        ],
+        "denial": "PermissionDenied before any state/revision/history/creation-ledger commit",
+        "consumer": "same Commands; MCP tool switch or whole-object submission cannot bypass"
+      },
+      {
+        "branch": "commit_definition_version",
+        "normalization": "only selected definition draft local version/state freeze; no instance upgrade, remote publish or fabricated provider availability",
+        "origin_rule": "authenticated UI/ExternalAgent with same current grant",
+        "scope": "definition_draft",
+        "effect_types_checked": [
+          "create",
+          "set",
+          "remove",
+          "reuse",
+          "source_version",
+          "history/departure boundary"
+        ],
+        "denial": "PermissionDenied before any state/revision/history/creation-ledger commit",
+        "consumer": "same Commands; MCP tool switch or whole-object submission cannot bypass"
+      },
+      {
+        "branch": "undo",
+        "normalization": "derive inverse from current Host draft history, then reauthorize complete candidate under current grant; no rollback of Run/IO/approval or budget refund",
+        "origin_rule": "authenticated UI/ExternalAgent with same current grant",
+        "scope": "project",
+        "effect_types_checked": [
+          "create",
+          "set",
+          "remove",
+          "reuse",
+          "source_version",
+          "history/departure boundary"
+        ],
+        "denial": "PermissionDenied before any state/revision/history/creation-ledger commit",
+        "consumer": "same Commands; MCP tool switch or whole-object submission cannot bypass"
+      },
+      {
+        "branch": "redo",
+        "normalization": "derive forward from current Host draft history, reauthorize current fields/reuse/count; restore same permitted ID without fresh budget refund",
+        "origin_rule": "authenticated UI/ExternalAgent with same current grant",
+        "scope": "project",
+        "effect_types_checked": [
+          "create",
+          "set",
+          "remove",
+          "reuse",
+          "source_version",
+          "history/departure boundary"
+        ],
+        "denial": "PermissionDenied before any state/revision/history/creation-ledger commit",
+        "consumer": "same Commands; MCP tool switch or whole-object submission cannot bypass"
+      }
+    ],
+    "independent_cases_ref": "docs/04_开发与验收/特征细化/DRF04_授权有限案例.json",
+    "verification_ref": "docs/04_开发与验收/特征细化/DRF04_授权差异核验.json",
+    "actual_Host_enforcement": null,
+    "actual_product_runtime": null,
+    "actual_result": null,
+    "status": "canonical_private_delta_merged_native_compiled_by_window1_finite_model_passed_real_Host_unexecuted",
+    "canonical_merge_ref": "packages/commands/api.design.rs#HostEditGrant"
+  },
+  "actual_result": null,
+  "real_Codex_business_verified": false
+}

@@ -1,0 +1,447 @@
+{
+  "document_kind": "P0_01_actual_directory_persistence_and_session_history_slice",
+  "task_id": "P0-01",
+  "within_original_step": 3,
+  "covered_original_steps": [
+    3,
+    4
+  ],
+  "status": "implemented_and_reviewed",
+  "dispatch": {
+    "authorized_at": "2026-10-15T23:08:14+08:00",
+    "authority": "发挥统筹作用自主往下推进，不设工作量上限",
+    "task_id": "P0-01",
+    "within_original_step": 3,
+    "covered_original_steps": [
+      3,
+      4
+    ],
+    "role": "W00",
+    "thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+    "scope_ref": "docs/04_开发与验收/P0-01_保存重开与会话历史切片.json",
+    "business_frontend_authorized": false
+  },
+  "scope": {
+    "task_id": "P0-01",
+    "within_original_step": 3,
+    "covered_original_steps": [
+      3,
+      4
+    ],
+    "original_steps": [
+      "保存最小设计工程、在另一目录重开并修改",
+      "接入本会话草稿撤销/重做：共同命令/修订冲突、redo分支与工程切换；与当前Run/人工认可/磁盘副作用分开"
+    ],
+    "scope": "在实际Host接通save_project/import_package/get_task/cancel_task和明确AdoptImportedDraft(OpenProject)；目录格式与Windows提交按冻结契约；已支持Project/ItemType草稿支持同会话undo/redo。正式Tauri原生目录选择产生Host私有token，锁外文件任务，原生同Host端到端核验。",
+    "planned_owner": "W00",
+    "actual_thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+    "actual_dispatch": {
+      "authorized_at": "2026-10-15T23:08:14+08:00",
+      "authority": "发挥统筹作用自主往下推进，不设工作量上限",
+      "task_id": "P0-01",
+      "within_original_step": 3,
+      "covered_original_steps": [
+        3,
+        4
+      ],
+      "role": "W00",
+      "thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+      "scope_ref": "docs/04_开发与验收/P0-01_保存重开与会话历史切片.json",
+      "business_frontend_authorized": false
+    },
+    "preparation_status": "implemented_and_reviewed",
+    "business_frontend_changes": false,
+    "input_refs": [
+      "docs/04_开发与验收/P0-01_Host最小创建读取编辑切片.json",
+      "packages/domain/src/models.rs",
+      "packages/commands/src/api.rs",
+      "docs/03_架构与契约/全层类型与工程格式.json",
+      "docs/03_架构与契约/共享状态与所有权.json",
+      "docs/04_开发与验收/特征细化/DRF04_Host授权合入.json"
+    ],
+    "actual_prerequisite_outputs": [
+      "packages/commands/src/project_host.rs",
+      "apps/planner/src-tauri/src/project_api.rs",
+      ".work/p0-01-host/verification/result.json"
+    ],
+    "implementation_dependencies": [],
+    "allowed_modified_files": [
+      "packages/commands/src/project_host.rs",
+      "packages/commands/src/lib.rs",
+      "packages/commands/Cargo.toml",
+      "Cargo.lock",
+      "apps/planner/src-tauri/src/lib.rs",
+      "apps/planner/src-tauri/src/project_api.rs",
+      "Cargo.toml",
+      "packages/commands/src/bin/export-contracts.rs",
+      "tools/检查工程与Command边界.py",
+      "tools/检查主线同步.py"
+    ],
+    "allowed_new_files": [
+      "packages/commands/src/project_store.rs",
+      "packages/commands/src/project_history.rs",
+      "packages/commands/tests/project_persistence_history.rs",
+      "tools/p0-01-host/verify-persistence-history.ps1"
+    ],
+    "finite_expectations": [
+      "保存冻结R并返回实际TaskHandle；UI读取和编辑不被I/O锁住，R+1在保存R完成后仍dirty。",
+      "根project.json是Versioned<PackageManifest>且唯一active_project文档身份/修订一致，安全相对路径/必需文件/九类与其他已携带文档无损，不用ID拼文件名。",
+      "完成后才生成SavedProject；旧根引用的数据不原地覆盖，ReplaceFileW提交失败按真实旧根/保留根身份验证与恢复；取消不能将已提交结果改成Cancelled。",
+      "import_package私有解析生成ImportDraft，必须由AdoptImportedDraft明确OpenProject与dirty/活动任务决策采用；坏工程/缺必需文档保留当前工程。",
+      "同目录准入顺序提交，异目录重开后继续编辑/保存，对象、单位、连接与引用不丢失。",
+      "Undo/Redo经同一Commands验证当前Scope/base_revision/当前授权后一次新修订提交；错误不动历史和账本，新编辑清redo，工程切换清旧历史；保存不清正常草稿历史。",
+      "撤销创建/重做同ID不退还累计创建预算；磁盘保存、任务结果、人工认可与当前Run不随历史倒退。"
+    ],
+    "non_goals": [
+      "业务前端/Figma",
+      "Engine/运行库存/时钟",
+      "完整模块创作/3D/专业求解",
+      "对未实现操作虚构成功",
+      "报名/发布/推送"
+    ],
+    "verification_entries": [
+      "cargo test --workspace --locked",
+      "npm run typecheck",
+      "真实Windows目录保存/失败保持/异目录重开/同会话历史",
+      "真实桌面同Host保存/重开烟测"
+    ],
+    "actual_implementation_result_ref": "docs/04_开发与验收/P0-01_保存重开与会话历史切片.json"
+  },
+  "private_implementation_interfaces": {
+    "history_module": "pub struct ProjectHistory; new()->Self; reset(&mut self,project:&ProjectState); record(&mut self,before:&ProjectState,after:&ProjectState); undo_candidate(&self,current:&ProjectState)->Result<ProjectState,ApiError>; redo_candidate同签名; commit_undo(&mut self,before:&ProjectState,after:&ProjectState); commit_redo同签名; availability(&self)->HistoryAvailability。candidate不变更堆栈，revision沿用current等待Host生成新修订。",
+    "store_module": "pub struct ProjectArchive { pub project:ProjectState, pub manifest:PackageManifest, pub files:BTreeMap<String,Vec<u8>> }，derive Clone；read_project_archive(directory:&Path)->Result<ProjectArchive,ApiError>；write_project_archive(directory:&Path,project:&ProjectState,backing:Option<&ProjectArchive>,cancelled:&AtomicBool)->Result<ProjectArchive,ApiError>。源文件托管在Host/Worker私有边界，不进入wire。",
+    "host_integration": "保留ProjectHost::new/dispatch/register_external_session/caller_context；新增select_directory(&mut self,session:&ObjectId,purpose:FilePurpose,directory:PathBuf)->Result<SelectedFileRef,ApiError>（可信宿主使用，不能从JSON接路径）；drain_io_work(&mut self)->Vec<ProjectIoWork>；ProjectIoWork::run(self)->ProjectIoCompletion（真实I/O在Host锁外）；finish_io(&mut self,completion:ProjectIoCompletion)。Work/Completion从sf_commands重导出，宿主私有无serde。",
+    "native_runner": "托管Arc<Mutex<ProjectHost>>及单个FIFO I/O worker；在Host锁内dispatch并按准入顺序入队，工作线程无Host锁执行run后锁内finish_io；不引入第二Host。project_select_directory真实picker只接purpose、不接机器路径，返回SelectedFileRef。同步smoke在托管同一Host中等待真实任务，不伪造终态。",
+    "Workspace_input_revision": "Workspace文件任务没有Project修订，TaskHandle.input_revision使用该Workspace选定文件任务输入命名空间的初始Revision(0)，不作为Project修订；TaskScope::Workspace(真实session)是身份，不伪造ProjectId。",
+    "OpenProject_adoption_choices": "整体打开保留原ProjectId/revision；对象/定义/素材选择为空是不筛选，非空须恰等该完成task全量提案，不允许子集、增补、重复或重绑定。manifest缺项/阻断Issue需显式accept_missing_as_draft；缺必需文件仍失败。"
+  },
+  "parallel_dispatch": [
+    {
+      "window_id": "W00",
+      "title": "统筹（本聊天，界面当前题名实现窗口1）",
+      "thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+      "task": "Host文件任务/显式采用/历史整合及公共状态",
+      "allowed_files": [
+        "packages/commands/src/project_host.rs",
+        "packages/commands/src/lib.rs",
+        "packages/commands/Cargo.toml",
+        "Cargo.lock",
+        "apps/planner/src-tauri/src/lib.rs"
+      ],
+      "status": "accepted_current_slice",
+      "coordinator_accepted": true,
+      "result_ref": "docs/04_开发与验收/P0-01_保存重开与会话历史切片.json"
+    },
+    {
+      "window_id": "W01",
+      "title": "实现窗口2",
+      "thread_id": "01a11f4e-f8a4-7a62-9d23-24834761b07e",
+      "task": "原生目录选择、锁外I/O队列与同Host保存重开烟测",
+      "allowed_files": [
+        "apps/planner/src-tauri/src/project_api.rs",
+        "docs/04_开发与验收/P0-01_保存历史_窗口2.json"
+      ],
+      "status": "accepted_current_slice",
+      "coordinator_accepted": true,
+      "result_ref": "docs/04_开发与验收/P0-01_保存历史_窗口2.json"
+    },
+    {
+      "window_id": "W02",
+      "title": "实现窗口3",
+      "thread_id": "01a13589-e1b0-73d2-aaae-c69be89c5b0f",
+      "task": "会话历史纯模块与有限预期",
+      "allowed_files": [
+        "packages/commands/src/project_history.rs",
+        "docs/04_开发与验收/P0-01_保存历史_窗口3.json"
+      ],
+      "status": "accepted_current_slice",
+      "coordinator_accepted": true,
+      "result_ref": "docs/04_开发与验收/P0-01_保存历史_窗口3.json"
+    },
+    {
+      "window_id": "W03",
+      "title": "实现窗口4",
+      "thread_id": "01a1396d-bb0e-7e93-8ad5-b3465048d09a",
+      "task": "冻结manifest目录格式/安全读写/Windows提交恢复",
+      "allowed_files": [
+        "packages/commands/src/project_store.rs",
+        "docs/04_开发与验收/P0-01_保存历史_窗口4.json"
+      ],
+      "status": "accepted_current_slice",
+      "coordinator_accepted": true,
+      "result_ref": "docs/04_开发与验收/P0-01_保存历史_窗口4.json"
+    },
+    {
+      "window_id": "W04",
+      "title": "实现窗口5",
+      "thread_id": "01a1396d-d905-75e2-a5c5-7db3cd9b36a2",
+      "task": "真实Host保存/异目录重开/历史/任务/授权独立测试",
+      "allowed_files": [
+        "packages/commands/tests/project_persistence_history.rs",
+        "docs/04_开发与验收/P0-01_保存历史_窗口5.json"
+      ],
+      "status": "accepted_current_slice",
+      "coordinator_accepted": true,
+      "result_ref": "docs/04_开发与验收/P0-01_保存历史_窗口5.json"
+    },
+    {
+      "window_id": "W05",
+      "title": "实现窗口6",
+      "thread_id": "01a1396d-f9d8-7ac0-ae86-b93a5d28b7ac",
+      "task": "先固定独立预期、实现就绪后只读复审",
+      "allowed_files": [
+        "docs/04_开发与验收/P0-01_保存历史_窗口6.json"
+      ],
+      "status": "accepted_current_slice",
+      "coordinator_accepted": true,
+      "result_ref": "docs/04_开发与验收/P0-01_保存历史_窗口6.json"
+    }
+  ],
+  "actual_result": {
+    "implemented_operations": [
+      "describe_capabilities",
+      "get_context",
+      "get_object",
+      "apply_commands",
+      "get_task",
+      "cancel_task",
+      "import_package",
+      "save_project"
+    ],
+    "business_operations_implemented": 8,
+    "operation_coverage": "八项操作仅在已声明Scope与最小对象/文件任务范围可执行，完整18项API仍未完成。",
+    "implemented_source_refs": [
+      "packages/commands/src/project_host.rs",
+      "packages/commands/src/project_store.rs",
+      "packages/commands/src/project_history.rs",
+      "apps/planner/src-tauri/src/project_api.rs",
+      "apps/planner/src-tauri/src/lib.rs"
+    ],
+    "tests_source_refs": [
+      "packages/commands/tests/project_persistence_history.rs",
+      "packages/commands/src/project_history.rs",
+      "packages/commands/src/project_store.rs",
+      "apps/planner/src-tauri/src/project_api.rs"
+    ],
+    "verification_commands": {
+      "workspace_tests": "npm run test:rust",
+      "generate_contracts": "npm run generate:contracts",
+      "typecheck": "npm run typecheck",
+      "schema_validation": "python -B -X utf8 tools/检查工程与Command边界.py",
+      "desktop_build": "cargo build -p sf-desktop-host --bin superfactory --locked",
+      "native_host_smoke": ".\\target\\debug\\superfactory.exe --p0-01-host-smoke",
+      "format": "cargo fmt -p sf-commands -p sf-desktop-host -- --check",
+      "all_checks": "./tools/p0-01-host/verify-persistence-history.ps1"
+    },
+    "command_runs": [
+      {
+        "key": "format",
+        "command": "cargo fmt -p sf-commands -p sf-desktop-host -- --check",
+        "started_at": "2026-10-15T23:28:21.1755188+08:00",
+        "finished_at": "2026-10-15T23:28:21.7056317+08:00",
+        "exit_code": 0,
+        "stdout_ref": ".work/p0-01-persistence-history/verification/format.stdout.txt",
+        "stderr_ref": ".work/p0-01-persistence-history/verification/format.stderr.txt"
+      },
+      {
+        "key": "workspace-tests",
+        "command": "npm.cmd run test:rust",
+        "started_at": "2026-10-15T23:28:21.7305122+08:00",
+        "finished_at": "2026-10-15T23:28:34.5595405+08:00",
+        "exit_code": 0,
+        "stdout_ref": ".work/p0-01-persistence-history/verification/workspace-tests.stdout.txt",
+        "stderr_ref": ".work/p0-01-persistence-history/verification/workspace-tests.stderr.txt",
+        "distinct_tests_executed": 79
+      },
+      {
+        "key": "generate-contracts",
+        "command": "npm.cmd run generate:contracts",
+        "started_at": "2026-10-15T23:28:34.5782347+08:00",
+        "finished_at": "2026-10-15T23:28:58.8973080+08:00",
+        "exit_code": 0,
+        "stdout_ref": ".work/p0-01-persistence-history/verification/generate-contracts.stdout.txt",
+        "stderr_ref": ".work/p0-01-persistence-history/verification/generate-contracts.stderr.txt"
+      },
+      {
+        "key": "typecheck",
+        "command": "npm.cmd run typecheck",
+        "started_at": "2026-10-15T23:28:58.8995881+08:00",
+        "finished_at": "2026-10-15T23:29:00.5262816+08:00",
+        "exit_code": 0,
+        "stdout_ref": ".work/p0-01-persistence-history/verification/typecheck.stdout.txt",
+        "stderr_ref": ".work/p0-01-persistence-history/verification/typecheck.stderr.txt"
+      },
+      {
+        "key": "schema-consumer",
+        "command": "C:/Users/fujunye/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe -B -X utf8 tools/检查工程与Command边界.py",
+        "started_at": "2026-10-15T23:29:00.5283082+08:00",
+        "finished_at": "2026-10-15T23:29:03.0062948+08:00",
+        "exit_code": 0,
+        "stdout_ref": ".work/p0-01-persistence-history/verification/schema-consumer.stdout.txt",
+        "stderr_ref": ".work/p0-01-persistence-history/verification/schema-consumer.stderr.txt"
+      },
+      {
+        "key": "desktop-build",
+        "command": "cargo build -p sf-desktop-host --bin superfactory --locked",
+        "started_at": "2026-10-15T23:29:03.0081607+08:00",
+        "finished_at": "2026-10-15T23:29:34.5706664+08:00",
+        "exit_code": 0,
+        "stdout_ref": ".work/p0-01-persistence-history/verification/desktop-build.stdout.txt",
+        "stderr_ref": ".work/p0-01-persistence-history/verification/desktop-build.stderr.txt"
+      },
+      {
+        "key": "desktop-host-smoke",
+        "command": ".\\target\\debug\\superfactory.exe --p0-01-host-smoke",
+        "started_at": "2026-10-15T23:29:34.5726964+08:00",
+        "finished_at": "2026-10-15T23:29:35.8721168+08:00",
+        "exit_code": 0,
+        "stdout_ref": ".work/p0-01-persistence-history/verification/desktop-host-smoke.stdout.txt",
+        "stderr_ref": ".work/p0-01-persistence-history/verification/desktop-host-smoke.stderr.txt"
+      }
+    ],
+    "verification_ref": ".work/p0-01-persistence-history/verification/result.json",
+    "schema_validation_ref": ".work/p0-01-persistence-history/schema-validation-result.json",
+    "tests": {
+      "distinct_tests": 79,
+      "failed": 0,
+      "retained_previous_tests": 49,
+      "history_tests": 6,
+      "store_tests": 13,
+      "Tauri_adapter_tests": 7,
+      "independent_persistence_history_tests": 8,
+      "schema_finite_cases": 48
+    },
+    "native_Host": {
+      "real_desktop_process": true,
+      "same_managed_ProjectHost": true,
+      "checks": 31,
+      "passed": true,
+      "business_frontend_executed": false,
+      "actual_picker_human_interaction": false,
+      "MCP_peer_authentication_executed": false
+    },
+    "completed_original_steps": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "full_P0_01_acceptance_met": false,
+    "unsupported": [
+      "DefinitionDraft",
+      "RunSnapshot",
+      "其余对象编辑/命令",
+      "IntoProject/IntoDefinitionDraft/本地库导入",
+      "Engine/库存/时钟",
+      "MCP外部进程认证",
+      "业务前端"
+    ],
+    "next_recommended_slice": "按实际共同类型/Host/目录产物评估P0-02原步骤1的后端引用输入切片；P0-01完整界面编辑与release验收仍须继续收口。"
+  },
+  "review": {
+    "review_kind": "independent_window_post_implementation_readonly_review",
+    "independent_reviewer": true,
+    "review_thread_id": "01a1396d-f9d8-7ac0-ae86-b93a5d28b7ac",
+    "result_ref": "docs/04_开发与验收/P0-01_保存历史_窗口6.json",
+    "status": "passed_independent_implementation_review_for_authorized_steps_3_4",
+    "confirmed_defects": [],
+    "closed_findings": [
+      {
+        "id": "W6-ST-F01",
+        "priority": "P2",
+        "status": "closed_after_UI_only_admission_projection_fix_and_real_Host_regression",
+        "title": "Workspace OpenProject导入未拒绝ExternalAgent且能力目录同时宣称可用",
+        "file": "packages/commands/src/project_host.rs",
+        "source_anchors": [
+          "ProjectHost::admit Workspace",
+          "ProjectHost::import",
+          "ProjectHost::capabilities"
+        ],
+        "observed_lines": [
+          466,
+          498,
+          665,
+          674,
+          827
+        ],
+        "observed_source_last_write": "2026-10-15T23:16:34+08:00",
+        "evidence": "Workspace admission只对ExternalAgent+ApplyCommands拒绝；import只验证Workspace/OpenProject与base_revision=null，不检查origin。可信select_directory可为已登记且allowed_operations含ImportPackage的E产生token，因此外部会话可实际排入仅UI允许的Workspace Open任务。能力目录也把ImportPackage无来源过滤地列为Workspace。",
+        "contract_ref": "docs/03_架构与契约/公开操作与宿主调用契约.json#/operations/import_package/allowed_scopes",
+        "frozen_scope": "workspace_UI_open_only",
+        "reproduce": [
+          "创建Host但不创建活动工程；可信登记ExternalAgent E，allowed_operations含ImportPackage/GetTask，granted_project=None。",
+          "可信select_directory(E, FilePurpose::ImportPackage, 有效工程目录D1)取得真实token；不伪造路径或caller。",
+          "E调用Workspace import_package，project_id=null，import_policy=OpenProject，base_revision=null并携该token。",
+          "现有控制流返回真实Queued TaskHandle，随后可run并stage完整工程；冻结Scope应在准入时PermissionDenied。",
+          "若E另获DescribeCapabilities，当前目录还会将仅UI支持的OpenProject导入列为该连接可用。"
+        ],
+        "expected": "保留ExternalAgent的其他正式授权边界，但本片Workspace OpenProject必须真实UI；目录和实际准入一致。UI同请求仍正常，不能通过删除ImportPackage能力或改正式Scope规避。",
+        "runtime_executed_by_window6": false,
+        "fix_owner": "W00",
+        "reviewer_changed_implementation": false,
+        "related_expectations": [
+          "W6-S05",
+          "W6-S12",
+          "W6-S13",
+          "W6-S22"
+        ],
+        "fix_recheck": {
+          "source_ref": "packages/commands/src/project_host.rs",
+          "source_anchors": [
+            "admit Workspace ExternalAgent ImportPackage denial",
+            "capabilities ImportPackage origin filter",
+            "context authorized_operations ImportPackage origin filter"
+          ],
+          "observed_lines": [
+            666,
+            676,
+            808,
+            811,
+            1084,
+            1087
+          ],
+          "regression": "selected_directories_cannot_be_forged_repurposed_or_used_by_another_session",
+          "actual_counterexample_executed": "E has allowed ImportPackage and a real Host-issued matching token; Workspace OpenProject returns PermissionDenied, no work is enqueued, current project unchanged; context excludes ImportPackage",
+          "actual_test_result": "test selected_directories_cannot_be_forged_repurposed_or_used_by_another_session ... ok",
+          "execution_ref": ".work/p0-01-persistence-history/verification/workspace-tests.stdout.txt",
+          "caps_code_rechecked": true,
+          "no_implementation_changes_by_window6": true
+        }
+      }
+    ],
+    "reviewed_at": "2026-10-15T23:33:58+08:00"
+  },
+  "whole_task_done": false,
+  "human_acceptance": null,
+  "actual_business_operations": 8,
+  "overall_sync_review": {
+    "status": "passed",
+    "mainline_ref": "docs/04_开发与验收/主线同步检查结果.json",
+    "matrix_passed": 12,
+    "checked_files": 10058,
+    "checked_local_refs": 5141,
+    "errors": [],
+    "runtime_available_operations": 8,
+    "P0_01_whole_status": "in_progress",
+    "other_selected_tasks_planned": 20,
+    "actual_conversations_in_round": 6
+  },
+  "next_preparation": {
+    "task_id": "P0-02",
+    "within_original_step": 1,
+    "status": "readonly_consumer_analysis_completed_not_product_dispatch",
+    "source_thread": "01a13589-e1b0-73d2-aaae-c69be89c5b0f",
+    "finding": "现有Product/Bom/Route/Scenario正式类型可复用；需纯输入精确版本/引用/单位检查，再接共同Host；Scenario独立文档编辑/保存/历史须同一事务，不能遗漏。",
+    "actual_implementation_started": false
+  },
+  "ordinary_Native_followup": {
+    "at": "2026-10-17T12:23:29.540817+08:00",
+    "status": "requested_ordinary_Native_chain_passed",
+    "report_ref": "docs/04_开发与验收/P0-01_普通Native保存历史与关闭验证.md",
+    "evidence_ref": ".work/single-window-20261017/p001-native/validation.json",
+    "candidate": "candidate07",
+    "original_backend_evidence_retained": true,
+    "whole_task_done": false,
+    "human_acceptance": null
+  }
+}

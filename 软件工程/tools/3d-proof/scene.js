@@ -8,6 +8,7 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { rigRobot, rigAssembly, rigConveyor, markSamples } from './equipment-motion.js';
 import { LineSimulation } from './line-simulation.mjs';
 import { LineView } from './line-view.js';
+import { recordLine } from './line-recording.js';
 
 const started = performance.now();
 const $ = id => document.getElementById(id);
@@ -435,7 +436,35 @@ const world = new THREE.Group(); scene.add(world);
 const ground = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), M.floor);
 ground.rotation.x = -Math.PI / 2; ground.position.y = 0; ground.receiveShadow = true; scene.add(ground);
 const grid = new THREE.GridHelper(100, 100, 0xaab4bf, 0xb8c2cd); grid.position.y = 0.001; grid.material.transparent = true; grid.material.opacity = 0.40; scene.add(grid);
-const state = { scene: 'device', kind: 'assembly', quality: 'high', shadow: true, phase: 0, view: 'iso', results: [], startup_ms: null };
+const lineConfig = await (await fetch('line-config.json')).json();
+let lineRun = new LineSimulation(lineConfig), lineView = null, simulationRunning = false;
+const defaultInstances = { assembly: 'ASM01', robot: 'R01', conveyor: 'CV01', inspection: 'V01', sealer: 'CASE01', pallet: 'PAL01' };
+const stateNames = { idle: '空闲', working: '工作', waiting_inputs: '缺料', waiting_resource: '等人员', waiting_output: '接收阻塞', waiting_quality: '待检验结果' };
+const state = { scene: 'line', kind: 'assembly', instanceId: 'ASM01', previewPose: false, quality: 'high', shadow: true, phase: 0, view: 'iso', results: [], startup_ms: null };
+for (const record of [...lineConfig.stations, { id: 'PAL01', title: '托盘资源', kind: 'pallet' }]) {
+  const button = document.createElement('button'); button.dataset.instanceId = record.id;
+  button.textContent = record.id + ' ' + record.title;
+  button.addEventListener('click', () => { state.kind = record.kind; state.instanceId = record.id; state.previewPose = false; state.scene = 'device'; buildScene(); updateBusinessUI(); });
+  $('line-instances').append(button);
+}
+function updateBusinessUI() {
+  const s = lineRun.snapshot();
+  $('line-clock').textContent = (s.now_ms / 1000).toFixed(1) + ' s' + (simulationRunning ? ' · 运行' : ' · 暂停');
+  $('line-count').textContent = `托盘接受 ${s.order.accepted} / ${s.order.quantity} · 未交 ${s.order.unmet} · 隔离 ${s.quarantined.length}`;
+  const resources = Object.entries(s.resources).map(([role, owner]) => role + '：' + (owner ?? '空闲')).join('\n');
+  const selected = s.devices[state.instanceId];
+  $('line-business').textContent = `订单 ${s.order.id}\n壳体 ${s.stock.shell} · PCB ${s.stock.pcb}\n螺钉 ${s.stock.fastener} · 纸箱 ${s.stock.carton}\n胶带 ${s.stock.tape_meter.toFixed(1)} m（预留 ${s.stock.tape_reserved_meter.toFixed(1)}）\n\n${resources}\n\n` +
+    (selected ? `${state.instanceId} ${stateNames[selected.state]}\n阶段 ${selected.phase_id ?? '—'} · 有效进度 ${Math.round(selected.effective_progress * 100)}%\n物品 ${selected.item_id ?? '—'}\n${selected.waiting_reason}` : 'PAL01：' + s.pallet.join('、'));
+  $('line-timeline').textContent = lineRun.events.slice(-9).map(e => `${(e.at_ms / 1000).toFixed(1)} s · ${e.device_id ?? '工程'}${e.item_id ? ' / ' + e.item_id : ''} · ${e.detail}`).join('\n');
+  $('line-timeline').scrollTop = $('line-timeline').scrollHeight;
+  for (const button of document.querySelectorAll('[data-instance-id]')) {
+    const id = button.dataset.instanceId, record = lineConfig.stations.find(d => d.id === id);
+    button.textContent = record ? `${id} ${record.title} · ${stateNames[s.devices[id].state]}` : `PAL01 托盘资源 · ${s.pallet.length}/12箱`;
+    button.setAttribute('aria-pressed', String(id === state.instanceId && state.scene === 'device' && !state.previewPose));
+  }
+  $('line-quality').disabled = s.devices.V01.state !== 'waiting_quality';
+  $('phase').disabled = simulationRunning || state.scene !== 'device';
+}
 let loadedGeometryBytes = 0, textureEstimate = 0, sceneMeshes = 0;
 function addDevice(kind, x, z, yaw = 0) {
   const object = optimized[kind][state.quality].clone(true); object.position.set(x, 0, z); object.rotation.y = yaw; world.add(object); return object;
@@ -487,8 +516,8 @@ function setView(view = 'iso') {
     controls.target.set(0, 1.15, -0.04); camera.position.set(1.3, 2.06, 1.75); camera.lookAt(controls.target); controls.update(); return;
   }
   if (view === 'work') view = 'iso';
-  const extent = state.scene === 'device' ? 0.66 : state.scene === 'line' ? 2.3 : 7.5;
-  const target = state.scene === 'device' ? new THREE.Vector3(0.05, 0.95, 0) : state.scene === 'line' ? new THREE.Vector3(5.7, 0.5, 0) : new THREE.Vector3(0, 0.7, 0);
+  const extent = state.scene === 'device' ? 0.66 : state.scene === 'line' ? 3.0 : 7.5;
+  const target = state.scene === 'device' ? new THREE.Vector3(0.05, 0.95, 0) : state.scene === 'line' ? new THREE.Vector3(7.1, 0.6, 0.5) : new THREE.Vector3(0, 0.7, 0);
   controls.target.copy(target);
   const vectors = { iso: [3.5, 2.7, 4.5], front: [0, 1.15, 5.7], back: [0, 1.15, -5.7], top: [0.02, 6.0, 0.01] };
   const vector = new THREE.Vector3(...vectors[view]).multiplyScalar(extent);
@@ -514,15 +543,20 @@ function applyPose() {
   if (state.scene !== 'device') return;
   world.traverse(o => {
     if (o.userData.motion === 'phase_z') o.position.y = -state.phase * o.userData.travel;
-    if (o.userData.motion === 'gripper') o.position.x = -o.userData.side * state.phase * 0.022;
+    if (o.userData.motion === 'gripper') {
+      if (!o.userData.rest_position) o.userData.rest_position = o.position.toArray();
+      o.position.fromArray(o.userData.rest_position); o.position.x -= o.userData.side * state.phase * 0.022;
+    }
   });
 }
 function buildScene() {
+  if (lineView) { lineView.dispose(); lineView = null; }
   world.children.slice().forEach(o => { world.remove(o); if (o.isInstancedMesh) o.dispose(); if (o.userData.temporaryGeometry) o.geometry.dispose(); });
-  if (state.scene === 'device') addDevice(state.kind, 0, 0);
-  else if (state.scene === 'line') {
-    addDevice('assembly', 0, 0); addDevice('robot', 1.8, -0.9); addDevice('conveyor', 3.1, 0);
-    addDevice('inspection', 5.4, 0); addDevice('conveyor', 7.7, 0); addDevice('sealer', 10, 0); addDevice('pallet', 12, 0); addDevice('assembly', 5.4, 2.2);
+  if (state.scene === 'device' && state.previewPose) addDevice(state.kind, 0, 0);
+  else if (state.scene === 'device' || state.scene === 'line') {
+    lineView = new LineView({ world, camera, container: $('canvas-wrap'), config: lineConfig, addDevice, makeProduct: product, materials: M,
+      selectedId: state.scene === 'device' ? state.instanceId : null });
+    lineView.update(lineRun.snapshot());
   } else {
     const placements = [];
     const kinds = ['assembly', 'robot', 'conveyor', 'inspection', 'sealer'];
@@ -534,7 +568,7 @@ function buildScene() {
     for (let i = 0; i < 3000; i++) { const column = i % 100, row = Math.floor(i / 100); transform.makeTranslation((column - 49.5) * 0.23, 0.09, (row - 14.5) * 0.28); goods.setMatrixAt(i, transform); }
     goods.computeBoundingSphere(); world.add(goods);
   }
-  applyPose();
+  if (state.previewPose) applyPose();
   const bound = state.scene === 'device' ? 3 : state.scene === 'line' ? 16 : 32;
   Object.assign(sun.shadow.camera, { left: -bound, right: bound, top: bound, bottom: -bound, near: 0.1, far: 100 }); sun.shadow.camera.updateProjectionMatrix();
   sun.position.set(state.scene === 'line' ? 13 : 8, state.scene === 'load' ? 30 : 16, 7);
@@ -544,11 +578,11 @@ function buildScene() {
   sceneMeshes = 0; world.traverse(o => { if (o.isMesh) sceneMeshes++; });
   $('geometry-memory').textContent = (loadedGeometryBytes / 1048576).toFixed(2) + ' MiB（当前模型）';
   $('texture-memory').textContent = (textureEstimate / 1048576).toFixed(2) + ' MiB（材质贴图）';
-  $('scene-name').textContent = state.scene === 'device' ? names[state.kind] : state.scene === 'line' ? 'L03 总装检查与包装线 · 8设备实例' : '3厂房 / 60设备 / 3000物品表现';
+  $('scene-name').textContent = state.scene === 'device' ? (state.previewPose ? names[state.kind] + ' · 隔离姿态' : state.instanceId + ' · ' + names[state.kind]) : state.scene === 'line' ? 'L03 总装检查与包装线 · 8设备实例' : '3厂房 / 60设备 / 3000物品表现';
   $('object-name').textContent = state.scene === 'device' ? names[state.kind] : '共同表现负载';
   document.querySelectorAll('[data-scene]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.scene === state.scene)));
   document.querySelectorAll('[data-device]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.device === state.kind && state.scene === 'device')));
-  $('status').textContent = '就绪 · 鼠标可自由旋转完整模型';
+  $('status').textContent = '就绪 · L03业务状态驱动设备与物品；鼠标可自由旋转'; updateBusinessUI();
 }
 const gl = renderer.getContext();
 const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
@@ -560,7 +594,7 @@ let recordingVideo = false;
 let measurement = null, lastFrame = performance.now(), lastUpdate = 0, rollingFrames = [], latestCalls = 0, latestTriangles = 0;
 const percentile = (samples, p) => { if (!samples.length) return null; const sorted = samples.slice().sort((a, b) => a - b); return sorted[Math.min(sorted.length - 1, Math.floor(p * sorted.length))]; };
 function metrics() {
-  return { scope: '3D_render_proof_no_production_engine', date: new Date().toISOString(), three_revision: THREE.REVISION, render_buffer: [1920, 1080], dpr: 1, renderer: gpuName, gpu_timer_available: !!timerExt, material_profile: state.quality === 'high' ? 'shared_2048_basecolor_roughness_normal' : 'simplified_untextured', startup_ms: state.startup_ms, scene: state.scene, quality: state.quality, shadow: state.shadow, camera: { position: camera.position.toArray(), target: controls.target.toArray(), view: state.view }, model_geometry_bytes: loadedGeometryBytes, model_texture_estimate_bytes: textureEstimate, render_target_minimum_bytes: 1920 * 1080 * 8 + 2048 * 2048 * 4, environment_texture_excluded_from_model_bytes: true, scene_mesh_batches: sceneMeshes, latest_frame_calls_including_shadows: latestCalls, latest_frame_triangles_including_shadows: latestTriangles, assets: assetStats, runs: state.results };
+  return { scope: 'L03_local_business_and_3D_proof_not_full_product', business: lineRun.snapshot(), date: new Date().toISOString(), three_revision: THREE.REVISION, render_buffer: [1920, 1080], dpr: 1, renderer: gpuName, gpu_timer_available: !!timerExt, material_profile: state.quality === 'high' ? 'shared_2048_basecolor_roughness_normal' : 'simplified_untextured', startup_ms: state.startup_ms, scene: state.scene, quality: state.quality, shadow: state.shadow, camera: { position: camera.position.toArray(), target: controls.target.toArray(), view: state.view }, model_geometry_bytes: loadedGeometryBytes, model_texture_estimate_bytes: textureEstimate, render_target_minimum_bytes: 1920 * 1080 * 8 + 2048 * 2048 * 4, environment_texture_excluded_from_model_bytes: true, scene_mesh_batches: sceneMeshes, latest_frame_calls_including_shadows: latestCalls, latest_frame_triangles_including_shadows: latestTriangles, assets: assetStats, runs: state.results };
 }
 function writeMetrics() { $('metrics-json').value = JSON.stringify(metrics(), null, 2); }
 function finishMeasurement() {
@@ -577,8 +611,15 @@ function finishMeasurement() {
 function animate(now) {
   requestAnimationFrame(animate);
   if (recordingVideo) return;
-  const interval = now - lastFrame; lastFrame = now; rollingFrames.push(interval); if (rollingFrames.length > 90) rollingFrames.shift();
+  const interval = now - lastFrame; lastFrame = now; if (interval > 0) rollingFrames.push(interval); if (rollingFrames.length > 90) rollingFrames.shift();
+  if (simulationRunning && !measurement) {
+    lineRun.advanceTo(lineRun.now + Math.max(0, interval) * Number($('line-speed').value), true);
+    if (lineRun.order.accepted === lineRun.order.quantity) {
+      simulationRunning = false; $('status').textContent = `L03交付完成：${lineRun.order.accepted}套，最后接受${(lineRun.result().last_acceptance_ms / 1000).toFixed(1)}秒`;
+    }
+  }
   controls.update();
+  if (lineView) lineView.update(lineRun.snapshot());
   while (gpuQueries.length && gl.getQueryParameter(gpuQueries[0].query, gl.QUERY_RESULT_AVAILABLE)) {
     const pending = gpuQueries.shift();
     if (!gl.getParameter(timerExt.GPU_DISJOINT_EXT)) pending.test.gpu.push(gl.getQueryParameter(pending.query, gl.QUERY_RESULT) / 1e6);
@@ -597,15 +638,27 @@ function animate(now) {
     const median = percentile(rollingFrames, 0.5); $('fps').textContent = median ? (1000 / median).toFixed(1) + ' FPS（帧间隔）' : '—';
     $('triangles').textContent = latestTriangles.toLocaleString(); $('calls').textContent = latestCalls.toLocaleString();
     $('pose').textContent = `方位 ${(controls.getAzimuthalAngle() * 180 / Math.PI).toFixed(1)}° / 极角 ${(controls.getPolarAngle() * 180 / Math.PI).toFixed(1)}°`;
-    lastUpdate = now;
+    updateBusinessUI(); lastUpdate = now;
   }
 }
-document.querySelectorAll('[data-scene]').forEach(b => b.addEventListener('click', () => { state.scene = b.dataset.scene; buildScene(); writeMetrics(); }));
-document.querySelectorAll('[data-device]').forEach(b => b.addEventListener('click', () => { state.kind = b.dataset.device; state.scene = 'device'; buildScene(); writeMetrics(); }));
+document.querySelectorAll('[data-scene]').forEach(b => b.addEventListener('click', () => { state.scene = b.dataset.scene; state.previewPose = false; buildScene(); writeMetrics(); }));
+document.querySelectorAll('[data-device]').forEach(b => b.addEventListener('click', () => { state.kind = b.dataset.device; state.instanceId = defaultInstances[state.kind]; state.previewPose = true; state.scene = 'device'; buildScene(); writeMetrics(); }));
 document.querySelectorAll('[data-view]').forEach(b => b.addEventListener('click', () => setView(b.dataset.view)));
 $('quality').addEventListener('change', e => { state.quality = e.target.value; buildScene(); writeMetrics(); });
 $('shadow').addEventListener('change', e => { state.shadow = e.target.checked; renderer.shadowMap.enabled = state.shadow; writeMetrics(); });
-$('phase').addEventListener('input', e => { state.phase = Number(e.target.value); applyPose(); $('phase-value').textContent = Math.round(state.phase * 100) + '%'; });
+$('phase').addEventListener('input', e => { state.phase = Number(e.target.value); if (!state.previewPose) { state.previewPose = true; buildScene(); } applyPose(); $('phase-value').textContent = Math.round(state.phase * 100) + '%'; });
+$('line-run').addEventListener('click', () => { state.previewPose = false; if (state.scene === 'device') buildScene(); simulationRunning = true; lastFrame = performance.now(); updateBusinessUI(); });
+$('line-pause').addEventListener('click', () => { simulationRunning = false; updateBusinessUI(); });
+$('line-step').addEventListener('click', () => { simulationRunning = false; state.previewPose = false; lineRun.advanceTo(lineRun.now + 1000); if (lineView) lineView.update(lineRun.snapshot()); updateBusinessUI(); writeMetrics(); });
+function resetLine() { simulationRunning = false; lineRun = new LineSimulation(lineConfig, $('line-scenario').value); state.previewPose = false; buildScene(); writeMetrics(); }
+$('line-reset').addEventListener('click', resetLine); $('line-scenario').addEventListener('change', resetLine);
+$('line-supply').addEventListener('click', () => { lineRun.supply('pcb', 4); updateBusinessUI(); });
+$('line-quality').addEventListener('click', () => { lineRun.setQuality(lineRun.devices.V01.job.itemId, 'pass'); updateBusinessUI(); });
+$('line-open').addEventListener('click', () => { lineRun.openReceiver(); updateBusinessUI(); });
+$('line-export').addEventListener('click', () => {
+  const url = URL.createObjectURL(new Blob([JSON.stringify(lineRun.result(), null, 2)], { type: 'application/json' }));
+  const link = document.createElement('a'); link.href = url; link.download = 'L03-business-result.json'; link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+});
 $('benchmark').addEventListener('click', () => {
   measurement = { start: performance.now(), scene: state.scene, kind: state.kind, quality: state.quality, shadow: state.shadow, camera: { position: camera.position.toArray(), target: controls.target.toArray() }, frame: [], cpu: [], gpu: [] };
   $('benchmark').disabled = true;
@@ -642,7 +695,7 @@ $('reopen').addEventListener('click', async () => {
     const loaded = await new GLTFLoader().loadAsync('output/' + kind + '.glb');
     const imported = loaded.scene.children[0];
     optimized[kind].high = optimize(imported, true);
-    state.kind = kind; state.scene = 'device'; state.quality = 'high'; $('quality').value = 'high';
+    state.kind = kind; state.instanceId = defaultInstances[kind]; state.previewPose = false; state.scene = 'device'; state.quality = 'high'; $('quality').value = 'high';
     buildScene(); writeMetrics(); $('status').textContent = '已从磁盘重开：output/' + kind + '.glb · ' + names[kind];
   } catch (error) { $('status').textContent = 'GLB重开失败：' + error.message; console.error(error); }
   finally { $('reopen').disabled = false; }
@@ -657,7 +710,8 @@ function previewMotion(time, isAssembly) {
 }
 $('record').addEventListener('click', async () => {
   const previous = { ...state }, previousPosition = camera.position.clone(), previousTarget = controls.target.clone();
-  const inputs = document.querySelectorAll('[data-scene],[data-device],[data-view],#quality,#shadow,#phase,#reopen,#save,#benchmark,#record');
+  const wasRunning = simulationRunning; simulationRunning = false;
+  const inputs = document.querySelectorAll('[data-scene],[data-device],[data-view],[data-instance-id],.simulation-bar button,.simulation-bar select,#quality,#shadow,#phase,#reopen,#save,#benchmark,#record,#line-record');
   inputs.forEach(b => b.disabled = true); controls.enabled = false; recordingVideo = true;
   $('record-result').hidden = true;
   const capture = document.createElement('canvas'); capture.width = 1920; capture.height = 1080;
@@ -675,7 +729,7 @@ $('record').addEventListener('click', async () => {
       optimized[kind].high = optimize(loaded.scene.children[0], true);
     }
     await post('/record-start'); encoderStarted = true;
-    state.scene = 'device'; state.quality = 'high'; state.shadow = true; renderer.shadowMap.enabled = true;
+    state.scene = 'device'; state.previewPose = true; state.quality = 'high'; state.shadow = true; renderer.shadowMap.enabled = true;
     let previousShot = -1, basePosition, baseTarget;
     for (let frame = 0; frame < 720; frame++) {
       const time = frame / 30, shot = Math.floor(time / 6), localTime = time % 6;
@@ -715,8 +769,48 @@ $('record').addEventListener('click', async () => {
     Object.assign(state, previous); $('quality').value = state.quality; $('shadow').checked = state.shadow;
     $('phase').value = String(state.phase); $('phase-value').textContent = Math.round(state.phase * 100) + '%';
     renderer.shadowMap.enabled = state.shadow; buildScene(); camera.position.copy(previousPosition); controls.target.copy(previousTarget); camera.lookAt(controls.target);
-    controls.enabled = true; recordingVideo = false; inputs.forEach(b => b.disabled = false); writeMetrics();
+    controls.enabled = true; recordingVideo = false; simulationRunning = wasRunning; lastFrame = performance.now(); inputs.forEach(b => b.disabled = false); updateBusinessUI(); writeMetrics();
     $('status').textContent = completion?.error ? '录制失败：' + completion.error : '视频已保存：output/device-motion.mp4 · 24秒 / 1080p / 30fps';
+  }
+});
+let cancelLineRecording = false;
+$('line-record-cancel').addEventListener('click', () => { cancelLineRecording = true; $('line-record-cancel').disabled = true; });
+$('line-record').addEventListener('click', async () => {
+  const previous = { ...state }, previousRun = lineRun, wasRunning = simulationRunning;
+  const inputs = document.querySelectorAll('[data-scene],[data-device],[data-view],[data-instance-id],.simulation-bar button,.simulation-bar select,#quality,#shadow,#phase,#reopen,#save,#benchmark,#record,#line-record');
+  const post = async (path, options = {}) => {
+    const response = await fetch(path, { method: 'POST', ...options });
+    if (!response.ok) throw new Error(path + ' HTTP ' + response.status);
+    return response.json();
+  };
+  simulationRunning = false; recordingVideo = true; controls.enabled = false; cancelLineRecording = false;
+  inputs.forEach(b => b.disabled = true); $('line-record-cancel').disabled = false; $('line-record-result').hidden = true;
+  let completion;
+  try {
+    $('status').textContent = '正在从磁盘载入六类GLB，准备L03完整业务录制…';
+    for (const kind of Object.keys(builders)) {
+      const loaded = await new GLTFLoader().loadAsync('output/' + kind + '.glb');
+      optimized[kind].high = optimize(loaded.scene.children[0], true);
+    }
+    lineRun = new LineSimulation(lineConfig, 'output_blocked');
+    Object.assign(state, { scene: 'line', previewPose: false, quality: 'high', shadow: true }); renderer.shadowMap.enabled = true;
+    $('line-scenario').value = 'output_blocked'; buildScene();
+    completion = await recordLine({ config: lineConfig, run: lineRun, view: lineView, camera, renderer, scene, post,
+      isCancelled: () => cancelLineRecording,
+      onProgress: (frame, total, snapshot, title) => {
+        updateBusinessUI();
+        $('status').textContent = `录制L03：${frame}/${total}帧 · ${Math.round(frame / total * 100)}% · 业务${(snapshot.now_ms / 1000).toFixed(1)}s · ${title}`;
+      },
+    });
+    $('line-record-video').src = 'output/' + completion.file + '?v=' + Date.now(); $('line-record-result').hidden = false;
+  } catch (error) {
+    completion = { error: error.message }; console.error(error);
+    lineRun = previousRun; Object.assign(state, previous); simulationRunning = wasRunning;
+  } finally {
+    recordingVideo = false; controls.enabled = true; $('line-record-cancel').disabled = true;
+    $('quality').value = state.quality; $('shadow').checked = state.shadow;
+    buildScene(); inputs.forEach(b => b.disabled = false); updateBusinessUI(); writeMetrics(); lastFrame = performance.now();
+    $('status').textContent = completion?.error ? 'L03录制失败：' + completion.error : 'L03完整运行视频已保存：output/L03-full-run.mp4 · 143秒 / 1080p / 30fps · 330秒六套进入托盘';
   }
 });
 buildScene();

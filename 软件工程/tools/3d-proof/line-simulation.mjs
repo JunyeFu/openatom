@@ -13,7 +13,7 @@ export class LineSimulation {
     this.quality = structuredClone(config.quality_inputs);
     this.events = [];
     this.items = {};
-    this.resources = Object.fromEntries(['assembler', 'inspector', 'repairer', 'packer'].map(role => [role, null]));
+    this.resources = Object.fromEntries(config.resource_instances.map(instance => [instance.role, null]));
     this.queues = Object.fromEntries(['asm', 'robot', 'inspect', 'passed', 'rework', 'reinspect', 'pack', 'seal', 'quarantine'].map(id => [id, []]));
     this.reservations = {};
     this.pallet = [];
@@ -104,7 +104,7 @@ export class LineSimulation {
       case 'assemble': {
         if (!job.resultCreated) {
           const id = `A-${String(job.sequence).padStart(3, '0')}`;
-          this.items[id] = { id, type: 'assembly', holder: device.id, completed_reworks: 0, quality: 'unchecked',
+          this.items[id] = { id, type: 'assembly', definition_ref: this.config.item_bindings.assembly, unit: 'piece', holder: device.id, completed_reworks: 0, quality: 'unchecked',
             components: job.components, order_id: this.order.id };
           job.itemId = id; job.resultCreated = true;
           this.log('assembly_created', device.id, id, '壳体1＋PCB1＋螺钉4；原料仅领用一次');
@@ -155,7 +155,7 @@ export class LineSimulation {
         if (!this.hasSpace('seal')) { this.wait(device, '装箱完成待接收，保留包装人员和原物品'); return false; }
         const content = this.items[job.itemId];
         const id = 'PK-' + content.id.slice(2);
-        this.items[id] = { id, type: 'package', holder: device.id, closure: 'open', contents: [content.id],
+        this.items[id] = { id, type: 'package', definition_ref: this.config.item_bindings.package, unit: 'piece', holder: device.id, closure: 'open', contents: [content.id],
           carton_id: job.cartonId, order_id: this.order.id };
         content.holder = id;
         this.log('package_created', device.id, id, '新包件包含原物品' + content.id);
@@ -232,13 +232,15 @@ export class LineSimulation {
     } while (changed);
   }
 
-  advanceTo(targetMs) {
+  advanceTo(targetMs, stopAtOrderAcceptance = false) {
     if (targetMs < this.now) throw new Error('Cannot rewind live production state; reset a new run.');
+    if (stopAtOrderAcceptance && this.order.accepted === this.order.quantity) return this.snapshot();
     while (this.now < targetMs) {
       let next = targetMs;
       if (this.externalEvents.length) next = Math.min(next, this.externalEvents[0].at_ms);
       for (const device of Object.values(this.devices)) if (device.job?.nextAt != null) next = Math.min(next, device.job.nextAt);
       this.now = next; this.settle();
+      if (stopAtOrderAcceptance && this.order.accepted === this.order.quantity) break;
     }
     return this.snapshot();
   }
@@ -281,7 +283,7 @@ export class LineSimulation {
   }
 
   result() {
-    return { scope: 'L03_executed_local_business_simulation_not_Rust_product_acceptance', input_variant: this.variant,
+    return { scope: 'L03_executed_local_business_simulation_not_Rust_product_acceptance', input: structuredClone(this.config), input_variant: this.variant,
       snapshot: this.snapshot(), events: structuredClone(this.events), last_acceptance_ms: this.events.filter(e => e.type === 'order_accepted').at(-1)?.at_ms ?? null };
   }
 }

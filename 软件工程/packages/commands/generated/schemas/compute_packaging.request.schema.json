@@ -1,0 +1,1224 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Request",
+  "type": "object",
+  "properties": {
+    "api_version": {
+      "$ref": "#/$defs/ApiVersion"
+    },
+    "operation": {
+      "$ref": "#/$defs/ComputePackagingTag"
+    },
+    "params": {
+      "$ref": "#/$defs/ComputePackagingParams"
+    },
+    "project_id": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ProjectId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "request_id": {
+      "$ref": "#/$defs/ObjectId"
+    },
+    "scope": {
+      "$ref": "#/$defs/ApiScope"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "api_version",
+    "request_id",
+    "project_id",
+    "scope",
+    "operation",
+    "params"
+  ],
+  "$defs": {
+    "ApiScope": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "workspace"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "project"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "data": {
+              "$ref": "#/$defs/ModuleId"
+            },
+            "kind": {
+              "type": "string",
+              "const": "definition_draft"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "data"
+          ]
+        }
+      ]
+    },
+    "ApiVersion": {
+      "type": "string",
+      "enum": [
+        "0.1"
+      ]
+    },
+    "CalculationBudget": {
+      "type": "object",
+      "properties": {
+        "basis": {
+          "type": "string"
+        },
+        "candidate_limit": {
+          "$ref": "#/$defs/SafeUint"
+        },
+        "interval_query_limit": {
+          "$ref": "#/$defs/SafeUint"
+        },
+        "subdivision_limit": {
+          "$ref": "#/$defs/SafeUint"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "candidate_limit",
+        "interval_query_limit",
+        "subdivision_limit",
+        "basis"
+      ]
+    },
+    "CapabilityPurpose": {
+      "type": "string",
+      "enum": [
+        "execution",
+        "preview",
+        "adoption",
+        "redistribution",
+        "complete_conclusion"
+      ]
+    },
+    "ComparisonOperator": {
+      "type": "string",
+      "enum": [
+        "equal",
+        "less_or_equal",
+        "greater_or_equal"
+      ]
+    },
+    "ComputePackagingParams": {
+      "type": "object",
+      "properties": {
+        "computation_budget": {
+          "$ref": "#/$defs/CalculationBudget"
+        },
+        "input_revision": {
+          "$ref": "#/$defs/SafeUint"
+        },
+        "packaging_job": {
+          "$ref": "#/$defs/PackageStructureJob"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "packaging_job",
+        "input_revision",
+        "computation_budget"
+      ]
+    },
+    "ComputePackagingTag": {
+      "type": "string",
+      "enum": [
+        "compute_packaging"
+      ]
+    },
+    "ConnectionMaterialKind": {
+      "type": "string",
+      "enum": [
+        "glue",
+        "mechanical_tab",
+        "fixed_seam"
+      ]
+    },
+    "CoordinateFrame": {
+      "type": "string",
+      "enum": [
+        "right_handed_z_up",
+        "right_handed_y_up"
+      ]
+    },
+    "DimensionConstraint": {
+      "type": "object",
+      "properties": {
+        "basis": {
+          "type": "string"
+        },
+        "id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "relation": {
+          "$ref": "#/$defs/ComparisonOperator"
+        },
+        "target": {
+          "$ref": "#/$defs/FiniteNumber"
+        },
+        "variable_id": {
+          "$ref": "#/$defs/ObjectId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "variable_id",
+        "relation",
+        "target",
+        "basis"
+      ]
+    },
+    "ExtractionPlan": {
+      "type": "object",
+      "properties": {
+        "direction": {
+          "$ref": "#/$defs/Vec3"
+        },
+        "distance_mm": {
+          "$ref": "#/$defs/FiniteNumber"
+        },
+        "part_ref": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "product_pose": {
+          "$ref": "#/$defs/Pose"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "part_ref",
+        "product_pose",
+        "direction",
+        "distance_mm"
+      ]
+    },
+    "FiniteNumber": {
+      "type": "number",
+      "format": "double"
+    },
+    "FixedConnection": {
+      "type": "object",
+      "properties": {
+        "allow_contact": {
+          "type": "boolean"
+        },
+        "contact_allowance_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ObjectId"
+          }
+        },
+        "engage_after_step_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ObjectId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "frame_a": {
+          "$ref": "#/$defs/Pose"
+        },
+        "frame_b": {
+          "$ref": "#/$defs/Pose"
+        },
+        "id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "kind": {
+          "$ref": "#/$defs/ConnectionMaterialKind"
+        },
+        "panel_a": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "panel_b": {
+          "$ref": "#/$defs/ObjectId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "panel_a",
+        "panel_b",
+        "frame_a",
+        "frame_b",
+        "kind",
+        "allow_contact",
+        "contact_allowance_refs"
+      ]
+    },
+    "FixedPoseMotion": {
+      "description": "Hold the named part at its matching current root pose; never teleport it.",
+      "type": "object",
+      "properties": {
+        "part_id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "pose": {
+          "$ref": "#/$defs/Pose"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "part_id",
+        "pose"
+      ]
+    },
+    "FoldBand": {
+      "type": "object",
+      "properties": {
+        "allowed_range_rad": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FiniteNumber"
+          },
+          "maxItems": 2,
+          "minItems": 2
+        },
+        "axis_end_mm": {
+          "$ref": "#/$defs/Vec3"
+        },
+        "axis_start_mm": {
+          "$ref": "#/$defs/Vec3"
+        },
+        "id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "panel_a": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "panel_b": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "target_angle_rad": {
+          "$ref": "#/$defs/FiniteNumber"
+        },
+        "width_mm": {
+          "$ref": "#/$defs/FiniteNumber"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "panel_a",
+        "panel_b",
+        "axis_start_mm",
+        "axis_end_mm",
+        "width_mm",
+        "target_angle_rad",
+        "allowed_range_rad"
+      ]
+    },
+    "FoldMotion": {
+      "type": "object",
+      "properties": {
+        "fold_band": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "from_angle_rad": {
+          "$ref": "#/$defs/FiniteNumber"
+        },
+        "to_angle_rad": {
+          "$ref": "#/$defs/FiniteNumber"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "fold_band",
+        "from_angle_rad",
+        "to_angle_rad"
+      ]
+    },
+    "Issue": {
+      "type": "object",
+      "properties": {
+        "blocks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CapabilityPurpose"
+          }
+        },
+        "code": {
+          "type": "string"
+        },
+        "field_path": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "message": {
+          "type": "string"
+        },
+        "object_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ObjectRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "message",
+        "blocks"
+      ]
+    },
+    "LengthUnit": {
+      "type": "string",
+      "enum": [
+        "meter",
+        "millimeter"
+      ]
+    },
+    "LocalContactAllowance": {
+      "description": "Local panel-face patches, never an exemption for an entire object pair.",
+      "type": "object",
+      "properties": {
+        "active_step_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ObjectId"
+          }
+        },
+        "basis": {
+          "type": "string"
+        },
+        "face_a": {
+          "$ref": "#/$defs/PanelFaceSide"
+        },
+        "face_b": {
+          "$ref": "#/$defs/PanelFaceSide"
+        },
+        "id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "normal_overlap_limit_mm": {
+          "$ref": "#/$defs/FiniteNumber"
+        },
+        "panel_a": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "panel_b": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "polygon_a_mm": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Vec2"
+          }
+        },
+        "polygon_b_mm": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Vec2"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "panel_a",
+        "panel_b",
+        "face_a",
+        "face_b",
+        "polygon_a_mm",
+        "polygon_b_mm",
+        "normal_overlap_limit_mm",
+        "active_step_ids",
+        "basis"
+      ]
+    },
+    "MaterialDeclaration": {
+      "type": "object",
+      "properties": {
+        "basis": {
+          "$ref": "#/$defs/SourceBasis"
+        },
+        "id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "source_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ObjectId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "thickness_mm": {
+          "$ref": "#/$defs/FiniteNumber"
+        },
+        "title": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "title",
+        "thickness_mm",
+        "basis"
+      ]
+    },
+    "ModuleId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "NumericTolerance": {
+      "type": "object",
+      "properties": {
+        "angle_rad": {
+          "$ref": "#/$defs/FiniteNumber"
+        },
+        "basis": {
+          "type": "string"
+        },
+        "constraint_mm": {
+          "$ref": "#/$defs/FiniteNumber"
+        },
+        "distance_mm": {
+          "$ref": "#/$defs/FiniteNumber"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "distance_mm",
+        "angle_rad",
+        "constraint_mm",
+        "basis"
+      ]
+    },
+    "ObjectId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "ObjectKind": {
+      "type": "string",
+      "enum": [
+        "project",
+        "scenario",
+        "run",
+        "definition_draft",
+        "packaging_job",
+        "asset",
+        "native_scene",
+        "item_type",
+        "item",
+        "location",
+        "hall",
+        "line",
+        "device",
+        "resource",
+        "calendar",
+        "product",
+        "bom",
+        "route",
+        "connection",
+        "order",
+        "task",
+        "job",
+        "supply",
+        "transport",
+        "artifact",
+        "module",
+        "report"
+      ]
+    },
+    "ObjectRef": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "kind": {
+          "$ref": "#/$defs/ObjectKind"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "id"
+      ]
+    },
+    "PackagePart": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "panel_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ObjectId"
+          }
+        },
+        "placement": {
+          "$ref": "#/$defs/Pose"
+        },
+        "root_panel": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "title": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "title",
+        "panel_ids",
+        "root_panel",
+        "placement"
+      ]
+    },
+    "PackageStructureJob": {
+      "type": "object",
+      "properties": {
+        "budget": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CalculationBudget"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "changes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PackagingChangeKind"
+          }
+        },
+        "conditions": {
+          "$ref": "#/$defs/PackagingConditions"
+        },
+        "connections": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FixedConnection"
+          }
+        },
+        "coordinate_frame": {
+          "$ref": "#/$defs/CoordinateFrame"
+        },
+        "dimension_constraints": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/DimensionConstraint"
+          }
+        },
+        "fold_bands": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FoldBand"
+          }
+        },
+        "id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "issues": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Issue"
+          }
+        },
+        "materials": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/MaterialDeclaration"
+          }
+        },
+        "mechanism": {
+          "$ref": "#/$defs/PackagingMechanism"
+        },
+        "panels": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PanelDefinition"
+          }
+        },
+        "parts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PackagePart"
+          }
+        },
+        "revision": {
+          "$ref": "#/$defs/SafeUint"
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PackagingStep"
+          }
+        },
+        "subject_ref": {
+          "$ref": "#/$defs/SubjectRevisionRef"
+        },
+        "tolerance": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NumericTolerance"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "unit": {
+          "$ref": "#/$defs/LengthUnit"
+        },
+        "variables": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/StructuralVariable"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "variables",
+        "dimension_constraints",
+        "id",
+        "revision",
+        "mechanism",
+        "changes",
+        "subject_ref",
+        "panels",
+        "fold_bands",
+        "connections",
+        "parts",
+        "materials",
+        "conditions",
+        "steps",
+        "unit",
+        "coordinate_frame",
+        "issues"
+      ]
+    },
+    "PackagingChangeKind": {
+      "type": "string",
+      "enum": [
+        "product_function",
+        "material_approved",
+        "part_relations_or_repeat_order"
+      ]
+    },
+    "PackagingConditions": {
+      "type": "object",
+      "properties": {
+        "allowed_contacts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/LocalContactAllowance"
+          }
+        },
+        "extraction": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ExtractionPlan"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "extraction_required": {
+          "type": "boolean"
+        },
+        "forming_required": {
+          "type": "boolean"
+        },
+        "net_space_required": {
+          "type": "boolean"
+        },
+        "opening_required": {
+          "type": "boolean"
+        },
+        "product_envelope": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ProductEnvelope"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "net_space_required",
+        "forming_required",
+        "opening_required",
+        "extraction_required",
+        "allowed_contacts"
+      ]
+    },
+    "PackagingMechanism": {
+      "type": "string",
+      "enum": [
+        "restricted_folded_container",
+        "outer_box_and_inner_liner",
+        "cover_or_sliding_sleeve",
+        "blank_restricted_structure"
+      ]
+    },
+    "PackagingMotion": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "data": {
+              "$ref": "#/$defs/FoldMotion"
+            },
+            "kind": {
+              "type": "string",
+              "const": "fold"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "data"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "data": {
+              "$ref": "#/$defs/TranslationMotion"
+            },
+            "kind": {
+              "type": "string",
+              "const": "rigid_translation"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "data"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "data": {
+              "$ref": "#/$defs/RotationMotion"
+            },
+            "kind": {
+              "type": "string",
+              "const": "rigid_rotation"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "data"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "data": {
+              "$ref": "#/$defs/FixedPoseMotion"
+            },
+            "kind": {
+              "type": "string",
+              "const": "fixed_pose"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "data"
+          ]
+        }
+      ]
+    },
+    "PackagingStep": {
+      "type": "object",
+      "properties": {
+        "duration_hint_ms": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SafeUint"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "motion": {
+          "$ref": "#/$defs/PackagingMotion"
+        },
+        "prerequisites": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ObjectId"
+          }
+        },
+        "purpose": {
+          "$ref": "#/$defs/PackagingStepPurpose"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "purpose",
+        "motion",
+        "prerequisites"
+      ]
+    },
+    "PackagingStepPurpose": {
+      "type": "string",
+      "enum": [
+        "forming",
+        "opening",
+        "linear_extraction",
+        "net_space",
+        "manufacturing"
+      ]
+    },
+    "PanelDefinition": {
+      "type": "object",
+      "properties": {
+        "flat_pose": {
+          "$ref": "#/$defs/Pose"
+        },
+        "id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "material_ref": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "part_id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "polygon_mm": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Vec2"
+          }
+        },
+        "thickness_mm": {
+          "$ref": "#/$defs/FiniteNumber"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "part_id",
+        "polygon_mm",
+        "thickness_mm",
+        "material_ref",
+        "flat_pose"
+      ]
+    },
+    "PanelFaceSide": {
+      "type": "string",
+      "enum": [
+        "front",
+        "back"
+      ]
+    },
+    "Pose": {
+      "type": "object",
+      "properties": {
+        "coordinate_frame": {
+          "$ref": "#/$defs/CoordinateFrame"
+        },
+        "rotation": {
+          "$ref": "#/$defs/Quaternion"
+        },
+        "scale": {
+          "$ref": "#/$defs/Vec3"
+        },
+        "translation": {
+          "$ref": "#/$defs/Vec3"
+        },
+        "unit": {
+          "$ref": "#/$defs/LengthUnit"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "translation",
+        "rotation",
+        "scale",
+        "unit",
+        "coordinate_frame"
+      ]
+    },
+    "ProductEnvelope": {
+      "type": "object",
+      "properties": {
+        "allowed_poses": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Pose"
+          }
+        },
+        "clearance_mm": {
+          "$ref": "#/$defs/FiniteNumber"
+        },
+        "subject": {
+          "$ref": "#/$defs/SubjectRevisionRef"
+        },
+        "vertices_mm": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Vec3"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "subject",
+        "vertices_mm",
+        "allowed_poses",
+        "clearance_mm"
+      ]
+    },
+    "ProjectId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "Quaternion": {
+      "type": "object",
+      "properties": {
+        "w": {
+          "$ref": "#/$defs/FiniteNumber"
+        },
+        "x": {
+          "$ref": "#/$defs/FiniteNumber"
+        },
+        "y": {
+          "$ref": "#/$defs/FiniteNumber"
+        },
+        "z": {
+          "$ref": "#/$defs/FiniteNumber"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y",
+        "z",
+        "w"
+      ]
+    },
+    "RotationMotion": {
+      "type": "object",
+      "properties": {
+        "axis": {
+          "$ref": "#/$defs/Vec3"
+        },
+        "from_angle_rad": {
+          "$ref": "#/$defs/FiniteNumber"
+        },
+        "part_id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "pivot_mm": {
+          "$ref": "#/$defs/Vec3"
+        },
+        "to_angle_rad": {
+          "$ref": "#/$defs/FiniteNumber"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "part_id",
+        "pivot_mm",
+        "axis",
+        "from_angle_rad",
+        "to_angle_rad"
+      ]
+    },
+    "SafeUint": {
+      "type": "integer",
+      "format": "uint64",
+      "maximum": 9007199254740991,
+      "minimum": 0
+    },
+    "SourceBasis": {
+      "type": "string",
+      "enum": [
+        "user_provided",
+        "module_declared",
+        "template_declared_example",
+        "unknown"
+      ]
+    },
+    "StructuralVariable": {
+      "type": "object",
+      "properties": {
+        "basis": {
+          "$ref": "#/$defs/SourceBasis"
+        },
+        "field_path": {
+          "type": "string"
+        },
+        "id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "integer": {
+          "type": "boolean"
+        },
+        "maximum": {
+          "$ref": "#/$defs/FiniteNumber"
+        },
+        "minimum": {
+          "$ref": "#/$defs/FiniteNumber"
+        },
+        "unit": {
+          "$ref": "#/$defs/UnitId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "field_path",
+        "minimum",
+        "maximum",
+        "unit",
+        "integer",
+        "basis"
+      ]
+    },
+    "SubjectRevisionId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "SubjectRevisionRef": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "revision": {
+          "$ref": "#/$defs/SubjectRevisionId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "revision"
+      ]
+    },
+    "TranslationMotion": {
+      "type": "object",
+      "properties": {
+        "displacement_mm": {
+          "$ref": "#/$defs/Vec3"
+        },
+        "part_id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "start_pose": {
+          "$ref": "#/$defs/Pose"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "part_id",
+        "start_pose",
+        "displacement_mm"
+      ]
+    },
+    "UnitId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "Vec2": {
+      "type": "object",
+      "properties": {
+        "x": {
+          "$ref": "#/$defs/FiniteNumber"
+        },
+        "y": {
+          "$ref": "#/$defs/FiniteNumber"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y"
+      ]
+    },
+    "Vec3": {
+      "type": "object",
+      "properties": {
+        "x": {
+          "$ref": "#/$defs/FiniteNumber"
+        },
+        "y": {
+          "$ref": "#/$defs/FiniteNumber"
+        },
+        "z": {
+          "$ref": "#/$defs/FiniteNumber"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y",
+        "z"
+      ]
+    }
+  }
+}

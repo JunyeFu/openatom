@@ -1,0 +1,140 @@
+{
+  "apiVersion": "batch/v1",
+  "kind": "Job",
+  "metadata": {
+    "name": "sf-cloud-schema1",
+    "namespace": "__NAMESPACE__",
+    "labels": {
+      "cloud.sealos.io/deploy-on-sealos": "sf-cloud"
+    }
+  },
+  "spec": {
+    "backoffLimit": 0,
+    "activeDeadlineSeconds": 1800,
+    "template": {
+      "metadata": {
+        "labels": {
+          "app": "sf-cloud-migrate"
+        }
+      },
+      "spec": {
+        "automountServiceAccountToken": false,
+        "securityContext": {
+          "runAsNonRoot": true,
+          "runAsUser": 10001,
+          "runAsGroup": 10001,
+          "seccompProfile": {
+            "type": "RuntimeDefault"
+          }
+        },
+        "terminationGracePeriodSeconds": 30,
+        "imagePullSecrets": [
+          {
+            "name": "sf-cloud-registry-pull"
+          }
+        ],
+        "containers": [
+          {
+            "name": "migrate",
+            "securityContext": {
+              "allowPrivilegeEscalation": false,
+              "capabilities": {
+                "drop": ["ALL"]
+              }
+            },
+            "image": "__IMAGE_DIGEST_REF__",
+            "imagePullPolicy": "IfNotPresent",
+            "args": [
+              "migrate"
+            ],
+            "env": [
+              {
+                "name": "PORT",
+                "value": "8080"
+              },
+              {
+                "name": "SF_CLOUD_LISTEN_ADDRESS",
+                "value": "0.0.0.0"
+              },
+              {
+                "name": "SF_CLOUD_BINDINGS_FILE",
+                "value": "/opt/superfactory/config/demo-bindings.json"
+              },
+              {
+                "name": "SSL_CERT_FILE",
+                "value": "/opt/superfactory/pg-trust/ca.pem"
+              },
+              {
+                "name": "DATABASE_URL",
+                "valueFrom": {
+                  "secretKeyRef": {
+                    "name": "sf-cloud-runtime",
+                    "key": "DATABASE_URL"
+                  }
+                }
+              },
+              {
+                "name": "SF_CLOUD_AUTH_TOKENS_JSON",
+                "valueFrom": {
+                  "secretKeyRef": {
+                    "name": "sf-cloud-runtime",
+                    "key": "SF_CLOUD_AUTH_TOKENS_JSON"
+                  }
+                }
+              }
+            ],
+            "resources": {
+              "requests": {
+                "cpu": "100m",
+                "memory": "102Mi"
+              },
+              "limits": {
+                "cpu": "1",
+                "memory": "1024Mi"
+              }
+            },
+            "volumeMounts": [
+              {
+                "name": "bindings",
+                "mountPath": "/opt/superfactory/config",
+                "readOnly": true
+              },
+              {
+                "name": "pg-trust",
+                "mountPath": "/opt/superfactory/pg-trust",
+                "readOnly": true
+              }
+            ]
+          }
+        ],
+        "volumes": [
+          {
+            "name": "bindings",
+            "configMap": {
+              "name": "sf-cloud-bindings",
+              "items": [
+                {
+                  "key": "demo-bindings.json",
+                  "path": "demo-bindings.json"
+                }
+              ]
+            }
+          },
+          {
+            "name": "pg-trust",
+            "secret": {
+              "secretName": "sf-cloud-pg-trust",
+              "items": [
+                {
+                  "key": "ca.pem",
+                  "path": "ca.pem"
+                }
+              ]
+            }
+          }
+        ],
+        "restartPolicy": "Never"
+      }
+    }
+  }
+}

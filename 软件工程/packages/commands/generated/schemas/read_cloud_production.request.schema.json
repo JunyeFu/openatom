@@ -1,0 +1,739 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "HostCloudReadRequest",
+  "type": "object",
+  "properties": {
+    "api_version": {
+      "$ref": "#/$defs/ApiVersion"
+    },
+    "operation": {
+      "$ref": "#/$defs/ReadCloudProductionTag"
+    },
+    "params": {
+      "$ref": "#/$defs/ReadCloudProductionParams"
+    },
+    "project_id": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ProjectId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "request_id": {
+      "$ref": "#/$defs/ObjectId"
+    },
+    "scope": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "project"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ]
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "api_version",
+    "request_id",
+    "project_id",
+    "scope",
+    "operation",
+    "params"
+  ],
+  "$defs": {
+    "ApiScope": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "workspace"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "project"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "data": {
+              "$ref": "#/$defs/ModuleId"
+            },
+            "kind": {
+              "type": "string",
+              "const": "definition_draft"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "data"
+          ]
+        }
+      ]
+    },
+    "ApiVersion": {
+      "type": "string",
+      "enum": [
+        "0.1"
+      ]
+    },
+    "CloudDatasetId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "CloudProjectId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "CloudReadSelection": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "base_revision": {
+              "$ref": "#/$defs/SafeUint"
+            },
+            "kind": {
+              "type": "string",
+              "const": "configuration"
+            },
+            "scenario_id": {
+              "$ref": "#/$defs/ScenarioId"
+            },
+            "scenario_revision": {
+              "$ref": "#/$defs/SafeUint"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "base_revision",
+            "scenario_id",
+            "scenario_revision"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "dataset_catalog"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "active_execution"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "data_query"
+            },
+            "query": {
+              "$ref": "#/$defs/DaaSQuery"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "query"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "identity": {
+              "$ref": "#/$defs/ExecutionIdentity"
+            },
+            "kind": {
+              "type": "string",
+              "const": "snapshot"
+            },
+            "selection": {
+              "$ref": "#/$defs/SnapshotSelection"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "identity",
+            "selection"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "command_id": {
+              "$ref": "#/$defs/DispatchCommandId"
+            },
+            "identity": {
+              "$ref": "#/$defs/ExecutionIdentity"
+            },
+            "kind": {
+              "type": "string",
+              "const": "command"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "identity",
+            "command_id"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "command_receipts"
+            },
+            "query": {
+              "$ref": "#/$defs/CommandReceiptsQuery"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "query"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "identity": {
+              "$ref": "#/$defs/ExecutionIdentity"
+            },
+            "kind": {
+              "type": "string",
+              "const": "inputs"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "identity"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "observations"
+            },
+            "query": {
+              "$ref": "#/$defs/ExecutionObservationQuery"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "query"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "history"
+            },
+            "query": {
+              "$ref": "#/$defs/ExecutionHistoryQuery"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "query"
+          ]
+        }
+      ]
+    },
+    "CloudTimestamp": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-([0-2][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\\.[0-9]{1,6})?(Z|[+-]([01][0-9]|2[0-3]):[0-5][0-9])$"
+    },
+    "CommandReceiptsQuery": {
+      "type": "object",
+      "properties": {
+        "command_id": {
+          "$ref": "#/$defs/DispatchCommandId"
+        },
+        "contract_version": {
+          "$ref": "#/$defs/CommandReceiptsQueryContractVersion"
+        },
+        "identity": {
+          "$ref": "#/$defs/ExecutionIdentity"
+        },
+        "page": {
+          "$ref": "#/$defs/PageSelection"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "identity",
+        "command_id",
+        "page",
+        "contract_version"
+      ]
+    },
+    "CommandReceiptsQueryContractVersion": {
+      "type": "string",
+      "enum": [
+        "sf.execution/2.0-draft11"
+      ]
+    },
+    "DaaSQuery": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "aggregation": {
+              "$ref": "#/$defs/DaaSQueryTelemetryAggregation"
+            },
+            "cloud_project_id": {
+              "$ref": "#/$defs/CloudProjectId"
+            },
+            "contract_version": {
+              "$ref": "#/$defs/DaaSQueryTelemetryContractVersion"
+            },
+            "dataset": {
+              "type": "string",
+              "const": "telemetry"
+            },
+            "dataset_id": {
+              "$ref": "#/$defs/CloudDatasetId"
+            },
+            "device_ids": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/ObjectId"
+              }
+            },
+            "page": {
+              "$ref": "#/$defs/PageSelection"
+            },
+            "received_from": {
+              "$ref": "#/$defs/CloudTimestamp"
+            },
+            "received_until": {
+              "$ref": "#/$defs/CloudTimestamp"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "dataset",
+            "contract_version",
+            "cloud_project_id",
+            "dataset_id",
+            "device_ids",
+            "received_from",
+            "received_until",
+            "aggregation",
+            "page"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "aggregation": {
+              "$ref": "#/$defs/DaaSQueryExecutionAggregation"
+            },
+            "contract_version": {
+              "$ref": "#/$defs/DaaSQueryExecutionContractVersion"
+            },
+            "dataset": {
+              "type": "string",
+              "const": "execution"
+            },
+            "host_from_ms": {
+              "$ref": "#/$defs/SafeUint"
+            },
+            "host_until_ms": {
+              "$ref": "#/$defs/SafeUint"
+            },
+            "identity": {
+              "$ref": "#/$defs/ExecutionIdentity"
+            },
+            "page": {
+              "$ref": "#/$defs/PageSelection"
+            },
+            "selection": {
+              "$ref": "#/$defs/SnapshotSelection"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "dataset",
+            "contract_version",
+            "identity",
+            "selection",
+            "host_from_ms",
+            "host_until_ms",
+            "aggregation",
+            "page"
+          ]
+        }
+      ]
+    },
+    "DaaSQueryExecutionAggregation": {
+      "type": "string",
+      "enum": [
+        "rows",
+        "accepted_quantity",
+        "command_counts",
+        "waiting_time"
+      ]
+    },
+    "DaaSQueryExecutionContractVersion": {
+      "type": "string",
+      "enum": [
+        "sf.execution/2.0-draft11"
+      ]
+    },
+    "DaaSQueryTelemetryAggregation": {
+      "type": "string",
+      "enum": [
+        "rows",
+        "count_by_device_minute"
+      ]
+    },
+    "DaaSQueryTelemetryContractVersion": {
+      "type": "string",
+      "enum": [
+        "sf.execution/2.0-draft11"
+      ]
+    },
+    "DeviceText": {
+      "type": "string",
+      "minLength": 1
+    },
+    "DispatchCommandId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "ExecutionContractVersion": {
+      "type": "string",
+      "enum": [
+        "sf.execution/2.0-draft11"
+      ]
+    },
+    "ExecutionEpochId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "ExecutionHistoryQuery": {
+      "type": "object",
+      "properties": {
+        "contract_version": {
+          "$ref": "#/$defs/ExecutionHistoryQueryContractVersion"
+        },
+        "execution_revision": {
+          "$ref": "#/$defs/SafeUint"
+        },
+        "host_from_ms": {
+          "$ref": "#/$defs/SafeUint"
+        },
+        "host_until_ms": {
+          "$ref": "#/$defs/SafeUint"
+        },
+        "identity": {
+          "$ref": "#/$defs/ExecutionIdentity"
+        },
+        "objects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ExecutionObservedObjectRef"
+          }
+        },
+        "page": {
+          "$ref": "#/$defs/PageSelection"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "contract_version",
+        "identity",
+        "execution_revision",
+        "host_from_ms",
+        "host_until_ms",
+        "objects",
+        "page"
+      ]
+    },
+    "ExecutionHistoryQueryContractVersion": {
+      "type": "string",
+      "enum": [
+        "sf.execution/2.0-draft11"
+      ]
+    },
+    "ExecutionIdentity": {
+      "type": "object",
+      "properties": {
+        "execution_epoch_id": {
+          "$ref": "#/$defs/ExecutionEpochId"
+        },
+        "host_context_session_id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "project_id": {
+          "$ref": "#/$defs/ProjectId"
+        },
+        "session_id": {
+          "$ref": "#/$defs/ExecutionSessionId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "session_id",
+        "execution_epoch_id",
+        "project_id",
+        "host_context_session_id"
+      ]
+    },
+    "ExecutionObservationQuery": {
+      "type": "object",
+      "properties": {
+        "at_host_ms": {
+          "$ref": "#/$defs/SafeUint"
+        },
+        "contract_version": {
+          "$ref": "#/$defs/ExecutionObservationQueryContractVersion"
+        },
+        "execution_revision": {
+          "$ref": "#/$defs/SafeUint"
+        },
+        "identity": {
+          "$ref": "#/$defs/ExecutionIdentity"
+        },
+        "objects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ExecutionObservedObjectRef"
+          }
+        },
+        "page": {
+          "$ref": "#/$defs/PageSelection"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "contract_version",
+        "identity",
+        "execution_revision",
+        "at_host_ms",
+        "objects",
+        "page"
+      ]
+    },
+    "ExecutionObservationQueryContractVersion": {
+      "type": "string",
+      "enum": [
+        "sf.execution/2.0-draft11"
+      ]
+    },
+    "ExecutionObservedObjectRef": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "kind": {
+          "$ref": "#/$defs/ExecutionObservedObjectRefKind"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "id"
+      ]
+    },
+    "ExecutionObservedObjectRefKind": {
+      "type": "string",
+      "enum": [
+        "transport",
+        "item",
+        "job",
+        "device",
+        "logical_work",
+        "attempt"
+      ]
+    },
+    "ExecutionSessionId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "ModuleId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "ObjectId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "PageLimit": {
+      "type": "integer",
+      "format": "uint64",
+      "maximum": 200,
+      "minimum": 1
+    },
+    "PageSelection": {
+      "type": "object",
+      "properties": {
+        "cursor": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DeviceText"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "limit": {
+          "$ref": "#/$defs/PageLimit"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "limit",
+        "cursor"
+      ]
+    },
+    "ProjectId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "ReadCloudProductionParams": {
+      "type": "object",
+      "properties": {
+        "execution_contract_version": {
+          "$ref": "#/$defs/ExecutionContractVersion"
+        },
+        "selection": {
+          "$ref": "#/$defs/CloudReadSelection"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "execution_contract_version",
+        "selection"
+      ]
+    },
+    "ReadCloudProductionTag": {
+      "type": "string",
+      "enum": [
+        "read_cloud_production"
+      ]
+    },
+    "SafeUint": {
+      "type": "integer",
+      "format": "uint64",
+      "maximum": 9007199254740991,
+      "minimum": 0
+    },
+    "ScenarioId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "SnapshotSelection": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "latest"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "execution_revision": {
+              "$ref": "#/$defs/SafeUint"
+            },
+            "kind": {
+              "type": "string",
+              "const": "revision"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "execution_revision"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "cutoff"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        }
+      ]
+    }
+  }
+}

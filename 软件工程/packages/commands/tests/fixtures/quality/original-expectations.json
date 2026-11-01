@@ -1,0 +1,338 @@
+{
+  "document_kind": "independent_frozen_original_expectations_before_runtime",
+  "input": {
+    "id": "quality_pending_and_scrap",
+    "time": {
+      "unit": "millisecond",
+      "observation_end_ms": 120000
+    },
+    "demand": 3,
+    "initial_stock": {
+      "shell": 3,
+      "pcb": 3,
+      "fastener": 12,
+      "carton": 3
+    },
+    "durations_ms": {
+      "assembly": 20000,
+      "inspection": 10000,
+      "rework": 15000,
+      "packing": 10000
+    },
+    "resources": {
+      "assembly_and_rework": "W-A",
+      "inspection": "W-Q",
+      "packing": "W-P"
+    },
+    "pending_policy": "pending_store",
+    "pending_capacity": 1,
+    "isolation_capacity": 1,
+    "max_reworks": 1,
+    "quality_presets": {
+      "assembly1": [
+        "PASS"
+      ],
+      "assembly2": [
+        "FAIL",
+        "FAIL"
+      ],
+      "assembly3": [
+        "UNKNOWN"
+      ]
+    },
+    "decisions": [
+      {
+        "at_ms": 90000,
+        "item": "assembly3",
+        "kind": "manual_release",
+        "source": "self-built scheduled decision"
+      },
+      {
+        "at_ms": 100000,
+        "item": "assembly2",
+        "kind": "scrap",
+        "source": "self-built scheduled decision"
+      }
+    ],
+    "automatic_replacement": false,
+    "resource_calendar_ms": [
+      [
+        0,
+        120000
+      ]
+    ],
+    "station_output_capacity": 3,
+    "execution_design": {
+      "device_ids": [
+        "Assembly",
+        "Inspection",
+        "Rework",
+        "Packing"
+      ],
+      "route_steps": {
+        "assembly": "step-assembly",
+        "inspection": "step-inspection",
+        "rework": "step-rework",
+        "packing": "step-packing"
+      },
+      "job_resources": {
+        "assembly": [
+          "Assembly",
+          "W-A"
+        ],
+        "inspection": [
+          "Inspection",
+          "W-Q"
+        ],
+        "rework": [
+          "Rework",
+          "W-A"
+        ],
+        "packing": [
+          "Packing",
+          "W-P"
+        ]
+      },
+      "single_phase_policy": "non_preemptive",
+      "acceptance": {
+        "destination": "factory-release",
+        "stage": "factory_released",
+        "unit": "piece",
+        "mode": "legacy_goal_demand_cumulative_not_invented_OrderLine_flag"
+      },
+      "quality_rules": {
+        "inspection": "QC/r1",
+        "pending_store": "pending-store",
+        "isolation_store": "isolation-store",
+        "scrap_holder_policy": "保持隔离库位holder，scrap_record仅是处置记录，不是瞬移目的地"
+      },
+      "pending_transfer_release": "70秒assembly3成功接收pending-store后Inspection/W-Q释放，仍pending",
+      "rework_ready_and_wait": "assembly2于50秒等W-A到60秒；返工完成75秒completed_reworks=1，85秒复检FAIL隔离",
+      "scrap_keeps_physical_slot": true,
+      "interval_end_contract": {
+        "status": "canonical_merged_local_consumer_mapping",
+        "claim_per_interval": [
+          "released",
+          "observation_end",
+          "computed_boundary"
+        ],
+        "wait": [
+          "condition_changed",
+          "resolved",
+          "observation_end",
+          "computed_boundary"
+        ],
+        "claim_alias": "intervals_ms数值不改，映射intervals和等长同序interval_end_causes"
+      }
+    }
+  },
+  "expected": {
+    "id": "quality_pending_and_scrap",
+    "family": "quality",
+    "jobs": [
+      {
+        "kind": "assembly",
+        "item": "assembly1",
+        "start_ms": 0,
+        "end_ms": 20000,
+        "resources": [
+          "W-A",
+          "Assembly"
+        ]
+      },
+      {
+        "kind": "inspection",
+        "item": "assembly1",
+        "start_ms": 20000,
+        "end_ms": 30000,
+        "resources": [
+          "W-Q",
+          "Inspection"
+        ]
+      },
+      {
+        "kind": "assembly",
+        "item": "assembly2",
+        "start_ms": 20000,
+        "end_ms": 40000,
+        "resources": [
+          "W-A",
+          "Assembly"
+        ]
+      },
+      {
+        "kind": "inspection",
+        "item": "assembly2",
+        "start_ms": 40000,
+        "end_ms": 50000,
+        "resources": [
+          "W-Q",
+          "Inspection"
+        ]
+      },
+      {
+        "kind": "assembly",
+        "item": "assembly3",
+        "start_ms": 40000,
+        "end_ms": 60000,
+        "resources": [
+          "W-A",
+          "Assembly"
+        ]
+      },
+      {
+        "kind": "inspection",
+        "item": "assembly3",
+        "start_ms": 60000,
+        "end_ms": 70000,
+        "resources": [
+          "W-Q",
+          "Inspection"
+        ]
+      },
+      {
+        "kind": "packing",
+        "item": "assembly1",
+        "start_ms": 30000,
+        "end_ms": 40000,
+        "resources": [
+          "W-P",
+          "Packing"
+        ]
+      },
+      {
+        "kind": "rework",
+        "item": "assembly2",
+        "start_ms": 60000,
+        "end_ms": 75000,
+        "resources": [
+          "W-A",
+          "Rework"
+        ]
+      },
+      {
+        "kind": "reinspection",
+        "item": "assembly2",
+        "start_ms": 75000,
+        "end_ms": 85000,
+        "resources": [
+          "W-Q",
+          "Inspection"
+        ]
+      },
+      {
+        "kind": "packing",
+        "item": "assembly3",
+        "start_ms": 90000,
+        "end_ms": 100000,
+        "resources": [
+          "W-P",
+          "Packing"
+        ]
+      }
+    ],
+    "events": [
+      {
+        "at_ms": 30000,
+        "item": "assembly1",
+        "decision": "PASS",
+        "destination": "packing"
+      },
+      {
+        "at_ms": 50000,
+        "item": "assembly2",
+        "decision": "FAIL",
+        "destination": "rework"
+      },
+      {
+        "at_ms": 70000,
+        "item": "assembly3",
+        "decision": "UNKNOWN",
+        "destination": "pending_store",
+        "release_inspection_resources": true
+      },
+      {
+        "at_ms": 85000,
+        "item": "assembly2",
+        "decision": "FAIL_after_one_rework",
+        "destination": "isolation_store"
+      },
+      {
+        "at_ms": 90000,
+        "item": "assembly3",
+        "decision": "manual_release_preset",
+        "destination": "packing"
+      },
+      {
+        "at_ms": 100000,
+        "item": "assembly2",
+        "decision": "scrap_preset",
+        "destination": "scrap_record"
+      }
+    ],
+    "expected_inventory": {
+      "packages": 2,
+      "empty_cartons": 1,
+      "pending": 0,
+      "isolated": 0,
+      "scrapped_assemblies": 1
+    },
+    "expected_order": {
+      "demand": 3,
+      "accepted_at_factory_release": 2,
+      "outstanding": 1,
+      "completion_ms": null
+    },
+    "input_consumption": {
+      "shell": 3,
+      "pcb": 3,
+      "fastener": 12,
+      "carton": 2
+    },
+    "expected_quality_at_ms_80": {
+      "pending": [
+        "assembly3"
+      ],
+      "reinspection": [
+        "assembly2"
+      ]
+    },
+    "actual_result": null
+  },
+  "explicit_reinspect_contract": {
+    "task_id": "P1-05",
+    "gap_id": "P105-EXPLICIT-REINSPECT-DISPOSITION",
+    "status": "canonical_runtime_product_type_schema_TS_verified_actual_Engine_and_independent_reception_pending",
+    "type": "QualityDisposition::Reinspect",
+    "wire_value": "reinspect",
+    "unchanged_existing_values": [
+      "pending",
+      "release",
+      "rework",
+      "isolate",
+      "scrap"
+    ],
+    "producer": "Existing ScenarioInput.initial_conditions.declared_quality_decisions:QualityDecision with exact item_ref/inspection_ref/source_kind/effective_at_ms/decision_source",
+    "consumer": "Unique Engine starts a distinct actual inspection attempt on the same physical item and exact inspection definition. It acquires actual resources and honors duration/preset cursor; pending-store item is not removed before its real check can start; hold-station handoff is atomic.",
+    "semantics": "Reinspection performs a new check; it is not rework and does not increment completed_reworks. Previous completed attempt stays completed. UNKNOWN remains pending; actual rejected recheck follows declared finite-rework/isolation policy. It does not grant professional acknowledgment or manufacture a human decision.",
+    "state_and_storage": "No new QualityDecision payload or independent quality state. Existing declared preset/human/provider source, exact refs, time, archive, frozen Scenario and event contracts remain.",
+    "source_refs": [
+      "packages/domain/types.design.rs",
+      "packages/domain/src/models.rs"
+    ],
+    "wire_version": "Existing API0.1/schema1.0 unchanged; all existing enum strings remain unchanged.",
+    "verification": "Root Schema cases cover explicit reinspect and rejection of invented automatic_pass; actual Engine behavior is owned by W3 and independent W5 consumers, not inferred from type parsing.",
+    "actual_type_verification": {
+      "canonical_native_stdout_ref": ".work/whole-packages/reinspect-design-types.stdout.txt",
+      "canonical_schema_stdout_ref": ".work/whole-packages/reinspect-design-schemas.stdout.txt",
+      "canonical_format_stdout_ref": ".work/whole-packages/reinspect-design-format.stdout.txt",
+      "product_generation_stdout_ref": ".work/whole-packages/reinspect-product-types.stdout.txt",
+      "product_schema_result_ref": ".work/whole-packages/reinspect-product-schema.json",
+      "product_TS_stdout_ref": ".work/whole-packages/reinspect-product-typecheck.stdout.txt",
+      "product_schema_documents": 40,
+      "product_schema_cases": 82,
+      "actual_Engine_disposition_execution_proven_by_types": false
+    }
+  },
+  "actual_result": null
+}

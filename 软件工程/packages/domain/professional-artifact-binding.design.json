@@ -1,6 +1,6 @@
 {
-  "document_kind": "professional_binding_draft_not_runtime_schema",
-  "schema_revision": "draft-1",
+  "document_kind": "professional_binding_logical_terms_and_selected_derivation_not_public_schema",
+  "schema_revision": "draft-2-DRF03-selected-derivation",
   "artifact_fields": [
     "id",
     "artifact_type",
@@ -60,5 +60,94 @@
   ],
   "deferred_modes": [
     "software_in_loop"
-  ]
+  ],
+  "canonical_source_ref": "packages/domain/types.design.rs",
+  "canonical_objects": [
+    "ArtifactRecord",
+    "ArtifactAcknowledgment",
+    "ConsumerBinding",
+    "PackagingResult",
+    "RunInputRef",
+    "RunResult"
+  ],
+  "logical_to_canonical": {
+    "artifact_fields": {
+      "subject_ref": "ArtifactRecord.subject_ref.id",
+      "subject_revision": "ArtifactRecord.subject_ref.revision",
+      "input_conditions": "ArtifactRecord.input_ref → immutable PackageStructureJob",
+      "content_ref": "ArtifactRecord.result_ref → PackagingResult.manufacturing_files/process_poses and input_ref for editable Job",
+      "producer_result_ref": "ArtifactRecord.result_ref → actual PackagingResult"
+    },
+    "acceptance_fields": {
+      "artifact_ref": "ArtifactAcknowledgment.artifact_ref",
+      "accepted_subject": "ArtifactAcknowledgment.accepted_subject",
+      "accepted_scope": "ArtifactAcknowledgment.accepted_scope",
+      "decision_source": "ArtifactAcknowledgment.decision_source, trusted Host calling context required",
+      "conditions": "ArtifactAcknowledgment.conditions",
+      "effective_at": "recorded_at_iso8601 is recording metadata; never reinterpret as production time"
+    },
+    "binding_fields": {
+      "consumer_ref": "ConsumerBinding.consumer_ref",
+      "operation_ref": "ConsumerBinding.operation_ref",
+      "expected_subject_revision": "derived current selected Job subject validated against current ProductRevision/route",
+      "required_payload": "derived paper_packaging_complete_v1 requirements, not request-provided whitelist"
+    },
+    "execution_fields": "Retained logical vocabulary for deferred software_in_loop. First-release actual outputs are PackagingResult and RunResult; no new execution_result API object."
+  },
+  "selected_derivation_ref": "docs/04_开发与验收/特征细化/DRF03_C02_专业绑定推导.json",
+  "selected_consumer_job_keys": {
+    "owner": "DeviceInstance.configuration via declared parameters",
+    "id": "packaging_job_id: TypedValue::String",
+    "revision": "packaging_job_revision: TypedValue::Integer",
+    "absence": "explicit missing input; never infer from artifact or latest Job",
+    "public_semantic_merge": "pending_review_window_1"
+  },
+  "gate_order": [
+    "Host permission and exact current consumer/pack operation",
+    "independently selected exact desired Job",
+    "matching current subject/route",
+    "required profile purposes and actual complete payload",
+    "actual trusted producer origin and immutable input/result",
+    "matching Host-recorded human artifact/use acknowledgment",
+    "atomic BindingCommit and frozen Run revalidation"
+  ],
+  "actual_result": null,
+  "consumer_definition_contract_ref": "packages/packaging/consumer-device.design.json",
+  "required_declared_selection_parameters": [
+    {
+      "id": "packaging_job_id",
+      "label": "所选包装作业ID",
+      "value_type": "string",
+      "unit": null,
+      "binding": "/payload/data/configuration/packaging_job_id/value",
+      "minimum": null,
+      "maximum": null,
+      "integer": false,
+      "options": [],
+      "basis": "user_provided"
+    },
+    {
+      "id": "packaging_job_revision",
+      "label": "所选包装作业修订",
+      "value_type": "integer",
+      "unit": null,
+      "binding": "/payload/data/configuration/packaging_job_revision/value",
+      "minimum": null,
+      "maximum": null,
+      "integer": true,
+      "options": [],
+      "basis": "user_provided"
+    }
+  ],
+  "missing_declaration_policy": "Missing declaration is an input gap even when a client supplies same-named configuration entries. Never infer a parameter from keys or auto-register it.",
+  "current_consumer_binding_selection": {
+    "status": "explicit_resolution_of_observed_P003_RESELECT_OLD_BINDING",
+    "scope": "first-release single paper-packaging execution profile per actual consumer; no new wire fields",
+    "active_selection": "Project.bindings preserves successful explicit adoption order. The last successfully adopted binding for the same exact consumer is its current execution choice; historical rows remain unchanged. This is explicit adoption order, not newest artifact or Job revision.",
+    "gate": "The current choice must still match the independently selected exact Job, currently selected operation, exact subject, accepted purposes, actual provider, actual frozen files and runtime authority. Changing Job/product alone never grants a new binding; the current choice stays needs-review and blocks until explicitly adopted.",
+    "historical": "Older bindings/Jobs/artifacts/acknowledgments and old Run snapshots remain readable and unchanged. Superseded bindings do not block the new explicitly adopted current consumer; immutable references/identity integrity still apply to all stored documents.",
+    "reselect": "Re-adopting a historical artifact is another explicit current selection and creates/appends a new binding fact; only repeating the already-current identical choice may be idempotent. No automatic latest or silent fallback.",
+    "consumers": "Domain current-use issues and actual Host Run validation must call the same current-binding derivation; save/reopen preserves binding list order. Imported order/labels alone never grant actual producer/UI authority.",
+    "finding_ref": "docs/04_开发与验收/整包派发/P0-03_整包执行.json#/frozen_Host_consumer_batch_review"
+  }
 }

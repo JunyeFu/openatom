@@ -1,0 +1,35 @@
+[package]
+name = "sf-p103-closeout-tests"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[workspace]
+resolver = "3"
+
+[dependencies]
+sf-domain = { path = "../../../packages/domain" }
+sf-simulation = { path = "../../../packages/simulation" }
+sf-commands = { path = "../../../packages/commands" }
+serde = "=1.0.229"
+serde_json = { version = "=1.0.154", features = ["float_roundtrip"] }
+
+[[test]]
+name = "owner"
+path = "owner.rs"
+
+[[test]]
+name = "combined"
+path = "combined.rs"
+
+[[test]]
+name = "host"
+path = "host.rs"
+
+[[test]]
+name = "completion_once"
+path = "completion_once.rs"
+
+[[test]]
+name = "native_projects"
+path = "native_projects.rs"

@@ -1,0 +1,404 @@
+{
+  "document_kind": "DRF03_independent_finite_design_expectations_not_actual_artifacts",
+  "basis": "self-built explicit finite facts; formulated before reference checker; all actual_product_result remain null",
+  "source_ref": "docs/04_开发与验收/特征细化/DRF03_完整定义.json",
+  "cases": [
+    {
+      "id": "R01",
+      "kind": "binding",
+      "input": {
+        "current_subject": "r2"
+      },
+      "expected": "blocked_subject_revision",
+      "basis": "r1成果/认可不改；r2消费不能继承r1。",
+      "actual_product_result": null
+    },
+    {
+      "id": "R02",
+      "kind": "binding",
+      "input": {
+        "ack_artifact": "A2"
+      },
+      "expected": "blocked_ack_artifact",
+      "basis": "认可A2不能授权A1。",
+      "actual_product_result": null
+    },
+    {
+      "id": "R03",
+      "kind": "binding",
+      "input": {
+        "artifact_scope": [
+          "forming",
+          "opening",
+          "linear_extraction"
+        ]
+      },
+      "expected": "blocked_scope",
+      "basis": "请求manufacturing但实际范围不含，不按前缀或标题放宽。",
+      "actual_product_result": null
+    },
+    {
+      "id": "R04",
+      "kind": "binding",
+      "input": {
+        "checks": {
+          "forming": "Fail",
+          "opening": "Pass",
+          "linear_extraction": "Pass",
+          "manufacturing": "Pass",
+          "net_space": "Pass"
+        }
+      },
+      "expected": "blocked_Fail",
+      "basis": "人工认可不能将专业Fail变Pass。",
+      "actual_product_result": null
+    },
+    {
+      "id": "R05",
+      "kind": "binding",
+      "input": {
+        "checks": {
+          "forming": "Pass",
+          "linear_extraction": "Pass",
+          "manufacturing": "Pass",
+          "net_space": "Pass"
+        }
+      },
+      "expected": "blocked_Undetermined",
+      "basis": "缺opening目的覆盖；空/部分checks不能all()放行。",
+      "actual_product_result": null
+    },
+    {
+      "id": "R06",
+      "kind": "binding",
+      "input": {
+        "glue_connections": 1,
+        "has_actual_glue_region": false
+      },
+      "expected": "blocked_Undetermined",
+      "basis": "有胶接而缺实际胶区，制造不可假完成。",
+      "actual_product_result": null
+    },
+    {
+      "id": "R07",
+      "kind": "binding",
+      "input": {
+        "artifact_origin": "imported_claim"
+      },
+      "expected": "blocked_non_actual_origin",
+      "basis": "外部宣称/类型夹具不能填producer实际结果。",
+      "actual_product_result": null
+    },
+    {
+      "id": "R08",
+      "kind": "acknowledgment",
+      "input": {
+        "caller": "external_agent",
+        "creates_human_statement": true
+      },
+      "expected": "PermissionDenied",
+      "basis": "可信调用者身份由Host取得，不由JSON HumanStatement文字决定。",
+      "actual_product_result": null
+    },
+    {
+      "id": "R09",
+      "kind": "display_version",
+      "input": {
+        "new_media_version": "0.2.0",
+        "old_run_media_version": "0.1.0",
+        "stock": 4
+      },
+      "expected": {
+        "old_run_media_version": "0.1.0",
+        "current_media_version": "0.2.0",
+        "stock": 4,
+        "professional_recompute": false
+      },
+      "basis": "只改表现，不回填旧Run或改库存/专业几何。",
+      "actual_product_result": null
+    },
+    {
+      "id": "R10",
+      "kind": "professional_change",
+      "input": {
+        "change": "material_thickness",
+        "old_job_revision": 1
+      },
+      "expected": {
+        "new_job_revision": 2,
+        "new_artifact_required": true,
+        "copy_acknowledgment": false,
+        "old_job_revision": 1
+      },
+      "basis": "厚度是冻结专业输入，需新Job/新结果/明确认可。",
+      "actual_product_result": null
+    },
+    {
+      "id": "R11",
+      "kind": "adoption",
+      "input": {
+        "base_revision": 7,
+        "current_revision": 7,
+        "source_unit": "kg",
+        "target_unit": "piece"
+      },
+      "expected": {
+        "result": "InvalidInput",
+        "project_revision": 7,
+        "created_instances": 0
+      },
+      "basis": "不相容单位不能自动换算；原子事务不部分创建。",
+      "actual_product_result": null
+    },
+    {
+      "id": "R12",
+      "kind": "adoption",
+      "input": {
+        "base_revision": 7,
+        "current_revision": 8,
+        "source_unit": "piece",
+        "target_unit": "piece"
+      },
+      "expected": {
+        "result": "RevisionConflict",
+        "project_revision": 8,
+        "created_instances": 0
+      },
+      "basis": "旧预览不得覆盖新工程；不先登记半份升级。",
+      "actual_product_result": null
+    },
+    {
+      "id": "R13",
+      "kind": "template_refs",
+      "input": {
+        "ids": [
+          "D1",
+          "D2"
+        ],
+        "links": [
+          [
+            "D1",
+            "D2"
+          ]
+        ],
+        "external_resource": "R1",
+        "namespace": "N2"
+      },
+      "expected": {
+        "ids": [
+          "N2:D1",
+          "N2:D2"
+        ],
+        "links": [
+          [
+            "N2:D1",
+            "N2:D2"
+          ]
+        ],
+        "external_resource": "R1",
+        "stock_created": 0
+      },
+      "basis": "内部ID与连接重映射；外部复用R1显式保留。",
+      "actual_product_result": null
+    },
+    {
+      "id": "R14",
+      "kind": "export_rights",
+      "input": {
+        "assets": [
+          {
+            "path": "assets/a.glb",
+            "redistribution_confirmed": true
+          },
+          {
+            "path": "assets/b.png",
+            "redistribution_confirmed": false
+          }
+        ]
+      },
+      "expected": {
+        "redistributable_export_ready": false,
+        "missing_rights": [
+          "assets/b.png"
+        ]
+      },
+      "basis": "本地可保留草稿；缺权利不声称可再分发包完整。",
+      "actual_product_result": null
+    },
+    {
+      "id": "R15",
+      "kind": "duration",
+      "input": {
+        "value_seconds": "0.0001"
+      },
+      "expected": "InvalidInput_non_integer_ms",
+      "basis": "0.1ms无法表示为既有整数ms，不静默取整。",
+      "actual_product_result": null
+    },
+    {
+      "id": "R16",
+      "kind": "duration",
+      "input": {
+        "value_seconds": "1.25"
+      },
+      "expected": 1250,
+      "basis": "明确秒转毫秒：1.25×1000=1250。",
+      "actual_product_result": null
+    },
+    {
+      "id": "R17",
+      "kind": "media_transform",
+      "input": {
+        "source_m_y_up": [
+          1,
+          2,
+          3
+        ],
+        "physical_width_mm": 100,
+        "display_scale": 2
+      },
+      "expected": {
+        "job_mm_z_up": [
+          1000,
+          -3000,
+          2000
+        ],
+        "physical_width_mm": 100
+      },
+      "basis": "R_x(+90°)：(x,y,z)→(x,-z,y)；显示缩放不改变专业宽度。",
+      "actual_product_result": null
+    },
+    {
+      "id": "R18",
+      "kind": "timeline_progress",
+      "input": {
+        "run_at_ms": 40000,
+        "working_intervals": [
+          [
+            10000,
+            20000
+          ],
+          [
+            30000,
+            50000
+          ]
+        ],
+        "required_work_ms": 30000,
+        "packaging_duration_hint_ms": 12000
+      },
+      "expected": {
+        "run_at_ms": 40000,
+        "effective_work_ms": 20000,
+        "phase_progress": "2/3",
+        "packaging_duration_hint_ms": 12000,
+        "factory_duration_ms": 30000
+      },
+      "basis": "等待[20000,30000)不推进工作；专业预览12秒不替生产30秒。",
+      "actual_product_result": null
+    },
+    {
+      "id": "R19",
+      "kind": "process_identity",
+      "input": {
+        "named_pose_has_step_id": false,
+        "named_pose_has_panel_id": false
+      },
+      "expected": "unmapped_no_index_guess",
+      "basis": "现行NamedPose缺step/progress/panel映射，不根据数组顺序猜身份。",
+      "actual_product_result": null
+    },
+    {
+      "id": "R20",
+      "kind": "aggregate",
+      "input": {
+        "required": [
+          "forming",
+          "opening"
+        ],
+        "checks": {
+          "forming": "Fail",
+          "opening": "Undetermined"
+        }
+      },
+      "expected": "Fail",
+      "basis": "已证硬违反优先；未知项仍保留，但不抹除Fail。",
+      "actual_product_result": null
+    },
+    {
+      "id": "R21",
+      "kind": "binding",
+      "input": {},
+      "expected": "binding_eligible_finite_model_only",
+      "basis": "假设同一真实输入/全部必需检查Pass/内容与人工用途匹配，只证明有限门逻辑。",
+      "actual_product_result": null
+    },
+    {
+      "id": "R22",
+      "kind": "binding",
+      "input": {
+        "current_thickness_mm": 2
+      },
+      "expected": "blocked_input_conditions",
+      "basis": "即使subject仍r1，1mm旧成果也不能自动用于2mm新材料条件。",
+      "actual_product_result": null
+    }
+  ],
+  "existing_15_expectations_changed": false,
+  "actual_result": null,
+  "binding_model_defaults": {
+    "current_subject": "r1",
+    "artifact_subject": "r1",
+    "current_thickness_mm": 1,
+    "artifact_thickness_mm": 1,
+    "artifact_id": "A1",
+    "ack_artifact": "A1",
+    "ack_subject": "r1",
+    "artifact_origin": "actual_software",
+    "required": [
+      "forming",
+      "opening",
+      "linear_extraction",
+      "net_space",
+      "manufacturing"
+    ],
+    "checks": {
+      "forming": "Pass",
+      "opening": "Pass",
+      "linear_extraction": "Pass",
+      "net_space": "Pass",
+      "manufacturing": "Pass"
+    },
+    "artifact_scope": [
+      "forming",
+      "opening",
+      "linear_extraction",
+      "net_space",
+      "manufacturing"
+    ],
+    "ack_scope": [
+      "forming",
+      "opening",
+      "linear_extraction",
+      "net_space",
+      "manufacturing"
+    ],
+    "required_payload": [
+      "editable_job",
+      "cut",
+      "fold",
+      "glue"
+    ],
+    "payload": [
+      "editable_job",
+      "cut",
+      "fold",
+      "glue"
+    ],
+    "glue_connections": 1,
+    "has_actual_glue_region": true,
+    "mode": "calculated_nominal",
+    "provider_modes": [
+      "calculated_nominal"
+    ]
+  }
+}

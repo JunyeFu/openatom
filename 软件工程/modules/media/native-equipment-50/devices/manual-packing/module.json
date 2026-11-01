@@ -1,0 +1,226 @@
+{
+  "schema_version": "1.0",
+  "data": {
+    "definition": {
+      "id": "sf.native50.device.manual-packing",
+      "version": "1.0.0",
+      "title": "人工装箱与折盖台",
+      "definition_state": "runtime_candidate",
+      "contribution": {
+        "author": "Super Factory Native50 original modeling",
+        "license": "CC0-1.0",
+        "assets": []
+      },
+      "parameters": [],
+      "attribute_schema": [],
+      "payload": {
+        "category": "devices",
+        "data": {
+          "placement": "fixed_during_simulation",
+          "ports": [
+            {
+              "id": "product",
+              "direction": "input",
+              "payload": {
+                "kind": "material",
+                "data": {
+                  "item_role": "product",
+                  "unit": "piece",
+                  "quantity_rule": null
+                }
+              }
+            },
+            {
+              "id": "carton",
+              "direction": "input",
+              "payload": {
+                "kind": "material",
+                "data": {
+                  "item_role": "carton",
+                  "unit": "piece",
+                  "quantity_rule": null
+                }
+              }
+            },
+            {
+              "id": "packed",
+              "direction": "output",
+              "payload": {
+                "kind": "material",
+                "data": {
+                  "item_role": "packed",
+                  "unit": "piece",
+                  "quantity_rule": null
+                }
+              }
+            }
+          ],
+          "behavior": {
+            "selected": "inline",
+            "inline": {
+              "builtin": "pack",
+              "item_roles": [
+                "product",
+                "carton",
+                "packed"
+              ],
+              "inputs": [
+                {
+                  "role": "product",
+                  "port": "product",
+                  "quantity": {
+                    "value": {
+                      "coefficient": 1,
+                      "decimal_places": 0
+                    },
+                    "unit": "piece"
+                  },
+                  "required_quality": [],
+                  "declared_output_quality": null
+                },
+                {
+                  "role": "carton",
+                  "port": "carton",
+                  "quantity": {
+                    "value": {
+                      "coefficient": 1,
+                      "decimal_places": 0
+                    },
+                    "unit": "piece"
+                  },
+                  "required_quality": [],
+                  "declared_output_quality": null
+                }
+              ],
+              "outputs": [
+                {
+                  "role": "packed",
+                  "port": "packed",
+                  "quantity": {
+                    "value": {
+                      "coefficient": 1,
+                      "decimal_places": 0
+                    },
+                    "unit": "piece"
+                  },
+                  "required_quality": [],
+                  "declared_output_quality": null
+                }
+              ],
+              "resource_roles": [],
+              "duration": null,
+              "phases": [
+                {
+                  "id": "load",
+                  "duration": {
+                    "value": 5000,
+                    "unit": "millisecond",
+                    "basis": "module_declared",
+                    "source_ref": null
+                  },
+                  "phase_resources": [],
+                  "interruption_policy": "pause_resume",
+                  "work_kind": "loading"
+                },
+                {
+                  "id": "auto",
+                  "duration": {
+                    "value": 15000,
+                    "unit": "millisecond",
+                    "basis": "module_declared",
+                    "source_ref": null
+                  },
+                  "phase_resources": [],
+                  "interruption_policy": "pause_resume",
+                  "work_kind": "packing"
+                },
+                {
+                  "id": "unload",
+                  "duration": {
+                    "value": 5000,
+                    "unit": "millisecond",
+                    "basis": "module_declared",
+                    "source_ref": null
+                  },
+                  "phase_resources": [],
+                  "interruption_policy": "pause_resume",
+                  "work_kind": "unloading"
+                }
+              ],
+              "hold_on_output_wait": [],
+              "quality_and_routes": null,
+              "identity_policy": "container_with_contents",
+              "family": "manual-packing",
+              "pack_identity": {
+                "output_role": "packed",
+                "container_material_roles": [
+                  "carton"
+                ],
+                "content_roles": [
+                  "product"
+                ]
+              }
+            },
+            "operation_ref": null
+          },
+          "configuration": {},
+          "presentation": {
+            "kind": "model",
+            "source": {
+              "kind": "media_ref",
+              "data": {
+                "id": "p302.line-grade.packing",
+                "version": "0.4.1"
+              }
+            },
+            "unit": "meter",
+            "coordinate_frame": "right_handed_y_up",
+            "scale": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            },
+            "nodes": [],
+            "poses": [],
+            "actions": [],
+            "timeline": [],
+            "tags": [],
+            "anchor_roles": {},
+            "port_anchors": {},
+            "lod": {
+              "detailed": null,
+              "simplified": {
+                "kind": "media_ref",
+                "data": {
+                  "id": "p302.line-grade.packing.simple",
+                  "version": "0.4.1"
+                }
+              },
+              "region": "device_icons"
+            },
+            "production_effect": "none"
+          },
+          "operations": [
+            "configure",
+            "inspect",
+            "preview_cycle"
+          ]
+        }
+      }
+    },
+    "files": [],
+    "dependencies": [
+      {
+        "id": "p302.line-grade.packing",
+        "version": "0.4.1"
+      },
+      {
+        "id": "p302.line-grade.packing.simple",
+        "version": "0.4.1"
+      }
+    ],
+    "assets": [],
+    "rights": [],
+    "issues": []
+  }
+}

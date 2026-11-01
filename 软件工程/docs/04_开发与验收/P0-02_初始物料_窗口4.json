@@ -1,0 +1,154 @@
+{
+  "document_kind": "P0_02_initial_material_store_consumer_slice",
+  "window": "实现窗口4",
+  "window_id": "W03",
+  "task_id": "P0-02",
+  "within_original_step": 2,
+  "date": "2026-10-16",
+  "status": "store_25_and_post_composition_fix_global_run_passed_independent_review_pending",
+  "scope_ref": "docs/04_开发与验收/P0-02_初始物料与分配输入切片.json",
+  "allowed_written_files": [
+    "packages/commands/src/project_store.rs",
+    "docs/04_开发与验收/P0-02_初始物料_窗口4.json"
+  ],
+  "private_API_or_wire_changed": false,
+  "implemented": [
+    "validate_archive先完成required typed文档、ScenarioInput角色、当前Project refs/身份/结构修订绑定校验，再向闭包校核传入其构造的当前scenarios映射",
+    "唯一新增code business_inputs.material_missing_transport_module；owner须实际当前Scenario，pointer仅/supplies/i/transport_ref，类型化ModuleRef ID及version均精确匹配，不解析message",
+    "此唯一code不能经旧ID-only direct missing规则绕过；root module index与所有module_references缺口检查均持完整ModuleRef调用新接点，保留其他旧direct声明契约",
+    "不从FrozenRunScenario/SupportingFile按ID或最大revision恢复上下文；同ID未报告的另一版本不被当前Issue豁免",
+    "未更改required文件、Versioned/路径/角色/冻结输入闭包、分代提交/失败恢复、当前Scenario原子保存、取消或历史语义"
+  ],
+  "Issue_contract": {
+    "code": "business_inputs.material_missing_transport_module",
+    "owner": "ObjectRef Scenario / actual current ScenarioInput",
+    "field_path": "/supplies/i/transport_ref",
+    "source": "既有manifest.missing / Project.issues，checker经check_business_inputs组合派生",
+    "blocks_from_producer": [
+      "execution",
+      "complete_conclusion"
+    ],
+    "version_match": "same full typed ModuleRef, not ID alone",
+    "required_file_waiver": false,
+    "actual_result": {
+      "status": "passed_in_post_composition_fix_run",
+      "proof_ref": ".work/p0-02-stock/verification/result.json",
+      "store_tests": 25
+    }
+  },
+  "new_test_names": [
+    "material_inputs_stay_separate_with_current_transport_gap_after_save_and_reopen",
+    "material_transport_gap_does_not_cover_other_versions_in_current_or_retained_documents",
+    "material_transport_issue_does_not_excuse_a_missing_required_module_file",
+    "material_transport_issue_never_resolves_its_owner_from_frozen_or_supporting_scenarios",
+    "material_transport_issue_rejects_wrong_code_owner_and_pointer"
+  ],
+  "fixed_expectations": [
+    "初始批次10与pending质量/唯一holder原样保留；未来到货5、供给目标20、需求8互不合并；hard4+6与未来soft_plan声明保留，不产生库存、拆批或committed状态",
+    "实际目录保存/另一目录重开保留当前整个Scenario及具名阻断Issue，旧Run/冻结Scenario bytes不变，不生成未提供模块",
+    "错误code、不存在Scenario owner、伪装Module owner、越界或错误typed pointer不能消费该新Issue",
+    "当前module index或旧Frozen/Supporting中同ID另一个version不能被v1的Issue豁免",
+    "已声明required的模块文件缺失仍MissingReference",
+    "只有旧Frozen/Supporting Scenario（含更高revision）时不能作为当前owner上下文使用"
+  ],
+  "validation": {
+    "expected_before_execution": true,
+    "format": "rustfmt --edition 2024 assigned source only passed",
+    "prior_store_tests": 20,
+    "new_store_tests": 5,
+    "total_store_tests": 25,
+    "prior_20_names_preserved": true,
+    "prior_name_check_ref": ".work/p0-02-inputs/verification/workspace-tests.stdout.txt",
+    "cargo_execution": {
+      "executor": "统筹W00集中实际执行，本窗口仅核读proof与raw，未重复运行Cargo",
+      "command": "npm.cmd run test:rust",
+      "exit_code": 0,
+      "proof_ref": ".work/p0-02-stock/verification/result.json",
+      "stdout_ref": ".work/p0-02-stock/verification/workspace-tests.stdout.txt",
+      "stderr_ref": ".work/p0-02-stock/verification/workspace-tests.stderr.txt",
+      "workspace_tests_passed": 124,
+      "workspace_tests_failed": 0,
+      "store_tests_passed": 25,
+      "store_tests_failed": 0,
+      "store_test_names": [
+        "project_store::tests::a_retained_filename_without_the_old_identity_is_not_a_recovery_source",
+        "project_store::tests::actual_replacefile_sharing_failure_parses_and_preserves_the_old_root",
+        "project_store::tests::actual_retained_root_is_restored_when_root_was_moved",
+        "project_store::tests::all_roles_nine_modules_and_related_bytes_survive_another_directory",
+        "project_store::tests::cancellation_before_commit_keeps_old_root_and_old_generation",
+        "project_store::tests::changed_current_orders_survive_another_directory_without_reusing_backing_orders",
+        "project_store::tests::current_scenario_create_update_and_unreferenced_delete_share_the_root_transaction",
+        "project_store::tests::deleting_current_scenario_preserves_old_run_and_evaluation_revision_without_reactivating_it",
+        "project_store::tests::explicitly_reported_draft_gaps_do_not_excuse_missing_required_documents",
+        "project_store::tests::included_bytes_cannot_overwrite_an_old_root_referenced_path",
+        "project_store::tests::initial_and_second_generation_reopen_without_overwriting_old_data",
+        "project_store::tests::junction_escape_is_rejected_by_actual_directory_handles",
+        "project_store::tests::located_module_gap_requires_the_exact_code_actual_owner_and_typed_pointer",
+        "project_store::tests::located_route_and_device_module_gaps_roundtrip_without_fabricating_required_files",
+        "project_store::tests::material_inputs_stay_separate_with_current_transport_gap_after_save_and_reopen",
+        "project_store::tests::material_transport_gap_does_not_cover_other_versions_in_current_or_retained_documents",
+        "project_store::tests::material_transport_issue_does_not_excuse_a_missing_required_module_file",
+        "project_store::tests::material_transport_issue_never_resolves_its_owner_from_frozen_or_supporting_scenarios",
+        "project_store::tests::material_transport_issue_rejects_wrong_code_owner_and_pointer",
+        "project_store::tests::restoration_failure_retains_recoverable_files_and_does_not_claim_intact_root",
+        "project_store::tests::retained_scenario_roles_cannot_satisfy_a_missing_current_index",
+        "project_store::tests::scenario_and_project_both_remain_old_when_the_real_root_replace_fails",
+        "project_store::tests::stale_backing_does_not_reuse_a_committed_or_orphan_generation",
+        "project_store::tests::typed_root_required_fields_versions_roles_and_revision_are_enforced",
+        "project_store::tests::windows_path_components_casefold_and_file_directory_collisions_are_rejected"
+      ],
+      "started_at": "2026-10-16T00:51:33.4201191+08:00",
+      "finished_at": "2026-10-16T00:52:10.1415174+08:00",
+      "execution_round": "post_composition_fix_second_concentrated_run"
+    },
+    "actual_result": {
+      "status": "passed",
+      "current_initial_future_supply_demand_and_allocations_roundtrip": "passed",
+      "wrong_code_owner_pointer_rejection": "passed",
+      "same_ID_other_version_in_current_Frozen_and_Supporting_rejection": "passed",
+      "required_module_file_not_waived": "passed",
+      "Frozen_or_Supporting_not_used_as_current_owner_context": "passed",
+      "current_Scenario_and_old_Run_preservation": "passed",
+      "new_store_tests": 5,
+      "original_store_tests": 20,
+      "proof_ref": ".work/p0-02-stock/verification/result.json",
+      "post_composition_fix_round": {
+        "status": "passed",
+        "proof_ref": ".work/p0-02-stock/verification/result.json",
+        "composition_related_raw_lines": [
+          "test container_holder_and_composition_relations_are_input_graphs_without_duplicate_physical_ownership ... ok",
+          "test material_inputs::tests::container_closure_and_component_origins_are_separate ... ok"
+        ],
+        "correction_and_independent_positive_negative_cases": "本轮统筹实际执行；组成来源source及独立Host分支由窗口2/5负责，本窗未改其源或代写认可",
+        "this_window_store_source_changed": false
+      }
+    },
+    "executor": "统筹集中Cargo；本窗口未运行Cargo或安装依赖",
+    "prior_107_Rust_56_native": "按新旧原始测试名实际比对：旧107 Rust/56 native均保留为新124/82子集"
+  },
+  "limits": {
+    "input_semantics_only": true,
+    "actual_Engine_or_Run_initialization": null,
+    "actual_inventory_reservation_or_split_ledger": null,
+    "run_admission_implemented": false,
+    "quality_module_scope_expanded": false,
+    "whole_original_step_2_or_P0_02_accepted": false
+  },
+  "public_types_config_lock_lib_or_other_window_records_modified": false,
+  "source_frozen_after_delivery": true,
+  "global_verification": {
+    "status": "passed_after_composition_fix",
+    "proof_ref": ".work/p0-02-stock/verification/result.json",
+    "Rust_tests": 124,
+    "schemas": 20,
+    "schema_cases": 48,
+    "actual_same_managed_Host_checks": 82,
+    "all_check_exit_codes": 0,
+    "old_107_Rust_names_retained": true,
+    "old_56_native_names_retained": true,
+    "independent_review": "由窗口6和统筹接收；本窗只更新store专属回执，不代写公共复审或整项完成状态",
+    "current_slice_scope": "输入校核与存储消费；完整步骤2的库存执行/运行Host准入/拆批及步骤3仍未完成",
+    "pre_composition_fix_proof_ref": ".work/p0-02-stock/pre-composition-fix-verification/result.json",
+    "pre_composition_proof_used_for_post_fix_pass": false
+  }
+}

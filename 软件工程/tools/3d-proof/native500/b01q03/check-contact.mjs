@@ -1,0 +1,14 @@
+import fs from 'node:fs/promises';import * as T from 'three';import assert from 'node:assert/strict';
+import {build} from '../../../../modules/media/native-equipment-500/reviews/B01-Q03/source/print-reviewed.mjs';import {specs,inkSeat} from '../../../../modules/media/native-equipment-500/reviews/B01-Q03/source/batch-spec.mjs';
+const home='modules/media/native-equipment-500/reviews/B01-Q03',spec=JSON.parse(await fs.readFile(home+'/catalog.json','utf8')).equipment[0],s=specs[spec.id],checks=[];
+for(const simple of [true,false]){
+ const b=build(spec,simple),part=n=>{const p=b.root.getObjectByName(n);assert.ok(p,n);return p;},box=n=>new T.Box3().setFromObject(part(n),true),near=(a,b)=>assert.ok(Math.abs(a-b)<1e-6,`${a} vs ${b}`),mixer=new T.AnimationMixer(b.root);b.root.updateMatrixWorld(true);
+ near(box('ImpressionCylinderRoll').max.y,s.surface);assert.ok(box('ImpressionCylinderRoll').min.y>=.8-1e-6);near(box('BlanketCylinderRoll').min.y,s.surface+s.size[1]+.000020);near(box('BlanketCylinderRoll').max.y,box('PlateCylinderRoll').min.y);
+ for(const[name,r]of[['InkFormRoller',.04],['DampeningFormRoller',.035]])near(part(name).position.distanceTo(part('PlateCylinder').position),.08+r);
+ near(box('WorkingInkFloor').max.y,inkSeat(s.colors[0])[1]);near(box('InkCupStandColumn').max.y,box('WorkingInkFloor').min.y);
+ for(const clip of b.animations){const a=mixer.clipAction(clip);a.setLoop(T.LoopOnce,1);a.clampWhenFinished=true;a.play();for(const u of[0,.25,.5,.75,1,.5,0]){a.time=u;mixer.update(0);b.root.updateMatrixWorld(true);b.root.traverse(o=>assert.ok(o.matrixWorld.elements.every(Number.isFinite)));for(const n of['PlateClamp-0.24','PlateClamp0.24'])if(!simple){const p=box(n);assert.ok(p.max.z<=-.23+1e-6||p.min.z>=.23-1e-6,'plate clamps enter blanket width');}}a.stop();}
+ const auto=mixer.clipAction(b.animations.find(c=>c.name==='auto'));auto.play();
+ for(const[name,r,sign]of[['BlanketCylinder',.08,-1],['ImpressionCylinder',.06,1]]){auto.time=.4;mixer.update(0);b.root.updateMatrixWorld(true);const o=part(name),contact=o.getWorldPosition(new T.Vector3()).add(new T.Vector3(0,sign*r,0)),local=o.worldToLocal(contact.clone());auto.time=.40001;mixer.update(0);b.root.updateMatrixWorld(true);const velocity=(o.localToWorld(local).x-contact.x)/.00001;assert.ok(Math.abs(velocity-2)<.001,'nip surface must co-move with actual paper: '+name+' '+velocity);}auto.stop();
+ checks.push({id:spec.id,lod:simple?'simple':'detailed',three_cylinder_contact_form_roll_tangency_bed_clearance_and_clamp_clearance:true});
+}
+await fs.writeFile(home+'/contact-checks.json',JSON.stringify({passed:true,profile:'b01q03-source-offset-three-cylinders',models:2,checks},null,2)+'\n');console.log('Two source models: plate/blanket/impression, inking/dampening tangencies, bed and clamp clearance PASS.');

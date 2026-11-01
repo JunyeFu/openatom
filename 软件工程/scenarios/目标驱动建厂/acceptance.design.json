@@ -11,11 +11,14 @@
   },
   "template_ref": "modules/templates/carton-factory/manifest.json",
   "required_steps": [
+    "describe_capabilities",
+    "get_context",
     "query_module_library",
     "apply_commands",
     "check_factory_draft",
     "render_view",
     "run_scenario",
+    "get_task",
     "get_run",
     "export_evaluation",
     "save_project"
@@ -24,37 +27,79 @@
     {
       "id": "GF-01",
       "condition": "supported_template_and_complete_labeled_inputs",
-      "expectation": "editable_nine_role_factory_with_layout_schedule_actual_run_and_report"
+      "expectation": "editable_nine_role_factory_with_layout_schedule_actual_run_and_report",
+      "actual_result": null,
+      "independent_cases": [
+        "FC01",
+        "FC03",
+        "FC04",
+        "FC24"
+      ]
     },
     {
       "id": "GF-02",
       "condition": "missing_calendar_or_cycle_or_site",
-      "expectation": "draft_and_named_missing_inputs_not_production_target_met"
+      "expectation": "draft_and_named_missing_inputs_not_production_target_met",
+      "actual_result": null,
+      "independent_cases": [
+        "FC21"
+      ]
     },
     {
       "id": "GF-03",
       "condition": "no_matching_template",
-      "expectation": "explain_missing_scope_preserve_draft_not_fake_factory"
+      "expectation": "explain_missing_scope_preserve_draft_not_fake_factory",
+      "actual_result": null,
+      "independent_cases": [
+        "FC21"
+      ]
     },
     {
       "id": "GF-04",
       "condition": "footprint_height_or_clearance_conflict",
-      "expectation": "object_specific_conflict_not_visual_scaling_bypass"
+      "expectation": "object_specific_conflict_not_visual_scaling_bypass",
+      "actual_result": null,
+      "independent_cases": [
+        "FC03",
+        "FC24"
+      ]
     },
     {
       "id": "GF-05",
       "condition": "actual_accepted_output_below_target",
-      "expectation": "finite_supported_repair_and_new_run_comparison_or_inability_reason"
+      "expectation": "finite_supported_repair_and_new_run_comparison_or_inability_reason",
+      "actual_result": null,
+      "independent_cases": [
+        "FC07",
+        "FC08",
+        "FC09",
+        "FC20",
+        "FC22",
+        "FC23"
+      ]
     },
     {
       "id": "GF-06",
       "condition": "human_reopens_generated_project",
-      "expectation": "edit_and_rerun_same_objects_sources_and_bindings"
+      "expectation": "edit_and_rerun_same_objects_sources_and_bindings",
+      "actual_result": null,
+      "independent_cases": [
+        "FC04",
+        "FC05",
+        "FC10",
+        "FC17"
+      ]
     },
     {
       "id": "GF-07",
       "condition": "initial_draft_inputs_complete_checks_pass_and_actual_target_met",
-      "expectation": "direct_editable_project_and_four_format_delivery_one_actual_run_no_required_change_revised_run_or_comparison"
+      "expectation": "direct_editable_project_and_four_format_delivery_one_actual_run_no_required_change_revised_run_or_comparison",
+      "actual_result": null,
+      "independent_cases": [
+        "FC06",
+        "FC02",
+        "FC15"
+      ]
     }
   ],
   "result_formats": [
@@ -73,9 +118,11 @@
   "generic_unit_examples": [
     {
       "product_family": "die_cut_fold_glued_paper_carton",
-      "accepted_unit": "carton",
+      "accepted_unit": "piece",
       "acceptance_scope": "declared_finished_goods_destination",
-      "count_rule": "bundle converted using declared carton contents counted once"
+      "count_rule": "bundle converted using declared carton contents counted once",
+      "accepted_item_type": "carton",
+      "display_label": "合格箱数"
     },
     {
       "product_family": "purchased_parts_assembly",
@@ -84,5 +131,21 @@
       "count_rule": "assembled product counted once; consumed components not added to accepted output"
     }
   ],
-  "generic_unit_examples_scope": "Contract walkthrough examples only, not frozen capacity inputs or executed runtime tests; both use the same goal_fields."
+  "generic_unit_examples_scope": "Contract walkthrough examples only, not frozen capacity inputs or executed runtime tests; both use the same goal_fields.",
+  "definition_ref": "docs/04_开发与验收/特征细化/DRF04_完整定义.json",
+  "finite_cases_ref": "scenarios/目标驱动建厂/finite-cases.design.json",
+  "call_examples_ref": "scenarios/目标驱动建厂/mcp-calls.design.json",
+  "instantiation_contract_ref": "modules/templates/instantiation.design.json",
+  "long_task_result_rule": "seven long actions return TaskHandle; get_task typed completion before reading Run/render/files; cancellation read actual terminal",
+  "feedback_repair_limit": {
+    "max_rounds": 3,
+    "initial_run_counts": false,
+    "no_effective_change_stops": true,
+    "max_capacity_runs": 4
+  },
+  "default_field_scope": "granted scheduling, selected layout and explicitly allowed device count; phase time/BOM/quality/hiring/cost and new supply require explicit field authorization",
+  "timeline_rule": "canonical TC01/TC02/frontier merged; read one Run; Events point end inclusive, durations half-open; no guessed history",
+  "authority_cases_ref": "docs/04_开发与验收/特征细化/DRF04_授权有限案例.json",
+  "connector_ref": "integrations/agent/stdio-connector.design.json",
+  "UI_binding_ref": "docs/04_开发与验收/特征细化/DRF04_H04-04界面绑定.json"
 }

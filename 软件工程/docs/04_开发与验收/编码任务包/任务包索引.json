@@ -2,6 +2,17 @@
   "document_kind": "derived_coding_package_index_not_execution_backlog",
   "source_ref": "docs/00_项目基线/首版任务选择.json",
   "stage_plan_ref": "docs/04_开发与验收/阶段实现计划.json",
+  "nonfunctional_spec_ref": "docs/01_业务需求/非功能需求与测量验收.json",
+  "navigation_spec_ref": "docs/02_交互设计/交互流程与视图导航.json",
+  "form_spec_ref": "docs/02_交互设计/首版表单与反馈.json",
+  "component_architecture_ref": "docs/03_架构与契约/全层组件与接点.json",
+  "ownership_spec_ref": "docs/03_架构与契约/共享状态与所有权.json",
+  "module_protocol_ref": "packages/module-kit/category-contracts.design.json",
+  "technical_selection_ref": "docs/03_架构与契约/首版技术栈与部署设计.json",
+  "scheduler_spec_ref": "docs/03_架构与契约/调度与状态转换算法.json",
+  "type_format_spec_ref": "docs/03_架构与契约/全层类型与工程格式.json",
+  "api_contract_spec_ref": "docs/03_架构与契约/公开操作与宿主调用契约.json",
+  "requirement_trace_ref": "docs/04_开发与验收/首版需求验收追踪.json",
   "protocol_ref": "docs/04_开发与验收/编码任务包与AI实现审查.md",
   "refresh_rule": "S06冻结设计/S07入口落实后刷新，用户派发前填当前切片/文件/真实前置；不修改源任务状态",
   "packages": [
@@ -9,190 +20,3214 @@
       "task_id": "P0-01",
       "primary_window": "W00",
       "package_ref": "docs/04_开发与验收/编码任务包/P0-01.md",
-      "status": "draft_not_dispatchable",
-      "design_accepted": false,
-      "actual_commands": null,
-      "actual_dispatch": null
+      "status": "in_progress",
+      "design_accepted": true,
+      "actual_commands": {
+        "workspace_tests": "npm run test:rust",
+        "generate_contracts": "npm run generate:contracts",
+        "typecheck": "npm run typecheck",
+        "schema_validation": "python -B -X utf8 tools/检查工程与Command边界.py",
+        "desktop_build": "cargo build -p sf-desktop-host --bin superfactory --locked",
+        "native_host_smoke": ".\\target\\debug\\superfactory.exe --p0-01-host-smoke",
+        "format": "cargo fmt -p sf-commands -p sf-desktop-host -- --check",
+        "all_checks": "./tools/p0-01-host/verify-persistence-history.ps1"
+      },
+      "actual_dispatch": {
+        "authorized_at": "2026-10-16T01:02:19+08:00",
+        "authority": "发挥统筹作用自主按设计好的开发顺序往下推进，不设工作量上限。分发任务时分发整个任务包而不是几个要点",
+        "task_id": "P0-01",
+        "within_original_step": 1,
+        "dispatch_mode": "whole_task_package",
+        "role": "W00",
+        "thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+        "scope_ref": "docs/04_开发与验收/整包派发/P0-01_整包执行.json",
+        "business_frontend_authorized": false
+      },
+      "confirmed_question_ids": [
+        "Q10",
+        "Q11",
+        "Q19",
+        "Q20",
+        "Q25",
+        "Q47",
+        "Q51",
+        "Q52",
+        "Q58",
+        "Q59"
+      ],
+      "design_acceptance_ref": "docs/04_开发与验收/S06-05_全层贯通设计与冻结复审.json",
+      "design_view_refs": {
+        "task_interaction": [
+          "docs/02_交互设计/交互流程与视图导航.json",
+          "docs/02_交互设计/首版表单与反馈.json",
+          "docs/03_架构与契约/首版类型格式与操作契约.md",
+          "packages/module-kit/category-contracts.design.json",
+          "packages/domain/factory-generation.design.json",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "structure_data": [
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "packages/domain/types.design.rs"
+        ],
+        "state_behavior": [
+          "docs/02_交互设计/主流程与视图导航.md",
+          "docs/02_交互设计/工业工作台母版与字段细化.json",
+          "docs/02_交互设计/时间轴主轴与子轴完整定义.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/03_架构与契约/共享状态与所有权.json",
+          "docs/04_开发与验收/特征细化/DRF04_Host授权合入.json",
+          "packages/commands/command-catalog.design.json"
+        ],
+        "interface_collaboration": [
+          "docs/02_交互设计/主流程与视图导航.md",
+          "docs/02_交互设计/工业工作台母版与字段细化.json",
+          "docs/02_交互设计/时间轴主轴与子轴完整定义.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/03_架构与契约/共享状态与所有权.json",
+          "docs/04_开发与验收/特征细化/DRF04_Host授权合入.json",
+          "packages/commands/api.design.rs",
+          "packages/commands/command-catalog.design.json"
+        ],
+        "presentation_UI": [
+          "docs/02_交互设计/S04_可操作设计原型/README.md",
+          "docs/02_交互设计/工业工作台母版与字段细化.json"
+        ],
+        "deployment_validation": [
+          "docs/02_交互设计/主流程与视图导航.md",
+          "docs/02_交互设计/工业工作台母版与字段细化.json",
+          "docs/02_交互设计/时间轴主轴与子轴完整定义.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/03_架构与契约/共享状态与所有权.json",
+          "docs/03_架构与契约/首版技术栈与部署设计.json",
+          "docs/04_开发与验收/S05-05_关键架构实际试做.json",
+          "docs/04_开发与验收/特征细化/DRF04_Host授权合入.json",
+          "packages/commands/command-catalog.design.json"
+        ]
+      },
+      "prepared_slice": {
+        "task_id": "P0-01",
+        "within_original_step": 2,
+        "original_steps_scope": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "dispatch_mode": "whole_task_package",
+        "scope": "Windows/Tauri基础构建入口、共同工程/九类定义及版本引用、目标/场地/单位和目录保存重开；不复制库存/时钟；本次会话内草稿撤销/重做，经共同Commands形成新修订，不回滚当前运行/认可/外部动作",
+        "planned_owner": "W00",
+        "actual_owner_window": "W00",
+        "actual_owner_thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+        "actual_thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+        "preparation_status": "in_progress",
+        "business_frontend_changes": false,
+        "input_refs": [
+          "docs/03_架构与契约/首版类型格式与操作契约.md",
+          "packages/module-kit/category-contracts.design.json",
+          "packages/domain/factory-generation.design.json",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "actual_prerequisite_outputs": [
+          "共同类型/18操作边界、原步骤1—4最小后端及共同Host/Engine专业联通限定切片已接收，当前公开13项限定操作；原完整业务UI/IX/NFR/release与人验仍未完成。"
+        ],
+        "implementation_dependencies": [],
+        "allowed_modified_files": [
+          "packages/domain/src/lib.rs",
+          "packages/commands/src/lib.rs",
+          "packages/commands/src/project_host.rs",
+          "packages/commands/src/project_store.rs",
+          "packages/commands/src/api.rs",
+          "apps/planner/src-tauri/src/project_api.rs",
+          "apps/planner/src-tauri/src/lib.rs",
+          "packages/commands/Cargo.toml",
+          "packages/simulation/Cargo.toml",
+          "Cargo.lock",
+          "docs/",
+          "tools/",
+          "README.md",
+          "AGENTS.md",
+          "packages/domain/src/models.rs",
+          "packages/domain/types.design.rs",
+          "packages/domain/type-inventory.design.json",
+          "packages/domain/business-objects.design.json",
+          "packages/commands/src/project_host/",
+          "packages/commands/generated/",
+          "Cargo.toml",
+          "packages/packaging/Cargo.toml",
+          "packages/commands/api.design.rs",
+          "packages/commands/src/host_definitions.rs",
+          "packages/commands/src/bin/export-contracts.rs",
+          "packages/domain/src/business_inputs.rs"
+        ],
+        "finite_expectations": [
+          "保存重开后对象、数量和连接一致；并行支线与合流能表达；库位、物品当前归属、模块实例与方案分开；两厂房声明引用完整；物品/信号/专业成果分别表达类型、单位、端点和接受范围，草稿扩展不改变原无阶段样例；目标/合格接受单位、场地包络、行业生成配置、来源明确的参数与九类角色绑定可保存；长宽高映射既有坐标与m单位。；实际Windows基础应用能启动，前端经共同Rust入口编辑最小工程并目录保存重开；构建/启动方法是可执行入口，不以README或本机Rust编译替代。；草稿编辑撤销/重做正确且产生新修订；旧Run/库存/认可不变，修订冲突不覆盖，新编辑清除失效redo，跨工程不串历史"
+        ],
+        "verification_entries": [
+          "必要crate targeted tests",
+          "cargo test --workspace --locked",
+          "npm run generate:contracts",
+          "npm run typecheck",
+          "真实Host/Worker与同源Schema/原生接入",
+          "完整原验收及独立复审"
+        ],
+        "actual_dispatch": {
+          "authorized_at": "2026-10-16T01:02:19+08:00",
+          "authority": "发挥统筹作用自主按设计好的开发顺序往下推进，不设工作量上限。分发任务时分发整个任务包而不是几个要点",
+          "task_id": "P0-01",
+          "within_original_step": 1,
+          "dispatch_mode": "whole_task_package",
+          "role": "W00",
+          "thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+          "scope_ref": "docs/04_开发与验收/整包派发/P0-01_整包执行.json",
+          "business_frontend_authorized": false
+        },
+        "actual_prerequisite_output_refs": [
+          "docs/04_开发与验收/P0-01_保存重开与会话历史切片.json",
+          "docs/04_开发与验收/P0-02_业务输入与引用切片.json",
+          "docs/04_开发与验收/P0-02_初始物料与分配输入切片.json",
+          "packages/domain/src/models.rs",
+          "packages/commands/src/api.rs",
+          "packages/commands/src/project_draft.rs",
+          "packages/commands/src/project_store.rs",
+          ".work/p0-02-stock/verification/result.json",
+          "docs/04_开发与验收/S08_共同Host与Engine专业联通切片.json"
+        ]
+      },
+      "engineering_preparation_ref": "docs/04_开发与验收/S07_工程准备与执行准入.json",
+      "current_execution_ref": "docs/04_开发与验收/整包派发/P0-01_整包执行.json",
+      "progress_assessment_ref": "docs/04_开发与验收/整包派发/P0-01_整包执行.json#/progress_assessment"
     },
     {
       "task_id": "P0-02",
       "primary_window": "W00",
       "package_ref": "docs/04_开发与验收/编码任务包/P0-02.md",
-      "status": "draft_not_dispatchable",
-      "design_accepted": false,
-      "actual_commands": null,
-      "actual_dispatch": null
+      "status": "in_progress",
+      "design_accepted": true,
+      "actual_commands": {
+        "all_checks": "./tools/p0-02-stock/verify.ps1",
+        "workspace_tests": "npm run test:rust",
+        "generate_contracts": "npm run generate:contracts",
+        "typecheck": "npm run typecheck",
+        "schema_validation": "python -B -X utf8 tools/检查工程与Command边界.py --output .work/p0-02-stock/schema-validation-result.json",
+        "desktop_build": "cargo build -p sf-desktop-host --bin superfactory --locked",
+        "native_host_smoke": ".\\target\\debug\\superfactory.exe --p0-01-host-smoke",
+        "format": "cargo fmt -p sf-domain -p sf-commands -p sf-desktop-host -- --check"
+      },
+      "actual_dispatch": {
+        "authorized_at": "2026-10-16T01:02:19+08:00",
+        "authority": "发挥统筹作用自主按设计好的开发顺序往下推进，不设工作量上限。分发任务时分发整个任务包而不是几个要点",
+        "task_id": "P0-02",
+        "within_original_step": 1,
+        "dispatch_mode": "whole_task_package",
+        "role": "W00",
+        "thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+        "scope_ref": "docs/04_开发与验收/整包派发/P0-02_整包执行.json",
+        "business_frontend_authorized": false
+      },
+      "confirmed_question_ids": [
+        "Q21",
+        "Q22",
+        "Q30",
+        "Q31",
+        "Q36"
+      ],
+      "design_acceptance_ref": "docs/04_开发与验收/S06-05_全层贯通设计与冻结复审.json",
+      "design_view_refs": {
+        "task_interaction": [
+          "docs/02_交互设计/交互流程与视图导航.json",
+          "docs/02_交互设计/首版表单与反馈.json",
+          "docs/01_业务需求/订单工艺与物料分配.md",
+          "packages/domain/business-objects.design.json",
+          "scenarios/真实业务设计/business-inputs.design.json",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "structure_data": [
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "packages/domain/types.design.rs"
+        ],
+        "state_behavior": [
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/03_架构与契约/共享状态与所有权.json",
+          "docs/04_开发与验收/特征细化/DRF03_C04_伴随材料消费契约.json",
+          "packages/module-kit/category-contracts.design.json"
+        ],
+        "interface_collaboration": [
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/04_开发与验收/特征细化/DRF03_C04_伴随材料消费契约.json",
+          "packages/commands/api.design.rs",
+          "packages/module-kit/category-contracts.design.json"
+        ],
+        "presentation_UI": [
+          "docs/02_交互设计/S04_可操作设计原型/README.md",
+          "docs/02_交互设计/工业工作台母版与字段细化.json"
+        ],
+        "deployment_validation": [
+          "docs/03_架构与契约/首版技术栈与部署设计.json",
+          "docs/04_开发与验收/S05-05_关键架构实际试做.json",
+          "docs/04_开发与验收/特征细化/DRF03_C04_伴随材料消费契约.json",
+          "packages/module-kit/category-contracts.design.json"
+        ]
+      },
+      "engineering_preparation_ref": "docs/04_开发与验收/S07_工程准备与执行准入.json",
+      "current_execution_ref": "docs/04_开发与验收/整包派发/P0-02_整包执行.json",
+      "prepared_slice": {
+        "task_id": "P0-02",
+        "within_original_step": 1,
+        "original_steps_scope": [
+          1,
+          2,
+          3
+        ],
+        "dispatch_mode": "whole_task_package",
+        "scope": "产品版本、订单/BOM/路线、物品/批次/容器关系、唯一归属、预留/质量及方案输入；需求与库存分开",
+        "planned_owner": "W00",
+        "actual_owner_window": "W01",
+        "actual_owner_thread_id": "01a11f4e-f8a4-7a62-9d23-24834761b07e",
+        "actual_thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+        "preparation_status": "in_progress",
+        "business_frontend_changes": false,
+        "input_refs": [
+          "docs/01_业务需求/订单工艺与物料分配.md",
+          "packages/domain/business-objects.design.json",
+          "scenarios/真实业务设计/business-inputs.design.json",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "actual_prerequisite_outputs": [
+          "完整产品/BOM/路线/订单Host输入及初始物料输入校核已接收；W6-M-F01/C01已修复并独立复审，124 Rust/48 Schema案例/82同Host原生检查通过。真实类型、ProjectDraft、保存/重开和会话历史可用。原步骤2运行库存/预留消费者和步骤3取消仍须完成并由P1-01真实消费者证明。"
+        ],
+        "implementation_dependencies": [
+          "P0-01"
+        ],
+        "allowed_modified_files": [
+          "packages/domain/src/business_inputs.rs",
+          "packages/domain/src/material_inputs.rs",
+          "packages/domain/src/business_plans.rs",
+          "packages/domain/tests/business_plans.rs",
+          "docs/04_开发与验收/整包派发/P0-02_整包执行.json"
+        ],
+        "finite_expectations": [
+          "产品/BOM/路线版本、订单目的/交期/分配明确；位置、生命周期、质量和预留独立；取消未开工需求不删除在制；旧无订单样例继续目标需求模式"
+        ],
+        "verification_entries": [
+          "必要crate targeted tests",
+          "cargo test --workspace --locked",
+          "npm run generate:contracts",
+          "npm run typecheck",
+          "真实Host/Worker与同源Schema/原生接入",
+          "完整原验收及独立复审"
+        ],
+        "actual_dispatch": {
+          "authorized_at": "2026-10-16T01:02:19+08:00",
+          "authority": "发挥统筹作用自主按设计好的开发顺序往下推进，不设工作量上限。分发任务时分发整个任务包而不是几个要点",
+          "task_id": "P0-02",
+          "within_original_step": 1,
+          "dispatch_mode": "whole_task_package",
+          "role": "W00",
+          "thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+          "scope_ref": "docs/04_开发与验收/整包派发/P0-02_整包执行.json",
+          "business_frontend_authorized": false
+        },
+        "actual_prerequisite_output_refs": [
+          "docs/04_开发与验收/P0-01_保存重开与会话历史切片.json",
+          "docs/04_开发与验收/P0-02_业务输入与引用切片.json",
+          "docs/04_开发与验收/P0-02_初始物料与分配输入切片.json",
+          "packages/domain/src/models.rs",
+          "packages/commands/src/api.rs",
+          "packages/commands/src/project_draft.rs",
+          "packages/commands/src/project_store.rs",
+          ".work/p0-02-stock/verification/result.json"
+        ]
+      },
+      "progress_assessment_ref": "docs/04_开发与验收/整包派发/P0-02_整包执行.json#/progress_assessment"
     },
     {
       "task_id": "P0-03",
       "primary_window": "W00",
       "package_ref": "docs/04_开发与验收/编码任务包/P0-03.md",
-      "status": "draft_not_dispatchable",
-      "design_accepted": false,
-      "actual_commands": null,
-      "actual_dispatch": null
+      "status": "in_progress",
+      "design_accepted": true,
+      "actual_commands": {
+        "generate_types": "npm run generate:types",
+        "typecheck": "npm run typecheck",
+        "build": "npm run build",
+        "rust_tests": "npm run test:rust",
+        "engineering_tests": "npm test",
+        "desktop_start_smoke": ".\\target\\debug\\superfactory.exe --s07-smoke"
+      },
+      "actual_dispatch": {
+        "authorized_at": "2026-10-16T01:02:19+08:00",
+        "authority": "发挥统筹作用自主按设计好的开发顺序往下推进，不设工作量上限。分发任务时分发整个任务包而不是几个要点",
+        "task_id": "P0-03",
+        "within_original_step": 1,
+        "dispatch_mode": "whole_task_package",
+        "role": "W00",
+        "thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+        "scope_ref": "docs/04_开发与验收/整包派发/P0-03_整包执行.json",
+        "business_frontend_authorized": false
+      },
+      "confirmed_question_ids": [
+        "Q28",
+        "Q39",
+        "Q43"
+      ],
+      "design_acceptance_ref": "docs/04_开发与验收/S06-05_全层贯通设计与冻结复审.json",
+      "design_view_refs": {
+        "task_interaction": [
+          "docs/02_交互设计/交互流程与视图导航.json",
+          "docs/02_交互设计/首版表单与反馈.json",
+          "packages/domain/professional-artifact-binding.design.json",
+          "docs/03_架构与契约/专业成果接入与软件在环.md",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "packages/packaging/consumer-device.design.json",
+          "docs/04_开发与验收/特征细化/DRF03_C02_专业绑定推导.json",
+          "docs/04_开发与验收/特征细化/DRF03_C02_实际工位定义与生成接入.json"
+        ],
+        "structure_data": [
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "packages/domain/types.design.rs"
+        ],
+        "state_behavior": [
+          "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/03_架构与契约/共享状态与所有权.json",
+          "docs/03_架构与契约/纸包装数值与制造规则.md",
+          "docs/03_架构与契约/纸包装结构与过程算法.md",
+          "docs/03_架构与契约/调度与状态转换算法.json",
+          "packages/commands/command-catalog.design.json",
+          "packages/packaging/algorithm.design.json"
+        ],
+        "interface_collaboration": [
+          "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/03_架构与契约/共享状态与所有权.json",
+          "docs/03_架构与契约/纸包装数值与制造规则.md",
+          "docs/03_架构与契约/纸包装结构与过程算法.md",
+          "docs/03_架构与契约/调度与状态转换算法.json",
+          "packages/commands/api.design.rs",
+          "packages/commands/command-catalog.design.json",
+          "packages/packaging/algorithm.design.json"
+        ],
+        "presentation_UI": [
+          "docs/02_交互设计/S04_可操作设计原型/README.md",
+          "docs/02_交互设计/工业工作台母版与字段细化.json"
+        ],
+        "deployment_validation": [
+          "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+          "docs/03_架构与契约/共享状态与所有权.json",
+          "docs/03_架构与契约/纸包装数值与制造规则.md",
+          "docs/03_架构与契约/纸包装结构与过程算法.md",
+          "docs/03_架构与契约/调度与状态转换算法.json",
+          "docs/03_架构与契约/首版技术栈与部署设计.json",
+          "docs/04_开发与验收/S05-05_关键架构实际试做.json",
+          "packages/commands/command-catalog.design.json",
+          "packages/packaging/algorithm.design.json"
+        ]
+      },
+      "engineering_preparation_ref": "docs/04_开发与验收/S07_工程准备与执行准入.json",
+      "current_execution_ref": "docs/04_开发与验收/整包派发/P0-03_整包执行.json",
+      "prepared_slice": {
+        "task_id": "P0-03",
+        "within_original_step": 1,
+        "original_steps_scope": [
+          1,
+          2,
+          3
+        ],
+        "dispatch_mode": "whole_task_package",
+        "scope": "仅专业成果artifact、人工认可acceptance、消费者binding、执行result及产品版本影响；建设/投用/公用服务字段与执行后置",
+        "planned_owner": "W00",
+        "actual_owner_window": "W03",
+        "actual_owner_thread_id": "01a1396d-bb0e-7e93-8ad5-b3465048d09a",
+        "actual_thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+        "preparation_status": "in_progress",
+        "business_frontend_changes": false,
+        "input_refs": [
+          "packages/domain/professional-artifact-binding.design.json",
+          "docs/03_架构与契约/专业成果接入与软件在环.md",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "packages/packaging/consumer-device.design.json",
+          "docs/04_开发与验收/特征细化/DRF03_C02_专业绑定推导.json",
+          "docs/04_开发与验收/特征细化/DRF03_C02_实际工位定义与生成接入.json"
+        ],
+        "actual_prerequisite_outputs": [
+          "所需产品版本/共同引用/专业四对象公共类型已真实实现，P0-02步骤1已接收。库存/运输不是四对象语义的启动屏障。专业计算器尚未就绪时保留Unknown/Fail，不制造Pass或把试做当产品执行。"
+        ],
+        "implementation_dependencies": [
+          "P0-02"
+        ],
+        "allowed_modified_files": [
+          "packages/domain/src/professional_inputs.rs",
+          "packages/commands/src/project_professional.rs",
+          "packages/commands/src/project_draft.rs",
+          "packages/commands/src/project_history.rs",
+          "docs/04_开发与验收/整包派发/P0-03_整包执行.json"
+        ],
+        "finite_expectations": [
+          "artifact/认可/消费者绑定/实际执行结果分别表达；保存所用产品/成果版本及认可用途；产品改版后受影响绑定待复核，旧r1成果仍可用于原范围；未知/失败结果不当通过；不要求实现建设日历、投用包或公用服务类型/求解。"
+        ],
+        "verification_entries": [
+          "必要crate targeted tests",
+          "cargo test --workspace --locked",
+          "npm run generate:contracts",
+          "npm run typecheck",
+          "真实Host/Worker与同源Schema/原生接入",
+          "完整原验收及独立复审"
+        ],
+        "actual_dispatch": {
+          "authorized_at": "2026-10-16T01:02:19+08:00",
+          "authority": "发挥统筹作用自主按设计好的开发顺序往下推进，不设工作量上限。分发任务时分发整个任务包而不是几个要点",
+          "task_id": "P0-03",
+          "within_original_step": 1,
+          "dispatch_mode": "whole_task_package",
+          "role": "W00",
+          "thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+          "scope_ref": "docs/04_开发与验收/整包派发/P0-03_整包执行.json",
+          "business_frontend_authorized": false
+        },
+        "actual_prerequisite_output_refs": [
+          "docs/04_开发与验收/P0-01_保存重开与会话历史切片.json",
+          "docs/04_开发与验收/P0-02_业务输入与引用切片.json",
+          "docs/04_开发与验收/P0-02_初始物料与分配输入切片.json",
+          "packages/domain/src/models.rs",
+          "packages/commands/src/api.rs",
+          "packages/commands/src/project_draft.rs",
+          "packages/commands/src/project_store.rs",
+          ".work/p0-02-stock/verification/result.json"
+        ]
+      },
+      "progress_assessment_ref": "docs/04_开发与验收/整包派发/P0-03_整包执行.json#/progress_assessment"
     },
     {
       "task_id": "P1-01",
       "primary_window": "W01",
       "package_ref": "docs/04_开发与验收/编码任务包/P1-01.md",
-      "status": "draft_not_dispatchable",
-      "design_accepted": false,
-      "actual_commands": null,
-      "actual_dispatch": null
+      "status": "in_progress",
+      "design_accepted": true,
+      "actual_commands": {
+        "generate_types": "npm run generate:types",
+        "typecheck": "npm run typecheck",
+        "build": "npm run build",
+        "rust_tests": "npm run test:rust",
+        "engineering_tests": "npm test",
+        "desktop_start_smoke": ".\\target\\debug\\superfactory.exe --s07-smoke"
+      },
+      "actual_dispatch": {
+        "authorized_at": "2026-10-16T01:02:19+08:00",
+        "authority": "发挥统筹作用自主按设计好的开发顺序往下推进，不设工作量上限。分发任务时分发整个任务包而不是几个要点",
+        "task_id": "P1-01",
+        "within_original_step": 1,
+        "dispatch_mode": "whole_task_package",
+        "role": "W00",
+        "thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+        "scope_ref": "docs/04_开发与验收/整包派发/P1-01_整包执行.json",
+        "business_frontend_authorized": false
+      },
+      "confirmed_question_ids": [
+        "Q16",
+        "Q24",
+        "Q31",
+        "Q33",
+        "Q34"
+      ],
+      "design_acceptance_ref": "docs/04_开发与验收/S06-05_全层贯通设计与冻结复审.json",
+      "design_view_refs": {
+        "task_interaction": [
+          "docs/02_交互设计/交互流程与视图导航.json",
+          "docs/02_交互设计/首版表单与反馈.json",
+          "scenarios/两厂房装配包装/project.design.json",
+          "docs/01_业务需求/订单工艺与物料分配.md",
+          "docs/03_架构与契约/调度与状态转换算法.json",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "structure_data": [
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "packages/domain/types.design.rs"
+        ],
+        "state_behavior": [
+          "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/03_架构与契约/共享状态与所有权.json",
+          "docs/03_架构与契约/调度与状态转换算法.json"
+        ],
+        "interface_collaboration": [
+          "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/03_架构与契约/调度与状态转换算法.json",
+          "packages/commands/api.design.rs"
+        ],
+        "presentation_UI": [
+          "docs/02_交互设计/S04_可操作设计原型/README.md",
+          "docs/02_交互设计/工业工作台母版与字段细化.json"
+        ],
+        "deployment_validation": [
+          "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+          "docs/03_架构与契约/调度与状态转换算法.json",
+          "docs/03_架构与契约/首版技术栈与部署设计.json",
+          "docs/04_开发与验收/S05-05_关键架构实际试做.json"
+        ]
+      },
+      "engineering_preparation_ref": "docs/04_开发与验收/S07_工程准备与执行准入.json",
+      "current_execution_ref": "docs/04_开发与验收/整包派发/P1-01_整包执行.json",
+      "prepared_slice": {
+        "task_id": "P1-01",
+        "within_original_step": 1,
+        "original_steps_scope": [
+          1,
+          2,
+          3
+        ],
+        "dispatch_mode": "whole_task_package",
+        "scope": "自主Rust离散引擎的静态规则加工/装配、齐套用料、库存/容量和人工占用；不实现CNC/贴装物理",
+        "planned_owner": "W01",
+        "actual_owner_window": "W02",
+        "actual_owner_thread_id": "01a13589-e1b0-73d2-aaae-c69be89c5b0f",
+        "actual_thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+        "preparation_status": "owner_kernel_round_verified_source_frozen_pending_host_and_independent_acceptance",
+        "business_frontend_changes": false,
+        "input_refs": [
+          "scenarios/两厂房装配包装/project.design.json",
+          "docs/01_业务需求/订单工艺与物料分配.md",
+          "docs/03_架构与契约/调度与状态转换算法.json",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "actual_prerequisite_outputs": [
+          "完整公共类型、实际Project/Scenario多文档Host及物品/BOM/资源DTO已具备，P0-02物料校核已修后接收。初始化/拆批与唯一库存由本包唯一Engine消费，不能在Host另建第二套库存；真实运行Host接线仍须落实。"
+        ],
+        "implementation_dependencies": [
+          "P0-02"
+        ],
+        "allowed_modified_files": [
+          "packages/simulation/src/",
+          "packages/simulation/tests/kernel_units.rs",
+          "modules/items/",
+          "modules/resources/",
+          "modules/tasks/",
+          "modules/operations/",
+          "docs/04_开发与验收/整包派发/P1-01_整包执行.json"
+        ],
+        "finite_expectations": [
+          "缺PCB等待；齐套后仅生成一件装配体；同一人不被并发占用；装盒保留内容关系且不重复领用；库位现有量与预留/在制分开"
+        ],
+        "verification_entries": [
+          "必要crate targeted tests",
+          "cargo test --workspace --locked",
+          "npm run generate:contracts",
+          "npm run typecheck",
+          "真实Host/Worker与同源Schema/原生接入",
+          "完整原验收及独立复审"
+        ],
+        "actual_dispatch": {
+          "authorized_at": "2026-10-16T01:02:19+08:00",
+          "authority": "发挥统筹作用自主按设计好的开发顺序往下推进，不设工作量上限。分发任务时分发整个任务包而不是几个要点",
+          "task_id": "P1-01",
+          "within_original_step": 1,
+          "dispatch_mode": "whole_task_package",
+          "role": "W00",
+          "thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+          "scope_ref": "docs/04_开发与验收/整包派发/P1-01_整包执行.json",
+          "business_frontend_authorized": false
+        },
+        "actual_prerequisite_output_refs": [
+          "docs/04_开发与验收/P0-01_保存重开与会话历史切片.json",
+          "docs/04_开发与验收/P0-02_业务输入与引用切片.json",
+          "docs/04_开发与验收/P0-02_初始物料与分配输入切片.json",
+          "packages/domain/src/models.rs",
+          "packages/commands/src/api.rs",
+          "packages/commands/src/project_draft.rs",
+          "packages/commands/src/project_store.rs",
+          ".work/p0-02-stock/verification/result.json"
+        ]
+      },
+      "progress_assessment_ref": "docs/04_开发与验收/整包派发/P1-01_整包执行.json#/progress_assessment"
     },
     {
       "task_id": "P1-02",
       "primary_window": "W01",
       "package_ref": "docs/04_开发与验收/编码任务包/P1-02.md",
-      "status": "draft_not_dispatchable",
-      "design_accepted": false,
-      "actual_commands": null,
-      "actual_dispatch": null
+      "status": "in_progress",
+      "design_accepted": true,
+      "actual_commands": {
+        "generate_types": "npm run generate:types",
+        "typecheck": "npm run typecheck",
+        "build": "npm run build",
+        "rust_tests": "npm run test:rust",
+        "engineering_tests": "npm test",
+        "desktop_start_smoke": ".\\target\\debug\\superfactory.exe --s07-smoke"
+      },
+      "actual_dispatch": {
+        "authorized_at": "2026-10-16T02:10:38+08:00",
+        "authority": "发挥统筹作用自主按设计好的开发顺序往下推进，不设工作量上限。分发任务时分发整个任务包而不是几个要点",
+        "task_id": "P1-02",
+        "within_original_step": 1,
+        "dispatch_mode": "whole_task_package",
+        "role": "W00",
+        "thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+        "scope_ref": "docs/04_开发与验收/整包派发/P1-02_整包执行.json",
+        "business_frontend_authorized": false
+      },
+      "confirmed_question_ids": [
+        "Q16",
+        "Q24",
+        "Q35"
+      ],
+      "design_acceptance_ref": "docs/04_开发与验收/S06-05_全层贯通设计与冻结复审.json",
+      "design_view_refs": {
+        "task_interaction": [
+          "docs/02_交互设计/交互流程与视图导航.json",
+          "docs/02_交互设计/首版表单与反馈.json",
+          "scenarios/并行汇合与返工/project.design.json",
+          "scenarios/并行汇合与返工/cases.design.json",
+          "docs/03_架构与契约/调度与状态转换算法.json",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "structure_data": [
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "packages/domain/types.design.rs"
+        ],
+        "state_behavior": [
+          "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/03_架构与契约/共享状态与所有权.json",
+          "docs/03_架构与契约/调度与状态转换算法.json"
+        ],
+        "interface_collaboration": [
+          "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/03_架构与契约/调度与状态转换算法.json",
+          "packages/commands/api.design.rs"
+        ],
+        "presentation_UI": [
+          "docs/02_交互设计/S04_可操作设计原型/README.md",
+          "docs/02_交互设计/工业工作台母版与字段细化.json"
+        ],
+        "deployment_validation": [
+          "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+          "docs/03_架构与契约/调度与状态转换算法.json",
+          "docs/03_架构与契约/首版技术栈与部署设计.json",
+          "docs/04_开发与验收/S05-05_关键架构实际试做.json"
+        ]
+      },
+      "engineering_preparation_ref": "docs/04_开发与验收/S07_工程准备与执行准入.json",
+      "current_slice_result_ref": "docs/04_开发与验收/整包派发/P1-02_整包执行.json",
+      "current_execution_ref": "docs/04_开发与验收/整包派发/P1-02_整包执行.json",
+      "prepared_slice": {
+        "task_id": "P1-02",
+        "within_original_step": 3,
+        "original_steps_scope": [
+          1,
+          2,
+          3
+        ],
+        "dispatch_mode": "whole_task_package",
+        "scope": "串并联汇合、配比齐套、检查单出口、保持身份的有限返工和重新检验；检查结果有声明输入来源",
+        "planned_owner": "W01",
+        "actual_owner_window": "W02",
+        "actual_owner_thread_id": "01a13589-e1b0-73d2-aaae-c69be89c5b0f",
+        "actual_thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+        "preparation_status": "source_frozen_ready_for_concentrated_receiving",
+        "business_frontend_changes": false,
+        "input_refs": [
+          "scenarios/并行汇合与返工/project.design.json",
+          "scenarios/并行汇合与返工/cases.design.json",
+          "docs/03_架构与契约/调度与状态转换算法.json",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "actual_prerequisite_outputs": [
+          "P1-01唯一Engine、物料齐套/转换/装配/包装及资源容量已实际实现；当前集中验证包含25项内核测试、16项独立生产案例、真实Host FIFO运行和保存搬目录重开（216项Rust、原生104项）。这些是P1-02所需实际生产者，P1-01整体仍待独立复审和原完整接收，不能把前置局部通过改为整包done。本包按既定DAG消费既有Engine，不复制库存、调度器或测试专用业务执行。"
+        ],
+        "actual_prerequisite_output_refs": [
+          "docs/04_开发与验收/整包派发/P1-01_整包执行.json",
+          "packages/simulation/src/lib.rs",
+          ".work/whole-packages/verification/result.json",
+          ".work/whole-packages/verification/workspace-tests.stdout.txt",
+          ".work/whole-packages/verification/desktop-host-smoke.stdout.txt"
+        ],
+        "implementation_dependencies": [
+          "P1-01"
+        ],
+        "allowed_modified_files": [
+          "packages/simulation/src/",
+          "packages/simulation/tests/kernel_units.rs",
+          "packages/simulation/tests/parallel_rework_units.rs",
+          "modules/items/",
+          "modules/resources/",
+          "modules/tasks/",
+          "modules/operations/",
+          "modules/transport/",
+          "docs/04_开发与验收/整包派发/P1-02_整包执行.json"
+        ],
+        "finite_expectations": [
+          "总装须齐套；同一物品只走一个检验出口；返工保留ID且不自动合格；达上限隔离；未知结果待判；核对设计样例145/175秒与三组最终归属"
+        ],
+        "verification_entries": [
+          "实际三组并行/返工案例及必要targeted tests",
+          "保留P1-01既有回归",
+          "W00集中workspace/同源契约/实际Host验证",
+          "独立原完整验收"
+        ],
+        "actual_dispatch": {
+          "authorized_at": "2026-10-16T02:10:38+08:00",
+          "authority": "发挥统筹作用自主按设计好的开发顺序往下推进，不设工作量上限。分发任务时分发整个任务包而不是几个要点",
+          "task_id": "P1-02",
+          "within_original_step": 1,
+          "dispatch_mode": "whole_task_package",
+          "role": "W00",
+          "thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+          "scope_ref": "docs/04_开发与验收/整包派发/P1-02_整包执行.json",
+          "business_frontend_authorized": false
+        }
+      },
+      "progress_assessment_ref": "docs/04_开发与验收/整包派发/P1-02_整包执行.json#/progress_assessment"
     },
     {
       "task_id": "P1-03",
       "primary_window": "W01",
       "package_ref": "docs/04_开发与验收/编码任务包/P1-03.md",
-      "status": "draft_not_dispatchable",
-      "design_accepted": false,
-      "actual_commands": null,
-      "actual_dispatch": null
+      "status": "in_progress",
+      "design_accepted": true,
+      "actual_commands": {
+        "generate_types": "npm run generate:types",
+        "typecheck": "npm run typecheck",
+        "build": "npm run build",
+        "rust_tests": "npm run test:rust",
+        "engineering_tests": "npm test",
+        "desktop_start_smoke": ".\\target\\debug\\superfactory.exe --s07-smoke"
+      },
+      "actual_dispatch": {
+        "authorized_at": "2026-10-16T02:51:24+08:00",
+        "authority": "发挥统筹作用自主按设计好的开发顺序往下推进，不设工作量上限。分发任务时分发整个任务包而不是几个要点，要求其他窗口完成后再给你发送消息，你也要在外部窗口空闲时才向外发送任务",
+        "task_id": "P1-03",
+        "within_original_step": 1,
+        "dispatch_mode": "whole_task_package",
+        "role": "W00",
+        "thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+        "scope_ref": "docs/04_开发与验收/整包派发/P1-03_整包执行.json",
+        "business_frontend_authorized": false
+      },
+      "confirmed_question_ids": [
+        "Q16",
+        "Q17",
+        "Q22",
+        "Q23",
+        "Q32",
+        "Q33"
+      ],
+      "design_acceptance_ref": "docs/04_开发与验收/S06-05_全层贯通设计与冻结复审.json",
+      "design_view_refs": {
+        "task_interaction": [
+          "docs/02_交互设计/交互流程与视图导航.json",
+          "docs/02_交互设计/首版表单与反馈.json",
+          "scenarios/真实业务设计/business-inputs.design.json",
+          "scenarios/真实业务设计/expected-business.design.json",
+          "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+          "docs/03_架构与契约/调度与状态转换算法.json",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "structure_data": [
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "packages/domain/types.design.rs"
+        ],
+        "state_behavior": [
+          "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/03_架构与契约/共享状态与所有权.json",
+          "docs/03_架构与契约/调度与状态转换算法.json"
+        ],
+        "interface_collaboration": [
+          "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/03_架构与契约/调度与状态转换算法.json",
+          "packages/commands/api.design.rs"
+        ],
+        "presentation_UI": [
+          "docs/02_交互设计/S04_可操作设计原型/README.md",
+          "docs/02_交互设计/工业工作台母版与字段细化.json"
+        ],
+        "deployment_validation": [
+          "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+          "docs/03_架构与契约/调度与状态转换算法.json",
+          "docs/03_架构与契约/首版技术栈与部署设计.json",
+          "docs/04_开发与验收/S05-05_关键架构实际试做.json"
+        ]
+      },
+      "engineering_preparation_ref": "docs/04_开发与验收/S07_工程准备与执行准入.json",
+      "current_slice_result_ref": "docs/04_开发与验收/整包派发/P1-03_整包执行.json",
+      "current_execution_ref": "docs/04_开发与验收/整包派发/P1-03_整包执行.json",
+      "prepared_slice": {
+        "task_id": "P1-03",
+        "within_original_step": 3,
+        "original_steps_scope": [
+          1,
+          2,
+          3
+        ],
+        "dispatch_mode": "whole_task_package",
+        "scope": "到料事件、人员班次与分阶段占用、机器持有/输出等待、阶段进度；不引入维修/公用服务求解",
+        "planned_owner": "W01",
+        "actual_owner_window": "W02",
+        "actual_owner_thread_id": "01a13589-e1b0-73d2-aaae-c69be89c5b0f",
+        "actual_thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+        "preparation_status": "source_frozen_current_shared_goal_consumer_verified_pending_actual_Host_and_independent_receiving",
+        "business_frontend_changes": false,
+        "input_refs": [
+          "scenarios/真实业务设计/business-inputs.design.json",
+          "scenarios/真实业务设计/expected-business.design.json",
+          "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+          "docs/03_架构与契约/调度与状态转换算法.json",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "actual_prerequisite_outputs": [
+          "P1-02三个原步骤已有真实唯一Engine产物：A/Q/U固定输入与145/175秒、保ID返工/复检、UNKNOWN占用及最终归属实际匹配；原25内核+16独立生产及18新增共59过，专业选择器修正后61过且旧59保留。当前Host独立专业9实际通过，消费同一Engine。这些具体前置允许P1-03启动，不代表P1-02整包/完整UI或跨厂IX-01已验收。"
+        ],
+        "actual_prerequisite_output_refs": [
+          "docs/04_开发与验收/整包派发/P1-02_整包执行.json",
+          "docs/04_开发与验收/整包派发/P1-01_整包执行.json",
+          "packages/simulation/src/lib.rs",
+          ".work/whole-packages/host-professional-repaired-second.stdout.txt"
+        ],
+        "implementation_dependencies": [
+          "P1-02"
+        ],
+        "allowed_modified_files": [
+          "packages/simulation/src/",
+          "packages/simulation/tests/kernel_units.rs",
+          "packages/simulation/tests/parallel_rework_units.rs",
+          "packages/simulation/tests/phased_resources_units.rs",
+          "modules/items/",
+          "modules/resources/",
+          "modules/tasks/",
+          "modules/operations/",
+          "modules/transport/",
+          "docs/04_开发与验收/整包派发/P1-03_整包执行.json"
+        ],
+        "finite_expectations": [
+          "独立到料/班次/阶段/容量样例实际核对：未来物料不提前入库；load/auto/unload按阶段占用，W-C仅上下料；下料资源忙或输出容量不足时保留机器与物品；无phase样例保留全作业占用；不连续人员日历0—20/40—60秒按5/30/5阶段在45秒完成，人员只占10秒；未配置中断策略保留待补。完整440/570秒及小车370—420等待/425返程由IX-01在P2-04联合P2-02验收，原要求不删除、不把局部通过当整厂通过。"
+        ],
+        "verification_entries": [
+          "必要实际targeted tests与原45秒/人员10秒输入",
+          "全部P1-01/P1-02旧回归保持",
+          "W00集中workspace/契约/同Host原生验证",
+          "独立完整原验收"
+        ],
+        "actual_dispatch": {
+          "authorized_at": "2026-10-16T02:51:24+08:00",
+          "authority": "发挥统筹作用自主按设计好的开发顺序往下推进，不设工作量上限。分发任务时分发整个任务包而不是几个要点，要求其他窗口完成后再给你发送消息，你也要在外部窗口空闲时才向外发送任务",
+          "task_id": "P1-03",
+          "within_original_step": 1,
+          "dispatch_mode": "whole_task_package",
+          "role": "W00",
+          "thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+          "scope_ref": "docs/04_开发与验收/整包派发/P1-03_整包执行.json",
+          "business_frontend_authorized": false
+        }
+      },
+      "progress_assessment_ref": "docs/04_开发与验收/整包派发/P1-03_整包执行.json#/progress_assessment"
     },
     {
       "task_id": "P1-04",
       "primary_window": "W01",
       "package_ref": "docs/04_开发与验收/编码任务包/P1-04.md",
-      "status": "draft_not_dispatchable",
-      "design_accepted": false,
-      "actual_commands": null,
-      "actual_dispatch": null
+      "status": "in_progress",
+      "design_accepted": true,
+      "actual_commands": {
+        "generate_types": "npm run generate:types",
+        "typecheck": "npm run typecheck",
+        "build": "npm run build",
+        "rust_tests": "npm run test:rust",
+        "engineering_tests": "npm test",
+        "desktop_start_smoke": ".\\target\\debug\\superfactory.exe --s07-smoke"
+      },
+      "actual_dispatch": {
+        "authorized_at": "2026-10-16T03:30:24+08:00",
+        "authority": "发挥统筹作用自主按设计好的开发顺序往下推进，不设工作量上限。分发任务时分发整个任务包而不是几个要点，要求其他窗口完成后再给你发送消息，你也要在外部窗口空闲时才向外发送任务",
+        "task_id": "P1-04",
+        "within_original_step": 1,
+        "dispatch_mode": "whole_task_package",
+        "role": "W00",
+        "thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+        "scope_ref": "docs/04_开发与验收/整包派发/P1-04_整包执行.json",
+        "business_frontend_authorized": false
+      },
+      "confirmed_question_ids": [
+        "Q23",
+        "Q31",
+        "Q32",
+        "Q36"
+      ],
+      "design_acceptance_ref": "docs/04_开发与验收/S06-05_全层贯通设计与冻结复审.json",
+      "design_view_refs": {
+        "task_interaction": [
+          "docs/02_交互设计/交互流程与视图导航.json",
+          "docs/02_交互设计/首版表单与反馈.json",
+          "scenarios/真实业务设计/business-inputs.design.json",
+          "scenarios/真实业务设计/expected-business.design.json",
+          "docs/03_架构与契约/调度与状态转换算法.json",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "structure_data": [
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "packages/domain/types.design.rs"
+        ],
+        "state_behavior": [
+          "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/03_架构与契约/共享状态与所有权.json",
+          "docs/03_架构与契约/调度与状态转换算法.json"
+        ],
+        "interface_collaboration": [
+          "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/03_架构与契约/调度与状态转换算法.json",
+          "packages/commands/api.design.rs"
+        ],
+        "presentation_UI": [
+          "docs/02_交互设计/S04_可操作设计原型/README.md",
+          "docs/02_交互设计/工业工作台母版与字段细化.json"
+        ],
+        "deployment_validation": [
+          "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+          "docs/03_架构与契约/调度与状态转换算法.json",
+          "docs/03_架构与契约/首版技术栈与部署设计.json",
+          "docs/04_开发与验收/S05-05_关键架构实际试做.json"
+        ]
+      },
+      "engineering_preparation_ref": "docs/04_开发与验收/S07_工程准备与执行准入.json",
+      "current_slice_result_ref": "docs/04_开发与验收/整包派发/P1-04_整包执行.json",
+      "current_execution_ref": "docs/04_开发与验收/整包派发/P1-04_整包执行.json",
+      "prepared_slice": {
+        "task_id": "P1-04",
+        "within_original_step": 3,
+        "original_steps_scope": [
+          1,
+          2,
+          3
+        ],
+        "dispatch_mode": "whole_task_package",
+        "scope": "多订单用料/接受分配、释放/交期/优先序、工艺家族及序列相关换单；不做无界最优排程",
+        "planned_owner": "W01",
+        "actual_owner_window": "W02",
+        "actual_owner_thread_id": "01a13589-e1b0-73d2-aaae-c69be89c5b0f",
+        "actual_thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+        "preparation_status": "in_progress",
+        "business_frontend_changes": false,
+        "input_refs": [
+          "scenarios/真实业务设计/business-inputs.design.json",
+          "scenarios/真实业务设计/expected-business.design.json",
+          "docs/03_架构与契约/调度与状态转换算法.json",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "actual_prerequisite_outputs": [
+          "P1-03三个原步骤已有真实唯一Engine产物：83项阶段/到料/占用和88项同源目标消费；同一managed桌面Host143项实际通过，原104项名称保留，目标与物品/Run冻结保存重开真实消费。据具体生产者允许启动P1-04与P2-02完整包；联合安排解决P1-04第三步对真实物流的依赖。原IX-01/IX-02、P2-01/时间轴显示、UI及release接收仍必须实际完成，不以局部结果代整项。"
+        ],
+        "actual_prerequisite_output_refs": [
+          "docs/04_开发与验收/整包派发/P1-03_整包执行.json",
+          ".work/whole-packages/native-143-result.json",
+          "docs/04_开发与验收/整包派发/P0-02_整包执行.json"
+        ],
+        "implementation_dependencies": [
+          "P1-03"
+        ],
+        "allowed_modified_files": [
+          "packages/simulation/src/",
+          "packages/simulation/tests/kernel_units.rs",
+          "packages/simulation/tests/parallel_rework_units.rs",
+          "packages/simulation/tests/phased_resources_units.rs",
+          "packages/simulation/tests/order_setup_units.rs",
+          "packages/simulation/tests/transport_units.rs",
+          "modules/items/",
+          "modules/resources/",
+          "modules/tasks/",
+          "modules/operations/",
+          "modules/transport/",
+          "docs/04_开发与验收/整包派发/P1-04_整包执行.json",
+          "docs/04_开发与验收/整包派发/P2-02_整包执行.json"
+        ],
+        "finite_expectations": [
+          "当前工序齐套才领用，共料不得双分配；A先B后/反序实际重现家族准备与两趟车；等待来料不制造库存；首件门槛按声明作用于后续；固定案例两方案接受終点205秒但各单迟延5/45秒"
+        ],
+        "verification_entries": [
+          "全部原案例独立固定预期",
+          "真实唯一Engine订单/准备/物流共同库存时钟",
+          "旧88及独立消费者回归保持",
+          "原IX-01/IX-02联合及UI/release独立接收"
+        ],
+        "actual_dispatch": {
+          "authorized_at": "2026-10-16T03:30:24+08:00",
+          "authority": "发挥统筹作用自主按设计好的开发顺序往下推进，不设工作量上限。分发任务时分发整个任务包而不是几个要点，要求其他窗口完成后再给你发送消息，你也要在外部窗口空闲时才向外发送任务",
+          "task_id": "P1-04",
+          "within_original_step": 1,
+          "dispatch_mode": "whole_task_package",
+          "role": "W00",
+          "thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+          "scope_ref": "docs/04_开发与验收/整包派发/P1-04_整包执行.json",
+          "business_frontend_authorized": false
+        }
+      },
+      "progress_assessment_ref": "docs/04_开发与验收/整包派发/P1-04_整包执行.json#/progress_assessment"
     },
     {
       "task_id": "P1-05",
       "primary_window": "W01",
       "package_ref": "docs/04_开发与验收/编码任务包/P1-05.md",
-      "status": "draft_not_dispatchable",
-      "design_accepted": false,
-      "actual_commands": null,
-      "actual_dispatch": null
+      "status": "in_progress",
+      "design_accepted": true,
+      "actual_commands": {
+        "generate_types": "npm run generate:types",
+        "typecheck": "npm run typecheck",
+        "build": "npm run build",
+        "rust_tests": "npm run test:rust",
+        "engineering_tests": "npm test",
+        "desktop_start_smoke": ".\\target\\debug\\superfactory.exe --s07-smoke"
+      },
+      "actual_dispatch": {
+        "authorized_at": "2026-10-16T04:38:30+08:00",
+        "authority": "发挥统筹作用自主按设计好的开发顺序往下推进，不设工作量上限。分发任务时分发整个任务包而不是几个要点，要求其他窗口完成后再给你发送消息，你也要在外部窗口空闲时才向外发送任务",
+        "task_id": "P1-05",
+        "within_original_step": 1,
+        "dispatch_mode": "whole_task_package",
+        "role": "W00",
+        "thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+        "scope_ref": "docs/04_开发与验收/整包派发/P1-05_整包执行.json",
+        "business_frontend_authorized": false
+      },
+      "confirmed_question_ids": [
+        "Q24",
+        "Q35",
+        "Q36"
+      ],
+      "design_acceptance_ref": "docs/04_开发与验收/S06-05_全层贯通设计与冻结复审.json",
+      "design_view_refs": {
+        "task_interaction": [
+          "docs/02_交互设计/交互流程与视图导航.json",
+          "docs/02_交互设计/首版表单与反馈.json",
+          "scenarios/真实业务设计/business-inputs.design.json",
+          "scenarios/真实业务设计/expected-business.design.json",
+          "docs/01_业务需求/换单班次与质量处置.md",
+          "docs/03_架构与契约/调度与状态转换算法.json",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "structure_data": [
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "packages/domain/types.design.rs"
+        ],
+        "state_behavior": [
+          "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/03_架构与契约/共享状态与所有权.json",
+          "docs/03_架构与契约/调度与状态转换算法.json"
+        ],
+        "interface_collaboration": [
+          "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/03_架构与契约/调度与状态转换算法.json",
+          "packages/commands/api.design.rs"
+        ],
+        "presentation_UI": [
+          "docs/02_交互设计/S04_可操作设计原型/README.md",
+          "docs/02_交互设计/工业工作台母版与字段细化.json"
+        ],
+        "deployment_validation": [
+          "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+          "docs/03_架构与契约/调度与状态转换算法.json",
+          "docs/03_架构与契约/首版技术栈与部署设计.json",
+          "docs/04_开发与验收/S05-05_关键架构实际试做.json"
+        ]
+      },
+      "engineering_preparation_ref": "docs/04_开发与验收/S07_工程准备与执行准入.json",
+      "current_slice_result_ref": "docs/04_开发与验收/整包派发/P1-05_整包执行.json",
+      "current_execution_ref": "docs/04_开发与验收/整包派发/P1-05_整包执行.json",
+      "prepared_slice": {
+        "task_id": "P1-05",
+        "within_original_step": 3,
+        "original_steps_scope": [
+          1,
+          2,
+          3
+        ],
+        "dispatch_mode": "whole_task_package",
+        "scope": "待判/隔离移交、有效质量决定与放行、显式报废及保留物品身份；不把时间结束当认可",
+        "planned_owner": "W01",
+        "actual_owner_window": "W02",
+        "actual_owner_thread_id": "01a13589-e1b0-73d2-aaae-c69be89c5b0f",
+        "actual_thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+        "preparation_status": "in_progress",
+        "business_frontend_changes": false,
+        "input_refs": [
+          "scenarios/真实业务设计/business-inputs.design.json",
+          "scenarios/真实业务设计/expected-business.design.json",
+          "docs/01_业务需求/换单班次与质量处置.md",
+          "docs/03_架构与契约/调度与状态转换算法.json",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "actual_prerequisite_outputs": [
+          "P1-02唯一Engine的并行/合流/质量分流与物品身份已有真实145/175秒产物；P1-03/04/P2-02同一Engine138项实际检查已冻源，保留原88和独立订单9/运输13，允许启动完整质量待判/隔离处置包。"
+        ],
+        "actual_prerequisite_output_refs": [
+          "docs/04_开发与验收/整包派发/P1-02_整包执行.json",
+          "docs/04_开发与验收/整包派发/P1-04_整包执行.json",
+          "docs/04_开发与验收/整包派发/P2-02_整包执行.json"
+        ],
+        "implementation_dependencies": [
+          "P1-02"
+        ],
+        "allowed_modified_files": [
+          "packages/simulation/src/",
+          "packages/simulation/tests/quarantine_units.rs",
+          "modules/devices/quality/",
+          "modules/items/",
+          "modules/resources/",
+          "modules/tasks/",
+          "modules/operations/",
+          "docs/04_开发与验收/整包派发/P1-05_整包执行.json"
+        ],
+        "finite_expectations": [
+          "hold_station与pending_store分别运行；库位满时不能提前释放；UNKNOWN不合格不报废；复检失败隔离，显式报废不退零件；例80秒待判/复检独立，最终2成品1报废订单缺1；原hold例保持"
+        ],
+        "verification_entries": [
+          "原hold_station与pending_store分别真实运行、容量满时持有设备/物品不能提前释放",
+          "80秒待判与复检分别可见，最终2成品1报废/订单缺1；报废不退零件",
+          "UNKNOWN不自动合格/报废；有效质量决定、复检失败隔离、放行保持原身份且不重复计数",
+          "保留原138项及所有固定订单/运输/并行/阶段预期，真正同一Engine库存/时钟/事件"
+        ],
+        "actual_dispatch": {
+          "authorized_at": "2026-10-16T04:38:30+08:00",
+          "authority": "发挥统筹作用自主按设计好的开发顺序往下推进，不设工作量上限。分发任务时分发整个任务包而不是几个要点，要求其他窗口完成后再给你发送消息，你也要在外部窗口空闲时才向外发送任务",
+          "task_id": "P1-05",
+          "within_original_step": 1,
+          "dispatch_mode": "whole_task_package",
+          "role": "W00",
+          "thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+          "scope_ref": "docs/04_开发与验收/整包派发/P1-05_整包执行.json",
+          "business_frontend_authorized": false
+        }
+      },
+      "progress_assessment_ref": "docs/04_开发与验收/整包派发/P1-05_整包执行.json#/progress_assessment"
     },
     {
       "task_id": "P2-01",
       "primary_window": "W02",
       "package_ref": "docs/04_开发与验收/编码任务包/P2-01.md",
-      "status": "draft_not_dispatchable",
-      "design_accepted": false,
-      "actual_commands": null,
-      "actual_dispatch": null
+      "status": "in_progress",
+      "design_accepted": true,
+      "actual_commands": {
+        "generate_types": "npm run generate:types",
+        "typecheck": "npm run typecheck",
+        "build": "npm run build",
+        "rust_tests": "npm run test:rust",
+        "engineering_tests": "npm test",
+        "desktop_start_smoke": ".\\target\\debug\\superfactory.exe --s07-smoke"
+      },
+      "actual_dispatch": {
+        "authorized_at": "2026-10-16T04:58:55+08:00",
+        "authority": "发挥统筹作用自主按设计好的开发顺序往下推进，不设工作量上限。分发任务时分发整个任务包而不是几个要点，要求其他窗口完成后再给你发送消息，你也要在外部窗口空闲时才向外发送任务",
+        "task_id": "P2-01",
+        "within_original_step": 1,
+        "dispatch_mode": "whole_task_package",
+        "role": "W00",
+        "thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+        "scope_ref": "docs/04_开发与验收/整包派发/P2-01_整包执行.json",
+        "business_frontend_authorized": true
+      },
+      "confirmed_question_ids": [
+        "Q02",
+        "Q03",
+        "Q04",
+        "Q06",
+        "Q07",
+        "Q08",
+        "Q09",
+        "Q10",
+        "Q12",
+        "Q13",
+        "Q18",
+        "Q19"
+      ],
+      "design_acceptance_ref": "docs/04_开发与验收/S06-05_全层贯通设计与冻结复审.json",
+      "design_view_refs": {
+        "task_interaction": [
+          "docs/02_交互设计/交互流程与视图导航.json",
+          "docs/02_交互设计/首版表单与反馈.json",
+          "docs/02_交互设计/完整操作流程与方案交付.md",
+          "docs/03_架构与契约/目标驱动厂房生成.md",
+          "../设计预览/当前交互规格.md",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "structure_data": [
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "packages/domain/types.design.rs"
+        ],
+        "state_behavior": [
+          "docs/02_交互设计/时间轴主轴与子轴完整定义.json",
+          "docs/02_交互设计/时间轴主轴与轨道组_监督细化.json",
+          "docs/02_交互设计/设备时间轴与标签设计.md",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/03_架构与契约/共享状态与所有权.json",
+          "packages/presentation/README.md"
+        ],
+        "interface_collaboration": [
+          "docs/02_交互设计/时间轴主轴与子轴完整定义.json",
+          "docs/02_交互设计/时间轴主轴与轨道组_监督细化.json",
+          "docs/02_交互设计/设备时间轴与标签设计.md",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "packages/commands/api.design.rs",
+          "packages/presentation/README.md"
+        ],
+        "presentation_UI": [
+          "docs/02_交互设计/S04_可操作设计原型/README.md",
+          "docs/02_交互设计/工业工作台母版与字段细化.json"
+        ],
+        "deployment_validation": [
+          "docs/02_交互设计/时间轴主轴与子轴完整定义.json",
+          "docs/02_交互设计/时间轴主轴与轨道组_监督细化.json",
+          "docs/02_交互设计/设备时间轴与标签设计.md",
+          "docs/03_架构与契约/首版技术栈与部署设计.json",
+          "docs/04_开发与验收/S05-05_关键架构实际试做.json",
+          "packages/presentation/README.md"
+        ]
+      },
+      "engineering_preparation_ref": "docs/04_开发与验收/S07_工程准备与执行准入.json",
+      "current_slice_result_ref": "docs/04_开发与验收/整包派发/P2-01_整包执行.json",
+      "current_execution_ref": "docs/04_开发与验收/整包派发/P2-01_整包执行.json",
+      "prepared_slice": {
+        "task_id": "P2-01",
+        "within_original_step": 1,
+        "original_steps_scope": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "dispatch_mode": "whole_task_package",
+        "scope": "流水线/多厂房两画布、三档LOD、单击详情、自由布置与编组连接、真实3D及静态场地检查展示；本次会话内草稿撤销/重做，经共同Commands形成新修订，不回滚当前运行/认可/外部动作",
+        "planned_owner": "W02",
+        "actual_owner_window": "W00",
+        "actual_owner_thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+        "actual_thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+        "preparation_status": "in_progress",
+        "business_frontend_changes": true,
+        "input_refs": [
+          "docs/02_交互设计/完整操作流程与方案交付.md",
+          "docs/03_架构与契约/目标驱动厂房生成.md",
+          "../设计预览/当前交互规格.md",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "actual_prerequisite_outputs": [
+          "用户当前持续目标授权按设计好的开发顺序自主推进全部原任务；P1-01唯一Engine与真实Host消费者已具备，S01—S06全部30设计及S07已冻结接收。W00据此单独派本批P2-01产品前端实现，按现行工业母版和4个原步骤执行；不沿用此前仅P0-01后端切片的前端未派状态扩大到本新批次。实际用户/目标机/完整IX与release验收不代填，Figma不属本包。"
+        ],
+        "actual_prerequisite_output_refs": [
+          "docs/04_开发与验收/整包派发/P1-01_整包执行.json",
+          "docs/04_开发与验收/S08_共同Host与Engine专业联通切片.json",
+          "docs/04_开发与验收/S06-05_全层贯通设计与冻结复审.json",
+          "docs/02_交互设计/工业工作台母版与字段细化.json"
+        ],
+        "implementation_dependencies": [
+          "P1-01"
+        ],
+        "allowed_modified_files": [
+          "apps/planner/src/main.tsx",
+          "apps/planner/src/features/factory/",
+          "apps/planner/src/features/timeline/",
+          "apps/planner/src/features/business/",
+          "apps/planner/src/scene/",
+          "apps/planner/src/styles/",
+          "apps/planner/src/components/",
+          "apps/planner/src/services/",
+          "tests/planner/",
+          "packages/presentation/src/",
+          "docs/04_开发与验收/整包派发/P2-01_整包执行.json",
+          "apps/planner/index.html"
+        ],
+        "finite_expectations": [
+          "点击开详情；缩放三档且不改运行状态；整线移动保留内部布局；布局变换用于显示/路径/包络，不只是镜头变化；用户可新增/配置/连接设备形成串并联产线，连接有物品/端口含义；当前固定时间运输不按画布距离推算；目标生成草案检查场地边界、设备占地/高度/模板声明间距与静态通道，工艺/物料端口可达且类型/单位相容；缺参数未判定，冲突定位；不缩小显示代替尺寸检查，不当动态交通或机电布线验证。；草稿编辑撤销/重做正确且产生新修订；旧Run/库存/认可不变，修订冲突不覆盖，新编辑清除失效redo，跨工程不串历史"
+        ],
+        "verification_entries": [
+          "实际流水线/多厂房两画布，三档LOD、单击详情及真实3D环绕平移缩放/默认斜视复位",
+          "共同Commands新增/编辑设备/编组移动/连接，场地占地高度间距及端口类型单位检查，缺参数未判定",
+          "真实Run状态绘制与观察/缩放分离，不复制库存时钟、不按距离推生产时间",
+          "共同修订与会话undo/redo/冲突/新分支/工程切换，旧Run及认可和磁盘副作用不回滚",
+          "按冻结工业母版实际浏览器截图/流程比对，Native实际Host消费与可视有限QA证据分开"
+        ],
+        "actual_dispatch": {
+          "authorized_at": "2026-10-16T04:58:55+08:00",
+          "authority": "发挥统筹作用自主按设计好的开发顺序往下推进，不设工作量上限。分发任务时分发整个任务包而不是几个要点，要求其他窗口完成后再给你发送消息，你也要在外部窗口空闲时才向外发送任务",
+          "task_id": "P2-01",
+          "within_original_step": 1,
+          "dispatch_mode": "whole_task_package",
+          "role": "W00",
+          "thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+          "scope_ref": "docs/04_开发与验收/整包派发/P2-01_整包执行.json",
+          "business_frontend_authorized": true
+        },
+        "independent_test_exclusions": [
+          "tests/planner/acceptance/"
+        ],
+        "temporary_read_only_leases": [
+          "apps/planner/src/features/timeline/"
+        ]
+      },
+      "progress_assessment_ref": "docs/04_开发与验收/整包派发/P2-01_整包执行.json#/progress_assessment"
     },
     {
       "task_id": "P2-02",
       "primary_window": "W01",
       "package_ref": "docs/04_开发与验收/编码任务包/P2-02.md",
-      "status": "draft_not_dispatchable",
-      "design_accepted": false,
-      "actual_commands": null,
-      "actual_dispatch": null
+      "status": "in_progress",
+      "design_accepted": true,
+      "actual_commands": {
+        "generate_types": "npm run generate:types",
+        "typecheck": "npm run typecheck",
+        "build": "npm run build",
+        "rust_tests": "npm run test:rust",
+        "engineering_tests": "npm test",
+        "desktop_start_smoke": ".\\target\\debug\\superfactory.exe --s07-smoke"
+      },
+      "actual_dispatch": {
+        "authorized_at": "2026-10-16T03:30:24+08:00",
+        "authority": "发挥统筹作用自主按设计好的开发顺序往下推进，不设工作量上限。分发任务时分发整个任务包而不是几个要点，要求其他窗口完成后再给你发送消息，你也要在外部窗口空闲时才向外发送任务",
+        "task_id": "P2-02",
+        "within_original_step": 1,
+        "dispatch_mode": "whole_task_package",
+        "role": "W00",
+        "thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+        "scope_ref": "docs/04_开发与验收/整包派发/P2-02_整包执行.json",
+        "business_frontend_authorized": false
+      },
+      "confirmed_question_ids": [
+        "Q26"
+      ],
+      "design_acceptance_ref": "docs/04_开发与验收/S06-05_全层贯通设计与冻结复审.json",
+      "design_view_refs": {
+        "task_interaction": [
+          "docs/02_交互设计/交互流程与视图导航.json",
+          "docs/02_交互设计/首版表单与反馈.json",
+          "scenarios/两厂房装配包装/project.design.json",
+          "scenarios/两厂房装配包装/expected-events.design.json",
+          "docs/01_业务需求/物流与布局业务.md",
+          "docs/03_架构与契约/调度与状态转换算法.json",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "structure_data": [
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "packages/domain/types.design.rs"
+        ],
+        "state_behavior": [
+          "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/03_架构与契约/共享状态与所有权.json",
+          "docs/03_架构与契约/调度与状态转换算法.json"
+        ],
+        "interface_collaboration": [
+          "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/03_架构与契约/调度与状态转换算法.json",
+          "packages/commands/api.design.rs"
+        ],
+        "presentation_UI": [
+          "docs/02_交互设计/S04_可操作设计原型/README.md",
+          "docs/02_交互设计/工业工作台母版与字段细化.json"
+        ],
+        "deployment_validation": [
+          "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+          "docs/03_架构与契约/调度与状态转换算法.json",
+          "docs/03_架构与契约/首版技术栈与部署设计.json",
+          "docs/04_开发与验收/S05-05_关键架构实际试做.json"
+        ]
+      },
+      "engineering_preparation_ref": "docs/04_开发与验收/S07_工程准备与执行准入.json",
+      "current_slice_result_ref": "docs/04_开发与验收/整包派发/P2-02_整包执行.json",
+      "current_execution_ref": "docs/04_开发与验收/整包派发/P2-02_整包执行.json",
+      "prepared_slice": {
+        "task_id": "P2-02",
+        "within_original_step": 3,
+        "original_steps_scope": [
+          1,
+          2,
+          3
+        ],
+        "dispatch_mode": "whole_task_package",
+        "scope": "厂际供货、固定时间批次运输、来源预留/发出/在途/目的接受和资源返程；复杂路径/交通后置",
+        "planned_owner": "W01",
+        "actual_owner_window": "W02",
+        "actual_owner_thread_id": "01a13589-e1b0-73d2-aaae-c69be89c5b0f",
+        "actual_thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+        "preparation_status": "in_progress",
+        "business_frontend_changes": false,
+        "input_refs": [
+          "scenarios/两厂房装配包装/project.design.json",
+          "scenarios/两厂房装配包装/expected-events.design.json",
+          "docs/01_业务需求/物流与布局业务.md",
+          "docs/03_架构与契约/调度与状态转换算法.json",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "actual_prerequisite_outputs": [
+          "P1-03三个原步骤已有真实唯一Engine产物：83项阶段/到料/占用和88项同源目标消费；同一managed桌面Host143项实际通过，原104项名称保留，目标与物品/Run冻结保存重开真实消费。据具体生产者允许启动P1-04与P2-02完整包；联合安排解决P1-04第三步对真实物流的依赖。原IX-01/IX-02、P2-01/时间轴显示、UI及release接收仍必须实际完成，不以局部结果代整项。"
+        ],
+        "actual_prerequisite_output_refs": [
+          "docs/04_开发与验收/整包派发/P1-03_整包执行.json",
+          ".work/whole-packages/native-143-result.json",
+          "docs/04_开发与验收/整包派发/P0-02_整包执行.json"
+        ],
+        "implementation_dependencies": [
+          "P1-03"
+        ],
+        "allowed_modified_files": [
+          "packages/simulation/src/",
+          "packages/simulation/tests/kernel_units.rs",
+          "packages/simulation/tests/parallel_rework_units.rs",
+          "packages/simulation/tests/phased_resources_units.rs",
+          "packages/simulation/tests/order_setup_units.rs",
+          "packages/simulation/tests/transport_units.rs",
+          "modules/items/",
+          "modules/resources/",
+          "modules/tasks/",
+          "modules/operations/",
+          "modules/transport/",
+          "docs/04_开发与验收/整包派发/P1-04_整包执行.json",
+          "docs/04_开发与验收/整包派发/P2-02_整包执行.json"
+        ],
+        "finite_expectations": [
+          "日目标200库存150时不能发出200；在途不提前成为接收库存；接收110秒可用于下游、运输资源140秒返程才可接下一批；同一货物ID贯穿交接"
+        ],
+        "verification_entries": [
+          "全部原案例独立固定预期",
+          "真实唯一Engine订单/准备/物流共同库存时钟",
+          "旧88及独立消费者回归保持",
+          "原IX-01/IX-02联合及UI/release独立接收"
+        ],
+        "actual_dispatch": {
+          "authorized_at": "2026-10-16T03:30:24+08:00",
+          "authority": "发挥统筹作用自主按设计好的开发顺序往下推进，不设工作量上限。分发任务时分发整个任务包而不是几个要点，要求其他窗口完成后再给你发送消息，你也要在外部窗口空闲时才向外发送任务",
+          "task_id": "P2-02",
+          "within_original_step": 1,
+          "dispatch_mode": "whole_task_package",
+          "role": "W00",
+          "thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+          "scope_ref": "docs/04_开发与验收/整包派发/P2-02_整包执行.json",
+          "business_frontend_authorized": false
+        }
+      },
+      "progress_assessment_ref": "docs/04_开发与验收/整包派发/P2-02_整包执行.json#/progress_assessment"
     },
     {
       "task_id": "P2-03",
       "primary_window": "W05",
       "package_ref": "docs/04_开发与验收/编码任务包/P2-03.md",
-      "status": "draft_not_dispatchable",
-      "design_accepted": false,
-      "actual_commands": null,
-      "actual_dispatch": null
+      "status": "in_progress",
+      "design_accepted": true,
+      "actual_commands": {
+        "generate_types": "npm run generate:types",
+        "typecheck": "npm run typecheck",
+        "build": "npm run build",
+        "rust_tests": "npm run test:rust",
+        "engineering_tests": "npm test",
+        "desktop_start_smoke": ".\\target\\debug\\superfactory.exe --s07-smoke"
+      },
+      "actual_dispatch": {
+        "authorized_at": "2026-10-16T04:38:30+08:00",
+        "authority": "发挥统筹作用自主按设计好的开发顺序往下推进，不设工作量上限。分发任务时分发整个任务包而不是几个要点，要求其他窗口完成后再给你发送消息，你也要在外部窗口空闲时才向外发送任务",
+        "task_id": "P2-03",
+        "within_original_step": 1,
+        "dispatch_mode": "whole_task_package",
+        "role": "W00",
+        "thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+        "scope_ref": "docs/04_开发与验收/整包派发/P2-03_整包执行.json",
+        "business_frontend_authorized": false
+      },
+      "confirmed_question_ids": [
+        "Q11",
+        "Q44",
+        "Q51",
+        "Q52",
+        "Q53",
+        "Q55",
+        "Q56"
+      ],
+      "design_acceptance_ref": "docs/04_开发与验收/S06-05_全层贯通设计与冻结复审.json",
+      "design_view_refs": {
+        "task_interaction": [
+          "docs/02_交互设计/交互流程与视图导航.json",
+          "docs/02_交互设计/首版表单与反馈.json",
+          "scenarios/两厂房装配包装/variants.design.json",
+          "docs/03_架构与契约/工程交接与打开.md",
+          "scenarios/模板与交接/expected-template-handoff.design.json",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "structure_data": [
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "packages/domain/types.design.rs"
+        ],
+        "state_behavior": [
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/03_架构与契约/共享状态与所有权.json",
+          "docs/03_架构与契约/工程交接与打开.md",
+          "docs/03_架构与契约/目标驱动厂房生成.md",
+          "docs/03_架构与契约/评估报告与数据导出.md",
+          "docs/04_开发与验收/特征细化/DRF04_Host授权合入.json",
+          "packages/reporting/evaluation-report.contract.design.json"
+        ],
+        "interface_collaboration": [
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/03_架构与契约/工程交接与打开.md",
+          "docs/03_架构与契约/目标驱动厂房生成.md",
+          "docs/03_架构与契约/评估报告与数据导出.md",
+          "docs/04_开发与验收/特征细化/DRF04_Host授权合入.json",
+          "packages/commands/api.design.rs",
+          "packages/reporting/evaluation-report.contract.design.json"
+        ],
+        "presentation_UI": [
+          "docs/02_交互设计/S04_可操作设计原型/README.md",
+          "docs/02_交互设计/工业工作台母版与字段细化.json"
+        ],
+        "deployment_validation": [
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/03_架构与契约/工程交接与打开.md",
+          "docs/03_架构与契约/目标驱动厂房生成.md",
+          "docs/03_架构与契约/评估报告与数据导出.md",
+          "docs/03_架构与契约/首版技术栈与部署设计.json",
+          "docs/04_开发与验收/S05-05_关键架构实际试做.json",
+          "docs/04_开发与验收/特征细化/DRF04_Host授权合入.json",
+          "packages/reporting/evaluation-report.contract.design.json"
+        ]
+      },
+      "engineering_preparation_ref": "docs/04_开发与验收/S07_工程准备与执行准入.json",
+      "current_slice_result_ref": "docs/04_开发与验收/整包派发/P2-03_整包执行.json",
+      "current_execution_ref": "docs/04_开发与验收/整包派发/P2-03_整包执行.json",
+      "prepared_slice": {
+        "task_id": "P2-03",
+        "within_original_step": 1,
+        "original_steps_scope": [
+          1,
+          2,
+          3
+        ],
+        "dispatch_mode": "whole_task_package",
+        "scope": "同起点方案比较、目录保存及ZIP单文件工程包、允许依赖/相对引用、另一目录重开修改；无完整快照不承诺冷启动续跑",
+        "planned_owner": "W05",
+        "actual_owner_window": "W01",
+        "actual_owner_thread_id": "01a11f4e-f8a4-7a62-9d23-24834761b07e",
+        "actual_thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+        "preparation_status": "in_progress",
+        "business_frontend_changes": false,
+        "input_refs": [
+          "scenarios/两厂房装配包装/variants.design.json",
+          "docs/03_架构与契约/工程交接与打开.md",
+          "scenarios/模板与交接/expected-template-handoff.design.json",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "actual_prerequisite_outputs": [
+          "P2-02实际唯一Engine138项及独立9/13、真实Host订单运输消费者已进入窗口6接收；P4-01原19SDK/6Engine/11真实Host链及来源修复已冻源。既有目录Save/Open、旧Run冻结及专业历史边界可消费，允许启动完整方案比较/工程包/交接。"
+        ],
+        "actual_prerequisite_output_refs": [
+          "docs/04_开发与验收/整包派发/P2-02_整包执行.json",
+          "docs/04_开发与验收/整包派发/整包复审_窗口6.json",
+          "docs/04_开发与验收/整包派发/P4-01_整包执行.json",
+          "docs/04_开发与验收/S08_共同Host与Engine专业联通切片.json"
+        ],
+        "implementation_dependencies": [
+          "P2-02"
+        ],
+        "allowed_modified_files": [
+          "packages/reporting/src/",
+          "packages/reporting/tests/comparison_units.rs",
+          "packages/commands/src/project_store.rs",
+          "packages/commands/tests/comparison_owner.rs",
+          "packages/commands/tests/fixtures/comparison/",
+          "scenarios/方案比较/runtime/",
+          "docs/04_开发与验收/整包派发/P2-03_整包执行.json"
+        ],
+        "finite_expectations": [
+          "先列共同条件和变更再比较实际结果；点等待/物品能定位画布；导出工程、模块和说明后可重开；未运行设计包不填实际产量；方案比较不新增常态画布；包内所用版本不被本机最新版替代；缺表现可明确替换、缺行为/专业状态不能伪造完整结果；普通比较/接手从共同初始起点重跑；只有明确支持且具完整可恢复快照时才验续跑不重放过去事件或已接受基数，无完整快照不成为首版交付阻塞"
+        ],
+        "verification_entries": [
+          "实际同起点A/B新方案、冻结输入差异/共同条件/结果，旧RunId不覆盖",
+          "实际目录及ZIP工程包/精确模块版本/允许依赖与相对资源，另一目录重开修改再跑",
+          "未运行设计包无实际产量，缺表现替换与缺行为/专业状态完整性分开",
+          "无完整恢复快照从共同初始重跑；不伪造冷启动续跑或阻塞首版普通交接"
+        ],
+        "actual_dispatch": {
+          "authorized_at": "2026-10-16T04:38:30+08:00",
+          "authority": "发挥统筹作用自主按设计好的开发顺序往下推进，不设工作量上限。分发任务时分发整个任务包而不是几个要点，要求其他窗口完成后再给你发送消息，你也要在外部窗口空闲时才向外发送任务",
+          "task_id": "P2-03",
+          "within_original_step": 1,
+          "dispatch_mode": "whole_task_package",
+          "role": "W00",
+          "thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+          "scope_ref": "docs/04_开发与验收/整包派发/P2-03_整包执行.json",
+          "business_frontend_authorized": false
+        }
+      },
+      "progress_assessment_ref": "docs/04_开发与验收/整包派发/P2-03_整包执行.json#/progress_assessment"
     },
     {
       "task_id": "P2-04",
       "primary_window": "W02",
       "package_ref": "docs/04_开发与验收/编码任务包/P2-04.md",
-      "status": "draft_not_dispatchable",
-      "design_accepted": false,
-      "actual_commands": null,
-      "actual_dispatch": null
+      "status": "in_progress",
+      "design_accepted": true,
+      "actual_commands": {
+        "generate_types": "npm run generate:types",
+        "typecheck": "npm run typecheck",
+        "build": "npm run build",
+        "rust_tests": "npm run test:rust",
+        "engineering_tests": "npm test",
+        "desktop_start_smoke": ".\\target\\debug\\superfactory.exe --s07-smoke"
+      },
+      "actual_dispatch": {
+        "authorized_at": "2026-10-16T05:35:47+08:00",
+        "authority": "发挥统筹作用自主按设计好的开发顺序往下推进，不设工作量上限。分发任务时分发整个任务包而不是几个要点，要求其他窗口完成后再给你发送消息，你也要在外部窗口空闲时才向外发送任务",
+        "task_id": "P2-04",
+        "within_original_step": 1,
+        "dispatch_mode": "whole_task_package",
+        "role": "W02",
+        "thread_id": "01a13589-e1b0-73d2-aaae-c69be89c5b0f",
+        "scope_ref": "docs/04_开发与验收/整包派发/P2-04_整包执行.json",
+        "business_frontend_authorized": true
+      },
+      "confirmed_question_ids": [
+        "Q06",
+        "Q16",
+        "Q17",
+        "Q18",
+        "Q33",
+        "Q34",
+        "Q37"
+      ],
+      "design_acceptance_ref": "docs/04_开发与验收/S06-05_全层贯通设计与冻结复审.json",
+      "design_view_refs": {
+        "task_interaction": [
+          "docs/02_交互设计/交互流程与视图导航.json",
+          "docs/02_交互设计/首版表单与反馈.json",
+          "scenarios/从零搭建控制盒厂房/project.design.json",
+          "scenarios/从零搭建控制盒厂房/expected-timeline.design.json",
+          "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+          "docs/03_架构与契约/调度与状态转换算法.json",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "structure_data": [
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "packages/domain/types.design.rs"
+        ],
+        "state_behavior": [
+          "docs/02_交互设计/时间轴主轴与子轴完整定义.json",
+          "docs/02_交互设计/时间轴主轴与轨道组_监督细化.json",
+          "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/03_架构与契约/共享状态与所有权.json",
+          "docs/03_架构与契约/调度与状态转换算法.json"
+        ],
+        "interface_collaboration": [
+          "docs/02_交互设计/时间轴主轴与子轴完整定义.json",
+          "docs/02_交互设计/时间轴主轴与轨道组_监督细化.json",
+          "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/03_架构与契约/调度与状态转换算法.json",
+          "packages/commands/api.design.rs"
+        ],
+        "presentation_UI": [
+          "docs/02_交互设计/S04_可操作设计原型/README.md",
+          "docs/02_交互设计/工业工作台母版与字段细化.json"
+        ],
+        "deployment_validation": [
+          "docs/02_交互设计/时间轴主轴与子轴完整定义.json",
+          "docs/02_交互设计/时间轴主轴与轨道组_监督细化.json",
+          "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+          "docs/03_架构与契约/调度与状态转换算法.json",
+          "docs/03_架构与契约/首版技术栈与部署设计.json",
+          "docs/04_开发与验收/S05-05_关键架构实际试做.json"
+        ]
+      },
+      "engineering_preparation_ref": "docs/04_开发与验收/S07_工程准备与执行准入.json",
+      "current_slice_result_ref": "docs/04_开发与验收/整包派发/P2-04_整包执行.json",
+      "current_execution_ref": "docs/04_开发与验收/整包派发/P2-04_整包执行.json",
+      "prepared_slice": {
+        "task_id": "P2-04",
+        "within_original_step": 1,
+        "original_steps_scope": [
+          1,
+          2,
+          3
+        ],
+        "dispatch_mode": "whole_task_package",
+        "scope": "共同生产时间轴、计划输入与只读结果、物品跟随及当前等待/资源条件定位；拖动显示不重放生产",
+        "planned_owner": "W02",
+        "actual_owner_window": "W02",
+        "actual_owner_thread_id": "01a13589-e1b0-73d2-aaae-c69be89c5b0f",
+        "actual_thread_id": "01a13589-e1b0-73d2-aaae-c69be89c5b0f",
+        "preparation_status": "in_progress",
+        "business_frontend_changes": true,
+        "input_refs": [
+          "scenarios/从零搭建控制盒厂房/project.design.json",
+          "scenarios/从零搭建控制盒厂房/expected-timeline.design.json",
+          "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+          "docs/03_架构与契约/调度与状态转换算法.json",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "actual_prerequisite_outputs": [
+          "用户现行完整自主开发目标；P1-03阶段/日历与P2-02物流已真实实现并独立验证，原IX-01基线440秒/延迟570秒及370—420等待/425返程保持；P1-05完整引擎156组已冻源。W00单独派发P2-04完整产品时间轴批次，启动前置实际可用，完整UI/IX/NFR/release继续按真实执行验收。"
+        ],
+        "actual_prerequisite_output_refs": [
+          "docs/04_开发与验收/整包派发/P1-03_整包执行.json",
+          "docs/04_开发与验收/整包派发/P2-02_整包执行.json",
+          "docs/04_开发与验收/整包派发/P1-05_整包执行.json",
+          "docs/04_开发与验收/整包派发/整包验收_窗口5.json"
+        ],
+        "implementation_dependencies": [
+          "P1-03"
+        ],
+        "allowed_modified_files": [
+          "apps/planner/src/features/timeline/",
+          "tests/planner/timeline/",
+          "scenarios/从零搭建控制盒厂房/runtime-timeline/",
+          "docs/04_开发与验收/整包派发/P2-04_整包执行.json"
+        ],
+        "finite_expectations": [
+          "作业/资源/来料/物流轨道共用事件时钟；选时和等待定位两画布；折叠与回看不增产；计划/手算/实际分开，未运行实际为空；时间面板不新增常态画布；计划输入与只读结果轨分层，释放时点不充当实际开工，回看/移动显示不改变产量；IX-01在P1-03阶段/到料及P2-02物流完成后，实际核对从零建厂基线440秒/延迟570秒、370—420等待接收/425返程及全部事件、物品持有与资源区间。"
+        ],
+        "verification_entries": [
+          "同一真实Run/观察时间，主轴-厂房-显示组-设备及细化共源，计划输入/实际/比较分层",
+          "作业/阶段有效工作、人员与设备占用、等待、到料、物流、接受事件和真实物品身份分别据来源绘制",
+          "选时/回看/定位与缩放/折叠不改Engine/库存/Run，未知历史不补画，观察窗只裁显示不重置时间",
+          "输入拖动预览/吸附/磁链只作用明确输入，应用经共同Commands和修订冲突处理，不移动实际工序消等待",
+          "原IX-01两个真实Run完整事件/归属/资源：440/570秒，370—420待接收和425返程，原Q/release全部保留"
+        ],
+        "actual_dispatch": {
+          "authorized_at": "2026-10-16T05:35:47+08:00",
+          "authority": "发挥统筹作用自主按设计好的开发顺序往下推进，不设工作量上限。分发任务时分发整个任务包而不是几个要点，要求其他窗口完成后再给你发送消息，你也要在外部窗口空闲时才向外发送任务",
+          "task_id": "P2-04",
+          "within_original_step": 1,
+          "dispatch_mode": "whole_task_package",
+          "role": "W02",
+          "thread_id": "01a13589-e1b0-73d2-aaae-c69be89c5b0f",
+          "scope_ref": "docs/04_开发与验收/整包派发/P2-04_整包执行.json",
+          "business_frontend_authorized": true
+        }
+      },
+      "progress_assessment_ref": "docs/04_开发与验收/整包派发/P2-04_整包执行.json#/progress_assessment"
     },
     {
       "task_id": "P2-05",
       "primary_window": "W02",
       "package_ref": "docs/04_开发与验收/编码任务包/P2-05.md",
-      "status": "draft_not_dispatchable",
-      "design_accepted": false,
-      "actual_commands": null,
-      "actual_dispatch": null
+      "status": "in_progress",
+      "design_accepted": true,
+      "actual_commands": {
+        "generate_types": "npm run generate:types",
+        "typecheck": "npm run typecheck",
+        "build": "npm run build",
+        "rust_tests": "npm run test:rust",
+        "engineering_tests": "npm test",
+        "desktop_start_smoke": ".\\target\\debug\\superfactory.exe --s07-smoke"
+      },
+      "actual_dispatch": {
+        "authorized_at": "2026-10-16T06:49:42+08:00",
+        "authority": "发挥统筹作用自主按设计好的开发顺序往下推进，不设工作量上限。分发任务时分发整个任务包而不是几个要点，要求其他窗口完成后再给你发送消息，你也要在外部窗口空闲时才向外发送任务",
+        "task_id": "P2-05",
+        "within_original_step": 1,
+        "dispatch_mode": "whole_task_package",
+        "role": "W02",
+        "thread_id": "01a13589-e1b0-73d2-aaae-c69be89c5b0f",
+        "scope_ref": "docs/04_开发与验收/整包派发/P2-05_整包执行.json",
+        "business_frontend_authorized": true
+      },
+      "confirmed_question_ids": [
+        "Q06",
+        "Q10",
+        "Q12",
+        "Q30",
+        "Q31",
+        "Q32",
+        "Q35",
+        "Q36"
+      ],
+      "design_acceptance_ref": "docs/04_开发与验收/S06-05_全层贯通设计与冻结复审.json",
+      "design_view_refs": {
+        "task_interaction": [
+          "docs/02_交互设计/交互流程与视图导航.json",
+          "docs/02_交互设计/首版表单与反馈.json",
+          "docs/02_交互设计/业务界面与方案评审.md",
+          "scenarios/真实业务设计/business-inputs.design.json",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "structure_data": [
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "packages/domain/types.design.rs"
+        ],
+        "state_behavior": [
+          "docs/02_交互设计/时间轴主轴与子轴完整定义.json",
+          "docs/02_交互设计/时间轴主轴与轨道组_监督细化.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/03_架构与契约/共享状态与所有权.json",
+          "packages/commands/command-catalog.design.json"
+        ],
+        "interface_collaboration": [
+          "docs/02_交互设计/时间轴主轴与子轴完整定义.json",
+          "docs/02_交互设计/时间轴主轴与轨道组_监督细化.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/03_架构与契约/共享状态与所有权.json",
+          "packages/commands/api.design.rs",
+          "packages/commands/command-catalog.design.json"
+        ],
+        "presentation_UI": [
+          "docs/02_交互设计/S04_可操作设计原型/README.md",
+          "docs/02_交互设计/工业工作台母版与字段细化.json"
+        ],
+        "deployment_validation": [
+          "docs/02_交互设计/时间轴主轴与子轴完整定义.json",
+          "docs/02_交互设计/时间轴主轴与轨道组_监督细化.json",
+          "docs/03_架构与契约/共享状态与所有权.json",
+          "docs/03_架构与契约/首版技术栈与部署设计.json",
+          "docs/04_开发与验收/S05-05_关键架构实际试做.json",
+          "packages/commands/command-catalog.design.json"
+        ]
+      },
+      "engineering_preparation_ref": "docs/04_开发与验收/S07_工程准备与执行准入.json",
+      "current_slice_result_ref": "docs/04_开发与验收/整包派发/P2-05_整包执行.json",
+      "current_execution_ref": "docs/04_开发与验收/整包派发/P2-05_整包执行.json",
+      "prepared_slice": {
+        "task_id": "P2-05",
+        "within_original_step": 4,
+        "original_steps_scope": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "dispatch_mode": "whole_task_package",
+        "scope": "产品/订单/BOM/路线、质量、到料、班次/换单与排期编辑面板，和时间轴改同一输入；本次会话内草稿撤销/重做，经共同Commands形成新修订，不回滚当前运行/认可/外部动作",
+        "planned_owner": "W02",
+        "actual_owner_window": "W02",
+        "actual_owner_thread_id": "01a13589-e1b0-73d2-aaae-c69be89c5b0f",
+        "actual_thread_id": "01a13589-e1b0-73d2-aaae-c69be89c5b0f",
+        "preparation_status": "in_progress",
+        "business_frontend_changes": true,
+        "input_refs": [
+          "docs/02_交互设计/业务界面与方案评审.md",
+          "scenarios/真实业务设计/business-inputs.design.json",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "actual_prerequisite_outputs": [
+          "当前自主整包目标；P2-04真实21单元/17浏览器及W5原15断言独立接收，P1-04/05实际Engine和共同Host已具备。W00据实际前置派发完整P2-05业务编辑前端包，四原步骤/全部Q/release保留。"
+        ],
+        "actual_prerequisite_output_refs": [
+          "docs/04_开发与验收/整包派发/P2-04_整包执行.json",
+          "docs/04_开发与验收/整包派发/整包验收_窗口5.json",
+          "docs/04_开发与验收/整包派发/P1-04_整包执行.json",
+          "docs/04_开发与验收/整包派发/P1-05_整包执行.json"
+        ],
+        "implementation_dependencies": [
+          "P2-04"
+        ],
+        "allowed_modified_files": [
+          "apps/planner/src/features/business/",
+          "tests/planner/business/",
+          "scenarios/真实业务设计/runtime-ui/",
+          "docs/04_开发与验收/整包派发/P2-05_整包执行.json"
+        ],
+        "finite_expectations": [
+          "两画布不变；订单/工艺/到料/质量以面板与详情配置；来源和待补字段可见，成本缺项不阻止时间彩排；点原因定位作业/批次/资源；全厂回看与输入变更分开；时间轴编辑释放/交期/优先序、到料、班次和阶段耗时，与订单/设备面板读写同一方案；修改后从同起点重跑而不篡改旧结果；草稿编辑撤销/重做正确且产生新修订；旧Run/库存/认可不变，修订冲突不覆盖，新编辑清除失效redo，跨工程不串历史"
+        ],
+        "verification_entries": [
+          "面板和时间轴读写同一Project/ScenarioInput，完整订单/产品/BOM/路线/来料/质量/班次/换单与阶段参数，单位/来源/缺项明确",
+          "捕获Project及Scenario修订，经既有18API/Command原子提交；冲突保留表单并明确刷新重预览",
+          "真实Engine重跑、旧Run冻结、草稿undo/redo新修订/失效分支和工程切换均按原预期验证",
+          "数值及键盘入口、多行添加/复制、可见焦点和来源，不把原始JSON当主要非程序员表单",
+          "Root负责Workbench挂载及服务公共边界，完整Native/IX/NFR/用户保留"
+        ],
+        "actual_dispatch": {
+          "authorized_at": "2026-10-16T06:49:42+08:00",
+          "authority": "发挥统筹作用自主按设计好的开发顺序往下推进，不设工作量上限。分发任务时分发整个任务包而不是几个要点，要求其他窗口完成后再给你发送消息，你也要在外部窗口空闲时才向外发送任务",
+          "task_id": "P2-05",
+          "within_original_step": 1,
+          "dispatch_mode": "whole_task_package",
+          "role": "W02",
+          "thread_id": "01a13589-e1b0-73d2-aaae-c69be89c5b0f",
+          "scope_ref": "docs/04_开发与验收/整包派发/P2-05_整包执行.json",
+          "business_frontend_authorized": true
+        }
+      },
+      "progress_assessment_ref": "docs/04_开发与验收/整包派发/P2-05_整包执行.json#/progress_assessment"
     },
     {
       "task_id": "P2-06",
       "primary_window": "W05",
       "package_ref": "docs/04_开发与验收/编码任务包/P2-06.md",
-      "status": "draft_not_dispatchable",
-      "design_accepted": false,
-      "actual_commands": null,
-      "actual_dispatch": null
+      "status": "in_progress",
+      "design_accepted": true,
+      "actual_commands": {
+        "generate_types": "npm run generate:types",
+        "typecheck": "npm run typecheck",
+        "build": "npm run build",
+        "rust_tests": "npm run test:rust",
+        "engineering_tests": "npm test",
+        "desktop_start_smoke": ".\\target\\debug\\superfactory.exe --s07-smoke"
+      },
+      "actual_dispatch": {
+        "authorized_at": "2026-10-16T05:46:53+08:00",
+        "authority": "发挥统筹作用自主按设计好的开发顺序往下推进，不设工作量上限。分发任务时分发整个任务包而不是几个要点，要求其他窗口完成后再给你发送消息，你也要在外部窗口空闲时才向外发送任务",
+        "task_id": "P2-06",
+        "within_original_step": 1,
+        "dispatch_mode": "whole_task_package",
+        "role": "W01",
+        "thread_id": "01a11f4e-f8a4-7a62-9d23-24834761b07e",
+        "scope_ref": "docs/04_开发与验收/整包派发/P2-06_整包执行.json",
+        "business_frontend_authorized": false
+      },
+      "confirmed_question_ids": [
+        "Q03",
+        "Q37",
+        "Q53",
+        "Q54",
+        "Q57"
+      ],
+      "design_acceptance_ref": "docs/04_开发与验收/S06-05_全层贯通设计与冻结复审.json",
+      "design_view_refs": {
+        "task_interaction": [
+          "docs/02_交互设计/交互流程与视图导航.json",
+          "docs/02_交互设计/首版表单与反馈.json",
+          "packages/reporting/evaluation-report.contract.design.json",
+          "docs/01_业务需求/指标成本与决策口径.md",
+          "docs/03_架构与契约/评估报告与数据导出.md",
+          "docs/03_架构与契约/调度与状态转换算法.json",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "structure_data": [
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "packages/domain/types.design.rs"
+        ],
+        "state_behavior": [
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/03_架构与契约/共享状态与所有权.json",
+          "docs/03_架构与契约/工程交接与打开.md",
+          "docs/03_架构与契约/目标驱动厂房生成.md",
+          "docs/03_架构与契约/评估报告与数据导出.md",
+          "packages/reporting/evaluation-report.contract.design.json"
+        ],
+        "interface_collaboration": [
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/03_架构与契约/工程交接与打开.md",
+          "docs/03_架构与契约/目标驱动厂房生成.md",
+          "docs/03_架构与契约/评估报告与数据导出.md",
+          "packages/commands/api.design.rs",
+          "packages/reporting/evaluation-report.contract.design.json"
+        ],
+        "presentation_UI": [
+          "docs/02_交互设计/S04_可操作设计原型/README.md",
+          "docs/02_交互设计/工业工作台母版与字段细化.json"
+        ],
+        "deployment_validation": [
+          "docs/03_架构与契约/工程交接与打开.md",
+          "docs/03_架构与契约/目标驱动厂房生成.md",
+          "docs/03_架构与契约/评估报告与数据导出.md",
+          "docs/03_架构与契约/首版技术栈与部署设计.json",
+          "docs/04_开发与验收/S05-05_关键架构实际试做.json",
+          "packages/reporting/evaluation-report.contract.design.json"
+        ]
+      },
+      "engineering_preparation_ref": "docs/04_开发与验收/S07_工程准备与执行准入.json",
+      "current_slice_result_ref": "docs/04_开发与验收/整包派发/P2-06_整包执行.json",
+      "current_execution_ref": "docs/04_开发与验收/整包派发/P2-06_整包执行.json",
+      "prepared_slice": {
+        "task_id": "P2-06",
+        "within_original_step": 1,
+        "original_steps_scope": [
+          1,
+          2,
+          3
+        ],
+        "dispatch_mode": "whole_task_package",
+        "scope": "指定接受量/时间/资源与条件成本评审，同一EvaluationReport的PDF/HTML/CSV/JSON导出；未知金额/结果不补零",
+        "planned_owner": "W05",
+        "actual_owner_window": "W01",
+        "actual_owner_thread_id": "01a11f4e-f8a4-7a62-9d23-24834761b07e",
+        "actual_thread_id": "01a11f4e-f8a4-7a62-9d23-24834761b07e",
+        "preparation_status": "in_progress",
+        "business_frontend_changes": false,
+        "input_refs": [
+          "packages/reporting/evaluation-report.contract.design.json",
+          "docs/01_业务需求/指标成本与决策口径.md",
+          "docs/03_架构与契约/评估报告与数据导出.md",
+          "docs/03_架构与契约/调度与状态转换算法.json",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "actual_prerequisite_outputs": [
+          "用户现行完整自主开发目标；P2-03真实Run比较、目录/ZIP交付及原两项手工目标反例已修复冻源，W5独立reporting6/commands10和完整55组已真实接收。W00据实际启动前置单独派发P2-06完整评估交付后端包给现reporting生产者W01；原计划W05身份保留，实际owner明确覆盖。本批不含Figma或产品前端写入，所有3原步骤/Q/四格式及完整release保留。"
+        ],
+        "actual_prerequisite_output_refs": [
+          "docs/04_开发与验收/整包派发/P2-03_整包执行.json",
+          "docs/04_开发与验收/整包派发/整包验收_窗口5.json",
+          "docs/04_开发与验收/整包派发/整包集成验证.json"
+        ],
+        "implementation_dependencies": [
+          "P2-03"
+        ],
+        "allowed_modified_files": [
+          "packages/reporting/src/",
+          "packages/reporting/tests/evaluation_units.rs",
+          "packages/reporting/tests/fixtures/evaluation/",
+          "scenarios/方案比较/runtime-evaluation/",
+          "docs/04_开发与验收/整包派发/P2-06_整包执行.json"
+        ],
+        "finite_expectations": [
+          "按目的接受评价完整/部分需求；窗口内未完整C=null而非迟延0；人员/机器区间不双计，班次计价不与占用计价相加；未知成本null；取消/缺件/待判可解释，工程包可重开修改；同一实际运行/比较生成PDF、离线HTML、CSV分表及JSON，单位/时间/接受口径一致；无运行仅导出设计说明；生成报告包含目标与实际接受量、模板来源/版本、场地/班次、采用参数/缺项、布局检查、初案RunId与停止原因；初案达标允许无修正RunId/比较，发生修正才附新旧RunId、变化原因与比较；生产表现与实测软件性能分开。"
+        ],
+        "verification_entries": [
+          "接受量/完工C/占用区间与条件成本消费真实冻结Run，物品和资源不重复计量，未知金额/结果为null",
+          "一份完整冻结EvaluationReport驱动PDF/离线HTML/CSV分表/JSON，同数值/单位/窗口/接受scope/参数与来源",
+          "中文字体与跨页真实打开/渲染验证；合法可分发字体先核许可，不复制系统商业字体当发布资产",
+          "单RunId初案达标直交，无修正不造比较；设计无Run仅设计说明，专业图/认可和生产/实测性能分开",
+          "Host真实export_evaluation/FIFO/目录Token由Root接线；完整IX03/目标机/NFR/用户/release缺口逐项保留"
+        ],
+        "actual_dispatch": {
+          "authorized_at": "2026-10-16T05:46:53+08:00",
+          "authority": "发挥统筹作用自主按设计好的开发顺序往下推进，不设工作量上限。分发任务时分发整个任务包而不是几个要点，要求其他窗口完成后再给你发送消息，你也要在外部窗口空闲时才向外发送任务",
+          "task_id": "P2-06",
+          "within_original_step": 1,
+          "dispatch_mode": "whole_task_package",
+          "role": "W01",
+          "thread_id": "01a11f4e-f8a4-7a62-9d23-24834761b07e",
+          "scope_ref": "docs/04_开发与验收/整包派发/P2-06_整包执行.json",
+          "business_frontend_authorized": false
+        }
+      },
+      "progress_assessment_ref": "docs/04_开发与验收/整包派发/P2-06_整包执行.json#/progress_assessment"
     },
     {
       "task_id": "P3-01",
       "primary_window": "W03",
       "package_ref": "docs/04_开发与验收/编码任务包/P3-01.md",
-      "status": "draft_not_dispatchable",
-      "design_accepted": false,
-      "actual_commands": null,
-      "actual_dispatch": null
+      "status": "in_progress",
+      "design_accepted": true,
+      "actual_commands": {
+        "generate_types": "npm run generate:types",
+        "typecheck": "npm run typecheck",
+        "build": "npm run build",
+        "rust_tests": "npm run test:rust",
+        "engineering_tests": "npm test",
+        "desktop_start_smoke": ".\\target\\debug\\superfactory.exe --s07-smoke"
+      },
+      "actual_dispatch": {
+        "authorized_at": "2026-10-16T06:49:42+08:00",
+        "authority": "发挥统筹作用自主按设计好的开发顺序往下推进，不设工作量上限。分发任务时分发整个任务包而不是几个要点，要求其他窗口完成后再给你发送消息，你也要在外部窗口空闲时才向外发送任务",
+        "task_id": "P3-01",
+        "within_original_step": 1,
+        "dispatch_mode": "whole_task_package",
+        "role": "W03",
+        "thread_id": "01a1396d-bb0e-7e93-8ad5-b3465048d09a",
+        "scope_ref": "docs/04_开发与验收/整包派发/P3-01_整包执行.json",
+        "business_frontend_authorized": true
+      },
+      "confirmed_question_ids": [
+        "Q03",
+        "Q06",
+        "Q09",
+        "Q10",
+        "Q12",
+        "Q14",
+        "Q20",
+        "Q21",
+        "Q22",
+        "Q23",
+        "Q24",
+        "Q25",
+        "Q26",
+        "Q27",
+        "Q28",
+        "Q29",
+        "Q61"
+      ],
+      "design_acceptance_ref": "docs/04_开发与验收/S06-05_全层贯通设计与冻结复审.json",
+      "design_view_refs": {
+        "task_interaction": [
+          "docs/02_交互设计/交互流程与视图导航.json",
+          "docs/02_交互设计/首版表单与反馈.json",
+          "packages/module-kit/category-contracts.design.json",
+          "scenarios/九类模块采用/expected-category-adoption.design.json",
+          "scenarios/设备创作与采用/inputs.design.json",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "structure_data": [
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "packages/domain/types.design.rs"
+        ],
+        "state_behavior": [
+          "docs/02_交互设计/自定义设备创作与采用.md",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/03_架构与契约/共享状态与所有权.json",
+          "docs/04_开发与验收/特征细化/DRF03_C04_伴随材料消费契约.json",
+          "packages/module-kit/category-contracts.design.json",
+          "packages/module-kit/device-editor-capabilities.design.json"
+        ],
+        "interface_collaboration": [
+          "docs/02_交互设计/自定义设备创作与采用.md",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/04_开发与验收/特征细化/DRF03_C04_伴随材料消费契约.json",
+          "packages/commands/api.design.rs",
+          "packages/module-kit/category-contracts.design.json",
+          "packages/module-kit/device-editor-capabilities.design.json"
+        ],
+        "presentation_UI": [
+          "docs/02_交互设计/S04_可操作设计原型/README.md",
+          "docs/02_交互设计/工业工作台母版与字段细化.json"
+        ],
+        "deployment_validation": [
+          "docs/02_交互设计/自定义设备创作与采用.md",
+          "docs/03_架构与契约/首版技术栈与部署设计.json",
+          "docs/04_开发与验收/S05-05_关键架构实际试做.json",
+          "docs/04_开发与验收/特征细化/DRF03_C04_伴随材料消费契约.json",
+          "packages/module-kit/category-contracts.design.json",
+          "packages/module-kit/device-editor-capabilities.design.json"
+        ]
+      },
+      "engineering_preparation_ref": "docs/04_开发与验收/S07_工程准备与执行准入.json",
+      "current_slice_result_ref": "docs/04_开发与验收/整包派发/P3-01_整包执行.json",
+      "current_execution_ref": "docs/04_开发与验收/整包派发/P3-01_整包执行.json",
+      "prepared_slice": {
+        "task_id": "P3-01",
+        "within_original_step": 1,
+        "original_steps_scope": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "dispatch_mode": "whole_task_package",
+        "scope": "九类定义新建/修改/导入、分类表单/样例检查、按版本明确采用及贡献导出；声明包不执行任意脚本；本次会话内草稿撤销/重做，经共同Commands形成新修订，不回滚当前运行/认可/外部动作",
+        "planned_owner": "W03",
+        "actual_owner_window": "W03",
+        "actual_owner_thread_id": "01a1396d-bb0e-7e93-8ad5-b3465048d09a",
+        "actual_thread_id": "01a1396d-bb0e-7e93-8ad5-b3465048d09a",
+        "preparation_status": "in_progress",
+        "business_frontend_changes": true,
+        "input_refs": [
+          "packages/module-kit/category-contracts.design.json",
+          "scenarios/九类模块采用/expected-category-adoption.design.json",
+          "scenarios/设备创作与采用/inputs.design.json",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "actual_prerequisite_outputs": [
+          "当前自主整包目标；P0-03真实Host定义/专业绑定及P2-01实际Native工业工作台创建编辑已可用，P4-01真实模板/版本源已冻结。W00据实际启动前置派发完整P3-01九类创作前端包，四原步骤/全部Q/release保留。"
+        ],
+        "actual_prerequisite_output_refs": [
+          "docs/04_开发与验收/整包派发/P0-03_整包执行.json",
+          "docs/04_开发与验收/整包派发/P2-01_整包执行.json",
+          "docs/04_开发与验收/整包派发/P4-01_整包执行.json",
+          "docs/04_开发与验收/P4-01_模板只读准备与库接收约定.json"
+        ],
+        "implementation_dependencies": [
+          "P0-03",
+          "P2-01"
+        ],
+        "allowed_modified_files": [
+          "apps/planner/src/features/modules/",
+          "apps/planner/src/features/device-authoring/",
+          "tests/planner/authoring/",
+          "scenarios/自定义模块/runtime-authoring/",
+          "docs/04_开发与验收/整包派发/P3-01_整包执行.json"
+        ],
+        "finite_expectations": [
+          "非编程用户建立插图加规则设备并重开可编辑；定义不带正式库存，实例映射真实库位/物品/资源；选实例升级前显示端口/参数/素材变化，取消保持原实例，库中修改不改变旧方案；受限素材不附公开导出包；九类按各自载荷进入消费者，定义不带库存/当前占用/实际结果，设备内联与独立规则只选一处，素材锚点明确映射，专业计划能力不列为实际可调用；九类分别支持新建/修改定义、适用样例检查、明确采用和导出贡献，不只给设备编辑器入口；按行业/产品族/场地适用条件查询已安装或明确导入的模板与九类定义，返回来源/版本/适用条件/可调用能力，未适配不冒充成功。；草稿编辑撤销/重做正确且产生新修订；旧Run/库存/认可不变，修订冲突不覆盖，新编辑清除失效redo，跨工程不串历史"
+        ],
+        "verification_entries": [
+          "九类定义完整载荷分类表单/新建/修改/导入与适用样例，明确schema/版本/单位/来源/缺项",
+          "定义不带正式库存/占用/结果；inline_behavior与operation_ref二选一；专业planned不等于available",
+          "真实get_object/validate_definition/adopt_module与既有Command；实例角色/资源/物品/端口明确映射，升级差异预览/取消不改旧实例",
+          "导出受限素材遵从原权利与实际文件Token，不自行公开发布；取消/修订冲突/undo/redo/跨工程原预期保留",
+          "Root负责公共SDK/Host/Workbench/真实picker，原整包Native/IX/NFR/用户release保留"
+        ],
+        "actual_dispatch": {
+          "authorized_at": "2026-10-16T06:49:42+08:00",
+          "authority": "发挥统筹作用自主按设计好的开发顺序往下推进，不设工作量上限。分发任务时分发整个任务包而不是几个要点，要求其他窗口完成后再给你发送消息，你也要在外部窗口空闲时才向外发送任务",
+          "task_id": "P3-01",
+          "within_original_step": 1,
+          "dispatch_mode": "whole_task_package",
+          "role": "W03",
+          "thread_id": "01a1396d-bb0e-7e93-8ad5-b3465048d09a",
+          "scope_ref": "docs/04_开发与验收/整包派发/P3-01_整包执行.json",
+          "business_frontend_authorized": true
+        }
+      },
+      "progress_assessment_ref": "docs/04_开发与验收/整包派发/P3-01_整包执行.json#/progress_assessment"
     },
     {
       "task_id": "P3-02",
       "primary_window": "W03",
       "package_ref": "docs/04_开发与验收/编码任务包/P3-02.md",
-      "status": "draft_not_dispatchable",
-      "design_accepted": false,
-      "actual_commands": null,
-      "actual_dispatch": null
+      "status": "in_progress",
+      "design_accepted": true,
+      "actual_commands": {
+        "generate_types": "npm run generate:types",
+        "typecheck": "npm run typecheck",
+        "build": "npm run build",
+        "rust_tests": "npm run test:rust",
+        "engineering_tests": "npm test",
+        "desktop_start_smoke": ".\\target\\debug\\superfactory.exe --s07-smoke"
+      },
+      "actual_dispatch": {
+        "authorized_at": "2026-10-16T09:25:46+08:00",
+        "authority": "发挥统筹作用自主按设计好的开发顺序往下推进，不设工作量上限。分发整个任务包，外部窗口空闲时派发，完成后一次交接",
+        "task_id": "P3-02",
+        "within_original_step": 1,
+        "dispatch_mode": "whole_task_package",
+        "role": "W03",
+        "thread_id": "01a1396d-bb0e-7e93-8ad5-b3465048d09a",
+        "scope_ref": "docs/04_开发与验收/整包派发/P3-02_整包执行.json",
+        "business_frontend_authorized": true
+      },
+      "confirmed_question_ids": [
+        "Q02",
+        "Q05",
+        "Q07",
+        "Q13",
+        "Q14",
+        "Q15",
+        "Q16",
+        "Q17",
+        "Q18",
+        "Q19",
+        "Q29",
+        "Q33",
+        "Q41"
+      ],
+      "design_acceptance_ref": "docs/04_开发与验收/S06-05_全层贯通设计与冻结复审.json",
+      "design_view_refs": {
+        "task_interaction": [
+          "docs/02_交互设计/交互流程与视图导航.json",
+          "docs/02_交互设计/首版表单与反馈.json",
+          "docs/02_交互设计/设备时间轴与标签设计.md",
+          "scenarios/设备创作与采用/expected-authoring.design.json",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "structure_data": [
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "packages/domain/types.design.rs"
+        ],
+        "state_behavior": [
+          "docs/02_交互设计/自定义设备创作与采用.md",
+          "docs/02_交互设计/设备时间轴与标签设计.md",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/03_架构与契约/共享状态与所有权.json",
+          "packages/module-kit/device-editor-capabilities.design.json",
+          "packages/presentation/README.md"
+        ],
+        "interface_collaboration": [
+          "docs/02_交互设计/自定义设备创作与采用.md",
+          "docs/02_交互设计/设备时间轴与标签设计.md",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "packages/commands/api.design.rs",
+          "packages/module-kit/device-editor-capabilities.design.json",
+          "packages/presentation/README.md"
+        ],
+        "presentation_UI": [
+          "docs/02_交互设计/S04_可操作设计原型/README.md",
+          "docs/02_交互设计/工业工作台母版与字段细化.json"
+        ],
+        "deployment_validation": [
+          "docs/02_交互设计/自定义设备创作与采用.md",
+          "docs/02_交互设计/设备时间轴与标签设计.md",
+          "docs/03_架构与契约/首版技术栈与部署设计.json",
+          "docs/04_开发与验收/S05-05_关键架构实际试做.json",
+          "packages/module-kit/device-editor-capabilities.design.json",
+          "packages/presentation/README.md"
+        ]
+      },
+      "engineering_preparation_ref": "docs/04_开发与验收/S07_工程准备与执行准入.json",
+      "current_execution_ref": "docs/04_开发与验收/整包派发/P3-02_整包执行.json",
+      "prepared_slice": {
+        "task_id": "P3-02",
+        "within_original_step": 1,
+        "original_steps_scope": [
+          1,
+          2,
+          3
+        ],
+        "dispatch_mode": "whole_task_package",
+        "scope": "GIF/GLB等受控媒体及三维表现绑定真实状态/阶段，完整可旋转3D模型、三档呈现与代表性物品动画；表现不决定工时/库存",
+        "planned_owner": "W03",
+        "actual_owner_window": "W03",
+        "actual_owner_thread_id": "01a1396d-bb0e-7e93-8ad5-b3465048d09a",
+        "preparation_status": "in_progress",
+        "business_frontend_changes": true,
+        "input_refs": [
+          "docs/02_交互设计/设备时间轴与标签设计.md",
+          "scenarios/设备创作与采用/expected-authoring.design.json",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "actual_prerequisite_outputs": [
+          "P301实际创作与精确版本/历史消费者、P103唯一Engine阶段结果、媒体Host253与Native11；真实新Nativebytes接收待Root执行"
+        ],
+        "actual_prerequisite_output_refs": [
+          "docs/04_开发与验收/整包派发/P3-01_整包执行.json",
+          "docs/04_开发与验收/整包派发/P1-03_整包执行.json",
+          "scenarios/自定义模块/runtime-media-assets/full-final.result.json",
+          ".work/whole-packages/media-private-native-unit.log"
+        ],
+        "implementation_dependencies": [
+          "P3-01",
+          "P1-03"
+        ],
+        "allowed_modified_files": [
+          "packages/presentation/src/",
+          "apps/planner/src/features/media/",
+          "tests/planner/media/",
+          "scenarios/媒体表现/runtime/",
+          "modules/media/p302-controlled/",
+          "docs/04_开发与验收/整包派发/P3-02_整包执行.json"
+        ],
+        "finite_expectations": [
+          "三种素材复用同一行为；暂停与进度读取仿真时钟；多阶段表现读取真实阶段进度，阶段边界/中断/输出待接收不切回空闲；不支持的动作明确显示"
+        ],
+        "verification_entries": [
+          "接入许可明确素材和对应锚点",
+          "按真实阶段/暂停/输出等待播放",
+          "用同一行为分别换素材并比较事件",
+          "换图片/GIF/GLB不改数量/时间/资源；暂停/阶段等待保持真实状态，不支持动作明示而非伪造执行"
+        ],
+        "actual_dispatch": {
+          "authorized_at": "2026-10-16T09:25:46+08:00",
+          "authority": "发挥统筹作用自主按设计好的开发顺序往下推进，不设工作量上限。分发整个任务包，外部窗口空闲时派发，完成后一次交接",
+          "task_id": "P3-02",
+          "within_original_step": 1,
+          "dispatch_mode": "whole_task_package",
+          "role": "W03",
+          "thread_id": "01a1396d-bb0e-7e93-8ad5-b3465048d09a",
+          "scope_ref": "docs/04_开发与验收/整包派发/P3-02_整包执行.json",
+          "business_frontend_authorized": true
+        }
+      },
+      "current_slice_result_ref": "docs/04_开发与验收/整包派发/P3-02_整包执行.json",
+      "progress_assessment_ref": "docs/04_开发与验收/整包派发/P3-02_整包执行.json#/progress_assessment"
     },
     {
       "task_id": "P3-03",
       "primary_window": "W03",
       "package_ref": "docs/04_开发与验收/编码任务包/P3-03.md",
-      "status": "draft_not_dispatchable",
-      "design_accepted": false,
-      "actual_commands": null,
-      "actual_dispatch": null
+      "status": "in_progress",
+      "design_accepted": true,
+      "actual_commands": {
+        "generate_types": "npm run generate:types",
+        "typecheck": "npm run typecheck",
+        "build": "npm run build",
+        "rust_tests": "npm run test:rust",
+        "engineering_tests": "npm test",
+        "desktop_start_smoke": ".\\target\\debug\\superfactory.exe --s07-smoke"
+      },
+      "actual_dispatch": {
+        "authorized_at": "2026-10-16T09:25:46+08:00",
+        "authority": "发挥统筹作用自主按设计好的开发顺序往下推进，不设工作量上限。分发整个任务包，外部窗口空闲时派发，完成后一次交接",
+        "task_id": "P3-03",
+        "within_original_step": 1,
+        "dispatch_mode": "whole_task_package",
+        "role": "W02",
+        "thread_id": "01a13589-e1b0-73d2-aaae-c69be89c5b0f",
+        "scope_ref": "docs/04_开发与验收/整包派发/P3-03_整包执行.json",
+        "business_frontend_authorized": true
+      },
+      "confirmed_question_ids": [
+        "Q10",
+        "Q25",
+        "Q29"
+      ],
+      "design_acceptance_ref": "docs/04_开发与验收/S06-05_全层贯通设计与冻结复审.json",
+      "design_view_refs": {
+        "task_interaction": [
+          "docs/02_交互设计/交互流程与视图导航.json",
+          "docs/02_交互设计/首版表单与反馈.json",
+          "modules/devices/manual-assembly/presentation/timeline.json",
+          "scenarios/设备创作与采用/inputs.design.json",
+          "scenarios/设备创作与采用/expected-authoring.design.json",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "structure_data": [
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "packages/domain/types.design.rs"
+        ],
+        "state_behavior": [
+          "docs/02_交互设计/自定义设备创作与采用.md",
+          "docs/02_交互设计/设备时间轴与标签设计.md",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/03_架构与契约/共享状态与所有权.json",
+          "packages/module-kit/device-editor-capabilities.design.json",
+          "packages/presentation/README.md"
+        ],
+        "interface_collaboration": [
+          "docs/02_交互设计/自定义设备创作与采用.md",
+          "docs/02_交互设计/设备时间轴与标签设计.md",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "packages/commands/api.design.rs",
+          "packages/module-kit/device-editor-capabilities.design.json",
+          "packages/presentation/README.md"
+        ],
+        "presentation_UI": [
+          "docs/02_交互设计/S04_可操作设计原型/README.md",
+          "docs/02_交互设计/工业工作台母版与字段细化.json"
+        ],
+        "deployment_validation": [
+          "docs/02_交互设计/自定义设备创作与采用.md",
+          "docs/02_交互设计/设备时间轴与标签设计.md",
+          "docs/03_架构与契约/首版技术栈与部署设计.json",
+          "docs/04_开发与验收/S05-05_关键架构实际试做.json",
+          "packages/module-kit/device-editor-capabilities.design.json",
+          "packages/presentation/README.md"
+        ]
+      },
+      "engineering_preparation_ref": "docs/04_开发与验收/S07_工程准备与执行准入.json",
+      "current_execution_ref": "docs/04_开发与验收/整包派发/P3-03_整包执行.json",
+      "prepared_slice": {
+        "task_id": "P3-03",
+        "within_original_step": 4,
+        "original_steps_scope": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "dispatch_mode": "whole_task_package",
+        "scope": "图片时间轴/标签/操作热点编辑、保存采用、真实阶段读数及观看循环；不增产；本次会话内草稿撤销/重做，经共同Commands形成新修订，不回滚当前运行/认可/外部动作",
+        "planned_owner": "W03",
+        "actual_owner_window": "W02",
+        "actual_owner_thread_id": "01a13589-e1b0-73d2-aaae-c69be89c5b0f",
+        "preparation_status": "in_progress",
+        "business_frontend_changes": true,
+        "input_refs": [
+          "modules/devices/manual-assembly/presentation/timeline.json",
+          "scenarios/设备创作与采用/inputs.design.json",
+          "scenarios/设备创作与采用/expected-authoring.design.json",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "actual_prerequisite_outputs": [
+          "P301实际创作与精确版本/历史消费者、P103唯一Engine阶段结果、媒体Host253与Native11；真实新Nativebytes接收待Root执行"
+        ],
+        "actual_prerequisite_output_refs": [
+          "docs/04_开发与验收/整包派发/P3-01_整包执行.json",
+          "docs/04_开发与验收/整包派发/P1-03_整包执行.json",
+          "scenarios/自定义模块/runtime-media-assets/full-final.result.json",
+          ".work/whole-packages/media-private-native-unit.log"
+        ],
+        "implementation_dependencies": [
+          "P3-01",
+          "P1-03"
+        ],
+        "allowed_modified_files": [
+          "apps/planner/src/features/presentation-editor/",
+          "tests/planner/presentation-editor/",
+          "scenarios/图片时间轴/runtime/",
+          "modules/devices/manual-assembly/presentation/p303-owned/",
+          "docs/04_开发与验收/整包派发/P3-03_整包执行.json"
+        ],
+        "finite_expectations": [
+          "图片可插入排序、调区间和过渡并保存重开；标签绑定真实字段或已声明操作；回看和观看循环不增产；连续生产完成1件后缺PCB等待；改工时同步阶段秒数；多阶段表现读取真实阶段进度，阶段边界/中断/输出待接收不切回空闲；不支持的动作明确显示；指定端口工序做完量和已移交量独立显示，读数不再次生成库存；草稿编辑撤销/重做正确且产生新修订；旧Run/库存/认可不变，修订冲突不覆盖，新编辑清除失效redo，跨工程不串历史"
+        ],
+        "verification_entries": [
+          "实现图片插入/排序/区间/过渡编辑",
+          "绑定实际字段与已实现操作，不允许直接写库存",
+          "实际循环/缺料/阶段变化与重开",
+          "接入本会话草稿撤销/重做：共同命令/修订冲突、redo分支与工程切换；与当前Run/人工认可/磁盘副作用分开",
+          "壳体2/PCB1例完成1件后等待；观看循环不增产，完成与已移交独立；改工时与阶段输入一致，实际操作有结果"
+        ],
+        "actual_dispatch": {
+          "authorized_at": "2026-10-16T09:25:46+08:00",
+          "authority": "发挥统筹作用自主按设计好的开发顺序往下推进，不设工作量上限。分发整个任务包，外部窗口空闲时派发，完成后一次交接",
+          "task_id": "P3-03",
+          "within_original_step": 1,
+          "dispatch_mode": "whole_task_package",
+          "role": "W02",
+          "thread_id": "01a13589-e1b0-73d2-aaae-c69be89c5b0f",
+          "scope_ref": "docs/04_开发与验收/整包派发/P3-03_整包执行.json",
+          "business_frontend_authorized": true
+        }
+      },
+      "current_slice_result_ref": "docs/04_开发与验收/整包派发/P3-03_整包执行.json",
+      "progress_assessment_ref": "docs/04_开发与验收/整包派发/P3-03_整包执行.json#/progress_assessment"
     },
     {
       "task_id": "P3-04",
       "primary_window": "W05",
       "package_ref": "docs/04_开发与验收/编码任务包/P3-04.md",
-      "status": "draft_not_dispatchable",
-      "design_accepted": false,
-      "actual_commands": null,
-      "actual_dispatch": null
+      "status": "in_progress",
+      "design_accepted": true,
+      "actual_commands": {
+        "generate_types": "npm run generate:types",
+        "typecheck": "npm run typecheck",
+        "build": "npm run build",
+        "rust_tests": "npm run test:rust",
+        "engineering_tests": "npm test",
+        "desktop_start_smoke": ".\\target\\debug\\superfactory.exe --s07-smoke"
+      },
+      "actual_dispatch": {
+        "authorized_at": "2026-10-16T04:30:09+08:00",
+        "authority": "发挥统筹作用自主按设计好的开发顺序往下推进，不设工作量上限。分发任务时分发整个任务包而不是几个要点，要求其他窗口完成后再给你发送消息，你也要在外部窗口空闲时才向外发送任务",
+        "task_id": "P3-04",
+        "within_original_step": 1,
+        "dispatch_mode": "whole_task_package",
+        "role": "W00",
+        "thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+        "scope_ref": "docs/04_开发与验收/整包派发/P3-04_整包执行.json",
+        "business_frontend_authorized": false
+      },
+      "confirmed_question_ids": [
+        "Q02",
+        "Q04",
+        "Q05",
+        "Q27",
+        "Q34",
+        "Q45",
+        "Q46",
+        "Q47",
+        "Q48",
+        "Q49",
+        "Q50",
+        "Q54",
+        "Q59"
+      ],
+      "design_acceptance_ref": "docs/04_开发与验收/S06-05_全层贯通设计与冻结复审.json",
+      "design_view_refs": {
+        "task_interaction": [
+          "docs/02_交互设计/交互流程与视图导航.json",
+          "docs/02_交互设计/首版表单与反馈.json",
+          "docs/03_架构与契约/通用Agent接入与专业软件连接器.md",
+          "docs/03_架构与契约/目标驱动厂房生成.md",
+          "scenarios/目标驱动建厂/acceptance.design.json",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/04_开发与验收/特征细化/DRF04_Host授权合入.json",
+          "integrations/agent/stdio-connector.design.json"
+        ],
+        "structure_data": [
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "packages/domain/types.design.rs"
+        ],
+        "state_behavior": [
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/03_架构与契约/共享状态与所有权.json",
+          "docs/03_架构与契约/工程交接与打开.md",
+          "docs/03_架构与契约/目标驱动厂房生成.md",
+          "docs/03_架构与契约/评估报告与数据导出.md",
+          "docs/04_开发与验收/特征细化/DRF04_Host授权合入.json",
+          "integrations/agent/stdio-connector.design.json",
+          "packages/commands/command-catalog.design.json"
+        ],
+        "interface_collaboration": [
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/03_架构与契约/共享状态与所有权.json",
+          "docs/03_架构与契约/工程交接与打开.md",
+          "docs/03_架构与契约/目标驱动厂房生成.md",
+          "docs/03_架构与契约/评估报告与数据导出.md",
+          "docs/04_开发与验收/特征细化/DRF04_Host授权合入.json",
+          "integrations/agent/stdio-connector.design.json",
+          "packages/commands/api.design.rs",
+          "packages/commands/command-catalog.design.json"
+        ],
+        "presentation_UI": [
+          "docs/02_交互设计/S04_可操作设计原型/README.md",
+          "docs/02_交互设计/工业工作台母版与字段细化.json"
+        ],
+        "deployment_validation": [
+          "docs/03_架构与契约/共享状态与所有权.json",
+          "docs/03_架构与契约/工程交接与打开.md",
+          "docs/03_架构与契约/目标驱动厂房生成.md",
+          "docs/03_架构与契约/评估报告与数据导出.md",
+          "docs/03_架构与契约/首版技术栈与部署设计.json",
+          "docs/04_开发与验收/S05-05_关键架构实际试做.json",
+          "docs/04_开发与验收/特征细化/DRF04_Host授权合入.json",
+          "integrations/agent/stdio-connector.design.json",
+          "packages/commands/command-catalog.design.json"
+        ]
+      },
+      "engineering_preparation_ref": "docs/04_开发与验收/S07_工程准备与执行准入.json",
+      "current_slice_result_ref": "docs/04_开发与验收/整包派发/P3-04_整包执行.json",
+      "current_execution_ref": "docs/04_开发与验收/整包派发/P3-04_整包执行.json",
+      "prepared_slice": {
+        "task_id": "P3-04",
+        "within_original_step": 1,
+        "original_steps_scope": [
+          1,
+          2,
+          3
+        ],
+        "dispatch_mode": "whole_task_package",
+        "scope": "外部Agent真实MCP stdio桥/共享Commands、九类与原生设备创作、目标建厂/检查/渲染/模拟/交付；初案达标直交、不足才有限修正/比较或说明，外部专业连接器后置",
+        "planned_owner": "W05",
+        "actual_owner_window": "W03",
+        "actual_owner_thread_id": "01a1396d-bb0e-7e93-8ad5-b3465048d09a",
+        "actual_thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+        "preparation_status": "in_progress",
+        "business_frontend_changes": false,
+        "input_refs": [
+          "docs/03_架构与契约/通用Agent接入与专业软件连接器.md",
+          "docs/03_架构与契约/目标驱动厂房生成.md",
+          "scenarios/目标驱动建厂/acceptance.design.json",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/04_开发与验收/特征细化/DRF04_Host授权合入.json",
+          "integrations/agent/stdio-connector.design.json"
+        ],
+        "actual_prerequisite_outputs": [
+          "P0-01实际共同Host/Engine限定切片已获独立接收，18项类型签名/13项限定操作、真实编辑/Scope/冲突/授权/保存重开可消费，允许P3-04启动实际MCP桥；完整九类/媒体/渲染/报告/GF及Codex客户端接收逐项保留，不因启动前置具备而视为完整通过。"
+        ],
+        "actual_prerequisite_output_refs": [
+          "docs/04_开发与验收/S08_共同Host与Engine专业联通切片.json",
+          "docs/04_开发与验收/整包派发/P0-01_整包执行.json",
+          ".work/whole-packages/verification-with-packaging/result.json"
+        ],
+        "implementation_dependencies": [
+          "P0-01"
+        ],
+        "allowed_modified_files": [
+          "apps/mcp-bridge/src/",
+          "apps/mcp-bridge/tests/",
+          "integrations/agent/",
+          "apps/planner/src-tauri/src/agent_pipe.rs",
+          "apps/planner/src-tauri/src/project_api.rs",
+          "apps/planner/src-tauri/src/lib.rs",
+          "tests/delivery/mcp/",
+          "docs/04_开发与验收/整包派发/P3-04_整包执行.json"
+        ],
+        "finite_expectations": [
+          "Agent通过同一草稿命令生成部件、端口、时间轴与标签；取得实际渲染反馈后修改；包可人工重开编辑并插入产线；外观预览与隔离周期验证分别报告；生成和采用分别完成，明确受影响实例，运行内编辑进入下一方案而不改当前物品/规则；能力发现覆盖九类编辑/采用、排期、运行/比较与评估导出，人工可继续编辑生成结果；不自动发布社区；用户一句话提出产品、日产目标及场地长宽高，Agent调用skills查询库和模板、分析来源明确的输入、填充九类对象/实例/连接/排期，取得同一修订的静态布局检查和真实3D后实际模拟；初案输入齐全、检查通过且实际达标时直接保存交付，不要求改动/修正RunId/比较；另以不足案例验收支持变量内有限修正重跑/比较或具体不能修正说明；导出PDF/HTML/CSV/JSON和可编辑工程；模板缺失、班次/关键工时不足、尺寸冲突或产能不足保持明确状态；目标不写入结果。"
+        ],
+        "verification_entries": [
+          "真实独立桥进程MCP stdio/Windows pipe/OS身份与会话/同一managed Host调用",
+          "原Scope/修订冲突/授权/原子提交/断连及大结果接收边界",
+          "能力仅据实际provider/状态/grant发布，旧18项wire契约保持",
+          "原GF与真实Codex/媒体/渲染/四格式/人工接手及release逐项接收"
+        ],
+        "actual_dispatch": {
+          "authorized_at": "2026-10-16T04:30:09+08:00",
+          "authority": "发挥统筹作用自主按设计好的开发顺序往下推进，不设工作量上限。分发任务时分发整个任务包而不是几个要点，要求其他窗口完成后再给你发送消息，你也要在外部窗口空闲时才向外发送任务",
+          "task_id": "P3-04",
+          "within_original_step": 1,
+          "dispatch_mode": "whole_task_package",
+          "role": "W00",
+          "thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+          "scope_ref": "docs/04_开发与验收/整包派发/P3-04_整包执行.json",
+          "business_frontend_authorized": false
+        }
+      },
+      "progress_assessment_ref": "docs/04_开发与验收/整包派发/P3-04_整包执行.json#/progress_assessment"
     },
     {
       "task_id": "P4-01",
       "primary_window": "W03",
       "package_ref": "docs/04_开发与验收/编码任务包/P4-01.md",
-      "status": "draft_not_dispatchable",
-      "design_accepted": false,
-      "actual_commands": null,
-      "actual_dispatch": null
+      "status": "in_progress",
+      "design_accepted": true,
+      "actual_commands": {
+        "generate_types": "npm run generate:types",
+        "typecheck": "npm run typecheck",
+        "build": "npm run build",
+        "rust_tests": "npm run test:rust",
+        "engineering_tests": "npm test",
+        "desktop_start_smoke": ".\\target\\debug\\superfactory.exe --s07-smoke"
+      },
+      "actual_dispatch": {
+        "authorized_at": "2026-10-16T03:17:20+08:00",
+        "authority": "发挥统筹作用自主按设计好的开发顺序往下推进，不设工作量上限。分发任务时分发整个任务包而不是几个要点，要求其他窗口完成后再给你发送消息，你也要在外部窗口空闲时才向外发送任务",
+        "task_id": "P4-01",
+        "within_original_step": 1,
+        "dispatch_mode": "whole_task_package",
+        "role": "W00",
+        "thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+        "scope_ref": "docs/04_开发与验收/整包派发/P4-01_整包执行.json",
+        "business_frontend_authorized": false
+      },
+      "confirmed_question_ids": [
+        "Q01",
+        "Q02",
+        "Q04",
+        "Q08",
+        "Q09",
+        "Q14",
+        "Q27",
+        "Q46",
+        "Q48",
+        "Q49",
+        "Q50"
+      ],
+      "design_acceptance_ref": "docs/04_开发与验收/S06-05_全层贯通设计与冻结复审.json",
+      "design_view_refs": {
+        "task_interaction": [
+          "docs/02_交互设计/交互流程与视图导航.json",
+          "docs/02_交互设计/首版表单与反馈.json",
+          "modules/templates/machining-delivery/manifest.json",
+          "modules/templates/purchased-assembly/manifest.json",
+          "modules/templates/parallel-electromechanical/manifest.json",
+          "modules/templates/carton-factory/generation-profile.design.json",
+          "scenarios/模板与交接/expected-template-handoff.design.json",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/04_开发与验收/特征细化/DRF04_Host授权合入.json",
+          "integrations/agent/stdio-connector.design.json"
+        ],
+        "structure_data": [
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "packages/domain/types.design.rs"
+        ],
+        "state_behavior": [
+          "docs/02_交互设计/自定义设备创作与采用.md",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/03_架构与契约/共享状态与所有权.json",
+          "docs/04_开发与验收/特征细化/DRF03_C04_伴随材料消费契约.json",
+          "packages/module-kit/category-contracts.design.json",
+          "packages/module-kit/device-editor-capabilities.design.json"
+        ],
+        "interface_collaboration": [
+          "docs/02_交互设计/自定义设备创作与采用.md",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/04_开发与验收/特征细化/DRF03_C04_伴随材料消费契约.json",
+          "packages/commands/api.design.rs",
+          "packages/module-kit/category-contracts.design.json",
+          "packages/module-kit/device-editor-capabilities.design.json"
+        ],
+        "presentation_UI": [
+          "docs/02_交互设计/S04_可操作设计原型/README.md",
+          "docs/02_交互设计/工业工作台母版与字段细化.json"
+        ],
+        "deployment_validation": [
+          "docs/02_交互设计/自定义设备创作与采用.md",
+          "docs/03_架构与契约/首版技术栈与部署设计.json",
+          "docs/04_开发与验收/S05-05_关键架构实际试做.json",
+          "docs/04_开发与验收/特征细化/DRF03_C04_伴随材料消费契约.json",
+          "packages/module-kit/category-contracts.design.json",
+          "packages/module-kit/device-editor-capabilities.design.json"
+        ]
+      },
+      "engineering_preparation_ref": "docs/04_开发与验收/S07_工程准备与执行准入.json",
+      "current_slice_result_ref": "docs/04_开发与验收/整包派发/P4-01_整包执行.json",
+      "current_execution_ref": "docs/04_开发与验收/整包派发/P4-01_整包执行.json",
+      "prepared_slice": {
+        "task_id": "P4-01",
+        "within_original_step": 1,
+        "original_steps_scope": [
+          1,
+          2,
+          3
+        ],
+        "dispatch_mode": "whole_task_package",
+        "scope": "三通用离散模板/空工程、所需行为/设备库及纸箱制造目标场地配置；加工/电子仅声明过程，纸箱为行业例，不限平台行业",
+        "planned_owner": "W03",
+        "actual_owner_window": "W01",
+        "actual_owner_thread_id": "01a11f4e-f8a4-7a62-9d23-24834761b07e",
+        "actual_thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+        "preparation_status": "in_progress",
+        "business_frontend_changes": false,
+        "input_refs": [
+          "modules/templates/machining-delivery/manifest.json",
+          "modules/templates/purchased-assembly/manifest.json",
+          "modules/templates/parallel-electromechanical/manifest.json",
+          "modules/templates/carton-factory/generation-profile.design.json",
+          "scenarios/模板与交接/expected-template-handoff.design.json",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/04_开发与验收/特征细化/DRF04_Host授权合入.json",
+          "integrations/agent/stdio-connector.design.json"
+        ],
+        "actual_prerequisite_outputs": [
+          "P0-03实际Host已完成真实专业生产/用途认可/采用/版本/保存重开及历史重选，最新定向135项通过；共同Project/Scenario/ModulePackage/导入草稿及唯一Engine已可消费实际产品和资源。这些实际入口允许完整P4-01启动，不代表P0-03整包、P3-01库/采用或P1-04/05及本包完整接收已经通过。"
+        ],
+        "actual_prerequisite_output_refs": [
+          "docs/04_开发与验收/整包派发/P0-03_整包执行.json",
+          "docs/04_开发与验收/整包派发/P1-03_整包执行.json",
+          ".work/whole-packages/professional-post-open-reselect-final.stdout.txt"
+        ],
+        "implementation_dependencies": [
+          "P0-03"
+        ],
+        "allowed_modified_files": [
+          "packages/module-kit/src/",
+          "packages/module-kit/tests/template_units.rs",
+          "modules/templates/",
+          "modules/devices/template-support/",
+          "scenarios/模板与交接/runtime/",
+          "docs/04_开发与验收/整包派发/P4-01_整包执行.json"
+        ],
+        "finite_expectations": [
+          "三类模板及纸箱生成配置可独立打开/修改，所需工序、设备、人员、物料/库位与端口样例有明确输入输出；三模板的加工/电子路线以声明过程实际消费库存和资源，不冒充专业计算；每类九类资产至少有可创作/采用样例；模板生成新对象ID，不复制在制/订单，物料种子单独明确采用；产品/参数来源与布局/场地角色可查，纸箱制造和给成品装箱区分。旧全产品12种对象未形成冻结枚举，不作为额外首版专业内核或任意数量门槛。"
+        ],
+        "verification_entries": [
+          "原三模板与纸箱配置实际类型/角色/采用/种子消费者",
+          "旧共享/专业回归保持",
+          "完整原UI/IX及release接收独立"
+        ],
+        "actual_dispatch": {
+          "authorized_at": "2026-10-16T03:17:20+08:00",
+          "authority": "发挥统筹作用自主按设计好的开发顺序往下推进，不设工作量上限。分发任务时分发整个任务包而不是几个要点，要求其他窗口完成后再给你发送消息，你也要在外部窗口空闲时才向外发送任务",
+          "task_id": "P4-01",
+          "within_original_step": 1,
+          "dispatch_mode": "whole_task_package",
+          "role": "W00",
+          "thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+          "scope_ref": "docs/04_开发与验收/整包派发/P4-01_整包执行.json",
+          "business_frontend_authorized": false
+        }
+      },
+      "progress_assessment_ref": "docs/04_开发与验收/整包派发/P4-01_整包执行.json#/progress_assessment"
     },
     {
       "task_id": "P4-02",
       "primary_window": "W04",
       "package_ref": "docs/04_开发与验收/编码任务包/P4-02.md",
-      "status": "draft_not_dispatchable",
-      "design_accepted": false,
-      "actual_commands": null,
-      "actual_dispatch": null
+      "status": "in_progress",
+      "design_accepted": true,
+      "actual_commands": {
+        "generate_types": "npm run generate:types",
+        "typecheck": "npm run typecheck",
+        "build": "npm run build",
+        "rust_tests": "npm run test:rust",
+        "engineering_tests": "npm test",
+        "desktop_start_smoke": ".\\target\\debug\\superfactory.exe --s07-smoke"
+      },
+      "actual_dispatch": {
+        "authorized_at": "2026-10-16T01:25:39+08:00",
+        "authority": "发挥统筹作用自主按设计好的开发顺序往下推进，不设工作量上限。分发任务时分发整个任务包而不是几个要点",
+        "task_id": "P4-02",
+        "within_original_step": 1,
+        "dispatch_mode": "whole_task_package",
+        "role": "W00",
+        "thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+        "scope_ref": "docs/04_开发与验收/整包派发/P4-02_整包执行.json",
+        "business_frontend_authorized": false
+      },
+      "confirmed_question_ids": [
+        "Q02",
+        "Q28",
+        "Q38",
+        "Q39",
+        "Q40",
+        "Q41",
+        "Q42",
+        "Q43",
+        "Q44"
+      ],
+      "design_acceptance_ref": "docs/04_开发与验收/S06-05_全层贯通设计与冻结复审.json",
+      "design_view_refs": {
+        "task_interaction": [
+          "docs/02_交互设计/交互流程与视图导航.json",
+          "docs/02_交互设计/首版表单与反馈.json",
+          "docs/00_项目基线/技术与经济可行性.md",
+          "docs/03_架构与契约/专业成果接入与软件在环.md",
+          "packages/packaging/README.md",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "packages/packaging/consumer-device.design.json",
+          "docs/04_开发与验收/特征细化/DRF03_C02_专业绑定推导.json",
+          "docs/04_开发与验收/特征细化/DRF03_C03_过程样本语义.json"
+        ],
+        "structure_data": [
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "packages/domain/types.design.rs"
+        ],
+        "state_behavior": [
+          "docs/03_架构与契约/专业成果接入与软件在环.md",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/03_架构与契约/共享状态与所有权.json",
+          "docs/03_架构与契约/纸包装数值与制造规则.md",
+          "docs/03_架构与契约/纸包装结构与过程算法.md",
+          "packages/packaging/algorithm.design.json",
+          "packages/packaging/consumer-device.design.json"
+        ],
+        "interface_collaboration": [
+          "docs/03_架构与契约/专业成果接入与软件在环.md",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/03_架构与契约/纸包装数值与制造规则.md",
+          "docs/03_架构与契约/纸包装结构与过程算法.md",
+          "packages/commands/api.design.rs",
+          "packages/packaging/algorithm.design.json",
+          "packages/packaging/consumer-device.design.json"
+        ],
+        "presentation_UI": [
+          "docs/02_交互设计/S04_可操作设计原型/README.md",
+          "docs/02_交互设计/工业工作台母版与字段细化.json"
+        ],
+        "deployment_validation": [
+          "docs/03_架构与契约/专业成果接入与软件在环.md",
+          "docs/03_架构与契约/纸包装数值与制造规则.md",
+          "docs/03_架构与契约/纸包装结构与过程算法.md",
+          "docs/03_架构与契约/首版技术栈与部署设计.json",
+          "docs/04_开发与验收/S05-05_关键架构实际试做.json",
+          "packages/packaging/algorithm.design.json",
+          "packages/packaging/consumer-device.design.json"
+        ]
+      },
+      "engineering_preparation_ref": "docs/04_开发与验收/S07_工程准备与执行准入.json",
+      "current_execution_ref": "docs/04_开发与验收/整包派发/P4-02_整包执行.json",
+      "prepared_slice": {
+        "task_id": "P4-02",
+        "within_original_step": 1,
+        "original_steps_scope": [
+          1,
+          2,
+          3
+        ],
+        "dispatch_mode": "whole_task_package",
+        "scope": "纸包装三机制/三变化、结构与条件求解、成型/开合/固定姿态直线取物三态判定、刀折胶SVG/材料数量/可编辑成果及认可绑定",
+        "planned_owner": "W04",
+        "actual_owner_window": "W01",
+        "actual_owner_thread_id": "01a11f4e-f8a4-7a62-9d23-24834761b07e",
+        "actual_thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+        "preparation_status": "in_progress",
+        "business_frontend_changes": false,
+        "input_refs": [
+          "docs/00_项目基线/技术与经济可行性.md",
+          "docs/03_架构与契约/专业成果接入与软件在环.md",
+          "packages/packaging/README.md",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "packages/packaging/consumer-device.design.json",
+          "docs/04_开发与验收/特征细化/DRF03_C02_专业绑定推导.json",
+          "docs/04_开发与验收/特征细化/DRF03_C03_过程样本语义.json"
+        ],
+        "actual_prerequisite_outputs": [
+          "按原execution_plan步骤1，P0-03版本化产品/PackageStructureJob/PackagingResult/Artifact四对象及专业候选引用产物已可编译消费；实际sf-commands cargo check --locked exit0。启动独立几何核心不要求先存在计算器，否则会构成假循环。P0-03正向实际绑定仍in_progress，由本包实际producer回接；这不是P0-03整项通过。原P4-02步骤2/3和全部release验收不删，完整退出仍等P0-03/P3-01/P2-06真实消费者。"
+        ],
+        "actual_prerequisite_output_refs": [
+          "docs/04_开发与验收/P0-02_业务输入与引用切片.json",
+          "docs/04_开发与验收/整包派发/P0-03_整包执行.json",
+          "packages/domain/src/models.rs",
+          "packages/domain/src/professional_inputs.rs",
+          "packages/commands/src/project_professional.rs",
+          ".work/whole-packages/host-first-check.stderr.txt"
+        ],
+        "implementation_dependencies": [
+          "P0-03"
+        ],
+        "allowed_modified_files": [
+          "packages/packaging/src/",
+          "packages/packaging/tests/kernel_units.rs",
+          "packages/packaging/tests/fixtures/",
+          "modules/professional/",
+          "docs/04_开发与验收/整包派发/P4-02_整包执行.json"
+        ],
+        "finite_expectations": [
+          "三机制（受限折叠容器、外盒/内衬多件、罩/滑套）与三变化（产品功能、认可材料、构件关系/重复订单）均实际可修改；结构/尺寸/过程按输入计算成型、开合、固定姿态直线取物，Pass/Fail/Undetermined及搜索预算界限明确；导出刀/折/胶SVG、材料/数量和可编辑结构；人工认可后绑定包装工位，产品变化使受影响绑定待复核；专业工具不直接增加库存，几何不代防护/强度或现场折叠工时。"
+        ],
+        "verification_entries": [
+          "必要实际几何/结构targeted tests",
+          "cargo test --workspace --locked",
+          "实际Host compute_packaging/认可/绑定/保存重开",
+          "独立原完整验收与IX-03"
+        ],
+        "actual_dispatch": {
+          "authorized_at": "2026-10-16T01:25:39+08:00",
+          "authority": "发挥统筹作用自主按设计好的开发顺序往下推进，不设工作量上限。分发任务时分发整个任务包而不是几个要点",
+          "task_id": "P4-02",
+          "within_original_step": 1,
+          "dispatch_mode": "whole_task_package",
+          "role": "W00",
+          "thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+          "scope_ref": "docs/04_开发与验收/整包派发/P4-02_整包执行.json",
+          "business_frontend_authorized": false
+        }
+      },
+      "progress_assessment_ref": "docs/04_开发与验收/整包派发/P4-02_整包执行.json#/progress_assessment"
     },
     {
       "task_id": "P5-01",
       "primary_window": "W00",
       "package_ref": "docs/04_开发与验收/编码任务包/P5-01.md",
-      "status": "draft_not_dispatchable",
-      "design_accepted": false,
-      "actual_commands": null,
-      "actual_dispatch": null
+      "status": "in_progress",
+      "design_accepted": true,
+      "actual_commands": {
+        "generate_types": "npm run generate:types",
+        "typecheck": "npm run typecheck",
+        "build": "npm run build",
+        "rust_tests": "npm run test:rust",
+        "engineering_tests": "npm test",
+        "desktop_start_smoke": ".\\target\\debug\\superfactory.exe --s07-smoke"
+      },
+      "actual_dispatch": {
+        "authorized_at": "2026-10-16T09:32:57+08:00",
+        "authority": "发挥统筹作用自主按设计好的开发顺序往下推进，不设工作量上限。分发整个任务包，空闲才派发，完成后一次交接",
+        "task_id": "P5-01",
+        "within_original_step": 1,
+        "dispatch_mode": "whole_task_package",
+        "role": "W01",
+        "thread_id": "01a11f4e-f8a4-7a62-9d23-24834761b07e",
+        "scope_ref": "docs/04_开发与验收/整包派发/P5-01_整包执行.json",
+        "business_frontend_authorized": false
+      },
+      "confirmed_question_ids": [
+        "Q01",
+        "Q02",
+        "Q03",
+        "Q05",
+        "Q13",
+        "Q18",
+        "Q19",
+        "Q44",
+        "Q45",
+        "Q54",
+        "Q55",
+        "Q56",
+        "Q57",
+        "Q58",
+        "Q59",
+        "Q60",
+        "Q61",
+        "Q62",
+        "Q63",
+        "Q64"
+      ],
+      "design_acceptance_ref": "docs/04_开发与验收/S06-05_全层贯通设计与冻结复审.json",
+      "design_view_refs": {
+        "task_interaction": [
+          "docs/02_交互设计/交互流程与视图导航.json",
+          "docs/02_交互设计/首版表单与反馈.json",
+          "docs/00_项目基线/首版需求与验收.md",
+          "docs/05_开源与参赛/比赛设计要求.md",
+          "community/CONTRIBUTING.md",
+          "community/GOVERNANCE.md",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "structure_data": [
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "packages/domain/types.design.rs"
+        ],
+        "state_behavior": [
+          "docs/02_交互设计/主流程与视图导航.md",
+          "docs/02_交互设计/工业工作台母版与字段细化.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/03_架构与契约/共享状态与所有权.json",
+          "docs/03_架构与契约/工程交接与打开.md",
+          "docs/03_架构与契约/评估报告与数据导出.md",
+          "docs/04_开发与验收/特征细化/DRF04_Host授权合入.json",
+          "packages/reporting/evaluation-report.contract.design.json"
+        ],
+        "interface_collaboration": [
+          "docs/02_交互设计/主流程与视图导航.md",
+          "docs/02_交互设计/工业工作台母版与字段细化.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/03_架构与契约/工程交接与打开.md",
+          "docs/03_架构与契约/评估报告与数据导出.md",
+          "docs/04_开发与验收/特征细化/DRF04_Host授权合入.json",
+          "packages/commands/api.design.rs",
+          "packages/reporting/evaluation-report.contract.design.json"
+        ],
+        "presentation_UI": [
+          "docs/02_交互设计/S04_可操作设计原型/README.md",
+          "docs/02_交互设计/工业工作台母版与字段细化.json"
+        ],
+        "deployment_validation": [
+          "docs/02_交互设计/主流程与视图导航.md",
+          "docs/02_交互设计/工业工作台母版与字段细化.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/03_架构与契约/工程交接与打开.md",
+          "docs/03_架构与契约/评估报告与数据导出.md",
+          "docs/03_架构与契约/首版技术栈与部署设计.json",
+          "docs/04_开发与验收/S05-05_关键架构实际试做.json",
+          "docs/04_开发与验收/特征细化/DRF04_Host授权合入.json",
+          "packages/reporting/evaluation-report.contract.design.json"
+        ]
+      },
+      "engineering_preparation_ref": "docs/04_开发与验收/S07_工程准备与执行准入.json",
+      "current_execution_ref": "docs/04_开发与验收/整包派发/P5-01_整包执行.json",
+      "current_slice_result_ref": "docs/04_开发与验收/整包派发/P5-01_整包执行.json",
+      "prepared_slice": {
+        "task_id": "P5-01",
+        "within_original_step": 1,
+        "original_steps_scope": [
+          1,
+          2,
+          3
+        ],
+        "dispatch_mode": "whole_task_package",
+        "scope": "SF-01至17真实验收、基准负载、实际复现/接手及九类贡献采用、许可和可运行仓库/作品介绍PDF/真实视频准备；报名审核/发送/回执独立据实记录",
+        "planned_owner": "W00",
+        "actual_owner_window": "W01",
+        "actual_owner_thread_id": "01a11f4e-f8a4-7a62-9d23-24834761b07e",
+        "actual_thread_id": "01a11f4e-f8a4-7a62-9d23-24834761b07e",
+        "preparation_status": "in_progress",
+        "business_frontend_changes": false,
+        "input_refs": [
+          "docs/00_项目基线/首版需求与验收.md",
+          "docs/05_开源与参赛/比赛设计要求.md",
+          "community/CONTRIBUTING.md",
+          "community/GOVERNANCE.md",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "actual_prerequisite_outputs": [
+          "P001实际Host/持久化与历史已接；原步骤1明确允许随开发文档/许可准备；步骤2全部首版完成门保持"
+        ],
+        "actual_prerequisite_output_refs": [
+          "docs/04_开发与验收/整包派发/P0-01_整包执行.json",
+          "scenarios/自定义模块/runtime-media-assets/full-final.result.json"
+        ],
+        "implementation_dependencies": [
+          "P0-01"
+        ],
+        "allowed_modified_files": [
+          "docs/05_开源与参赛/release-preparation/",
+          "tools/release-preparation/",
+          "tests/delivery/release-preparation/",
+          ".work/whole-packages/window2-release-preparation/",
+          "docs/04_开发与验收/整包派发/P5-01_整包执行.json"
+        ],
+        "finite_expectations": [
+          "实际新环境复现、第三人模块贡献演练、素材许可清单、软件录屏；提案/文件可编辑/实际运行/发布状态分开，失去维护保留所用旧版；第三人实际接手而非只读JSON，作者与许可按真实信息填写；贡献者按九类入口选择样例，不能用固定设备模板冒充所有类别；SF-01至SF-17实际验收；九类各一例贡献采用，四格式同源且在另一目录可读；不以文件骨架当完成；真实外部Agent完成SF-17目标生成、模拟反馈和人工接手，初案达标直接交付分支可核对，另以不足案例核对有限修正/比较或不能修正说明；通用目标按accepted_unit、指定接受位置/阶段及观察窗核对；纸箱用例为合格箱，其他产品按自身认可单位；缺输入无产能达标结论；课程竞赛准备/赛道一适配依S01-03；完整可运行仓库、含背景/架构/场景/创新的作品介绍PDF、真实核心功能/流程视频三项分别检查且与实际版本一致，产品评估与研究报告不得替代；报名主体/成员/负责人、审核确认和正式发送/回执据实际记录，未办理留空，内部准备期限不放宽到官方截止。；本版软件与材料准备验收不要求自动办理报名/审核或正式发送，手续状态必须据实；完整SF验收不以关键技术试做或设计通过替代。；最终显式核对IX-01/IX-02/IX-03的完整贯通证据，局部任务或手算通过不能代替。"
+        ],
+        "verification_entries": [
+          "文档/许可盘点可随开发准备，不把待填当证据",
+          "所有首版前置完成后做完整功能/负载/新环境与第三人复现",
+          "制作与实际版本一致的三组交付；手续据授权和真实记录另办",
+          "最终依赖闭包覆盖全部21任务；无后置阻塞、无以试做或研究PDF代软件；软件准备验收不假装报名审核/发送成功"
+        ],
+        "actual_dispatch": {
+          "authorized_at": "2026-10-16T09:32:57+08:00",
+          "authority": "发挥统筹作用自主按设计好的开发顺序往下推进，不设工作量上限。分发整个任务包，空闲才派发，完成后一次交接",
+          "task_id": "P5-01",
+          "within_original_step": 1,
+          "dispatch_mode": "whole_task_package",
+          "role": "W01",
+          "thread_id": "01a11f4e-f8a4-7a62-9d23-24834761b07e",
+          "scope_ref": "docs/04_开发与验收/整包派发/P5-01_整包执行.json",
+          "business_frontend_authorized": false
+        }
+      },
+      "progress_assessment_ref": "docs/04_开发与验收/整包派发/P5-01_整包执行.json#/progress_assessment"
     }
-  ]
+  ],
+  "confirmed_choice_ref": "docs/00_项目基线/全量设计编码确认选择.json",
+  "checkpoint_choice_requirements_ref": "docs/04_开发与验收/全量设计编码确认/SXX-XX_确认选择落实.json",
+  "sequential_closeout_control_ref": "docs/04_开发与验收/逐包收口计划.json",
+  "updated_at": "2026-10-21T11:13:40+08:00",
+  "completion_assessment_ref": "docs/04_开发与验收/实现阶段完成度.json",
+  "current_reading_rule": "原21包均in_progress；旧actual_dispatch/prepared_slice是历史切片，当前剩余/验收状态取原包sequential_closeout及progress_assessment。",
+  "current_submission_delivery_policy_ref": "docs/04_开发与验收/官方提交物交付口径.json",
+  "current_delivery_goal": "official_three_materials_only",
+  "submission_policy_effective_at": "2026-10-21T14:43:53+08:00"
 }

@@ -1,0 +1,25 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';import {setup,host} from './regression-port-source.mjs';
+const failure=code=>({detail:{code,message:code==='UnsupportedCapability'?'Old port history unavailable':'Actual authorization/revision failure'}});
+test('protocol: same frozen device material output uses current authorized ScopeR9, oldRunR1 and exact private getter; fullRun untouched',async()=>{
+ const s=setup(),before=structuredClone(s.run),actual=await s.reader.read(s.context);assert.equal(s.portCalls.length,1);assert.deepEqual(s.portCalls[0],{project_id:s.project.id,scope:{kind:'project'},scope_revision:9,run_id:s.run.id,at_ms:75000,port:{module_ref:{id:s.pkg.definition.id,version:s.pkg.definition.version},instance_id:'CNC',port_id:'output'}});assert.equal(actual.run.input_ref.project_revision,1);assert.deepEqual(actual.run,before);assert.equal(actual.frame.port_outputs.ports[0].status,'available');assert.equal(actual.frame.port_outputs.ports[0].completed_output.value.coefficient,1);
+});
+test('protocol: original explicit two-port fixtures remain offline; missing third port never falls through to Native',async()=>{
+ const s=setup({omitPort:true}),actual=await s.reader.read(s.context);assert.equal(s.portCalls.length,0);assert.equal(actual.frame.port_outputs.ports[0].status,'unavailable');assert.equal(actual.frame.port_outputs.ports[0].reason,'not_wired');
+});
+test('protocol: only explicit UnsupportedCapability becomes named port unavailable; authorization/revision/IO propagate',async()=>{
+ const s=setup({readPort:()=>{throw failure('UnsupportedCapability');}}),actual=await s.reader.read(s.context);assert.equal(actual.frame.port_outputs.ports[0].reason,'unsupported_capability');
+ for(const code of ['PermissionDenied','RevisionConflict','IoFailure','MissingReference']){const error=failure(code),t=setup({readPort:()=>{throw error;}});await assert.rejects(t.reader.read(t.context),e=>e===error);}
+});
+test('protocol: DefinitionCycle never borrows same-named Project device or calls instance-port getter',async()=>{
+ const s=setup();s.job.execution_ref={kind:'definition_cycle',data:{module_ref:{id:s.pkg.definition.id,version:s.pkg.definition.version}}};s.context.scope={kind:'definition_draft',data:'actual-draft'};const actual=await s.reader.read(s.context);assert.equal(actual.device,null);assert.deepEqual(actual.frame.port_outputs.ports,[]);assert.equal(s.portCalls.length,0);assert.match(actual.frame.port_outputs.not_applicable,/DefinitionCycle/);
+});
+test('protocol: late actual counts cannot cross session/project/Scope/R/Run/Job/time; errors after switch also fail source identity',async()=>{
+ for(const mutate of [c=>c.session_id='next',c=>c.project_id='next',c=>c.scope={kind:'definition_draft',data:'next'},c=>c.scope_revision++,c=>c.selection.run_id='next',c=>c.selection.job_id='next',c=>c.selection.at_ms++]){let release;const deferred=new Promise(r=>release=r),s=setup({readPort:()=>deferred}),pending=s.reader.read(s.context);while(!s.portCalls.length)await new Promise(r=>setTimeout(r,0));const next=structuredClone(s.context);mutate(next);s.switchTo(next);release({});await assert.rejects(pending,host.ProcessSourceChanged);}
+ let reject;const deferred=new Promise((_,r)=>reject=r),s=setup({readPort:()=>deferred}),pending=s.reader.read(s.context);while(!s.portCalls.length)await new Promise(r=>setTimeout(r,0));s.switchTo({...s.context,scope_revision:10});reject(failure('UnsupportedCapability'));await assert.rejects(pending,host.ProcessSourceChanged);
+});
+test('protocol: wrong response Run/time/Port/version/unit stops frame; legal bidirectional material ports only',async()=>{
+ for(const mutate of [v=>v.run_id='other',v=>v.at_ms=85000,v=>v.port.port_id='input',v=>v.port.module_ref.version='9.9.9',v=>v.completed_output.unit='kg']){const s=setup({readPort:request=>{const value={run_id:request.run_id,at_ms:request.at_ms,port:structuredClone(request.port),item_type_ref:null,completed_output:{unit:'piece',value:{coefficient:0,decimal_places:0}},accepted_output:{unit:'piece',value:{coefficient:0,decimal_places:0}}};mutate(value);return value;}});await assert.rejects(s.reader.read(s.context),host.ProcessUnavailable);}
+ const s=setup();s.pkg.definition.payload.data.ports.push({id:'both',direction:'bidirectional',payload:{kind:'material',data:{item_role:'product',unit:'piece'}}},{id:'signal',direction:'output',payload:{kind:'signal',data:{}}});await s.reader.read(s.context);assert.deepEqual(s.portCalls.map(r=>r.port.port_id),['output','both']);
+});
+
+test('protocol: actual DefinitionCycle Draft scope with retained project_device fixture declarations still has no formal instance ports',async()=>{const s=setup();s.context.scope={kind:'definition_draft',data:'actual-draft'};const value=await s.reader.read(s.context);assert.equal(value.job.execution_ref.kind,'project_device');assert.equal(value.device,null);assert.equal(value.frame.port_outputs.device,null);assert.deepEqual(value.frame.port_outputs.ports,[]);assert.equal(s.portCalls.length,0);});

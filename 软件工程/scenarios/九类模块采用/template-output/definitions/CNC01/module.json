@@ -1,0 +1,169 @@
+{
+  "schema_version": "1.0",
+  "data": {
+    "definition": {
+      "id": "local.template-parallel-electromechanical.device.CNC01",
+      "version": "0.1.0",
+      "title": "CNC01（由原模板显式配置派生）",
+      "definition_state": "design",
+      "contribution": {
+        "author": null,
+        "license": null,
+        "assets": []
+      },
+      "parameters": [],
+      "attribute_schema": [],
+      "payload": {
+        "category": "devices",
+        "data": {
+          "placement": "fixed_during_simulation",
+          "ports": [
+            {
+              "id": "input",
+              "direction": "input",
+              "payload": {
+                "kind": "material",
+                "data": {
+                  "item_role": "input",
+                  "unit": "piece",
+                  "quantity_rule": null
+                }
+              }
+            },
+            {
+              "id": "output",
+              "direction": "output",
+              "payload": {
+                "kind": "material",
+                "data": {
+                  "item_role": "output",
+                  "unit": "piece",
+                  "quantity_rule": null
+                }
+              }
+            }
+          ],
+          "behavior": {
+            "inline": {
+              "builtin": "transform",
+              "item_roles": [
+                "input",
+                "output"
+              ],
+              "inputs": [
+                {
+                  "role": "input",
+                  "port": "input",
+                  "quantity": {
+                    "value": {
+                      "coefficient": 1,
+                      "decimal_places": 0
+                    },
+                    "unit": "piece"
+                  },
+                  "required_quality": []
+                }
+              ],
+              "outputs": [
+                {
+                  "role": "output",
+                  "port": "output",
+                  "quantity": {
+                    "value": {
+                      "coefficient": 1,
+                      "decimal_places": 0
+                    },
+                    "unit": "piece"
+                  },
+                  "required_quality": []
+                }
+              ],
+              "resource_roles": [],
+              "duration": null,
+              "phases": [
+                {
+                  "id": "load",
+                  "work_kind": "loading",
+                  "duration": {
+                    "value": 10000,
+                    "unit": "millisecond",
+                    "basis": "module_declared",
+                    "source_ref": null
+                  },
+                  "phase_resources": [
+                    {
+                      "role": "legacy.worker.W-C",
+                      "quantity": {
+                        "value": {
+                          "coefficient": 1,
+                          "decimal_places": 0
+                        },
+                        "unit": "person"
+                      },
+                      "qualifications": []
+                    }
+                  ],
+                  "interruption_policy": "pause_resume"
+                },
+                {
+                  "id": "auto",
+                  "work_kind": "processing",
+                  "duration": {
+                    "value": 45000,
+                    "unit": "millisecond",
+                    "basis": "module_declared",
+                    "source_ref": null
+                  },
+                  "phase_resources": [],
+                  "interruption_policy": "pause_resume"
+                },
+                {
+                  "id": "unload",
+                  "work_kind": "unloading",
+                  "duration": {
+                    "value": 5000,
+                    "unit": "millisecond",
+                    "basis": "module_declared",
+                    "source_ref": null
+                  },
+                  "phase_resources": [
+                    {
+                      "role": "legacy.worker.W-C",
+                      "quantity": {
+                        "value": {
+                          "coefficient": 1,
+                          "decimal_places": 0
+                        },
+                        "unit": "person"
+                      },
+                      "qualifications": []
+                    }
+                  ],
+                  "interruption_policy": "pause_resume"
+                }
+              ],
+              "hold_on_output_wait": [],
+              "quality_and_routes": null,
+              "identity_policy": "transform_with_origin",
+              "family": null
+            },
+            "operation_ref": null,
+            "selected": "inline"
+          },
+          "configuration": {},
+          "presentation": null,
+          "operations": [
+            "configure",
+            "inspect",
+            "preview_cycle"
+          ]
+        }
+      }
+    },
+    "files": [],
+    "dependencies": [],
+    "assets": [],
+    "rights": [],
+    "issues": []
+  }
+}

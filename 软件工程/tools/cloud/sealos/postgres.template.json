@@ -1,0 +1,54 @@
+{
+  "apiVersion": "v1",
+  "kind": "List",
+  "items": [
+    {
+      "apiVersion": "v1",
+      "kind": "ServiceAccount",
+      "metadata": {
+        "name": "sf-cloud-pg", "namespace": "__NAMESPACE__",
+        "labels": {"sealos-db-provider-cr": "sf-cloud-pg", "app.kubernetes.io/instance": "sf-cloud-pg", "app.kubernetes.io/managed-by": "kbcli", "cloud.sealos.io/deploy-on-sealos": "sf-cloud"}
+      }
+    },
+    {
+      "apiVersion": "rbac.authorization.k8s.io/v1",
+      "kind": "Role",
+      "metadata": {"name": "sf-cloud-pg", "namespace": "__NAMESPACE__", "labels": {"sealos-db-provider-cr": "sf-cloud-pg", "cloud.sealos.io/deploy-on-sealos": "sf-cloud"}},
+      "rules": [
+        {"apiGroups": [""], "resources": ["configmaps", "endpoints", "pods"], "verbs": ["create", "delete", "get", "list", "patch", "update", "watch"]},
+        {"apiGroups": [""], "resources": ["events"], "verbs": ["create"]},
+        {"apiGroups": ["apps.kubeblocks.io"], "resources": ["clusters"], "verbs": ["get", "list"]},
+        {"apiGroups": ["apps.kubeblocks.io"], "resources": ["clusters/status"], "verbs": ["get"]},
+        {"apiGroups": ["apps.kubeblocks.io"], "resources": ["opsrequests/status"], "verbs": ["get", "patch"]}
+      ]
+    },
+    {
+      "apiVersion": "rbac.authorization.k8s.io/v1", "kind": "RoleBinding",
+      "metadata": {"name": "sf-cloud-pg", "namespace": "__NAMESPACE__", "labels": {"sealos-db-provider-cr": "sf-cloud-pg", "cloud.sealos.io/deploy-on-sealos": "sf-cloud"}},
+      "roleRef": {"apiGroup": "rbac.authorization.k8s.io", "kind": "Role", "name": "sf-cloud-pg"},
+      "subjects": [{"kind": "ServiceAccount", "name": "sf-cloud-pg", "namespace": "__NAMESPACE__"}]
+    },
+    {
+      "apiVersion": "apps.kubeblocks.io/v1alpha1", "kind": "Cluster",
+      "metadata": {
+        "name": "sf-cloud-pg", "namespace": "__NAMESPACE__",
+        "labels": {
+          "kb.io/database": "postgresql-16.4.0", "clusterdefinition.kubeblocks.io/name": "postgresql",
+          "clusterversion.kubeblocks.io/name": "postgresql-16.4.0", "sealos-db-provider-cr": "sf-cloud-pg",
+          "app.kubernetes.io/instance": "sf-cloud-pg", "app.kubernetes.io/managed-by": "kbcli", "cloud.sealos.io/deploy-on-sealos": "sf-cloud"
+        }
+      },
+      "spec": {
+        "affinity": {"podAntiAffinity": "Preferred", "tenancy": "SharedNode"},
+        "clusterDefinitionRef": "postgresql", "clusterVersionRef": "postgresql-16.4.0", "terminationPolicy": "DoNotTerminate",
+        "componentSpecs": [{
+          "componentDefRef": "postgresql", "name": "postgresql", "replicas": 1, "disableExporter": true,
+          "enabledLogs": ["running"], "serviceAccountName": "sf-cloud-pg", "switchPolicy": {"type": "Noop"},
+          "tls": true, "issuer": {"name": "KubeBlocks"},
+          "resources": {"limits": {"cpu": "1", "memory": "2048Mi"}, "requests": {"cpu": "100m", "memory": "204Mi"}},
+          "volumeClaimTemplates": [{"name": "data", "spec": {"accessModes": ["ReadWriteOnce"], "resources": {"requests": {"storage": "20Gi"}}}}]
+        }]
+      }
+    }
+  ]
+}

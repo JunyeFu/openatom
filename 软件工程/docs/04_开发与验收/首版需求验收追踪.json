@@ -1,0 +1,3604 @@
+{
+  "document_kind": "first_release_requirement_acceptance_trace_not_runtime",
+  "checkpoint": "S03-05",
+  "date": "2026-10-13 Asia/Shanghai",
+  "source_refs": {
+    "requirements": "docs/00_项目基线/首版需求与验收.md",
+    "selection": "docs/00_项目基线/首版任务选择.json",
+    "user_tasks": "docs/00_项目基线/用户任务与需求映射.json",
+    "stage": "docs/04_开发与验收/阶段实现计划.json",
+    "nonfunctional": "docs/01_业务需求/非功能需求与测量验收.json",
+    "operations": "packages/commands/command-catalog.design.json"
+  },
+  "priority_policy": "17SF和11NFR全部为已冻结首版必做；实施顺序仍取原两种前置，不因所谓低优先级取消验收，不新增产品任务。",
+  "execution_policy": [
+    "现有文件/指针能定位设计输入与预期，仍须PREP中的真实候选/适配/冻结条件；文档存在不等于可运行输入或验收证据。",
+    "每个SF全部相关案例、完整生产者、NFR和IX通过才关闭；MS-11验证除SF-15外的16SF及全部NFR/IX，SF-15在MS-12核对材料后关闭，最终17项必做保持；不以P5材料done为候选测试前置。",
+    "初案达标直交与不足修正分开；专业非Pass保存不当合格绑定；缺输入/未执行/不可评估不能填通过。",
+    "实际案例结果须有真实命令/操作、候选与输入/结果引用、必要观察和判定；人工/第三人/许可项目保留真实参与/来源证据。",
+    "源需求/类别/非功能/输入变化时复核受影响行及预期；不得为代码通过反写冻结预期。"
+  ],
+  "preparation": [
+    {
+      "id": "PREP-RUNTIME",
+      "owner_tasks": [
+        "P0-01",
+        "P5-01"
+      ],
+      "gate": "S06冻结输入映射，S07/S08形成真实候选后执行",
+      "input_state": "design_inputs_available_runtime_adapter_and_candidate_pending",
+      "required_artifacts": [
+        "实际Windows候选/构建运行入口",
+        "现有设计JSON到冻结Project的明确映射：ID/单位/时点/版本及预设质量",
+        "已认可本地模型/素材/许可与测试环境"
+      ],
+      "steps": [
+        "选明本例/变体和观察窗，按S06 schema适配，秒例显式乘1000；先核对初始对象/数量/连接。",
+        "在首次产品运行前冻结输入与独立预期；本项原设计预期不可为迎合代码改写。",
+        "实际执行时记录真实命令、候选/输入/结果引用、关键观察和判定；缺条件先not_evaluable，不填PASS。"
+      ]
+    },
+    {
+      "id": "PREP-PACKAGING",
+      "owner_tasks": [
+        "P4-02",
+        "P0-03"
+      ],
+      "gate": "S06具体几何/过程/预算设计；P4-02执行前冻结",
+      "input_state": "preparation_recipe_defined_no_frozen_geometry_jobs_yet",
+      "required_artifacts": [
+        "三机制各自实际产品/板片/折带/固定连接/多件输入",
+        "三变化的基准与变更对照及版本：产品功能、认可材料、构件关系/重复订单",
+        "成型/开合/固定姿态直线取物路径、容差/预算、独立核定的可行/干涉/预算不足预期",
+        "实际PackageStructureJob与源依据、制造输出及消费者绑定"
+      ],
+      "steps": [
+        "每个机制至少冻结可行、明确干涉和预算不足对照；三变化在支持范围内各有实际基准/变更，列支持的组合。",
+        "先独立核定预期和输入来源再运行候选；不得把人工认可或矩形包络例当几何Pass。",
+        "输入/预期未冻结则AC-12/13和IX-03不可执行/通过，完成后保留实际求解/制造/认可/绑定和工厂新RunId。",
+        "固定姿态步骤冻结显式part_id及保持pose：未知part拒绝，旧bare Pose不自动迁移；姿态不符不得瞬移，保持段仍核对全部干涉和生效连接。",
+        "按H64-02核对折带局部轴、板→part→Job坐标/scale=1、双面许可体深度与步骤、联合整板拒绝、连接激活和实际共同投影胶层；输入域错误与几何Fail/Undetermined分开。"
+      ],
+      "shared_input_contract_ref": "docs/03_架构与契约/全层类型与工程格式.json",
+      "geometry_domain_contract_ref": "docs/03_架构与契约/全层类型与工程格式.json"
+    },
+    {
+      "id": "PREP-AGENT",
+      "owner_tasks": [
+        "P3-04",
+        "P4-01"
+      ],
+      "gate": "P3-04全部真实库/检查/渲染/模拟/报告消费者可用后执行",
+      "input_state": "design_cases_available_complete_runtime_inputs_and_client_pending",
+      "declared_direct_case": {
+        "industry": "purchased_parts_assembly",
+        "template": "purchased-assembly",
+        "accepted_quantity": 2,
+        "accepted_unit": "piece",
+        "acceptance_scope": "declared_factory_store",
+        "observation_end_ms": 300000,
+        "site_m": {
+          "length": 24,
+          "width": 16,
+          "height": 4
+        },
+        "source": "自建模板假设，非实际企业场地/参数；高度4m为本验收声明输入"
+      },
+      "required_artifacts": [
+        "获授权真实客户端/同宿主桥",
+        "完整来源明确的场地/占地/高度/间距、生产日历/工时和角色映射",
+        "初案达标输入与独立不足/缺项/冲突变体"
+      ],
+      "steps": [
+        "从采购总装显式种子输入构造可编辑生成配置，核对既有70/110秒两件自建预期；补齐全部声明场地/设备包络后冻结GF-07运行输入。",
+        "将目标2提高到相同窗口实际不足的目标3，冻结GF-05；另分别缺日历/周期/场地、无模板及一处场地冲突。",
+        "纸箱日产10000示例仍缺实际场地/班次，不可充达标输入；初案达标只需一RunId，修正能力以独立不足例验。"
+      ]
+    },
+    {
+      "id": "PREP-MATERIALS",
+      "owner_tasks": [
+        "P5-01"
+      ],
+      "gate": "MS-11实际候选验证及MS-12材料准备",
+      "input_state": "material_requirements_available_actual_version_people_assets_pending",
+      "required_artifacts": [
+        "真实候选与MS-11其余16SF（不含SF-15）/全部11NFR/3IX结果",
+        "实际接手者/贡献样例及许可证据",
+        "MAT-01至04真实文件和链接"
+      ],
+      "steps": [
+        "记录实际版本/环境与真实参与者，不造作者/许可/用户验证。",
+        "软件/材料准备验收与MAT-05外部手续分开，按真实收到要求补格式。",
+        "AC-15在MS-12验收本次实际材料并关闭SF-15；不得要求本例或SF-15先通过再开始材料验收。"
+      ],
+      "required_passed_functional_ids": [
+        "SF-01",
+        "SF-02",
+        "SF-03",
+        "SF-04",
+        "SF-05",
+        "SF-06",
+        "SF-07",
+        "SF-08",
+        "SF-09",
+        "SF-10",
+        "SF-11",
+        "SF-12",
+        "SF-13",
+        "SF-14",
+        "SF-16",
+        "SF-17"
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "id": "AC-01",
+      "owner_task": "P0-01",
+      "owner_window": "W00",
+      "input_refs": [
+        {
+          "path": "scenarios/两厂房装配包装/project.design.json",
+          "json_pointer": ""
+        }
+      ],
+      "expected_refs": [
+        {
+          "path": "scenarios/两厂房装配包装/project.design.json",
+          "json_pointer": ""
+        }
+      ],
+      "procedure": [
+        "用S07真实Windows候选打开适配后的工程，普通新建/编辑/模拟/目录保存重开。",
+        "新进程、禁网及本地素材情况下复做，保留缺项和失败结果。"
+      ],
+      "expected": "真实启动/普通离线工作可完成；重开对象/数量/连接一致。Rust烟测或README存在不能代替。",
+      "preparation_id": "PREP-RUNTIME",
+      "runtime_status": "not_executed",
+      "actual_command": null,
+      "actual_result": null
+    },
+    {
+      "id": "AC-02",
+      "owner_task": "P4-01",
+      "owner_window": "W03",
+      "input_refs": [
+        {
+          "path": "modules/templates/machining-delivery/project.design.json",
+          "json_pointer": ""
+        },
+        {
+          "path": "modules/templates/purchased-assembly/project.design.json",
+          "json_pointer": ""
+        },
+        {
+          "path": "modules/templates/parallel-electromechanical/project.design.json",
+          "json_pointer": ""
+        }
+      ],
+      "expected_refs": [
+        {
+          "path": "scenarios/模板与交接/expected-template-handoff.design.json",
+          "json_pointer": "/cases/0",
+          "expected_identity": "machining_delivery",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/模板与交接/expected-template-handoff.design.json",
+          "json_pointer": "/cases/1",
+          "expected_identity": "purchased_assembly",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/模板与交接/expected-template-handoff.design.json",
+          "json_pointer": "/cases/2",
+          "expected_identity": "parallel_manufacturing",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/模板与交接/expected-template-handoff.design.json",
+          "json_pointer": "/cases/4",
+          "expected_identity": "insert_template_into_existing_project",
+          "identity_field": "id"
+        }
+      ],
+      "procedure": [
+        "分别空工程、三模板新建并修改；新建时显式采用演示种子。",
+        "在已有工程导入模板，核对新ID/引用及原库存/需求未被清零，默认不带样例存量。"
+      ],
+      "expected": "三模板声明过程真实消费同一引擎的库存/资源；不宣称加工/电子专业已实现；已有工程输入保持。",
+      "preparation_id": "PREP-RUNTIME",
+      "runtime_status": "not_executed",
+      "actual_command": null,
+      "actual_result": null
+    },
+    {
+      "id": "AC-03",
+      "owner_task": "P2-01",
+      "owner_window": "W02",
+      "input_refs": [
+        {
+          "path": "scenarios/两厂房装配包装/project.design.json",
+          "json_pointer": ""
+        },
+        {
+          "path": "scenarios/目标驱动建厂/acceptance.design.json",
+          "json_pointer": "/cases/3",
+          "expected_identity": "GF-04",
+          "identity_field": "id"
+        }
+      ],
+      "expected_refs": [],
+      "procedure": [
+        "人工新增/配置/连接串并联、移动整线、菜单切两画布；单击详情并返回原位置。",
+        "三LOD及不同角度核对完整3D、相机环绕/平移/缩放/默认复位，制造一处占地/高度/间距冲突。"
+      ],
+      "expected": "移动保留内部连接，缩放不进入详情或改变运行状态；冲突定位到对象，缺尺寸未判定，不缩小模型绕过检查。",
+      "preparation_id": "PREP-RUNTIME",
+      "runtime_status": "not_executed",
+      "actual_command": null,
+      "actual_result": null
+    },
+    {
+      "id": "AC-04",
+      "owner_task": "P3-01",
+      "owner_window": "W03",
+      "input_refs": [
+        {
+          "path": "packages/module-kit/category-contracts.design.json",
+          "json_pointer": ""
+        },
+        {
+          "path": "scenarios/设备创作与采用/inputs.design.json",
+          "json_pointer": "/adoption"
+        }
+      ],
+      "expected_refs": [
+        {
+          "path": "scenarios/九类模块采用/expected-category-adoption.design.json",
+          "json_pointer": "/cases/0",
+          "expected_identity": "item_definition_import",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/九类模块采用/expected-category-adoption.design.json",
+          "json_pointer": "/cases/1",
+          "expected_identity": "resource_definition_import",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/九类模块采用/expected-category-adoption.design.json",
+          "json_pointer": "/cases/2",
+          "expected_identity": "operation_ref_adoption",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/九类模块采用/expected-category-adoption.design.json",
+          "json_pointer": "/cases/3",
+          "expected_identity": "double_behavior_source",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/九类模块采用/expected-category-adoption.design.json",
+          "json_pointer": "/cases/4",
+          "expected_identity": "preparation_completion",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/九类模块采用/expected-category-adoption.design.json",
+          "json_pointer": "/cases/7",
+          "expected_identity": "media_replacement",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/九类模块采用/expected-category-adoption.design.json",
+          "json_pointer": "/cases/8",
+          "expected_identity": "template_import",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/九类模块采用/expected-category-adoption.design.json",
+          "json_pointer": "/cases/9",
+          "expected_identity": "transport_rule_import",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/九类模块采用/expected-category-adoption.design.json",
+          "json_pointer": "/cases/10",
+          "expected_identity": "first_release_and_deferred_scope",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/九类模块采用/expected-category-adoption.design.json",
+          "json_pointer": "/cases/11",
+          "expected_identity": "template_new_project_explicit_seed",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/九类模块采用/expected-category-adoption.design.json",
+          "json_pointer": "/cases/12",
+          "expected_identity": "packaging_artifact_acceptance_binding_handoff",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/九类模块采用/expected-category-adoption.design.json",
+          "json_pointer": "/cases/13",
+          "expected_identity": "packaging_nonpass_or_declared_process",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/九类模块采用/expected-category-adoption.design.json",
+          "json_pointer": "/cases/14",
+          "expected_identity": "external_agent_and_professional_connectors",
+          "identity_field": "id"
+        }
+      ],
+      "procedure": [
+        "九类各新建/改定义、导入、检查样例并明确版本/角色/消费者采用。",
+        "核对内联行为与operation_ref不重复执行、模板/物品/资源导入不产生库存/人数/当前占用，实际分享内容另由人决定。",
+        "仅执行预期源中13条first_release_design_expectation；service_capacity和professional_provider_not_implemented是2条后置设计，不要求首版运行服务/数控求解。专业实际交接与外部桥分别消费AC-13/AC-11。"
+      ],
+      "expected": "九类实际可创作/采用，不以21声明存在代运行；后置服务/数控预期不充首版能力。",
+      "preparation_id": "PREP-RUNTIME",
+      "runtime_status": "not_executed",
+      "actual_command": null,
+      "actual_result": null
+    },
+    {
+      "id": "AC-05",
+      "owner_task": "P1-04",
+      "owner_window": "W01",
+      "input_refs": [
+        {
+          "path": "scenarios/真实业务设计/business-inputs.design.json",
+          "json_pointer": "/cases/0",
+          "expected_identity": "multi_order",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/真实业务设计/business-inputs.design.json",
+          "json_pointer": "/cases/1",
+          "expected_identity": "phase_calendar",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+          "json_pointer": "/cases/0",
+          "expected_identity": "B01",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+          "json_pointer": "/cases/1",
+          "expected_identity": "B02",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+          "json_pointer": "/cases/2",
+          "expected_identity": "B03",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+          "json_pointer": "/cases/4",
+          "expected_identity": "B05",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+          "json_pointer": "/cases/5",
+          "expected_identity": "B06",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+          "json_pointer": "/cases/6",
+          "expected_identity": "B07",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+          "json_pointer": "/cases/7",
+          "expected_identity": "B08",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+          "json_pointer": "/cases/8",
+          "expected_identity": "B09",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+          "json_pointer": "/cases/9",
+          "expected_identity": "B10",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+          "json_pointer": "/cases/10",
+          "expected_identity": "B11",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+          "json_pointer": "/cases/11",
+          "expected_identity": "B12",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+          "json_pointer": "/cases/16",
+          "expected_identity": "B17",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+          "json_pointer": "/cases/17",
+          "expected_identity": "B18",
+          "identity_field": "id"
+        }
+      ],
+      "expected_refs": [
+        {
+          "path": "scenarios/真实业务设计/expected-business.design.json",
+          "json_pointer": "/cases/0",
+          "expected_identity": "multi_a_first",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/真实业务设计/expected-business.design.json",
+          "json_pointer": "/cases/1",
+          "expected_identity": "multi_b_first",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/真实业务设计/expected-business.design.json",
+          "json_pointer": "/cases/2",
+          "expected_identity": "phase_calendar",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+          "json_pointer": "/cases/0",
+          "expected_identity": "B01",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+          "json_pointer": "/cases/1",
+          "expected_identity": "B02",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+          "json_pointer": "/cases/2",
+          "expected_identity": "B03",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+          "json_pointer": "/cases/4",
+          "expected_identity": "B05",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+          "json_pointer": "/cases/5",
+          "expected_identity": "B06",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+          "json_pointer": "/cases/6",
+          "expected_identity": "B07",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+          "json_pointer": "/cases/7",
+          "expected_identity": "B08",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+          "json_pointer": "/cases/8",
+          "expected_identity": "B09",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+          "json_pointer": "/cases/9",
+          "expected_identity": "B10",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+          "json_pointer": "/cases/10",
+          "expected_identity": "B11",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+          "json_pointer": "/cases/11",
+          "expected_identity": "B12",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+          "json_pointer": "/cases/16",
+          "expected_identity": "B17",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+          "json_pointer": "/cases/17",
+          "expected_identity": "B18",
+          "identity_field": "id"
+        }
+      ],
+      "procedure": [
+        "用对象面板/时间轴编辑订单、到料、班次/阶段/换单并运行A/B派工。",
+        "核对未到PCB不领用、全齐套取得、共享资源不重叠及计划输入不充实际开工。",
+        "按B01在明确库位/质量/预留输入下取得齐套：资源不可用时新取得为零、已有预留保持；限制重叠按集合并集扣除。",
+        "按B02声明足够接收容量及订单4件，以累计收到并放行2/4件分别核对部分接受2/4、整单接受0/4；运输部分装载独立。",
+        "按B03取消未开工需求A：只释放a，保留B的b及已投入作业的c；不支持运行中业务撤销时明确拒绝且状态不变，再用新方案重跑验证，不以cancel_task代业务撤销。",
+        "按B05核对优先级降序、交期缺值最后及稳定ID：d,b,e,a,c；按B06重复空间通知只移交一次，物品持有者与接受量不重复提交。",
+        "B07/08核对拆分预留/容器接受去重，B09—12核对多原因等待、阶段中断、零阶段/计算截断；B17/18核对完整同刻闭包和执行容量绑定。"
+      ],
+      "expected": "完整物流接入后205秒接受，迟延5/45秒、W-A135/160秒；5/30/5阶段45秒完成、人员10秒。IX-02不能用无物流局部代替。 B01至03、B05/06逐条核对其独立冻结预期；既有六案例数值及原始期望保持。 逐项核对新增业务边界的独立预期；有效加工/设备占用/等待区间及零时长事件分开，actual_result保持空。",
+      "preparation_id": "PREP-RUNTIME",
+      "runtime_status": "not_executed",
+      "actual_command": null,
+      "actual_result": null
+    },
+    {
+      "id": "AC-06",
+      "owner_task": "P1-05",
+      "owner_window": "W01",
+      "input_refs": [
+        {
+          "path": "scenarios/并行汇合与返工/project.design.json",
+          "json_pointer": ""
+        },
+        {
+          "path": "scenarios/并行汇合与返工/cases.design.json",
+          "json_pointer": ""
+        },
+        {
+          "path": "scenarios/真实业务设计/business-inputs.design.json",
+          "json_pointer": "/cases/2",
+          "expected_identity": "quality_pending_and_scrap",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+          "json_pointer": "/cases/3",
+          "expected_identity": "B04",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+          "json_pointer": "/cases/14",
+          "expected_identity": "B15",
+          "identity_field": "id"
+        }
+      ],
+      "expected_refs": [
+        {
+          "path": "scenarios/真实业务设计/expected-business.design.json",
+          "json_pointer": "/cases/3",
+          "expected_identity": "quality_pending_and_scrap",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+          "json_pointer": "/cases/3",
+          "expected_identity": "B04",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+          "json_pointer": "/cases/14",
+          "expected_identity": "B15",
+          "identity_field": "id"
+        }
+      ],
+      "procedure": [
+        "实际运行A/Q/U三组预设与待判/报废例，分别检查hold_station和pending_store。",
+        "待判库位满时保持物品/声明资源；复检/隔离/显式报废分别执行并追踪同一ID。",
+        "B15核对待判开始前、错检验版本与正确放行分别不应用/不应用/应用，不能借上次质量结果。"
+      ],
+      "expected": "单一出口、有限返工不自动合格/补产/回收；80秒待判和复检分列，最终2成品1报废、目标缺1；装箱内容不重复领用。 逐项核对新增业务边界的独立预期；有效加工/设备占用/等待区间及零时长事件分开，actual_result保持空。",
+      "preparation_id": "PREP-RUNTIME",
+      "runtime_status": "not_executed",
+      "actual_command": null,
+      "actual_result": null
+    },
+    {
+      "id": "AC-07",
+      "owner_task": "P2-02",
+      "owner_window": "W01",
+      "input_refs": [
+        {
+          "path": "scenarios/两厂房装配包装/project.design.json",
+          "json_pointer": ""
+        },
+        {
+          "path": "scenarios/两厂房装配包装/variants.design.json",
+          "json_pointer": ""
+        },
+        {
+          "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+          "json_pointer": "/cases/12",
+          "expected_identity": "B13",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+          "json_pointer": "/cases/13",
+          "expected_identity": "B14",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+          "json_pointer": "/cases/15",
+          "expected_identity": "B16",
+          "identity_field": "id"
+        }
+      ],
+      "expected_refs": [
+        {
+          "path": "scenarios/两厂房装配包装/expected-events.design.json",
+          "json_pointer": ""
+        },
+        {
+          "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+          "json_pointer": "/cases/12",
+          "expected_identity": "B13",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+          "json_pointer": "/cases/13",
+          "expected_identity": "B14",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+          "json_pointer": "/cases/15",
+          "expected_identity": "B16",
+          "identity_field": "id"
+        }
+      ],
+      "procedure": [
+        "实际跑A/B跨厂装载、发出、到达、接收、返程，制造接收容量不足变体。",
+        "另用150件初始来源、目标200、两批100的声明输入核对禁止不足批与允许不足批两支路。",
+        "B13/14/16核对跨日去返程、卸料日历和接收容量不足；到达不等于接收、订单可接受不等于载具已返回。"
+      ],
+      "expected": "110秒下游可用、140秒运输资源可再用，A125/B205秒包装；货物ID保持。150件不能发出200，接收受阻不提前入库/放车。 逐项核对新增业务边界的独立预期；有效加工/设备占用/等待区间及零时长事件分开，actual_result保持空。",
+      "preparation_id": "PREP-RUNTIME",
+      "runtime_status": "not_executed",
+      "actual_command": null,
+      "actual_result": null
+    },
+    {
+      "id": "AC-08",
+      "owner_task": "P2-04",
+      "owner_window": "W02",
+      "input_refs": [
+        {
+          "path": "scenarios/从零搭建控制盒厂房/project.design.json",
+          "json_pointer": ""
+        },
+        {
+          "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+          "json_pointer": "/cases/8",
+          "expected_identity": "B09",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+          "json_pointer": "/cases/9",
+          "expected_identity": "B10",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+          "json_pointer": "/cases/10",
+          "expected_identity": "B11",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+          "json_pointer": "/cases/11",
+          "expected_identity": "B12",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+          "json_pointer": "/cases/16",
+          "expected_identity": "B17",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+          "json_pointer": "/cases/17",
+          "expected_identity": "B18",
+          "identity_field": "id"
+        }
+      ],
+      "expected_refs": [
+        {
+          "path": "scenarios/从零搭建控制盒厂房/expected-timeline.design.json",
+          "json_pointer": "/cases/0",
+          "expected_identity": "baseline",
+          "identity_field": "scenario"
+        },
+        {
+          "path": "scenarios/从零搭建控制盒厂房/expected-timeline.design.json",
+          "json_pointer": "/cases/1",
+          "expected_identity": "delayed_pcb",
+          "identity_field": "scenario"
+        },
+        {
+          "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+          "json_pointer": "/cases/8",
+          "expected_identity": "B09",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+          "json_pointer": "/cases/9",
+          "expected_identity": "B10",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+          "json_pointer": "/cases/10",
+          "expected_identity": "B11",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+          "json_pointer": "/cases/11",
+          "expected_identity": "B12",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+          "json_pointer": "/cases/16",
+          "expected_identity": "B17",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+          "json_pointer": "/cases/17",
+          "expected_identity": "B18",
+          "identity_field": "id"
+        }
+      ],
+      "procedure": [
+        "接入阶段/到料和物流生产者，实际运行两个完整控制盒方案。",
+        "点时刻/等待/物品定位两画布并回看，逐事件核对持有者、库存和资源区间。",
+        "把B09—12/B17/18投影至主轴/设备细化：工作/占用/等待分开，零时长画点，计算边界不称完成，设备不能从相同模块或人员Claim猜。"
+      ],
+      "expected": "基线440/延迟570秒、370—420等待接收/425返程及完整归属正确；所有轨道同一时钟，回看/折叠不重放生产。 逐项核对新增业务边界的独立预期；有效加工/设备占用/等待区间及零时长事件分开，actual_result保持空。",
+      "preparation_id": "PREP-RUNTIME",
+      "runtime_status": "not_executed",
+      "actual_command": null,
+      "actual_result": null
+    },
+    {
+      "id": "AC-09",
+      "owner_task": "P2-03",
+      "owner_window": "W05",
+      "input_refs": [
+        {
+          "path": "scenarios/两厂房装配包装/variants.design.json",
+          "json_pointer": ""
+        }
+      ],
+      "expected_refs": [
+        {
+          "path": "scenarios/两厂房装配包装/expected-events.design.json",
+          "json_pointer": ""
+        }
+      ],
+      "procedure": [
+        "同初始起点运行A/B，记录唯一PCB输入变化及相同接受位置/单位/窗口。",
+        "点比较中的等待/物品定位，缺一侧结果或改口径时核对不能宣布改善。"
+      ],
+      "expected": "实际结果归属原方案/版本，两画布不变；不因动画流畅或整厂终点相同宣称高产或最优。",
+      "preparation_id": "PREP-RUNTIME",
+      "runtime_status": "not_executed",
+      "actual_command": null,
+      "actual_result": null
+    },
+    {
+      "id": "AC-10",
+      "owner_task": "P3-03",
+      "owner_window": "W03",
+      "input_refs": [
+        {
+          "path": "scenarios/设备创作与采用/inputs.design.json",
+          "json_pointer": ""
+        }
+      ],
+      "expected_refs": [
+        {
+          "path": "scenarios/设备创作与采用/expected-authoring.design.json",
+          "json_pointer": ""
+        }
+      ],
+      "procedure": [
+        "实际排序四片段、改60为30秒、编辑标签/原生部件并保存重开；选择性采用外观/行为版本。",
+        "图片/GIF/GLB读取同一阶段、暂停/等待/输出受阻；循环观看和端口变更分别验证。"
+      ],
+      "expected": "壳体2/PCB1最终只有1件且缺PCB等待；表现替换不改数量/时间，已完成量与已移交量分开，真实字段/操作只有一个来源。",
+      "preparation_id": "PREP-RUNTIME",
+      "runtime_status": "not_executed",
+      "actual_command": null,
+      "actual_result": null
+    },
+    {
+      "id": "AC-11",
+      "owner_task": "P3-04",
+      "owner_window": "W05",
+      "input_refs": [
+        {
+          "path": "packages/commands/command-catalog.design.json",
+          "json_pointer": ""
+        },
+        {
+          "path": "integrations/agent/design-check.json",
+          "json_pointer": ""
+        },
+        {
+          "path": "scenarios/目标驱动建厂/acceptance.design.json",
+          "json_pointer": ""
+        },
+        {
+          "path": "packages/domain/business-objects.design.json",
+          "json_pointer": "/policies/cancellation_semantics"
+        }
+      ],
+      "expected_refs": [
+        {
+          "path": "packages/domain/business-objects.design.json",
+          "json_pointer": "/policies/cancellation_semantics"
+        }
+      ],
+      "procedure": [
+        "获授权真实外部客户端连接实际同宿主MCP桥，按18项能力设计逐项调用并取得真实返回。",
+        "人/Agent同修订并发编辑、查询/改九类、渲染/运行/读结果/比较/导出；专业认可只能引用已有人工决定。",
+        "分别启动合法模拟和纸包装长计算后调用cancel_task/get_task：显示实际取消或已结束状态，取消结果不报完整成功；输入/已有物品/其他预留保持，不撤销业务订单，不伪填RunId或专业Pass。"
+      ],
+      "expected": "真实调用链与同一工程/修订/对象/RunId可核对，RevisionConflict不覆盖，不以粘贴JSON或接口草案代执行。",
+      "preparation_id": "PREP-AGENT",
+      "runtime_status": "not_executed",
+      "actual_command": null,
+      "actual_result": null
+    },
+    {
+      "id": "AC-12",
+      "owner_task": "P4-02",
+      "owner_window": "W04",
+      "input_refs": [
+        {
+          "path": "docs/03_架构与契约/首版类型格式与操作契约.md",
+          "json_pointer": ""
+        },
+        {
+          "path": "packages/packaging/README.md",
+          "json_pointer": ""
+        }
+      ],
+      "expected_refs": [],
+      "procedure": [
+        "在执行前冻结三机制的实际几何/过程输入、三变化及已独立核定的可行/干涉/预算不足对照。",
+        "真实求解成型/开合/固定姿态直线取物，逐过程核对三态、预算界限及刀/折/胶SVG、材料/数量和可编辑成果。"
+      ],
+      "expected": "三机制/三变化均可实际修改，实际结果与冻结预期一致；Fail/Undetermined不写通过，不能用终态动画或包络接口例代全过程求解。",
+      "preparation_id": "PREP-PACKAGING",
+      "runtime_status": "not_executed",
+      "actual_command": null,
+      "actual_result": null
+    },
+    {
+      "id": "AC-13",
+      "owner_task": "P4-02",
+      "owner_window": "W04",
+      "input_refs": [
+        {
+          "path": "packages/domain/professional-artifact-binding.design.json",
+          "json_pointer": ""
+        },
+        {
+          "path": "scenarios/九类模块采用/expected-category-adoption.design.json",
+          "json_pointer": "/cases/12",
+          "expected_identity": "packaging_artifact_acceptance_binding_handoff",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/九类模块采用/expected-category-adoption.design.json",
+          "json_pointer": "/cases/13",
+          "expected_identity": "packaging_nonpass_or_declared_process",
+          "identity_field": "id"
+        }
+      ],
+      "expected_refs": [],
+      "procedure": [
+        "消费AC-12真实成果，人工明确用途后绑定包装工位，实际运行并记录装入影响。",
+        "产品r1改r2，仅受影响绑定待复核；保留r1用途，重算/认可后以新版本重跑。"
+      ],
+      "expected": "成果/认可/绑定/工厂结果分开，所需检查Pass且匹配范围/版本/内容/单位后才合格用途采用；专业/认可/绑定均不增加库存，IX-03完整收口。",
+      "preparation_id": "PREP-PACKAGING",
+      "runtime_status": "not_executed",
+      "actual_command": null,
+      "actual_result": null
+    },
+    {
+      "id": "AC-14",
+      "owner_task": "P2-03",
+      "owner_window": "W05",
+      "input_refs": [
+        {
+          "path": "scenarios/两厂房装配包装/project.design.json",
+          "json_pointer": ""
+        },
+        {
+          "path": "scenarios/设备创作与采用/inputs.design.json",
+          "json_pointer": "/handoff_assets"
+        }
+      ],
+      "expected_refs": [
+        {
+          "path": "scenarios/模板与交接/expected-template-handoff.design.json",
+          "json_pointer": ""
+        }
+      ],
+      "procedure": [
+        "目录保存重开，导出.sfproj包，在另一目录/接手环境重开修改并从初始起点重跑。",
+        "分别移除表现、行为、请求的专业成果，验证缺项影响/所用版本和相对资产；未运行包仅为设计说明。"
+      ],
+      "expected": "可编辑交接/版本引用正确，缺行为/专业状态不造结果；快照续跑仅在明确支持且数据完整时另验，不作为无条件首版门槛。",
+      "preparation_id": "PREP-RUNTIME",
+      "runtime_status": "not_executed",
+      "actual_command": null,
+      "actual_result": null
+    },
+    {
+      "id": "AC-15",
+      "owner_task": "P5-01",
+      "owner_window": "W00",
+      "input_refs": [
+        {
+          "path": "docs/04_开发与验收/任务框架与工量里程碑.json",
+          "json_pointer": "/material_checklist"
+        },
+        {
+          "path": "docs/00_项目基线/课程与比赛要求映射.json",
+          "json_pointer": ""
+        }
+      ],
+      "expected_refs": [],
+      "procedure": [
+        "在候选真实验证后检查可运行仓库/构建复现、作品介绍PDF、真实核心视频、工程/报告/制造/贡献及许可资料。",
+        "实际第三人重开改工程及九类贡献采用；依真实人员/许可填写记录。"
+      ],
+      "expected": "MAT-01至04与版本/支持范围相符，研究PDF/评估PDF/AI图不替作品介绍/录像；MAT-05手续单列，不据材料备齐称已报名/发送。",
+      "preparation_id": "PREP-MATERIALS",
+      "runtime_status": "not_executed",
+      "actual_command": null,
+      "actual_result": null
+    },
+    {
+      "id": "AC-16",
+      "owner_task": "P2-06",
+      "owner_window": "W05",
+      "input_refs": [
+        {
+          "path": "packages/reporting/evaluation-report.contract.design.json",
+          "json_pointer": ""
+        },
+        {
+          "path": "scenarios/两厂房装配包装/variants.design.json",
+          "json_pointer": ""
+        }
+      ],
+      "expected_refs": [
+        {
+          "path": "scenarios/两厂房装配包装/expected-events.design.json",
+          "json_pointer": ""
+        }
+      ],
+      "procedure": [
+        "从同一实际RunId/比较导出PDF、离线HTML、CSV分表和JSON，并用相应阅读器逐格式核对。",
+        "核对接受单位/位置/窗口、条件/缺项、逐件经历；未执行只导出设计说明。"
+      ],
+      "expected": "同一EvaluationReport语义一致，四格式文件均可读，未知成本不填0；实际生成/专业制造层和作品介绍分别检查。",
+      "preparation_id": "PREP-RUNTIME",
+      "runtime_status": "not_executed",
+      "actual_command": null,
+      "actual_result": null
+    },
+    {
+      "id": "AC-17",
+      "owner_task": "P3-04",
+      "owner_window": "W05",
+      "input_refs": [
+        {
+          "path": "scenarios/目标驱动建厂/acceptance.design.json",
+          "json_pointer": ""
+        },
+        {
+          "path": "modules/templates/purchased-assembly/project.design.json",
+          "json_pointer": ""
+        },
+        {
+          "path": "scenarios/模板与交接/expected-template-handoff.design.json",
+          "json_pointer": "/cases/1",
+          "expected_identity": "purchased_assembly",
+          "identity_field": "id"
+        }
+      ],
+      "expected_refs": [
+        {
+          "path": "scenarios/目标驱动建厂/acceptance.design.json",
+          "json_pointer": "/cases/0",
+          "expected_identity": "GF-01",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/目标驱动建厂/acceptance.design.json",
+          "json_pointer": "/cases/1",
+          "expected_identity": "GF-02",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/目标驱动建厂/acceptance.design.json",
+          "json_pointer": "/cases/2",
+          "expected_identity": "GF-03",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/目标驱动建厂/acceptance.design.json",
+          "json_pointer": "/cases/3",
+          "expected_identity": "GF-04",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/目标驱动建厂/acceptance.design.json",
+          "json_pointer": "/cases/4",
+          "expected_identity": "GF-05",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/目标驱动建厂/acceptance.design.json",
+          "json_pointer": "/cases/5",
+          "expected_identity": "GF-06",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/目标驱动建厂/acceptance.design.json",
+          "json_pointer": "/cases/6",
+          "expected_identity": "GF-07",
+          "identity_field": "id"
+        }
+      ],
+      "procedure": [
+        "实际执行GF-01至07：完整输入、缺日历/周期/场地、缺模板、布局冲突、目标不足、人工接手和初案达标。",
+        "初案达标单RunId直接保存/四格式交付；另跑不足变体，许可变量内有限修正/重跑比较或给具体不能修正原因。"
+      ],
+      "expected": "真实目标/接受单位/位置/窗口一致，目标不充结果，缺项保留草稿；GF-07不得被强制第二RunId/修改/比较代替。",
+      "preparation_id": "PREP-AGENT",
+      "runtime_status": "not_executed",
+      "actual_command": null,
+      "actual_result": null
+    }
+  ],
+  "functional_requirements": [
+    {
+      "id": "SF-01",
+      "title": "Windows本地编辑、彩排、保存",
+      "priority": "first_release_must",
+      "acceptance": "普通任务断网仍能使用；安装/启动/重开在目标Windows环境实际验证",
+      "source_ref": "docs/00_项目基线/首版需求与验收.md",
+      "user_task_ids": [
+        "UT-01"
+      ],
+      "producer_tasks": [
+        "P0-01",
+        "P2-03"
+      ],
+      "evidence_owner_task": "P0-01",
+      "evidence_owner_window": "W00",
+      "closure_task": "P5-01",
+      "verification_milestone": "MS-11",
+      "material_closure_milestone": "MS-12",
+      "case_ids": [
+        "AC-01",
+        "AC-14"
+      ],
+      "operation_refs": [
+        "get_context",
+        "apply_commands",
+        "run_scenario",
+        "save_project"
+      ],
+      "nonfunctional_ids": [
+        "NFR-01",
+        "NFR-05",
+        "NFR-06",
+        "NFR-07"
+      ],
+      "actual_result_slot": {
+        "path": "docs/04_开发与验收/阶段实现计划.json",
+        "json_pointer": "/sf_evidence/0/actual_result"
+      },
+      "confirmed_question_ids": [
+        "Q10",
+        "Q11",
+        "Q19",
+        "Q20",
+        "Q25",
+        "Q44",
+        "Q47",
+        "Q51",
+        "Q52",
+        "Q53",
+        "Q55",
+        "Q56",
+        "Q58",
+        "Q59"
+      ],
+      "confirmed_requirement_source_ref": "docs/04_开发与验收/全量设计编码确认/SXX-XX_确认选择落实.json"
+    },
+    {
+      "id": "SF-02",
+      "title": "空工程与三类离散模板",
+      "priority": "first_release_must",
+      "acceptance": "机加工交付、采购总装、并行机电工程可编辑；未实现的加工/贴装专业部分标声明过程；纸包装执行真实专业计算",
+      "source_ref": "docs/00_项目基线/首版需求与验收.md",
+      "user_task_ids": [
+        "UT-01"
+      ],
+      "producer_tasks": [
+        "P4-01",
+        "P4-02"
+      ],
+      "evidence_owner_task": "P4-01",
+      "evidence_owner_window": "W03",
+      "closure_task": "P5-01",
+      "verification_milestone": "MS-11",
+      "material_closure_milestone": "MS-12",
+      "case_ids": [
+        "AC-02",
+        "AC-12"
+      ],
+      "operation_refs": [
+        "query_module_library",
+        "apply_commands"
+      ],
+      "nonfunctional_ids": [],
+      "actual_result_slot": {
+        "path": "docs/04_开发与验收/阶段实现计划.json",
+        "json_pointer": "/sf_evidence/1/actual_result"
+      },
+      "confirmed_question_ids": [
+        "Q01",
+        "Q02",
+        "Q04",
+        "Q08",
+        "Q09",
+        "Q14",
+        "Q27",
+        "Q28",
+        "Q38",
+        "Q39",
+        "Q40",
+        "Q41",
+        "Q42",
+        "Q43",
+        "Q44",
+        "Q46",
+        "Q48",
+        "Q49",
+        "Q50"
+      ],
+      "confirmed_requirement_source_ref": "docs/04_开发与验收/全量设计编码确认/SXX-XX_确认选择落实.json"
+    },
+    {
+      "id": "SF-03",
+      "title": "两画布、三档LOD与对象详情；自由搭建产线",
+      "priority": "first_release_must",
+      "acceptance": "在画布新增/配置/连接设备，组织串并联并移动编组；三维视口自由环绕旋转/平移/缩放，默认俯视斜角可恢复；详细模型与L03八设备修正后模型保持同等级结构/背底/机构/材质/动作质量，原AI图保留风格参考，不能用单视角纸片替代；菜单切画布，单击打开详情；缩放不进入设备；移动保留内部连接；视图变化不改运行结果",
+      "source_ref": "docs/00_项目基线/首版需求与验收.md",
+      "user_task_ids": [
+        "UT-03"
+      ],
+      "producer_tasks": [
+        "P2-01",
+        "P3-02"
+      ],
+      "evidence_owner_task": "P2-01",
+      "evidence_owner_window": "W02",
+      "closure_task": "P5-01",
+      "verification_milestone": "MS-11",
+      "material_closure_milestone": "MS-12",
+      "case_ids": [
+        "AC-03"
+      ],
+      "operation_refs": [
+        "get_object",
+        "apply_commands",
+        "check_factory_draft",
+        "render_view"
+      ],
+      "nonfunctional_ids": [
+        "NFR-01",
+        "NFR-02",
+        "NFR-03"
+      ],
+      "actual_result_slot": {
+        "path": "docs/04_开发与验收/阶段实现计划.json",
+        "json_pointer": "/sf_evidence/2/actual_result"
+      },
+      "confirmed_question_ids": [
+        "Q02",
+        "Q03",
+        "Q04",
+        "Q05",
+        "Q06",
+        "Q07",
+        "Q08",
+        "Q09",
+        "Q10",
+        "Q12",
+        "Q13",
+        "Q14",
+        "Q15",
+        "Q16",
+        "Q17",
+        "Q18",
+        "Q19",
+        "Q29",
+        "Q33",
+        "Q41"
+      ],
+      "confirmed_requirement_source_ref": "docs/04_开发与验收/全量设计编码确认/SXX-XX_确认选择落实.json"
+    },
+    {
+      "id": "SF-04",
+      "title": "九类可自定义、组合、导入与明确采用",
+      "priority": "first_release_must",
+      "acceptance": "每类可新建/修改定义并用自己的表单/样例检查；人工与Agent共用，设备可仅有插图/规则；物品不带库存、角色不增人数、厂房/模板复制不复制订单/在制，设备只选一个行为来源",
+      "source_ref": "docs/00_项目基线/首版需求与验收.md",
+      "user_task_ids": [
+        "UT-01",
+        "UT-02"
+      ],
+      "producer_tasks": [
+        "P0-01",
+        "P3-01",
+        "P3-03",
+        "P3-04",
+        "P4-01"
+      ],
+      "evidence_owner_task": "P3-01",
+      "evidence_owner_window": "W03",
+      "closure_task": "P5-01",
+      "verification_milestone": "MS-11",
+      "material_closure_milestone": "MS-12",
+      "case_ids": [
+        "AC-04",
+        "AC-02",
+        "AC-10",
+        "AC-11"
+      ],
+      "operation_refs": [
+        "query_module_library",
+        "get_object",
+        "apply_commands",
+        "import_package"
+      ],
+      "nonfunctional_ids": [
+        "NFR-03",
+        "NFR-08"
+      ],
+      "actual_result_slot": {
+        "path": "docs/04_开发与验收/阶段实现计划.json",
+        "json_pointer": "/sf_evidence/3/actual_result"
+      },
+      "confirmed_question_ids": [
+        "Q01",
+        "Q02",
+        "Q03",
+        "Q04",
+        "Q05",
+        "Q06",
+        "Q08",
+        "Q09",
+        "Q10",
+        "Q11",
+        "Q12",
+        "Q14",
+        "Q19",
+        "Q20",
+        "Q21",
+        "Q22",
+        "Q23",
+        "Q24",
+        "Q25",
+        "Q26",
+        "Q27",
+        "Q28",
+        "Q29",
+        "Q34",
+        "Q45",
+        "Q46",
+        "Q47",
+        "Q48",
+        "Q49",
+        "Q50",
+        "Q51",
+        "Q52",
+        "Q54",
+        "Q58",
+        "Q59",
+        "Q61"
+      ],
+      "confirmed_requirement_source_ref": "docs/04_开发与验收/全量设计编码确认/SXX-XX_确认选择落实.json"
+    },
+    {
+      "id": "SF-05",
+      "title": "订单/产品/BOM/路线及阶段资源；在时间轴编辑排期输入",
+      "priority": "first_release_must",
+      "acceptance": "释放/交期/优先序、到料、班次与阶段耗时可从时间轴修改并与对象面板一致；齐套才开工，同一人不能被重复占用；实际开工/完成由引擎求出，不把计划时点当结果",
+      "source_ref": "docs/00_项目基线/首版需求与验收.md",
+      "user_task_ids": [
+        "UT-03"
+      ],
+      "producer_tasks": [
+        "P0-02",
+        "P1-01",
+        "P1-02",
+        "P1-03",
+        "P1-04",
+        "P2-04",
+        "P2-05"
+      ],
+      "evidence_owner_task": "P1-04",
+      "evidence_owner_window": "W01",
+      "closure_task": "P5-01",
+      "verification_milestone": "MS-11",
+      "material_closure_milestone": "MS-12",
+      "case_ids": [
+        "AC-05",
+        "AC-06",
+        "AC-08"
+      ],
+      "operation_refs": [
+        "get_object",
+        "apply_commands",
+        "run_scenario",
+        "get_run"
+      ],
+      "nonfunctional_ids": [
+        "NFR-03",
+        "NFR-09"
+      ],
+      "actual_result_slot": {
+        "path": "docs/04_开发与验收/阶段实现计划.json",
+        "json_pointer": "/sf_evidence/4/actual_result"
+      },
+      "confirmed_question_ids": [
+        "Q06",
+        "Q10",
+        "Q12",
+        "Q16",
+        "Q17",
+        "Q18",
+        "Q21",
+        "Q22",
+        "Q23",
+        "Q24",
+        "Q30",
+        "Q31",
+        "Q32",
+        "Q33",
+        "Q34",
+        "Q35",
+        "Q36",
+        "Q37"
+      ],
+      "confirmed_requirement_source_ref": "docs/04_开发与验收/全量设计编码确认/SXX-XX_确认选择落实.json"
+    },
+    {
+      "id": "SF-06",
+      "title": "质量与包装",
+      "priority": "first_release_must",
+      "acceptance": "检查只走一个出口；返工保持物品身份并复检；待判/隔离不成为可用来料；装箱保留内容关系",
+      "source_ref": "docs/00_项目基线/首版需求与验收.md",
+      "user_task_ids": [
+        "UT-03",
+        "UT-05"
+      ],
+      "producer_tasks": [
+        "P0-02",
+        "P1-01",
+        "P1-02",
+        "P1-05",
+        "P2-05"
+      ],
+      "evidence_owner_task": "P1-05",
+      "evidence_owner_window": "W01",
+      "closure_task": "P5-01",
+      "verification_milestone": "MS-11",
+      "material_closure_milestone": "MS-12",
+      "case_ids": [
+        "AC-06"
+      ],
+      "operation_refs": [
+        "run_scenario",
+        "get_run",
+        "get_object"
+      ],
+      "nonfunctional_ids": [
+        "NFR-09"
+      ],
+      "actual_result_slot": {
+        "path": "docs/04_开发与验收/阶段实现计划.json",
+        "json_pointer": "/sf_evidence/5/actual_result"
+      },
+      "confirmed_question_ids": [
+        "Q06",
+        "Q10",
+        "Q12",
+        "Q16",
+        "Q21",
+        "Q22",
+        "Q24",
+        "Q30",
+        "Q31",
+        "Q32",
+        "Q33",
+        "Q34",
+        "Q35",
+        "Q36"
+      ],
+      "confirmed_requirement_source_ref": "docs/04_开发与验收/全量设计编码确认/SXX-XX_确认选择落实.json"
+    },
+    {
+      "id": "SF-07",
+      "title": "跨厂供货和固定时间运输",
+      "priority": "first_release_must",
+      "acceptance": "来源预留、发出、在途、接受、返程分别处理；库存不足不虚构供货，目的容量不足等待；每天目标不等于已交付",
+      "source_ref": "docs/00_项目基线/首版需求与验收.md",
+      "user_task_ids": [
+        "UT-03",
+        "UT-05"
+      ],
+      "producer_tasks": [
+        "P0-02",
+        "P2-02"
+      ],
+      "evidence_owner_task": "P2-02",
+      "evidence_owner_window": "W01",
+      "closure_task": "P5-01",
+      "verification_milestone": "MS-11",
+      "material_closure_milestone": "MS-12",
+      "case_ids": [
+        "AC-07"
+      ],
+      "operation_refs": [
+        "run_scenario",
+        "get_run"
+      ],
+      "nonfunctional_ids": [
+        "NFR-09"
+      ],
+      "actual_result_slot": {
+        "path": "docs/04_开发与验收/阶段实现计划.json",
+        "json_pointer": "/sf_evidence/6/actual_result"
+      },
+      "confirmed_question_ids": [
+        "Q21",
+        "Q22",
+        "Q26",
+        "Q30",
+        "Q31",
+        "Q36"
+      ],
+      "confirmed_requirement_source_ref": "docs/04_开发与验收/全量设计编码确认/SXX-XX_确认选择落实.json"
+    },
+    {
+      "id": "SF-08",
+      "title": "共同时间轴与逐件跟随",
+      "priority": "first_release_must",
+      "acceptance": "计划输入与只读结果分层；作业/人员/到料/去返程/等待均来自同一时钟；选择物品定位持有者和经历；回看或拖动显示位置不重放生产或改变产量",
+      "source_ref": "docs/00_项目基线/首版需求与验收.md",
+      "user_task_ids": [
+        "UT-05",
+        "UT-06"
+      ],
+      "producer_tasks": [
+        "P0-02",
+        "P1-01",
+        "P1-02",
+        "P1-03",
+        "P1-05",
+        "P2-01",
+        "P2-02",
+        "P2-04"
+      ],
+      "evidence_owner_task": "P2-04",
+      "evidence_owner_window": "W02",
+      "closure_task": "P5-01",
+      "verification_milestone": "MS-11",
+      "material_closure_milestone": "MS-12",
+      "case_ids": [
+        "AC-08",
+        "AC-07"
+      ],
+      "operation_refs": [
+        "get_object",
+        "run_scenario",
+        "get_run",
+        "render_view"
+      ],
+      "nonfunctional_ids": [
+        "NFR-01",
+        "NFR-02",
+        "NFR-04",
+        "NFR-09"
+      ],
+      "actual_result_slot": {
+        "path": "docs/04_开发与验收/阶段实现计划.json",
+        "json_pointer": "/sf_evidence/7/actual_result"
+      },
+      "confirmed_question_ids": [
+        "Q02",
+        "Q03",
+        "Q04",
+        "Q06",
+        "Q07",
+        "Q08",
+        "Q09",
+        "Q10",
+        "Q12",
+        "Q13",
+        "Q16",
+        "Q17",
+        "Q18",
+        "Q19",
+        "Q21",
+        "Q22",
+        "Q23",
+        "Q24",
+        "Q26",
+        "Q30",
+        "Q31",
+        "Q32",
+        "Q33",
+        "Q34",
+        "Q35",
+        "Q36",
+        "Q37"
+      ],
+      "confirmed_requirement_source_ref": "docs/04_开发与验收/全量设计编码确认/SXX-XX_确认选择落实.json"
+    },
+    {
+      "id": "SF-09",
+      "title": "同起点方案比较",
+      "priority": "first_release_must",
+      "acceptance": "保留输入/变更/观察窗，实际结果归属于所用版本；显示订单接受、在制/在途及等待；不自行宣布最优或企业收益",
+      "source_ref": "docs/00_项目基线/首版需求与验收.md",
+      "user_task_ids": [
+        "UT-06"
+      ],
+      "producer_tasks": [
+        "P0-02",
+        "P1-04",
+        "P2-03",
+        "P2-04",
+        "P2-05",
+        "P2-06"
+      ],
+      "evidence_owner_task": "P2-03",
+      "evidence_owner_window": "W05",
+      "closure_task": "P5-01",
+      "verification_milestone": "MS-11",
+      "material_closure_milestone": "MS-12",
+      "case_ids": [
+        "AC-09",
+        "AC-05",
+        "AC-16"
+      ],
+      "operation_refs": [
+        "get_run",
+        "compare_runs"
+      ],
+      "nonfunctional_ids": [
+        "NFR-09"
+      ],
+      "actual_result_slot": {
+        "path": "docs/04_开发与验收/阶段实现计划.json",
+        "json_pointer": "/sf_evidence/8/actual_result"
+      },
+      "confirmed_question_ids": [
+        "Q03",
+        "Q06",
+        "Q10",
+        "Q11",
+        "Q12",
+        "Q16",
+        "Q17",
+        "Q18",
+        "Q21",
+        "Q22",
+        "Q23",
+        "Q30",
+        "Q31",
+        "Q32",
+        "Q33",
+        "Q34",
+        "Q35",
+        "Q36",
+        "Q37",
+        "Q44",
+        "Q51",
+        "Q52",
+        "Q53",
+        "Q54",
+        "Q55",
+        "Q56",
+        "Q57"
+      ],
+      "confirmed_requirement_source_ref": "docs/04_开发与验收/全量设计编码确认/SXX-XX_确认选择落实.json"
+    },
+    {
+      "id": "SF-10",
+      "title": "设备创作与媒体",
+      "priority": "first_release_must",
+      "acceptance": "图片可排序并放数据/操作标签，GIF/GLB按实际状态/进度显示；原生部件可继续编辑；换素材及循环观看不增产",
+      "source_ref": "docs/00_项目基线/首版需求与验收.md",
+      "user_task_ids": [
+        "UT-02"
+      ],
+      "producer_tasks": [
+        "P1-03",
+        "P3-01",
+        "P3-02",
+        "P3-03",
+        "P3-04"
+      ],
+      "evidence_owner_task": "P3-03",
+      "evidence_owner_window": "W03",
+      "closure_task": "P5-01",
+      "verification_milestone": "MS-11",
+      "material_closure_milestone": "MS-12",
+      "case_ids": [
+        "AC-10"
+      ],
+      "operation_refs": [
+        "get_object",
+        "apply_commands",
+        "render_view"
+      ],
+      "nonfunctional_ids": [
+        "NFR-02",
+        "NFR-04",
+        "NFR-11"
+      ],
+      "actual_result_slot": {
+        "path": "docs/04_开发与验收/阶段实现计划.json",
+        "json_pointer": "/sf_evidence/9/actual_result"
+      },
+      "confirmed_question_ids": [
+        "Q02",
+        "Q03",
+        "Q04",
+        "Q05",
+        "Q06",
+        "Q07",
+        "Q09",
+        "Q10",
+        "Q12",
+        "Q13",
+        "Q14",
+        "Q15",
+        "Q16",
+        "Q17",
+        "Q18",
+        "Q19",
+        "Q20",
+        "Q21",
+        "Q22",
+        "Q23",
+        "Q24",
+        "Q25",
+        "Q26",
+        "Q27",
+        "Q28",
+        "Q29",
+        "Q32",
+        "Q33",
+        "Q34",
+        "Q41",
+        "Q45",
+        "Q46",
+        "Q47",
+        "Q48",
+        "Q49",
+        "Q50",
+        "Q54",
+        "Q59",
+        "Q61"
+      ],
+      "confirmed_requirement_source_ref": "docs/04_开发与验收/全量设计编码确认/SXX-XX_确认选择落实.json"
+    },
+    {
+      "id": "SF-11",
+      "title": "真实Agent操作九类与工厂工作链",
+      "priority": "first_release_must",
+      "acceptance": "发现九类字段/能力，实际调用定义编辑/采用、画布组合和排期、渲染/样例、模拟/比较及报告导出；取得真实对象与结果解释等待；不能手工粘贴结果代替调用",
+      "source_ref": "docs/00_项目基线/首版需求与验收.md",
+      "user_task_ids": [
+        "UT-02",
+        "UT-05"
+      ],
+      "producer_tasks": [
+        "P3-01",
+        "P3-03",
+        "P3-04"
+      ],
+      "evidence_owner_task": "P3-04",
+      "evidence_owner_window": "W05",
+      "closure_task": "P5-01",
+      "verification_milestone": "MS-11",
+      "material_closure_milestone": "MS-12",
+      "case_ids": [
+        "AC-11",
+        "AC-04",
+        "AC-12",
+        "AC-13",
+        "AC-14",
+        "AC-16",
+        "AC-17"
+      ],
+      "operation_refs": [
+        "describe_capabilities",
+        "get_context",
+        "get_object",
+        "apply_commands",
+        "render_view",
+        "run_scenario",
+        "get_run",
+        "compare_runs",
+        "compute_packaging",
+        "get_task",
+        "cancel_task",
+        "adopt_artifact",
+        "import_package",
+        "save_project",
+        "export_package",
+        "export_evaluation",
+        "query_module_library",
+        "check_factory_draft"
+      ],
+      "nonfunctional_ids": [
+        "NFR-04",
+        "NFR-07",
+        "NFR-08"
+      ],
+      "actual_result_slot": {
+        "path": "docs/04_开发与验收/阶段实现计划.json",
+        "json_pointer": "/sf_evidence/10/actual_result"
+      },
+      "confirmed_question_ids": [
+        "Q02",
+        "Q03",
+        "Q04",
+        "Q05",
+        "Q06",
+        "Q09",
+        "Q10",
+        "Q12",
+        "Q14",
+        "Q20",
+        "Q21",
+        "Q22",
+        "Q23",
+        "Q24",
+        "Q25",
+        "Q26",
+        "Q27",
+        "Q28",
+        "Q29",
+        "Q34",
+        "Q45",
+        "Q46",
+        "Q47",
+        "Q48",
+        "Q49",
+        "Q50",
+        "Q54",
+        "Q59",
+        "Q61"
+      ],
+      "confirmed_requirement_source_ref": "docs/04_开发与验收/全量设计编码确认/SXX-XX_确认选择落实.json"
+    },
+    {
+      "id": "SF-12",
+      "title": "真实纸包装专业链",
+      "priority": "first_release_must",
+      "acceptance": "三类受限结构机制可形成/修改；实际检查成型、开合和固定姿态直线取物；输出可编辑工程及刀/折/胶SVG、材料/数量表；结果有通过/不满足/未判定",
+      "source_ref": "docs/00_项目基线/首版需求与验收.md",
+      "user_task_ids": [
+        "UT-04"
+      ],
+      "producer_tasks": [
+        "P0-03",
+        "P4-02"
+      ],
+      "evidence_owner_task": "P4-02",
+      "evidence_owner_window": "W04",
+      "closure_task": "P5-01",
+      "verification_milestone": "MS-11",
+      "material_closure_milestone": "MS-12",
+      "case_ids": [
+        "AC-12"
+      ],
+      "operation_refs": [
+        "compute_packaging",
+        "get_task",
+        "cancel_task"
+      ],
+      "nonfunctional_ids": [
+        "NFR-04",
+        "NFR-10"
+      ],
+      "actual_result_slot": {
+        "path": "docs/04_开发与验收/阶段实现计划.json",
+        "json_pointer": "/sf_evidence/11/actual_result"
+      },
+      "confirmed_question_ids": [
+        "Q02",
+        "Q28",
+        "Q38",
+        "Q39",
+        "Q40",
+        "Q41",
+        "Q42",
+        "Q43",
+        "Q44"
+      ],
+      "confirmed_requirement_source_ref": "docs/04_开发与验收/全量设计编码确认/SXX-XX_确认选择落实.json"
+    },
+    {
+      "id": "SF-13",
+      "title": "专业成果进入工厂",
+      "priority": "first_release_must",
+      "acceptance": "成果、认可与绑定分开；产品变更使受影响绑定待复核；认可包装规格进入包装工位的装入条件，专业工具不直接增加成品库存",
+      "source_ref": "docs/00_项目基线/首版需求与验收.md",
+      "user_task_ids": [
+        "UT-04",
+        "UT-06"
+      ],
+      "producer_tasks": [
+        "P0-03",
+        "P4-02"
+      ],
+      "evidence_owner_task": "P4-02",
+      "evidence_owner_window": "W04",
+      "closure_task": "P5-01",
+      "verification_milestone": "MS-11",
+      "material_closure_milestone": "MS-12",
+      "case_ids": [
+        "AC-13",
+        "AC-12"
+      ],
+      "operation_refs": [
+        "adopt_artifact",
+        "get_object",
+        "run_scenario",
+        "get_run"
+      ],
+      "nonfunctional_ids": [
+        "NFR-10"
+      ],
+      "actual_result_slot": {
+        "path": "docs/04_开发与验收/阶段实现计划.json",
+        "json_pointer": "/sf_evidence/12/actual_result"
+      },
+      "confirmed_question_ids": [
+        "Q02",
+        "Q28",
+        "Q38",
+        "Q39",
+        "Q40",
+        "Q41",
+        "Q42",
+        "Q43",
+        "Q44"
+      ],
+      "confirmed_requirement_source_ref": "docs/04_开发与验收/全量设计编码确认/SXX-XX_确认选择落实.json"
+    },
+    {
+      "id": "SF-14",
+      "title": "保存、交接及版本",
+      "priority": "first_release_must",
+      "acceptance": "目录工程保存重开一致，导出单文件包后在另一目录重开修改；所用模块/素材使用相对引用；缺成果/行为如实显示，不伪造旧结果",
+      "source_ref": "docs/00_项目基线/首版需求与验收.md",
+      "user_task_ids": [
+        "UT-07"
+      ],
+      "producer_tasks": [
+        "P0-01",
+        "P2-03",
+        "P3-04"
+      ],
+      "evidence_owner_task": "P2-03",
+      "evidence_owner_window": "W05",
+      "closure_task": "P5-01",
+      "verification_milestone": "MS-11",
+      "material_closure_milestone": "MS-12",
+      "case_ids": [
+        "AC-14",
+        "AC-02"
+      ],
+      "operation_refs": [
+        "save_project",
+        "export_package",
+        "import_package"
+      ],
+      "nonfunctional_ids": [
+        "NFR-05",
+        "NFR-06",
+        "NFR-07",
+        "NFR-08",
+        "NFR-11"
+      ],
+      "actual_result_slot": {
+        "path": "docs/04_开发与验收/阶段实现计划.json",
+        "json_pointer": "/sf_evidence/13/actual_result"
+      },
+      "confirmed_question_ids": [
+        "Q02",
+        "Q04",
+        "Q05",
+        "Q10",
+        "Q11",
+        "Q19",
+        "Q20",
+        "Q25",
+        "Q27",
+        "Q34",
+        "Q44",
+        "Q45",
+        "Q46",
+        "Q47",
+        "Q48",
+        "Q49",
+        "Q50",
+        "Q51",
+        "Q52",
+        "Q53",
+        "Q54",
+        "Q55",
+        "Q56",
+        "Q58",
+        "Q59"
+      ],
+      "confirmed_requirement_source_ref": "docs/04_开发与验收/全量设计编码确认/SXX-XX_确认选择落实.json"
+    },
+    {
+      "id": "SF-15",
+      "title": "开源与课程/赛道一提交物",
+      "priority": "first_release_must",
+      "acceptance": "提供完整可运行代码仓库/构建运行文档，含背景/架构/场景/创新的作品介绍PDF及真实核心流程视频；与实际版本和支持范围一致；SF-16评估PDF、研究报告不替代完整作品介绍，设计图不当运行录像；代码/依赖/模型/素材授权据实处理；报名、审核与正式提交分开，不虚构社区",
+      "source_ref": "docs/00_项目基线/首版需求与验收.md",
+      "user_task_ids": [
+        "UT-07"
+      ],
+      "producer_tasks": [
+        "P3-01"
+      ],
+      "evidence_owner_task": "P5-01",
+      "evidence_owner_window": "W00",
+      "closure_task": "P5-01",
+      "verification_milestone": "MS-12",
+      "material_closure_milestone": "MS-12",
+      "case_ids": [
+        "AC-15"
+      ],
+      "operation_refs": [],
+      "nonfunctional_ids": [],
+      "actual_result_slot": {
+        "path": "docs/04_开发与验收/阶段实现计划.json",
+        "json_pointer": "/sf_evidence/14/actual_result"
+      },
+      "confirmed_question_ids": [
+        "Q03",
+        "Q06",
+        "Q09",
+        "Q10",
+        "Q12",
+        "Q14",
+        "Q20",
+        "Q21",
+        "Q22",
+        "Q23",
+        "Q24",
+        "Q25",
+        "Q26",
+        "Q27",
+        "Q28",
+        "Q29",
+        "Q61"
+      ],
+      "confirmed_requirement_source_ref": "docs/04_开发与验收/全量设计编码确认/SXX-XX_确认选择落实.json"
+    },
+    {
+      "id": "SF-16",
+      "title": "工业模拟评估文档导出",
+      "priority": "first_release_must",
+      "acceptance": "同一实际RunId/比较导出PDF、离线HTML、CSV分表、JSON数据，接受量/时间/单位/范围一致；逐件经历与输入条件可核对，未运行只导出设计说明；人工和Agent走同一导出操作",
+      "source_ref": "docs/00_项目基线/首版需求与验收.md",
+      "user_task_ids": [
+        "UT-07"
+      ],
+      "producer_tasks": [
+        "P2-06",
+        "P3-04"
+      ],
+      "evidence_owner_task": "P2-06",
+      "evidence_owner_window": "W05",
+      "closure_task": "P5-01",
+      "verification_milestone": "MS-11",
+      "material_closure_milestone": "MS-12",
+      "case_ids": [
+        "AC-16",
+        "AC-17"
+      ],
+      "operation_refs": [
+        "export_evaluation"
+      ],
+      "nonfunctional_ids": [
+        "NFR-04",
+        "NFR-06",
+        "NFR-07",
+        "NFR-11"
+      ],
+      "actual_result_slot": {
+        "path": "docs/04_开发与验收/阶段实现计划.json",
+        "json_pointer": "/sf_evidence/15/actual_result"
+      },
+      "confirmed_question_ids": [
+        "Q02",
+        "Q03",
+        "Q04",
+        "Q05",
+        "Q27",
+        "Q34",
+        "Q37",
+        "Q45",
+        "Q46",
+        "Q47",
+        "Q48",
+        "Q49",
+        "Q50",
+        "Q53",
+        "Q54",
+        "Q57",
+        "Q59"
+      ],
+      "confirmed_requirement_source_ref": "docs/04_开发与验收/全量设计编码确认/SXX-XX_确认选择落实.json"
+    },
+    {
+      "id": "SF-17",
+      "title": "外部Agent一句话按目标/行业/场地生成厂房",
+      "priority": "first_release_must",
+      "acceptance": "实际查询原生/已导入社区模板及九类库，填产量/产品/场地/排期并布置连线；核对声明占地/高度/间距/端口，渲染后实际模拟；初案输入齐全、检查通过且实际达标即可保存交付；不足时有据有限修正并重跑比较或说明不能修正的原因，展示产能/缺口和逐件经历，导出报告。目标不得写成结果，无匹配/缺数据/布局不满足明确返回",
+      "source_ref": "docs/00_项目基线/首版需求与验收.md",
+      "user_task_ids": [
+        "UT-01",
+        "UT-03"
+      ],
+      "producer_tasks": [
+        "P0-01",
+        "P2-01",
+        "P2-04",
+        "P2-06",
+        "P3-04",
+        "P4-01"
+      ],
+      "evidence_owner_task": "P3-04",
+      "evidence_owner_window": "W05",
+      "closure_task": "P5-01",
+      "verification_milestone": "MS-11",
+      "material_closure_milestone": "MS-12",
+      "case_ids": [
+        "AC-17"
+      ],
+      "operation_refs": [
+        "describe_capabilities",
+        "get_context",
+        "query_module_library",
+        "apply_commands",
+        "check_factory_draft",
+        "render_view",
+        "run_scenario",
+        "get_run",
+        "save_project",
+        "export_package",
+        "export_evaluation",
+        "compare_runs"
+      ],
+      "nonfunctional_ids": [
+        "NFR-04",
+        "NFR-08"
+      ],
+      "actual_result_slot": {
+        "path": "docs/04_开发与验收/阶段实现计划.json",
+        "json_pointer": "/sf_evidence/16/actual_result"
+      },
+      "confirmed_question_ids": [
+        "Q01",
+        "Q02",
+        "Q03",
+        "Q04",
+        "Q05",
+        "Q06",
+        "Q07",
+        "Q08",
+        "Q09",
+        "Q10",
+        "Q11",
+        "Q12",
+        "Q13",
+        "Q14",
+        "Q16",
+        "Q17",
+        "Q18",
+        "Q19",
+        "Q20",
+        "Q25",
+        "Q27",
+        "Q33",
+        "Q34",
+        "Q37",
+        "Q45",
+        "Q46",
+        "Q47",
+        "Q48",
+        "Q49",
+        "Q50",
+        "Q51",
+        "Q52",
+        "Q53",
+        "Q54",
+        "Q57",
+        "Q58",
+        "Q59"
+      ],
+      "confirmed_requirement_source_ref": "docs/04_开发与验收/全量设计编码确认/SXX-XX_确认选择落实.json"
+    }
+  ],
+  "nonfunctional_requirements": [
+    {
+      "id": "NFR-01",
+      "title": "基准负载/画面与环境一致",
+      "priority": "first_release_must",
+      "source": {
+        "path": "docs/01_业务需求/非功能需求与测量验收.json",
+        "json_pointer": "/requirements/0",
+        "expected_identity": "NFR-01",
+        "identity_field": "id"
+      },
+      "evidence_owner_task": "P0-01",
+      "evidence_owner_window": "W00",
+      "producer_tasks": [
+        "P0-01",
+        "P1-01",
+        "P2-01",
+        "P3-02",
+        "P5-01"
+      ],
+      "related_SF": [
+        "SF-01",
+        "SF-03",
+        "SF-08"
+      ],
+      "input_refs": [
+        {
+          "path": "scenarios/非功能基准/benchmark.design.json",
+          "json_pointer": ""
+        },
+        {
+          "path": "scenarios/非功能基准/machine-baseline.json",
+          "json_pointer": ""
+        },
+        {
+          "path": "docs/03_架构与契约/全层类型与工程格式.json",
+          "json_pointer": "/measurement_records"
+        }
+      ],
+      "execution_rule": "消费源规范的前置/步骤/测量/判定及各子检查；失败优先、证据不足不计通过。Q42完整检查体验独立记录，不冒充正确性或硬超时。 必需子检查由源test_execution_contract.required_check_groups展开，按全部规定分支汇总。",
+      "actual_result_slot": {
+        "path": "docs/01_业务需求/非功能需求与测量验收.json",
+        "json_pointer": "/requirements/0/actual_result"
+      },
+      "closure_task": "P5-01",
+      "confirmation_ids": [
+        "Q19",
+        "Q58"
+      ]
+    },
+    {
+      "id": "NFR-02",
+      "title": "画布中位帧率",
+      "priority": "first_release_must",
+      "source": {
+        "path": "docs/01_业务需求/非功能需求与测量验收.json",
+        "json_pointer": "/requirements/1",
+        "expected_identity": "NFR-02",
+        "identity_field": "id"
+      },
+      "evidence_owner_task": "P2-01",
+      "evidence_owner_window": "W02",
+      "producer_tasks": [
+        "P2-01",
+        "P3-02",
+        "P3-03",
+        "P5-01"
+      ],
+      "related_SF": [
+        "SF-03",
+        "SF-08",
+        "SF-10"
+      ],
+      "input_refs": [
+        {
+          "path": "scenarios/非功能基准/benchmark.design.json",
+          "json_pointer": ""
+        },
+        {
+          "path": "scenarios/非功能基准/machine-baseline.json",
+          "json_pointer": ""
+        },
+        {
+          "path": "docs/03_架构与契约/全层类型与工程格式.json",
+          "json_pointer": "/measurement_records"
+        }
+      ],
+      "execution_rule": "消费源规范的前置/步骤/测量/判定及各子检查；失败优先、证据不足不计通过。Q42完整检查体验独立记录，不冒充正确性或硬超时。 必需子检查由源test_execution_contract.required_check_groups展开，按全部规定分支汇总。",
+      "actual_result_slot": {
+        "path": "docs/01_业务需求/非功能需求与测量验收.json",
+        "json_pointer": "/requirements/1/actual_result"
+      },
+      "closure_task": "P5-01",
+      "confirmation_ids": [
+        "Q19"
+      ]
+    },
+    {
+      "id": "NFR-03",
+      "title": "选择/详情/纯参数编辑可见反馈",
+      "priority": "first_release_must",
+      "source": {
+        "path": "docs/01_业务需求/非功能需求与测量验收.json",
+        "json_pointer": "/requirements/2",
+        "expected_identity": "NFR-03",
+        "identity_field": "id"
+      },
+      "evidence_owner_task": "P2-05",
+      "evidence_owner_window": "W02",
+      "producer_tasks": [
+        "P0-01",
+        "P2-01",
+        "P2-05",
+        "P3-01",
+        "P5-01"
+      ],
+      "related_SF": [
+        "SF-03",
+        "SF-04",
+        "SF-05"
+      ],
+      "input_refs": [
+        {
+          "path": "scenarios/非功能基准/benchmark.design.json",
+          "json_pointer": ""
+        },
+        {
+          "path": "scenarios/非功能基准/machine-baseline.json",
+          "json_pointer": ""
+        },
+        {
+          "path": "docs/01_业务需求/非功能需求与测量验收.json",
+          "json_pointer": "/test_execution_contract/editor_attempt_plan"
+        },
+        {
+          "path": "docs/03_架构与契约/全层类型与工程格式.json",
+          "json_pointer": "/measurement_records"
+        }
+      ],
+      "execution_rule": "消费源规范的前置/步骤/测量/判定及各子检查；失败优先、证据不足不计通过。Q42完整检查体验独立记录，不冒充正确性或硬超时。 必需子检查由源test_execution_contract.required_check_groups展开，按全部规定分支汇总。",
+      "actual_result_slot": {
+        "path": "docs/01_业务需求/非功能需求与测量验收.json",
+        "json_pointer": "/requirements/2/actual_result"
+      },
+      "closure_task": "P5-01",
+      "confirmation_ids": [
+        "Q12",
+        "Q19"
+      ]
+    },
+    {
+      "id": "NFR-04",
+      "title": "长任务接收与交互不中断",
+      "priority": "first_release_must",
+      "source": {
+        "path": "docs/01_业务需求/非功能需求与测量验收.json",
+        "json_pointer": "/requirements/3",
+        "expected_identity": "NFR-04",
+        "identity_field": "id"
+      },
+      "evidence_owner_task": "P3-04",
+      "evidence_owner_window": "W05",
+      "producer_tasks": [
+        "P2-04",
+        "P3-02",
+        "P3-03",
+        "P3-04",
+        "P4-02",
+        "P2-06",
+        "P5-01"
+      ],
+      "related_SF": [
+        "SF-08",
+        "SF-10",
+        "SF-11",
+        "SF-12",
+        "SF-16",
+        "SF-17"
+      ],
+      "input_refs": [
+        {
+          "path": "scenarios/非功能基准/benchmark.design.json",
+          "json_pointer": ""
+        },
+        {
+          "path": "scenarios/非功能基准/machine-baseline.json",
+          "json_pointer": ""
+        },
+        {
+          "path": "docs/01_业务需求/非功能需求与测量验收.json",
+          "json_pointer": "/test_execution_contract/long_task_fixture_requirements"
+        },
+        {
+          "path": "docs/03_架构与契约/全层类型与工程格式.json",
+          "json_pointer": "/measurement_records"
+        }
+      ],
+      "execution_rule": "消费源规范的前置/步骤/测量/判定及各子检查；失败优先、证据不足不计通过。Q42完整检查体验独立记录，不冒充正确性或硬超时。 必需子检查由源test_execution_contract.required_check_groups展开，按全部规定分支汇总。",
+      "actual_result_slot": {
+        "path": "docs/01_业务需求/非功能需求与测量验收.json",
+        "json_pointer": "/requirements/3/actual_result"
+      },
+      "closure_task": "P5-01",
+      "confirmation_ids": []
+    },
+    {
+      "id": "NFR-05",
+      "title": "目录保存/打开延迟",
+      "priority": "first_release_must",
+      "source": {
+        "path": "docs/01_业务需求/非功能需求与测量验收.json",
+        "json_pointer": "/requirements/4",
+        "expected_identity": "NFR-05",
+        "identity_field": "id"
+      },
+      "evidence_owner_task": "P2-03",
+      "evidence_owner_window": "W05",
+      "producer_tasks": [
+        "P0-01",
+        "P2-03",
+        "P5-01"
+      ],
+      "related_SF": [
+        "SF-01",
+        "SF-14"
+      ],
+      "input_refs": [
+        {
+          "path": "scenarios/非功能基准/benchmark.design.json",
+          "json_pointer": ""
+        },
+        {
+          "path": "scenarios/非功能基准/machine-baseline.json",
+          "json_pointer": ""
+        },
+        {
+          "path": "docs/03_架构与契约/全层类型与工程格式.json",
+          "json_pointer": "/measurement_records"
+        }
+      ],
+      "execution_rule": "消费源规范的前置/步骤/测量/判定及各子检查；失败优先、证据不足不计通过。Q42完整检查体验独立记录，不冒充正确性或硬超时。 必需子检查由源test_execution_contract.required_check_groups展开，按全部规定分支汇总。",
+      "actual_result_slot": {
+        "path": "docs/01_业务需求/非功能需求与测量验收.json",
+        "json_pointer": "/requirements/4/actual_result"
+      },
+      "closure_task": "P5-01",
+      "confirmation_ids": []
+    },
+    {
+      "id": "NFR-06",
+      "title": "持久化完整性与失败保留",
+      "priority": "first_release_must",
+      "source": {
+        "path": "docs/01_业务需求/非功能需求与测量验收.json",
+        "json_pointer": "/requirements/5",
+        "expected_identity": "NFR-06",
+        "identity_field": "id"
+      },
+      "evidence_owner_task": "P2-03",
+      "evidence_owner_window": "W05",
+      "producer_tasks": [
+        "P0-01",
+        "P2-03",
+        "P2-06",
+        "P5-01"
+      ],
+      "related_SF": [
+        "SF-01",
+        "SF-14",
+        "SF-16"
+      ],
+      "input_refs": [
+        {
+          "path": "scenarios/非功能基准/benchmark.design.json",
+          "json_pointer": ""
+        },
+        {
+          "path": "scenarios/非功能基准/machine-baseline.json",
+          "json_pointer": ""
+        },
+        {
+          "path": "docs/03_架构与契约/全层类型与工程格式.json",
+          "json_pointer": "/measurement_records"
+        }
+      ],
+      "execution_rule": "消费源规范的前置/步骤/测量/判定及各子检查；失败优先、证据不足不计通过。Q42完整检查体验独立记录，不冒充正确性或硬超时。 必需子检查由源test_execution_contract.required_check_groups展开，按全部规定分支汇总。",
+      "actual_result_slot": {
+        "path": "docs/01_业务需求/非功能需求与测量验收.json",
+        "json_pointer": "/requirements/5/actual_result"
+      },
+      "closure_task": "P5-01",
+      "confirmation_ids": [
+        "Q51",
+        "Q52",
+        "Q56"
+      ]
+    },
+    {
+      "id": "NFR-07",
+      "title": "普通工作离线与接入边界",
+      "priority": "first_release_must",
+      "source": {
+        "path": "docs/01_业务需求/非功能需求与测量验收.json",
+        "json_pointer": "/requirements/6",
+        "expected_identity": "NFR-07",
+        "identity_field": "id"
+      },
+      "evidence_owner_task": "P0-01",
+      "evidence_owner_window": "W00",
+      "producer_tasks": [
+        "P0-01",
+        "P2-03",
+        "P2-06",
+        "P3-04",
+        "P5-01"
+      ],
+      "related_SF": [
+        "SF-01",
+        "SF-11",
+        "SF-14",
+        "SF-16"
+      ],
+      "input_refs": [
+        {
+          "path": "scenarios/非功能基准/benchmark.design.json",
+          "json_pointer": ""
+        },
+        {
+          "path": "scenarios/非功能基准/machine-baseline.json",
+          "json_pointer": ""
+        },
+        {
+          "path": "docs/03_架构与契约/全层类型与工程格式.json",
+          "json_pointer": "/measurement_records"
+        }
+      ],
+      "execution_rule": "消费源规范的前置/步骤/测量/判定及各子检查；失败优先、证据不足不计通过。Q42完整检查体验独立记录，不冒充正确性或硬超时。 必需子检查由源test_execution_contract.required_check_groups展开，按全部规定分支汇总。",
+      "actual_result_slot": {
+        "path": "docs/01_业务需求/非功能需求与测量验收.json",
+        "json_pointer": "/requirements/6/actual_result"
+      },
+      "closure_task": "P5-01",
+      "confirmation_ids": []
+    },
+    {
+      "id": "NFR-08",
+      "title": "人工/Agent并发编辑一致性",
+      "priority": "first_release_must",
+      "source": {
+        "path": "docs/01_业务需求/非功能需求与测量验收.json",
+        "json_pointer": "/requirements/7",
+        "expected_identity": "NFR-08",
+        "identity_field": "id"
+      },
+      "evidence_owner_task": "P0-01",
+      "evidence_owner_window": "W00",
+      "producer_tasks": [
+        "P0-01",
+        "P3-04",
+        "P5-01"
+      ],
+      "related_SF": [
+        "SF-04",
+        "SF-11",
+        "SF-14",
+        "SF-17"
+      ],
+      "input_refs": [
+        {
+          "path": "scenarios/非功能基准/benchmark.design.json",
+          "json_pointer": ""
+        },
+        {
+          "path": "scenarios/非功能基准/machine-baseline.json",
+          "json_pointer": ""
+        },
+        {
+          "path": "docs/03_架构与契约/全层类型与工程格式.json",
+          "json_pointer": "/measurement_records"
+        }
+      ],
+      "execution_rule": "消费源规范的前置/步骤/测量/判定及各子检查；失败优先、证据不足不计通过。Q42完整检查体验独立记录，不冒充正确性或硬超时。 必需子检查由源test_execution_contract.required_check_groups展开，按全部规定分支汇总。",
+      "actual_result_slot": {
+        "path": "docs/01_业务需求/非功能需求与测量验收.json",
+        "json_pointer": "/requirements/7/actual_result"
+      },
+      "closure_task": "P5-01",
+      "confirmation_ids": [
+        "Q11"
+      ]
+    },
+    {
+      "id": "NFR-09",
+      "title": "同输入确定性与视图不改数值",
+      "priority": "first_release_must",
+      "source": {
+        "path": "docs/01_业务需求/非功能需求与测量验收.json",
+        "json_pointer": "/requirements/8",
+        "expected_identity": "NFR-09",
+        "identity_field": "id"
+      },
+      "evidence_owner_task": "P1-01",
+      "evidence_owner_window": "W01",
+      "producer_tasks": [
+        "P1-01",
+        "P1-03",
+        "P2-04",
+        "P5-01"
+      ],
+      "related_SF": [
+        "SF-05",
+        "SF-06",
+        "SF-07",
+        "SF-08",
+        "SF-09"
+      ],
+      "input_refs": [
+        {
+          "path": "scenarios/非功能基准/benchmark.design.json",
+          "json_pointer": ""
+        },
+        {
+          "path": "scenarios/非功能基准/machine-baseline.json",
+          "json_pointer": ""
+        },
+        {
+          "path": "scenarios/真实业务设计/business-inputs.design.json",
+          "json_pointer": "/cases/1",
+          "expected_identity": "phase_calendar",
+          "identity_field": "id"
+        },
+        {
+          "path": "scenarios/真实业务设计/expected-business.design.json",
+          "json_pointer": "/cases/2",
+          "expected_identity": "phase_calendar",
+          "identity_field": "id"
+        },
+        {
+          "path": "docs/03_架构与契约/全层类型与工程格式.json",
+          "json_pointer": "/measurement_records"
+        }
+      ],
+      "execution_rule": "消费源规范的前置/步骤/测量/判定及各子检查；失败优先、证据不足不计通过。Q42完整检查体验独立记录，不冒充正确性或硬超时。 必需子检查由源test_execution_contract.required_check_groups展开，按全部规定分支汇总。",
+      "actual_result_slot": {
+        "path": "docs/01_业务需求/非功能需求与测量验收.json",
+        "json_pointer": "/requirements/8/actual_result"
+      },
+      "closure_task": "P5-01",
+      "confirmation_ids": [
+        "Q17",
+        "Q18",
+        "Q56"
+      ]
+    },
+    {
+      "id": "NFR-10",
+      "title": "专业计算预算与结果边界",
+      "priority": "first_release_must",
+      "source": {
+        "path": "docs/01_业务需求/非功能需求与测量验收.json",
+        "json_pointer": "/requirements/9",
+        "expected_identity": "NFR-10",
+        "identity_field": "id"
+      },
+      "evidence_owner_task": "P4-02",
+      "evidence_owner_window": "W04",
+      "producer_tasks": [
+        "P4-02",
+        "P2-06",
+        "P5-01"
+      ],
+      "related_SF": [
+        "SF-12",
+        "SF-13"
+      ],
+      "input_refs": [
+        {
+          "path": "scenarios/非功能基准/benchmark.design.json",
+          "json_pointer": ""
+        },
+        {
+          "path": "scenarios/非功能基准/machine-baseline.json",
+          "json_pointer": ""
+        },
+        {
+          "path": "docs/03_架构与契约/全层类型与工程格式.json",
+          "json_pointer": "/measurement_records"
+        }
+      ],
+      "execution_rule": "消费源规范的前置/步骤/测量/判定及各子检查；失败优先、证据不足不计通过。Q42完整检查体验独立记录，不冒充正确性或硬超时。 必需子检查由源test_execution_contract.required_check_groups展开，按全部规定分支汇总。",
+      "actual_result_slot": {
+        "path": "docs/01_业务需求/非功能需求与测量验收.json",
+        "json_pointer": "/requirements/9/actual_result"
+      },
+      "closure_task": "P5-01",
+      "confirmation_ids": [
+        "Q42"
+      ]
+    },
+    {
+      "id": "NFR-11",
+      "title": "大素材/导出进度与测试结论归属",
+      "priority": "first_release_must",
+      "source": {
+        "path": "docs/01_业务需求/非功能需求与测量验收.json",
+        "json_pointer": "/requirements/10",
+        "expected_identity": "NFR-11",
+        "identity_field": "id"
+      },
+      "evidence_owner_task": "P2-06",
+      "evidence_owner_window": "W05",
+      "producer_tasks": [
+        "P3-02",
+        "P3-03",
+        "P2-03",
+        "P2-06",
+        "P5-01"
+      ],
+      "related_SF": [
+        "SF-10",
+        "SF-14",
+        "SF-16"
+      ],
+      "input_refs": [
+        {
+          "path": "scenarios/非功能基准/benchmark.design.json",
+          "json_pointer": ""
+        },
+        {
+          "path": "scenarios/非功能基准/machine-baseline.json",
+          "json_pointer": ""
+        },
+        {
+          "path": "docs/03_架构与契约/全层类型与工程格式.json",
+          "json_pointer": "/measurement_records"
+        }
+      ],
+      "execution_rule": "消费源规范的前置/步骤/测量/判定及各子检查；失败优先、证据不足不计通过。Q42完整检查体验独立记录，不冒充正确性或硬超时。 必需子检查由源test_execution_contract.required_check_groups展开，按全部规定分支汇总。",
+      "actual_result_slot": {
+        "path": "docs/01_业务需求/非功能需求与测量验收.json",
+        "json_pointer": "/requirements/10/actual_result"
+      },
+      "closure_task": "P5-01",
+      "confirmation_ids": []
+    }
+  ],
+  "integration_checks": [
+    {
+      "id": "IX-01",
+      "owner_task": "P2-04",
+      "producer_tasks": [
+        "P1-03",
+        "P2-02",
+        "P1-02"
+      ],
+      "input_refs": [
+        "scenarios/从零搭建控制盒厂房/project.design.json",
+        "scenarios/从零搭建控制盒厂房/expected-timeline.design.json"
+      ],
+      "required_observations": "完整实际基线440秒/到料延迟570秒、370—420秒小车等待/425返程；全部物品/资源/数量/事件核对；P1-03本地只验阶段/到料不先运行未完成物流",
+      "release_gate": "P5-01",
+      "related_SF": [
+        "SF-05",
+        "SF-07",
+        "SF-08"
+      ],
+      "actual_result_slot": {
+        "path": "docs/00_项目基线/首版任务选择.json",
+        "json_pointer": "/shared_scenario_checks/0/actual_result"
+      }
+    },
+    {
+      "id": "IX-02",
+      "owner_task": "P1-04",
+      "producer_tasks": [
+        "P1-03",
+        "P2-02"
+      ],
+      "input_refs": [
+        "scenarios/真实业务设计/business-inputs.design.json",
+        "scenarios/真实业务设计/expected-business.design.json"
+      ],
+      "required_observations": "订单与换单接物流后完整205秒/迟延5或45秒、W-A135或160秒，接收与返程分开；不能用无运输局部替代客户接受",
+      "release_gate": "P5-01",
+      "related_SF": [
+        "SF-05",
+        "SF-07",
+        "SF-09"
+      ],
+      "actual_result_slot": {
+        "path": "docs/00_项目基线/首版任务选择.json",
+        "json_pointer": "/shared_scenario_checks/1/actual_result"
+      }
+    },
+    {
+      "id": "IX-03",
+      "owner_task": "P4-02",
+      "producer_tasks": [
+        "P0-03",
+        "P3-01",
+        "P2-06"
+      ],
+      "input_refs": [
+        "docs/03_架构与契约/专业成果接入与软件在环.md",
+        "docs/00_项目基线/首版需求与验收.md"
+      ],
+      "required_observations": "专业计算→人工用途认可→工位绑定→改版待复核/新跑→专业制造层与四格式；三机制/三变化和全过程三态不削减，专业不增库存",
+      "release_gate": "P5-01",
+      "related_SF": [
+        "SF-12",
+        "SF-13",
+        "SF-16"
+      ],
+      "actual_result_slot": {
+        "path": "docs/00_项目基线/首版任务选择.json",
+        "json_pointer": "/shared_scenario_checks/2/actual_result"
+      }
+    }
+  ],
+  "task_projection": [
+    {
+      "task_id": "P0-01",
+      "functional_ids": [
+        "SF-01",
+        "SF-04",
+        "SF-14",
+        "SF-17"
+      ],
+      "nonfunctional_ids": [
+        "NFR-01",
+        "NFR-03",
+        "NFR-05",
+        "NFR-06",
+        "NFR-07",
+        "NFR-08"
+      ],
+      "owner_window": "W00",
+      "scope": "Windows/Tauri基础构建入口、共同工程/九类定义及版本引用、目标/场地/单位和目录保存重开；不复制库存/时钟；本次会话内草稿撤销/重做，经共同Commands形成新修订，不回滚当前运行/认可/外部动作",
+      "runtime_status": "planned",
+      "actual_result": null,
+      "task_source": {
+        "path": "docs/00_项目基线/首版任务选择.json",
+        "json_pointer": "/selected/0",
+        "expected_identity": "P0-01",
+        "identity_field": "id"
+      },
+      "confirmed_question_ids": [
+        "Q10",
+        "Q11",
+        "Q19",
+        "Q20",
+        "Q25",
+        "Q47",
+        "Q51",
+        "Q52",
+        "Q58",
+        "Q59"
+      ]
+    },
+    {
+      "task_id": "P0-02",
+      "functional_ids": [
+        "SF-05",
+        "SF-06",
+        "SF-07",
+        "SF-08",
+        "SF-09"
+      ],
+      "nonfunctional_ids": [],
+      "owner_window": "W00",
+      "scope": "产品版本、订单/BOM/路线、物品/批次/容器关系、唯一归属、预留/质量及方案输入；需求与库存分开",
+      "runtime_status": "planned",
+      "actual_result": null,
+      "task_source": {
+        "path": "docs/00_项目基线/首版任务选择.json",
+        "json_pointer": "/selected/1",
+        "expected_identity": "P0-02",
+        "identity_field": "id"
+      },
+      "confirmed_question_ids": [
+        "Q21",
+        "Q22",
+        "Q30",
+        "Q31",
+        "Q36"
+      ]
+    },
+    {
+      "task_id": "P0-03",
+      "functional_ids": [
+        "SF-12",
+        "SF-13"
+      ],
+      "nonfunctional_ids": [],
+      "owner_window": "W00",
+      "scope": "仅专业成果artifact、人工认可acceptance、消费者binding、执行result及产品版本影响；建设/投用/公用服务字段与执行后置",
+      "runtime_status": "planned",
+      "actual_result": null,
+      "task_source": {
+        "path": "docs/00_项目基线/首版任务选择.json",
+        "json_pointer": "/selected/2",
+        "expected_identity": "P0-03",
+        "identity_field": "id"
+      },
+      "confirmed_question_ids": [
+        "Q28",
+        "Q39",
+        "Q43"
+      ]
+    },
+    {
+      "task_id": "P1-01",
+      "functional_ids": [
+        "SF-05",
+        "SF-06",
+        "SF-08"
+      ],
+      "nonfunctional_ids": [
+        "NFR-01",
+        "NFR-09"
+      ],
+      "owner_window": "W01",
+      "scope": "自主Rust离散引擎的静态规则加工/装配、齐套用料、库存/容量和人工占用；不实现CNC/贴装物理",
+      "runtime_status": "planned",
+      "actual_result": null,
+      "task_source": {
+        "path": "docs/00_项目基线/首版任务选择.json",
+        "json_pointer": "/selected/3",
+        "expected_identity": "P1-01",
+        "identity_field": "id"
+      },
+      "confirmed_question_ids": [
+        "Q16",
+        "Q24",
+        "Q31",
+        "Q33",
+        "Q34"
+      ]
+    },
+    {
+      "task_id": "P1-02",
+      "functional_ids": [
+        "SF-05",
+        "SF-06",
+        "SF-08"
+      ],
+      "nonfunctional_ids": [],
+      "owner_window": "W01",
+      "scope": "串并联汇合、配比齐套、检查单出口、保持身份的有限返工和重新检验；检查结果有声明输入来源",
+      "runtime_status": "planned",
+      "actual_result": null,
+      "task_source": {
+        "path": "docs/00_项目基线/首版任务选择.json",
+        "json_pointer": "/selected/4",
+        "expected_identity": "P1-02",
+        "identity_field": "id"
+      },
+      "confirmed_question_ids": [
+        "Q16",
+        "Q24",
+        "Q35"
+      ]
+    },
+    {
+      "task_id": "P1-03",
+      "functional_ids": [
+        "SF-05",
+        "SF-08",
+        "SF-10"
+      ],
+      "nonfunctional_ids": [
+        "NFR-09"
+      ],
+      "owner_window": "W01",
+      "scope": "到料事件、人员班次与分阶段占用、机器持有/输出等待、阶段进度；不引入维修/公用服务求解",
+      "runtime_status": "planned",
+      "actual_result": null,
+      "task_source": {
+        "path": "docs/00_项目基线/首版任务选择.json",
+        "json_pointer": "/selected/5",
+        "expected_identity": "P1-03",
+        "identity_field": "id"
+      },
+      "confirmed_question_ids": [
+        "Q16",
+        "Q17",
+        "Q22",
+        "Q23",
+        "Q32",
+        "Q33"
+      ]
+    },
+    {
+      "task_id": "P1-04",
+      "functional_ids": [
+        "SF-05",
+        "SF-09"
+      ],
+      "nonfunctional_ids": [],
+      "owner_window": "W01",
+      "scope": "多订单用料/接受分配、释放/交期/优先序、工艺家族及序列相关换单；不做无界最优排程",
+      "runtime_status": "planned",
+      "actual_result": null,
+      "task_source": {
+        "path": "docs/00_项目基线/首版任务选择.json",
+        "json_pointer": "/selected/6",
+        "expected_identity": "P1-04",
+        "identity_field": "id"
+      },
+      "confirmed_question_ids": [
+        "Q23",
+        "Q31",
+        "Q32",
+        "Q36"
+      ]
+    },
+    {
+      "task_id": "P1-05",
+      "functional_ids": [
+        "SF-06",
+        "SF-08"
+      ],
+      "nonfunctional_ids": [],
+      "owner_window": "W01",
+      "scope": "待判/隔离移交、有效质量决定与放行、显式报废及保留物品身份；不把时间结束当认可",
+      "runtime_status": "planned",
+      "actual_result": null,
+      "task_source": {
+        "path": "docs/00_项目基线/首版任务选择.json",
+        "json_pointer": "/selected/7",
+        "expected_identity": "P1-05",
+        "identity_field": "id"
+      },
+      "confirmed_question_ids": [
+        "Q24",
+        "Q35",
+        "Q36"
+      ]
+    },
+    {
+      "task_id": "P2-01",
+      "functional_ids": [
+        "SF-03",
+        "SF-08",
+        "SF-17"
+      ],
+      "nonfunctional_ids": [
+        "NFR-01",
+        "NFR-02",
+        "NFR-03"
+      ],
+      "owner_window": "W02",
+      "scope": "流水线/多厂房两画布、三档LOD、单击详情、自由布置与编组连接、真实3D及静态场地检查展示；本次会话内草稿撤销/重做，经共同Commands形成新修订，不回滚当前运行/认可/外部动作",
+      "runtime_status": "planned",
+      "actual_result": null,
+      "task_source": {
+        "path": "docs/00_项目基线/首版任务选择.json",
+        "json_pointer": "/selected/8",
+        "expected_identity": "P2-01",
+        "identity_field": "id"
+      },
+      "confirmed_question_ids": [
+        "Q02",
+        "Q03",
+        "Q04",
+        "Q06",
+        "Q07",
+        "Q08",
+        "Q09",
+        "Q10",
+        "Q12",
+        "Q13",
+        "Q18",
+        "Q19"
+      ]
+    },
+    {
+      "task_id": "P2-02",
+      "functional_ids": [
+        "SF-07",
+        "SF-08"
+      ],
+      "nonfunctional_ids": [],
+      "owner_window": "W01",
+      "scope": "厂际供货、固定时间批次运输、来源预留/发出/在途/目的接受和资源返程；复杂路径/交通后置",
+      "runtime_status": "planned",
+      "actual_result": null,
+      "task_source": {
+        "path": "docs/00_项目基线/首版任务选择.json",
+        "json_pointer": "/selected/9",
+        "expected_identity": "P2-02",
+        "identity_field": "id"
+      },
+      "confirmed_question_ids": [
+        "Q26"
+      ]
+    },
+    {
+      "task_id": "P2-03",
+      "functional_ids": [
+        "SF-01",
+        "SF-09",
+        "SF-14"
+      ],
+      "nonfunctional_ids": [
+        "NFR-05",
+        "NFR-06",
+        "NFR-07",
+        "NFR-11"
+      ],
+      "owner_window": "W05",
+      "scope": "同起点方案比较、目录保存及ZIP单文件工程包、允许依赖/相对引用、另一目录重开修改；无完整快照不承诺冷启动续跑",
+      "runtime_status": "planned",
+      "actual_result": null,
+      "task_source": {
+        "path": "docs/00_项目基线/首版任务选择.json",
+        "json_pointer": "/selected/10",
+        "expected_identity": "P2-03",
+        "identity_field": "id"
+      },
+      "confirmed_question_ids": [
+        "Q11",
+        "Q44",
+        "Q51",
+        "Q52",
+        "Q53",
+        "Q55",
+        "Q56"
+      ]
+    },
+    {
+      "task_id": "P2-04",
+      "functional_ids": [
+        "SF-05",
+        "SF-08",
+        "SF-09",
+        "SF-17"
+      ],
+      "nonfunctional_ids": [
+        "NFR-04",
+        "NFR-09"
+      ],
+      "owner_window": "W02",
+      "scope": "共同生产时间轴、计划输入与只读结果、物品跟随及当前等待/资源条件定位；拖动显示不重放生产",
+      "runtime_status": "planned",
+      "actual_result": null,
+      "task_source": {
+        "path": "docs/00_项目基线/首版任务选择.json",
+        "json_pointer": "/selected/11",
+        "expected_identity": "P2-04",
+        "identity_field": "id"
+      },
+      "confirmed_question_ids": [
+        "Q06",
+        "Q16",
+        "Q17",
+        "Q18",
+        "Q33",
+        "Q34",
+        "Q37"
+      ]
+    },
+    {
+      "task_id": "P2-05",
+      "functional_ids": [
+        "SF-05",
+        "SF-06",
+        "SF-09"
+      ],
+      "nonfunctional_ids": [
+        "NFR-03"
+      ],
+      "owner_window": "W02",
+      "scope": "产品/订单/BOM/路线、质量、到料、班次/换单与排期编辑面板，和时间轴改同一输入；本次会话内草稿撤销/重做，经共同Commands形成新修订，不回滚当前运行/认可/外部动作",
+      "runtime_status": "planned",
+      "actual_result": null,
+      "task_source": {
+        "path": "docs/00_项目基线/首版任务选择.json",
+        "json_pointer": "/selected/12",
+        "expected_identity": "P2-05",
+        "identity_field": "id"
+      },
+      "confirmed_question_ids": [
+        "Q06",
+        "Q10",
+        "Q12",
+        "Q30",
+        "Q31",
+        "Q32",
+        "Q35",
+        "Q36"
+      ]
+    },
+    {
+      "task_id": "P2-06",
+      "functional_ids": [
+        "SF-09",
+        "SF-16",
+        "SF-17"
+      ],
+      "nonfunctional_ids": [
+        "NFR-04",
+        "NFR-06",
+        "NFR-07",
+        "NFR-10",
+        "NFR-11"
+      ],
+      "owner_window": "W05",
+      "scope": "指定接受量/时间/资源与条件成本评审，同一EvaluationReport的PDF/HTML/CSV/JSON导出；未知金额/结果不补零",
+      "runtime_status": "planned",
+      "actual_result": null,
+      "task_source": {
+        "path": "docs/00_项目基线/首版任务选择.json",
+        "json_pointer": "/selected/13",
+        "expected_identity": "P2-06",
+        "identity_field": "id"
+      },
+      "confirmed_question_ids": [
+        "Q03",
+        "Q37",
+        "Q53",
+        "Q54",
+        "Q57"
+      ]
+    },
+    {
+      "task_id": "P3-01",
+      "functional_ids": [
+        "SF-04",
+        "SF-10",
+        "SF-11",
+        "SF-15"
+      ],
+      "nonfunctional_ids": [
+        "NFR-03"
+      ],
+      "owner_window": "W03",
+      "scope": "九类定义新建/修改/导入、分类表单/样例检查、按版本明确采用及贡献导出；声明包不执行任意脚本；本次会话内草稿撤销/重做，经共同Commands形成新修订，不回滚当前运行/认可/外部动作",
+      "runtime_status": "planned",
+      "actual_result": null,
+      "task_source": {
+        "path": "docs/00_项目基线/首版任务选择.json",
+        "json_pointer": "/selected/14",
+        "expected_identity": "P3-01",
+        "identity_field": "id"
+      },
+      "confirmed_question_ids": [
+        "Q03",
+        "Q06",
+        "Q09",
+        "Q10",
+        "Q12",
+        "Q14",
+        "Q20",
+        "Q21",
+        "Q22",
+        "Q23",
+        "Q24",
+        "Q25",
+        "Q26",
+        "Q27",
+        "Q28",
+        "Q29",
+        "Q61"
+      ]
+    },
+    {
+      "task_id": "P3-02",
+      "functional_ids": [
+        "SF-03",
+        "SF-10"
+      ],
+      "nonfunctional_ids": [
+        "NFR-01",
+        "NFR-02",
+        "NFR-04",
+        "NFR-11"
+      ],
+      "owner_window": "W03",
+      "scope": "GIF/GLB等受控媒体及三维表现绑定真实状态/阶段，完整可旋转3D模型、三档呈现与代表性物品动画；表现不决定工时/库存",
+      "runtime_status": "planned",
+      "actual_result": null,
+      "task_source": {
+        "path": "docs/00_项目基线/首版任务选择.json",
+        "json_pointer": "/selected/15",
+        "expected_identity": "P3-02",
+        "identity_field": "id"
+      },
+      "confirmed_question_ids": [
+        "Q02",
+        "Q05",
+        "Q07",
+        "Q13",
+        "Q14",
+        "Q15",
+        "Q16",
+        "Q17",
+        "Q18",
+        "Q19",
+        "Q29",
+        "Q33",
+        "Q41"
+      ]
+    },
+    {
+      "task_id": "P3-03",
+      "functional_ids": [
+        "SF-04",
+        "SF-10",
+        "SF-11"
+      ],
+      "nonfunctional_ids": [
+        "NFR-02",
+        "NFR-04",
+        "NFR-11"
+      ],
+      "owner_window": "W03",
+      "scope": "图片时间轴/标签/操作热点编辑、保存采用、真实阶段读数及观看循环；不增产；本次会话内草稿撤销/重做，经共同Commands形成新修订，不回滚当前运行/认可/外部动作",
+      "runtime_status": "planned",
+      "actual_result": null,
+      "task_source": {
+        "path": "docs/00_项目基线/首版任务选择.json",
+        "json_pointer": "/selected/16",
+        "expected_identity": "P3-03",
+        "identity_field": "id"
+      },
+      "confirmed_question_ids": [
+        "Q10",
+        "Q25",
+        "Q29"
+      ]
+    },
+    {
+      "task_id": "P3-04",
+      "functional_ids": [
+        "SF-04",
+        "SF-10",
+        "SF-11",
+        "SF-14",
+        "SF-16",
+        "SF-17"
+      ],
+      "nonfunctional_ids": [
+        "NFR-04",
+        "NFR-07",
+        "NFR-08"
+      ],
+      "owner_window": "W05",
+      "scope": "外部Agent真实MCP stdio桥/共享Commands、九类与原生设备创作、目标建厂/检查/渲染/模拟/交付；初案达标直交、不足才有限修正/比较或说明，外部专业连接器后置",
+      "runtime_status": "planned",
+      "actual_result": null,
+      "task_source": {
+        "path": "docs/00_项目基线/首版任务选择.json",
+        "json_pointer": "/selected/17",
+        "expected_identity": "P3-04",
+        "identity_field": "id"
+      },
+      "confirmed_question_ids": [
+        "Q02",
+        "Q04",
+        "Q05",
+        "Q27",
+        "Q34",
+        "Q45",
+        "Q46",
+        "Q47",
+        "Q48",
+        "Q49",
+        "Q50",
+        "Q54",
+        "Q59"
+      ]
+    },
+    {
+      "task_id": "P4-01",
+      "functional_ids": [
+        "SF-02",
+        "SF-04",
+        "SF-17"
+      ],
+      "nonfunctional_ids": [],
+      "owner_window": "W03",
+      "scope": "三通用离散模板/空工程、所需行为/设备库及纸箱制造目标场地配置；加工/电子仅声明过程，纸箱为行业例，不限平台行业",
+      "runtime_status": "planned",
+      "actual_result": null,
+      "task_source": {
+        "path": "docs/00_项目基线/首版任务选择.json",
+        "json_pointer": "/selected/18",
+        "expected_identity": "P4-01",
+        "identity_field": "id"
+      },
+      "confirmed_question_ids": [
+        "Q01",
+        "Q02",
+        "Q04",
+        "Q08",
+        "Q09",
+        "Q14",
+        "Q27",
+        "Q46",
+        "Q48",
+        "Q49",
+        "Q50"
+      ]
+    },
+    {
+      "task_id": "P4-02",
+      "functional_ids": [
+        "SF-02",
+        "SF-12",
+        "SF-13"
+      ],
+      "nonfunctional_ids": [
+        "NFR-04",
+        "NFR-10"
+      ],
+      "owner_window": "W04",
+      "scope": "纸包装三机制/三变化、结构与条件求解、成型/开合/固定姿态直线取物三态判定、刀折胶SVG/材料数量/可编辑成果及认可绑定",
+      "runtime_status": "planned",
+      "actual_result": null,
+      "task_source": {
+        "path": "docs/00_项目基线/首版任务选择.json",
+        "json_pointer": "/selected/19",
+        "expected_identity": "P4-02",
+        "identity_field": "id"
+      },
+      "confirmed_question_ids": [
+        "Q02",
+        "Q28",
+        "Q38",
+        "Q39",
+        "Q40",
+        "Q41",
+        "Q42",
+        "Q43",
+        "Q44"
+      ]
+    },
+    {
+      "task_id": "P5-01",
+      "functional_ids": [
+        "SF-01",
+        "SF-02",
+        "SF-03",
+        "SF-04",
+        "SF-05",
+        "SF-06",
+        "SF-07",
+        "SF-08",
+        "SF-09",
+        "SF-10",
+        "SF-11",
+        "SF-12",
+        "SF-13",
+        "SF-14",
+        "SF-15",
+        "SF-16",
+        "SF-17"
+      ],
+      "nonfunctional_ids": [
+        "NFR-01",
+        "NFR-02",
+        "NFR-03",
+        "NFR-04",
+        "NFR-05",
+        "NFR-06",
+        "NFR-07",
+        "NFR-08",
+        "NFR-09",
+        "NFR-10",
+        "NFR-11"
+      ],
+      "owner_window": "W00",
+      "scope": "SF-01至17真实验收、基准负载、实际复现/接手及九类贡献采用、许可和可运行仓库/作品介绍PDF/真实视频准备；报名审核/发送/回执独立据实记录",
+      "runtime_status": "planned",
+      "actual_result": null,
+      "task_source": {
+        "path": "docs/00_项目基线/首版任务选择.json",
+        "json_pointer": "/selected/20",
+        "expected_identity": "P5-01",
+        "identity_field": "id"
+      },
+      "confirmed_question_ids": [
+        "Q01",
+        "Q02",
+        "Q03",
+        "Q05",
+        "Q13",
+        "Q18",
+        "Q19",
+        "Q44",
+        "Q45",
+        "Q54",
+        "Q55",
+        "Q56",
+        "Q57",
+        "Q58",
+        "Q59",
+        "Q60",
+        "Q61",
+        "Q62",
+        "Q63",
+        "Q64"
+      ]
+    }
+  ],
+  "report_ref": "docs/04_开发与验收/S03-05_首版需求与验收追踪复审.json",
+  "actual_runtime": null,
+  "serial_review_ref": "docs/04_开发与验收/S01至S03_串联复审.json",
+  "confirmed_choice_ref": "docs/00_项目基线/全量设计编码确认选择.json",
+  "checkpoint_choice_requirements_ref": "docs/04_开发与验收/全量设计编码确认/SXX-XX_确认选择落实.json",
+  "confirmed_acceptance_supplements": [
+    {
+      "question_id": "Q10",
+      "task_ids": [
+        "P0-01",
+        "P2-01",
+        "P2-05",
+        "P3-01",
+        "P3-03"
+      ],
+      "functional_ids": [
+        "SF-01",
+        "SF-03",
+        "SF-04",
+        "SF-05",
+        "SF-06"
+      ],
+      "input": {
+        "draft_revision": 0,
+        "object_position_m": [
+          0,
+          0,
+          0
+        ],
+        "edited_position_m": [
+          1,
+          0,
+          0
+        ]
+      },
+      "procedure": [
+        "提交位置编辑",
+        "撤销此编辑",
+        "重做此编辑"
+      ],
+      "expected": {
+        "positions_m": [
+          [
+            1,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            0,
+            0
+          ]
+        ],
+        "new_revisions": [
+          1,
+          2,
+          3
+        ],
+        "current_RunId_inventory_clock_acceptance_unchanged": true
+      },
+      "additional_expectations": [
+        "编辑对象/参数/连接后撤销与重做的草稿状态正确",
+        "撤销不改变当前RunId结果、生产时钟、实际库存及认可",
+        "共享修订冲突时不覆盖新状态",
+        "新编辑后不能重做已失效分支，跨工程历史不混用"
+      ],
+      "exact_command_format": "S06-03待完成；预期冻结在接口实现前",
+      "actual_result": null
+    },
+    {
+      "question_id": "Q42",
+      "task_ids": [
+        "P4-02"
+      ],
+      "nonfunctional_ids": [
+        "NFR-10"
+      ],
+      "expected": "完整检查30秒为体验试做目标；预算耗尽Undetermined，不删过程检查，不将30秒当硬超时或已有实测。",
+      "actual_result": null,
+      "measurement_source": {
+        "path": "docs/01_业务需求/非功能需求与测量验收.json",
+        "json_pointer": "/requirements/9/experience_trial"
+      }
+    },
+    {
+      "question_id": "Q49",
+      "task_ids": [
+        "P3-04",
+        "P4-01"
+      ],
+      "functional_ids": [
+        "SF-17"
+      ],
+      "expected": "初案达标零次修正；独立不足输入最多3轮反馈修正，每轮真实检查/可运行时实际重跑；达标/关键缺项/无有效改动立即结束。",
+      "initial_run_counts_as_repair": false,
+      "actual_result": null
+    }
+  ],
+  "nonfunctional_revision": "2026-10-14 S03-04复审补齐非空操作的逐次采样与S06-02字段绑定；11NFR/38组/原指标不变，实际结果未执行。",
+  "timeline_contract_merge_ref": "docs/03_架构与契约/全层类型与工程格式.json#/timeline_runtime_contract",
+  "equipment_model_quality_ref": "docs/02_交互设计/设备建模精度与表现验收规范.json"
+}

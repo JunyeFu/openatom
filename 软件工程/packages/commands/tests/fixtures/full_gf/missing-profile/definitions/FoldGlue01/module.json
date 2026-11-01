@@ -1,0 +1,153 @@
+{
+  "schema_version": "1.0",
+  "data": {
+    "definition": {
+      "id": "p401.carton-factory.FoldGlue01",
+      "version": "1.0.0",
+      "title": "FoldGlue01（由原模板显式配置派生）",
+      "definition_state": "design",
+      "contribution": {
+        "author": null,
+        "license": null,
+        "assets": []
+      },
+      "parameters": [
+        {
+          "id": "cycle_seconds",
+          "label": null,
+          "value_type": "duration",
+          "unit": "millisecond",
+          "binding": "/payload/data/behavior/inline/duration",
+          "minimum": null,
+          "maximum": null,
+          "integer": false,
+          "options": [],
+          "basis": "module_declared"
+        }
+      ],
+      "attribute_schema": [],
+      "payload": {
+        "category": "devices",
+        "data": {
+          "placement": "fixed_during_simulation",
+          "ports": [
+            {
+              "id": "input",
+              "direction": "input",
+              "payload": {
+                "kind": "material",
+                "data": {
+                  "item_role": "input",
+                  "unit": "piece",
+                  "quantity_rule": null
+                }
+              }
+            },
+            {
+              "id": "output",
+              "direction": "output",
+              "payload": {
+                "kind": "material",
+                "data": {
+                  "item_role": "output",
+                  "unit": "piece",
+                  "quantity_rule": null
+                }
+              }
+            }
+          ],
+          "behavior": {
+            "inline": {
+              "builtin": "transform",
+              "item_roles": [
+                "input",
+                "output"
+              ],
+              "inputs": [
+                {
+                  "role": "input",
+                  "port": "input",
+                  "quantity": {
+                    "value": {
+                      "coefficient": 1,
+                      "decimal_places": 0
+                    },
+                    "unit": "piece"
+                  },
+                  "required_quality": [
+                    "unchecked",
+                    "released"
+                  ],
+                  "declared_output_quality": null
+                }
+              ],
+              "outputs": [
+                {
+                  "role": "output",
+                  "port": "output",
+                  "quantity": {
+                    "value": {
+                      "coefficient": 1,
+                      "decimal_places": 0
+                    },
+                    "unit": "piece"
+                  },
+                  "required_quality": [],
+                  "declared_output_quality": null
+                }
+              ],
+              "resource_roles": [
+                {
+                  "role": "legacy.worker.W-A",
+                  "quantity": {
+                    "value": {
+                      "coefficient": 1,
+                      "decimal_places": 0
+                    },
+                    "unit": "person"
+                  },
+                  "qualifications": []
+                }
+              ],
+              "duration": {
+                "value": 20000,
+                "unit": "millisecond",
+                "basis": "module_declared",
+                "source_ref": null
+              },
+              "phases": [],
+              "hold_on_output_wait": [],
+              "quality_and_routes": null,
+              "identity_policy": "transform_with_origin",
+              "family": null
+            },
+            "operation_ref": null,
+            "selected": "inline"
+          },
+          "configuration": {
+            "cycle_seconds": {
+              "kind": "duration",
+              "value": {
+                "value": 20000,
+                "unit": "millisecond",
+                "basis": "module_declared",
+                "source_ref": null
+              }
+            }
+          },
+          "presentation": null,
+          "operations": [
+            "configure",
+            "inspect",
+            "preview_cycle"
+          ]
+        }
+      }
+    },
+    "files": [],
+    "dependencies": [],
+    "assets": [],
+    "rights": [],
+    "issues": []
+  }
+}

@@ -1,0 +1,448 @@
+{
+  "document_kind": "independent_finite_inputs_and_expected_rules_not_runtime_results",
+  "date": "2026-10-14",
+  "assumptions": "Numbers/IDs below are explicit invented design inputs, not measured machines, site data, actual Task states or Engine results. Expectations precede any product implementation.",
+  "cases": [
+    {
+      "id": "FC01",
+      "kind": "sizing_math",
+      "input": {
+        "Q": 10000,
+        "stage_t_seconds": 3,
+        "effective_seconds": 28800,
+        "accepted_per_cycle": 1
+      },
+      "expected": {
+        "ideal_takt_seconds": 2.88,
+        "machine_lower_bound": 2,
+        "production_proven": false
+      },
+      "actual_result": null
+    },
+    {
+      "id": "FC02",
+      "kind": "content_quantity_math",
+      "input": {
+        "bundles": 400,
+        "cartons_per_bundle": 25
+      },
+      "expected": {
+        "accepted_cartons": 10000,
+        "bundle_plus_content_double_count": false
+      },
+      "actual_result": null
+    },
+    {
+      "id": "FC03",
+      "kind": "unit_and_axis_math",
+      "input": {
+        "L_m": 24,
+        "W_m": 16,
+        "H_m": 6,
+        "product_mm": 300
+      },
+      "expected": {
+        "hall_width_m": 24,
+        "hall_depth_m": 16,
+        "hall_height_m": 6,
+        "product_extent_m": 0.3
+      },
+      "actual_result": null
+    },
+    {
+      "id": "FC04",
+      "kind": "identity_remap",
+      "input": {
+        "ids": {
+          "D1": "N1",
+          "D2": "N2"
+        },
+        "edge": [
+          "D1",
+          "out",
+          "D2",
+          "in"
+        ],
+        "module_ref": {
+          "id": "community.example",
+          "version": "0.1.0"
+        }
+      },
+      "expected": {
+        "edge": [
+          "N1",
+          "out",
+          "N2",
+          "in"
+        ],
+        "module_ref_unchanged": true
+      },
+      "actual_result": null
+    },
+    {
+      "id": "FC05",
+      "kind": "default_seed",
+      "input": {
+        "existing_stock": 12,
+        "template_demo_stock": 2,
+        "supply_selected": false,
+        "orders_selected": false
+      },
+      "expected": {
+        "existing_stock": 12,
+        "new_seed_items": 0,
+        "new_orders": 0,
+        "explicit_new_scenario_seed": null
+      },
+      "actual_result": null
+    },
+    {
+      "id": "FC06",
+      "kind": "initial_success",
+      "input": {
+        "target": 2,
+        "accepted": 2,
+        "checks_pass": true,
+        "whole_window_computed": true,
+        "same_unit_and_scope": true
+      },
+      "expected": {
+        "stop_reason": "initial_target_met",
+        "capacity_runs": 1,
+        "repairs": 0,
+        "compare_calls": 0,
+        "revised_run_ids": []
+      },
+      "actual_result": null
+    },
+    {
+      "id": "FC07",
+      "kind": "no_change",
+      "input": {
+        "target": 3,
+        "accepted": 2,
+        "proposal_before_ms": 10000,
+        "proposal_after_ms": 10000
+      },
+      "expected": {
+        "stop_reason": "unrepairable_shortfall",
+        "edit_calls": 0,
+        "new_run_calls": 0
+      },
+      "actual_result": null
+    },
+    {
+      "id": "FC08",
+      "kind": "field_permission",
+      "input": {
+        "granted": [
+          "arrivals.at_ms"
+        ],
+        "changed": [
+          "operation.phase.duration"
+        ]
+      },
+      "expected": {
+        "error": "PermissionDenied",
+        "committed": false
+      },
+      "actual_result": null
+    },
+    {
+      "id": "FC09",
+      "kind": "whole_object_permission",
+      "input": {
+        "command": "put_object ScenarioInput",
+        "granted": [
+          "arrivals.at_ms"
+        ],
+        "changed": [
+          "arrivals.at_ms",
+          "quality_presets.result"
+        ]
+      },
+      "expected": {
+        "error": "PermissionDenied",
+        "committed": false,
+        "partial_commit": false
+      },
+      "actual_result": null
+    },
+    {
+      "id": "FC10",
+      "kind": "resource_reuse",
+      "input": {
+        "role_resource_ids": [
+          "W-B",
+          "W-B"
+        ],
+        "existing_capacity": 1,
+        "new_personnel_authorized": false
+      },
+      "expected": {
+        "distinct_resources": 1,
+        "capacity": 1,
+        "new_workers": 0,
+        "concurrent_jobs_still_contend": true
+      },
+      "actual_result": null
+    },
+    {
+      "id": "FC11",
+      "kind": "cancel_completion_race",
+      "input": {
+        "state_before_cancel": "completed",
+        "output_exists": true
+      },
+      "expected": {
+        "state": "completed",
+        "terminal_won": true,
+        "preserve_output": true
+      },
+      "actual_result": null
+    },
+    {
+      "id": "FC12",
+      "kind": "cancel_request_pending",
+      "input": {
+        "state": "cancel_requested",
+        "worker_terminal": false
+      },
+      "expected": {
+        "terminal": false,
+        "claim_cancelled_or_success": false
+      },
+      "actual_result": null
+    },
+    {
+      "id": "FC13",
+      "kind": "partial_goal",
+      "input": {
+        "target": 2,
+        "accepted": 2,
+        "state": "cancelled",
+        "whole_window_computed": false
+      },
+      "expected": {
+        "whole_goal_pass": false,
+        "partial_scope_retained": true
+      },
+      "actual_result": null
+    },
+    {
+      "id": "FC14",
+      "kind": "timeline_clip_math",
+      "input": {
+        "job": "J1",
+        "true_interval": [
+          90000,
+          180000
+        ],
+        "visible_window": [
+          100000,
+          160000
+        ]
+      },
+      "expected": {
+        "job": "J1",
+        "true_interval": [
+          90000,
+          180000
+        ],
+        "visible_interval": [
+          100000,
+          160000
+        ],
+        "continued_left": true,
+        "continued_right": true,
+        "new_completion_event": false
+      },
+      "actual_result": null
+    },
+    {
+      "id": "FC15",
+      "kind": "endpoint_quantity_math",
+      "input": {
+        "acceptance_events_ms": [
+          70000,
+          110000
+        ],
+        "H_ms": 110000,
+        "display_query_half_open_end": 110000,
+        "Events_end_point_membership": "closed point"
+      },
+      "expected": {
+        "A_H": 2,
+        "interior_display_events": 1,
+        "boundary_event_separate": true,
+        "Events_page_events": 2
+      },
+      "actual_result": null
+    },
+    {
+      "id": "FC16",
+      "kind": "missing_phase_history",
+      "input": {
+        "operation_shared_by_devices": [
+          "D1",
+          "D2"
+        ],
+        "execution_ref_present": false,
+        "phase_intervals_present": false,
+        "public_records_merged": true,
+        "fixture_scope": "missing actual history despite known canonical carrier"
+      },
+      "expected": {
+        "guess_execution_device": false,
+        "reconstruct_nominal_phase": false,
+        "display": "unknown_required_history"
+      },
+      "actual_result": null
+    },
+    {
+      "id": "FC17",
+      "kind": "seed_order_separation",
+      "input": {
+        "supply_selected": true,
+        "orders_selected": false,
+        "seed_items": 2,
+        "template_demand": 2
+      },
+      "expected": {
+        "new_scenario_items": 2,
+        "new_orders": 0,
+        "mutate_active_Run": false
+      },
+      "actual_result": null
+    },
+    {
+      "id": "FC18",
+      "kind": "file_purpose_permission",
+      "input": {
+        "Host_grant_purpose": "save_project",
+        "request_purpose": "export_evaluation"
+      },
+      "expected": {
+        "error": "PermissionDenied",
+        "files_written": 0
+      },
+      "actual_result": null
+    },
+    {
+      "id": "FC19",
+      "kind": "lost_connection",
+      "input": {
+        "run_admitted": true,
+        "connection_lost": true
+      },
+      "expected": {
+        "task_owner": "Host",
+        "automatic_run_resubmissions": 0,
+        "second_Engine": false
+      },
+      "actual_result": null
+    },
+    {
+      "id": "FC20",
+      "kind": "three_repairs",
+      "input": {
+        "target": 10,
+        "initial_accepted": 6,
+        "repair_accepted": [
+          7,
+          8,
+          9
+        ],
+        "all_committed_and_runnable": true
+      },
+      "expected": {
+        "repair_rounds": 3,
+        "capacity_runs": 4,
+        "stop_reason": "finite_budget_exhausted",
+        "fourth_repair_allowed": false
+      },
+      "actual_result": null
+    },
+    {
+      "id": "FC21",
+      "kind": "incomplete_goal_form",
+      "input": {
+        "product_ref": null,
+        "destination": null,
+        "calendar": null
+      },
+      "expected": {
+        "check_call": false,
+        "form_draft_saved": true,
+        "missing_inputs_asked_together": true
+      },
+      "actual_result": null
+    },
+    {
+      "id": "FC22",
+      "kind": "finite_supply_math",
+      "input": {
+        "target": 3,
+        "shell": 2,
+        "pcb": 2,
+        "fastener": 8,
+        "fastener_per_product": 4,
+        "carton": 2
+      },
+      "expected": {
+        "ideal_max_accepted": 2,
+        "minimum_shortfall": 1,
+        "invented_stock": 0
+      },
+      "actual_result": null
+    },
+    {
+      "id": "FC23",
+      "kind": "authorized_change",
+      "input": {
+        "granted": [
+          "arrivals.at_ms"
+        ],
+        "changed": [
+          "arrivals.at_ms"
+        ],
+        "before_ms": 10000,
+        "after_ms": 5000
+      },
+      "expected": {
+        "effective_change": true,
+        "repair_round_consumed_after_commit": 1,
+        "fresh_check_required": true,
+        "actual_run_required_when_runnable": true
+      },
+      "actual_result": null
+    },
+    {
+      "id": "FC24",
+      "kind": "declared_straight_layout_math",
+      "input": {
+        "station_widths_m": [
+          2,
+          2
+        ],
+        "declared_gap_m": 1,
+        "anchor_x_m": 0,
+        "hall_length_m": 5
+      },
+      "expected": {
+        "station_min_x_m": [
+          0,
+          3
+        ],
+        "occupied_end_x_m": 5,
+        "fits_declared_x_bounds": true,
+        "height_clearance_unproved": true
+      },
+      "actual_result": null
+    }
+  ],
+  "runtime_validation": "Run GF-01..GF-07 and these state/permission cases against actual Codex/Host/Engine after stage admission; definition checker is not those tests.",
+  "actual_product_runtime": null,
+  "actual_agent_execution": null,
+  "human_walkthrough": null
+}

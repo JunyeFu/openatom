@@ -1,0 +1,3205 @@
+{
+  "document_kind": "first_release_selection_not_task_completion",
+  "scope_baseline": "docs/00_项目基线/首版交付基线.md",
+  "requirements": "docs/00_项目基线/首版需求与验收.md",
+  "selected": [
+    {
+      "id": "P0-01",
+      "disposition": "required",
+      "scope": "Windows/Tauri基础构建入口、共同工程/九类定义及版本引用、目标/场地/单位和目录保存重开；不复制库存/时钟；本次会话内草稿撤销/重做，经共同Commands形成新修订，不回滚当前运行/认可/外部动作",
+      "release_dependencies": [],
+      "status": "in_progress",
+      "implementation_owner": "primary_window_01_under_user_authority",
+      "acceptance_owner": "user",
+      "actual_result": null,
+      "requirement_ids": [
+        "SF-01",
+        "SF-04",
+        "SF-14",
+        "SF-17"
+      ],
+      "release_acceptance": "保存重开后对象、数量和连接一致；并行支线与合流能表达；库位、物品当前归属、模块实例与方案分开；两厂房声明引用完整；物品/信号/专业成果分别表达类型、单位、端点和接受范围，草稿扩展不改变原无阶段样例；目标/合格接受单位、场地包络、行业生成配置、来源明确的参数与九类角色绑定可保存；长宽高映射既有坐标与m单位。；实际Windows基础应用能启动，前端经共同Rust入口编辑最小工程并目录保存重开；构建/启动方法是可执行入口，不以README或本机Rust编译替代。；草稿编辑撤销/重做正确且产生新修订；旧Run/库存/认可不变，修订冲突不覆盖，新编辑清除失效redo，跨工程不串历史",
+      "release_paths": [
+        "packages/domain",
+        "modules",
+        "scenarios",
+        "apps/planner",
+        "packages/commands",
+        "tools"
+      ],
+      "implementation_dependencies": [],
+      "execution_plan": {
+        "input_refs": [
+          "docs/03_架构与契约/首版类型格式与操作契约.md",
+          "packages/module-kit/category-contracts.design.json",
+          "packages/domain/factory-generation.design.json",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "inputs": [
+          "已冻结Windows技术栈；共同ID/版本、九类、单位/目标/场地语义"
+        ],
+        "outputs": [
+          "Windows实际基础构建/启动入口与依赖清单",
+          "共同工程类型/边界序列化及目录保存重开",
+          "Tauri与Rust Commands最小编辑入口"
+        ],
+        "steps": [
+          "落实该步所需共同字段/schema与命令边界，生成同源前端类型",
+          "建立实际工程/构建入口并接通最小创建/读取/编辑",
+          "保存最小设计工程、在另一目录重开并修改",
+          "接入本会话草稿撤销/重做：共同命令/修订冲突、redo分支与工程切换；与当前Run/人工认可/磁盘副作用分开"
+        ],
+        "verification_method": "实际Windows启动与断网普通编辑；对象/连接/单位重开一致；构建和重开用实际命令记录，不能只跑无依赖Rust烟测",
+        "actual_result": null,
+        "partial_results": [
+          {
+            "within_original_step": 1,
+            "scope": "先落实最小创建/读取/编辑所需的基础值类型、ID/版本/修订语义及Rust同源TS导出；本切片不实现CRUD或完整工程模型。",
+            "status": "implemented_and_reviewed",
+            "result_ref": "docs/04_开发与验收/P0-01_首个后端切片.json"
+          },
+          {
+            "within_original_step": 1,
+            "scope": "补齐冻结ProjectState及其传递依赖、完整有类型Command/API边界；正式Rust生成TS和Schema并用创建/读取/编辑报文链消费。这里只实现边界，不实现Host业务提交。",
+            "status": "implemented_and_reviewed",
+            "result_ref": "docs/04_开发与验收/P0-01_工程类型与Command边界切片.json"
+          },
+          {
+            "within_original_step": 2,
+            "scope": "正式Host持有单个活动工程和真实会话；UI创建工程、读取上下文/工程/物品类型、原子编辑工程设置和物品类型；经实际Tauri宿主入口接入。外部会话只能通过Host注册后按当前工程/操作/字段及创建预算授权。",
+            "status": "implemented_and_reviewed",
+            "result_ref": "docs/04_开发与验收/P0-01_Host最小创建读取编辑切片.json"
+          },
+          {
+            "within_original_step": 3,
+            "covered_original_steps": [
+              3,
+              4
+            ],
+            "scope": "在实际Host接通save_project/import_package/get_task/cancel_task和明确AdoptImportedDraft(OpenProject)；目录格式与Windows提交按冻结契约；已支持Project/ItemType草稿支持同会话undo/redo。正式Tauri原生目录选择产生Host私有token，锁外文件任务，原生同Host端到端核验。",
+            "status": "implemented_and_reviewed",
+            "result_ref": "docs/04_开发与验收/P0-01_保存重开与会话历史切片.json"
+          }
+        ],
+        "completed_original_steps": [
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      "dependency_reasons": {},
+      "accountable_owner": "user",
+      "planned_window_id": "W00",
+      "parallel_plan_ref": "docs/04_开发与验收/本机并行窗口计划.json",
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P0-01.md",
+      "coding_protocol_ref": "docs/04_开发与验收/编码任务包与AI实现审查.md",
+      "effort_estimate_ref": "docs/04_开发与验收/任务框架与工量里程碑.json#P0-01",
+      "deliverable_milestone_id": "MS-06",
+      "phase_exit_ref": "docs/04_开发与验收/阶段实现计划.json#P0",
+      "acceptance_trace_ids": [
+        "SF-01",
+        "SF-04",
+        "SF-14",
+        "SF-17",
+        "NFR-01",
+        "NFR-03",
+        "NFR-05",
+        "NFR-06",
+        "NFR-07",
+        "NFR-08"
+      ],
+      "confirmed_question_ids": [
+        "Q10",
+        "Q11",
+        "Q19",
+        "Q20",
+        "Q25",
+        "Q47",
+        "Q51",
+        "Q52",
+        "Q58",
+        "Q59"
+      ],
+      "confirmed_design_requirements": [
+        {
+          "question_id": "Q10",
+          "selected_text": "加入本次会话内草稿编辑的撤销/重做；生产结果、人工认可和外部发布不能用它倒退。"
+        },
+        {
+          "question_id": "Q11",
+          "selected_text": "一个活动工程；切换前处理未保存改动，避免同时建立多套活动运行上下文。"
+        },
+        {
+          "question_id": "Q19",
+          "selected_text": "接受作为候选验收目标，使用NFR-B60和已写采样协议；模型质量不靠暗降级达标，实测失败后报告取舍。"
+        },
+        {
+          "question_id": "Q20",
+          "selected_text": "共同身份/版本/来源页，加各类载荷表单；均支持草稿、检查、适合的预览、明确采用和导出。"
+        },
+        {
+          "question_id": "Q25",
+          "selected_text": "详情明确显示三层和当前版本；改实例不改库，另存新定义后列变化并选择受影响实例升级。"
+        },
+        {
+          "question_id": "Q47",
+          "selected_text": "在本次选定草稿和字段范围内分批执行，展示变更；涉及超范围改动再由你决定。"
+        },
+        {
+          "question_id": "Q51",
+          "selected_text": "手动保存、未保存标记和关闭提醒；失败保留旧有效工程。"
+        },
+        {
+          "question_id": "Q52",
+          "selected_text": "明确本版与已验证兼容版本；未知/缺引用列具体问题并保留原文件，不承诺任意历史设计稿可运行。"
+        },
+        {
+          "question_id": "Q58",
+          "selected_text": "先明确Windows11 x64为首版验证目标，在本机和另一台目标机器实际安装/重开；最低配置实测后写。"
+        },
+        {
+          "question_id": "Q59",
+          "selected_text": "优先离线可运行的发布包及启动/桥配置说明；安装器按实际打包试做结果另列。"
+        }
+      ],
+      "confirmed_undo_requirement": {
+        "supported_scope": "本次会话的当前工程/定义草稿中对象、参数、连接、排期和受支持创作编辑；当前生产、真实结果、专业认可和外部动作不回滚。",
+        "revision_policy": "undo/redo经同一Commands成为新的草稿修订；遵守base_revision冲突检查，不倒拨共享修订号，不覆盖别人修改。",
+        "file_policy": "撤销工程引用/采用只影响草稿，不物理删除导入资产，不回滚已落盘文件、发布或购买。",
+        "history_policy": "限定本次会话；新的编辑使失效的redo分支清空，切换工程不串用；文本框优先本地文本撤销。",
+        "acceptance_expectations": [
+          "编辑对象/参数/连接后撤销与重做的草稿状态正确",
+          "撤销不改变当前RunId结果、生产时钟、实际库存及认可",
+          "共享修订冲突时不覆盖新状态",
+          "新编辑后不能重做已失效分支，跨工程历史不混用"
+        ]
+      },
+      "incremental_effort_due_to_Q10": {
+        "status": "included_in_current_original_task_budget_engineering_estimate_not_measured",
+        "existing_budget_includes_Q10": true,
+        "framework_owner": "W00",
+        "human_hours": [
+          2,
+          3
+        ],
+        "window_active_hours": [
+          4,
+          6
+        ],
+        "basis": "共同Scope历史、可逆数据、修订冲突和不可逆边界；消费者只引用同一历史实现。",
+        "contract_refs": [
+          "packages/commands/api.design.rs",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/03_架构与契约/共享状态与所有权.json"
+        ]
+      },
+      "confirmed_design_input_refs": [
+        "docs/00_项目基线/全量设计编码确认选择.json",
+        "docs/04_开发与验收/全量设计编码确认/SXX-XX_确认选择落实.json"
+      ],
+      "current_slice_result_ref": "docs/04_开发与验收/整包派发/P0-01_整包执行.json",
+      "current_execution_plan_ref": "docs/04_开发与验收/本窗口实施主线.json",
+      "current_full_task_packet_ref": "docs/04_开发与验收/整包派发/P0-01_完整任务包.md",
+      "sequential_closeout_ref": "docs/04_开发与验收/整包派发/P0-01_整包执行.json#/sequential_closeout"
+    },
+    {
+      "id": "P0-02",
+      "disposition": "required",
+      "scope": "产品版本、订单/BOM/路线、物品/批次/容器关系、唯一归属、预留/质量及方案输入；需求与库存分开",
+      "release_dependencies": [
+        "P0-01"
+      ],
+      "status": "in_progress",
+      "implementation_owner": "primary_window_01_under_user_authority",
+      "acceptance_owner": "user",
+      "actual_result": null,
+      "requirement_ids": [
+        "SF-05",
+        "SF-06",
+        "SF-07",
+        "SF-08",
+        "SF-09"
+      ],
+      "release_acceptance": "产品/BOM/路线版本、订单目的/交期/分配明确；位置、生命周期、质量和预留独立；取消未开工需求不删除在制；旧无订单样例继续目标需求模式",
+      "release_paths": [
+        "packages/domain",
+        "scenarios"
+      ],
+      "implementation_dependencies": [
+        "P0-01"
+      ],
+      "execution_plan": {
+        "input_refs": [
+          "docs/01_业务需求/订单工艺与物料分配.md",
+          "packages/domain/business-objects.design.json",
+          "scenarios/真实业务设计/business-inputs.design.json",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "inputs": [
+          "共同类型/序列化；产品/订单/BOM/路线及初始供应输入"
+        ],
+        "outputs": [
+          "版本化产品/订单与需求分配数据",
+          "位置/质量/预留/容器组成各自独立的物品状态",
+          "不可重复领用的方案输入与取消规则"
+        ],
+        "steps": [
+          "实现产品/订单/路线输入与引用",
+          "分离初始库存、未来到料、需求、预留及物品持有关系",
+          "核对取消未开工需求和保留在制/旧版本"
+        ],
+        "verification_method": "以真实业务输入构造/保存/重开数据；重复分配被拒绝，取消不删除在制，未到料不成为当前库存",
+        "actual_result": null,
+        "partial_results": [
+          {
+            "within_original_step": 1,
+            "scope": "产品/物品/BOM/路线精确版本与订单/生产任务输入引用；现有Put/Remove/Get接通Product/Bom/Route/Scenario，Project及当前Scenario同一候选、授权、修订、历史与冻结保存；有效缺项草稿保留并定位，不造库存或运行。",
+            "status": "implemented_and_reviewed",
+            "result_ref": "docs/04_开发与验收/P0-02_业务输入与引用切片.json"
+          },
+          {
+            "within_original_step": 2,
+            "scope": "P0-02原步骤2的输入校核切片：保持起点物品、未来到料、供货目标、需求、软计划/硬预留和唯一持有关系独立；同一实际Host派生具名用途问题，原子编辑/历史/冻结保存/异目录重开，不创建运行库存或执行预留。",
+            "status": "implemented_and_reviewed",
+            "result_ref": "docs/04_开发与验收/P0-02_初始物料与分配输入切片.json"
+          }
+        ],
+        "completed_original_steps": [
+          1
+        ]
+      },
+      "dependency_reasons": {
+        "P0-01": "消费Windows实际基础构建/启动入口与依赖清单；共同工程类型/边界序列化及目录保存重开，用于本任务的版本化产品/订单与需求分配数据"
+      },
+      "accountable_owner": "user",
+      "planned_window_id": "W00",
+      "parallel_plan_ref": "docs/04_开发与验收/本机并行窗口计划.json",
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P0-02.md",
+      "coding_protocol_ref": "docs/04_开发与验收/编码任务包与AI实现审查.md",
+      "effort_estimate_ref": "docs/04_开发与验收/任务框架与工量里程碑.json#P0-02",
+      "deliverable_milestone_id": "MS-06",
+      "phase_exit_ref": "docs/04_开发与验收/阶段实现计划.json#P0",
+      "acceptance_trace_ids": [
+        "SF-05",
+        "SF-06",
+        "SF-07",
+        "SF-08",
+        "SF-09"
+      ],
+      "confirmed_question_ids": [
+        "Q21",
+        "Q22",
+        "Q30",
+        "Q31",
+        "Q36"
+      ],
+      "confirmed_design_requirements": [
+        {
+          "question_id": "Q21",
+          "selected_text": "保留核心类型化字段，加显式命名/单位的自定义属性；数量和当前位置只属于工程实例。"
+        },
+        {
+          "question_id": "Q22",
+          "selected_text": "定义角色/容量/资格/日历，采用时创建或绑定实际实例；服务声明可保存但显示执行后置。"
+        },
+        {
+          "question_id": "Q30",
+          "selected_text": "首版表单支持多行添加/复制、清楚显示单位和版本；CSV导入作为单列可选项再决定。"
+        },
+        {
+          "question_id": "Q31",
+          "selected_text": "保持规则，界面展示优先序、缺项、预留与实际接受，不加入自动最优排程。"
+        },
+        {
+          "question_id": "Q36",
+          "selected_text": "保留现行处置边界，修改生成新方案重跑；当前执行和旧结果不被覆盖。"
+        }
+      ],
+      "confirmed_design_input_refs": [
+        "docs/00_项目基线/全量设计编码确认选择.json",
+        "docs/04_开发与验收/全量设计编码确认/SXX-XX_确认选择落实.json"
+      ],
+      "current_slice_result_ref": "docs/04_开发与验收/整包派发/P0-02_整包执行.json",
+      "current_execution_plan_ref": "docs/04_开发与验收/本窗口实施主线.json",
+      "current_full_task_packet_ref": "docs/04_开发与验收/整包派发/P0-02_完整任务包.md",
+      "sequential_closeout_ref": "docs/04_开发与验收/整包派发/P0-02_整包执行.json#/sequential_closeout"
+    },
+    {
+      "id": "P0-03",
+      "disposition": "partial",
+      "scope": "仅专业成果artifact、人工认可acceptance、消费者binding、执行result及产品版本影响；建设/投用/公用服务字段与执行后置",
+      "release_dependencies": [
+        "P0-02"
+      ],
+      "status": "in_progress",
+      "implementation_owner": "primary_window_01_under_user_authority",
+      "acceptance_owner": "user",
+      "actual_result": null,
+      "requirement_ids": [
+        "SF-12",
+        "SF-13"
+      ],
+      "release_acceptance": "artifact/认可/消费者绑定/实际执行结果分别表达；保存所用产品/成果版本及认可用途；产品改版后受影响绑定待复核，旧r1成果仍可用于原范围；未知/失败结果不当通过；不要求实现建设日历、投用包或公用服务类型/求解。",
+      "release_paths": [
+        "packages/domain",
+        "scenarios"
+      ],
+      "implementation_dependencies": [
+        "P0-02"
+      ],
+      "execution_plan": {
+        "input_refs": [
+          "packages/domain/professional-artifact-binding.design.json",
+          "docs/03_架构与契约/专业成果接入与软件在环.md",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "packages/packaging/consumer-device.design.json",
+          "docs/04_开发与验收/特征细化/DRF03_C02_专业绑定推导.json",
+          "docs/04_开发与验收/特征细化/DRF03_C02_实际工位定义与生成接入.json"
+        ],
+        "inputs": [
+          "产品版本与共同引用；成果、用途、认可和消费者定义"
+        ],
+        "outputs": [
+          "artifact/acceptance/binding/result四对象与引用",
+          "产品/成果变化的受影响绑定判定",
+          "独立保存的专业输入与结果归属"
+        ],
+        "steps": [
+          "定义四对象和版本/认可用途",
+          "落实绑定与变更影响，保存未判定/失败",
+          "以旧r1/新r2有限例核对认可与绑定分开"
+        ],
+        "verification_method": "未实际计算不生成通过结果；r2只使受影响绑定待复核，r1用途保留；首版不要求建设/投用/服务求解",
+        "actual_result": null
+      },
+      "dependency_reasons": {
+        "P0-02": "消费版本化产品/订单与需求分配数据；位置/质量/预留/容器组成各自独立的物品状态，用于本任务的artifact/acceptance/binding/result四对象与引用"
+      },
+      "accountable_owner": "user",
+      "planned_window_id": "W00",
+      "parallel_plan_ref": "docs/04_开发与验收/本机并行窗口计划.json",
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P0-03.md",
+      "coding_protocol_ref": "docs/04_开发与验收/编码任务包与AI实现审查.md",
+      "effort_estimate_ref": "docs/04_开发与验收/任务框架与工量里程碑.json#P0-03",
+      "deliverable_milestone_id": "MS-06",
+      "phase_exit_ref": "docs/04_开发与验收/阶段实现计划.json#P0",
+      "acceptance_trace_ids": [
+        "SF-12",
+        "SF-13"
+      ],
+      "confirmed_question_ids": [
+        "Q28",
+        "Q39",
+        "Q43"
+      ],
+      "confirmed_design_requirements": [
+        {
+          "question_id": "Q28",
+          "selected_text": "纸包装可进入实际输入/计算/认可/绑定；其他提供者展示契约/缺能力，可保存定义，不伪装可算。"
+        },
+        {
+          "question_id": "Q39",
+          "selected_text": "产品版本/包络/允许姿态、净空间、开合/固定姿态直线取物等硬条件可见可改，未知值待补。"
+        },
+        {
+          "question_id": "Q43",
+          "selected_text": "成果页看三态/制造内容，显式选认可用途，再选择具体包装工位；受影响产品变化提示复核。"
+        }
+      ],
+      "confirmed_design_input_refs": [
+        "docs/00_项目基线/全量设计编码确认选择.json",
+        "docs/04_开发与验收/全量设计编码确认/SXX-XX_确认选择落实.json"
+      ],
+      "current_slice_result_ref": "docs/04_开发与验收/整包派发/P0-03_整包执行.json",
+      "current_execution_plan_ref": "docs/04_开发与验收/本窗口实施主线.json",
+      "current_full_task_packet_ref": "docs/04_开发与验收/整包派发/P0-03_完整任务包.md",
+      "sequential_closeout_ref": "docs/04_开发与验收/整包派发/P0-03_整包执行.json#/sequential_closeout"
+    },
+    {
+      "id": "P1-01",
+      "disposition": "required",
+      "scope": "自主Rust离散引擎的静态规则加工/装配、齐套用料、库存/容量和人工占用；不实现CNC/贴装物理",
+      "release_dependencies": [
+        "P0-02"
+      ],
+      "status": "in_progress",
+      "implementation_owner": "primary_window_01_under_user_authority",
+      "acceptance_owner": "user",
+      "actual_result": null,
+      "requirement_ids": [
+        "SF-05",
+        "SF-06",
+        "SF-08"
+      ],
+      "release_acceptance": "缺PCB等待；齐套后仅生成一件装配体；同一人不被并发占用；装盒保留内容关系且不重复领用；库位现有量与预留/在制分开",
+      "release_paths": [
+        "packages/simulation",
+        "modules/operations",
+        "modules/tasks",
+        "tests"
+      ],
+      "implementation_dependencies": [
+        "P0-02"
+      ],
+      "execution_plan": {
+        "input_refs": [
+          "scenarios/两厂房装配包装/project.design.json",
+          "docs/01_业务需求/订单工艺与物料分配.md",
+          "docs/03_架构与契约/调度与状态转换算法.json",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "inputs": [
+          "完整物品/BOM/初始库存与资源定义；固定工时规则"
+        ],
+        "outputs": [
+          "唯一Engine、稳定事件顺序及RunResult基础",
+          "齐套消耗/转换、资源互斥和输出待移交",
+          "保留组成身份的装配与包装"
+        ],
+        "steps": [
+          "实现自主事件推进与物品/资源状态转换",
+          "用单厂房固定时间工序验证齐套/互斥/容量",
+          "记录完整事件、持有与接受量，不依赖DOM或动画"
+        ],
+        "verification_method": "从两厂房输入抽取明确单厂局部（运输边界不启用）；缺PCB等待、齐套消耗一次、共享人员互斥、箱内身份保留；完整跨厂125/205秒在P2-02验收",
+        "actual_result": null
+      },
+      "dependency_reasons": {
+        "P0-02": "消费版本化产品/订单与需求分配数据；位置/质量/预留/容器组成各自独立的物品状态，用于本任务的唯一Engine、稳定事件顺序及RunResult基础"
+      },
+      "accountable_owner": "user",
+      "planned_window_id": "W01",
+      "parallel_plan_ref": "docs/04_开发与验收/本机并行窗口计划.json",
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P1-01.md",
+      "coding_protocol_ref": "docs/04_开发与验收/编码任务包与AI实现审查.md",
+      "effort_estimate_ref": "docs/04_开发与验收/任务框架与工量里程碑.json#P1-01",
+      "deliverable_milestone_id": "MS-06",
+      "phase_exit_ref": "docs/04_开发与验收/阶段实现计划.json#P1",
+      "acceptance_trace_ids": [
+        "SF-05",
+        "SF-06",
+        "SF-08",
+        "NFR-01",
+        "NFR-09"
+      ],
+      "confirmed_question_ids": [
+        "Q16",
+        "Q24",
+        "Q31",
+        "Q33",
+        "Q34"
+      ],
+      "confirmed_design_requirements": [
+        {
+          "question_id": "Q16",
+          "selected_text": "上料、紧固/加工、移交、检验、装盒/封箱与运输绑定实际阶段；四类等待保持对应姿态。"
+        },
+        {
+          "question_id": "Q24",
+          "selected_text": "从转换/齐套/检查/返工/包装规则起步，结构化编辑配比、条件、阶段、资源和输出。"
+        },
+        {
+          "question_id": "Q31",
+          "selected_text": "保持规则，界面展示优先序、缺项、预留与实际接受，不加入自动最优排程。"
+        },
+        {
+          "question_id": "Q33",
+          "selected_text": "事件驱动真实计算，可显示任务进度/已形成状态并回放真实事件；播放速度只改变呈现。"
+        },
+        {
+          "question_id": "Q34",
+          "selected_text": "缺项定位到对象/用途；完整结论受阻，可对已有支持且输入齐全的范围运行并明确标范围。"
+        }
+      ],
+      "confirmed_design_input_refs": [
+        "docs/00_项目基线/全量设计编码确认选择.json",
+        "docs/04_开发与验收/全量设计编码确认/SXX-XX_确认选择落实.json"
+      ],
+      "algorithm_spec_ref": "docs/03_架构与契约/调度与状态转换算法.json",
+      "current_slice_result_ref": "docs/04_开发与验收/整包派发/P1-01_整包执行.json",
+      "current_execution_plan_ref": "docs/04_开发与验收/本窗口实施主线.json",
+      "current_full_task_packet_ref": "docs/04_开发与验收/整包派发/P1-01_完整任务包.md",
+      "sequential_closeout_ref": "docs/04_开发与验收/整包派发/P1-01_整包执行.json#/sequential_closeout"
+    },
+    {
+      "id": "P1-02",
+      "disposition": "required",
+      "scope": "串并联汇合、配比齐套、检查单出口、保持身份的有限返工和重新检验；检查结果有声明输入来源",
+      "release_dependencies": [
+        "P1-01"
+      ],
+      "status": "in_progress",
+      "implementation_owner": "primary_window_01_under_user_authority",
+      "acceptance_owner": "user",
+      "actual_result": null,
+      "requirement_ids": [
+        "SF-05",
+        "SF-06",
+        "SF-08"
+      ],
+      "release_acceptance": "总装须齐套；同一物品只走一个检验出口；返工保留ID且不自动合格；达上限隔离；未知结果待判；核对设计样例145/175秒与三组最终归属",
+      "release_paths": [
+        "packages/domain",
+        "packages/simulation",
+        "modules/devices",
+        "scenarios"
+      ],
+      "implementation_dependencies": [
+        "P1-01"
+      ],
+      "execution_plan": {
+        "input_refs": [
+          "scenarios/并行汇合与返工/project.design.json",
+          "scenarios/并行汇合与返工/cases.design.json",
+          "docs/03_架构与契约/调度与状态转换算法.json",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "inputs": [
+          "固定转换/齐套引擎；三组明确预设质量输入"
+        ],
+        "outputs": [
+          "并行汇合与单出口检验规则",
+          "保留身份及尝试计数的有限返工",
+          "待判/隔离与资源/物品事件"
+        ],
+        "steps": [
+          "实现并行准备到齐套汇合",
+          "加入PASS/FAIL/UNKNOWN及有限返工回流",
+          "核对分支、计数、资源及最终归属"
+        ],
+        "verification_method": "三组并行案例实际运行；145/175秒等手算只作对照，UNKNOWN不放行、返工不换ID、隔离不自动报废",
+        "actual_result": null
+      },
+      "dependency_reasons": {
+        "P1-01": "消费唯一Engine、稳定事件顺序及RunResult基础；齐套消耗/转换、资源互斥和输出待移交，用于本任务的并行汇合与单出口检验规则"
+      },
+      "accountable_owner": "user",
+      "planned_window_id": "W01",
+      "parallel_plan_ref": "docs/04_开发与验收/本机并行窗口计划.json",
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P1-02.md",
+      "coding_protocol_ref": "docs/04_开发与验收/编码任务包与AI实现审查.md",
+      "effort_estimate_ref": "docs/04_开发与验收/任务框架与工量里程碑.json#P1-02",
+      "deliverable_milestone_id": "MS-07",
+      "phase_exit_ref": "docs/04_开发与验收/阶段实现计划.json#P1",
+      "acceptance_trace_ids": [
+        "SF-05",
+        "SF-06",
+        "SF-08"
+      ],
+      "confirmed_question_ids": [
+        "Q16",
+        "Q24",
+        "Q35"
+      ],
+      "confirmed_design_requirements": [
+        {
+          "question_id": "Q16",
+          "selected_text": "上料、紧固/加工、移交、检验、装盒/封箱与运输绑定实际阶段；四类等待保持对应姿态。"
+        },
+        {
+          "question_id": "Q24",
+          "selected_text": "从转换/齐套/检查/返工/包装规则起步，结构化编辑配比、条件、阶段、资源和输出。"
+        },
+        {
+          "question_id": "Q35",
+          "selected_text": "首版用明确预设事件/规则形成质量决定；未实现运行内处置时以新方案改输入重跑。"
+        }
+      ],
+      "confirmed_design_input_refs": [
+        "docs/00_项目基线/全量设计编码确认选择.json",
+        "docs/04_开发与验收/全量设计编码确认/SXX-XX_确认选择落实.json"
+      ],
+      "algorithm_spec_ref": "docs/03_架构与契约/调度与状态转换算法.json",
+      "current_slice_result_ref": "docs/04_开发与验收/整包派发/P1-02_整包执行.json",
+      "current_execution_plan_ref": "docs/04_开发与验收/本窗口实施主线.json",
+      "current_full_task_packet_ref": "docs/04_开发与验收/整包派发/P1-02_完整任务包.md",
+      "sequential_closeout_ref": "docs/04_开发与验收/整包派发/P1-02_整包执行.json#/sequential_closeout"
+    },
+    {
+      "id": "P1-03",
+      "disposition": "required",
+      "scope": "到料事件、人员班次与分阶段占用、机器持有/输出等待、阶段进度；不引入维修/公用服务求解",
+      "release_dependencies": [
+        "P1-02"
+      ],
+      "status": "in_progress",
+      "implementation_owner": "primary_window_01_under_user_authority",
+      "acceptance_owner": "user",
+      "actual_result": null,
+      "requirement_ids": [
+        "SF-05",
+        "SF-08",
+        "SF-10"
+      ],
+      "release_acceptance": "独立到料/班次/阶段/容量样例实际核对：未来物料不提前入库；load/auto/unload按阶段占用，W-C仅上下料；下料资源忙或输出容量不足时保留机器与物品；无phase样例保留全作业占用；不连续人员日历0—20/40—60秒按5/30/5阶段在45秒完成，人员只占10秒；未配置中断策略保留待补。完整440/570秒及小车370—420等待/425返程由IX-01在P2-04联合P2-02验收，原要求不删除、不把局部通过当整厂通过。",
+      "release_paths": [
+        "packages/domain",
+        "packages/simulation",
+        "modules/operations",
+        "scenarios"
+      ],
+      "implementation_dependencies": [
+        "P1-02"
+      ],
+      "execution_plan": {
+        "input_refs": [
+          "scenarios/真实业务设计/business-inputs.design.json",
+          "scenarios/真实业务设计/expected-business.design.json",
+          "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+          "docs/03_架构与契约/调度与状态转换算法.json",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "inputs": [
+          "共同Engine、物品/资源状态；到料与阶段日历"
+        ],
+        "outputs": [
+          "到料事件与分阶段占用",
+          "机器持有/有效进度/输出受阻等待",
+          "向物流消费者提供共同资源/日历机制"
+        ],
+        "steps": [
+          "实现未来到料事件，不提前入库存",
+          "实现load/auto/unload与不可抢占班次条件",
+          "以无运输局部检查日历和输出等待；与物流在IX-01合流"
+        ],
+        "verification_method": "实际单件5/30/5例在45秒完成、人员仅占10秒；独立到料/容量输入核对未来库存和持有。440/570秒及小车370—420等待/425返程转归IX-01，不要求本步先实现P2-02",
+        "actual_result": null
+      },
+      "dependency_reasons": {
+        "P1-02": "消费并行汇合与单出口检验规则；保留身份及尝试计数的有限返工，用于本任务的到料事件与分阶段占用"
+      },
+      "accountable_owner": "user",
+      "planned_window_id": "W01",
+      "parallel_plan_ref": "docs/04_开发与验收/本机并行窗口计划.json",
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P1-03.md",
+      "coding_protocol_ref": "docs/04_开发与验收/编码任务包与AI实现审查.md",
+      "effort_estimate_ref": "docs/04_开发与验收/任务框架与工量里程碑.json#P1-03",
+      "deliverable_milestone_id": "MS-07",
+      "phase_exit_ref": "docs/04_开发与验收/阶段实现计划.json#P1",
+      "acceptance_trace_ids": [
+        "SF-05",
+        "SF-08",
+        "SF-10",
+        "NFR-09"
+      ],
+      "confirmed_question_ids": [
+        "Q16",
+        "Q17",
+        "Q22",
+        "Q23",
+        "Q32",
+        "Q33"
+      ],
+      "confirmed_design_requirements": [
+        {
+          "question_id": "Q16",
+          "selected_text": "上料、紧固/加工、移交、检验、装盒/封箱与运输绑定实际阶段；四类等待保持对应姿态。"
+        },
+        {
+          "question_id": "Q17",
+          "selected_text": "用人员位置/角色与占用标识，必要时受控动作；不从行走动画推导未声明工时。"
+        },
+        {
+          "question_id": "Q22",
+          "selected_text": "定义角色/容量/资格/日历，采用时创建或绑定实际实例；服务声明可保存但显示执行后置。"
+        },
+        {
+          "question_id": "Q23",
+          "selected_text": "用目标/前置/步骤/角色/工时/声明效果表单，制造产出交工艺规则；无实现能力显示不可执行。"
+        },
+        {
+          "question_id": "Q32",
+          "selected_text": "编辑家族/换单矩阵、人员日历与上下料阶段；显示机器持有与等人时段。"
+        },
+        {
+          "question_id": "Q33",
+          "selected_text": "事件驱动真实计算，可显示任务进度/已形成状态并回放真实事件；播放速度只改变呈现。"
+        }
+      ],
+      "confirmed_design_input_refs": [
+        "docs/00_项目基线/全量设计编码确认选择.json",
+        "docs/04_开发与验收/全量设计编码确认/SXX-XX_确认选择落实.json"
+      ],
+      "algorithm_spec_ref": "docs/03_架构与契约/调度与状态转换算法.json",
+      "current_slice_result_ref": "docs/04_开发与验收/整包派发/P1-03_整包执行.json",
+      "current_execution_plan_ref": "docs/04_开发与验收/本窗口实施主线.json",
+      "current_full_task_packet_ref": "docs/04_开发与验收/整包派发/P1-03_完整任务包.md",
+      "sequential_closeout_ref": "docs/04_开发与验收/整包派发/P1-03_整包执行.json#/sequential_closeout"
+    },
+    {
+      "id": "P1-04",
+      "disposition": "required",
+      "scope": "多订单用料/接受分配、释放/交期/优先序、工艺家族及序列相关换单；不做无界最优排程",
+      "release_dependencies": [
+        "P1-03",
+        "P0-02",
+        "P2-02"
+      ],
+      "status": "in_progress",
+      "implementation_owner": "primary_window_01_under_user_authority",
+      "acceptance_owner": "user",
+      "actual_result": null,
+      "requirement_ids": [
+        "SF-05",
+        "SF-09"
+      ],
+      "release_acceptance": "当前工序齐套才领用，共料不得双分配；A先B后/反序实际重现家族准备与两趟车；等待来料不制造库存；首件门槛按声明作用于后续；固定案例两方案接受終点205秒但各单迟延5/45秒",
+      "release_paths": [
+        "packages/simulation",
+        "modules/operations",
+        "modules/tasks",
+        "scenarios"
+      ],
+      "implementation_dependencies": [
+        "P1-03"
+      ],
+      "execution_plan": {
+        "input_refs": [
+          "scenarios/真实业务设计/business-inputs.design.json",
+          "scenarios/真实业务设计/expected-business.design.json",
+          "docs/03_架构与契约/调度与状态转换算法.json",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "inputs": [
+          "订单/BOM/资源日历；家族/优先序与序列相关准备；物流接受接口"
+        ],
+        "outputs": [
+          "订单分配/领料及换单事件",
+          "每订单指定目的接受与准时性",
+          "可用于方案比较的A/B输入与运行"
+        ],
+        "steps": [
+          "实现释放/优先序、齐套领料与家族准备",
+          "先检查无运输局部领料/换单",
+          "接P2-02发运/客户接受后核对IX-02"
+        ],
+        "verification_method": "实际A先B后与反序：完整接受终点205秒，单单迟延5/45秒、W-A135/160秒；未完成C=null，不因总终点相同称最优",
+        "actual_result": null
+      },
+      "dependency_reasons": {
+        "P1-03": "消费到料事件与分阶段占用；机器持有/有效进度/输出受阻等待，用于本任务的订单分配/领料及换单事件",
+        "P0-02": "消费版本化产品/订单与需求分配数据；位置/质量/预留/容器组成各自独立的物品状态，用于本任务的订单分配/领料及换单事件",
+        "P2-02": "消费固定时间批次运输事件/持有状态；供货目标/发出/在途/接受/返程分离，用于本任务的订单分配/领料及换单事件"
+      },
+      "accountable_owner": "user",
+      "planned_window_id": "W01",
+      "parallel_plan_ref": "docs/04_开发与验收/本机并行窗口计划.json",
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P1-04.md",
+      "coding_protocol_ref": "docs/04_开发与验收/编码任务包与AI实现审查.md",
+      "effort_estimate_ref": "docs/04_开发与验收/任务框架与工量里程碑.json#P1-04",
+      "deliverable_milestone_id": "MS-07",
+      "phase_exit_ref": "docs/04_开发与验收/阶段实现计划.json#P1",
+      "acceptance_trace_ids": [
+        "SF-05",
+        "SF-09"
+      ],
+      "confirmed_question_ids": [
+        "Q23",
+        "Q31",
+        "Q32",
+        "Q36"
+      ],
+      "confirmed_design_requirements": [
+        {
+          "question_id": "Q23",
+          "selected_text": "用目标/前置/步骤/角色/工时/声明效果表单，制造产出交工艺规则；无实现能力显示不可执行。"
+        },
+        {
+          "question_id": "Q31",
+          "selected_text": "保持规则，界面展示优先序、缺项、预留与实际接受，不加入自动最优排程。"
+        },
+        {
+          "question_id": "Q32",
+          "selected_text": "编辑家族/换单矩阵、人员日历与上下料阶段；显示机器持有与等人时段。"
+        },
+        {
+          "question_id": "Q36",
+          "selected_text": "保留现行处置边界，修改生成新方案重跑；当前执行和旧结果不被覆盖。"
+        }
+      ],
+      "confirmed_design_input_refs": [
+        "docs/00_项目基线/全量设计编码确认选择.json",
+        "docs/04_开发与验收/全量设计编码确认/SXX-XX_确认选择落实.json"
+      ],
+      "algorithm_spec_ref": "docs/03_架构与契约/调度与状态转换算法.json",
+      "current_slice_result_ref": "docs/04_开发与验收/整包派发/P1-04_整包执行.json",
+      "current_execution_plan_ref": "docs/04_开发与验收/本窗口实施主线.json",
+      "current_full_task_packet_ref": "docs/04_开发与验收/整包派发/P1-04_完整任务包.md",
+      "sequential_closeout_ref": "docs/04_开发与验收/整包派发/P1-04_整包执行.json#/sequential_closeout"
+    },
+    {
+      "id": "P1-05",
+      "disposition": "required",
+      "scope": "待判/隔离移交、有效质量决定与放行、显式报废及保留物品身份；不把时间结束当认可",
+      "release_dependencies": [
+        "P1-02",
+        "P0-02"
+      ],
+      "status": "in_progress",
+      "implementation_owner": "primary_window_01_under_user_authority",
+      "acceptance_owner": "user",
+      "actual_result": null,
+      "requirement_ids": [
+        "SF-06",
+        "SF-08"
+      ],
+      "release_acceptance": "hold_station与pending_store分别运行；库位满时不能提前释放；UNKNOWN不合格不报废；复检失败隔离，显式报废不退零件；例80秒待判/复检独立，最终2成品1报废订单缺1；原hold例保持",
+      "release_paths": [
+        "packages/simulation",
+        "modules/devices",
+        "scenarios"
+      ],
+      "implementation_dependencies": [
+        "P1-02"
+      ],
+      "execution_plan": {
+        "input_refs": [
+          "scenarios/真实业务设计/business-inputs.design.json",
+          "scenarios/真实业务设计/expected-business.design.json",
+          "docs/01_业务需求/换单班次与质量处置.md",
+          "docs/03_架构与契约/调度与状态转换算法.json",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "inputs": [
+          "检验/返工和独立物品状态；待判容量及明确放行/报废决定"
+        ],
+        "outputs": [
+          "hold/pending_store两种移交",
+          "显式放行/复检/报废与保持身份",
+          "缺件和订单未交结果"
+        ],
+        "steps": [
+          "加入受容量约束的待判移交",
+          "按预设决定放行或显式报废，不自动认可",
+          "核对无运输质量局部完整事件"
+        ],
+        "verification_method": "80秒待判与复检分别可见；最终2成品1报废、缺1，物品不重复计数且报废不退零件",
+        "actual_result": null
+      },
+      "dependency_reasons": {
+        "P1-02": "消费并行汇合与单出口检验规则；保留身份及尝试计数的有限返工，用于本任务的hold/pending_store两种移交",
+        "P0-02": "消费版本化产品/订单与需求分配数据；位置/质量/预留/容器组成各自独立的物品状态，用于本任务的hold/pending_store两种移交"
+      },
+      "accountable_owner": "user",
+      "planned_window_id": "W01",
+      "parallel_plan_ref": "docs/04_开发与验收/本机并行窗口计划.json",
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P1-05.md",
+      "coding_protocol_ref": "docs/04_开发与验收/编码任务包与AI实现审查.md",
+      "effort_estimate_ref": "docs/04_开发与验收/任务框架与工量里程碑.json#P1-05",
+      "deliverable_milestone_id": "MS-07",
+      "phase_exit_ref": "docs/04_开发与验收/阶段实现计划.json#P1",
+      "acceptance_trace_ids": [
+        "SF-06",
+        "SF-08"
+      ],
+      "confirmed_question_ids": [
+        "Q24",
+        "Q35",
+        "Q36"
+      ],
+      "confirmed_design_requirements": [
+        {
+          "question_id": "Q24",
+          "selected_text": "从转换/齐套/检查/返工/包装规则起步，结构化编辑配比、条件、阶段、资源和输出。"
+        },
+        {
+          "question_id": "Q35",
+          "selected_text": "首版用明确预设事件/规则形成质量决定；未实现运行内处置时以新方案改输入重跑。"
+        },
+        {
+          "question_id": "Q36",
+          "selected_text": "保留现行处置边界，修改生成新方案重跑；当前执行和旧结果不被覆盖。"
+        }
+      ],
+      "confirmed_design_input_refs": [
+        "docs/00_项目基线/全量设计编码确认选择.json",
+        "docs/04_开发与验收/全量设计编码确认/SXX-XX_确认选择落实.json"
+      ],
+      "algorithm_spec_ref": "docs/03_架构与契约/调度与状态转换算法.json",
+      "current_slice_result_ref": "docs/04_开发与验收/整包派发/P1-05_整包执行.json",
+      "current_execution_plan_ref": "docs/04_开发与验收/本窗口实施主线.json",
+      "current_full_task_packet_ref": "docs/04_开发与验收/整包派发/P1-05_完整任务包.md",
+      "sequential_closeout_ref": "docs/04_开发与验收/整包派发/P1-05_整包执行.json#/sequential_closeout"
+    },
+    {
+      "id": "P2-01",
+      "disposition": "required",
+      "scope": "流水线/多厂房两画布、三档LOD、单击详情、自由布置与编组连接、真实3D及静态场地检查展示；本次会话内草稿撤销/重做，经共同Commands形成新修订，不回滚当前运行/认可/外部动作",
+      "release_dependencies": [
+        "P1-01"
+      ],
+      "status": "in_progress",
+      "implementation_owner": "primary_window_01_under_user_authority",
+      "acceptance_owner": "user",
+      "actual_result": null,
+      "requirement_ids": [
+        "SF-03",
+        "SF-08",
+        "SF-17"
+      ],
+      "release_acceptance": "点击开详情；缩放三档且不改运行状态；整线移动保留内部布局；布局变换用于显示/路径/包络，不只是镜头变化；用户可新增/配置/连接设备形成串并联产线，连接有物品/端口含义；当前固定时间运输不按画布距离推算；目标生成草案检查场地边界、设备占地/高度/模板声明间距与静态通道，工艺/物料端口可达且类型/单位相容；缺参数未判定，冲突定位；不缩小显示代替尺寸检查，不当动态交通或机电布线验证。；草稿编辑撤销/重做正确且产生新修订；旧Run/库存/认可不变，修订冲突不覆盖，新编辑清除失效redo，跨工程不串历史",
+      "release_paths": [
+        "apps/planner",
+        "packages/presentation"
+      ],
+      "implementation_dependencies": [
+        "P1-01"
+      ],
+      "execution_plan": {
+        "input_refs": [
+          "docs/02_交互设计/完整操作流程与方案交付.md",
+          "docs/03_架构与契约/目标驱动厂房生成.md",
+          "../设计预览/当前交互规格.md",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "inputs": [
+          "共同工程、Commands和基础运行状态；设备/场地尺寸与端口"
+        ],
+        "outputs": [
+          "两画布/三LOD的真实3D编辑视图",
+          "对象/线组编辑及静态布局/端口检查",
+          "与业务ID/修订对应的真实渲染"
+        ],
+        "steps": [
+          "落实流水线/多厂房画布、点击详情与编组移动；完整原生3D可环绕/平移/缩放并恢复默认斜视，不把相机缩放当设备页入口",
+          "通过共同命令编辑对象/连接并检查场地",
+          "从实际结果绘制状态，保证缩放不改库存",
+          "接入本会话草稿撤销/重做：共同命令/修订冲突、redo分支与工程切换；与当前Run/人工认可/磁盘副作用分开"
+        ],
+        "verification_method": "用最小串并联工程实际编辑、移动/连接、切画布与LOD；按当前交互规格检查原生模型不同角度和默认视图复位；高度/占地/间距冲突定位，缺参数未判定；渲染读取同一修订，独立3D试样不代产品验收",
+        "actual_result": null
+      },
+      "dependency_reasons": {
+        "P1-01": "消费唯一Engine、稳定事件顺序及RunResult基础；齐套消耗/转换、资源互斥和输出待移交，用于本任务的两画布/三LOD的真实3D编辑视图"
+      },
+      "accountable_owner": "user",
+      "planned_window_id": "W02",
+      "parallel_plan_ref": "docs/04_开发与验收/本机并行窗口计划.json",
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P2-01.md",
+      "coding_protocol_ref": "docs/04_开发与验收/编码任务包与AI实现审查.md",
+      "effort_estimate_ref": "docs/04_开发与验收/任务框架与工量里程碑.json#P2-01",
+      "deliverable_milestone_id": "MS-07",
+      "phase_exit_ref": "docs/04_开发与验收/阶段实现计划.json#P2",
+      "acceptance_trace_ids": [
+        "SF-03",
+        "SF-08",
+        "SF-17",
+        "NFR-01",
+        "NFR-02",
+        "NFR-03"
+      ],
+      "confirmed_question_ids": [
+        "Q02",
+        "Q03",
+        "Q04",
+        "Q06",
+        "Q07",
+        "Q08",
+        "Q09",
+        "Q10",
+        "Q12",
+        "Q13",
+        "Q18",
+        "Q19"
+      ],
+      "confirmed_design_requirements": [
+        {
+          "question_id": "Q02",
+          "selected_text": "以八设备总装检查包装线讲平台，再贯通纸包装、跨厂与Agent；完整SF验收均保留。"
+        },
+        {
+          "question_id": "Q03",
+          "selected_text": "中文界面、中文说明与报告；稳定ID和代码保持英文，不增加整套国际化。"
+        },
+        {
+          "question_id": "Q04",
+          "selected_text": "展示任务/模板/空工程三入口；按当前目标逐步补必要参数，允许保存草稿。"
+        },
+        {
+          "question_id": "Q06",
+          "selected_text": "中部3D画布、右侧对象属性、可收起模块库和底部时间轴；专业/比较/报告进入同工程工作台。"
+        },
+        {
+          "question_id": "Q07",
+          "selected_text": "单击选择/详情；右键拖动环绕、中键平移、滚轮缩放；对象移动旋转用明确操控器。"
+        },
+        {
+          "question_id": "Q08",
+          "selected_text": "提供位置/朝向/占地数值、可关网格吸附和超界高亮；LOD先明确手动切换。"
+        },
+        {
+          "question_id": "Q09",
+          "selected_text": "多选、编组/解组、整体移动、复制为新ID；连接/角色待重绑和种子供给单独确认。"
+        },
+        {
+          "question_id": "Q10",
+          "selected_text": "加入本次会话内草稿编辑的撤销/重做；生产结果、人工认可和外部发布不能用它倒退。"
+        },
+        {
+          "question_id": "Q12",
+          "selected_text": "常用操作有键盘入口/可见焦点，属性文本可缩放；3D操作提供数值或按钮替代，状态不只靠颜色。"
+        },
+        {
+          "question_id": "Q13",
+          "selected_text": "先认可代表设备的整体轮廓、背底结构、关键机构、材质与实际动作，再复用到产线和60设备基准。"
+        },
+        {
+          "question_id": "Q18",
+          "selected_text": "全部身份真实追踪，画面允许明确标识的代表物品/批次聚合；任一件可定位和看经历。"
+        },
+        {
+          "question_id": "Q19",
+          "selected_text": "接受作为候选验收目标，使用NFR-B60和已写采样协议；模型质量不靠暗降级达标，实测失败后报告取舍。"
+        }
+      ],
+      "confirmed_undo_requirement": {
+        "supported_scope": "本次会话的当前工程/定义草稿中对象、参数、连接、排期和受支持创作编辑；当前生产、真实结果、专业认可和外部动作不回滚。",
+        "revision_policy": "undo/redo经同一Commands成为新的草稿修订；遵守base_revision冲突检查，不倒拨共享修订号，不覆盖别人修改。",
+        "file_policy": "撤销工程引用/采用只影响草稿，不物理删除导入资产，不回滚已落盘文件、发布或购买。",
+        "history_policy": "限定本次会话；新的编辑使失效的redo分支清空，切换工程不串用；文本框优先本地文本撤销。",
+        "acceptance_expectations": [
+          "编辑对象/参数/连接后撤销与重做的草稿状态正确",
+          "撤销不改变当前RunId结果、生产时钟、实际库存及认可",
+          "共享修订冲突时不覆盖新状态",
+          "新编辑后不能重做已失效分支，跨工程历史不混用"
+        ]
+      },
+      "incremental_effort_due_to_Q10": {
+        "status": "included_in_current_original_task_budget_engineering_estimate_not_measured",
+        "existing_budget_includes_Q10": true,
+        "framework_owner": "W00",
+        "human_hours": [
+          1,
+          2
+        ],
+        "window_active_hours": [
+          2,
+          4
+        ],
+        "basis": "场景移动/旋转/连接批次消费共同历史；当前Run与相机状态隔离。",
+        "contract_refs": [
+          "packages/commands/api.design.rs",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/03_架构与契约/共享状态与所有权.json"
+        ]
+      },
+      "confirmed_design_input_refs": [
+        "docs/00_项目基线/全量设计编码确认选择.json",
+        "docs/04_开发与验收/全量设计编码确认/SXX-XX_确认选择落实.json"
+      ],
+      "current_slice_result_ref": "docs/04_开发与验收/整包派发/P2-01_整包执行.json",
+      "current_execution_plan_ref": "docs/04_开发与验收/本窗口实施主线.json",
+      "current_full_task_packet_ref": "docs/04_开发与验收/整包派发/P2-01_完整任务包.md",
+      "sequential_closeout_ref": "docs/04_开发与验收/整包派发/P2-01_整包执行.json#/sequential_closeout"
+    },
+    {
+      "id": "P2-02",
+      "disposition": "required",
+      "scope": "厂际供货、固定时间批次运输、来源预留/发出/在途/目的接受和资源返程；复杂路径/交通后置",
+      "release_dependencies": [
+        "P1-03",
+        "P2-01"
+      ],
+      "status": "in_progress",
+      "implementation_owner": "primary_window_01_under_user_authority",
+      "acceptance_owner": "user",
+      "actual_result": null,
+      "requirement_ids": [
+        "SF-07",
+        "SF-08"
+      ],
+      "release_acceptance": "日目标200库存150时不能发出200；在途不提前成为接收库存；接收110秒可用于下游、运输资源140秒返程才可接下一批；同一货物ID贯穿交接",
+      "release_paths": [
+        "packages/simulation",
+        "modules/transport",
+        "apps/planner"
+      ],
+      "implementation_dependencies": [
+        "P1-03"
+      ],
+      "execution_plan": {
+        "input_refs": [
+          "scenarios/两厂房装配包装/project.design.json",
+          "scenarios/两厂房装配包装/expected-events.design.json",
+          "docs/01_业务需求/物流与布局业务.md",
+          "docs/03_架构与契约/调度与状态转换算法.json",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "inputs": [
+          "物品/预留、共同日历/占用及目的容量；两画布输入"
+        ],
+        "outputs": [
+          "固定时间批次运输事件/持有状态",
+          "供货目标/发出/在途/接受/返程分离",
+          "画布上的跨厂供应配置与运行显示"
+        ],
+        "steps": [
+          "在simulation实现预留/发出/在途/接受/返程，无DOM依赖",
+          "实际两厂房A/B核对货物身份、容量及资源",
+          "接入P2-01画布显示/编辑，提供IX-01/02物流消费者"
+        ],
+        "verification_method": "150库存不发200；两厂房125/205秒完整事件核对，110秒接受与140秒返程分开；接收受阻不丢货、不提前释放车辆",
+        "actual_result": null
+      },
+      "dependency_reasons": {
+        "P1-03": "消费到料事件与分阶段占用；机器持有/有效进度/输出受阻等待，用于本任务的固定时间批次运输事件/持有状态",
+        "P2-01": "消费两画布/三LOD的真实3D编辑视图；对象/线组编辑及静态布局/端口检查，用于本任务的固定时间批次运输事件/持有状态"
+      },
+      "accountable_owner": "user",
+      "planned_window_id": "W01",
+      "parallel_plan_ref": "docs/04_开发与验收/本机并行窗口计划.json",
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P2-02.md",
+      "coding_protocol_ref": "docs/04_开发与验收/编码任务包与AI实现审查.md",
+      "effort_estimate_ref": "docs/04_开发与验收/任务框架与工量里程碑.json#P2-02",
+      "deliverable_milestone_id": "MS-07",
+      "phase_exit_ref": "docs/04_开发与验收/阶段实现计划.json#P2",
+      "acceptance_trace_ids": [
+        "SF-07",
+        "SF-08"
+      ],
+      "confirmed_question_ids": [
+        "Q26"
+      ],
+      "confirmed_design_requirements": [
+        {
+          "question_id": "Q26",
+          "selected_text": "编辑货物、容量、装卸/去返时长、角色和接受条件；采用时绑定实际起讫库位/载具。"
+        }
+      ],
+      "confirmed_design_input_refs": [
+        "docs/00_项目基线/全量设计编码确认选择.json",
+        "docs/04_开发与验收/全量设计编码确认/SXX-XX_确认选择落实.json"
+      ],
+      "algorithm_spec_ref": "docs/03_架构与契约/调度与状态转换算法.json",
+      "current_slice_result_ref": "docs/04_开发与验收/整包派发/P2-02_整包执行.json",
+      "current_execution_plan_ref": "docs/04_开发与验收/本窗口实施主线.json",
+      "current_full_task_packet_ref": "docs/04_开发与验收/整包派发/P2-02_完整任务包.md",
+      "sequential_closeout_ref": "docs/04_开发与验收/整包派发/P2-02_整包执行.json#/sequential_closeout"
+    },
+    {
+      "id": "P2-03",
+      "disposition": "required",
+      "scope": "同起点方案比较、目录保存及ZIP单文件工程包、允许依赖/相对引用、另一目录重开修改；无完整快照不承诺冷启动续跑",
+      "release_dependencies": [
+        "P2-02"
+      ],
+      "status": "in_progress",
+      "implementation_owner": "primary_window_01_under_user_authority",
+      "acceptance_owner": "user",
+      "actual_result": null,
+      "requirement_ids": [
+        "SF-01",
+        "SF-09",
+        "SF-14"
+      ],
+      "release_acceptance": "先列共同条件和变更再比较实际结果；点等待/物品能定位画布；导出工程、模块和说明后可重开；未运行设计包不填实际产量；方案比较不新增常态画布；包内所用版本不被本机最新版替代；缺表现可明确替换、缺行为/专业状态不能伪造完整结果；普通比较/接手从共同初始起点重跑；只有明确支持且具完整可恢复快照时才验续跑不重放过去事件或已接受基数，无完整快照不成为首版交付阻塞",
+      "release_paths": [
+        "apps/planner",
+        "packages/domain",
+        "scenarios",
+        "docs",
+        "packages/reporting"
+      ],
+      "implementation_dependencies": [
+        "P2-02"
+      ],
+      "execution_plan": {
+        "input_refs": [
+          "scenarios/两厂房装配包装/variants.design.json",
+          "docs/03_架构与契约/工程交接与打开.md",
+          "scenarios/模板与交接/expected-template-handoff.design.json",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "inputs": [
+          "同起点场景/实际RunResult；所用定义版本/允许资产与相对路径"
+        ],
+        "outputs": [
+          "同口径比较与输入差异",
+          "目录工程/ZIP交付包及缺项读取",
+          "可修改接手工程，旧结果归旧输入"
+        ],
+        "steps": [
+          "实现同起点新方案与比较，不覆盖旧RunId",
+          "封装工程/依赖/结果，实际另一目录重开修改",
+          "验证设计包、结果包与可恢复快照的能力区别"
+        ],
+        "verification_method": "实际A/B比较/重开/改供料再跑；缺行为不伪造结果。完整快照续跑仅当软件明确支持且数据完整时检查；首版无此能力可从初始重跑，不能因无快照阻止工程交付",
+        "actual_result": null
+      },
+      "dependency_reasons": {
+        "P2-02": "消费固定时间批次运输事件/持有状态；供货目标/发出/在途/接受/返程分离，用于本任务的同口径比较与输入差异"
+      },
+      "accountable_owner": "user",
+      "planned_window_id": "W05",
+      "parallel_plan_ref": "docs/04_开发与验收/本机并行窗口计划.json",
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P2-03.md",
+      "coding_protocol_ref": "docs/04_开发与验收/编码任务包与AI实现审查.md",
+      "effort_estimate_ref": "docs/04_开发与验收/任务框架与工量里程碑.json#P2-03",
+      "deliverable_milestone_id": "MS-08",
+      "phase_exit_ref": "docs/04_开发与验收/阶段实现计划.json#P2",
+      "acceptance_trace_ids": [
+        "SF-01",
+        "SF-09",
+        "SF-14",
+        "NFR-05",
+        "NFR-06",
+        "NFR-07",
+        "NFR-11"
+      ],
+      "confirmed_question_ids": [
+        "Q11",
+        "Q44",
+        "Q51",
+        "Q52",
+        "Q53",
+        "Q55",
+        "Q56"
+      ],
+      "confirmed_design_requirements": [
+        {
+          "question_id": "Q11",
+          "selected_text": "一个活动工程；切换前处理未保存改动，避免同时建立多套活动运行上下文。"
+        },
+        {
+          "question_id": "Q44",
+          "selected_text": "按板片/构件标识导出分层SVG、材料数量表和可重开专业工程；每份对应实际产品/成果版本。"
+        },
+        {
+          "question_id": "Q51",
+          "selected_text": "手动保存、未保存标记和关闭提醒；失败保留旧有效工程。"
+        },
+        {
+          "question_id": "Q52",
+          "selected_text": "明确本版与已验证兼容版本；未知/缺引用列具体问题并保留原文件，不承诺任意历史设计稿可运行。"
+        },
+        {
+          "question_id": "Q53",
+          "selected_text": "同屏主比较2个，可保留更多方案列表；列输入变化、实际结果与限制。"
+        },
+        {
+          "question_id": "Q55",
+          "selected_text": "带所选方案与必要定义/合法资产/成果/认可绑定/所选实际结果，并列缺项；其他历史按需选。"
+        },
+        {
+          "question_id": "Q56",
+          "selected_text": "接受默认从共同初始条件重跑，旧结果仍可读/回放；中途续跑留明确后续范围。"
+        }
+      ],
+      "confirmed_design_input_refs": [
+        "docs/00_项目基线/全量设计编码确认选择.json",
+        "docs/04_开发与验收/全量设计编码确认/SXX-XX_确认选择落实.json"
+      ],
+      "current_slice_result_ref": "docs/04_开发与验收/整包派发/P2-03_整包执行.json",
+      "current_execution_plan_ref": "docs/04_开发与验收/本窗口实施主线.json",
+      "current_full_task_packet_ref": "docs/04_开发与验收/整包派发/P2-03_完整任务包.md",
+      "sequential_closeout_ref": "docs/04_开发与验收/整包派发/P2-03_整包执行.json#/sequential_closeout"
+    },
+    {
+      "id": "P2-04",
+      "disposition": "required",
+      "scope": "共同生产时间轴、计划输入与只读结果、物品跟随及当前等待/资源条件定位；拖动显示不重放生产",
+      "release_dependencies": [
+        "P1-03",
+        "P2-02"
+      ],
+      "status": "in_progress",
+      "implementation_owner": "primary_window_01_under_user_authority",
+      "acceptance_owner": "user",
+      "actual_result": null,
+      "requirement_ids": [
+        "SF-05",
+        "SF-08",
+        "SF-09",
+        "SF-17"
+      ],
+      "release_acceptance": "作业/资源/来料/物流轨道共用事件时钟；选时和等待定位两画布；折叠与回看不增产；计划/手算/实际分开，未运行实际为空；时间面板不新增常态画布；计划输入与只读结果轨分层，释放时点不充当实际开工，回看/移动显示不改变产量；IX-01在P1-03阶段/到料及P2-02物流完成后，实际核对从零建厂基线440秒/延迟570秒、370—420等待接收/425返程及全部事件、物品持有与资源区间。",
+      "release_paths": [
+        "apps/planner",
+        "packages/domain",
+        "packages/presentation",
+        "packages/simulation"
+      ],
+      "implementation_dependencies": [
+        "P1-03"
+      ],
+      "execution_plan": {
+        "input_refs": [
+          "scenarios/从零搭建控制盒厂房/project.design.json",
+          "scenarios/从零搭建控制盒厂房/expected-timeline.design.json",
+          "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+          "docs/03_架构与契约/调度与状态转换算法.json",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "inputs": [
+          "实际阶段/来料/物流事件与画布对象；计划输入和运行结果"
+        ],
+        "outputs": [
+          "共同时间轴/物品跟随与当前阻断定位",
+          "计划轨与只读实际轨",
+          "IX-01完整事件与画面联合证据"
+        ],
+        "steps": [
+          "绘制同一时钟的作业、来料、占用、物流与物品",
+          "回看/定位只读，不重放生产",
+          "接齐P1-03/P2-02后验IX-01的两RunId和资源/库存"
+        ],
+        "verification_method": "完整基线440秒、到料延迟570秒，370—420秒待接收/425秒车辆可再用等全部保留；检验完整事件/数量/归属而非只终点，LOD/回看不改结果",
+        "actual_result": null
+      },
+      "dependency_reasons": {
+        "P1-03": "消费到料事件与分阶段占用；机器持有/有效进度/输出受阻等待，用于本任务的共同时间轴/物品跟随与当前阻断定位",
+        "P2-02": "消费固定时间批次运输事件/持有状态；供货目标/发出/在途/接受/返程分离，用于本任务的共同时间轴/物品跟随与当前阻断定位"
+      },
+      "accountable_owner": "user",
+      "planned_window_id": "W02",
+      "parallel_plan_ref": "docs/04_开发与验收/本机并行窗口计划.json",
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P2-04.md",
+      "coding_protocol_ref": "docs/04_开发与验收/编码任务包与AI实现审查.md",
+      "effort_estimate_ref": "docs/04_开发与验收/任务框架与工量里程碑.json#P2-04",
+      "deliverable_milestone_id": "MS-08",
+      "phase_exit_ref": "docs/04_开发与验收/阶段实现计划.json#P2",
+      "acceptance_trace_ids": [
+        "SF-05",
+        "SF-08",
+        "SF-09",
+        "SF-17",
+        "NFR-04",
+        "NFR-09"
+      ],
+      "confirmed_question_ids": [
+        "Q06",
+        "Q16",
+        "Q17",
+        "Q18",
+        "Q33",
+        "Q34",
+        "Q37"
+      ],
+      "confirmed_design_requirements": [
+        {
+          "question_id": "Q06",
+          "selected_text": "中部3D画布、右侧对象属性、可收起模块库和底部时间轴；专业/比较/报告进入同工程工作台。"
+        },
+        {
+          "question_id": "Q16",
+          "selected_text": "上料、紧固/加工、移交、检验、装盒/封箱与运输绑定实际阶段；四类等待保持对应姿态。"
+        },
+        {
+          "question_id": "Q17",
+          "selected_text": "用人员位置/角色与占用标识，必要时受控动作；不从行走动画推导未声明工时。"
+        },
+        {
+          "question_id": "Q18",
+          "selected_text": "全部身份真实追踪，画面允许明确标识的代表物品/批次聚合；任一件可定位和看经历。"
+        },
+        {
+          "question_id": "Q33",
+          "selected_text": "事件驱动真实计算，可显示任务进度/已形成状态并回放真实事件；播放速度只改变呈现。"
+        },
+        {
+          "question_id": "Q34",
+          "selected_text": "缺项定位到对象/用途；完整结论受阻，可对已有支持且输入齐全的范围运行并明确标范围。"
+        },
+        {
+          "question_id": "Q37",
+          "selected_text": "选择物品或等待段，显示条件、持有者、前后事件及定位；时间轴与两画布同步。"
+        }
+      ],
+      "confirmed_design_input_refs": [
+        "docs/00_项目基线/全量设计编码确认选择.json",
+        "docs/04_开发与验收/全量设计编码确认/SXX-XX_确认选择落实.json"
+      ],
+      "algorithm_spec_ref": "docs/03_架构与契约/调度与状态转换算法.json",
+      "current_slice_result_ref": "docs/04_开发与验收/整包派发/P2-04_整包执行.json",
+      "current_execution_plan_ref": "docs/04_开发与验收/本窗口实施主线.json",
+      "current_full_task_packet_ref": "docs/04_开发与验收/整包派发/P2-04_完整任务包.md",
+      "sequential_closeout_ref": "docs/04_开发与验收/整包派发/P2-04_整包执行.json#/sequential_closeout"
+    },
+    {
+      "id": "P2-05",
+      "disposition": "required",
+      "scope": "产品/订单/BOM/路线、质量、到料、班次/换单与排期编辑面板，和时间轴改同一输入；本次会话内草稿撤销/重做，经共同Commands形成新修订，不回滚当前运行/认可/外部动作",
+      "release_dependencies": [
+        "P2-04",
+        "P1-04",
+        "P1-05"
+      ],
+      "status": "in_progress",
+      "implementation_owner": "primary_window_01_under_user_authority",
+      "acceptance_owner": "user",
+      "actual_result": null,
+      "requirement_ids": [
+        "SF-05",
+        "SF-06",
+        "SF-09"
+      ],
+      "release_acceptance": "两画布不变；订单/工艺/到料/质量以面板与详情配置；来源和待补字段可见，成本缺项不阻止时间彩排；点原因定位作业/批次/资源；全厂回看与输入变更分开；时间轴编辑释放/交期/优先序、到料、班次和阶段耗时，与订单/设备面板读写同一方案；修改后从同起点重跑而不篡改旧结果；草稿编辑撤销/重做正确且产生新修订；旧Run/库存/认可不变，修订冲突不覆盖，新编辑清除失效redo，跨工程不串历史",
+      "release_paths": [
+        "apps/planner",
+        "packages/presentation",
+        "packages/domain"
+      ],
+      "implementation_dependencies": [
+        "P2-04"
+      ],
+      "execution_plan": {
+        "input_refs": [
+          "docs/02_交互设计/业务界面与方案评审.md",
+          "scenarios/真实业务设计/business-inputs.design.json",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "inputs": [
+          "订单/产品/质量、来料/阶段日历与实际结果；共享编辑命令"
+        ],
+        "outputs": [
+          "业务面板和时间轴共用的输入编辑",
+          "明确的缺项/成本与当前等待定位",
+          "保留旧结果的新方案输入"
+        ],
+        "steps": [
+          "接入已有业务字段，不另造状态",
+          "提供订单/来料/质量/换单表单与时间轴编辑",
+          "与P1-04/05实际运行核对变更和旧结果",
+          "接入本会话草稿撤销/重做：共同命令/修订冲突、redo分支与工程切换；与当前Run/人工认可/磁盘副作用分开"
+        ],
+        "verification_method": "两画布不变；面板与时间轴改同一释放/交期/来料/阶段输入，从同起点重跑；成本缺项不阻止时间彩排",
+        "actual_result": null
+      },
+      "dependency_reasons": {
+        "P2-04": "消费共同时间轴/物品跟随与当前阻断定位；计划轨与只读实际轨，用于本任务的业务面板和时间轴共用的输入编辑",
+        "P1-04": "消费订单分配/领料及换单事件；每订单指定目的接受与准时性，用于本任务的业务面板和时间轴共用的输入编辑",
+        "P1-05": "消费hold/pending_store两种移交；显式放行/复检/报废与保持身份，用于本任务的业务面板和时间轴共用的输入编辑"
+      },
+      "accountable_owner": "user",
+      "planned_window_id": "W02",
+      "parallel_plan_ref": "docs/04_开发与验收/本机并行窗口计划.json",
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P2-05.md",
+      "coding_protocol_ref": "docs/04_开发与验收/编码任务包与AI实现审查.md",
+      "effort_estimate_ref": "docs/04_开发与验收/任务框架与工量里程碑.json#P2-05",
+      "deliverable_milestone_id": "MS-08",
+      "phase_exit_ref": "docs/04_开发与验收/阶段实现计划.json#P2",
+      "acceptance_trace_ids": [
+        "SF-05",
+        "SF-06",
+        "SF-09",
+        "NFR-03"
+      ],
+      "confirmed_question_ids": [
+        "Q06",
+        "Q10",
+        "Q12",
+        "Q30",
+        "Q31",
+        "Q32",
+        "Q35",
+        "Q36"
+      ],
+      "confirmed_design_requirements": [
+        {
+          "question_id": "Q06",
+          "selected_text": "中部3D画布、右侧对象属性、可收起模块库和底部时间轴；专业/比较/报告进入同工程工作台。"
+        },
+        {
+          "question_id": "Q10",
+          "selected_text": "加入本次会话内草稿编辑的撤销/重做；生产结果、人工认可和外部发布不能用它倒退。"
+        },
+        {
+          "question_id": "Q12",
+          "selected_text": "常用操作有键盘入口/可见焦点，属性文本可缩放；3D操作提供数值或按钮替代，状态不只靠颜色。"
+        },
+        {
+          "question_id": "Q30",
+          "selected_text": "首版表单支持多行添加/复制、清楚显示单位和版本；CSV导入作为单列可选项再决定。"
+        },
+        {
+          "question_id": "Q31",
+          "selected_text": "保持规则，界面展示优先序、缺项、预留与实际接受，不加入自动最优排程。"
+        },
+        {
+          "question_id": "Q32",
+          "selected_text": "编辑家族/换单矩阵、人员日历与上下料阶段；显示机器持有与等人时段。"
+        },
+        {
+          "question_id": "Q35",
+          "selected_text": "首版用明确预设事件/规则形成质量决定；未实现运行内处置时以新方案改输入重跑。"
+        },
+        {
+          "question_id": "Q36",
+          "selected_text": "保留现行处置边界，修改生成新方案重跑；当前执行和旧结果不被覆盖。"
+        }
+      ],
+      "confirmed_undo_requirement": {
+        "supported_scope": "本次会话的当前工程/定义草稿中对象、参数、连接、排期和受支持创作编辑；当前生产、真实结果、专业认可和外部动作不回滚。",
+        "revision_policy": "undo/redo经同一Commands成为新的草稿修订；遵守base_revision冲突检查，不倒拨共享修订号，不覆盖别人修改。",
+        "file_policy": "撤销工程引用/采用只影响草稿，不物理删除导入资产，不回滚已落盘文件、发布或购买。",
+        "history_policy": "限定本次会话；新的编辑使失效的redo分支清空，切换工程不串用；文本框优先本地文本撤销。",
+        "acceptance_expectations": [
+          "编辑对象/参数/连接后撤销与重做的草稿状态正确",
+          "撤销不改变当前RunId结果、生产时钟、实际库存及认可",
+          "共享修订冲突时不覆盖新状态",
+          "新编辑后不能重做已失效分支，跨工程历史不混用"
+        ]
+      },
+      "incremental_effort_due_to_Q10": {
+        "status": "included_in_current_original_task_budget_engineering_estimate_not_measured",
+        "existing_budget_includes_Q10": true,
+        "framework_owner": "W00",
+        "human_hours": [
+          1,
+          1
+        ],
+        "window_active_hours": [
+          1,
+          2
+        ],
+        "basis": "属性/多行排期表单的本地编辑与域提交历史分离。",
+        "contract_refs": [
+          "packages/commands/api.design.rs",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/03_架构与契约/共享状态与所有权.json"
+        ]
+      },
+      "confirmed_design_input_refs": [
+        "docs/00_项目基线/全量设计编码确认选择.json",
+        "docs/04_开发与验收/全量设计编码确认/SXX-XX_确认选择落实.json"
+      ],
+      "current_slice_result_ref": "docs/04_开发与验收/整包派发/P2-05_整包执行.json",
+      "current_execution_plan_ref": "docs/04_开发与验收/本窗口实施主线.json",
+      "current_full_task_packet_ref": "docs/04_开发与验收/整包派发/P2-05_完整任务包.md",
+      "sequential_closeout_ref": "docs/04_开发与验收/整包派发/P2-05_整包执行.json#/sequential_closeout"
+    },
+    {
+      "id": "P2-06",
+      "disposition": "required",
+      "scope": "指定接受量/时间/资源与条件成本评审，同一EvaluationReport的PDF/HTML/CSV/JSON导出；未知金额/结果不补零",
+      "release_dependencies": [
+        "P0-03",
+        "P2-05",
+        "P2-03"
+      ],
+      "status": "in_progress",
+      "implementation_owner": "primary_window_01_under_user_authority",
+      "acceptance_owner": "user",
+      "actual_result": null,
+      "requirement_ids": [
+        "SF-09",
+        "SF-16",
+        "SF-17"
+      ],
+      "release_acceptance": "按目的接受评价完整/部分需求；窗口内未完整C=null而非迟延0；人员/机器区间不双计，班次计价不与占用计价相加；未知成本null；取消/缺件/待判可解释，工程包可重开修改；同一实际运行/比较生成PDF、离线HTML、CSV分表及JSON，单位/时间/接受口径一致；无运行仅导出设计说明；生成报告包含目标与实际接受量、模板来源/版本、场地/班次、采用参数/缺项、布局检查、初案RunId与停止原因；初案达标允许无修正RunId/比较，发生修正才附新旧RunId、变化原因与比较；生产表现与实测软件性能分开。",
+      "release_paths": [
+        "apps/planner",
+        "packages/domain",
+        "scenarios",
+        "docs",
+        "packages/reporting"
+      ],
+      "implementation_dependencies": [
+        "P2-03"
+      ],
+      "execution_plan": {
+        "input_refs": [
+          "packages/reporting/evaluation-report.contract.design.json",
+          "docs/01_业务需求/指标成本与决策口径.md",
+          "docs/03_架构与契约/评估报告与数据导出.md",
+          "docs/03_架构与契约/调度与状态转换算法.json",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "inputs": [
+          "实际RunResult/比较、来源/模板/目标与单位窗；专业成果类型及已知费率"
+        ],
+        "outputs": [
+          "EvaluationReport及接受/资源/条件成本口径",
+          "PDF/HTML/CSV/JSON四种同源输出",
+          "缺项/未运行设计说明及可空修正引用"
+        ],
+        "steps": [
+          "实现接受、区间占用和条件成本，不重复计量",
+          "构造一份报告对象后输出四格式",
+          "检验中文/跨页/离线HTML及单RunId直交；接专业成果在IX-03"
+        ],
+        "verification_method": "同源数值/单位/范围一致；C和未知成本保持null，单RunId达标不要求修正；无实际运行只设计说明，专业图/结果不伪造",
+        "actual_result": null
+      },
+      "dependency_reasons": {
+        "P0-03": "消费artifact/acceptance/binding/result四对象与引用；产品/成果变化的受影响绑定判定，用于本任务的EvaluationReport及接受/资源/条件成本口径",
+        "P2-05": "消费业务面板和时间轴共用的输入编辑；明确的缺项/成本与当前等待定位，用于本任务的EvaluationReport及接受/资源/条件成本口径",
+        "P2-03": "消费同口径比较与输入差异；目录工程/ZIP交付包及缺项读取，用于本任务的EvaluationReport及接受/资源/条件成本口径"
+      },
+      "accountable_owner": "user",
+      "planned_window_id": "W05",
+      "parallel_plan_ref": "docs/04_开发与验收/本机并行窗口计划.json",
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P2-06.md",
+      "coding_protocol_ref": "docs/04_开发与验收/编码任务包与AI实现审查.md",
+      "effort_estimate_ref": "docs/04_开发与验收/任务框架与工量里程碑.json#P2-06",
+      "deliverable_milestone_id": "MS-09",
+      "phase_exit_ref": "docs/04_开发与验收/阶段实现计划.json#P2",
+      "acceptance_trace_ids": [
+        "SF-09",
+        "SF-16",
+        "SF-17",
+        "NFR-04",
+        "NFR-06",
+        "NFR-07",
+        "NFR-10",
+        "NFR-11"
+      ],
+      "confirmed_question_ids": [
+        "Q03",
+        "Q37",
+        "Q53",
+        "Q54",
+        "Q57"
+      ],
+      "confirmed_design_requirements": [
+        {
+          "question_id": "Q03",
+          "selected_text": "中文界面、中文说明与报告；稳定ID和代码保持英文，不增加整套国际化。"
+        },
+        {
+          "question_id": "Q37",
+          "selected_text": "选择物品或等待段，显示条件、持有者、前后事件及定位；时间轴与两画布同步。"
+        },
+        {
+          "question_id": "Q53",
+          "selected_text": "同屏主比较2个，可保留更多方案列表；列输入变化、实际结果与限制。"
+        },
+        {
+          "question_id": "Q54",
+          "selected_text": "中文工程报告版：目标/输入/流程图景/指标/等待/比较/限制/接手；数据一致，PDF处理分页与中文。"
+        },
+        {
+          "question_id": "Q57",
+          "selected_text": "先输出已支持接受量/时间/占用/等待/条件成本；无价格的项列缺值，不拼完整总成本。"
+        }
+      ],
+      "confirmed_design_input_refs": [
+        "docs/00_项目基线/全量设计编码确认选择.json",
+        "docs/04_开发与验收/全量设计编码确认/SXX-XX_确认选择落实.json"
+      ],
+      "algorithm_spec_ref": "docs/03_架构与契约/调度与状态转换算法.json",
+      "current_slice_result_ref": "docs/04_开发与验收/整包派发/P2-06_整包执行.json",
+      "current_execution_plan_ref": "docs/04_开发与验收/本窗口实施主线.json",
+      "current_full_task_packet_ref": "docs/04_开发与验收/整包派发/P2-06_完整任务包.md",
+      "sequential_closeout_ref": "docs/04_开发与验收/整包派发/P2-06_整包执行.json#/sequential_closeout"
+    },
+    {
+      "id": "P3-01",
+      "disposition": "required",
+      "scope": "九类定义新建/修改/导入、分类表单/样例检查、按版本明确采用及贡献导出；声明包不执行任意脚本；本次会话内草稿撤销/重做，经共同Commands形成新修订，不回滚当前运行/认可/外部动作",
+      "release_dependencies": [
+        "P0-03",
+        "P2-02"
+      ],
+      "status": "in_progress",
+      "implementation_owner": "primary_window_01_under_user_authority",
+      "acceptance_owner": "user",
+      "actual_result": null,
+      "requirement_ids": [
+        "SF-04",
+        "SF-10",
+        "SF-11",
+        "SF-15"
+      ],
+      "release_acceptance": "非编程用户建立插图加规则设备并重开可编辑；定义不带正式库存，实例映射真实库位/物品/资源；选实例升级前显示端口/参数/素材变化，取消保持原实例，库中修改不改变旧方案；受限素材不附公开导出包；九类按各自载荷进入消费者，定义不带库存/当前占用/实际结果，设备内联与独立规则只选一处，素材锚点明确映射，专业计划能力不列为实际可调用；九类分别支持新建/修改定义、适用样例检查、明确采用和导出贡献，不只给设备编辑器入口；按行业/产品族/场地适用条件查询已安装或明确导入的模板与九类定义，返回来源/版本/适用条件/可调用能力，未适配不冒充成功。；草稿编辑撤销/重做正确且产生新修订；旧Run/库存/认可不变，修订冲突不覆盖，新编辑清除失效redo，跨工程不串历史",
+      "release_paths": [
+        "packages/module-kit",
+        "apps/planner",
+        "community/templates"
+      ],
+      "implementation_dependencies": [
+        "P0-03",
+        "P2-01"
+      ],
+      "execution_plan": {
+        "input_refs": [
+          "packages/module-kit/category-contracts.design.json",
+          "scenarios/九类模块采用/expected-category-adoption.design.json",
+          "scenarios/设备创作与采用/inputs.design.json",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "inputs": [
+          "九类类型/专业引用与共同画布；库清单/版本、明示供应与允许资产"
+        ],
+        "outputs": [
+          "九类定义/类别表单/导入/库查询",
+          "明确实例采用与版本差异/撤销",
+          "可重开模块/贡献包及各类样例"
+        ],
+        "steps": [
+          "实现分类解析和自己的编辑/样例入口",
+          "明确映射实例角色/资源/端口，不带库存/结果",
+          "真实采用到已有消费者，验证升级取消和贡献导出",
+          "接入本会话草稿撤销/重做：共同命令/修订冲突、redo分支与工程切换；与当前Run/人工认可/磁盘副作用分开"
+        ],
+        "verification_method": "九类逐类新建/修改/导入/采用/重开；运输样例接P2-02，专业定义只列实际能力；不执行上传任意脚本、不自动发布",
+        "actual_result": null
+      },
+      "dependency_reasons": {
+        "P0-03": "消费artifact/acceptance/binding/result四对象与引用；产品/成果变化的受影响绑定判定，用于本任务的九类定义/类别表单/导入/库查询",
+        "P2-02": "消费固定时间批次运输事件/持有状态；供货目标/发出/在途/接受/返程分离，用于本任务的九类定义/类别表单/导入/库查询"
+      },
+      "accountable_owner": "user",
+      "planned_window_id": "W03",
+      "parallel_plan_ref": "docs/04_开发与验收/本机并行窗口计划.json",
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P3-01.md",
+      "coding_protocol_ref": "docs/04_开发与验收/编码任务包与AI实现审查.md",
+      "effort_estimate_ref": "docs/04_开发与验收/任务框架与工量里程碑.json#P3-01",
+      "deliverable_milestone_id": "MS-08",
+      "phase_exit_ref": "docs/04_开发与验收/阶段实现计划.json#P3",
+      "acceptance_trace_ids": [
+        "SF-04",
+        "SF-10",
+        "SF-11",
+        "SF-15",
+        "NFR-03"
+      ],
+      "confirmed_question_ids": [
+        "Q03",
+        "Q06",
+        "Q09",
+        "Q10",
+        "Q12",
+        "Q14",
+        "Q20",
+        "Q21",
+        "Q22",
+        "Q23",
+        "Q24",
+        "Q25",
+        "Q26",
+        "Q27",
+        "Q28",
+        "Q29",
+        "Q61"
+      ],
+      "confirmed_design_requirements": [
+        {
+          "question_id": "Q03",
+          "selected_text": "中文界面、中文说明与报告；稳定ID和代码保持英文，不增加整套国际化。"
+        },
+        {
+          "question_id": "Q06",
+          "selected_text": "中部3D画布、右侧对象属性、可收起模块库和底部时间轴；专业/比较/报告进入同工程工作台。"
+        },
+        {
+          "question_id": "Q09",
+          "selected_text": "多选、编组/解组、整体移动、复制为新ID；连接/角色待重绑和种子供给单独确认。"
+        },
+        {
+          "question_id": "Q10",
+          "selected_text": "加入本次会话内草稿编辑的撤销/重做；生产结果、人工认可和外部发布不能用它倒退。"
+        },
+        {
+          "question_id": "Q12",
+          "selected_text": "常用操作有键盘入口/可见焦点，属性文本可缩放；3D操作提供数值或按钮替代，状态不只靠颜色。"
+        },
+        {
+          "question_id": "Q14",
+          "selected_text": "完善现有代表设备/载具，补必要物品与包装结构；新类型由可编辑原生部件或合法导入素材表示。"
+        },
+        {
+          "question_id": "Q20",
+          "selected_text": "共同身份/版本/来源页，加各类载荷表单；均支持草稿、检查、适合的预览、明确采用和导出。"
+        },
+        {
+          "question_id": "Q21",
+          "selected_text": "保留核心类型化字段，加显式命名/单位的自定义属性；数量和当前位置只属于工程实例。"
+        },
+        {
+          "question_id": "Q22",
+          "selected_text": "定义角色/容量/资格/日历，采用时创建或绑定实际实例；服务声明可保存但显示执行后置。"
+        },
+        {
+          "question_id": "Q23",
+          "selected_text": "用目标/前置/步骤/角色/工时/声明效果表单，制造产出交工艺规则；无实现能力显示不可执行。"
+        },
+        {
+          "question_id": "Q24",
+          "selected_text": "从转换/齐套/检查/返工/包装规则起步，结构化编辑配比、条件、阶段、资源和输出。"
+        },
+        {
+          "question_id": "Q25",
+          "selected_text": "详情明确显示三层和当前版本；改实例不改库，另存新定义后列变化并选择受影响实例升级。"
+        },
+        {
+          "question_id": "Q26",
+          "selected_text": "编辑货物、容量、装卸/去返时长、角色和接受条件；采用时绑定实际起讫库位/载具。"
+        },
+        {
+          "question_id": "Q27",
+          "selected_text": "导出选定组合及角色需求；采用前预览新ID/引用/资源复用，种子供料和订单单独确认。"
+        },
+        {
+          "question_id": "Q28",
+          "selected_text": "纸包装可进入实际输入/计算/认可/绑定；其他提供者展示契约/缺能力，可保存定义，不伪装可算。"
+        },
+        {
+          "question_id": "Q29",
+          "selected_text": "编辑部件树、位置/尺度/朝向/材质、锚点与命名动作；GLB只操作受支持节点和绑定。"
+        },
+        {
+          "question_id": "Q61",
+          "selected_text": "本地类别包＋真实示例＋许可/版本/支持范围，经仓库Issue/PR审阅后显式采用；发布由你决定。"
+        }
+      ],
+      "confirmed_undo_requirement": {
+        "supported_scope": "本次会话的当前工程/定义草稿中对象、参数、连接、排期和受支持创作编辑；当前生产、真实结果、专业认可和外部动作不回滚。",
+        "revision_policy": "undo/redo经同一Commands成为新的草稿修订；遵守base_revision冲突检查，不倒拨共享修订号，不覆盖别人修改。",
+        "file_policy": "撤销工程引用/采用只影响草稿，不物理删除导入资产，不回滚已落盘文件、发布或购买。",
+        "history_policy": "限定本次会话；新的编辑使失效的redo分支清空，切换工程不串用；文本框优先本地文本撤销。",
+        "acceptance_expectations": [
+          "编辑对象/参数/连接后撤销与重做的草稿状态正确",
+          "撤销不改变当前RunId结果、生产时钟、实际库存及认可",
+          "共享修订冲突时不覆盖新状态",
+          "新编辑后不能重做已失效分支，跨工程历史不混用"
+        ]
+      },
+      "incremental_effort_due_to_Q10": {
+        "status": "included_in_current_original_task_budget_engineering_estimate_not_measured",
+        "existing_budget_includes_Q10": true,
+        "framework_owner": "W00",
+        "human_hours": [
+          1,
+          2
+        ],
+        "window_active_hours": [
+          2,
+          4
+        ],
+        "basis": "九类定义草稿/实例采用的Scope与版本边界消费共同历史。",
+        "contract_refs": [
+          "packages/commands/api.design.rs",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/03_架构与契约/共享状态与所有权.json"
+        ]
+      },
+      "confirmed_design_input_refs": [
+        "docs/00_项目基线/全量设计编码确认选择.json",
+        "docs/04_开发与验收/全量设计编码确认/SXX-XX_确认选择落实.json"
+      ],
+      "current_slice_result_ref": "docs/04_开发与验收/整包派发/P3-01_整包执行.json",
+      "current_execution_plan_ref": "docs/04_开发与验收/本窗口实施主线.json",
+      "current_full_task_packet_ref": "docs/04_开发与验收/整包派发/P3-01_完整任务包.md",
+      "sequential_closeout_ref": "docs/04_开发与验收/整包派发/P3-01_整包执行.json#/sequential_closeout"
+    },
+    {
+      "id": "P3-02",
+      "disposition": "required",
+      "scope": "GIF/GLB等受控媒体及三维表现绑定真实状态/阶段，完整可旋转3D模型、三档呈现与代表性物品动画；表现不决定工时/库存",
+      "release_dependencies": [
+        "P3-01",
+        "P1-03"
+      ],
+      "status": "in_progress",
+      "implementation_owner": "primary_window_01_under_user_authority",
+      "acceptance_owner": "user",
+      "actual_result": null,
+      "requirement_ids": [
+        "SF-03",
+        "SF-10"
+      ],
+      "release_acceptance": "三种素材复用同一行为；暂停与进度读取仿真时钟；多阶段表现读取真实阶段进度，阶段边界/中断/输出待接收不切回空闲；不支持的动作明确显示",
+      "release_paths": [
+        "packages/presentation",
+        "modules/media"
+      ],
+      "implementation_dependencies": [
+        "P3-01",
+        "P1-03"
+      ],
+      "execution_plan": {
+        "input_refs": [
+          "docs/02_交互设计/设备时间轴与标签设计.md",
+          "scenarios/设备创作与采用/expected-authoring.design.json",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "inputs": [
+          "已采用设备/媒体定义；实际阶段/进度/持有状态"
+        ],
+        "outputs": [
+          "GIF/GLB等媒体加载与安全可用范围",
+          "随仿真状态的表现绑定",
+          "与图片相同的业务结果"
+        ],
+        "steps": [
+          "接入许可明确素材和对应锚点",
+          "按真实阶段/暂停/输出等待播放",
+          "用同一行为分别换素材并比较事件"
+        ],
+        "verification_method": "换图片/GIF/GLB不改数量/时间/资源；暂停/阶段等待保持真实状态，不支持动作明示而非伪造执行",
+        "actual_result": null
+      },
+      "dependency_reasons": {
+        "P3-01": "消费九类定义/类别表单/导入/库查询；明确实例采用与版本差异/撤销，用于本任务的GIF/GLB等媒体加载与安全可用范围",
+        "P1-03": "消费到料事件与分阶段占用；机器持有/有效进度/输出受阻等待，用于本任务的GIF/GLB等媒体加载与安全可用范围"
+      },
+      "accountable_owner": "user",
+      "planned_window_id": "W03",
+      "parallel_plan_ref": "docs/04_开发与验收/本机并行窗口计划.json",
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P3-02.md",
+      "coding_protocol_ref": "docs/04_开发与验收/编码任务包与AI实现审查.md",
+      "effort_estimate_ref": "docs/04_开发与验收/任务框架与工量里程碑.json#P3-02",
+      "deliverable_milestone_id": "MS-08",
+      "phase_exit_ref": "docs/04_开发与验收/阶段实现计划.json#P3",
+      "acceptance_trace_ids": [
+        "SF-03",
+        "SF-10",
+        "NFR-01",
+        "NFR-02",
+        "NFR-04",
+        "NFR-11"
+      ],
+      "confirmed_question_ids": [
+        "Q02",
+        "Q05",
+        "Q07",
+        "Q13",
+        "Q14",
+        "Q15",
+        "Q16",
+        "Q17",
+        "Q18",
+        "Q19",
+        "Q29",
+        "Q33",
+        "Q41"
+      ],
+      "confirmed_design_requirements": [
+        {
+          "question_id": "Q02",
+          "selected_text": "以八设备总装检查包装线讲平台，再贯通纸包装、跨厂与Agent；完整SF验收均保留。"
+        },
+        {
+          "question_id": "Q05",
+          "selected_text": "不自动购买；优先现有工具和许可明确的素材，确有必要时提交具体金额与用途再决定。"
+        },
+        {
+          "question_id": "Q07",
+          "selected_text": "单击选择/详情；右键拖动环绕、中键平移、滚轮缩放；对象移动旋转用明确操控器。"
+        },
+        {
+          "question_id": "Q13",
+          "selected_text": "先认可代表设备的整体轮廓、背底结构、关键机构、材质与实际动作，再复用到产线和60设备基准。"
+        },
+        {
+          "question_id": "Q14",
+          "selected_text": "完善现有代表设备/载具，补必要物品与包装结构；新类型由可编辑原生部件或合法导入素材表示。"
+        },
+        {
+          "question_id": "Q15",
+          "selected_text": "先补支撑/夹紧/传动/接触与动作机构，再材质、线缆和标识；以实际可旋转近景复核。"
+        },
+        {
+          "question_id": "Q16",
+          "selected_text": "上料、紧固/加工、移交、检验、装盒/封箱与运输绑定实际阶段；四类等待保持对应姿态。"
+        },
+        {
+          "question_id": "Q17",
+          "selected_text": "用人员位置/角色与占用标识，必要时受控动作；不从行走动画推导未声明工时。"
+        },
+        {
+          "question_id": "Q18",
+          "selected_text": "全部身份真实追踪，画面允许明确标识的代表物品/批次聚合；任一件可定位和看经历。"
+        },
+        {
+          "question_id": "Q19",
+          "selected_text": "接受作为候选验收目标，使用NFR-B60和已写采样协议；模型质量不靠暗降级达标，实测失败后报告取舍。"
+        },
+        {
+          "question_id": "Q29",
+          "selected_text": "编辑部件树、位置/尺度/朝向/材质、锚点与命名动作；GLB只操作受支持节点和绑定。"
+        },
+        {
+          "question_id": "Q33",
+          "selected_text": "事件驱动真实计算，可显示任务进度/已形成状态并回放真实事件；播放速度只改变呈现。"
+        },
+        {
+          "question_id": "Q41",
+          "selected_text": "步骤列表加3D过程回看，显示板片/连接、当前段与干涉/未判定条件；制造视图另列。"
+        }
+      ],
+      "confirmed_design_input_refs": [
+        "docs/00_项目基线/全量设计编码确认选择.json",
+        "docs/04_开发与验收/全量设计编码确认/SXX-XX_确认选择落实.json"
+      ],
+      "current_slice_result_ref": "docs/04_开发与验收/整包派发/P3-02_整包执行.json",
+      "current_execution_plan_ref": "docs/04_开发与验收/本窗口实施主线.json",
+      "current_full_task_packet_ref": "docs/04_开发与验收/整包派发/P3-02_完整任务包.md",
+      "sequential_closeout_ref": "docs/04_开发与验收/整包派发/P3-02_整包执行.json#/sequential_closeout"
+    },
+    {
+      "id": "P3-03",
+      "disposition": "required",
+      "scope": "图片时间轴/标签/操作热点编辑、保存采用、真实阶段读数及观看循环；不增产；本次会话内草稿撤销/重做，经共同Commands形成新修订，不回滚当前运行/认可/外部动作",
+      "release_dependencies": [
+        "P3-01",
+        "P1-03"
+      ],
+      "status": "in_progress",
+      "implementation_owner": "primary_window_01_under_user_authority",
+      "acceptance_owner": "user",
+      "actual_result": null,
+      "requirement_ids": [
+        "SF-04",
+        "SF-10",
+        "SF-11"
+      ],
+      "release_acceptance": "图片可插入排序、调区间和过渡并保存重开；标签绑定真实字段或已声明操作；回看和观看循环不增产；连续生产完成1件后缺PCB等待；改工时同步阶段秒数；多阶段表现读取真实阶段进度，阶段边界/中断/输出待接收不切回空闲；不支持的动作明确显示；指定端口工序做完量和已移交量独立显示，读数不再次生成库存；草稿编辑撤销/重做正确且产生新修订；旧Run/库存/认可不变，修订冲突不覆盖，新编辑清除失效redo，跨工程不串历史",
+      "release_paths": [
+        "apps/planner",
+        "packages/domain",
+        "packages/module-kit",
+        "packages/presentation",
+        "packages/simulation",
+        "modules/devices/manual-assembly"
+      ],
+      "implementation_dependencies": [
+        "P3-01",
+        "P1-03"
+      ],
+      "execution_plan": {
+        "input_refs": [
+          "modules/devices/manual-assembly/presentation/timeline.json",
+          "scenarios/设备创作与采用/inputs.design.json",
+          "scenarios/设备创作与采用/expected-authoring.design.json",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "inputs": [
+          "四张自有图、采用实例、阶段和明确操作/字段类型"
+        ],
+        "outputs": [
+          "可编辑图片时间轴/过渡/类型化标签",
+          "观看循环与生产循环分别控制",
+          "可保存/采用并续改的时间轴定义"
+        ],
+        "steps": [
+          "实现图片插入/排序/区间/过渡编辑",
+          "绑定实际字段与已实现操作，不允许直接写库存",
+          "实际循环/缺料/阶段变化与重开",
+          "接入本会话草稿撤销/重做：共同命令/修订冲突、redo分支与工程切换；与当前Run/人工认可/磁盘副作用分开"
+        ],
+        "verification_method": "壳体2/PCB1例完成1件后等待；观看循环不增产，完成与已移交独立；改工时与阶段输入一致，实际操作有结果",
+        "actual_result": null
+      },
+      "dependency_reasons": {
+        "P3-01": "消费九类定义/类别表单/导入/库查询；明确实例采用与版本差异/撤销，用于本任务的可编辑图片时间轴/过渡/类型化标签",
+        "P1-03": "消费到料事件与分阶段占用；机器持有/有效进度/输出受阻等待，用于本任务的可编辑图片时间轴/过渡/类型化标签"
+      },
+      "accountable_owner": "user",
+      "planned_window_id": "W03",
+      "parallel_plan_ref": "docs/04_开发与验收/本机并行窗口计划.json",
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P3-03.md",
+      "coding_protocol_ref": "docs/04_开发与验收/编码任务包与AI实现审查.md",
+      "effort_estimate_ref": "docs/04_开发与验收/任务框架与工量里程碑.json#P3-03",
+      "deliverable_milestone_id": "MS-08",
+      "phase_exit_ref": "docs/04_开发与验收/阶段实现计划.json#P3",
+      "acceptance_trace_ids": [
+        "SF-04",
+        "SF-10",
+        "SF-11",
+        "NFR-02",
+        "NFR-04",
+        "NFR-11"
+      ],
+      "confirmed_question_ids": [
+        "Q10",
+        "Q25",
+        "Q29"
+      ],
+      "confirmed_design_requirements": [
+        {
+          "question_id": "Q10",
+          "selected_text": "加入本次会话内草稿编辑的撤销/重做；生产结果、人工认可和外部发布不能用它倒退。"
+        },
+        {
+          "question_id": "Q25",
+          "selected_text": "详情明确显示三层和当前版本；改实例不改库，另存新定义后列变化并选择受影响实例升级。"
+        },
+        {
+          "question_id": "Q29",
+          "selected_text": "编辑部件树、位置/尺度/朝向/材质、锚点与命名动作；GLB只操作受支持节点和绑定。"
+        }
+      ],
+      "confirmed_undo_requirement": {
+        "supported_scope": "本次会话的当前工程/定义草稿中对象、参数、连接、排期和受支持创作编辑；当前生产、真实结果、专业认可和外部动作不回滚。",
+        "revision_policy": "undo/redo经同一Commands成为新的草稿修订；遵守base_revision冲突检查，不倒拨共享修订号，不覆盖别人修改。",
+        "file_policy": "撤销工程引用/采用只影响草稿，不物理删除导入资产，不回滚已落盘文件、发布或购买。",
+        "history_policy": "限定本次会话；新的编辑使失效的redo分支清空，切换工程不串用；文本框优先本地文本撤销。",
+        "acceptance_expectations": [
+          "编辑对象/参数/连接后撤销与重做的草稿状态正确",
+          "撤销不改变当前RunId结果、生产时钟、实际库存及认可",
+          "共享修订冲突时不覆盖新状态",
+          "新编辑后不能重做已失效分支，跨工程历史不混用"
+        ]
+      },
+      "incremental_effort_due_to_Q10": {
+        "status": "included_in_current_original_task_budget_engineering_estimate_not_measured",
+        "existing_budget_includes_Q10": true,
+        "framework_owner": "W00",
+        "human_hours": [
+          1,
+          1
+        ],
+        "window_active_hours": [
+          1,
+          2
+        ],
+        "basis": "受支持片段/标签/热点草稿消费共同历史，不倒退播放或外部文件。",
+        "contract_refs": [
+          "packages/commands/api.design.rs",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/03_架构与契约/共享状态与所有权.json"
+        ]
+      },
+      "confirmed_design_input_refs": [
+        "docs/00_项目基线/全量设计编码确认选择.json",
+        "docs/04_开发与验收/全量设计编码确认/SXX-XX_确认选择落实.json"
+      ],
+      "current_slice_result_ref": "docs/04_开发与验收/整包派发/P3-03_整包执行.json",
+      "current_execution_plan_ref": "docs/04_开发与验收/本窗口实施主线.json",
+      "current_full_task_packet_ref": "docs/04_开发与验收/整包派发/P3-03_完整任务包.md",
+      "sequential_closeout_ref": "docs/04_开发与验收/整包派发/P3-03_整包执行.json#/sequential_closeout"
+    },
+    {
+      "id": "P3-04",
+      "disposition": "required",
+      "scope": "外部Agent真实MCP stdio桥/共享Commands、九类与原生设备创作、目标建厂/检查/渲染/模拟/交付；初案达标直交、不足才有限修正/比较或说明，外部专业连接器后置",
+      "release_dependencies": [
+        "P3-02",
+        "P3-03",
+        "P2-04",
+        "P4-01",
+        "P2-06"
+      ],
+      "status": "in_progress",
+      "implementation_owner": "primary_window_01_under_user_authority",
+      "acceptance_owner": "user",
+      "actual_result": null,
+      "requirement_ids": [
+        "SF-04",
+        "SF-10",
+        "SF-11",
+        "SF-14",
+        "SF-16",
+        "SF-17"
+      ],
+      "release_acceptance": "Agent通过同一草稿命令生成部件、端口、时间轴与标签；取得实际渲染反馈后修改；包可人工重开编辑并插入产线；外观预览与隔离周期验证分别报告；生成和采用分别完成，明确受影响实例，运行内编辑进入下一方案而不改当前物品/规则；能力发现覆盖九类编辑/采用、排期、运行/比较与评估导出，人工可继续编辑生成结果；不自动发布社区；用户一句话提出产品、日产目标及场地长宽高，Agent调用skills查询库和模板、分析来源明确的输入、填充九类对象/实例/连接/排期，取得同一修订的静态布局检查和真实3D后实际模拟；初案输入齐全、检查通过且实际达标时直接保存交付，不要求改动/修正RunId/比较；另以不足案例验收支持变量内有限修正重跑/比较或具体不能修正说明；导出PDF/HTML/CSV/JSON和可编辑工程；模板缺失、班次/关键工时不足、尺寸冲突或产能不足保持明确状态；目标不写入结果。",
+      "release_paths": [
+        "apps/planner",
+        "packages/module-kit",
+        "packages/presentation",
+        "modules/devices/manual-assembly",
+        "community/templates",
+        "apps/mcp-bridge",
+        "packages/commands",
+        "integrations/agent"
+      ],
+      "implementation_dependencies": [
+        "P0-01"
+      ],
+      "execution_plan": {
+        "input_refs": [
+          "docs/03_架构与契约/通用Agent接入与专业软件连接器.md",
+          "docs/03_架构与契约/目标驱动厂房生成.md",
+          "scenarios/目标驱动建厂/acceptance.design.json",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/04_开发与验收/特征细化/DRF04_Host授权合入.json",
+          "integrations/agent/stdio-connector.design.json"
+        ],
+        "inputs": [
+          "同一宿主Commands/工程修订；真实媒体/九类/模板与运行/报告能力；获授权外部客户端"
+        ],
+        "outputs": [
+          "实际MCP stdio/宿主IPC与能力发现",
+          "可编辑原生设备及真实渲染反馈",
+          "GF-01至07建厂/检查/运行/直交或有限不足反馈"
+        ],
+        "steps": [
+          "可先做最小桥与共同草稿读写，禁止另建Engine",
+          "接入实际九类/媒体/模板、时间轴/检查/渲染",
+          "待P2-06报告可用后完整GF成功直交与独立不足例、人工接手"
+        ],
+        "verification_method": "真实客户端调用同一工程，RevisionConflict不覆盖；初案真实达标单RunId四格式直交，另跑不足修正/说明；目标不写结果、图不冒充运行",
+        "actual_result": null
+      },
+      "dependency_reasons": {
+        "P3-02": "消费GIF/GLB等媒体加载与安全可用范围；随仿真状态的表现绑定，用于本任务的实际MCP stdio/宿主IPC与能力发现",
+        "P3-03": "消费可编辑图片时间轴/过渡/类型化标签；观看循环与生产循环分别控制，用于本任务的实际MCP stdio/宿主IPC与能力发现",
+        "P2-04": "消费共同时间轴/物品跟随与当前阻断定位；计划轨与只读实际轨，用于本任务的实际MCP stdio/宿主IPC与能力发现",
+        "P4-01": "消费可独立打开修改的三模板/纸箱配置；所需声明工序/设备/资源及九类角色覆盖，用于本任务的实际MCP stdio/宿主IPC与能力发现",
+        "P2-06": "消费EvaluationReport及接受/资源/条件成本口径；PDF/HTML/CSV/JSON四种同源输出，用于本任务的实际MCP stdio/宿主IPC与能力发现"
+      },
+      "accountable_owner": "user",
+      "planned_window_id": "W05",
+      "parallel_plan_ref": "docs/04_开发与验收/本机并行窗口计划.json",
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P3-04.md",
+      "coding_protocol_ref": "docs/04_开发与验收/编码任务包与AI实现审查.md",
+      "effort_estimate_ref": "docs/04_开发与验收/任务框架与工量里程碑.json#P3-04",
+      "deliverable_milestone_id": "MS-10",
+      "phase_exit_ref": "docs/04_开发与验收/阶段实现计划.json#P3",
+      "acceptance_trace_ids": [
+        "SF-04",
+        "SF-10",
+        "SF-11",
+        "SF-14",
+        "SF-16",
+        "SF-17",
+        "NFR-04",
+        "NFR-07",
+        "NFR-08"
+      ],
+      "confirmed_question_ids": [
+        "Q02",
+        "Q04",
+        "Q05",
+        "Q27",
+        "Q34",
+        "Q45",
+        "Q46",
+        "Q47",
+        "Q48",
+        "Q49",
+        "Q50",
+        "Q54",
+        "Q59"
+      ],
+      "confirmed_design_requirements": [
+        {
+          "question_id": "Q02",
+          "selected_text": "以八设备总装检查包装线讲平台，再贯通纸包装、跨厂与Agent；完整SF验收均保留。"
+        },
+        {
+          "question_id": "Q04",
+          "selected_text": "展示任务/模板/空工程三入口；按当前目标逐步补必要参数，允许保存草稿。"
+        },
+        {
+          "question_id": "Q05",
+          "selected_text": "不自动购买；优先现有工具和许可明确的素材，确有必要时提交具体金额与用途再决定。"
+        },
+        {
+          "question_id": "Q27",
+          "selected_text": "导出选定组合及角色需求；采用前预览新ID/引用/资源复用，种子供料和订单单独确认。"
+        },
+        {
+          "question_id": "Q34",
+          "selected_text": "缺项定位到对象/用途；完整结论受阻，可对已有支持且输入齐全的范围运行并明确标范围。"
+        },
+        {
+          "question_id": "Q45",
+          "selected_text": "先以你目前使用的Codex客户端为首个实际验证对象，其他客户端只在真实验证后声称支持。"
+        },
+        {
+          "question_id": "Q46",
+          "selected_text": "关键缺项集中询问，普通示例假设显式标注并可改；无数据不填虚构充足库存或产量。"
+        },
+        {
+          "question_id": "Q47",
+          "selected_text": "在本次选定草稿和字段范围内分批执行，展示变更；涉及超范围改动再由你决定。"
+        },
+        {
+          "question_id": "Q48",
+          "selected_text": "先限排期、可选模板布局与明确允许的设备实例数；工时/BOM/质量、人员增补和成本需明确授权。"
+        },
+        {
+          "question_id": "Q49",
+          "selected_text": "候选默认3轮，每轮真实检查/运行并保留变化；达标即停，关键缺项或无有效改动则说明。"
+        },
+        {
+          "question_id": "Q50",
+          "selected_text": "保存已完成草稿与缺项，给出人工创作/已有模块组合入口，不自行发明新工艺求解器。"
+        },
+        {
+          "question_id": "Q54",
+          "selected_text": "中文工程报告版：目标/输入/流程图景/指标/等待/比较/限制/接手；数据一致，PDF处理分页与中文。"
+        },
+        {
+          "question_id": "Q59",
+          "selected_text": "优先离线可运行的发布包及启动/桥配置说明；安装器按实际打包试做结果另列。"
+        }
+      ],
+      "feedback_repair_limit": {
+        "max_rounds": 3,
+        "initial_run_counts": false,
+        "stop_on_target_met_or_missing_inputs_or_no_effective_change": true
+      },
+      "confirmed_design_input_refs": [
+        "docs/00_项目基线/全量设计编码确认选择.json",
+        "docs/04_开发与验收/全量设计编码确认/SXX-XX_确认选择落实.json"
+      ],
+      "current_slice_result_ref": "docs/04_开发与验收/整包派发/P3-04_整包执行.json",
+      "current_execution_plan_ref": "docs/04_开发与验收/本窗口实施主线.json",
+      "current_full_task_packet_ref": "docs/04_开发与验收/整包派发/P3-04_完整任务包.md",
+      "sequential_closeout_ref": "docs/04_开发与验收/整包派发/P3-04_整包执行.json#/sequential_closeout"
+    },
+    {
+      "id": "P4-01",
+      "disposition": "required",
+      "scope": "三通用离散模板/空工程、所需行为/设备库及纸箱制造目标场地配置；加工/电子仅声明过程，纸箱为行业例，不限平台行业",
+      "release_dependencies": [
+        "P3-01",
+        "P1-04",
+        "P1-05"
+      ],
+      "status": "in_progress",
+      "implementation_owner": "primary_window_01_under_user_authority",
+      "acceptance_owner": "user",
+      "actual_result": null,
+      "requirement_ids": [
+        "SF-02",
+        "SF-04",
+        "SF-17"
+      ],
+      "release_acceptance": "三类模板及纸箱生成配置可独立打开/修改，所需工序、设备、人员、物料/库位与端口样例有明确输入输出；三模板的加工/电子路线以声明过程实际消费库存和资源，不冒充专业计算；每类九类资产至少有可创作/采用样例；模板生成新对象ID，不复制在制/订单，物料种子单独明确采用；产品/参数来源与布局/场地角色可查，纸箱制造和给成品装箱区分。旧全产品12种对象未形成冻结枚举，不作为额外首版专业内核或任意数量门槛。",
+      "release_paths": [
+        "modules",
+        "scenarios"
+      ],
+      "implementation_dependencies": [
+        "P0-03"
+      ],
+      "execution_plan": {
+        "input_refs": [
+          "modules/templates/machining-delivery/manifest.json",
+          "modules/templates/purchased-assembly/manifest.json",
+          "modules/templates/parallel-electromechanical/manifest.json",
+          "modules/templates/carton-factory/generation-profile.design.json",
+          "scenarios/模板与交接/expected-template-handoff.design.json",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "docs/04_开发与验收/特征细化/DRF04_Host授权合入.json",
+          "integrations/agent/stdio-connector.design.json"
+        ],
+        "inputs": [
+          "共同格式/角色类型；三类模板与纸箱配置、参数来源和静态素材"
+        ],
+        "outputs": [
+          "可独立打开修改的三模板/纸箱配置",
+          "所需声明工序/设备/资源及九类角色覆盖",
+          "新ID实例化、明确种子供应和缺专业能力"
+        ],
+        "steps": [
+          "先整理模板输入/版本/必要参数和来源",
+          "接P3-01库/采用，不依赖GIF或图片时间轴编辑",
+          "待P1-04/05能力完成后实际运行与重开/改动"
+        ],
+        "verification_method": "同源引擎消费真实物品/资源；纸箱制造与装入现成箱区分；复制不带库存/订单；专业未实现明示；无冻结12对象数量门槛",
+        "actual_result": null
+      },
+      "dependency_reasons": {
+        "P3-01": "消费九类定义/类别表单/导入/库查询；明确实例采用与版本差异/撤销，用于本任务的可独立打开修改的三模板/纸箱配置",
+        "P1-04": "消费订单分配/领料及换单事件；每订单指定目的接受与准时性，用于本任务的可独立打开修改的三模板/纸箱配置",
+        "P1-05": "消费hold/pending_store两种移交；显式放行/复检/报废与保持身份，用于本任务的可独立打开修改的三模板/纸箱配置"
+      },
+      "accountable_owner": "user",
+      "planned_window_id": "W03",
+      "parallel_plan_ref": "docs/04_开发与验收/本机并行窗口计划.json",
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P4-01.md",
+      "coding_protocol_ref": "docs/04_开发与验收/编码任务包与AI实现审查.md",
+      "effort_estimate_ref": "docs/04_开发与验收/任务框架与工量里程碑.json#P4-01",
+      "deliverable_milestone_id": "MS-08",
+      "phase_exit_ref": "docs/04_开发与验收/阶段实现计划.json#P4",
+      "acceptance_trace_ids": [
+        "SF-02",
+        "SF-04",
+        "SF-17"
+      ],
+      "confirmed_question_ids": [
+        "Q01",
+        "Q02",
+        "Q04",
+        "Q08",
+        "Q09",
+        "Q14",
+        "Q27",
+        "Q46",
+        "Q48",
+        "Q49",
+        "Q50"
+      ],
+      "confirmed_design_requirements": [
+        {
+          "question_id": "Q01",
+          "selected_text": "工艺/集成商完成真实设计与接手为主；非专业用户通过模板引导；贡献者另有创作流程。"
+        },
+        {
+          "question_id": "Q02",
+          "selected_text": "以八设备总装检查包装线讲平台，再贯通纸包装、跨厂与Agent；完整SF验收均保留。"
+        },
+        {
+          "question_id": "Q04",
+          "selected_text": "展示任务/模板/空工程三入口；按当前目标逐步补必要参数，允许保存草稿。"
+        },
+        {
+          "question_id": "Q08",
+          "selected_text": "提供位置/朝向/占地数值、可关网格吸附和超界高亮；LOD先明确手动切换。"
+        },
+        {
+          "question_id": "Q09",
+          "selected_text": "多选、编组/解组、整体移动、复制为新ID；连接/角色待重绑和种子供给单独确认。"
+        },
+        {
+          "question_id": "Q14",
+          "selected_text": "完善现有代表设备/载具，补必要物品与包装结构；新类型由可编辑原生部件或合法导入素材表示。"
+        },
+        {
+          "question_id": "Q27",
+          "selected_text": "导出选定组合及角色需求；采用前预览新ID/引用/资源复用，种子供料和订单单独确认。"
+        },
+        {
+          "question_id": "Q46",
+          "selected_text": "关键缺项集中询问，普通示例假设显式标注并可改；无数据不填虚构充足库存或产量。"
+        },
+        {
+          "question_id": "Q48",
+          "selected_text": "先限排期、可选模板布局与明确允许的设备实例数；工时/BOM/质量、人员增补和成本需明确授权。"
+        },
+        {
+          "question_id": "Q49",
+          "selected_text": "候选默认3轮，每轮真实检查/运行并保留变化；达标即停，关键缺项或无有效改动则说明。"
+        },
+        {
+          "question_id": "Q50",
+          "selected_text": "保存已完成草稿与缺项，给出人工创作/已有模块组合入口，不自行发明新工艺求解器。"
+        }
+      ],
+      "feedback_repair_limit": {
+        "max_rounds": 3,
+        "initial_run_counts": false,
+        "stop_on_target_met_or_missing_inputs_or_no_effective_change": true
+      },
+      "confirmed_design_input_refs": [
+        "docs/00_项目基线/全量设计编码确认选择.json",
+        "docs/04_开发与验收/全量设计编码确认/SXX-XX_确认选择落实.json"
+      ],
+      "current_slice_result_ref": "docs/04_开发与验收/整包派发/P4-01_整包执行.json",
+      "current_execution_plan_ref": "docs/04_开发与验收/本窗口实施主线.json",
+      "current_full_task_packet_ref": "docs/04_开发与验收/整包派发/P4-01_完整任务包.md",
+      "sequential_closeout_ref": "docs/04_开发与验收/整包派发/P4-01_整包执行.json#/sequential_closeout"
+    },
+    {
+      "id": "P4-02",
+      "disposition": "required",
+      "scope": "纸包装三机制/三变化、结构与条件求解、成型/开合/固定姿态直线取物三态判定、刀折胶SVG/材料数量/可编辑成果及认可绑定",
+      "release_dependencies": [
+        "P0-03",
+        "P3-01",
+        "P2-06"
+      ],
+      "status": "in_progress",
+      "implementation_owner": "primary_window_01_under_user_authority",
+      "acceptance_owner": "user",
+      "actual_result": null,
+      "requirement_ids": [
+        "SF-02",
+        "SF-12",
+        "SF-13"
+      ],
+      "release_acceptance": "三机制（受限折叠容器、外盒/内衬多件、罩/滑套）与三变化（产品功能、认可材料、构件关系/重复订单）均实际可修改；结构/尺寸/过程按输入计算成型、开合、固定姿态直线取物，Pass/Fail/Undetermined及搜索预算界限明确；导出刀/折/胶SVG、材料/数量和可编辑结构；人工认可后绑定包装工位，产品变化使受影响绑定待复核；专业工具不直接增加库存，几何不代防护/强度或现场折叠工时。",
+      "release_paths": [
+        "modules/professional",
+        "packages/module-kit",
+        "packages/domain",
+        "apps/planner",
+        "scenarios",
+        "packages/packaging"
+      ],
+      "implementation_dependencies": [
+        "P0-03"
+      ],
+      "execution_plan": {
+        "input_refs": [
+          "docs/00_项目基线/技术与经济可行性.md",
+          "docs/03_架构与契约/专业成果接入与软件在环.md",
+          "packages/packaging/README.md",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json",
+          "packages/packaging/consumer-device.design.json",
+          "docs/04_开发与验收/特征细化/DRF03_C02_专业绑定推导.json",
+          "docs/04_开发与验收/特征细化/DRF03_C03_过程样本语义.json"
+        ],
+        "inputs": [
+          "版本化产品/材料/结构/过程与明确预算；专业四对象；基础几何候选/许可"
+        ],
+        "outputs": [
+          "独立可实际测试的纸包装计算与三态结果",
+          "刀/折/胶SVG、材料数量和可编辑结构",
+          "认可/绑定/变更复核及IX-03工厂消费"
+        ],
+        "steps": [
+          "P0-03产物可用后先做独立几何/结构核心和已知三态输入，不等媒体/报告整合",
+          "实现三机制/三变化及全过程预算/区间与制造层",
+          "接P3-01专业采用、P2-06显示导出和包装消费者，验IX-03"
+        ],
+        "verification_method": "三机制/三变化实际算例；干涉FAIL、预算不足Undetermined，不能只看终态；认可后影响包装、改版待复核；几何不推断防护/工时/库存",
+        "actual_result": null
+      },
+      "dependency_reasons": {
+        "P0-03": "消费artifact/acceptance/binding/result四对象与引用；产品/成果变化的受影响绑定判定，用于本任务的独立可实际测试的纸包装计算与三态结果",
+        "P3-01": "消费九类定义/类别表单/导入/库查询；明确实例采用与版本差异/撤销，用于本任务的独立可实际测试的纸包装计算与三态结果",
+        "P2-06": "消费EvaluationReport及接受/资源/条件成本口径；PDF/HTML/CSV/JSON四种同源输出，用于本任务的独立可实际测试的纸包装计算与三态结果"
+      },
+      "accountable_owner": "user",
+      "planned_window_id": "W04",
+      "parallel_plan_ref": "docs/04_开发与验收/本机并行窗口计划.json",
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P4-02.md",
+      "coding_protocol_ref": "docs/04_开发与验收/编码任务包与AI实现审查.md",
+      "effort_estimate_ref": "docs/04_开发与验收/任务框架与工量里程碑.json#P4-02",
+      "deliverable_milestone_id": "MS-09",
+      "phase_exit_ref": "docs/04_开发与验收/阶段实现计划.json#P4",
+      "acceptance_trace_ids": [
+        "SF-02",
+        "SF-12",
+        "SF-13",
+        "NFR-04",
+        "NFR-10"
+      ],
+      "confirmed_question_ids": [
+        "Q02",
+        "Q28",
+        "Q38",
+        "Q39",
+        "Q40",
+        "Q41",
+        "Q42",
+        "Q43",
+        "Q44"
+      ],
+      "confirmed_design_requirements": [
+        {
+          "question_id": "Q02",
+          "selected_text": "以八设备总装检查包装线讲平台，再贯通纸包装、跨厂与Agent；完整SF验收均保留。"
+        },
+        {
+          "question_id": "Q28",
+          "selected_text": "纸包装可进入实际输入/计算/认可/绑定；其他提供者展示契约/缺能力，可保存定义，不伪装可算。"
+        },
+        {
+          "question_id": "Q38",
+          "selected_text": "三机制模板和空白受限结构入口；编辑板片/折带/连接/多件及参数，不缩成只改长宽高。"
+        },
+        {
+          "question_id": "Q39",
+          "selected_text": "产品版本/包络/允许姿态、净空间、开合/固定姿态直线取物等硬条件可见可改，未知值待补。"
+        },
+        {
+          "question_id": "Q40",
+          "selected_text": "人工指定认可厚度/材料/连接与允许接触；示例明确标来源，用于当前几何范围。"
+        },
+        {
+          "question_id": "Q41",
+          "selected_text": "步骤列表加3D过程回看，显示板片/连接、当前段与干涉/未判定条件；制造视图另列。"
+        },
+        {
+          "question_id": "Q42",
+          "selected_text": "先以可取消、进度可见、完整检查30秒以内为候选体验目标试做；容差由我提出依据后冻结。"
+        },
+        {
+          "question_id": "Q43",
+          "selected_text": "成果页看三态/制造内容，显式选认可用途，再选择具体包装工位；受影响产品变化提示复核。"
+        },
+        {
+          "question_id": "Q44",
+          "selected_text": "按板片/构件标识导出分层SVG、材料数量表和可重开专业工程；每份对应实际产品/成果版本。"
+        }
+      ],
+      "packaging_trial_target": {
+        "full_check_seconds": 30,
+        "kind": "experience_trial_not_hard_timeout",
+        "geometric_tolerance": "explicit_job_input_per_packages/packaging/algorithm.design.json#/numerics",
+        "actual_measurement": null,
+        "budget_design_ref": "packages/packaging/algorithm.design.json#/numerics/default_budget_profile"
+      },
+      "confirmed_design_input_refs": [
+        "docs/00_项目基线/全量设计编码确认选择.json",
+        "docs/04_开发与验收/全量设计编码确认/SXX-XX_确认选择落实.json"
+      ],
+      "current_slice_result_ref": "docs/04_开发与验收/整包派发/P4-02_整包执行.json",
+      "current_execution_plan_ref": "docs/04_开发与验收/本窗口实施主线.json",
+      "current_full_task_packet_ref": "docs/04_开发与验收/整包派发/P4-02_完整任务包.md",
+      "sequential_closeout_ref": "docs/04_开发与验收/整包派发/P4-02_整包执行.json#/sequential_closeout"
+    },
+    {
+      "id": "P5-01",
+      "disposition": "required",
+      "scope": "SF-01至17真实验收、基准负载、实际复现/接手及九类贡献采用、许可和可运行仓库/作品介绍PDF/真实视频准备；报名审核/发送/回执独立据实记录",
+      "release_dependencies": [
+        "P4-01",
+        "P3-04",
+        "P2-03",
+        "P2-04",
+        "P2-06",
+        "P4-02"
+      ],
+      "status": "in_progress",
+      "implementation_owner": "primary_window_01_under_user_authority",
+      "acceptance_owner": "user",
+      "actual_result": null,
+      "requirement_ids": [
+        "SF-01",
+        "SF-02",
+        "SF-03",
+        "SF-04",
+        "SF-05",
+        "SF-06",
+        "SF-07",
+        "SF-08",
+        "SF-09",
+        "SF-10",
+        "SF-11",
+        "SF-12",
+        "SF-13",
+        "SF-14",
+        "SF-15",
+        "SF-16",
+        "SF-17"
+      ],
+      "release_acceptance": "实际新环境复现、第三人模块贡献演练、素材许可清单、软件录屏；提案/文件可编辑/实际运行/发布状态分开，失去维护保留所用旧版；第三人实际接手而非只读JSON，作者与许可按真实信息填写；贡献者按九类入口选择样例，不能用固定设备模板冒充所有类别；SF-01至SF-17实际验收；九类各一例贡献采用，四格式同源且在另一目录可读；不以文件骨架当完成；真实外部Agent完成SF-17目标生成、模拟反馈和人工接手，初案达标直接交付分支可核对，另以不足案例核对有限修正/比较或不能修正说明；通用目标按accepted_unit、指定接受位置/阶段及观察窗核对；纸箱用例为合格箱，其他产品按自身认可单位；缺输入无产能达标结论；课程竞赛准备/赛道一适配依S01-03；完整可运行仓库、含背景/架构/场景/创新的作品介绍PDF、真实核心功能/流程视频三项分别检查且与实际版本一致，产品评估与研究报告不得替代；报名主体/成员/负责人、审核确认和正式发送/回执据实际记录，未办理留空，内部准备期限不放宽到官方截止。；本版软件与材料准备验收不要求自动办理报名/审核或正式发送，手续状态必须据实；完整SF验收不以关键技术试做或设计通过替代。；最终显式核对IX-01/IX-02/IX-03的完整贯通证据，局部任务或手算通过不能代替。",
+      "release_paths": [
+        "community",
+        ".github",
+        "docs",
+        "tools",
+        "packages/reporting"
+      ],
+      "implementation_dependencies": [
+        "P0-01"
+      ],
+      "execution_plan": {
+        "input_refs": [
+          "docs/00_项目基线/首版需求与验收.md",
+          "docs/05_开源与参赛/比赛设计要求.md",
+          "community/CONTRIBUTING.md",
+          "community/GOVERNANCE.md",
+          "docs/03_架构与契约/全层类型与工程格式.json",
+          "docs/03_架构与契约/公开操作与宿主调用契约.json"
+        ],
+        "inputs": [
+          "冻结需求和任务真实结果；许可/实际环境、另一接手者与提交物指南"
+        ],
+        "outputs": [
+          "实际SF-01至17和负载/重开/接手证据",
+          "九类贡献采用及代码/资产许可说明",
+          "可运行源代码/软件、作品介绍PDF及真实流程视频"
+        ],
+        "steps": [
+          "文档/许可盘点可随开发准备，不把待填当证据",
+          "所有首版前置完成后做完整功能/负载/新环境与第三人复现",
+          "制作与实际版本一致的三组交付；手续据授权和真实记录另办"
+        ],
+        "verification_method": "最终依赖闭包覆盖全部21任务；无后置阻塞、无以试做或研究PDF代软件；软件准备验收不假装报名审核/发送成功",
+        "actual_result": null
+      },
+      "dependency_reasons": {
+        "P4-01": "消费可独立打开修改的三模板/纸箱配置；所需声明工序/设备/资源及九类角色覆盖，用于本任务的实际SF-01至17和负载/重开/接手证据",
+        "P3-04": "消费实际MCP stdio/宿主IPC与能力发现；可编辑原生设备及真实渲染反馈，用于本任务的实际SF-01至17和负载/重开/接手证据",
+        "P2-03": "消费同口径比较与输入差异；目录工程/ZIP交付包及缺项读取，用于本任务的实际SF-01至17和负载/重开/接手证据",
+        "P2-04": "消费共同时间轴/物品跟随与当前阻断定位；计划轨与只读实际轨，用于本任务的实际SF-01至17和负载/重开/接手证据",
+        "P2-06": "消费EvaluationReport及接受/资源/条件成本口径；PDF/HTML/CSV/JSON四种同源输出，用于本任务的实际SF-01至17和负载/重开/接手证据",
+        "P4-02": "消费独立可实际测试的纸包装计算与三态结果；刀/折/胶SVG、材料数量和可编辑结构，用于本任务的实际SF-01至17和负载/重开/接手证据"
+      },
+      "accountable_owner": "user",
+      "planned_window_id": "W00",
+      "parallel_plan_ref": "docs/04_开发与验收/本机并行窗口计划.json",
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P5-01.md",
+      "coding_protocol_ref": "docs/04_开发与验收/编码任务包与AI实现审查.md",
+      "effort_estimate_ref": "docs/04_开发与验收/任务框架与工量里程碑.json#P5-01",
+      "deliverable_milestone_id": "MS-12",
+      "phase_exit_ref": "docs/04_开发与验收/阶段实现计划.json#P5",
+      "acceptance_trace_ids": [
+        "SF-01",
+        "SF-02",
+        "SF-03",
+        "SF-04",
+        "SF-05",
+        "SF-06",
+        "SF-07",
+        "SF-08",
+        "SF-09",
+        "SF-10",
+        "SF-11",
+        "SF-12",
+        "SF-13",
+        "SF-14",
+        "SF-15",
+        "SF-16",
+        "SF-17",
+        "NFR-01",
+        "NFR-02",
+        "NFR-03",
+        "NFR-04",
+        "NFR-05",
+        "NFR-06",
+        "NFR-07",
+        "NFR-08",
+        "NFR-09",
+        "NFR-10",
+        "NFR-11"
+      ],
+      "confirmed_question_ids": [
+        "Q01",
+        "Q02",
+        "Q03",
+        "Q05",
+        "Q13",
+        "Q18",
+        "Q19",
+        "Q44",
+        "Q45",
+        "Q54",
+        "Q55",
+        "Q56",
+        "Q57",
+        "Q58",
+        "Q59",
+        "Q60",
+        "Q61",
+        "Q62",
+        "Q63",
+        "Q64"
+      ],
+      "confirmed_design_requirements": [
+        {
+          "question_id": "Q01",
+          "selected_text": "工艺/集成商完成真实设计与接手为主；非专业用户通过模板引导；贡献者另有创作流程。"
+        },
+        {
+          "question_id": "Q02",
+          "selected_text": "以八设备总装检查包装线讲平台，再贯通纸包装、跨厂与Agent；完整SF验收均保留。"
+        },
+        {
+          "question_id": "Q03",
+          "selected_text": "中文界面、中文说明与报告；稳定ID和代码保持英文，不增加整套国际化。"
+        },
+        {
+          "question_id": "Q05",
+          "selected_text": "不自动购买；优先现有工具和许可明确的素材，确有必要时提交具体金额与用途再决定。"
+        },
+        {
+          "question_id": "Q13",
+          "selected_text": "先认可代表设备的整体轮廓、背底结构、关键机构、材质与实际动作，再复用到产线和60设备基准。"
+        },
+        {
+          "question_id": "Q18",
+          "selected_text": "全部身份真实追踪，画面允许明确标识的代表物品/批次聚合；任一件可定位和看经历。"
+        },
+        {
+          "question_id": "Q19",
+          "selected_text": "接受作为候选验收目标，使用NFR-B60和已写采样协议；模型质量不靠暗降级达标，实测失败后报告取舍。"
+        },
+        {
+          "question_id": "Q44",
+          "selected_text": "按板片/构件标识导出分层SVG、材料数量表和可重开专业工程；每份对应实际产品/成果版本。"
+        },
+        {
+          "question_id": "Q45",
+          "selected_text": "先以你目前使用的Codex客户端为首个实际验证对象，其他客户端只在真实验证后声称支持。"
+        },
+        {
+          "question_id": "Q54",
+          "selected_text": "中文工程报告版：目标/输入/流程图景/指标/等待/比较/限制/接手；数据一致，PDF处理分页与中文。"
+        },
+        {
+          "question_id": "Q55",
+          "selected_text": "带所选方案与必要定义/合法资产/成果/认可绑定/所选实际结果，并列缺项；其他历史按需选。"
+        },
+        {
+          "question_id": "Q56",
+          "selected_text": "接受默认从共同初始条件重跑，旧结果仍可读/回放；中途续跑留明确后续范围。"
+        },
+        {
+          "question_id": "Q57",
+          "selected_text": "先输出已支持接受量/时间/占用/等待/条件成本；无价格的项列缺值，不拼完整总成本。"
+        },
+        {
+          "question_id": "Q58",
+          "selected_text": "先明确Windows11 x64为首版验证目标，在本机和另一台目标机器实际安装/重开；最低配置实测后写。"
+        },
+        {
+          "question_id": "Q59",
+          "selected_text": "优先离线可运行的发布包及启动/桥配置说明；安装器按实际打包试做结果另列。"
+        },
+        {
+          "question_id": "Q60",
+          "selected_text": "原创代码倾向MIT候选；第三方保留原许可，最终发布文本先结合真实资产清点核对。"
+        },
+        {
+          "question_id": "Q61",
+          "selected_text": "本地类别包＋真实示例＋许可/版本/支持范围，经仓库Issue/PR审阅后显式采用；发布由你决定。"
+        },
+        {
+          "question_id": "Q62",
+          "selected_text": "你走查原型；安排实际目标使用者完成任务和接手者在另一目录/机器修改重跑，人数按可取得对象注明。"
+        },
+        {
+          "question_id": "Q63",
+          "selected_text": "保留完整首版，报告实际缺口/成果门槛，由你明确调整范围或期限；不暗自删掉纸包装/Agent/四格式。"
+        },
+        {
+          "question_id": "Q64",
+          "selected_text": "真实缺陷小版本修复；后置保留范围/接口，不在当前交付声明实现或确定日期。"
+        }
+      ],
+      "confirmed_design_input_refs": [
+        "docs/00_项目基线/全量设计编码确认选择.json",
+        "docs/04_开发与验收/全量设计编码确认/SXX-XX_确认选择落实.json"
+      ],
+      "current_slice_result_ref": "docs/04_开发与验收/整包派发/P5-01_整包执行.json",
+      "current_execution_plan_ref": "docs/04_开发与验收/本窗口实施主线.json",
+      "current_full_task_packet_ref": "docs/04_开发与验收/整包派发/P5-01_完整任务包.md",
+      "sequential_closeout_ref": "docs/04_开发与验收/整包派发/P5-01_整包执行.json#/sequential_closeout"
+    }
+  ],
+  "deferred": [
+    "P1-06",
+    "P1-07",
+    "P1-08",
+    "P2-07",
+    "P2-08",
+    "P2-09",
+    "P4-03"
+  ],
+  "partial_scope": [
+    "P0-03"
+  ],
+  "original_backlog": "docs/04_开发与验收/tasks.json",
+  "dependency_rule": "implementation_dependencies gate the core start once actual necessary producer outputs exist; release_dependencies gate complete task acceptance, not all preparatory work. Both are release-only. tasks.depends_on/acceptance remain full-product. Shared scenarios are completed at their integration owner; no deferred prerequisite or cloned engine.",
+  "release_gate": "actual_SF01_to_SF17_and_submission_materials",
+  "actual_result": null,
+  "scope_freeze": {
+    "checkpoint": "S02-01",
+    "date": "2026-10-13 Asia/Shanghai",
+    "status": "scope_frozen_not_implemented",
+    "confirmed_choices_ref": "docs/00_项目基线/首版确认选择.json",
+    "current_mainline_ref": "docs/00_项目基线/项目主线.json",
+    "joint_corrections_ref": "docs/04_开发与验收/S01-01至04_联合验收.json",
+    "included_requirement_ids": [
+      "SF-01",
+      "SF-02",
+      "SF-03",
+      "SF-04",
+      "SF-05",
+      "SF-06",
+      "SF-07",
+      "SF-08",
+      "SF-09",
+      "SF-10",
+      "SF-11",
+      "SF-12",
+      "SF-13",
+      "SF-14",
+      "SF-15",
+      "SF-16",
+      "SF-17"
+    ],
+    "nine_category_ids": [
+      "items",
+      "devices",
+      "resources",
+      "tasks",
+      "operations",
+      "transport",
+      "templates",
+      "professional",
+      "media"
+    ],
+    "general_template_refs": [
+      "modules/templates/machining-delivery/manifest.json",
+      "modules/templates/purchased-assembly/manifest.json",
+      "modules/templates/parallel-electromechanical/manifest.json"
+    ],
+    "industry_generation_profile_ref": "modules/templates/carton-factory/generation-profile.design.json",
+    "professional_scope_requirement_ids": [
+      "SF-12",
+      "SF-13"
+    ],
+    "delivery_policy_source_ref": "docs/00_项目基线/项目主线.json",
+    "ordinary_work_offline": true,
+    "external_agent_model_connection_by_client": true,
+    "external_registration_and_submission_separate": true,
+    "partial_result_rule": "selected.status_and_actual_result_cover_selected_scope_only;do_not_mark_full_backlog_partial_task_complete",
+    "change_rule": "implementation_details_and_in_scope_fixes_do_not_change_scope;material_scope_changes_require_explicit_user_decision_and_consumer_updates",
+    "actual_result": null
+  },
+  "deferred_scopes": {
+    "P1-06": "建设日历、投用条件/投用前置及建设到生产求解；不阻止本版专业成果绑定",
+    "P1-07": "电热冷气水容量/公用服务过程、中断及工况求解；人员班次/阶段占用仍本版必做",
+    "P1-08": "故障停机、维修排他使用、备件/在制恢复及维修日历",
+    "P2-07": "建设投用/公用服务专用业务面板",
+    "P2-08": "认可路径、空驶交通、共享通道/冲突区/候车与动态交通求解；固定时间批次运输仍本版必做",
+    "P2-09": "复杂路径/交通/维修专用编辑及覆盖层",
+    "P4-03": "实际外部控制程序/专业软件SIL及Unity/Blender/FreeCAD连接器；本平台MCP桥仍本版必做"
+  },
+  "other_deferred_features": [
+    "remaining_40_professional_kernels",
+    "unbounded_global_layout_or_schedule_optimization",
+    "free_factory_roaming",
+    "cloud_multiplayer_or_online_marketplace",
+    "physical_machine_connection",
+    "dxf_or_complex_optimal_nesting"
+  ],
+  "decomposition_review": {
+    "checkpoint": "S02-02",
+    "date": "2026-10-13 Asia/Shanghai",
+    "spec_ref": "docs/04_开发与验收/任务拆解与依赖.md",
+    "state": "document_specification_not_runtime",
+    "task_count": 21,
+    "work_step_count_is_not_product_task_count": true,
+    "dependency_changes": [
+      {
+        "task": "P1-01",
+        "before": [
+          "P0-01"
+        ],
+        "after": [
+          "P0-02"
+        ]
+      },
+      {
+        "task": "P2-02",
+        "before": [
+          "P2-01"
+        ],
+        "after": [
+          "P1-03",
+          "P2-01"
+        ]
+      },
+      {
+        "task": "P1-04",
+        "before": [
+          "P1-03",
+          "P0-02"
+        ],
+        "after": [
+          "P1-03",
+          "P0-02",
+          "P2-02"
+        ]
+      },
+      {
+        "task": "P3-01",
+        "before": [
+          "P2-02"
+        ],
+        "after": [
+          "P0-03",
+          "P2-02"
+        ]
+      },
+      {
+        "task": "P2-06",
+        "before": [
+          "P2-05",
+          "P2-03"
+        ],
+        "after": [
+          "P0-03",
+          "P2-05",
+          "P2-03"
+        ]
+      },
+      {
+        "task": "P4-01",
+        "before": [
+          "P3-02",
+          "P3-03",
+          "P1-02"
+        ],
+        "after": [
+          "P3-01",
+          "P1-04",
+          "P1-05"
+        ]
+      },
+      {
+        "task": "P3-04",
+        "before": [
+          "P3-03",
+          "P2-04",
+          "P4-01"
+        ],
+        "after": [
+          "P3-02",
+          "P3-03",
+          "P2-04",
+          "P4-01",
+          "P2-06"
+        ]
+      },
+      {
+        "task": "P4-02",
+        "before": [
+          "P0-03",
+          "P2-06"
+        ],
+        "after": [
+          "P0-03",
+          "P3-01",
+          "P2-06"
+        ]
+      }
+    ],
+    "actual_result": null
+  },
+  "shared_scenario_checks": [
+    {
+      "id": "IX-01",
+      "owner": "P2-04",
+      "producer_tasks": [
+        "P1-03",
+        "P2-02",
+        "P1-02"
+      ],
+      "input_refs": [
+        "scenarios/从零搭建控制盒厂房/project.design.json",
+        "scenarios/从零搭建控制盒厂房/expected-timeline.design.json"
+      ],
+      "required_observations": "完整实际基线440秒/到料延迟570秒、370—420秒小车等待/425返程；全部物品/资源/数量/事件核对；P1-03本地只验阶段/到料不先运行未完成物流",
+      "release_gate": "P5-01",
+      "actual_result": null
+    },
+    {
+      "id": "IX-02",
+      "owner": "P1-04",
+      "producer_tasks": [
+        "P1-03",
+        "P2-02"
+      ],
+      "input_refs": [
+        "scenarios/真实业务设计/business-inputs.design.json",
+        "scenarios/真实业务设计/expected-business.design.json"
+      ],
+      "required_observations": "订单与换单接物流后完整205秒/迟延5或45秒、W-A135或160秒，接收与返程分开；不能用无运输局部替代客户接受",
+      "release_gate": "P5-01",
+      "actual_result": null
+    },
+    {
+      "id": "IX-03",
+      "owner": "P4-02",
+      "producer_tasks": [
+        "P0-03",
+        "P3-01",
+        "P2-06"
+      ],
+      "input_refs": [
+        "docs/03_架构与契约/专业成果接入与软件在环.md",
+        "docs/00_项目基线/首版需求与验收.md"
+      ],
+      "required_observations": "专业计算→人工用途认可→工位绑定→改版待复核/新跑→专业制造层与四格式；三机制/三变化和全过程三态不削减，专业不增库存",
+      "release_gate": "P5-01",
+      "actual_result": null
+    }
+  ],
+  "logical_completion_waves": [
+    [
+      "P0-01"
+    ],
+    [
+      "P0-02"
+    ],
+    [
+      "P0-03",
+      "P1-01"
+    ],
+    [
+      "P1-02",
+      "P2-01"
+    ],
+    [
+      "P1-03",
+      "P1-05"
+    ],
+    [
+      "P2-02"
+    ],
+    [
+      "P1-04",
+      "P2-03",
+      "P2-04",
+      "P3-01"
+    ],
+    [
+      "P2-05",
+      "P3-02",
+      "P3-03",
+      "P4-01"
+    ],
+    [
+      "P2-06"
+    ],
+    [
+      "P3-04",
+      "P4-02"
+    ],
+    [
+      "P5-01"
+    ]
+  ],
+  "parallel_window_plan_ref": "docs/04_开发与验收/本机并行窗口计划.json",
+  "responsibility_rule": "用户本人仍负责全项目及真实接受；当前原21包由实现窗口1独自实施、集成和复核，其他窗口停止实施与派发。selected.planned_window_id保留历史计划身份；当前执行权和主线取docs/04_开发与验收/本窗口实施主线.json，完整done仍受原release_dependencies与真实验收约束。",
+  "coding_protocol_ref": "docs/04_开发与验收/编码任务包与AI实现审查.md",
+  "coding_package_index_ref": "docs/04_开发与验收/编码任务包/任务包索引.json",
+  "effort_framework_ref": "docs/04_开发与验收/任务框架与工量里程碑.json",
+  "joint_baseline_review_ref": "docs/04_开发与验收/S01-01至S02-03_联合复核.json",
+  "effort_framework_review_ref": "docs/04_开发与验收/S02-04_工量与成果里程碑复审.json",
+  "stage_plan_ref": "docs/04_开发与验收/阶段实现计划.json",
+  "stage_exit_review_ref": "docs/04_开发与验收/S02-05_阶段闭环与退出条件复审.json",
+  "nonfunctional_spec_ref": "docs/01_业务需求/非功能需求与测量验收.json",
+  "requirement_trace_ref": "docs/04_开发与验收/首版需求验收追踪.json",
+  "serial_review_ref": "docs/04_开发与验收/S01至S03_串联复审.json",
+  "confirmed_choice_ref": "docs/00_项目基线/全量设计编码确认选择.json",
+  "checkpoint_choice_requirements_ref": "docs/04_开发与验收/全量设计编码确认/SXX-XX_确认选择落实.json",
+  "navigation_spec_ref": "docs/02_交互设计/交互流程与视图导航.json",
+  "form_spec_ref": "docs/02_交互设计/首版表单与反馈.json",
+  "component_architecture_ref": "docs/03_架构与契约/全层组件与接点.json",
+  "ownership_spec_ref": "docs/03_架构与契约/共享状态与所有权.json",
+  "module_protocol_ref": "packages/module-kit/category-contracts.design.json",
+  "technical_selection_ref": "docs/03_架构与契约/首版技术栈与部署设计.json",
+  "scheduler_spec_ref": "docs/03_架构与契约/调度与状态转换算法.json",
+  "type_format_spec_ref": "docs/03_架构与契约/全层类型与工程格式.json",
+  "api_contract_spec_ref": "docs/03_架构与契约/公开操作与宿主调用契约.json",
+  "equipment_model_quality_ref": "docs/02_交互设计/设备建模精度与表现验收规范.json",
+  "current_execution_mode": {
+    "mode": "single_window_execution",
+    "active": true,
+    "effective_at": "2026-10-17T10:35:09+08:00",
+    "authority": "现在将整个项目的操作权收回到你这个窗口，先整合其他窗口的任务并形成你这个窗口的主线，接下来的任务暂时不派发到其他窗口而专由你这个窗口负责。现在先完成整合，然后完成初步的实施准备。",
+    "owner_window_id": "W00",
+    "owner_title": "实现窗口1",
+    "owner_thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+    "plan_ref": "docs/04_开发与验收/本窗口实施主线.json",
+    "other_windows_implementation_allowed": false,
+    "automatic_dispatch_allowed": false,
+    "former_file_GUI_and_build_leases_returned": true,
+    "scope": "整个超级工厂软件工程产品；原21包功能范围、7项后置及真实验收要求保持",
+    "historical_planned_window_ids_preserved": true,
+    "sequential_closeout_plan_ref": "docs/04_开发与验收/逐包收口计划.json",
+    "current_package": "P0-01",
+    "scheduling_rule": "按验收依赖单窗口逐包收口，旧可按局部产物扩展下游的执行策略仅为历史；原依赖/范围/验收不改。"
+  },
+  "sequential_closeout_control_ref": "docs/04_开发与验收/逐包收口计划.json",
+  "completion_assessment_ref": "docs/04_开发与验收/实现阶段完成度.json",
+  "current_submission_delivery_policy_ref": "docs/04_开发与验收/官方提交物交付口径.json",
+  "current_delivery_goal": "official_three_materials_only",
+  "submission_policy_effective_at": "2026-10-21T14:43:53+08:00"
+}

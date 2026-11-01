@@ -1,0 +1,1292 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Response",
+  "type": "object",
+  "properties": {
+    "api_version": {
+      "$ref": "#/$defs/ApiVersion"
+    },
+    "context": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ResponseContext"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "outcome": {
+      "$ref": "#/$defs/ApiOutcome"
+    },
+    "request_id": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ObjectId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "api_version",
+    "outcome"
+  ],
+  "$defs": {
+    "ApiCategory": {
+      "type": "string",
+      "enum": [
+        "items",
+        "devices",
+        "resources",
+        "tasks",
+        "operations",
+        "transport",
+        "templates",
+        "professional",
+        "media"
+      ]
+    },
+    "ApiError": {
+      "type": "object",
+      "properties": {
+        "actual_revision": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SafeUint"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "code": {
+          "$ref": "#/$defs/ErrorCode"
+        },
+        "expected_revision": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SafeUint"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "field_errors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ApiFieldError"
+          }
+        },
+        "message": {
+          "type": "string"
+        },
+        "object_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ObjectRef"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "message",
+        "object_refs",
+        "field_errors"
+      ]
+    },
+    "ApiFieldError": {
+      "type": "object",
+      "properties": {
+        "pointer": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "pointer",
+        "reason"
+      ]
+    },
+    "ApiOutcome": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "data": {
+              "$ref": "#/$defs/ModuleTemplateCandidates"
+            },
+            "status": {
+              "type": "string",
+              "const": "ok"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "data"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "data": {
+              "$ref": "#/$defs/ApiError"
+            },
+            "status": {
+              "type": "string",
+              "const": "error"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "data"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "data": {
+              "$ref": "#/$defs/ManagedJsonResultRef"
+            },
+            "status": {
+              "type": "string",
+              "const": "managed"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "data"
+          ]
+        }
+      ]
+    },
+    "ApiVersion": {
+      "type": "string",
+      "enum": [
+        "0.1"
+      ]
+    },
+    "CanonicalTimeUnit": {
+      "type": "string",
+      "enum": [
+        "millisecond"
+      ]
+    },
+    "CapabilityPurpose": {
+      "type": "string",
+      "enum": [
+        "execution",
+        "preview",
+        "adoption",
+        "redistribution",
+        "complete_conclusion"
+      ]
+    },
+    "DecimalAmount": {
+      "type": "object",
+      "properties": {
+        "coefficient": {
+          "$ref": "#/$defs/SafeUint"
+        },
+        "decimal_places": {
+          "$ref": "#/$defs/DecimalPlaces"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "coefficient",
+        "decimal_places"
+      ]
+    },
+    "DecimalPlaces": {
+      "type": "integer",
+      "format": "uint8",
+      "maximum": 9,
+      "minimum": 0
+    },
+    "DefinitionScopeIdentity": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/ModuleId"
+        },
+        "revision": {
+          "$ref": "#/$defs/SafeUint"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "revision"
+      ]
+    },
+    "DurationValue": {
+      "type": "object",
+      "properties": {
+        "basis": {
+          "$ref": "#/$defs/SourceBasis"
+        },
+        "source_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ObjectId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "unit": {
+          "$ref": "#/$defs/CanonicalTimeUnit"
+        },
+        "value": {
+          "$ref": "#/$defs/SafeUint"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "unit",
+        "basis"
+      ]
+    },
+    "EditScope": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "data": {
+              "$ref": "#/$defs/ProjectId"
+            },
+            "kind": {
+              "type": "string",
+              "const": "project"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "data"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "data": {
+              "$ref": "#/$defs/DefinitionScopeIdentity"
+            },
+            "kind": {
+              "type": "string",
+              "const": "definition_draft"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "data"
+          ]
+        }
+      ]
+    },
+    "ErrorCode": {
+      "type": "string",
+      "enum": [
+        "NoActiveProject",
+        "UnsupportedCapability",
+        "InvalidInput",
+        "MissingReference",
+        "RevisionConflict",
+        "PermissionDenied",
+        "ComputationFailed",
+        "Cancelled",
+        "UnsupportedSchema",
+        "IoFailure"
+      ]
+    },
+    "FiniteNumber": {
+      "type": "number",
+      "format": "double"
+    },
+    "Issue": {
+      "type": "object",
+      "properties": {
+        "blocks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CapabilityPurpose"
+          }
+        },
+        "code": {
+          "type": "string"
+        },
+        "field_path": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "message": {
+          "type": "string"
+        },
+        "object_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ObjectRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "message",
+        "blocks"
+      ]
+    },
+    "LayoutRegion": {
+      "type": "object",
+      "properties": {
+        "clearance_m": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FiniteNumber"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "kind": {
+          "$ref": "#/$defs/LayoutRegionKind"
+        },
+        "polygon_m": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Vec2"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "polygon_m",
+        "kind"
+      ]
+    },
+    "LayoutRegionKind": {
+      "type": "string",
+      "enum": [
+        "usable",
+        "keep_out",
+        "static_lane"
+      ]
+    },
+    "ManagedJsonResultRef": {
+      "type": "object",
+      "properties": {
+        "byte_length": {
+          "$ref": "#/$defs/SafeUint"
+        },
+        "response_schema_ref": {
+          "type": "string"
+        },
+        "result_id": {
+          "$ref": "#/$defs/ObjectId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "result_id",
+        "response_schema_ref",
+        "byte_length"
+      ]
+    },
+    "ModuleCandidate": {
+      "type": "object",
+      "properties": {
+        "applicable": {
+          "type": "boolean"
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "category": {
+          "$ref": "#/$defs/ApiCategory"
+        },
+        "missing": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Issue"
+          }
+        },
+        "module_ref": {
+          "$ref": "#/$defs/ModuleRef"
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceRecord"
+          }
+        },
+        "template_profile": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TemplateGenerationProfile"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "title": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "module_ref",
+        "category",
+        "title",
+        "applicable",
+        "missing",
+        "capabilities",
+        "sources"
+      ]
+    },
+    "ModuleId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "ModuleRef": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/ModuleId"
+        },
+        "version": {
+          "$ref": "#/$defs/VersionId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "version"
+      ]
+    },
+    "ModuleTemplateCandidates": {
+      "type": "object",
+      "properties": {
+        "candidates": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ModuleCandidate"
+          }
+        },
+        "missing": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Issue"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "candidates",
+        "missing"
+      ]
+    },
+    "ObjectId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "ObjectKind": {
+      "type": "string",
+      "enum": [
+        "project",
+        "scenario",
+        "run",
+        "definition_draft",
+        "packaging_job",
+        "asset",
+        "native_scene",
+        "item_type",
+        "item",
+        "location",
+        "hall",
+        "line",
+        "device",
+        "resource",
+        "calendar",
+        "product",
+        "bom",
+        "route",
+        "connection",
+        "order",
+        "task",
+        "job",
+        "supply",
+        "transport",
+        "artifact",
+        "module",
+        "report"
+      ]
+    },
+    "ObjectRef": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "kind": {
+          "$ref": "#/$defs/ObjectKind"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "id"
+      ]
+    },
+    "ParameterDeclaration": {
+      "type": "object",
+      "properties": {
+        "basis": {
+          "$ref": "#/$defs/SourceBasis"
+        },
+        "binding": {
+          "type": "string"
+        },
+        "id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "integer": {
+          "type": "boolean"
+        },
+        "label": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "maximum": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FiniteNumber"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "minimum": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FiniteNumber"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "options": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "unit": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UnitId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "value_type": {
+          "$ref": "#/$defs/ValueKind"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "value_type",
+        "binding",
+        "integer",
+        "options",
+        "basis"
+      ]
+    },
+    "ParameterSource": {
+      "type": "object",
+      "properties": {
+        "basis": {
+          "$ref": "#/$defs/SourceBasis"
+        },
+        "field_path": {
+          "type": "string"
+        },
+        "source_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ObjectId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "target": {
+          "$ref": "#/$defs/ObjectRef"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TypedValue"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "target",
+        "field_path",
+        "basis"
+      ]
+    },
+    "PortId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "PortRef": {
+      "type": "object",
+      "properties": {
+        "instance_id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "module_ref": {
+          "$ref": "#/$defs/ModuleRef"
+        },
+        "port_id": {
+          "$ref": "#/$defs/PortId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "module_ref",
+        "instance_id",
+        "port_id"
+      ]
+    },
+    "ProjectId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "Quantity": {
+      "type": "object",
+      "properties": {
+        "unit": {
+          "$ref": "#/$defs/UnitId"
+        },
+        "value": {
+          "$ref": "#/$defs/DecimalAmount"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "unit"
+      ]
+    },
+    "ResponseContext": {
+      "type": "object",
+      "properties": {
+        "host_instance_id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "project_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ProjectId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "project_revision": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SafeUint"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "scope": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/EditScope"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "scope_revision": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SafeUint"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "session_id": {
+          "$ref": "#/$defs/ObjectId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "host_instance_id",
+        "session_id"
+      ]
+    },
+    "RoleBindings": {
+      "type": "object",
+      "properties": {
+        "item_types": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[^\\u0000]+$": {
+              "$ref": "#/$defs/ObjectId"
+            }
+          }
+        },
+        "ports": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[^\\u0000]+$": {
+              "$ref": "#/$defs/PortRef"
+            }
+          }
+        },
+        "resources": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[^\\u0000]+$": {
+              "$ref": "#/$defs/ObjectId"
+            }
+          }
+        },
+        "targets": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[^\\u0000]+$": {
+              "$ref": "#/$defs/ObjectRef"
+            }
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "item_types",
+        "resources",
+        "targets",
+        "ports"
+      ]
+    },
+    "RoleId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "RoleQuantity": {
+      "type": "object",
+      "properties": {
+        "quantity": {
+          "$ref": "#/$defs/Quantity"
+        },
+        "role": {
+          "$ref": "#/$defs/RoleId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "role",
+        "quantity"
+      ]
+    },
+    "RouteStep": {
+      "type": "object",
+      "properties": {
+        "device_id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "item_bindings": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[^\\u0000]+$": {
+              "$ref": "#/$defs/ObjectId"
+            }
+          }
+        },
+        "operation_ref": {
+          "$ref": "#/$defs/ModuleRef"
+        },
+        "predecessors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ObjectId"
+          }
+        },
+        "resource_bindings": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[^\\u0000]+$": {
+              "$ref": "#/$defs/ObjectId"
+            }
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "operation_ref",
+        "device_id",
+        "predecessors",
+        "item_bindings",
+        "resource_bindings"
+      ]
+    },
+    "SafeUint": {
+      "type": "integer",
+      "format": "uint64",
+      "maximum": 9007199254740991,
+      "minimum": 0
+    },
+    "SiteEnvelope": {
+      "type": "object",
+      "properties": {
+        "clearance_m": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FiniteNumber"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "height_m": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FiniteNumber"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "length_m": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FiniteNumber"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "regions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/LayoutRegion"
+          }
+        },
+        "usable_polygon_m": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Vec2"
+          }
+        },
+        "width_m": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FiniteNumber"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "regions",
+        "usable_polygon_m"
+      ]
+    },
+    "SourceBasis": {
+      "type": "string",
+      "enum": [
+        "user_provided",
+        "module_declared",
+        "template_declared_example",
+        "unknown"
+      ]
+    },
+    "SourceRecord": {
+      "type": "object",
+      "properties": {
+        "basis": {
+          "$ref": "#/$defs/SourceBasis"
+        },
+        "id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "locator": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "read_date": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "read_scope": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "title": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "title",
+        "basis"
+      ]
+    },
+    "TemplateGenerationProfile": {
+      "type": "object",
+      "properties": {
+        "industry": {
+          "type": "string"
+        },
+        "layout_modes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "nine_category_roles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/RoleQuantity"
+          }
+        },
+        "parameter_sources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ParameterSource"
+          }
+        },
+        "process_graph": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/RouteStep"
+          }
+        },
+        "product_family": {
+          "type": "string"
+        },
+        "required_parameters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ParameterDeclaration"
+          }
+        },
+        "role_bindings": {
+          "$ref": "#/$defs/RoleBindings"
+        },
+        "site_applicability": {
+          "$ref": "#/$defs/SiteEnvelope"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "industry",
+        "product_family",
+        "site_applicability",
+        "process_graph",
+        "nine_category_roles",
+        "required_parameters",
+        "parameter_sources",
+        "layout_modes",
+        "role_bindings"
+      ]
+    },
+    "TypedValue": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "number"
+            },
+            "value": {
+              "$ref": "#/$defs/FiniteNumber"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "integer"
+            },
+            "value": {
+              "$ref": "#/$defs/SafeUint"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "boolean"
+            },
+            "value": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "string"
+            },
+            "value": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "enum"
+            },
+            "value": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "vector3"
+            },
+            "value": {
+              "$ref": "#/$defs/Vec3"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "duration"
+            },
+            "value": {
+              "$ref": "#/$defs/DurationValue"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "quantity"
+            },
+            "value": {
+              "$ref": "#/$defs/Quantity"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "item_type"
+            },
+            "value": {
+              "$ref": "#/$defs/ObjectId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        }
+      ]
+    },
+    "UnitId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "ValueKind": {
+      "type": "string",
+      "enum": [
+        "number",
+        "integer",
+        "boolean",
+        "string",
+        "enum",
+        "vector3",
+        "duration",
+        "quantity",
+        "item_type"
+      ]
+    },
+    "Vec2": {
+      "type": "object",
+      "properties": {
+        "x": {
+          "$ref": "#/$defs/FiniteNumber"
+        },
+        "y": {
+          "$ref": "#/$defs/FiniteNumber"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y"
+      ]
+    },
+    "Vec3": {
+      "type": "object",
+      "properties": {
+        "x": {
+          "$ref": "#/$defs/FiniteNumber"
+        },
+        "y": {
+          "$ref": "#/$defs/FiniteNumber"
+        },
+        "z": {
+          "$ref": "#/$defs/FiniteNumber"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y",
+        "z"
+      ]
+    },
+    "VersionId": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)(?:\\.(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*)?(?:\\+[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?$"
+    }
+  }
+}

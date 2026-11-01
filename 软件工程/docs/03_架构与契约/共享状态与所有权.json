@@ -1,0 +1,348 @@
+{
+  "document_kind": "S05_02_state_ownership_and_lifecycle_design_not_runtime",
+  "checkpoint": "S05-02",
+  "date": "2026-10-14 Asia/Shanghai",
+  "spec_ref": "docs/03_架构与契约/共享状态与生命周期.md",
+  "architecture_ref": "docs/03_架构与契约/全层组件与接点.json",
+  "command_ref": "packages/commands/command-catalog.design.json",
+  "confirmed_choices_ref": "docs/00_项目基线/全量设计编码确认选择.json",
+  "states": [
+    {
+      "id": "OS01",
+      "title": "活动工程",
+      "owner_component": "desktop_host",
+      "storage_scope": "host_memory_and_manual_project_files",
+      "invariant": "一个活动Project；只有Host载入/切换；定义库不是第二工程",
+      "transition_and_exit": "切工程先处理表单/未保存工程和仍活动任务；原scope/grant/历史退出，不混写新工程",
+      "actual_runtime": null,
+      "code_owner_component": "desktop_host",
+      "runtime_store_owner_component": "desktop_host"
+    },
+    {
+      "id": "OS02",
+      "title": "工程草稿修订",
+      "owner_component": "desktop_host",
+      "storage_scope": "project_draft",
+      "invariant": "ProjectScope修订单调增加；Commands短事务验证base_revision后一次提交",
+      "transition_and_exit": "应用/undo/redo生成新修订，不倒拨；运行中编辑下一草稿，不改当前Run",
+      "actual_runtime": null,
+      "code_owner_component": "desktop_host",
+      "runtime_store_owner_component": "desktop_host"
+    },
+    {
+      "id": "OS03",
+      "title": "定义创作草稿",
+      "owner_component": "desktop_host",
+      "storage_scope": "host_owned_authoring_session",
+      "invariant": "DefinitionDraftScope有自己的草稿ID/修订，属于当前工程编辑会话，未采用不改现有实例",
+      "transition_and_exit": "保存定义版本不自动升级实例；完整Scope/参数结构S06冻结，同apply_commands负责",
+      "actual_runtime": null,
+      "code_owner_component": "module_kit",
+      "runtime_store_owner_component": "desktop_host"
+    },
+    {
+      "id": "OS04",
+      "title": "已保存模块版本",
+      "owner_component": "desktop_host",
+      "storage_scope": "versioned_library_files",
+      "invariant": "指定id/version是实际已写模块内容；实例只用明确版本",
+      "transition_and_exit": "不原地改其他实例；新定义/升级列变化后采用，undo不物理删除文件",
+      "actual_runtime": null,
+      "code_owner_component": "module_kit",
+      "runtime_store_owner_component": "desktop_host"
+    },
+    {
+      "id": "OS05",
+      "title": "方案输入",
+      "owner_component": "desktop_host",
+      "storage_scope": "immutable_scenario_input_in_run",
+      "invariant": "版本/物品/资源/日历/规则/预设质量与观察窗在开始运行时冻结",
+      "transition_and_exit": "新编辑需要新Run；不得修改旧输入或把目标填到结果",
+      "actual_runtime": null,
+      "code_owner_component": "domain",
+      "runtime_store_owner_component": "desktop_host"
+    },
+    {
+      "id": "OS06",
+      "title": "正式生产运行",
+      "owner_component": "simulation",
+      "storage_scope": "single_active_run_per_host",
+      "invariant": "唯一Simulation服务，一次一个活动正式Run；时钟/库存/归属/资源只在此状态推进",
+      "transition_and_exit": "另发正式运行时先完成或取消当前任务；状态不适用返回现有InvalidInput与原因，不偷偷另建Engine",
+      "actual_runtime": null,
+      "code_owner_component": "simulation",
+      "runtime_store_owner_component": "desktop_host"
+    },
+    {
+      "id": "OS07",
+      "title": "隔离预览",
+      "owner_component": "simulation",
+      "storage_scope": "isolated_preview_context",
+      "invariant": "复用同一受支持内核执行明确示例范围，临时预览状态不写正式库存/订单或正式Run成功",
+      "transition_and_exit": "循环外观不再次生产；隔离行为结果和图像分列，不声称全厂运行",
+      "actual_runtime": null,
+      "code_owner_component": "simulation",
+      "runtime_store_owner_component": "desktop_host"
+    },
+    {
+      "id": "OS08",
+      "title": "实际结果和旧Run",
+      "owner_component": "desktop_host",
+      "storage_scope": "read_only_results_selected_for_manual_save",
+      "invariant": "结果属于冻结输入/Run和实际执行窗口；旧Run场景可还原，不按新草稿同名对象替代",
+      "transition_and_exit": "取消时已形成实际部分保留标范围/终态；不声明完整目标通过或完整观察窗",
+      "actual_runtime": null,
+      "code_owner_component": "desktop_host",
+      "runtime_store_owner_component": "desktop_host"
+    },
+    {
+      "id": "OS09",
+      "title": "专业作业和结果",
+      "owner_component": "desktop_host",
+      "storage_scope": "immutable_job_and_artifact_store",
+      "invariant": "作业输入/产品/材料/结构/过程/预算冻结；结果三态与制造层有版本归属",
+      "transition_and_exit": "新输入新作业；专业计算不写库存；30秒是体验目标，不自动当硬超时或Pass条件",
+      "actual_runtime": null,
+      "code_owner_component": "packaging",
+      "runtime_store_owner_component": "desktop_host"
+    },
+    {
+      "id": "OS10",
+      "title": "人工用途认可",
+      "owner_component": "desktop_host",
+      "storage_scope": "acceptance_records",
+      "invariant": "由实际人工明确动作产生；只引用实际成果/版本/条件，不由Agent/图片/存盘伪填",
+      "transition_and_exit": "认可不是普通可逆草稿，undo不回滚；完整决定字段S06定义",
+      "actual_runtime": null,
+      "code_owner_component": "desktop_host",
+      "runtime_store_owner_component": "desktop_host"
+    },
+    {
+      "id": "OS11",
+      "title": "消费者绑定",
+      "owner_component": "desktop_host",
+      "storage_scope": "project_bindings",
+      "invariant": "绑定引用已有认可/成果/具体工位；认可不等于绑定，绑定不等于实际执行",
+      "transition_and_exit": "受影响产品/材料/关系变化待复核；旧Run原输入不改，普通undo不代替显式专业认可/绑定处置",
+      "actual_runtime": null,
+      "code_owner_component": "desktop_host",
+      "runtime_store_owner_component": "desktop_host"
+    },
+    {
+      "id": "OS12",
+      "title": "会话可逆历史",
+      "owner_component": "commands",
+      "storage_scope": "host_memory_per_draft_scope",
+      "invariant": "每Scope保存可逆编辑/历史头修订；新的编辑清redo，类型/许可文件不另建副本",
+      "transition_and_exit": "undo/redo前base与history头对应当前Scope；生成新修订。非可逆领域提交开启新历史边界，保存文件不回滚且不清正常草稿可逆历史",
+      "actual_runtime": null,
+      "code_owner_component": "commands",
+      "runtime_store_owner_component": "desktop_host"
+    },
+    {
+      "id": "OS13",
+      "title": "任务表与取消",
+      "owner_component": "desktop_host",
+      "storage_scope": "task_registry",
+      "invariant": "实际task_id关联冻结输入、Worker、阶段/终态；提交接收与实际完成分开",
+      "transition_and_exit": "取消请求只标请求，Worker合作确认后Cancelled；先完成则Completed，不能取消回复后再把完成伪称取消",
+      "actual_runtime": null,
+      "code_owner_component": "desktop_host",
+      "runtime_store_owner_component": "desktop_host"
+    },
+    {
+      "id": "OS14",
+      "title": "渲染任务/实际帧",
+      "owner_component": "desktop_host",
+      "storage_scope": "immutable_render_request_and_correlated_frame",
+      "invariant": "请求时捕获所需修订/Run/对象/视点/时间和素材映射；Renderer只消费快照",
+      "transition_and_exit": "回传task/scene_revision必须匹配，迟到回传不换到当前工程；无实际画面不返回旧图冒充",
+      "actual_runtime": null,
+      "code_owner_component": "desktop_host",
+      "runtime_store_owner_component": "desktop_host"
+    },
+    {
+      "id": "OS15",
+      "title": "UI上下文与表单",
+      "owner_component": "ui_host",
+      "storage_scope": "frontend_local_state",
+      "invariant": "相机/LOD/选择/返回/播放位置、未提交字段为UI状态；只读DTO不当生产真值；显示组/折叠/筛选/吸附属于本机私有视图偏好，不修改LineGroup或ProjectState",
+      "transition_and_exit": "表单Scope/基修订/dirty明确；文本撤销优先本地；应用与工程保存分别显示；按draft/frozen_run上下文保存，旧Run不复用新草稿成员身份",
+      "actual_runtime": null,
+      "code_owner_component": "ui_host",
+      "runtime_store_owner_component": "ui_host"
+    },
+    {
+      "id": "OS16",
+      "title": "显示时钟/媒体姿态",
+      "owner_component": "ui_host",
+      "storage_scope": "view_time_only",
+      "invariant": "从真实事件或隔离示例选状态/阶段姿态；view_time与仿真时钟不同；组/设备共享一个view_time，实际阶段有效区间依TC02，不能以占用代替加工",
+      "transition_and_exit": "播放/回看/LOD不领用/产出；计算暂停和回放暂停标不同含义，复位/重跑新Run保留旧结果",
+      "actual_runtime": null,
+      "code_owner_component": "presentation",
+      "runtime_store_owner_component": "ui_host"
+    },
+    {
+      "id": "OS17",
+      "title": "保存/导入/导出文件任务",
+      "owner_component": "desktop_host",
+      "storage_scope": "authorized_file_IO_under_host_control",
+      "invariant": "Host授权选定路径；handoff写对应冻结R与所选资产/结果，目标路径提交串行避免写坏",
+      "transition_and_exit": "保存成功saved_revision=实际写入R；若当前已R+1仍显示未保存；失败旧有效清单保持，undo不回滚磁盘/导入资产",
+      "actual_runtime": null,
+      "code_owner_component": "reporting",
+      "runtime_store_owner_component": "desktop_host"
+    },
+    {
+      "id": "OS18",
+      "title": "外部连接与授权",
+      "owner_component": "desktop_host",
+      "storage_scope": "session_local_grants_and_pipe",
+      "invariant": "MCP连接用户域Host并取得明确工程/Scope/字段范围，来源由传输确定，不能由caller伪称UI",
+      "transition_and_exit": "Host关闭/切工程导致旧Scope无效；桥不自动开启另一Host。stdout仅协议，客户端模型连接不成为业务真值",
+      "actual_runtime": null,
+      "code_owner_component": "desktop_host",
+      "runtime_store_owner_component": "desktop_host"
+    }
+  ],
+  "admission_and_compute": "Host只在短事务中检查Scope/修订/必要输入并接收或提交，CPU/渲染/文件工作在锁外执行冻结输入；实际回传只登记关联任务/结果，不能用序列化整个长计算阻塞UI。详细调度和请求参数S06冻结。",
+  "revision_scopes": "ProjectDraft与DefinitionDraft两个语义Scope，各自修订/历史；外部命令仍以当前Project锚定，同apply_commands处理。旧18操作目录不因本项新增操作，S06-03同步精确Scope请求/结果结构与实际消费者。",
+  "compute_control_semantics": "Run计算暂停/事件单步只影响实际计算继续，不重领料；速度与回放暂停只改view_time。复位计算通过取消/结束后从共同输入新Run，不改写旧结果。具体18操作内控制结构/宿主服务接点由S06-03明确定义；不以本文假称已可调用。",
+  "physical_file_vs_state": "保存/导出不使旧Run成为新草稿结果。对同一实际目标按准入顺序提交，每任务冻结R；只有实际根提交后成功。替换失败核对并尽可能恢复旧根，恢复失败保留可恢复文件并报告IoFailure/dirty，不声称旧根完好；R+1仍dirty。未采用模块/未知能力可保存声明，执行前检查用途。",
+  "scoped_walkthroughs": [
+    {
+      "id": "ST01",
+      "trigger": "UI和Agent同时基于Project R编辑",
+      "expected": "短事务先提交者R+1，另一RevisionConflict；保留后一草稿，不部分覆盖",
+      "evidence": "finite_design_reasoning_not_execution",
+      "actual_result": null
+    },
+    {
+      "id": "ST02",
+      "trigger": "运行中改工时/BOM/来料",
+      "expected": "只改下一草稿；旧Run输入/已执行事件/库存和资源保持，重跑新RunId",
+      "evidence": "finite_design_reasoning_not_execution",
+      "actual_result": null
+    },
+    {
+      "id": "ST03",
+      "trigger": "定义草稿修改未采用",
+      "expected": "DefinitionDraftScope修订变化；现有实例仍旧版本，正式Project和当前Run不受影响",
+      "evidence": "finite_design_reasoning_not_execution",
+      "actual_result": null
+    },
+    {
+      "id": "ST04",
+      "trigger": "保存R期间有新编辑R+1",
+      "expected": "文件真实提交R，saved_revision=R；当前R+1的未保存标记保留，不误称全工程已保存",
+      "evidence": "finite_design_reasoning_not_execution",
+      "actual_result": null
+    },
+    {
+      "id": "ST05",
+      "trigger": "撤销后重做、再新增编辑",
+      "expected": "草稿修订每次增；新编辑清redo；当前Run与磁盘文件不倒退，跨Scope不混历史",
+      "evidence": "finite_design_reasoning_not_execution",
+      "actual_result": null
+    },
+    {
+      "id": "ST06",
+      "trigger": "专业认可或显式绑定后尝试普通undo",
+      "expected": "不回滚认可/专业处置；非可逆提交改变历史边界，说明受支持撤销范围，旧结果仍保留",
+      "evidence": "finite_design_reasoning_not_execution",
+      "actual_result": null
+    },
+    {
+      "id": "ST07",
+      "trigger": "取消请求与完成竞争",
+      "expected": "根据真实任务终态；先完成显示Completed，实际取消显示Cancelled/部分范围，不能用请求回执代终态",
+      "evidence": "finite_design_reasoning_not_execution",
+      "actual_result": null
+    },
+    {
+      "id": "ST08",
+      "trigger": "旧R渲染尚未返回时变更到R+1",
+      "expected": "返回归请求R，不当当前R+1；读取/生成关联图可保留，不能静默替换当前UI场景",
+      "evidence": "finite_design_reasoning_not_execution",
+      "actual_result": null
+    },
+    {
+      "id": "ST09",
+      "trigger": "关闭/切工程时任务还活动",
+      "expected": "明确等待完成/取消后切换/留在；实际终态与未保存处理完成前不接入另一活动Project，不让回传写错工程",
+      "evidence": "finite_design_reasoning_not_execution",
+      "actual_result": null
+    },
+    {
+      "id": "ST10",
+      "trigger": "目标3的草稿仅形成2实际接受",
+      "expected": "目标不变成库存；实际差额和观察窗可读，允许条件内≤3轮修正；初案已达标不强制第二Run",
+      "evidence": "finite_design_reasoning_not_execution",
+      "actual_result": null
+    },
+    {
+      "id": "ST11",
+      "trigger": "仅图片/标签/LOD或播放头改变",
+      "expected": "只改定义/显示相应状态，不再次领用/产出；同一状态可换外观但不生成新成功Run",
+      "evidence": "finite_design_reasoning_not_execution",
+      "actual_result": null
+    },
+    {
+      "id": "ST12",
+      "trigger": "Agent尝试伪造人工认可或写当前Run",
+      "expected": "传输来源/范围核验，拒绝未授权写入；可以读实际成果或在获准范围提出绑定，不能生成假的人工决定",
+      "evidence": "finite_design_reasoning_not_execution",
+      "actual_result": null
+    }
+  ],
+  "source_boundaries": [
+    "文档明确状态所有权/生命周期；完整Rust/TS字段、事务/取消/回传签名由S06-02/03落到同源类型",
+    "实际并发/命名管道/IPC/保存和渲染关联仍须S05-05/S09执行，案例预期不当实际结果",
+    "Figma/可点击原型/本人走查仍按S04授权和真实证据，不由状态文字通过"
+  ],
+  "actual_runtime": null,
+  "actual_frontend_or_Figma": null,
+  "review_ref": "docs/04_开发与验收/S05-02_共享状态与所有权复审.json",
+  "ownership_terms": "owner_component/runtime_store_owner_component是活动数据的持有责任，code_owner_component是处理算法/类型/格式的包；Domain只定义类型，不持有独立活动状态，Simulation/Packaging执行库由Host持有上下文。",
+  "timeline_contract_ref": "docs/02_交互设计/时间轴主轴与轨道组_监督细化.json",
+  "timeline_private_preferences": {
+    "version": 1,
+    "storage_owner": "ui_host",
+    "storage": "machine-local localStorage",
+    "key": "superfactory.timeline.view.v1:<project_id>:draft|run:<run_id>",
+    "fields": [
+      "group_overrides",
+      "row_order",
+      "collapsed_group_ids",
+      "pinned_resource_ids",
+      "axis_windows",
+      "row_scroll",
+      "time_scale",
+      "dock_height_px",
+      "description_width_px",
+      "timeline_visible",
+      "description_visible",
+      "snap_enabled"
+    ],
+    "owner": "ui_host",
+    "current_public_schema_extended": false,
+    "design_status": "fully_specified_private_UI_V1",
+    "runtime_implemented": false
+  },
+  "timeline_public_contract_pending": [],
+  "timeline_complete_definition_ref": "docs/02_交互设计/时间轴主轴与子轴完整定义.json",
+  "timeline_return_time_rule": "confirmed view_time shared; explicit child seek survives Back; candidate seek not production truth",
+  "timeline_public_contract_merge_ref": "docs/03_架构与契约/全层类型与工程格式.json#/timeline_runtime_contract",
+  "timeline_actual_runtime": "not_implemented; type/schema/TS/finite proof only",
+  "file_commit_and_recovery_ref": "docs/03_架构与契约/全层类型与工程格式.json#/storage/replacement_recovery",
+  "managed_result_lifecycle_ref": "docs/03_架构与契约/大结果传输设计.md",
+  "desktop_close_admission_ref": "docs/03_架构与契约/公开操作与宿主调用契约.json#/private_ui_desktop_close_contract",
+  "workspace_refresh_order": {
+    "owner": "Workbench presentation state; actual active project remains Host-owned",
+    "rule": "每次整工作区读取记录当前读取序号；较新读取开始后，旧读取返回必须在写snapshot/projectIdentity/Run/选择/厂房和方案控件前拒绝。较新读取失败照实报错，不自动重试或恢复旧响应。",
+    "scope": "补充OS01、NFR08旧异步回调归属；不改变Host的工程epoch、共同命令或旧会话撤销边界。",
+    "implementation_ref": "apps/planner/src/features/factory/Workbench.tsx",
+    "validation_ref": ".work/single-window-20261019/p001-closeout/nfr08-callbacks/validation.json"
+  }
+}

@@ -1,0 +1,496 @@
+{
+  "document_kind": "explicit_61_field_adapter_rules_not_public_schema",
+  "fields": [
+    {
+      "category": "items",
+      "logical_field": "item_definition.unit",
+      "source_manifest": "modules/items/shell-spec/manifest.json",
+      "source_path_or_rule": "item_definition.unit",
+      "canonical_pointer_relative_to_ModuleDefinition": "/payload/data/unit",
+      "transform": "原UnitId直接保留"
+    },
+    {
+      "category": "items",
+      "logical_field": "item_definition.tracking",
+      "source_manifest": "modules/items/shell-spec/manifest.json",
+      "source_path_or_rule": "item_definition.tracking",
+      "canonical_pointer_relative_to_ModuleDefinition": "/payload/data/tracking",
+      "transform": "原枚举直接保留"
+    },
+    {
+      "category": "items",
+      "logical_field": "item_definition.spec_ref",
+      "source_manifest": "modules/items/shell-spec/manifest.json",
+      "source_path_or_rule": "item_definition.spec_ref",
+      "canonical_pointer_relative_to_ModuleDefinition": "/payload/data/spec_ref",
+      "transform": "由显式subject_refs字典解析为id/revision，不按连字符猜"
+    },
+    {
+      "category": "items",
+      "logical_field": "item_definition.attributes",
+      "source_manifest": "modules/items/shell-spec/manifest.json",
+      "source_path_or_rule": "item_definition.attributes",
+      "canonical_pointer_relative_to_ModuleDefinition": "/payload/data/attributes",
+      "transform": "按已声明type包装TypedValue，vector3数组→x/y/z"
+    },
+    {
+      "category": "items",
+      "logical_field": "item_definition.attribute_schema",
+      "source_manifest": "modules/items/shell-spec/manifest.json",
+      "source_path_or_rule": "item_definition.attribute_schema",
+      "canonical_pointer_relative_to_ModuleDefinition": "/payload/data/attribute_schema",
+      "transform": "type→value_type；shape=3→[3]；basis显式试做来源"
+    },
+    {
+      "category": "items",
+      "logical_field": "presentation_or_media_ref",
+      "source_manifest": "modules/items/shell-spec/manifest.json",
+      "source_path_or_rule": "presentation_or_media_ref",
+      "canonical_pointer_relative_to_ModuleDefinition": "/payload/data/presentation_or_media_ref",
+      "transform": "源未声明时保留null，不构造外观"
+    },
+    {
+      "category": "devices",
+      "logical_field": "placement",
+      "source_manifest": "modules/devices/control-box-assembly/manifest.json",
+      "source_path_or_rule": "placement",
+      "canonical_pointer_relative_to_ModuleDefinition": "/payload/data/placement",
+      "transform": "fixed_during_simulation枚举保留"
+    },
+    {
+      "category": "devices",
+      "logical_field": "parameters",
+      "source_manifest": "modules/devices/control-box-assembly/manifest.json",
+      "source_path_or_rule": "parameters",
+      "canonical_pointer_relative_to_ModuleDefinition": "/parameters",
+      "transform": "type→value_type、显式parameter_aliases；duration绑定整个typed DurationValue"
+    },
+    {
+      "category": "devices",
+      "logical_field": "ports",
+      "source_manifest": "modules/devices/control-box-assembly/manifest.json",
+      "source_path_or_rule": "ports",
+      "canonical_pointer_relative_to_ModuleDefinition": "/payload/data/ports",
+      "transform": "in/out→input/output，item→MaterialPort.item_role，单位保留"
+    },
+    {
+      "category": "devices",
+      "logical_field": "behavior OR operation_ref",
+      "source_manifest": "modules/devices/control-box-assembly/manifest.json",
+      "source_path_or_rule": "behavior OR operation_ref",
+      "canonical_pointer_relative_to_ModuleDefinition": "/payload/data/behavior",
+      "transform": "原内联assemble转换OperationDefinition，selected=inline，不叠加独立规则"
+    },
+    {
+      "category": "devices",
+      "logical_field": "configuration",
+      "source_manifest": "modules/devices/control-box-assembly/manifest.json",
+      "source_path_or_rule": "configuration",
+      "canonical_pointer_relative_to_ModuleDefinition": "/payload/data/configuration",
+      "transform": "run_mode枚举原值保留，缺实际策略消费者明确阻塞execution"
+    },
+    {
+      "category": "devices",
+      "logical_field": "presentation",
+      "source_manifest": "modules/devices/control-box-assembly/manifest.json",
+      "source_path_or_rule": "presentation",
+      "canonical_pointer_relative_to_ModuleDefinition": "/payload/data/presentation",
+      "transform": "读真实native-scene，box/cylinder/姿态和锚点转换，原文归档"
+    },
+    {
+      "category": "devices",
+      "logical_field": "operations",
+      "source_manifest": "modules/devices/control-box-assembly/manifest.json",
+      "source_path_or_rule": "operations",
+      "canonical_pointer_relative_to_ModuleDefinition": "/payload/data/operations",
+      "transform": "原声明动作保持；不注册Host能力"
+    },
+    {
+      "category": "resources",
+      "logical_field": "resource_definition.kind",
+      "source_manifest": "modules/resources/operator-role/manifest.json",
+      "source_path_or_rule": "resource_definition.kind",
+      "canonical_pointer_relative_to_ModuleDefinition": "/payload/data/kind",
+      "transform": "枚举保留"
+    },
+    {
+      "category": "resources",
+      "logical_field": "resource_definition.role",
+      "source_manifest": "modules/resources/operator-role/manifest.json",
+      "source_path_or_rule": "resource_definition.role",
+      "canonical_pointer_relative_to_ModuleDefinition": "/payload/data/role",
+      "transform": "实际角色字符串保留"
+    },
+    {
+      "category": "resources",
+      "logical_field": "resource_definition.capacity",
+      "source_manifest": "modules/resources/operator-role/manifest.json",
+      "source_path_or_rule": "resource_definition.capacity",
+      "canonical_pointer_relative_to_ModuleDefinition": "/payload/data/capacity",
+      "transform": "value→DecimalAmount coefficient/decimal_places，单位保留"
+    },
+    {
+      "category": "resources",
+      "logical_field": "resource_definition.qualifications",
+      "source_manifest": "modules/resources/operator-role/manifest.json",
+      "source_path_or_rule": "resource_definition.qualifications",
+      "canonical_pointer_relative_to_ModuleDefinition": "/payload/data/qualifications",
+      "transform": "源未声明资格要求记空集合；不自造资格"
+    },
+    {
+      "category": "resources",
+      "logical_field": "resource_definition.default_calendar_ms",
+      "source_manifest": "modules/resources/operator-role/manifest.json",
+      "source_path_or_rule": "resource_definition.default_calendar_ms",
+      "canonical_pointer_relative_to_ModuleDefinition": "/payload/data/default_calendar_ms",
+      "transform": "[a,b]→IntervalMs{start_ms:a,end_ms:b}，数值不变"
+    },
+    {
+      "category": "resources",
+      "logical_field": "presentation",
+      "source_manifest": "modules/resources/operator-role/manifest.json",
+      "source_path_or_rule": "presentation",
+      "canonical_pointer_relative_to_ModuleDefinition": "/payload/data/presentation",
+      "transform": "源未声明保留null"
+    },
+    {
+      "category": "tasks",
+      "logical_field": "task_definition.kind",
+      "source_manifest": "modules/tasks/board-preparation/manifest.json",
+      "source_path_or_rule": "task_definition.kind",
+      "canonical_pointer_relative_to_ModuleDefinition": "/payload/data/kind",
+      "transform": "preparation→manual_preparation显式语义别名"
+    },
+    {
+      "category": "tasks",
+      "logical_field": "task_definition.target_role",
+      "source_manifest": "modules/tasks/board-preparation/manifest.json",
+      "source_path_or_rule": "task_definition.target_role",
+      "canonical_pointer_relative_to_ModuleDefinition": "/payload/data/target_role",
+      "transform": "原board_station角色保留，不推断实际设备ID"
+    },
+    {
+      "category": "tasks",
+      "logical_field": "task_definition.prerequisites",
+      "source_manifest": "modules/tasks/board-preparation/manifest.json",
+      "source_path_or_rule": "task_definition.prerequisites",
+      "canonical_pointer_relative_to_ModuleDefinition": "/payload/data/prerequisites",
+      "transform": "原命名条件经明确readiness_refs表→ReadinessRef"
+    },
+    {
+      "category": "tasks",
+      "logical_field": "task_definition.steps",
+      "source_manifest": "modules/tasks/board-preparation/manifest.json",
+      "source_path_or_rule": "task_definition.steps",
+      "canonical_pointer_relative_to_ModuleDefinition": "/payload/data/steps",
+      "transform": "源单步骤工时，steps为空且duration存在，不制造额外工作"
+    },
+    {
+      "category": "tasks",
+      "logical_field": "task_definition.resource_roles",
+      "source_manifest": "modules/tasks/board-preparation/manifest.json",
+      "source_path_or_rule": "task_definition.resource_roles",
+      "canonical_pointer_relative_to_ModuleDefinition": "/payload/data/resource_roles",
+      "transform": "数量包装Quantity，setter单位显式选择person"
+    },
+    {
+      "category": "tasks",
+      "logical_field": "task_definition.duration",
+      "source_manifest": "modules/tasks/board-preparation/manifest.json",
+      "source_path_or_rule": "task_definition.duration",
+      "canonical_pointer_relative_to_ModuleDefinition": "/payload/data/duration",
+      "transform": "30second→30000millisecond；非整数ms拒绝"
+    },
+    {
+      "category": "tasks",
+      "logical_field": "task_definition.equipment_access",
+      "source_manifest": "modules/tasks/board-preparation/manifest.json",
+      "source_path_or_rule": "task_definition.equipment_access",
+      "canonical_pointer_relative_to_ModuleDefinition": "/payload/data/equipment_access",
+      "transform": "exclusive原值保留"
+    },
+    {
+      "category": "tasks",
+      "logical_field": "task_definition.completion_effect",
+      "source_manifest": "modules/tasks/board-preparation/manifest.json",
+      "source_path_or_rule": "task_definition.completion_effect",
+      "canonical_pointer_relative_to_ModuleDefinition": "/payload/data/completion_effect",
+      "transform": "readiness_flag→marker，target_role沿源，produces_material=false不变"
+    },
+    {
+      "category": "operations",
+      "logical_field": "operation_definition.builtin",
+      "source_manifest": "modules/operations/control-box-rule/manifest.json",
+      "source_path_or_rule": "operation_definition.builtin",
+      "canonical_pointer_relative_to_ModuleDefinition": "/payload/data/builtin",
+      "transform": "assemble保留"
+    },
+    {
+      "category": "operations",
+      "logical_field": "operation_definition.item_roles",
+      "source_manifest": "modules/operations/control-box-rule/manifest.json",
+      "source_path_or_rule": "operation_definition.item_roles",
+      "canonical_pointer_relative_to_ModuleDefinition": "/payload/data/item_roles",
+      "transform": "由原输入输出角色闭包保留"
+    },
+    {
+      "category": "operations",
+      "logical_field": "operation_definition.inputs/outputs",
+      "source_manifest": "modules/operations/control-box-rule/manifest.json",
+      "source_path_or_rule": "operation_definition.inputs/outputs",
+      "canonical_pointer_relative_to_ModuleDefinition": "/payload/data/inputs + /payload/data/outputs",
+      "transform": "Quantity包装；端口经显式operation_ports映射；无质量要求不填自动合格"
+    },
+    {
+      "category": "operations",
+      "logical_field": "operation_definition.resource_roles",
+      "source_manifest": "modules/operations/control-box-rule/manifest.json",
+      "source_path_or_rule": "operation_definition.resource_roles",
+      "canonical_pointer_relative_to_ModuleDefinition": "/payload/data/resource_roles",
+      "transform": "resource_units显式给assembler=person"
+    },
+    {
+      "category": "operations",
+      "logical_field": "operation_definition.duration OR phases",
+      "source_manifest": "modules/operations/control-box-rule/manifest.json",
+      "source_path_or_rule": "operation_definition.duration OR phases",
+      "canonical_pointer_relative_to_ModuleDefinition": "/payload/data/duration + /payload/data/phases",
+      "transform": "40s→40000ms，源无phases记空，不重复加工时"
+    },
+    {
+      "category": "operations",
+      "logical_field": "operation_definition.quality_and_routes",
+      "source_manifest": "modules/operations/control-box-rule/manifest.json",
+      "source_path_or_rule": "operation_definition.quality_and_routes",
+      "canonical_pointer_relative_to_ModuleDefinition": "/payload/data/quality_and_routes",
+      "transform": "未声明则null，不猜检验结论"
+    },
+    {
+      "category": "operations",
+      "logical_field": "operation_definition.identity_policy",
+      "source_manifest": "modules/operations/control-box-rule/manifest.json",
+      "source_path_or_rule": "operation_definition.identity_policy",
+      "canonical_pointer_relative_to_ModuleDefinition": "/payload/data/identity_policy",
+      "transform": "new_output_preserves_input_composition→assembly_with_composition，配比/结论不改"
+    },
+    {
+      "category": "transport",
+      "logical_field": "parameters/ports",
+      "source_manifest": "modules/transport/batch-transport/manifest.json",
+      "source_path_or_rule": "parameters/ports",
+      "canonical_pointer_relative_to_ModuleDefinition": "/parameters + /payload/data/ports",
+      "transform": "typed参数/MaterialPort转换，端口源目的原角色保留"
+    },
+    {
+      "category": "transport",
+      "logical_field": "behavior.builtin",
+      "source_manifest": "modules/transport/batch-transport/manifest.json",
+      "source_path_or_rule": "behavior.builtin",
+      "canonical_pointer_relative_to_ModuleDefinition": "/payload/data/builtin",
+      "transform": "transport保留"
+    },
+    {
+      "category": "transport",
+      "logical_field": "behavior.batch_capacity",
+      "source_manifest": "modules/transport/batch-transport/manifest.json",
+      "source_path_or_rule": "behavior.batch_capacity",
+      "canonical_pointer_relative_to_ModuleDefinition": "/payload/data/batch_capacity",
+      "transform": "Quantity包装，value1/piece不变"
+    },
+    {
+      "category": "transport",
+      "logical_field": "behavior.resources",
+      "source_manifest": "modules/transport/batch-transport/manifest.json",
+      "source_path_or_rule": "behavior.resources",
+      "canonical_pointer_relative_to_ModuleDefinition": "/payload/data/resources",
+      "transform": "carrier显式单位vehicle，不当货物数量"
+    },
+    {
+      "category": "transport",
+      "logical_field": "behavior.times",
+      "source_manifest": "modules/transport/batch-transport/manifest.json",
+      "source_path_or_rule": "behavior.times",
+      "canonical_pointer_relative_to_ModuleDefinition": "/payload/data/times",
+      "transform": "10/30/10/30s→10000/30000/10000/30000ms"
+    },
+    {
+      "category": "transport",
+      "logical_field": "behavior.acceptance_conditions",
+      "source_manifest": "modules/transport/batch-transport/manifest.json",
+      "source_path_or_rule": "behavior.acceptance_conditions",
+      "canonical_pointer_relative_to_ModuleDefinition": "/payload/data/acceptance_conditions",
+      "transform": "原固定builtin的到达/卸货/接收/返程语义在C01定义，未声明附加目的条件记空"
+    },
+    {
+      "category": "transport",
+      "logical_field": "behavior.identity_policy",
+      "source_manifest": "modules/transport/batch-transport/manifest.json",
+      "source_path_or_rule": "behavior.identity_policy",
+      "canonical_pointer_relative_to_ModuleDefinition": "/payload/data/identity_policy",
+      "transform": "preserve_cargo_ids保留"
+    },
+    {
+      "category": "transport",
+      "logical_field": "presentation",
+      "source_manifest": "modules/transport/batch-transport/manifest.json",
+      "source_path_or_rule": "presentation",
+      "canonical_pointer_relative_to_ModuleDefinition": "/payload/data/presentation",
+      "transform": "源path=null，optional Presentation=null且preview缺项"
+    },
+    {
+      "category": "templates",
+      "logical_field": "project",
+      "source_manifest": "modules/templates/parallel-electromechanical/manifest.json",
+      "source_path_or_rule": "project",
+      "canonical_pointer_relative_to_ModuleDefinition": "/payload/data/project",
+      "transform": "实际旧project.design原样归档并保留相对引用；明确阻塞，不能称TemplateSubset"
+    },
+    {
+      "category": "templates",
+      "logical_field": "project.module_refs",
+      "source_manifest": "modules/templates/parallel-electromechanical/manifest.json",
+      "source_path_or_rule": "project.module_refs",
+      "canonical_pointer_relative_to_ModuleDefinition": "referenced TemplateSubset.module_refs",
+      "transform": "逐项映射为TemplateSubset.module_refs的id/version；内层生成待公共闭合"
+    },
+    {
+      "category": "templates",
+      "logical_field": "project.layout_scope/halls/lines/connections",
+      "source_manifest": "modules/templates/parallel-electromechanical/manifest.json",
+      "source_path_or_rule": "project.layout_scope/halls/lines/connections",
+      "canonical_pointer_relative_to_ModuleDefinition": "referenced TemplateSubset.layout_scope/halls/lines/connections + proposed_objects.locations",
+      "transform": "layout_scope/高度null/Location端点与PortRef差异逐项阻塞，禁止删连接形成假成功"
+    },
+    {
+      "category": "templates",
+      "logical_field": "project.resources/item_types/role_bindings",
+      "source_manifest": "modules/templates/parallel-electromechanical/manifest.json",
+      "source_path_or_rule": "project.resources/item_types/role_bindings",
+      "canonical_pointer_relative_to_ModuleDefinition": "referenced TemplateSubset.resource_requirements/item_types/suggested_role_bindings",
+      "transform": "实际W-B等与类型规格完整保留；需显式新建/复用及spec_ref映射"
+    },
+    {
+      "category": "templates",
+      "logical_field": "project.initial_stock/demand",
+      "source_manifest": "modules/templates/parallel-electromechanical/manifest.json",
+      "source_path_or_rule": "project.initial_stock/demand",
+      "canonical_pointer_relative_to_ModuleDefinition": "referenced TemplateSubset.seed",
+      "transform": "保留原输入；默认不生成seed，不称已完成新方案种子转换"
+    },
+    {
+      "category": "templates",
+      "logical_field": "generation_profile",
+      "source_manifest": "modules/templates/parallel-electromechanical/manifest.json",
+      "source_path_or_rule": "generation_profile",
+      "canonical_pointer_relative_to_ModuleDefinition": "/payload/data/generation_profile",
+      "transform": "当前示例无该字段，payload.generation_profile=null"
+    },
+    {
+      "category": "professional",
+      "logical_field": "professional_contract.input_fields",
+      "source_manifest": "modules/professional/machining-producer/manifest.json",
+      "source_path_or_rule": "professional_contract.input_fields",
+      "canonical_pointer_relative_to_ModuleDefinition": "/payload/data/input_fields",
+      "transform": "每个原字段名转DataFieldDeclaration；类型引用与frame使用显式试做选择，未确认阻塞"
+    },
+    {
+      "category": "professional",
+      "logical_field": "professional_contract.output_artifact_type/output_fields",
+      "source_manifest": "modules/professional/machining-producer/manifest.json",
+      "source_path_or_rule": "professional_contract.output_artifact_type/output_fields",
+      "canonical_pointer_relative_to_ModuleDefinition": "/payload/data/output_artifact_type + /payload/data/output_fields",
+      "transform": "artifact_type原machining_job保留，输出名逐项保留，非实际结果"
+    },
+    {
+      "category": "professional",
+      "logical_field": "professional_contract.intended_modes",
+      "source_manifest": "modules/professional/machining-producer/manifest.json",
+      "source_path_or_rule": "professional_contract.intended_modes",
+      "canonical_pointer_relative_to_ModuleDefinition": "/payload/data/intended_modes",
+      "transform": "两个原模式保留，不进入ProviderCapability"
+    },
+    {
+      "category": "professional",
+      "logical_field": "professional_contract.available_modes/producer_status",
+      "source_manifest": "modules/professional/machining-producer/manifest.json",
+      "source_path_or_rule": "professional_contract.available_modes/producer_status",
+      "canonical_pointer_relative_to_ModuleDefinition": "Host ProviderCapability only; not copied",
+      "transform": "保留在原文归档，绝不写入ProfessionalDefinition或注册真实能力"
+    },
+    {
+      "category": "professional",
+      "logical_field": "professional_contract.unit/coordinate_frame/scope",
+      "source_manifest": "modules/professional/machining-producer/manifest.json",
+      "source_path_or_rule": "professional_contract.unit/coordinate_frame/scope",
+      "canonical_pointer_relative_to_ModuleDefinition": "/payload/data/unit + /payload/data/coordinate_frame + /payload/data/scope",
+      "transform": "mm→millimeter；机器frame未给轴，选择profile仅试做且标未确认"
+    },
+    {
+      "category": "professional",
+      "logical_field": "acceptance/consumer_binding",
+      "source_manifest": "modules/professional/machining-producer/manifest.json",
+      "source_path_or_rule": "acceptance/consumer_binding",
+      "canonical_pointer_relative_to_ModuleDefinition": "ProjectState.acknowledgments/bindings not generated",
+      "transform": "原定义无认可/绑定；不生成ProjectState记录"
+    },
+    {
+      "category": "media",
+      "logical_field": "presentation.kind/path OR media_ref",
+      "source_manifest": "modules/media/editable-bench/manifest.json",
+      "source_path_or_rule": "presentation.kind/path OR media_ref",
+      "canonical_pointer_relative_to_ModuleDefinition": "/payload/data/kind + /payload/data/source",
+      "transform": "实际文件读入受控native_scene；源JSON及权利缺项保留"
+    },
+    {
+      "category": "media",
+      "logical_field": "presentation.unit/coordinate_frame/scale",
+      "source_manifest": "modules/media/editable-bench/manifest.json",
+      "source_path_or_rule": "presentation.unit/coordinate_frame/scale",
+      "canonical_pointer_relative_to_ModuleDefinition": "/payload/data/unit + /payload/data/coordinate_frame + /payload/data/scale",
+      "transform": "源meter/right_handed_y_up保留；显式render profile的单位scale非物理尺寸"
+    },
+    {
+      "category": "media",
+      "logical_field": "presentation.nodes/poses/actions",
+      "source_manifest": "modules/media/editable-bench/manifest.json",
+      "source_path_or_rule": "presentation.nodes/poses/actions",
+      "canonical_pointer_relative_to_ModuleDefinition": "/payload/data/nodes + /payload/data/poses + /payload/data/actions",
+      "transform": "原5节点含真实cylinder；字符串ID→稳定索引；offset转原节点局部基准Pose；无动作不制造轨迹"
+    },
+    {
+      "category": "media",
+      "logical_field": "presentation.timeline",
+      "source_manifest": "modules/media/editable-bench/manifest.json",
+      "source_path_or_rule": "presentation.timeline",
+      "canonical_pointer_relative_to_ModuleDefinition": "/payload/data/timeline",
+      "transform": "原文件未声明时间轨道，空数组，不造生产时间"
+    },
+    {
+      "category": "media",
+      "logical_field": "presentation.anchor_roles/port_anchors",
+      "source_manifest": "modules/media/editable-bench/manifest.json",
+      "source_path_or_rule": "presentation.anchor_roles/port_anchors",
+      "canonical_pointer_relative_to_ModuleDefinition": "/payload/data/anchor_roles + /payload/data/port_anchors",
+      "transform": "源local_position通过显式透明零面helper子节点保留，不猜同名端口；仅Schema试做"
+    },
+    {
+      "category": "media",
+      "logical_field": "presentation.lod",
+      "source_manifest": "modules/media/editable-bench/manifest.json",
+      "source_path_or_rule": "presentation.lod",
+      "canonical_pointer_relative_to_ModuleDefinition": "/payload/data/lod",
+      "transform": "显式试做device_icons策略，不声称实际产品LOD性能"
+    },
+    {
+      "category": "media",
+      "logical_field": "presentation.production_effect",
+      "source_manifest": "modules/media/editable-bench/manifest.json",
+      "source_path_or_rule": "presentation.production_effect",
+      "canonical_pointer_relative_to_ModuleDefinition": "/payload/data/production_effect",
+      "transform": "none原值保留，严禁状态写入"
+    }
+  ],
+  "common_header_ref": "packages/domain/module-field-bindings.design.json#/common_bindings",
+  "profile_ref": "scenarios/九类模块采用/DRF03_适配试做选项.json",
+  "template_limit": "未完整转换的内层留阻塞；不删库位/连接/阶段/初始输入。"
+}

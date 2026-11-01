@@ -1,0 +1,2248 @@
+{
+  "document_kind": "S04_03_form_and_feedback_design_not_UI_or_API_runtime",
+  "checkpoint": "S04-03",
+  "date": "2026-10-14 Asia/Shanghai",
+  "navigation_ref": "docs/02_交互设计/交互流程与视图导航.json",
+  "confirmed_choices_ref": "docs/00_项目基线/全量设计编码确认选择.json",
+  "command_catalog_ref": "packages/commands/command-catalog.design.json",
+  "form_field_identity": "ui_field_id是界面控件身份，不新增公共API字段；S06-02/03负责精确domain/params/json_pointer及错误路径映射",
+  "field_states": [
+    "unknown",
+    "explicit_example_assumption",
+    "user_provided",
+    "actual_computed_readonly"
+  ],
+  "unknown_policy": "unknown用待补/空值，不能填0/充足/合格；示例来源可见，用户确认后仍保留来源，不自动提升为测量事实",
+  "common_form_state": [
+    "object_or_definition_id",
+    "draft_scope",
+    "form_base_revision",
+    "original_values",
+    "local_values",
+    "dirty_fields",
+    "field_source_refs",
+    "applied_revision_or_null",
+    "saved_revision_or_null",
+    "bound_task_or_run_or_null"
+  ],
+  "validation_ownership": "表单作输入反馈，宿主按同一冻结schema/能力/引用授权验证提交。领域内部消费已验证类型，不再复制整套兜底。草稿保存、采用、局部执行和完整结论分别检查当前用途必需项。",
+  "discard_feedback_rule": "明确放弃本地表单变更时，恢复当前工程值并清除已被放弃输入对应的字段错误和过期提示；已同步状态不能同时保留该次无效输入的待补提示。不改变Host修订、已保存文件或旧Run。",
+  "forms": [
+    {
+      "id": "F01",
+      "title": "九类共同身份/版本/来源",
+      "navigation_node": "module_library",
+      "category": "common",
+      "planned_operations": [
+        "query_module_library",
+        "import_package",
+        "apply_commands",
+        "export_package"
+      ],
+      "fields": [
+        {
+          "ui_field_id": "F01-01",
+          "label": "类别",
+          "value_kind": "enum",
+          "unit_or_reference": "九类稳定ID",
+          "required_for": "创建定义",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F01-02",
+          "label": "名称/稳定ID/版本",
+          "value_kind": "identity",
+          "unit_or_reference": "定义身份，不复制工程实例ID",
+          "required_for": "检查/采用",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F01-03",
+          "label": "来源/许可/资产",
+          "value_kind": "references",
+          "unit_or_reference": "实际文件与作者声明",
+          "required_for": "导入/交接/公开贡献分别核对",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F01-04",
+          "label": "依赖/支持范围",
+          "value_kind": "references",
+          "unit_or_reference": "明确版本/能力",
+          "required_for": "采用/运行",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F01-05",
+          "label": "示例输入与独立预期",
+          "value_kind": "references",
+          "unit_or_reference": "设计与实际结果分开",
+          "required_for": "贡献示例",
+          "mode": "editable_in_draft"
+        }
+      ],
+      "source_ref": "packages/module-kit/category-contracts.design.json",
+      "apply_and_effect": "保存私人草稿、检查、适当预览、明确采用和导出分步；保存不等于发布",
+      "scope": "draft_edit",
+      "actual_result": null
+    },
+    {
+      "id": "F02",
+      "title": "物品规格",
+      "navigation_node": "module_library",
+      "category": "items",
+      "planned_operations": [
+        "get_object",
+        "apply_commands",
+        "import_package",
+        "export_package"
+      ],
+      "fields": [
+        {
+          "ui_field_id": "F02-01",
+          "label": "类型/单位/规格",
+          "value_kind": "typed_fields",
+          "unit_or_reference": "物品类型与单位",
+          "required_for": "采用定义",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F02-02",
+          "label": "自定义属性",
+          "value_kind": "typed_attributes",
+          "unit_or_reference": "显式名称/类型/单位；非库存",
+          "required_for": "声明该属性时",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F02-03",
+          "label": "可回收/载具语义",
+          "value_kind": "enum",
+          "unit_or_reference": "不得重复统计承载物",
+          "required_for": "当前规格需要时",
+          "mode": "editable_in_draft"
+        }
+      ],
+      "source_ref": "packages/module-kit/category-contracts.design.json",
+      "apply_and_effect": "独立规格只生成物品类型，初始库存由工程输入另建",
+      "scope": "draft_edit",
+      "actual_result": null
+    },
+    {
+      "id": "F03",
+      "title": "固定设备定义/实例",
+      "navigation_node": "module_library",
+      "category": "devices",
+      "planned_operations": [
+        "get_object",
+        "apply_commands",
+        "import_package",
+        "export_package"
+      ],
+      "fields": [
+        {
+          "ui_field_id": "F03-01",
+          "label": "唯一行为来源",
+          "value_kind": "enum",
+          "unit_or_reference": "内联或工艺定义引用二选一",
+          "required_for": "用于生产时",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F03-02",
+          "label": "公开参数",
+          "value_kind": "typed_fields",
+          "unit_or_reference": "只能实例覆盖公开参数",
+          "required_for": "当前行为必需项",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F03-03",
+          "label": "端口/类型/单位/容量",
+          "value_kind": "ports",
+          "unit_or_reference": "稳定端口ID与物品/信号/成果类别",
+          "required_for": "连接/运行",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F03-04",
+          "label": "表现/包络/姿态",
+          "value_kind": "references",
+          "unit_or_reference": "布局m、节点ID，不能猜工时",
+          "required_for": "当前表现/布局用途",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F03-05",
+          "label": "角色绑定",
+          "value_kind": "references",
+          "unit_or_reference": "真实人员/夹具/载具ID",
+          "required_for": "当前阶段需要时",
+          "mode": "editable_in_draft"
+        }
+      ],
+      "source_ref": "packages/module-kit/category-contracts.design.json",
+      "apply_and_effect": "明确实例/定义/表现三层，实例修改不改库或其他设备",
+      "scope": "draft_edit",
+      "actual_result": null
+    },
+    {
+      "id": "F04",
+      "title": "资源定义与采用",
+      "navigation_node": "module_library",
+      "category": "resources",
+      "planned_operations": [
+        "get_object",
+        "apply_commands",
+        "import_package",
+        "export_package"
+      ],
+      "fields": [
+        {
+          "ui_field_id": "F04-01",
+          "label": "角色/容量/资格",
+          "value_kind": "typed_fields",
+          "unit_or_reference": "离散资源定义",
+          "required_for": "运行使用时",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F04-02",
+          "label": "日历/地点",
+          "value_kind": "calendar",
+          "unit_or_reference": "声明时间基准/厂房ID",
+          "required_for": "当前用途需要时",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F04-03",
+          "label": "实例数量/复用绑定",
+          "value_kind": "references",
+          "unit_or_reference": "现有资源或明确新实例",
+          "required_for": "采用时",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F04-04",
+          "label": "服务声明",
+          "value_kind": "typed_fields",
+          "unit_or_reference": "求解后置，保存不当可执行",
+          "required_for": "保存服务声明时",
+          "mode": "editable_in_draft"
+        }
+      ],
+      "source_ref": "packages/module-kit/category-contracts.design.json",
+      "apply_and_effect": "容量不等于实时空闲数；人员实例不可从定义或动画自动生成",
+      "scope": "draft_edit",
+      "actual_result": null
+    },
+    {
+      "id": "F05",
+      "title": "人工/准备/受支持自动任务",
+      "navigation_node": "module_library",
+      "category": "tasks",
+      "planned_operations": [
+        "get_object",
+        "apply_commands",
+        "import_package",
+        "export_package"
+      ],
+      "fields": [
+        {
+          "ui_field_id": "F05-01",
+          "label": "目标/前置/步骤",
+          "value_kind": "references",
+          "unit_or_reference": "任务/事件/对象ID",
+          "required_for": "执行时",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F05-02",
+          "label": "角色/工时",
+          "value_kind": "typed_fields",
+          "unit_or_reference": "日历与duration来源",
+          "required_for": "受支持步骤运行",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F05-03",
+          "label": "声明效果",
+          "value_kind": "enum",
+          "unit_or_reference": "准备/决定，不直接制造物品",
+          "required_for": "执行时",
+          "mode": "editable_in_draft"
+        }
+      ],
+      "source_ref": "packages/module-kit/category-contracts.design.json",
+      "apply_and_effect": "不存在的行为只可保存声明；制造产出交工艺规则",
+      "scope": "draft_edit",
+      "actual_result": null
+    },
+    {
+      "id": "F06",
+      "title": "工艺规则",
+      "navigation_node": "module_library",
+      "category": "operations",
+      "planned_operations": [
+        "get_object",
+        "apply_commands",
+        "import_package",
+        "export_package"
+      ],
+      "fields": [
+        {
+          "ui_field_id": "F06-01",
+          "label": "规则类型",
+          "value_kind": "enum",
+          "unit_or_reference": "转换/齐套/检查/返工/包装",
+          "required_for": "执行时",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F06-02",
+          "label": "输入输出配比",
+          "value_kind": "quantity_map",
+          "unit_or_reference": "物品类型/端口/数量/单位",
+          "required_for": "该工序实际用料时",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F06-03",
+          "label": "阶段/角色/条件",
+          "value_kind": "typed_fields",
+          "unit_or_reference": "phase_id/资源角色/日历",
+          "required_for": "执行时",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F06-04",
+          "label": "质量/返工出口",
+          "value_kind": "typed_fields",
+          "unit_or_reference": "明确预设/次数/待判库位",
+          "required_for": "检查或返工用途",
+          "mode": "editable_in_draft"
+        }
+      ],
+      "source_ref": "packages/module-kit/category-contracts.design.json",
+      "apply_and_effect": "工序用料而非全BOM阻塞首工序；正式变化只由Engine提交",
+      "scope": "draft_edit",
+      "actual_result": null
+    },
+    {
+      "id": "F07",
+      "title": "固定时间物流定义/采用",
+      "navigation_node": "module_library",
+      "category": "transport",
+      "planned_operations": [
+        "get_object",
+        "apply_commands",
+        "import_package",
+        "export_package"
+      ],
+      "fields": [
+        {
+          "ui_field_id": "F07-01",
+          "label": "货物/容量/单位",
+          "value_kind": "typed_fields",
+          "unit_or_reference": "类型/批量/载具容量",
+          "required_for": "发运时",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F07-02",
+          "label": "装卸/去返时长",
+          "value_kind": "duration_map",
+          "unit_or_reference": "声明时间来源",
+          "required_for": "运行时",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F07-03",
+          "label": "角色/接受条件",
+          "value_kind": "references",
+          "unit_or_reference": "真实资源与库位ID",
+          "required_for": "采用/执行时",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F07-04",
+          "label": "起讫/载具绑定",
+          "value_kind": "references",
+          "unit_or_reference": "工程对象，不按屏幕距离推时长",
+          "required_for": "采用时",
+          "mode": "editable_in_draft"
+        }
+      ],
+      "source_ref": "packages/module-kit/category-contracts.design.json",
+      "apply_and_effect": "已发出/在途/目的接受/返程分开，定义不带当前货物",
+      "scope": "draft_edit",
+      "actual_result": null
+    },
+    {
+      "id": "F08",
+      "title": "厂房/线组/区域/模板",
+      "navigation_node": "module_library",
+      "category": "templates",
+      "planned_operations": [
+        "get_object",
+        "apply_commands",
+        "import_package",
+        "export_package"
+      ],
+      "fields": [
+        {
+          "ui_field_id": "F08-01",
+          "label": "成员/布局/组合",
+          "value_kind": "references",
+          "unit_or_reference": "工程ID/局部位置/单位",
+          "required_for": "采用时",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F08-02",
+          "label": "角色/外部连接重映射",
+          "value_kind": "references",
+          "unit_or_reference": "新实例ID与真实绑定",
+          "required_for": "采用时",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F08-03",
+          "label": "种子供料/订单",
+          "value_kind": "explicit_seed",
+          "unit_or_reference": "默认不由定义自动出现",
+          "required_for": "显式选择种子时",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F08-04",
+          "label": "生成适用范围/参数来源",
+          "value_kind": "typed_fields",
+          "unit_or_reference": "行业/产品/场地/九类角色",
+          "required_for": "目标模板用途",
+          "mode": "editable_in_draft"
+        }
+      ],
+      "source_ref": "packages/module-kit/category-contracts.design.json",
+      "apply_and_effect": "预览新增ID/复用及待重绑，种子单独确认，复制不带Run库存",
+      "scope": "draft_edit",
+      "actual_result": null
+    },
+    {
+      "id": "F09",
+      "title": "专业提供者契约",
+      "navigation_node": "module_library",
+      "category": "professional",
+      "planned_operations": [
+        "get_object",
+        "apply_commands",
+        "import_package",
+        "export_package"
+      ],
+      "fields": [
+        {
+          "ui_field_id": "F09-01",
+          "label": "输入/输出/支持范围",
+          "value_kind": "references",
+          "unit_or_reference": "提供者/格式/版本",
+          "required_for": "保存契约",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F09-02",
+          "label": "实际可执行能力",
+          "value_kind": "result",
+          "unit_or_reference": "纸包装内核；其他未实现",
+          "required_for": "计算前",
+          "mode": "read_only"
+        },
+        {
+          "ui_field_id": "F09-03",
+          "label": "成果/认可/消费者",
+          "value_kind": "references",
+          "unit_or_reference": "三对象分别保存",
+          "required_for": "认可与采用时",
+          "mode": "editable_in_draft"
+        }
+      ],
+      "source_ref": "packages/module-kit/category-contracts.design.json",
+      "apply_and_effect": "可存其他方向契约，计算按钮按真实能力不可用；首版仅纸包装实际算",
+      "scope": "draft_edit",
+      "actual_result": null
+    },
+    {
+      "id": "F10",
+      "title": "表现素材与原生外观",
+      "navigation_node": "module_library",
+      "category": "media",
+      "planned_operations": [
+        "get_object",
+        "apply_commands",
+        "import_package",
+        "export_package"
+      ],
+      "fields": [
+        {
+          "ui_field_id": "F10-01",
+          "label": "素材/节点/来源",
+          "value_kind": "references",
+          "unit_or_reference": "图片/序列/GIF/受支持GLB/原生部件",
+          "required_for": "当前表现用途",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F10-02",
+          "label": "尺度/朝向/原点",
+          "value_kind": "transform",
+          "unit_or_reference": "领域m与坐标变换",
+          "required_for": "采用时",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F10-03",
+          "label": "部件树/材质/姿态",
+          "value_kind": "typed_fields",
+          "unit_or_reference": "box/cylinder/plane与支持节点",
+          "required_for": "原生/模型编辑时",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F10-04",
+          "label": "锚点/标签/命名动作",
+          "value_kind": "references",
+          "unit_or_reference": "实际部件/端口/状态/阶段",
+          "required_for": "绑定时",
+          "mode": "editable_in_draft"
+        }
+      ],
+      "source_ref": "packages/module-kit/category-contracts.design.json",
+      "apply_and_effect": "外观不改变行为/库存；不支持节点和未绑定标签显式列出",
+      "scope": "draft_edit",
+      "actual_result": null
+    },
+    {
+      "id": "F11",
+      "title": "布局/多选/编组",
+      "navigation_node": "detail_panel",
+      "category": null,
+      "planned_operations": [
+        "apply_commands",
+        "check_factory_draft"
+      ],
+      "fields": [
+        {
+          "ui_field_id": "F11-01",
+          "label": "位置X/Y/Z/朝向/包络",
+          "value_kind": "transform",
+          "unit_or_reference": "领域m/Z高度；显示转换不改领域轴",
+          "required_for": "采用布局时",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F11-02",
+          "label": "网格步长/吸附开关",
+          "value_kind": "ui_setting",
+          "unit_or_reference": "示例0.1m，可改；非公差",
+          "required_for": "可选",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F11-03",
+          "label": "多选/编组/复制映射",
+          "value_kind": "references",
+          "unit_or_reference": "新ID/外部连接/角色/种子单独确认",
+          "required_for": "批量动作时",
+          "mode": "editable_in_draft"
+        }
+      ],
+      "source_ref": "docs/02_交互设计/交互流程与视图导航.json",
+      "apply_and_effect": "超界高亮；手柄/数值动作一次提交；取消保留旧布局",
+      "scope": "draft_edit",
+      "actual_result": null
+    },
+    {
+      "id": "F12",
+      "title": "产品/BOM/订单",
+      "navigation_node": "timeline_panel",
+      "category": null,
+      "planned_operations": [
+        "get_object",
+        "apply_commands"
+      ],
+      "fields": [
+        {
+          "ui_field_id": "F12-01",
+          "label": "产品/版本/BOM用料位置",
+          "value_kind": "references",
+          "unit_or_reference": "明确版本与物品单位",
+          "required_for": "生产订单时",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F12-02",
+          "label": "数量/单位/接受位置",
+          "value_kind": "quantity",
+          "unit_or_reference": "件/片/箱等声明单位与目的位置",
+          "required_for": "接受目标时",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F12-03",
+          "label": "释放/交期/优先序/分批",
+          "value_kind": "schedule",
+          "unit_or_reference": "时间基准；交期可未知",
+          "required_for": "需要准时率时交期必填",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F12-04",
+          "label": "多行添加/复制",
+          "value_kind": "ui_action",
+          "unit_or_reference": "原单位/版本保留；CSV暂不承诺",
+          "required_for": "录入多行时",
+          "mode": "editable_in_draft"
+        }
+      ],
+      "source_ref": "docs/01_业务需求/订单工艺与物料分配.md",
+      "apply_and_effect": "只改输入；派工/预留和实际接受读Engine，不做自动最优排程",
+      "scope": "draft_edit",
+      "actual_result": null
+    },
+    {
+      "id": "F13",
+      "title": "初始库存/后续到料",
+      "navigation_node": "timeline_panel",
+      "category": null,
+      "planned_operations": [
+        "get_object",
+        "apply_commands"
+      ],
+      "fields": [
+        {
+          "ui_field_id": "F13-01",
+          "label": "类型/数量/单位/位置",
+          "value_kind": "quantity",
+          "unit_or_reference": "工程实例和库位，不是模块规格",
+          "required_for": "建供给输入时",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F13-02",
+          "label": "预计到达/质量预设",
+          "value_kind": "schedule",
+          "unit_or_reference": "时间基准/来源；未来到料不可提前领用",
+          "required_for": "该批到料时",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F13-03",
+          "label": "预留/当前持有者",
+          "value_kind": "result",
+          "unit_or_reference": "只读Engine分配/归属",
+          "required_for": "已有Run时",
+          "mode": "read_only"
+        }
+      ],
+      "source_ref": "docs/01_业务需求/订单工艺与物料分配.md",
+      "apply_and_effect": "明确初始输入/预设事件，不直接修改当前实际库存",
+      "scope": "draft_edit",
+      "actual_result": null
+    },
+    {
+      "id": "F14",
+      "title": "日历/阶段/换单",
+      "navigation_node": "device_config",
+      "category": null,
+      "planned_operations": [
+        "get_object",
+        "apply_commands"
+      ],
+      "fields": [
+        {
+          "ui_field_id": "F14-01",
+          "label": "人员/设备日历",
+          "value_kind": "calendar",
+          "unit_or_reference": "明确工作区间/时间基准",
+          "required_for": "该阶段需资源时",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F14-02",
+          "label": "上下料/自动阶段",
+          "value_kind": "typed_fields",
+          "unit_or_reference": "phase_id/工时/角色；有效进度",
+          "required_for": "多阶段用途",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F14-03",
+          "label": "家族/换单矩阵",
+          "value_kind": "typed_fields",
+          "unit_or_reference": "来源/从何家族到何家族",
+          "required_for": "换单用途",
+          "mode": "editable_in_draft"
+        }
+      ],
+      "source_ref": "docs/01_业务需求/换单班次与质量处置.md",
+      "apply_and_effect": "显示机器持有与等人阶段；阶段工时不由图片比例代替",
+      "scope": "draft_edit",
+      "actual_result": null
+    },
+    {
+      "id": "F15",
+      "title": "跨厂日供货",
+      "navigation_node": "detail_panel",
+      "category": null,
+      "planned_operations": [
+        "get_object",
+        "apply_commands"
+      ],
+      "fields": [
+        {
+          "ui_field_id": "F15-01",
+          "label": "来源/目的/物品/单位",
+          "value_kind": "references",
+          "unit_or_reference": "厂房端口与库位",
+          "required_for": "创建供应关系",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F15-02",
+          "label": "日目标/工作日历/发运窗口",
+          "value_kind": "schedule",
+          "unit_or_reference": "接收日历定义目标，发出日历定义窗口",
+          "required_for": "按日目标用途",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F15-03",
+          "label": "批量/装卸/去返时长/载具",
+          "value_kind": "typed_fields",
+          "unit_or_reference": "固定时间/声明来源/真实角色",
+          "required_for": "运行时",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F15-04",
+          "label": "已发出/在途/接受/未满足",
+          "value_kind": "result",
+          "unit_or_reference": "当前Run与观察窗",
+          "required_for": "已有Run时",
+          "mode": "read_only"
+        }
+      ],
+      "source_ref": "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+      "apply_and_effect": "目标不保证到货，跨日接收按实际接收日；双向物品各自有向线",
+      "scope": "draft_edit",
+      "actual_result": null
+    },
+    {
+      "id": "F16",
+      "title": "全厂时间轴",
+      "navigation_node": "timeline_panel",
+      "category": null,
+      "planned_operations": [
+        "apply_commands",
+        "get_run",
+        "get_task",
+        "cancel_task"
+      ],
+      "fields": [
+        {
+          "ui_field_id": "F16-01",
+          "label": "输入释放/交期/来料/班次",
+          "value_kind": "schedule",
+          "unit_or_reference": "输入轨与变更来源",
+          "required_for": "编辑输入时",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F16-02",
+          "label": "阶段工时/优先序",
+          "value_kind": "typed_fields",
+          "unit_or_reference": "草稿规则和资源",
+          "required_for": "编辑输入时",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F16-03",
+          "label": "实际开完工/占用/等待",
+          "value_kind": "result",
+          "unit_or_reference": "只读Run时点/对象",
+          "required_for": "已有Run时",
+          "mode": "read_only"
+        },
+        {
+          "ui_field_id": "F16-04",
+          "label": "播放头/跟随/回看",
+          "value_kind": "ui_setting",
+          "unit_or_reference": "只改view_time",
+          "required_for": "查看时",
+          "mode": "view_selection"
+        },
+        {
+          "ui_field_id": "F16-05",
+          "label": "自动/手动显示组、展开和设备独立行",
+          "value_kind": "ui_setting",
+          "unit_or_reference": "稳定设备ID；不修改LineGroup",
+          "required_for": "归类时",
+          "mode": "view_selection"
+        },
+        {
+          "ui_field_id": "F16-06",
+          "label": "吸附开关、候选和精确时点",
+          "value_kind": "ui_setting",
+          "unit_or_reference": "6px初值；相对毫秒；Alt临时关闭",
+          "required_for": "编辑输入时",
+          "mode": "view_selection"
+        },
+        {
+          "ui_field_id": "F16-07",
+          "label": "联动输入选择和变更预览",
+          "value_kind": "references",
+          "unit_or_reference": "同Scenario释放/到料；同Δt，交期需明确选中",
+          "required_for": "联动编辑时",
+          "mode": "view_selection"
+        },
+        {
+          "ui_field_id": "F16-08",
+          "label": "来源、Run及已计算边界",
+          "value_kind": "result",
+          "unit_or_reference": "同一次RunResult/RunSummary computed_until_ms与RunInputRef；未知不补全",
+          "required_for": "查看实际时",
+          "mode": "read_only"
+        },
+        {
+          "ui_field_id": "F16-09",
+          "label": "业务依赖与对象定位",
+          "value_kind": "result",
+          "unit_or_reference": "真实工艺/物料/资源引用；TC01/TC02类型已合入，实际记录缺项保持未知",
+          "required_for": "查看关联时",
+          "mode": "read_only"
+        }
+      ],
+      "source_ref": "docs/03_架构与契约/全厂时间轴与阶段资源设计.md",
+      "apply_and_effect": "显示归类/吸附/回看只改UI；显式输入联动一次PutObject(ScenarioInput)，形成新修订；实际结果只读，计算控制按Task能力。",
+      "scope": "draft_edit",
+      "actual_result": null,
+      "timeline_field_semantics": {
+        "input_fields": [
+          "F16-01",
+          "F16-02"
+        ],
+        "view_only_fields": [
+          "F16-04",
+          "F16-05",
+          "F16-06",
+          "F16-07"
+        ],
+        "actual_read_only_fields": [
+          "F16-03",
+          "F16-08",
+          "F16-09"
+        ],
+        "data_requests_pending": [],
+        "complete_definition_ref": "docs/02_交互设计/时间轴主轴与子轴完整定义.json",
+        "UI_detail_controls": {
+          "F16-04": "confirmed shared view_time; ghost seek until matching RunObjectsPage",
+          "F16-05": "display grouping/expansion + explicit line/device inspector",
+          "F16-06": "snap preview within input drag only",
+          "F16-07": "one ScenarioInput linked edit preview; pointercancel discards",
+          "F16-08": "source/Run/computed boundary; never guess stage history",
+          "F16-09": "read-only dependency + separate description; reference navigation"
+        },
+        "canonical_public_contract_ref": "docs/03_架构与契约/全层类型与工程格式.json#/timeline_runtime_contract",
+        "public_type_state": "canonical_public_types_merged_finite_proof_passed_product_execution_pending",
+        "actual_producer_state": "Engine/Host and actual UI consumption pending"
+      }
+    },
+    {
+      "id": "F17",
+      "title": "设备过程和标签",
+      "navigation_node": "device_process",
+      "category": null,
+      "planned_operations": [
+        "get_object",
+        "apply_commands",
+        "render_view"
+      ],
+      "fields": [
+        {
+          "ui_field_id": "F17-01",
+          "label": "图片/阶段/持续比例",
+          "value_kind": "timeline_mapping",
+          "unit_or_reference": "u或phase_id有效进度，片段覆盖",
+          "required_for": "过程编辑时",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F17-02",
+          "label": "数据标签/类型/单位",
+          "value_kind": "typed_binding",
+          "unit_or_reference": "quantity/ratio/duration/enum/text等实际字段",
+          "required_for": "绑定时",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F17-03",
+          "label": "操作热点",
+          "value_kind": "capability",
+          "unit_or_reference": "configure/inspect/preview_cycle；不支持能力不可执行",
+          "required_for": "绑定时",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F17-04",
+          "label": "隔离样例/循环/原生部件",
+          "value_kind": "typed_fields",
+          "unit_or_reference": "独立示例，不写正式库存",
+          "required_for": "预览时",
+          "mode": "editable_in_draft"
+        }
+      ],
+      "source_ref": "docs/02_交互设计/设备时间轴与标签设计.md",
+      "apply_and_effect": "换外观不改工时，等待保持对应姿态；未绑定不虚构读数",
+      "scope": "draft_edit",
+      "actual_result": null
+    },
+    {
+      "id": "F18",
+      "title": "质量与返工设置",
+      "navigation_node": "device_config",
+      "category": null,
+      "planned_operations": [
+        "get_object",
+        "apply_commands",
+        "get_run"
+      ],
+      "fields": [
+        {
+          "ui_field_id": "F18-01",
+          "label": "决定规则/预设来源",
+          "value_kind": "typed_fields",
+          "unit_or_reference": "明确预设事件/规则",
+          "required_for": "检查用途",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F18-02",
+          "label": "待判/隔离/返工路径与上限",
+          "value_kind": "references",
+          "unit_or_reference": "真实库位/工艺/次数",
+          "required_for": "当前出口需要时",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F18-03",
+          "label": "质量/已完成返工次数/持有者",
+          "value_kind": "result",
+          "unit_or_reference": "当前物品，不借用上件",
+          "required_for": "已有Run时",
+          "mode": "read_only"
+        }
+      ],
+      "source_ref": "docs/01_业务需求/换单班次与质量处置.md",
+      "apply_and_effect": "运行内人工处置未实现时只在新方案改预设重跑；没有假放行按钮",
+      "scope": "draft_edit",
+      "actual_result": null
+    },
+    {
+      "id": "F19",
+      "title": "纸包装结构/功能/过程",
+      "navigation_node": "packaging_panel",
+      "category": null,
+      "planned_operations": [
+        "compute_packaging",
+        "get_task",
+        "cancel_task"
+      ],
+      "fields": [
+        {
+          "ui_field_id": "F19-01",
+          "label": "三机制/空白受限结构",
+          "value_kind": "enum",
+          "unit_or_reference": "实际支持模板与完整结构入口",
+          "required_for": "建作业时",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F19-02",
+          "label": "板片/折带/固定连接/多件",
+          "value_kind": "geometry",
+          "unit_or_reference": "板片/构件ID、尺寸/姿态/关系",
+          "required_for": "计算时",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F19-03",
+          "label": "产品版本/包络/允许姿态/净空间",
+          "value_kind": "geometry",
+          "unit_or_reference": "明确mm/m换算与硬条件",
+          "required_for": "计算时",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F19-04",
+          "label": "认可材料/厚度/连接/允许接触",
+          "value_kind": "typed_fields",
+          "unit_or_reference": "实际来源，未知留空",
+          "required_for": "对应检查用途",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F19-05",
+          "label": "成型/开合/固定姿态直线取物步骤",
+          "value_kind": "trajectory",
+          "unit_or_reference": "真实步骤/当前段/容差和预算",
+          "required_for": "计算时",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F19-06",
+          "label": "三态/干涉/未判定/制造层",
+          "value_kind": "result",
+          "unit_or_reference": "原型示例不称真实检查",
+          "required_for": "已有实际专业结果时",
+          "mode": "read_only"
+        }
+      ],
+      "source_ref": "packages/packaging/README.md",
+      "apply_and_effect": "30秒为候选体验目标，不能直接作为几何正确性或硬超时；预算不足不当Pass",
+      "scope": "draft_edit",
+      "actual_result": null
+    },
+    {
+      "id": "F20",
+      "title": "用途认可/消费者绑定",
+      "navigation_node": "packaging_panel",
+      "category": null,
+      "planned_operations": [
+        "get_object",
+        "adopt_artifact",
+        "apply_commands"
+      ],
+      "fields": [
+        {
+          "ui_field_id": "F20-01",
+          "label": "成果/产品版本/三态",
+          "value_kind": "result",
+          "unit_or_reference": "实际成果身份和条件",
+          "required_for": "认可时",
+          "mode": "read_only"
+        },
+        {
+          "ui_field_id": "F20-02",
+          "label": "认可用途/认可人/依据",
+          "value_kind": "acceptance",
+          "unit_or_reference": "真实人工决定，Agent不代填",
+          "required_for": "认可时",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F20-03",
+          "label": "具体包装工位/映射",
+          "value_kind": "references",
+          "unit_or_reference": "受支持消费者ID",
+          "required_for": "绑定时",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F20-04",
+          "label": "变更影响/待复核",
+          "value_kind": "result",
+          "unit_or_reference": "只复核受影响绑定",
+          "required_for": "产品变更后",
+          "mode": "read_only"
+        }
+      ],
+      "source_ref": "docs/03_架构与契约/专业作业与模块接口.md",
+      "apply_and_effect": "保存成果不自动认可/绑定，三者不互相代替；认可不在普通草稿undo中回滚",
+      "scope": "draft_edit",
+      "actual_result": null
+    },
+    {
+      "id": "F21",
+      "title": "外部Agent目标与授权",
+      "navigation_node": "agent_panel",
+      "category": null,
+      "planned_operations": [
+        "describe_capabilities",
+        "get_context",
+        "query_module_library",
+        "apply_commands",
+        "check_factory_draft",
+        "render_view",
+        "run_scenario",
+        "get_task",
+        "cancel_task"
+      ],
+      "fields": [
+        {
+          "ui_field_id": "F21-01",
+          "label": "产品/接受单位/目标/窗口/位置",
+          "value_kind": "typed_fields",
+          "unit_or_reference": "目标不当结果",
+          "required_for": "定量建厂时",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F21-02",
+          "label": "场地长宽高/行业/模板",
+          "value_kind": "geometry",
+          "unit_or_reference": "来源明确，未知集中询问",
+          "required_for": "布局/产能结论时",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F21-03",
+          "label": "当前草稿/字段/允许变量",
+          "value_kind": "authorization",
+          "unit_or_reference": "授权范围/版本；不等于购买发布许可",
+          "required_for": "自动变更前",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F21-04",
+          "label": "模板参数与缺项",
+          "value_kind": "typed_fields",
+          "unit_or_reference": "原生/社区/人工/示例来源",
+          "required_for": "采用时",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F21-05",
+          "label": "实际变更/任务/Run/轮次",
+          "value_kind": "result",
+          "unit_or_reference": "默认最多3修正轮，初案不计",
+          "required_for": "真实Agent运行后",
+          "mode": "read_only"
+        }
+      ],
+      "source_ref": "docs/03_架构与契约/目标驱动厂房生成.md",
+      "apply_and_effect": "先验证Codex；缺能力保存草稿/说明，不发明求解器或增加人员；初案达标直交",
+      "scope": "draft_edit",
+      "actual_result": null
+    },
+    {
+      "id": "F22",
+      "title": "运行范围与观察窗口",
+      "navigation_node": "task_status_panel",
+      "category": null,
+      "planned_operations": [
+        "run_scenario",
+        "get_task",
+        "get_run",
+        "cancel_task"
+      ],
+      "fields": [
+        {
+          "ui_field_id": "F22-01",
+          "label": "方案/修订/初始条件",
+          "value_kind": "references",
+          "unit_or_reference": "固定输入，不复制旧Run库存",
+          "required_for": "运行前",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F22-02",
+          "label": "观察窗/接受口径/局部范围",
+          "value_kind": "schedule",
+          "unit_or_reference": "窗口与范围明确",
+          "required_for": "运行前",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F22-03",
+          "label": "必要缺项/静态检查",
+          "value_kind": "result",
+          "unit_or_reference": "对应当前用途，非所有可能项",
+          "required_for": "运行前",
+          "mode": "read_only"
+        },
+        {
+          "ui_field_id": "F22-04",
+          "label": "进度/已形成事件/任务终态",
+          "value_kind": "result",
+          "unit_or_reference": "真实任务，取消不当成功",
+          "required_for": "执行后",
+          "mode": "read_only"
+        }
+      ],
+      "source_ref": "docs/04_开发与验收/首版需求验收追踪.json",
+      "apply_and_effect": "已支持且输入齐全的范围可以明确局部运行，结果不声称整厂完整结论",
+      "scope": "draft_edit",
+      "actual_result": null
+    },
+    {
+      "id": "F23",
+      "title": "同起点双方案比较",
+      "navigation_node": "comparison_panel",
+      "category": null,
+      "planned_operations": [
+        "get_run",
+        "compare_runs"
+      ],
+      "fields": [
+        {
+          "ui_field_id": "F23-01",
+          "label": "两个主方案/Run",
+          "value_kind": "references",
+          "unit_or_reference": "相同接受口径/观察窗/起点",
+          "required_for": "比较时",
+          "mode": "view_selection"
+        },
+        {
+          "ui_field_id": "F23-02",
+          "label": "输入变化/假设/限制",
+          "value_kind": "typed_fields",
+          "unit_or_reference": "明确版本，不能隐藏变化",
+          "required_for": "比较时",
+          "mode": "read_only"
+        },
+        {
+          "ui_field_id": "F23-03",
+          "label": "接受量/时间/占用/等待/已知成本",
+          "value_kind": "result",
+          "unit_or_reference": "缺成本留空，不拼无依据总成本",
+          "required_for": "有相应实际输入/结果时",
+          "mode": "read_only"
+        }
+      ],
+      "source_ref": "docs/03_架构与契约/评估报告与数据导出.md",
+      "apply_and_effect": "选择两Run后调用既有compare_runs；输入变化/共同条件/限制及指标来自冻结结果与typed diff，不能手改事实。不可比只并列并列明原因，返回保留Run/筛选/时点。",
+      "scope": "view_selection",
+      "actual_result": null
+    },
+    {
+      "id": "F24",
+      "title": "四格式评估",
+      "navigation_node": "report_panel",
+      "category": null,
+      "planned_operations": [
+        "export_evaluation",
+        "get_task",
+        "cancel_task"
+      ],
+      "fields": [
+        {
+          "ui_field_id": "F24-01",
+          "label": "设计说明或实际评估",
+          "value_kind": "enum",
+          "unit_or_reference": "有真实Run才可实际评估",
+          "required_for": "导出前",
+          "mode": "view_selection"
+        },
+        {
+          "ui_field_id": "F24-02",
+          "label": "所选方案/Run/比较/指标",
+          "value_kind": "references",
+          "unit_or_reference": "同一EvaluationReport",
+          "required_for": "导出前",
+          "mode": "view_selection"
+        },
+        {
+          "ui_field_id": "F24-03",
+          "label": "PDF/HTML/CSV/JSON与目的位置",
+          "value_kind": "file_scope",
+          "unit_or_reference": "中文/分页/离线/单位与条件",
+          "required_for": "导出前",
+          "mode": "view_selection"
+        },
+        {
+          "ui_field_id": "F24-04",
+          "label": "价格/未知项/支持范围",
+          "value_kind": "typed_fields",
+          "unit_or_reference": "无价格列缺值",
+          "required_for": "成本用途",
+          "mode": "read_only"
+        }
+      ],
+      "source_ref": "packages/reporting/evaluation-report.contract.design.json",
+      "apply_and_effect": "导出选项仅组成现有export_evaluation请求，不改工程/Run；设计说明与模拟评估仍为既有两模式。部分Run标已计算前缀，完整性与目标判断据同一冻结边界；失败保留Run/格式/路径与错误，不伪造文件成功。价格来源需回明确输入编辑，不能在报告页改写历史Run。",
+      "scope": "export_request",
+      "actual_result": null
+    },
+    {
+      "id": "F25",
+      "title": "工程/模块交接",
+      "navigation_node": "delivery_panel",
+      "category": null,
+      "planned_operations": [
+        "export_package",
+        "import_package"
+      ],
+      "fields": [
+        {
+          "ui_field_id": "F25-01",
+          "label": "所选方案/定义/专业/结果",
+          "value_kind": "references",
+          "unit_or_reference": "只选必要内容，历史可选",
+          "required_for": "导出时",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F25-02",
+          "label": "资产许可/附带或引用/缺项",
+          "value_kind": "asset_policy",
+          "unit_or_reference": "真实逐资产声明",
+          "required_for": "交接/贡献时",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F25-03",
+          "label": "格式版本/接手方式",
+          "value_kind": "references",
+          "unit_or_reference": "本版/已验证版本，默认共同起点重跑",
+          "required_for": "重开时",
+          "mode": "editable_in_draft"
+        }
+      ],
+      "source_ref": "docs/03_架构与契约/工程交接与打开.md",
+      "apply_and_effect": "缺引用列实际问题；旧結果可读回放，不承诺中途恢复或未知版本兼容",
+      "scope": "draft_edit",
+      "actual_result": null
+    },
+    {
+      "id": "F26",
+      "title": "保存/打开与切工程",
+      "navigation_node": "project_entry",
+      "category": null,
+      "planned_operations": [
+        "save_project",
+        "get_context"
+      ],
+      "fields": [
+        {
+          "ui_field_id": "F26-01",
+          "label": "当前工程/修订/目录",
+          "value_kind": "file_scope",
+          "unit_or_reference": "手动保存，已应用与已落盘分开",
+          "required_for": "保存时",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F26-02",
+          "label": "未保存改动离开决定",
+          "value_kind": "enum",
+          "unit_or_reference": "保存/丢弃/留在",
+          "required_for": "切工程/退出时",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F26-03",
+          "label": "成功/失败/实际路径",
+          "value_kind": "result",
+          "unit_or_reference": "真实写入提交，不仅入队",
+          "required_for": "保存响应后",
+          "mode": "read_only"
+        }
+      ],
+      "source_ref": "docs/03_架构与契约/工程交接与打开.md",
+      "apply_and_effect": "失败保留旧有效工程与当前工作，不关闭、不自动重试或静默覆盖；打开由唯一宿主工程文件服务处理，get_context读取已打开工程，不假称其加载文件或新增MCP操作",
+      "scope": "draft_edit",
+      "actual_result": null
+    },
+    {
+      "id": "F27",
+      "title": "草稿冲突/撤销/重做",
+      "navigation_node": "detail_panel",
+      "category": null,
+      "planned_operations": [
+        "apply_commands",
+        "get_context"
+      ],
+      "fields": [
+        {
+          "ui_field_id": "F27-01",
+          "label": "当前/base修订与未提交字段",
+          "value_kind": "references",
+          "unit_or_reference": "同一工程/定义会话",
+          "required_for": "提交/撤销时",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F27-02",
+          "label": "本次可逆草稿编辑/redo分支",
+          "value_kind": "typed_fields",
+          "unit_or_reference": "共享命令；新编辑使redo失效",
+          "required_for": "当前支持编辑时",
+          "mode": "editable_in_draft"
+        },
+        {
+          "ui_field_id": "F27-03",
+          "label": "冲突/重新核对/留在",
+          "value_kind": "ui_action",
+          "unit_or_reference": "不覆盖Agent/他人新修订",
+          "required_for": "RevisionConflict时",
+          "mode": "editable_in_draft"
+        }
+      ],
+      "source_ref": "docs/00_项目基线/全量设计编码确认选择.json",
+      "apply_and_effect": "不倒拨修订；不回滚专业人工认可/生产/外部文件，跨工程不串历史",
+      "scope": "draft_edit",
+      "actual_result": null
+    },
+    {
+      "id": "F28",
+      "title": "等待与逐件经历",
+      "navigation_node": "device_inspect",
+      "category": null,
+      "planned_operations": [
+        "get_run",
+        "get_object"
+      ],
+      "fields": [
+        {
+          "ui_field_id": "F28-01",
+          "label": "Run/观察时点/对象",
+          "value_kind": "references",
+          "unit_or_reference": "当前修订场景或旧Run",
+          "required_for": "查看时",
+          "mode": "view_selection"
+        },
+        {
+          "ui_field_id": "F28-02",
+          "label": "需要/当前/持有者/前后事件",
+          "value_kind": "result",
+          "unit_or_reference": "实际引用与多个缺项",
+          "required_for": "已有Run时",
+          "mode": "read_only"
+        },
+        {
+          "ui_field_id": "F28-03",
+          "label": "下一已声明事件/未安排",
+          "value_kind": "result",
+          "unit_or_reference": "未知解除时点不估造",
+          "required_for": "查看时",
+          "mode": "read_only"
+        },
+        {
+          "ui_field_id": "F28-04",
+          "label": "定位/返回",
+          "value_kind": "ui_action",
+          "unit_or_reference": "画布/时间轴/旧修订归属",
+          "required_for": "定位时",
+          "mode": "view_selection"
+        }
+      ],
+      "source_ref": "docs/02_交互设计/交互流程与视图导航.json",
+      "apply_and_effect": "不直接改库存/产量；输出满时物品仍属于设备，动画不是归属证据",
+      "scope": "runtime_read_only",
+      "actual_result": null,
+      "timeline_projection_rule": "按冻结Run的实际等待记录定位；未释放/无需求不是待料；设备归属不确定则显示未归属，不按同名模块猜设备；下一边界未知不估造。"
+    }
+  ],
+  "feedback_states": [
+    {
+      "id": "empty",
+      "trigger": "无对象/无结果/无当前物品",
+      "visible": "说明缺什么与对应创建/选择入口；不显示上件读数或假0",
+      "next": "创建草稿/选择真实对象"
+    },
+    {
+      "id": "missing",
+      "trigger": "当前用途必需输入缺失",
+      "visible": "定位对象/字段/用途；保留草稿，列来源",
+      "next": "补输入或明确受支持局部范围；不把局部当全厂"
+    },
+    {
+      "id": "dirty",
+      "trigger": "修改未应用或工程未保存",
+      "visible": "字段草稿/已应用修订/已落盘分别标识",
+      "next": "应用/保存各有实际成功条件"
+    },
+    {
+      "id": "submitting",
+      "trigger": "本地提交已发出",
+      "visible": "只禁用本次重复提交；保留其他可安全查看路径",
+      "next": "接收实际返回；不显示假进度"
+    },
+    {
+      "id": "task_received",
+      "trigger": "实际任务句柄返回",
+      "visible": "任务已受理与ID；还未完成",
+      "next": "get_task读取真实阶段/进度"
+    },
+    {
+      "id": "task_progress",
+      "trigger": "当前真实任务有阶段/已形成事件",
+      "visible": "阶段/支持的进度；未知剩余时间不造倒计时",
+      "next": "继续查看/请求取消；普通交互按NFR03/04"
+    },
+    {
+      "id": "revision_conflict",
+      "trigger": "实际RevisionConflict",
+      "visible": "原base与最新修订、未提交字段保留",
+      "next": "重新读取并核对后新提交；不自动覆盖"
+    },
+    {
+      "id": "error",
+      "trigger": "实际输入/缺引用/能力/权限/I/O/计算错误",
+      "visible": "原错误码、message、对象/字段定位，恢复选择按实际错误",
+      "next": "修对应输入或保留草稿；不泛重试/吞异常"
+    },
+    {
+      "id": "cancel_requested",
+      "trigger": "取消请求发出/已受理，但任务未证实取消",
+      "visible": "请求取消中；不能清空结果/伪成功",
+      "next": "读终态；可能已完成，按真实终态显示"
+    },
+    {
+      "id": "cancelled",
+      "trigger": "任务实际终态Cancelled",
+      "visible": "已取消及实际保留产物，不当计算通过",
+      "next": "回原草稿/查看既有结果；新的任务由用户决定"
+    },
+    {
+      "id": "completed",
+      "trigger": "实际任务完成",
+      "visible": "实际结果与输入修订/Run/条件；计算完成不等于订单达标或认可",
+      "next": "检查三态/接受窗口后认可、比较或导出"
+    },
+    {
+      "id": "unsaved_leave",
+      "trigger": "切面板/工程或退出有未处理改动",
+      "visible": "表单应用/丢弃/留在；工程保存/丢弃/留在分别处理",
+      "next": "成功才离开，失败保持工作"
+    }
+  ],
+  "error_mapping": "采用现有error_codes/field_errors/object_refs；字段路径到控件映射由S06冻结。找不到控件时显示完整原错误和对象位置，不隐去错误。",
+  "actual_Figma": null,
+  "actual_frontend": null,
+  "actual_runtime": null,
+  "review_ref": "docs/04_开发与验收/S04-03_关键表单反馈与等待解释复审.json",
+  "value_kind_controls": {
+    "enum": "受支持目录选择器，不可用项附原因，不改名获得能力",
+    "identity": "名称/ID/版本分栏，格式唯一性按共同schema",
+    "references": "对象/版本/端口/文件选择，缺引用保留ID，不按同名重接",
+    "typed_fields": "共同schema属性/列表，类型单位来源明确，不执行自由脚本",
+    "typed_attributes": "名称/类型/单位/值四列，自定义字段不冒充实时计算",
+    "ports": "稳定ID/方向/类别/类型单位/接受规则列表，画布同源",
+    "calendar": "工作区间/日期，明确时间基准，按共同规则反馈",
+    "duration_map": "阶段工时/单位/来源表，显式换算，0不代未知",
+    "quantity_map": "类型/端口/配比/数量/单位表，信号/成果不当库存",
+    "quantity": "数值与单位并列，unknown不填0/充足，范围取schema",
+    "explicit_seed": "单独复选并预览新增供料/订单/ID，取消不创建",
+    "transform": "X/Y/Z/朝向/尺度与操控器，网格不当公差",
+    "typed_binding": "字段→类型单位→状态阶段→锚点，未绑定明确显示",
+    "capability": "仅支持能力，configure/inspect/preview_cycle，播放不当生产",
+    "schedule": "时点/窗口/优先序/日历，明确基准，输入/实际分开",
+    "ui_action": "动作/禁用原因/反馈明确，不自动提交其他字段",
+    "ui_setting": "视图/网格/播放控件，只改UI状态",
+    "geometry": "产品/板片/折带/连接/多件树、参数表/受限3D，不缩成三尺寸",
+    "trajectory": "步骤/姿态/路径与过程视口，只声称支持的直线取物",
+    "acceptance": "显式用途和实际人工决定，Agent/保存不自动认可",
+    "authorization": "草稿/字段变量范围与变更预览，不当购买/外联许可",
+    "file_scope": "选目录/资产/格式版本，不扩大未选范围",
+    "result": "只读来源/版本/单位，无结果未执行，不借上件值",
+    "timeline_mapping": "排序片段/比例/阶段/标签轨道，实际时长来自行为；重排不改工时",
+    "asset_policy": "逐资产来源/许可、附带/引用/替换选择；未许可不自动带出"
+  },
+  "atomic_fields_vs_groups": "111个ui_field_id是字段组/编辑区；71项九类子字段规则已映射，实际请求字段取canonical载体与同源Schema，不把逻辑别名当运行路径。",
+  "field_mode_rule": "result在所有模式只读；运行查看中的选择器只选择观察对象/时点，不写领域。草稿编辑只作用当前修订，专业认可为另一步显式人工决定。",
+  "presentation_master_ref": "docs/02_交互设计/工业工作台母版与字段细化.json",
+  "presentation_refinement_scope": "S04-02当前draw.io母版；保留既有字段组/业务/API，实例身份取现行DeviceInstance，不复制定义ID",
+  "timeline_contract_ref": "docs/02_交互设计/时间轴主轴与轨道组_监督细化.json",
+  "workbench_layout_ref": "docs/02_交互设计/工业工作台母版与字段细化.json#/workbench_regions",
+  "timeline_complete_definition_ref": "docs/02_交互设计/时间轴主轴与子轴完整定义.json",
+  "timeline_description_mode": "read_only; separate dock toggled by Window menu; selection updates shared event but never reopens a hidden dock",
+  "field_contract_bindings": [
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/common_field_contracts/0",
+      "logical_field": "id",
+      "ui_field_ids": [
+        "F01-02"
+      ],
+      "carrier_mapping": "resolve canonical_carriers in same source; logical name is not a runtime JSON path",
+      "field_mode_override": "editable_new_definition_only_frozen_identity_readonly"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/common_field_contracts/1",
+      "logical_field": "version",
+      "ui_field_ids": [
+        "F01-02"
+      ],
+      "carrier_mapping": "resolve canonical_carriers in same source; logical name is not a runtime JSON path",
+      "field_mode_override": "editable_new_definition_only_frozen_identity_readonly"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/common_field_contracts/2",
+      "logical_field": "category",
+      "ui_field_ids": [
+        "F01-01"
+      ],
+      "carrier_mapping": "resolve canonical_carriers in same source; logical name is not a runtime JSON path"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/common_field_contracts/3",
+      "logical_field": "title",
+      "ui_field_ids": [
+        "F01-02"
+      ],
+      "carrier_mapping": "resolve canonical_carriers in same source; logical name is not a runtime JSON path"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/common_field_contracts/4",
+      "logical_field": "definition_state",
+      "ui_field_ids": [
+        "F01-04"
+      ],
+      "carrier_mapping": "resolve canonical_carriers in same source; logical name is not a runtime JSON path",
+      "field_mode_override": "lifecycle_action_result_not_free_capability_toggle"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/common_field_contracts/5",
+      "logical_field": "contribution.author",
+      "ui_field_ids": [
+        "F01-03"
+      ],
+      "carrier_mapping": "resolve canonical_carriers in same source; logical name is not a runtime JSON path"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/common_field_contracts/6",
+      "logical_field": "contribution.license",
+      "ui_field_ids": [
+        "F01-03"
+      ],
+      "carrier_mapping": "resolve canonical_carriers in same source; logical name is not a runtime JSON path"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/common_field_contracts/7",
+      "logical_field": "contribution.assets[]",
+      "ui_field_ids": [
+        "F01-03"
+      ],
+      "carrier_mapping": "resolve canonical_carriers in same source; logical name is not a runtime JSON path"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/common_field_contracts/8",
+      "logical_field": "parameters[]",
+      "ui_field_ids": [
+        "F01-04",
+        "F03-02"
+      ],
+      "carrier_mapping": "resolve canonical_carriers in same source; logical name is not a runtime JSON path"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/common_field_contracts/9",
+      "logical_field": "attribute_schema",
+      "ui_field_ids": [
+        "F01-04",
+        "F02-02"
+      ],
+      "carrier_mapping": "resolve canonical_carriers in same source; logical name is not a runtime JSON path"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/0/field_contracts/0",
+      "category": "items",
+      "logical_field": "item_definition.unit",
+      "ui_field_ids": [
+        "F02-01"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/0/field_contracts/1",
+      "category": "items",
+      "logical_field": "item_definition.tracking",
+      "ui_field_ids": [
+        "F02-03"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/0/field_contracts/2",
+      "category": "items",
+      "logical_field": "item_definition.spec_ref",
+      "ui_field_ids": [
+        "F02-01"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/0/field_contracts/3",
+      "category": "items",
+      "logical_field": "item_definition.attributes",
+      "ui_field_ids": [
+        "F02-02"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/0/field_contracts/4",
+      "category": "items",
+      "logical_field": "item_definition.attribute_schema",
+      "ui_field_ids": [
+        "F02-02"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/0/field_contracts/5",
+      "category": "items",
+      "logical_field": "presentation_or_media_ref",
+      "ui_field_ids": [
+        "F10-01"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/1/field_contracts/0",
+      "category": "devices",
+      "logical_field": "placement",
+      "ui_field_ids": [
+        "F11-01"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/1/field_contracts/1",
+      "category": "devices",
+      "logical_field": "parameters",
+      "ui_field_ids": [
+        "F03-02"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/1/field_contracts/2",
+      "category": "devices",
+      "logical_field": "ports",
+      "ui_field_ids": [
+        "F03-03"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/1/field_contracts/3",
+      "category": "devices",
+      "logical_field": "behavior OR operation_ref",
+      "ui_field_ids": [
+        "F03-01"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/1/field_contracts/4",
+      "category": "devices",
+      "logical_field": "configuration",
+      "ui_field_ids": [
+        "F03-02"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/1/field_contracts/5",
+      "category": "devices",
+      "logical_field": "presentation",
+      "ui_field_ids": [
+        "F03-04",
+        "F10-01"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/1/field_contracts/6",
+      "category": "devices",
+      "logical_field": "operations",
+      "ui_field_ids": [
+        "F17-03"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/2/field_contracts/0",
+      "category": "resources",
+      "logical_field": "resource_definition.kind",
+      "ui_field_ids": [
+        "F04-01"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/2/field_contracts/1",
+      "category": "resources",
+      "logical_field": "resource_definition.role",
+      "ui_field_ids": [
+        "F04-01"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/2/field_contracts/2",
+      "category": "resources",
+      "logical_field": "resource_definition.capacity",
+      "ui_field_ids": [
+        "F04-01"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/2/field_contracts/3",
+      "category": "resources",
+      "logical_field": "resource_definition.qualifications",
+      "ui_field_ids": [
+        "F04-01"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/2/field_contracts/4",
+      "category": "resources",
+      "logical_field": "resource_definition.default_calendar_ms",
+      "ui_field_ids": [
+        "F04-02"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/2/field_contracts/5",
+      "category": "resources",
+      "logical_field": "presentation",
+      "ui_field_ids": [
+        "F10-01"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/3/field_contracts/0",
+      "category": "tasks",
+      "logical_field": "task_definition.kind",
+      "ui_field_ids": [
+        "F05-01"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/3/field_contracts/1",
+      "category": "tasks",
+      "logical_field": "task_definition.target_role",
+      "ui_field_ids": [
+        "F05-02"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/3/field_contracts/2",
+      "category": "tasks",
+      "logical_field": "task_definition.prerequisites",
+      "ui_field_ids": [
+        "F05-01"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/3/field_contracts/3",
+      "category": "tasks",
+      "logical_field": "task_definition.steps",
+      "ui_field_ids": [
+        "F05-01"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/3/field_contracts/4",
+      "category": "tasks",
+      "logical_field": "task_definition.resource_roles",
+      "ui_field_ids": [
+        "F05-02"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/3/field_contracts/5",
+      "category": "tasks",
+      "logical_field": "task_definition.duration",
+      "ui_field_ids": [
+        "F05-02"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/3/field_contracts/6",
+      "category": "tasks",
+      "logical_field": "task_definition.equipment_access",
+      "ui_field_ids": [
+        "F05-02"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/3/field_contracts/7",
+      "category": "tasks",
+      "logical_field": "task_definition.completion_effect",
+      "ui_field_ids": [
+        "F05-03"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/4/field_contracts/0",
+      "category": "operations",
+      "logical_field": "operation_definition.builtin",
+      "ui_field_ids": [
+        "F06-01"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/4/field_contracts/1",
+      "category": "operations",
+      "logical_field": "operation_definition.item_roles",
+      "ui_field_ids": [
+        "F06-02"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/4/field_contracts/2",
+      "category": "operations",
+      "logical_field": "operation_definition.inputs/outputs",
+      "ui_field_ids": [
+        "F06-02"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/4/field_contracts/3",
+      "category": "operations",
+      "logical_field": "operation_definition.resource_roles",
+      "ui_field_ids": [
+        "F06-03"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/4/field_contracts/4",
+      "category": "operations",
+      "logical_field": "operation_definition.duration OR phases",
+      "ui_field_ids": [
+        "F06-03",
+        "F14-02"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/4/field_contracts/5",
+      "category": "operations",
+      "logical_field": "operation_definition.quality_and_routes",
+      "ui_field_ids": [
+        "F06-04"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/4/field_contracts/6",
+      "category": "operations",
+      "logical_field": "operation_definition.identity_policy",
+      "ui_field_ids": [
+        "F06-02"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/5/field_contracts/0",
+      "category": "transport",
+      "logical_field": "parameters/ports",
+      "ui_field_ids": [
+        "F07-01"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/5/field_contracts/1",
+      "category": "transport",
+      "logical_field": "behavior.builtin",
+      "ui_field_ids": [
+        "F07-02"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/5/field_contracts/2",
+      "category": "transport",
+      "logical_field": "behavior.batch_capacity",
+      "ui_field_ids": [
+        "F07-01"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/5/field_contracts/3",
+      "category": "transport",
+      "logical_field": "behavior.resources",
+      "ui_field_ids": [
+        "F07-03"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/5/field_contracts/4",
+      "category": "transport",
+      "logical_field": "behavior.times",
+      "ui_field_ids": [
+        "F07-02"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/5/field_contracts/5",
+      "category": "transport",
+      "logical_field": "behavior.acceptance_conditions",
+      "ui_field_ids": [
+        "F07-03"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/5/field_contracts/6",
+      "category": "transport",
+      "logical_field": "behavior.identity_policy",
+      "ui_field_ids": [
+        "F07-01"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/5/field_contracts/7",
+      "category": "transport",
+      "logical_field": "presentation",
+      "ui_field_ids": [
+        "F10-01"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/6/field_contracts/0",
+      "category": "templates",
+      "logical_field": "project",
+      "ui_field_ids": [
+        "F08-01"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/6/field_contracts/1",
+      "category": "templates",
+      "logical_field": "project.module_refs",
+      "ui_field_ids": [
+        "F01-04"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/6/field_contracts/2",
+      "category": "templates",
+      "logical_field": "project.layout_scope/halls/lines/connections",
+      "ui_field_ids": [
+        "F08-01"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/6/field_contracts/3",
+      "category": "templates",
+      "logical_field": "project.resources/item_types/role_bindings",
+      "ui_field_ids": [
+        "F08-02"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/6/field_contracts/4",
+      "category": "templates",
+      "logical_field": "project.initial_stock/demand",
+      "ui_field_ids": [
+        "F08-03"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/6/field_contracts/5",
+      "category": "templates",
+      "logical_field": "generation_profile",
+      "ui_field_ids": [
+        "F08-04"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/7/field_contracts/0",
+      "category": "professional",
+      "logical_field": "professional_contract.input_fields",
+      "ui_field_ids": [
+        "F09-01"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/7/field_contracts/1",
+      "category": "professional",
+      "logical_field": "professional_contract.output_artifact_type/output_fields",
+      "ui_field_ids": [
+        "F09-01"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/7/field_contracts/2",
+      "category": "professional",
+      "logical_field": "professional_contract.intended_modes",
+      "ui_field_ids": [
+        "F09-01"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/7/field_contracts/3",
+      "category": "professional",
+      "logical_field": "professional_contract.available_modes/producer_status",
+      "ui_field_ids": [
+        "F09-02"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval",
+      "field_mode_override": "read_only_from_Host_capabilities"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/7/field_contracts/4",
+      "category": "professional",
+      "logical_field": "professional_contract.unit/coordinate_frame/scope",
+      "ui_field_ids": [
+        "F09-01"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/7/field_contracts/5",
+      "category": "professional",
+      "logical_field": "acceptance/consumer_binding",
+      "ui_field_ids": [
+        "F09-03",
+        "F20-02",
+        "F20-03"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/8/field_contracts/0",
+      "category": "media",
+      "logical_field": "presentation.kind/path OR media_ref",
+      "ui_field_ids": [
+        "F10-01"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/8/field_contracts/1",
+      "category": "media",
+      "logical_field": "presentation.unit/coordinate_frame/scale",
+      "ui_field_ids": [
+        "F10-02"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/8/field_contracts/2",
+      "category": "media",
+      "logical_field": "presentation.nodes/poses/actions",
+      "ui_field_ids": [
+        "F10-03"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/8/field_contracts/3",
+      "category": "media",
+      "logical_field": "presentation.timeline",
+      "ui_field_ids": [
+        "F17-01"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/8/field_contracts/4",
+      "category": "media",
+      "logical_field": "presentation.anchor_roles/port_anchors",
+      "ui_field_ids": [
+        "F10-04"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/8/field_contracts/5",
+      "category": "media",
+      "logical_field": "presentation.lod",
+      "ui_field_ids": [
+        "F10-03"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval"
+    },
+    {
+      "contract_ref": "packages/module-kit/category-contracts.design.json#/categories/8/field_contracts/6",
+      "category": "media",
+      "logical_field": "presentation.production_effect",
+      "ui_field_ids": [
+        "F10-03"
+      ],
+      "carrier_mapping": "canonical_carriers + type_field_bindings_ref; no dot path eval",
+      "field_mode_override": "read_only_fixed_none"
+    }
+  ],
+  "child_field_rendering_policy": {
+    "source": "packages/module-kit/category-contracts.design.json",
+    "rule": "既有111项为字段组，展开子字段的类型/单位/required/范围/引用/角色/实例化/版本规则直接消费71项契约及canonical_carriers和同源Schema；逻辑别名不作为请求path。",
+    "input_modes": "基础数字/布尔/枚举/时间/数量控件，复杂数组分项添加/删除，引用控件只选支持对象，不以任意JSON/脚本替代表单。",
+    "feedback": "字段错误定位到当前组内对应canonical字段；基础格式/单位先校核，跨对象/资源/Scope/修订及采用门由Host权威返回。",
+    "upgrade": "明确所选实例与精确版本，差异页列端口/角色/覆盖/布局/行为/外观变化，可取消；原子提交失败保留草稿，不部分升级。",
+    "professional": "人工认可只走可信人工入口；读取ArtifactRecord/Acknowledgment/Binding精确版本，专业process pose无步骤/板片身份时只标模型预览，不能猜真实回放。",
+    "actual_UI_result": null,
+    "mode_precedence": "字段read_only/fixed-none/Host能力及冻结身份限制优先于父字段组editable_in_draft；发布/定义生命周期按既有动作返回，不任意切换为实际可用。"
+  },
+  "comparison_export_display_contract": {
+    "handoff_ref": "docs/04_开发与验收/特征细化/DRF05_缺口与修复.json",
+    "handoff_id": "DRF05-H07",
+    "comparison": {
+      "header": "逐Run身份、冻结输入、观察窗/已知范围、接受位置/阶段/单位",
+      "conditions": "共同条件与before/after变化均可展开；不可比项列具体原因，只并列",
+      "metrics": "null显示未知及来源原因，不显示0；差值B-A仅两边已知且可比，百分比仅基线>0",
+      "wait_navigation": "同Run/确认时点/对象定位，返回恢复比较所选Run与布局；不加第三张常态画布"
+    },
+    "export": {
+      "mode_values": [
+        "design_description",
+        "simulation_evaluation"
+      ],
+      "completeness_badge": "独立显示设计说明/已计算前缀/完整观察窗，不增加公开报告mode",
+      "partial": "只展示该次一致冻结边界已计算前缀；整窗产量/目标达成未知",
+      "source": "同一EvaluationReport与逐Run结果；不从可见Events页计数",
+      "terminal": "持续区间半开；观察末刻点事件单独保留，同Run sequence去重；未完成阶段开放端帽",
+      "context": "相同冻结报告生成PDF/HTML/CSV/JSON，字段/单位/范围/未知说明一致"
+    },
+    "return_and_failure": "导出失败保留Run/选项与当前表单；打开工程按保存/丢弃/留在处理dirty，保存失败不离开",
+    "layout": "中央比较/报告工作区；顶菜单、底工具与状态、160px时间轴及独立描述dock；窗口菜单显隐",
+    "evidence_state": "consumer_definition_integrated_actual_visual_prototype_pending"
+  },
+  "timeline_public_contract_merge": {
+    "status": "canonical_public_types_merged_finite_proof_passed_product_execution_pending",
+    "canonical_ref": "docs/03_架构与契约/全层类型与工程格式.json#/timeline_runtime_contract",
+    "proof_ref": "tools/type-contract-proof/output/timeline-contract-proof-result.json",
+    "finite_case_count": 13,
+    "evidence_kind": "Rust_derived_TS_Schema_and_native_FullResult_finite_contract_proof",
+    "Engine_or_Host_executed": false,
+    "actual_product_runtime": null,
+    "actual_prototype": null
+  },
+  "equipment_model_quality_ref": "docs/02_交互设计/设备建模精度与表现验收规范.json",
+  "schedule_numeric_text_rule": {
+    "scales_percent": [
+      100,
+      150,
+      200
+    ],
+    "fields": "时间轴输入标记、目标时点/ms、预览精确时点、预览差异、确认/取消和反馈同档放大；空间不足可在时间轴dock内滚动到达。",
+    "projection": "只改变表单呈现；轨道坐标、时间窗、吸附距离、Host修订、保存文件和Run不改变。",
+    "feedback": "成功重新预览清除旧失败提示；取消预览清除本地预览及对应旧提示，绝不隐式提交。",
+    "evidence_ref": ".work/manual-phase-20261020/form-feedback-text/validation.json"
+  },
+  "discard_feedback_validation_ref": ".work/manual-phase-20261020/form-feedback-text/business-regression.json"
+}

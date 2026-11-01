@@ -1,0 +1,17 @@
+{
+  "review_batch": "B01-Q01",
+  "device_ids": [
+    "sheet-feeder",
+    "pile-lift"
+  ],
+  "version": "1.1.0",
+  "definition_namespace": "sf.native50.device; preserve original exact identities",
+  "rules": {
+    "sheet-feeder": "One staged 0.50 x 0.40 x 0.0008m sheet Item is vacuum-picked, moved to the feed nip, released and roller-fed to output. No hidden sheet creation or implicit pile splitting.",
+    "pile-lift": "One declared 20-sheet pile Item,0.50 x0.40 x0.016m, moves from0.20m loading to0.90m delivery; same identity and sheet_count20. It is an aggregate pile stock unit, not20 independent runtime Items."
+  },
+  "quantities": "one input and same output Item; sheet_count1/20 and area0.20/4.0m2 retained",
+  "work": "12s feeder,15s lift; load20%,auto60%,unload20%; loading/unloading require actual operator capacity, automatic phase requires actual fixture calendar",
+  "integration": "Explicit ItemType and Operation bindings required. Aggregate pile and individual sheet are different types; this batch does not automatically convert or split one into the other.",
+  "geometry": "Original illustrative mechanical geometry and CC0 micro-surfaces; editable package-local source; no manufacturer CAD or rated performance claim."
+}

@@ -90,7 +90,7 @@ def main():
             check(math.isclose(sum(s["ratio"] for s in behavior["stages"]), 1),
                   f"Stages do not cover the cycle: {definition['id']}")
         if "declaration" in behavior:
-            check("builtin" not in behavior and behavior["implementation_status"] == "required_not_implemented",
+            check("builtin" not in behavior and behavior["implementation_status"] in {"required_not_implemented", "local_proof_only_not_product_runtime"},
                   f"New declaration falsely marked executable: {definition['id']}")
 
     asset_checks = []
@@ -189,7 +189,8 @@ def main():
                       "existing_definition_refs": len(seed["existing_definitions"]),
                       "new_design_candidates": len(seed["candidate_definitions"]), "media_definitions": len(media),
                       "asset_checks": asset_checks, "finite_specification_checks": len(cases), "check_result": "passed",
-                      "production_execution": "not_run", "catalog_registration": "not_done"}, ensure_ascii=False, indent=2))
+                      "registered_product_execution": "not_run", "local_line_evidence_ref": "tools/3d-proof/output/line-business-checks.json",
+                      "catalog_registration": "not_done"}, ensure_ascii=False, indent=2))
 
 
 if __name__ == "__main__":

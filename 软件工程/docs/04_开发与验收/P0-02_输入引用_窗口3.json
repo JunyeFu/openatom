@@ -1,0 +1,269 @@
+{
+  "document_kind": "P0_02_window3_atomic_multidocument_ProjectDraft_history",
+  "task_id": "P0-02",
+  "within_original_step": 1,
+  "owner": "实现窗口3",
+  "role": "W02",
+  "status": "implemented_final_round_history_8_tests_passed",
+  "dispatch_ref": "docs/04_开发与验收/P0-02_业务输入与引用切片.json#/parallel_dispatch/2",
+  "interface_ref": "docs/04_开发与验收/P0-02_业务输入与引用切片.json#/private_implementation_interfaces/history",
+  "draft_type_ref": "packages/commands/src/project_draft.rs",
+  "source_ref": "packages/commands/src/project_history.rs",
+  "method_signatures": [
+    "new()->Self",
+    "reset(&mut self,&ProjectDraft)",
+    "record(&mut self,&ProjectDraft,&ProjectDraft)",
+    "undo_candidate(&self,&ProjectDraft)->Result<ProjectDraft,ApiError>",
+    "redo_candidate(&self,&ProjectDraft)->Result<ProjectDraft,ApiError>",
+    "commit_undo(&mut self,&ProjectDraft,&ProjectDraft)",
+    "commit_redo(&mut self,&ProjectDraft,&ProjectDraft)",
+    "availability(&self)->HistoryAvailability"
+  ],
+  "actual_change": [
+    "HistoryEntry前后快照均为ProjectDraft，Project和全部当前Scenario不再拆开。",
+    "身份/历史头仍只取draft.project.id/revision；跨工程和头冲突规则保留，候选先验头后看栈。",
+    "undo/redo候选完整clone历史ProjectDraft，仅把Project revision设为传入current，候选不移动栈。",
+    "commit_*才移动条目并接收Host新Project修订；record清整个redo分支，reset清旧工程历史。",
+    "没有旧ProjectState签名兼容wrapper；ProjectDraft是根定义的私有Rust快照，未新增wire类型。"
+  ],
+  "ownership_boundaries": {
+    "candidate_scenario_metadata": "保留快照中的历史Scenario revision/project_revision；不在历史模块生成、补齐或校验高水位。Host在授权/语义校核成功后为当前Scenario分配新revision/project_revision。",
+    "derived_issues": "Host重新派生business_inputs.问题，本模块不另建来源/问题字段。",
+    "private_state": "无创建账本/预算/Task/文件/Run副本，也不退还创建预算。",
+    "save": "保存不调用reset；统一冻结/保存由Host和store负责。"
+  },
+  "old_six_expectations_retained": true,
+  "old_six_test_names": [
+    "empty_history_and_reset_never_invent_an_undo",
+    "candidates_and_revision_failures_leave_history_unconsumed",
+    "host_supplies_monotonic_revisions_across_multiple_undo_and_redo",
+    "an_ordinary_committed_branch_discards_redo_only_after_record",
+    "another_project_cannot_reuse_matching_revision_history",
+    "reset_clears_old_project_history_and_establishes_the_new_head"
+  ],
+  "specification_before_results": true,
+  "cases": [
+    {
+      "id": "PH-01",
+      "test": "empty_history_and_reset_never_invent_an_undo",
+      "expected": "new/reset空历史均不可撤销/重做，不凭当前Project伪造快照。",
+      "actual": {
+        "executed": true,
+        "passed": true,
+        "raw_output": "test project_history::tests::empty_history_and_reset_never_invent_an_undo ... ok"
+      }
+    },
+    {
+      "id": "PH-02",
+      "test": "candidates_and_revision_failures_leave_history_unconsumed",
+      "expected": "反复candidate或stale头冲突不动栈；commit_undo后才从undo转redo并更新头，旧修订即使undo栈空仍先冲突。",
+      "actual": {
+        "executed": true,
+        "passed": true,
+        "raw_output": "test project_history::tests::candidates_and_revision_failures_leave_history_unconsumed ... ok"
+      }
+    },
+    {
+      "id": "PH-03",
+      "test": "host_supplies_monotonic_revisions_across_multiple_undo_and_redo",
+      "expected": "A10→B11→C12，多次候选沿用current修订；Host填100/101/102/103，历史不自增/回用旧修订，顺序B/A/B/C。",
+      "actual": {
+        "executed": true,
+        "passed": true,
+        "raw_output": "test project_history::tests::host_supplies_monotonic_revisions_across_multiple_undo_and_redo ... ok"
+      }
+    },
+    {
+      "id": "PH-04",
+      "test": "an_ordinary_committed_branch_discards_redo_only_after_record",
+      "expected": "撤销后普通record新分支清redo，下一undo返回新分支前状态而非旧redo结果。",
+      "actual": {
+        "executed": true,
+        "passed": true,
+        "raw_output": "test project_history::tests::an_ordinary_committed_branch_discards_redo_only_after_record ... ok"
+      }
+    },
+    {
+      "id": "PH-05",
+      "test": "another_project_cannot_reuse_matching_revision_history",
+      "expected": "不同工程即使修订相同也InvalidInput且不带旧工程修订；旧工程历史未被消费。",
+      "actual": {
+        "executed": true,
+        "passed": true,
+        "raw_output": "test project_history::tests::another_project_cannot_reuse_matching_revision_history ... ok"
+      }
+    },
+    {
+      "id": "PH-06",
+      "test": "reset_clears_old_project_history_and_establishes_the_new_head",
+      "expected": "工程切换reset清undo/redo及旧头；新工程后续record和candidate只属于新身份/当前头。",
+      "actual": {
+        "executed": true,
+        "passed": true,
+        "raw_output": "test project_history::tests::reset_clears_old_project_history_and_establishes_the_new_head ... ok"
+      }
+    },
+    {
+      "id": "PH-07",
+      "test": "scenario_creation_and_removal_restore_documents_and_project_refs_together",
+      "expected": "创建两份Scenario后undo/redo时整个Scenario集合与Project.scenario_refs同步消失/恢复；删除单份后undo恢复同一文档及引用且另一份不丢。",
+      "actual": {
+        "executed": true,
+        "passed": true,
+        "raw_output": "test project_history::tests::scenario_creation_and_removal_restore_documents_and_project_refs_together ... ok"
+      }
+    },
+    {
+      "id": "PH-08",
+      "test": "scenario_content_and_failed_candidates_stay_atomic_without_assigning_revisions",
+      "expected": "订单优先级/第二份Scenario内容与Project一起恢复；重复候选/历史头冲突均不消费；Host已分配的独立Scenario高水位不由模块修改，历史候选仅带保存的内容/元数据并保持current Project revision。",
+      "actual": {
+        "executed": true,
+        "passed": true,
+        "raw_output": "test project_history::tests::scenario_content_and_failed_candidates_stay_atomic_without_assigning_revisions ... ok"
+      }
+    }
+  ],
+  "format_verification": {
+    "command": "rustfmt --edition 2024 packages/commands/src/project_history.rs",
+    "exit_code": 0,
+    "scope": "only assigned source file"
+  },
+  "manual_self_review": {
+    "current_head": "所有方法均通过draft.project读取身份/修订，不把Scenario修订当Project修订。",
+    "atomic_snapshot": "before/after均包含整个BTreeMap，不按单个Scenario补丁拼接。",
+    "private_types": "单测分别比较Project与Scenario序列化值；未要求ProjectDraft实现wire Serialize/Schema/TS。",
+    "old_API_wrapper_retained": false
+  },
+  "expected_central_verification": "根集中编译并运行cargo test --workspace --locked；本窗不提前Cargo。",
+  "actual_execution": {
+    "executor": "统筹W00集中执行；本窗只读核验日志",
+    "proof_ref": ".work/p0-02-inputs/verification/result.json",
+    "round_started_at": "2026-10-16T00:10:03.9898223+08:00",
+    "round_finished_at": "2026-10-16T00:11:11.8827272+08:00",
+    "workspace_command": "npm.cmd run test:rust",
+    "workspace_exit_code": 0,
+    "stdout_ref": ".work/p0-02-inputs/verification/workspace-tests.stdout.txt",
+    "stderr_ref": ".work/p0-02-inputs/verification/workspace-tests.stderr.txt",
+    "actual_history_unit_output": [
+      "test project_history::tests::empty_history_and_reset_never_invent_an_undo ... ok",
+      "test project_history::tests::an_ordinary_committed_branch_discards_redo_only_after_record ... ok",
+      "test project_history::tests::another_project_cannot_reuse_matching_revision_history ... ok",
+      "test project_history::tests::reset_clears_old_project_history_and_establishes_the_new_head ... ok",
+      "test project_history::tests::scenario_creation_and_removal_restore_documents_and_project_refs_together ... ok",
+      "test project_history::tests::host_supplies_monotonic_revisions_across_multiple_undo_and_redo ... ok",
+      "test project_history::tests::candidates_and_revision_failures_leave_history_unconsumed ... ok",
+      "test project_history::tests::scenario_content_and_failed_candidates_stay_atomic_without_assigning_revisions ... ok"
+    ],
+    "history_passed": 8,
+    "history_failed": 0,
+    "workspace_distinct_tests": 107,
+    "all_7_recorded_commands_exit_zero": true,
+    "local_duplicate_Cargo_execution": false,
+    "schema_consumer": {
+      "status": "passed_actual_product_schema_finite_cases",
+      "schemas": 20,
+      "cases": 48
+    },
+    "native_host_checks": 56,
+    "native_raw_stdout_ref": ".work/p0-02-inputs/verification/desktop-host-smoke.stdout.txt",
+    "native_raw_equals_nontruncated_proof": true,
+    "baseline_retention": {
+      "Rust_old79_all_named_retained": true,
+      "native_old31_all_named_retained": true
+    },
+    "native_history_chain": [
+      {
+        "name": "business_project_and_scenario_undo_commits",
+        "passed": true
+      },
+      {
+        "name": "business_undo_restores_orders_and_tasks",
+        "passed": true
+      },
+      {
+        "name": "business_project_and_scenario_redo_commits",
+        "passed": true
+      },
+      {
+        "name": "business_redo_restores_quantity_with_fresh_structure_revision",
+        "passed": true
+      },
+      {
+        "name": "business_saved_scenario_is_same_generation_as_project",
+        "passed": true
+      },
+      {
+        "name": "business_reopened_orders_and_tasks_are_exact_saved_values",
+        "passed": true
+      },
+      {
+        "name": "business_reopened_history_restores_saved_input",
+        "passed": true
+      },
+      {
+        "name": "business_reopened_redo_restores_new_input",
+        "passed": true
+      },
+      {
+        "name": "business_history_does_not_modify_any_archive_file",
+        "passed": true
+      }
+    ]
+  },
+  "actual_result": {
+    "implemented": true,
+    "unit_tests_executed": 8,
+    "passed": 8,
+    "failed": 0,
+    "old_six_expectations_retained": true,
+    "multidocument_history_pure_module_complete": true,
+    "real_Host_native_history_chain_observed": true,
+    "whole_task_complete": false
+  },
+  "tests_executed_by_this_window": false,
+  "source_observation": {
+    "bytes": 18021,
+    "mtime_ns": 1792079135354075200,
+    "declared_unit_tests": 8
+  },
+  "allowed_write_files": [
+    "packages/commands/src/project_history.rs",
+    "docs/04_开发与验收/P0-02_输入引用_窗口3.json"
+  ],
+  "shared_type_config_lock_or_other_window_source_written": false,
+  "whole_P0_02_complete": false,
+  "related_final_fix_receipts": [
+    {
+      "id": "W6-IN-F01",
+      "owner": "窗口2/W00",
+      "actual_final_evidence": "business_inputs::tests的9项最终raw均ok；严格SemVer公共类型未被测试预期放宽。",
+      "verified_by_this_receipt": true
+    },
+    {
+      "id": "W6-IN-F02",
+      "owner": "W00 Host",
+      "source_fix": "packages/commands/src/project_host.rs:2270 archive_scenario_highwater只纳入archive.files实际包含文档。",
+      "regression_test": "frozen_project_and_scenarios_save_at_r_reopen_elsewhere_and_preserve_old_frozen_documents",
+      "actual_final_evidence": "新增缺失可选Scenario声明MAX_SAFE_UINT回归分支；同ID真实新Scenario仍成功revision1/project_revision2，包含该分支的最终Host测试ok。",
+      "verified_by_this_receipt": true
+    },
+    {
+      "id": "W6-IN-F03",
+      "owner": "窗口4/W00整合",
+      "source_fix": "packages/commands/src/project_store.rs:665 精确消费business_inputs.missing_scenario及Project所属/scenario_refs/i。",
+      "regression_test": "put_remove_get_business_kinds_use_the_actual_host_and_sync_scenario_refs",
+      "actual_final_evidence": "实际canonical缺口Issue保持ref、保存、异目录重开、显式采用并读回；包含该分支的最终Host测试ok。",
+      "verified_by_this_receipt": true
+    }
+  ],
+  "cross_window_formal_finding_closeout_owner": "窗口6只读复审后正式关闭F01-F03；本窗不修改其状态或公共implementation_passed。",
+  "source_observation_final": {
+    "path": "packages/commands/src/project_history.rs",
+    "bytes": 18021,
+    "mtime_ns": 1792079135354075200,
+    "source_written_in_this_receipt": false
+  },
+  "verification_boundary": "结果属于P0-02原步骤1及本模块；步骤2/3、库存/时钟/Engine、整项P0-02与业务前端仍未验收。",
+  "source_implementation_changes_after_ready": false
+}

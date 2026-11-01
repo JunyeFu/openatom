@@ -1,0 +1,74 @@
+{
+  "kind": "finished_case_logistics",
+  "version": "1.0.0",
+  "package": "V2-05-G01",
+  "source": "preparation-host07 actual project, scenario and frozen modules",
+  "hall_geometry_changed": false,
+  "AI_views_reused": true,
+  "devices": [
+    "belt-conveyor",
+    "right-angle-transfer",
+    "roller-conveyor",
+    "vacuum-palletizer"
+  ],
+  "case": {
+    "type": "PF-packed-case",
+    "count": 3,
+    "length_m": 0.32,
+    "width_m": 0.24,
+    "height_m": 0.24,
+    "contents_per_case": 6,
+    "state": "two_band_pack"
+  },
+  "flow": "Final inspection -> belt -> right-angle transfer -> rollers -> single-case vacuum placement -> shipping",
+  "stock_policy": "Remove four isolated demonstration inputs; all four stations consume only actual upstream released cases.",
+  "identity_policy": "Preserve the same three case IDs, eighteen contained item IDs, seals, labels, straps and inspection quality.",
+  "geometry_policy": "Keep accepted device geometry and motion; reuse the actual 320x240x240mm packed-case geometry on each declared cargo trajectory. Do not scale the complete machine or replace cases with 240x180x120mm example boxes.",
+  "vacuum_height_fixture": {
+    "height_difference_m": 0.12,
+    "node_y_offsets_m": {
+      "J3_VerticalTool": 0.12,
+      "PaperSeat": -0.12,
+      "TelescopingStage_1": 0.04,
+      "TelescopingStage_2": 0.08
+    },
+    "rule": "Raise suction tooling for the actual case height; compensate its child cargo seat so the case bottom follows the original world trajectory. Apply to both accepted LODs and all declared phases."
+  },
+  "transfer_policy": "Existing three carriers connect separated workstations via declared aisles; one case per trip, including return.",
+  "expected": {
+    "manufacturing_jobs": 161,
+    "transport_trips": 117,
+    "accepted_orders": {
+      "PF-ORDER-CASE": 3,
+      "PF-ORDER-SLEEVE": 3,
+      "PF-ORDER-TUBE": 6,
+      "PF-ORDER-LABEL": 18,
+      "PF-ORDER-BAG": 3,
+      "PF-ORDER-SHEETS": 60,
+      "PF-ORDER-BOARDS": 6,
+      "PF-ORDER-CURED": 3
+    },
+    "connected_devices": 30,
+    "independent_cells": 62
+  },
+  "expected_derivation": "153 - 4 isolated one-cycle jobs + 4*3 actual case jobs = 161; replace 3 direct shipping trips with 5*3 trips = 117.",
+  "pallet_followup": {
+    "state": "design_required_not_implemented",
+    "container_m": [
+      1.2,
+      0.8,
+      0.12
+    ],
+    "canonical_declared_case_contents": 6,
+    "film_m_per_load": 9,
+    "required": "Explicitly assemble a pallet container with actual case contents before wrapping; the current three single-case placements do not constitute a six-case pallet."
+  },
+  "acceptance": [
+    "Three identities preserved across all four devices",
+    "Each case retains six original contained items",
+    "All eight existing orders remain exact",
+    "Actual 15 logistics trips and complete returns",
+    "Exact save/reopen",
+    "Native trajectories and box dimensions verified before template promotion"
+  ]
+}

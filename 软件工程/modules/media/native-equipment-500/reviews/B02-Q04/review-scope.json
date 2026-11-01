@@ -1,0 +1,69 @@
+{
+  "review_batch": "B02-Q04",
+  "status": "in_progress_not_counted",
+  "formal_supported_device_count": 15,
+  "user_goal_scope": "../paper-packaging-review-scope.json",
+  "equipment": [
+    {
+      "id": "hot-foil-stamper",
+      "title": "平压烫金机",
+      "cycle_seconds": 20,
+      "identity": "transform_with_origin",
+      "input": "1张0.50×0.40×0.0008m纸板+1片0.16×0.16m PET载体烫金片（12μm PET，0.12×0.12m、0.15μm金属层）",
+      "output": "1张烫金纸板+1片独立用后PET载体；输出保留两项实际投入来源；纸材面积0.20m²、PET面积0.0256m²和金属层体积2.16e-9m³各自守恒。",
+      "mechanism": "本实例为预切片真空保持式平压烫金，不冒充卷料自动放卷；热模压合后载体抬升并后退，卸料交出成品与独立PET片。"
+    },
+    {
+      "id": "blind-embosser",
+      "title": "纸面凹凸压印机",
+      "cycle_seconds": 20,
+      "identity": "preserve",
+      "input": "1张0.50×0.40×0.0008m纸板",
+      "output": "同一实际纸张，flat→embossed，名义面积0.20m²、目标凸起1.2mm，无废料。",
+      "mechanism": "下凸模顶起、上凹模容纳，四柱液压和弹簧压纸；保留纸张完整形态，未模拟纸纤维应力。"
+    },
+    {
+      "id": "spot-uv-printer",
+      "title": "局部UV上光机",
+      "cycle_seconds": 20,
+      "identity": "preserve",
+      "input": "1张0.50×0.40×0.0008m纸板+1份0.2mL UV涂料",
+      "output": "同一纸张flat→uv_cured；涂层0.10×0.10m、20μm；实际涂料份额消费。",
+      "mechanism": "复合原子工序：网版上光、抬网、送入罩内和定时固化；蓝色指示灯仅表示固化阶段，不声称光学剂量或温度求解。未完成整个auto不提交cured状态、不释放湿件。"
+    },
+    {
+      "id": "screen-print-press",
+      "title": "平面丝网印刷机",
+      "cycle_seconds": 16,
+      "identity": "preserve",
+      "input": "1张0.50×0.40×0.0008m纸板+1份0.2mL油墨",
+      "output": "同一纸张flat→screen_printed；0.10×0.10m、20μm墨层。",
+      "mechanism": "定量料井、开窗模板/接触网、抬网机构和横向刮刀，模板规定印刷区域；只在真实auto有效进度内转移墨层。"
+    },
+    {
+      "id": "pad-print-press",
+      "title": "移印机",
+      "cycle_seconds": 16,
+      "identity": "preserve",
+      "input": "1张0.20×0.14×0.0008m纸板标签+1份0.08mL油墨",
+      "output": "同一标签flat→pad_printed；0.04×0.04m、50μm墨层。",
+      "mechanism": "本实例为开式凹版定量、刮平、硅胶垫取墨、横移、压印和抬起；版内/胶垫/纸上墨层属于实际投入物品及其工序内转移，不复制库存。"
+    }
+  ],
+  "finite_state_contract": "现行material_flow仅提交已声明enum状态；涂层体积、凸起高度是declared recipe常量，不能误读为初始纸张已经上墨或凸起。实际成品状态提交后才应用相应成品外观。",
+  "references": [
+    {
+      "url": "https://www.kurz-graphics.com/hot-stamping/faq-hot-stamping/",
+      "use": "仅核对热/压力使转移层离开载体并结合基材的工序关系。"
+    },
+    {
+      "url": "https://www.nazdar.com/Portals/0/Tech_Service_Docs/TIPs/TIP_Pad-printing.pdf",
+      "use": "仅核对凹版、硅胶垫、承印物间取墨/转印关系。"
+    },
+    {
+      "url": "https://www.sakurai-gs.co.jp/products",
+      "use": "仅核对丝印及配套UV干燥工艺；不复制机器CAD、商标或额定参数。"
+    }
+  ],
+  "geometry_rights": "全部几何、铭牌和微表面原创CC0；尺寸/周期/剂量为本模块明确示例声明。"
+}

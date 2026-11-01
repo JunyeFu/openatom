@@ -1,0 +1,230 @@
+{
+  "document_kind": "P0_01_persistence_history_tauri_adapter_window2_delivery",
+  "date": "2026-10-15 Asia/Shanghai",
+  "task_id": "P0-01",
+  "covered_original_steps": [
+    3,
+    4
+  ],
+  "window": "实现窗口2",
+  "thread_id": "01a11f4e-f8a4-7a62-9d23-24834761b07e",
+  "authority_ref": "docs/04_开发与验收/P0-01_保存重开与会话历史切片.json#/parallel_dispatch/1",
+  "status": "completed_scoped_persistence_history_adapter_and_native_startup_verified",
+  "allowed_files": [
+    "apps/planner/src-tauri/src/project_api.rs",
+    "docs/04_开发与验收/P0-01_保存历史_窗口2.json"
+  ],
+  "contract_refs": [
+    "docs/04_开发与验收/P0-01_保存重开与会话历史切片.json#/private_implementation_interfaces",
+    "packages/commands/src/api.rs",
+    "docs/03_架构与契约/工程交接与打开.md"
+  ],
+  "implementation": {
+    "state": "Arc<Mutex<ProjectHost>>; 同一托管Host与固定UI会话，无第二Host",
+    "admission": "Host锁内dispatch、drain_io_work并按原准入顺序向唯一mpsc Worker发送；随后释放Host锁",
+    "execution": "单线程FIFO执行ProjectIoWork::run，不持有Host锁；短锁finish_io；Host锁释放后通知Condvar",
+    "send_failure": "通过ProjectIoWork::fail(ApiError)生成失败Completion并finish_io，不把已准入任务遗留为queued",
+    "directory_command": "pub async fn project_select_directory(window: tauri::WebviewWindow, app: tauri::AppHandle, state: tauri::State<'_, ProjectApiState>, purpose: FilePurpose) -> Result<SelectedFileRef, ApiError>",
+    "picker": "真实tauri-plugin-dialog 2.8.2 DialogExt::pick_folder，绑定真实main窗口；tokio oneshot接回调，不接收机器路径参数",
+    "purpose": "仅SaveProject/ImportPackage目录；其它UnsupportedCapability；非main优先PermissionDenied",
+    "cancel": "原生picker返回None时Cancelled；不登记目录或改工程",
+    "wait": "smoke按真实get_task句柄和完成通知等待，15秒有限截止；不sleep、不伪造终态或output",
+    "temporary_files": "仅创建本进程独占临时目录；保存完成后逐文件复制到另一目录；清理前验证解析绝对目标仍在已解析临时根内"
+  },
+  "integration_by_W00": {
+    "file": "apps/planner/src-tauri/src/lib.rs",
+    "register_command": "project_api::project_select_directory",
+    "existing_manage": "project_api::ProjectApiState::new()",
+    "existing_smoke": "project_api::smoke(&app.state::<project_api::ProjectApiState>())",
+    "stdout_kind_preserved": "P0_01_host_smoke",
+    "root_file_written_by_this_window": false,
+    "command_registration_reported_complete": true,
+    "dependency_lock_ready_reported": true,
+    "current_source_frozen_for_shared_execution": true,
+    "actual_test_and_native_execution_complete": true
+  },
+  "finite_expectations": [
+    "原10项同Host CRUD及错误分类检查不删除，现有4组测试不缩小",
+    "正常保存返回实际TaskHandle；冻结修订保存完成后，新编辑仍保留并dirty",
+    "实际复制目录后import_package只产生已完成ImportDraft，未显式接纳前不替换当前工程",
+    "AdoptImportedDraft(OpenProject)显式处理脏工程及活动任务后打开另目录原保存内容",
+    "重开后继续编辑、Undo、Redo，每次提交新修订，历史操作前后两个目录字节完全不变",
+    "另目录继续保存得到实际完成结果和当前manifest，原目录完全不变",
+    "同目录两个真实保存任务的最终磁盘版本遵从准入FIFO顺序",
+    "目录选择只暴露selection_id/purpose，不把机器路径送入公开wire"
+  ],
+  "planned_verification": {
+    "scoped_tests": "cargo test -p sf-desktop-host --lib project_api::tests --locked",
+    "test_groups": "原4组保留，新增3组；7组已随实际workspace回归通过",
+    "native_smoke": "原10项加21项保存重开历史/磁盘检查，31项均经真实原生进程执行通过"
+  },
+  "verification": [
+    {
+      "command": "rustfmt --edition 2024 apps/planner/src-tauri/src/project_api.rs",
+      "exit_code": 0
+    },
+    {
+      "key": "format",
+      "command": "cargo fmt -p sf-commands -p sf-desktop-host -- --check",
+      "started_at": "2026-10-15T23:28:21.1755188+08:00",
+      "finished_at": "2026-10-15T23:28:21.7056317+08:00",
+      "exit_code": 0,
+      "stdout_ref": ".work/p0-01-persistence-history/verification/format.stdout.txt",
+      "stderr_ref": ".work/p0-01-persistence-history/verification/format.stderr.txt",
+      "executed_by": "W00",
+      "consumed_by_window2": "原始回执/工作区stdout/原生stdout实际回读"
+    },
+    {
+      "key": "workspace-tests",
+      "command": "npm.cmd run test:rust",
+      "started_at": "2026-10-15T23:28:21.7305122+08:00",
+      "finished_at": "2026-10-15T23:28:34.5595405+08:00",
+      "exit_code": 0,
+      "stdout_ref": ".work/p0-01-persistence-history/verification/workspace-tests.stdout.txt",
+      "stderr_ref": ".work/p0-01-persistence-history/verification/workspace-tests.stderr.txt",
+      "distinct_tests_executed": 79,
+      "executed_by": "W00",
+      "consumed_by_window2": "原始回执/工作区stdout/原生stdout实际回读"
+    },
+    {
+      "key": "generate-contracts",
+      "command": "npm.cmd run generate:contracts",
+      "started_at": "2026-10-15T23:28:34.5782347+08:00",
+      "finished_at": "2026-10-15T23:28:58.8973080+08:00",
+      "exit_code": 0,
+      "stdout_ref": ".work/p0-01-persistence-history/verification/generate-contracts.stdout.txt",
+      "stderr_ref": ".work/p0-01-persistence-history/verification/generate-contracts.stderr.txt",
+      "executed_by": "W00",
+      "consumed_by_window2": "原始回执/工作区stdout/原生stdout实际回读"
+    },
+    {
+      "key": "typecheck",
+      "command": "npm.cmd run typecheck",
+      "started_at": "2026-10-15T23:28:58.8995881+08:00",
+      "finished_at": "2026-10-15T23:29:00.5262816+08:00",
+      "exit_code": 0,
+      "stdout_ref": ".work/p0-01-persistence-history/verification/typecheck.stdout.txt",
+      "stderr_ref": ".work/p0-01-persistence-history/verification/typecheck.stderr.txt",
+      "executed_by": "W00",
+      "consumed_by_window2": "原始回执/工作区stdout/原生stdout实际回读"
+    },
+    {
+      "key": "schema-consumer",
+      "command": "C:/Users/fujunye/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe -B -X utf8 tools/检查工程与Command边界.py",
+      "started_at": "2026-10-15T23:29:00.5283082+08:00",
+      "finished_at": "2026-10-15T23:29:03.0062948+08:00",
+      "exit_code": 0,
+      "stdout_ref": ".work/p0-01-persistence-history/verification/schema-consumer.stdout.txt",
+      "stderr_ref": ".work/p0-01-persistence-history/verification/schema-consumer.stderr.txt",
+      "executed_by": "W00",
+      "consumed_by_window2": "原始回执/工作区stdout/原生stdout实际回读"
+    },
+    {
+      "key": "desktop-build",
+      "command": "cargo build -p sf-desktop-host --bin superfactory --locked",
+      "started_at": "2026-10-15T23:29:03.0081607+08:00",
+      "finished_at": "2026-10-15T23:29:34.5706664+08:00",
+      "exit_code": 0,
+      "stdout_ref": ".work/p0-01-persistence-history/verification/desktop-build.stdout.txt",
+      "stderr_ref": ".work/p0-01-persistence-history/verification/desktop-build.stderr.txt",
+      "executed_by": "W00",
+      "consumed_by_window2": "原始回执/工作区stdout/原生stdout实际回读"
+    },
+    {
+      "key": "desktop-host-smoke",
+      "command": ".\\target\\debug\\superfactory.exe --p0-01-host-smoke",
+      "started_at": "2026-10-15T23:29:34.5726964+08:00",
+      "finished_at": "2026-10-15T23:29:35.8721168+08:00",
+      "exit_code": 0,
+      "stdout_ref": ".work/p0-01-persistence-history/verification/desktop-host-smoke.stdout.txt",
+      "stderr_ref": ".work/p0-01-persistence-history/verification/desktop-host-smoke.stderr.txt",
+      "executed_by": "W00",
+      "consumed_by_window2": "原始回执/工作区stdout/原生stdout实际回读"
+    }
+  ],
+  "actual_result": {
+    "executed_by": "W00",
+    "verification_entry": "tools/p0-01-host/verify-persistence-history.ps1",
+    "receipt_ref": ".work/p0-01-persistence-history/verification/result.json",
+    "workspace_stdout_ref": ".work/p0-01-persistence-history/verification/workspace-tests.stdout.txt",
+    "workspace_test_count": 79,
+    "adapter_test_groups_passed": 7,
+    "adapter_test_output": [
+      "test project_api::tests::project_api_reports_poison_without_dispatching ... ok",
+      "test project_api::tests::project_directory_picker_gates_purpose_and_preserves_cancelled_state ... ok",
+      "test project_api::tests::project_api_rejects_wire_identity_and_malformed_requests ... ok",
+      "test project_api::tests::project_api_smoke_uses_the_supplied_host_and_checks_real_data ... ok",
+      "test project_api::tests::project_api_unknown_headers_keep_frozen_errors_without_mutation ... ok",
+      "test project_api::tests::project_api_fifo_commits_same_directory_in_admission_order ... ok",
+      "test project_api::tests::project_api_save_reopen_and_history_use_the_same_fifo_host ... ok"
+    ],
+    "old_four_adapter_groups_preserved": true,
+    "native_stdout_ref": ".work/p0-01-persistence-history/verification/desktop-host-smoke.stdout.txt",
+    "native_process_passed": true,
+    "native_smoke_kind": "P0_01_host_smoke",
+    "native_stdout_json_lines": 1,
+    "native_checks_passed": 31,
+    "old_ten_crud_checks_preserved": true,
+    "new_persistence_history_checks_passed": 21,
+    "native_check_names": [
+      "managed_host_starts_without_project",
+      "workspace_create_commits_revision_one",
+      "read_returns_created_project",
+      "edit_commits_revision_two",
+      "read_returns_edited_data",
+      "stale_edit_returns_conflict",
+      "json_cannot_supply_caller",
+      "non_main_window_denied",
+      "known_unimplemented_operation_is_explicit",
+      "rejected_requests_preserve_same_host_project",
+      "save_returns_real_task_handle",
+      "edit_does_not_wait_for_disk_task",
+      "completed_save_contains_frozen_revision",
+      "newer_current_revision_remains_dirty",
+      "relocated_archive_is_byte_identical",
+      "import_returns_real_workspace_task",
+      "completed_import_contains_staged_draft",
+      "import_does_not_implicitly_replace_project",
+      "explicit_adoption_opens_relocated_project",
+      "reopened_data_matches_saved_snapshot",
+      "reopened_project_remains_editable",
+      "undo_commits_a_new_revision",
+      "undo_restores_draft_title",
+      "redo_commits_a_new_revision",
+      "redo_restores_edited_title",
+      "history_never_rewrites_disk_archives",
+      "relocated_project_can_be_saved_again",
+      "relocated_save_has_actual_completion",
+      "saved_current_revision_is_clean",
+      "relocated_directory_contains_saved_current_revision",
+      "relocated_save_does_not_touch_original_directory"
+    ],
+    "single_managed_host_instance_id": "desktop-host-63548",
+    "single_ui_session_id": "desktop-main-ui",
+    "second_host_created_by_smoke": false,
+    "same_directory_FIFO_test_passed": true,
+    "source_frozen_after_test": true,
+    "native_picker_interactively_exercised": false,
+    "whole_task_done": false
+  },
+  "boundaries": {
+    "business_frontend_changed": false,
+    "figma_changed": false,
+    "public_entry_or_dependency_or_lock_written": false,
+    "native_picker_interactively_exercised": false,
+    "temporary_directory_smoke_is_not_interactive_picker_evidence": true,
+    "webview_invoke_transport_exercised": false,
+    "mcp_process_authentication_proved": false,
+    "whole_P0_01_done": false,
+    "human_acceptance": null
+  },
+  "handoff": {
+    "status": "ready_for_W00_independent_acceptance",
+    "modified_files": [
+      "apps/planner/src-tauri/src/project_api.rs",
+      "docs/04_开发与验收/P0-01_保存历史_窗口2.json"
+    ],
+    "public_progress_owner": "W00",
+    "remaining_scope": "系统目录picker已真实接API并编译，但未进行真人交互；Webview invoke、业务UI和整项P0-01不由本窗结果判为完成"
+  }
+}

@@ -1,0 +1,221 @@
+{
+  "document_kind": "P0_01_first_backend_slice_execution_and_review",
+  "task_id": "P0-01",
+  "within_original_step": 1,
+  "status": "implemented_and_reviewed",
+  "dispatch": {
+    "authorized_at": "2026-10-15T20:59:09+08:00",
+    "authority": "按推荐进入S08，直接执行P0-01首个后端切片，完成实现、必要测试和复审，并同步对应文件与JSON。",
+    "task_id": "P0-01",
+    "within_original_step": 1,
+    "role": "W00",
+    "thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+    "scope_ref": "docs/04_开发与验收/P0-01_首个后端切片.json",
+    "business_frontend_authorized": false
+  },
+  "scope": {
+    "task_id": "P0-01",
+    "within_original_step": 1,
+    "original_step": "落实该步所需共同字段/schema与命令边界，生成同源前端类型",
+    "scope": "先落实最小创建/读取/编辑所需的基础值类型、ID/版本/修订语义及Rust同源TS导出；本切片不实现CRUD或完整工程模型。",
+    "reason_for_starting_with_step_1": "原推荐步骤2依赖原步骤1的真实公共类型；S07只建立工程壳，不提前编造业务字段或跳过该前置。",
+    "planned_owner": "W00",
+    "actual_thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+    "actual_dispatch": {
+      "authorized_at": "2026-10-15T20:59:09+08:00",
+      "authority": "按推荐进入S08，直接执行P0-01首个后端切片，完成实现、必要测试和复审，并同步对应文件与JSON。",
+      "task_id": "P0-01",
+      "within_original_step": 1,
+      "role": "W00",
+      "thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+      "scope_ref": "docs/04_开发与验收/P0-01_首个后端切片.json",
+      "business_frontend_authorized": false
+    },
+    "preparation_status": "implemented_and_reviewed",
+    "input_refs": [
+      "packages/domain/types.design.rs",
+      "docs/03_架构与契约/全层类型与工程格式.json",
+      "docs/03_架构与契约/公开操作与宿主调用契约.json",
+      "docs/04_开发与验收/S07_工程准备与执行准入.json"
+    ],
+    "actual_prerequisite_outputs": [
+      "Cargo.toml",
+      "Cargo.lock",
+      "package.json",
+      "package-lock.json",
+      "tools/s07/output/verification.json"
+    ],
+    "implementation_dependencies": [],
+    "allowed_modified_files": [
+      "packages/domain/src/lib.rs"
+    ],
+    "allowed_new_files": [
+      "packages/domain/src/value_types.rs",
+      "packages/domain/src/ids.rs",
+      "packages/domain/tests/value_contracts.rs",
+      "packages/domain/tests/type_exports.rs",
+      "packages/domain/generated/value-types.ts"
+    ],
+    "public_contract": "采用types.design.rs中相应基础类型原定义；Rust为唯一来源，不从工程壳EngineeringStatus推导业务格式。",
+    "finite_expectations": [
+      "SafeUint接受0与9007199254740991，拒绝超出JS安全整数范围的值；Revision沿用该边界。",
+      "FiniteNumber保留1.25等实际有限值，拒绝NaN和正负无穷；不预先降低数值精度。",
+      "RelativeFilePath接受assets/model.glb，拒绝../escape、C:/escape、a//b和a/../b。",
+      "ID及VersionId采用冻结定义的有效/无效有限样本；序列化形状不改变。",
+      "TS仅由实际Rust类型导出；JSON边界及导出测试须在实现后新增并真正执行，不能以当前0个业务单测算通过。"
+    ],
+    "verification_entries": [
+      "npm run test:rust",
+      "npm run typecheck"
+    ],
+    "outputs": [
+      "实际Rust基础值类型和有限边界测试",
+      "从相同Rust类型导出的TS基础类型"
+    ],
+    "business_frontend_changes": false,
+    "forbidden_scope": [
+      "前端组件/样式/Figma制作",
+      "生产Engine/库存/运行时钟",
+      "保存重开及撤销重做的业务实现",
+      "公共18操作新增或改名",
+      "修改其他窗口源或tools/3d-proof"
+    ],
+    "handoff": "交付实际diff、边界测试/导出结果和剩余步骤；W00只读核对后再接入原步骤2，整项P0-01仍为planned。",
+    "actual_implementation_result": {
+      "result_ref": "docs/04_开发与验收/P0-01_首个后端切片.json",
+      "status": "implemented_and_reviewed"
+    }
+  },
+  "actual_result": {
+    "status": "implemented_and_reviewed",
+    "completed_at": "2026-10-15T21:07:40+08:00",
+    "implemented_types": [
+      "SafeUint",
+      "FiniteNumber",
+      "RelativeFilePath",
+      "Revision",
+      "SimTimeMs",
+      "DurationMs",
+      "ProjectId",
+      "ObjectId",
+      "ScenarioId",
+      "RunId",
+      "TaskId",
+      "ModuleId",
+      "AssetId",
+      "ArtifactId",
+      "RoleId",
+      "PortId",
+      "PhaseId",
+      "UnitId",
+      "SubjectRevisionId",
+      "VersionId"
+    ],
+    "implemented_type_count": 20,
+    "implementation_and_test_files": [
+      "packages/domain/src/lib.rs",
+      "packages/domain/src/value_types.rs",
+      "packages/domain/src/ids.rs",
+      "packages/domain/tests/value_contracts.rs",
+      "packages/domain/tests/type_exports.rs",
+      "packages/domain/generated/value-types.ts"
+    ],
+    "verification_commands": {
+      "domain_tests": "cargo test -p sf-domain --locked",
+      "workspace_tests": "npm run test:rust",
+      "typecheck": "npm run typecheck",
+      "format": "cargo fmt -p sf-domain -- --check"
+    },
+    "actual_command_results": [
+      {
+        "command": "cargo test -p sf-domain --locked",
+        "started_at": "2026-10-15T21:01:14.7995685+08:00",
+        "finished_at": "2026-10-15T21:01:22.2150688+08:00",
+        "exit_code": 0,
+        "stdout_ref": ".work/p0-01/domain-tests.stdout.txt",
+        "stderr_ref": ".work/p0-01/domain-tests.stderr.txt"
+      },
+      {
+        "command": "npm run test:rust",
+        "started_at": "2026-10-15T21:02:55.0246681+08:00",
+        "finished_at": "2026-10-15T21:03:05.5813399+08:00",
+        "exit_code": 0,
+        "stdout_ref": ".work/p0-01/workspace-tests.stdout.txt",
+        "stderr_ref": ".work/p0-01/workspace-tests.stderr.txt"
+      },
+      {
+        "command": "npm run typecheck",
+        "started_at": "2026-10-15T21:02:55.0247637+08:00",
+        "finished_at": "2026-10-15T21:02:56.2327827+08:00",
+        "exit_code": 0,
+        "stdout_ref": ".work/p0-01/typecheck.stdout.txt",
+        "stderr_ref": ".work/p0-01/typecheck.stderr.txt"
+      }
+    ],
+    "tests": {
+      "distinct_tests": 9,
+      "boundary_and_schema_tests": 8,
+      "Rust_export_TS_compiler_consumer_tests": 1,
+      "failed": 0,
+      "workspace_run_same_tests": 9
+    },
+    "consumer_scope": "公开Rust库被工作区真实编译；Rust派生TS由测试消费端实际编译，未接入业务UI或CRUD。",
+    "remaining_original_step_1": "完整工程/九类/目标/场地模型及Command边界尚未实现；本次只完成其基础值类型子范围。",
+    "remaining_original_steps": [
+      2,
+      3,
+      4
+    ],
+    "full_P0_01_acceptance_met": false,
+    "business_operations_implemented": 0
+  },
+  "review": {
+    "review_kind": "same_window_post_implementation_readonly_review",
+    "frozen_numeric_and_path_bodies_unchanged": true,
+    "frozen_ID_and_semver_bodies_unchanged": true,
+    "types_exported": [
+      "SafeUint",
+      "FiniteNumber",
+      "RelativeFilePath",
+      "Revision",
+      "SimTimeMs",
+      "DurationMs",
+      "ProjectId",
+      "ObjectId",
+      "ScenarioId",
+      "RunId",
+      "TaskId",
+      "ModuleId",
+      "AssetId",
+      "ArtifactId",
+      "RoleId",
+      "PortId",
+      "PhaseId",
+      "UnitId",
+      "SubjectRevisionId",
+      "VersionId"
+    ],
+    "confirmed_defects": [],
+    "generated_TS_has_real_compiler_consumer": true,
+    "scope_excludes_business_handlers_and_frontend": true,
+    "nonblocking_tool_diagnostics": "ts-rs12 warns about ignored serde try_from/into/transparent attributes. Rust JSON boundary tests and actual TS consumer verify the intended primitive wire shapes; warnings were not suppressed.",
+    "status": "passed_scoped_readonly_self_review",
+    "reviewed_at": "2026-10-15T21:07:40+08:00",
+    "independent_reviewer": false,
+    "source_changed_during_review": false
+  },
+  "whole_task_done": false,
+  "actual_business_operations": 0,
+  "human_acceptance": null,
+  "overall_sync_review": {
+    "status": "passed",
+    "mainline_ref": "docs/04_开发与验收/主线同步检查结果.json",
+    "matrix_passed": 12,
+    "checked_files": 9583,
+    "checked_local_refs": 5114,
+    "errors": [],
+    "P0_01_whole_status": "in_progress",
+    "other_selected_tasks_planned": 20,
+    "business_operations_implemented": 0
+  }
+}

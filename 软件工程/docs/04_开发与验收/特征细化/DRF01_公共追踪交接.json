@@ -1,0 +1,140 @@
+{
+  "id": "H-DRF01-05",
+  "owner": "W00/复审窗口2",
+  "status": "merged_existing_AC_refs_verified_product_cases_not_executed",
+  "observed": "business-rule-boundaries新增B07—B18，但首版需求验收追踪input_refs/expected_refs仅覆盖B01—B06，检查需求验收追踪.py:96按既有完整覆盖不变量失败。",
+  "target_files": [
+    "docs/04_开发与验收/首版需求验收追踪.json",
+    "docs/04_开发与验收/首版需求验收追踪.md"
+  ],
+  "recommended": "按业务责任接入既有17个AC，不增身份、不改实际结果；输入与预期都添加精确引用，并补对应procedure/expected。保持检查断言，不以跳过案例恢复通过。",
+  "case_additions": {
+    "AC-05": [
+      {
+        "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+        "json_pointer": "/cases/6",
+        "expected_identity": "B07",
+        "identity_field": "id"
+      },
+      {
+        "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+        "json_pointer": "/cases/7",
+        "expected_identity": "B08",
+        "identity_field": "id"
+      },
+      {
+        "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+        "json_pointer": "/cases/8",
+        "expected_identity": "B09",
+        "identity_field": "id"
+      },
+      {
+        "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+        "json_pointer": "/cases/9",
+        "expected_identity": "B10",
+        "identity_field": "id"
+      },
+      {
+        "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+        "json_pointer": "/cases/10",
+        "expected_identity": "B11",
+        "identity_field": "id"
+      },
+      {
+        "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+        "json_pointer": "/cases/11",
+        "expected_identity": "B12",
+        "identity_field": "id"
+      },
+      {
+        "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+        "json_pointer": "/cases/16",
+        "expected_identity": "B17",
+        "identity_field": "id"
+      },
+      {
+        "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+        "json_pointer": "/cases/17",
+        "expected_identity": "B18",
+        "identity_field": "id"
+      }
+    ],
+    "AC-06": [
+      {
+        "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+        "json_pointer": "/cases/14",
+        "expected_identity": "B15",
+        "identity_field": "id"
+      }
+    ],
+    "AC-07": [
+      {
+        "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+        "json_pointer": "/cases/12",
+        "expected_identity": "B13",
+        "identity_field": "id"
+      },
+      {
+        "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+        "json_pointer": "/cases/13",
+        "expected_identity": "B14",
+        "identity_field": "id"
+      },
+      {
+        "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+        "json_pointer": "/cases/15",
+        "expected_identity": "B16",
+        "identity_field": "id"
+      }
+    ],
+    "AC-08": [
+      {
+        "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+        "json_pointer": "/cases/8",
+        "expected_identity": "B09",
+        "identity_field": "id"
+      },
+      {
+        "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+        "json_pointer": "/cases/9",
+        "expected_identity": "B10",
+        "identity_field": "id"
+      },
+      {
+        "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+        "json_pointer": "/cases/10",
+        "expected_identity": "B11",
+        "identity_field": "id"
+      },
+      {
+        "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+        "json_pointer": "/cases/11",
+        "expected_identity": "B12",
+        "identity_field": "id"
+      },
+      {
+        "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+        "json_pointer": "/cases/16",
+        "expected_identity": "B17",
+        "identity_field": "id"
+      },
+      {
+        "path": "scenarios/真实业务设计/business-rule-boundaries.design.json",
+        "json_pointer": "/cases/17",
+        "expected_identity": "B18",
+        "identity_field": "id"
+      }
+    ]
+  },
+  "procedure_supplement": {
+    "AC-05": "B07/08核对拆分预留/容器接受去重，B09—12核对多原因等待、阶段中断、零阶段/计算截断；B17/18核对完整同刻闭包和执行容量绑定。",
+    "AC-06": "B15核对待判开始前、错检验版本与正确放行分别不应用/不应用/应用，不能借上次质量结果。",
+    "AC-07": "B13/14/16核对跨日去返程、卸料日历和接收容量不足；到达不等于接收、订单可接受不等于载具已返回。",
+    "AC-08": "把B09—12/B17/18投影至主轴/设备细化：工作/占用/等待分开，零时长画点，计算边界不称完成，设备不能从相同模块或人员Claim猜。"
+  },
+  "actual_public_merge": {
+    "evidence": "current 首版需求验收追踪.json has both input/expected B01-B18 coverage in existing 17 AC",
+    "actual_product_cases_executed": 0
+  },
+  "required_recheck": "python tools/检查需求验收追踪.py; then original mainline check"
+}

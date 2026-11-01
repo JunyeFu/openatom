@@ -1,0 +1,910 @@
+{
+  "document_kind": "RR_window5_report_linked_source_consumer_verification",
+  "date": "2026-10-15T12:21:05+08:00",
+  "owner": "复审窗口5",
+  "status": "owned_new_defect_fixed_and_verified_remaining_product_external_evidence_explicit",
+  "authority": "复审窗口1本轮精确核验授权；不恢复R1—R3撤回分派，不写最终报告文件。",
+  "readonly_report_sources": [
+    "../模块研究/输出/报告/超级工厂_最终选题报告_34处疑点核对与修订.md",
+    "../模块研究/输出/报告/超级工厂_最终选题报告_逐字阅读问题记录.md"
+  ],
+  "original_ids": [
+    "09",
+    "12",
+    "26",
+    "27",
+    "30",
+    "31",
+    "32",
+    "34"
+  ],
+  "items": [
+    {
+      "original_id": "09",
+      "classification": "已有定义但产品待实做",
+      "current_conclusion": "现行源区分严格同条件/受控变化/仅并列；补PCB是供给投入变化，不能标same_initial_conditions=true。当前有限报告只消费预置比较，没有产品compare_runs计算。",
+      "source_locations": [
+        {
+          "path": "docs/01_业务需求/指标成本与决策口径.md",
+          "line": 61,
+          "anchor": "### 同起点与变化列表"
+        },
+        {
+          "path": "docs/04_开发与验收/特征细化/DRF05_独立预期.json",
+          "json_pointer": "/cases/7"
+        },
+        {
+          "path": "packages/reporting/evaluation_projection.proof.py",
+          "line": 170,
+          "anchor": "def project_rows"
+        }
+      ],
+      "actual_execution_layer": "现行定义+schema/type_fixture逐Run冻结输入与变化列表读回；非真实比较Run",
+      "raw_outputs": [
+        "tools/design-quality-audit/report-linked/window5/precision/input.type_fixture.json",
+        "tools/design-quality-audit/report-linked/window5/precision/after/projection-result.json"
+      ],
+      "implementation_missing_now": [
+        "冻结两份实际RunInput的比较函数及物理初始供给差异检测尚无产品实现。",
+        "当前project_rows只序列化已给comparison；不能据其通过说比较算法已实现。"
+      ],
+      "original_tasks_and_prerequisites": {
+        "P2-03": {
+          "title": "方案比较与可接手工程交付",
+          "status": "planned",
+          "first_release_implementation_dependencies": [
+            "P2-02"
+          ],
+          "first_release_dependencies": [
+            "P2-02"
+          ],
+          "first_release_coding_package_ref": "docs/04_开发与验收/编码任务包/P2-03.md",
+          "first_release_planned_window_id": "W05",
+          "implementation_closure": [
+            "P0-01",
+            "P0-02",
+            "P1-01",
+            "P1-02",
+            "P1-03",
+            "P2-02",
+            "P2-03"
+          ],
+          "release_closure": [
+            "P0-01",
+            "P0-02",
+            "P1-01",
+            "P1-02",
+            "P1-03",
+            "P2-01",
+            "P2-02",
+            "P2-03"
+          ]
+        },
+        "P2-06": {
+          "title": "订单接受指标条件成本与评审交付",
+          "status": "planned",
+          "first_release_implementation_dependencies": [
+            "P2-03"
+          ],
+          "first_release_dependencies": [
+            "P0-03",
+            "P2-05",
+            "P2-03"
+          ],
+          "first_release_coding_package_ref": "docs/04_开发与验收/编码任务包/P2-06.md",
+          "first_release_planned_window_id": "W05",
+          "implementation_closure": [
+            "P0-01",
+            "P0-02",
+            "P1-01",
+            "P1-02",
+            "P1-03",
+            "P2-02",
+            "P2-03",
+            "P2-06"
+          ],
+          "release_closure": [
+            "P0-01",
+            "P0-02",
+            "P0-03",
+            "P1-01",
+            "P1-02",
+            "P1-03",
+            "P1-04",
+            "P1-05",
+            "P2-01",
+            "P2-02",
+            "P2-03",
+            "P2-04",
+            "P2-05",
+            "P2-06"
+          ]
+        }
+      },
+      "completed_now": "精度夹具同时显式列出费率分子1→72与分母7→3600000 person_ms，避免修改冻结费率却保留旧变化解释。",
+      "next_executable_action": "S07实际准备/派发后，在P2-03用同起点两次实际Run比较；另用只补第二PCB的变化核对initial_conditions=false、controlled_changes及完整投入解释。",
+      "external_input_required": [],
+      "new_defect_ids": [],
+      "closed_regressions_not_reopened": [],
+      "actual_product_runtime": null
+    },
+    {
+      "original_id": "12",
+      "classification": "本轮实际发现",
+      "current_conclusion": "RR-W5-01：有限投影对基础float用.9g提前舍入，已修复repr并实际四格式复验。五类CostBasis与互斥/缺项规则已有源，实际五类计量接线仍缺。",
+      "source_locations": [
+        {
+          "path": "docs/01_业务需求/指标成本与决策口径.md",
+          "line": 75,
+          "anchor": "### 容量积分与成本"
+        },
+        {
+          "path": "packages/reporting/evaluation_projection.proof.py",
+          "line": 174,
+          "anchor": "repr(value)"
+        },
+        {
+          "path": "packages/reporting/evaluation-report.contract.design.json"
+        }
+      ],
+      "actual_execution_layer": "真实Python投影+四文件读回；费率/计量为合法type_fixture，未由Engine生成",
+      "raw_outputs": [
+        "tools/design-quality-audit/report-linked/window5/precision/before.json",
+        "tools/design-quality-audit/report-linked/window5/precision/after.json",
+        "tools/design-quality-audit/report-linked/window5/precision/after/projection-result.json"
+      ],
+      "implementation_missing_now": [
+        "build_fixture中的计量数量由夹具给出；不是从真实消耗/占用/付费日历/批次/处置结果计量。",
+        "未实现按CostInput.includes及同对象/component互斥规则汇总真实Run；独立能耗/折旧等仍须明确费用及支持条件，不能冒充总成本。"
+      ],
+      "original_tasks_and_prerequisites": {
+        "P2-06": {
+          "title": "订单接受指标条件成本与评审交付",
+          "status": "planned",
+          "first_release_implementation_dependencies": [
+            "P2-03"
+          ],
+          "first_release_dependencies": [
+            "P0-03",
+            "P2-05",
+            "P2-03"
+          ],
+          "first_release_coding_package_ref": "docs/04_开发与验收/编码任务包/P2-06.md",
+          "first_release_planned_window_id": "W05",
+          "implementation_closure": [
+            "P0-01",
+            "P0-02",
+            "P1-01",
+            "P1-02",
+            "P1-03",
+            "P2-02",
+            "P2-03",
+            "P2-06"
+          ],
+          "release_closure": [
+            "P0-01",
+            "P0-02",
+            "P0-03",
+            "P1-01",
+            "P1-02",
+            "P1-03",
+            "P1-04",
+            "P1-05",
+            "P2-01",
+            "P2-02",
+            "P2-03",
+            "P2-04",
+            "P2-05",
+            "P2-06"
+          ]
+        }
+      },
+      "completed_now": "合法1 CNY/7 person_ms×135000 person_ms：修前CSV19285.7143，修后JSON/CSV保留19285.714285714286；69行四格式读回，零/未知/币种保留。",
+      "next_executable_action": "在P2-06接实际RunResult与冻结ScenarioInput.cost_inputs，逐类计量并验证paid_calendar/occupied_time互斥、includes、未知币种/费率与完整所选费用边界；不新增全制造成本承诺。",
+      "external_input_required": [],
+      "new_defect_ids": [
+        "RR-W5-01"
+      ],
+      "closed_regressions_not_reopened": [],
+      "actual_product_runtime": null
+    },
+    {
+      "original_id": "26",
+      "classification": "本轮实际发现",
+      "current_conclusion": "同源精度缺陷已修复；4页内部类型表证明字段投影与读回，不证明工艺读者理解或正式printpdf输出。原型中文预览/PR-08仍为设计例。",
+      "source_locations": [
+        {
+          "path": "docs/03_架构与契约/评估报告与数据导出.md",
+          "line": 66,
+          "anchor": "## DRF05：冻结、映射与四格式输出"
+        },
+        {
+          "path": "packages/reporting/README.md",
+          "line": 37,
+          "anchor": "## 2026-10-15 报告关联核验"
+        },
+        {
+          "path": "tools/design-quality-audit/prototype-parallel/window5/final/four-format-readback.json"
+        }
+      ],
+      "actual_execution_layer": "69行type_fixture四文件实际生成/读回；参考PDF为ReportLab。此前原型2页PDF为Chrome打印，均不是产品printpdf。",
+      "raw_outputs": [
+        "tools/design-quality-audit/report-linked/window5/precision/after/output/evaluation.type_fixture.json",
+        "tools/design-quality-audit/report-linked/window5/precision/after/output/evaluation.type_fixture.csv",
+        "tools/design-quality-audit/report-linked/window5/precision/after/output/evaluation.type_fixture.html",
+        "tools/design-quality-audit/report-linked/window5/precision/after/output/pdf/evaluation.type_fixture.pdf",
+        "tools/design-quality-audit/report-linked/window5/precision/visual-review.json"
+      ],
+      "implementation_missing_now": [
+        "reporting目录没有Rust crate/Cargo入口；完整EvaluationReport构造、15张CSV分表、printpdf0.12.8/许可字体、离线资产与实际Host导出任务未实现。",
+        "69行平铺表不是15张正式CSV表，也不是订单/等待/下一步修改的工程阅读摘要产品实现。"
+      ],
+      "original_tasks_and_prerequisites": {
+        "P2-06": {
+          "title": "订单接受指标条件成本与评审交付",
+          "status": "planned",
+          "first_release_implementation_dependencies": [
+            "P2-03"
+          ],
+          "first_release_dependencies": [
+            "P0-03",
+            "P2-05",
+            "P2-03"
+          ],
+          "first_release_coding_package_ref": "docs/04_开发与验收/编码任务包/P2-06.md",
+          "first_release_planned_window_id": "W05",
+          "implementation_closure": [
+            "P0-01",
+            "P0-02",
+            "P1-01",
+            "P1-02",
+            "P1-03",
+            "P2-02",
+            "P2-03",
+            "P2-06"
+          ],
+          "release_closure": [
+            "P0-01",
+            "P0-02",
+            "P0-03",
+            "P1-01",
+            "P1-02",
+            "P1-03",
+            "P1-04",
+            "P1-05",
+            "P2-01",
+            "P2-02",
+            "P2-03",
+            "P2-04",
+            "P2-05",
+            "P2-06"
+          ]
+        },
+        "P5-01": {
+          "title": "开源复现与比赛交付",
+          "status": "planned",
+          "first_release_implementation_dependencies": [
+            "P0-01"
+          ],
+          "first_release_dependencies": [
+            "P4-01",
+            "P3-04",
+            "P2-03",
+            "P2-04",
+            "P2-06",
+            "P4-02"
+          ],
+          "first_release_coding_package_ref": "docs/04_开发与验收/编码任务包/P5-01.md",
+          "first_release_planned_window_id": "W00",
+          "implementation_closure": [
+            "P0-01",
+            "P5-01"
+          ],
+          "release_closure": [
+            "P0-01",
+            "P0-02",
+            "P0-03",
+            "P1-01",
+            "P1-02",
+            "P1-03",
+            "P1-04",
+            "P1-05",
+            "P2-01",
+            "P2-02",
+            "P2-03",
+            "P2-04",
+            "P2-05",
+            "P2-06",
+            "P3-01",
+            "P3-02",
+            "P3-03",
+            "P3-04",
+            "P4-01",
+            "P4-02",
+            "P5-01"
+          ]
+        }
+      },
+      "completed_now": "重生成4格式/4页PDF并逐字段读回69行，实际查看改动所在第1页；其余3页本轮做文本字段读回，不宣称真人阅读。",
+      "next_executable_action": "P2-06获准后先用真实冻结Run形成中文任务摘要+明细，接四输出器并检验同源/未知/中文分页；P5由真实目标读者解释完成情况、关键等待与下一步，保留追问。",
+      "external_input_required": [
+        "可运行候选之后的独立目标读者及其真实回答/追问；当前不能由AI自评替代。"
+      ],
+      "new_defect_ids": [
+        "RR-W5-01"
+      ],
+      "closed_regressions_not_reopened": [
+        "PR-08"
+      ],
+      "actual_product_runtime": null
+    },
+    {
+      "original_id": "27",
+      "classification": "已修复回归",
+      "current_conclusion": "DQ-02四出口和PR-15/16保持已关闭。此次新增实际Windows错误2/5/32/183及成功替换的完整旧引用读回，仍不足以证明1176/1177或产品恢复。",
+      "source_locations": [
+        {
+          "path": "docs/03_架构与契约/工程交接与打开.md",
+          "line": 117,
+          "anchor": "### DQ-02：四种失败出口与文件消费者判定"
+        },
+        {
+          "path": "docs/03_架构与契约/全层类型与工程格式.json",
+          "json_pointer": "/storage/replacement_recovery"
+        },
+        {
+          "path": "packages/reporting/save_contact.proof.py",
+          "line": 81,
+          "anchor": "def main"
+        },
+        {
+          "path": "tools/design-quality-audit/window5/output/dq02-result.json"
+        }
+      ],
+      "actual_execution_layer": "本轮真实Windows文件API/CRT与20文档schema/引用读回；既有F03/F04是构造根移位后的隔离恢复；无产品Host/Save/Open。",
+      "raw_outputs": [
+        "tools/design-quality-audit/report-linked/window5/windows/result.json",
+        "tools/design-quality-audit/window5/output/dq02-result.json",
+        "tools/design-quality-audit/prototype-parallel/window5/final/result.json"
+      ],
+      "implementation_missing_now": [
+        "产品save_project/export_package/import_package任务、目录对象队列键、授权FileToken、完整包/合法资产组装与私有导入采用未接线。",
+        "真实ReplaceFileW返回1176/1177后的原根/保留根检查和恢复未取得；现有错误2/32只支持旧根保留，不支持恢复成功/恢复失败产品结论。",
+        "二进制资产、正式ZIP及跨机软件重开不在本轮20份JSON文件夹具覆盖内。"
+      ],
+      "original_tasks_and_prerequisites": {
+        "P2-03": {
+          "title": "方案比较与可接手工程交付",
+          "status": "planned",
+          "first_release_implementation_dependencies": [
+            "P2-02"
+          ],
+          "first_release_dependencies": [
+            "P2-02"
+          ],
+          "first_release_coding_package_ref": "docs/04_开发与验收/编码任务包/P2-03.md",
+          "first_release_planned_window_id": "W05",
+          "implementation_closure": [
+            "P0-01",
+            "P0-02",
+            "P1-01",
+            "P1-02",
+            "P1-03",
+            "P2-02",
+            "P2-03"
+          ],
+          "release_closure": [
+            "P0-01",
+            "P0-02",
+            "P1-01",
+            "P1-02",
+            "P1-03",
+            "P2-01",
+            "P2-02",
+            "P2-03"
+          ]
+        },
+        "P5-01": {
+          "title": "开源复现与比赛交付",
+          "status": "planned",
+          "first_release_implementation_dependencies": [
+            "P0-01"
+          ],
+          "first_release_dependencies": [
+            "P4-01",
+            "P3-04",
+            "P2-03",
+            "P2-04",
+            "P2-06",
+            "P4-02"
+          ],
+          "first_release_coding_package_ref": "docs/04_开发与验收/编码任务包/P5-01.md",
+          "first_release_planned_window_id": "W00",
+          "implementation_closure": [
+            "P0-01",
+            "P5-01"
+          ],
+          "release_closure": [
+            "P0-01",
+            "P0-02",
+            "P0-03",
+            "P1-01",
+            "P1-02",
+            "P1-03",
+            "P1-04",
+            "P1-05",
+            "P2-01",
+            "P2-02",
+            "P2-03",
+            "P2-04",
+            "P2-05",
+            "P2-06",
+            "P3-01",
+            "P3-02",
+            "P3-03",
+            "P3-04",
+            "P4-01",
+            "P4-02",
+            "P5-01"
+          ]
+        }
+      },
+      "completed_now": "原生缺replacement错误2、只读写入5（CRT errno13另原生确认）、不分享DELETE错误32、写入父路径冲突183以及一次ReplaceFileW成功；五例旧20文档可读回，成功新根revision2且旧Run冻结revision1。",
+      "next_executable_action": "先按P2-03实现正式保存/导入接点；为1176/1177取得可靠故障入口或真实失败后，逐出口验证原根/保留根及完整包引用，再按P5在另一目录/目标机/另一人打开、修改、从初始运行。",
+      "external_input_required": [
+        "1176/1177可靠可控失败样本或产品故障注入接点尚未取得；不能把普通错误码重命名为该证据。",
+        "跨机目标Windows环境及真实接手者。"
+      ],
+      "new_defect_ids": [],
+      "closed_regressions_not_reopened": [
+        "DQ-02",
+        "PR-15",
+        "PR-16"
+      ],
+      "actual_product_runtime": null
+    },
+    {
+      "original_id": "30",
+      "classification": "外部待证",
+      "current_conclusion": "采用理由已有T1—T3同任务规格，但没有实际同任务工具净负担结果；本轮不以文案、分类数或试做速度补收益。",
+      "source_locations": [
+        {
+          "path": "docs/00_项目基线/完整工作链竞品与差异.md",
+          "line": 62,
+          "anchor": "## 同任务比较的执行规格"
+        },
+        {
+          "path": "docs/01_业务需求/指标成本与决策口径.md",
+          "line": 39,
+          "anchor": "同一周期净用户工时"
+        }
+      ],
+      "actual_execution_layer": "现行执行规格/任务依赖核验；未执行竞品或目标用户采用实验",
+      "raw_outputs": [
+        "tools/design-quality-audit/report-linked/window5/implementation-inventory.json"
+      ],
+      "implementation_missing_now": [
+        "本产品完整任务链尚未能作为对照候选；当前没有同输入同质量的工具任务结果、准备/学习/重填/核对/维护实际时间。"
+      ],
+      "original_tasks_and_prerequisites": {
+        "P5-01": {
+          "title": "开源复现与比赛交付",
+          "status": "planned",
+          "first_release_implementation_dependencies": [
+            "P0-01"
+          ],
+          "first_release_dependencies": [
+            "P4-01",
+            "P3-04",
+            "P2-03",
+            "P2-04",
+            "P2-06",
+            "P4-02"
+          ],
+          "first_release_coding_package_ref": "docs/04_开发与验收/编码任务包/P5-01.md",
+          "first_release_planned_window_id": "W00",
+          "implementation_closure": [
+            "P0-01",
+            "P5-01"
+          ],
+          "release_closure": [
+            "P0-01",
+            "P0-02",
+            "P0-03",
+            "P1-01",
+            "P1-02",
+            "P1-03",
+            "P1-04",
+            "P1-05",
+            "P2-01",
+            "P2-02",
+            "P2-03",
+            "P2-04",
+            "P2-05",
+            "P2-06",
+            "P3-01",
+            "P3-02",
+            "P3-03",
+            "P3-04",
+            "P4-01",
+            "P4-02",
+            "P5-01"
+          ]
+        }
+      },
+      "completed_now": "核对准备、修改、核对与接手均计人工，求解等待另列；未完成任务不得算节省率，未新增商业授权门槛。",
+      "next_executable_action": "P5有可运行候选后，用原T1—T3共同输入及实际可用工具/版本/权限执行完整任务；先比结果质量，再记录净人工，不拼接多个产品能力。",
+      "external_input_required": [
+        "合法可用的对照工具版本/权限及实际操作者经验。",
+        "目标任务输入与实际准备/学习/核对/维护记录；无现场数据仍只得自建任务结果。"
+      ],
+      "new_defect_ids": [],
+      "closed_regressions_not_reopened": [],
+      "actual_product_runtime": null
+    },
+    {
+      "original_id": "31",
+      "classification": "外部待证",
+      "current_conclusion": "仅换表现不改事件/数量/资源是正确性要求；没有证据证明减少建模投入或重填工作，当前不把该不变量当贡献收益。",
+      "source_locations": [
+        {
+          "path": "docs/00_项目基线/完整工作链竞品与差异.md",
+          "line": 56,
+          "anchor": "|C1"
+        },
+        {
+          "path": "docs/00_项目基线/完整工作链竞品与差异.md",
+          "line": 62,
+          "anchor": "## 同任务比较的执行规格"
+        },
+        {
+          "path": "docs/02_交互设计/自定义设备创作与采用.md"
+        }
+      ],
+      "actual_execution_layer": "源契约与既有原型状态证据；无净收益实测",
+      "raw_outputs": [
+        "docs/04_开发与验收/特征细化/PL2_窗口5_报告交接复核.json"
+      ],
+      "implementation_missing_now": [
+        "真实生产行为/阶段创作与旧Run不变接线仍需原P3/生产前置；模型投入保留量和重建/重填人工尚未测。"
+      ],
+      "original_tasks_and_prerequisites": {
+        "P5-01": {
+          "title": "开源复现与比赛交付",
+          "status": "planned",
+          "first_release_implementation_dependencies": [
+            "P0-01"
+          ],
+          "first_release_dependencies": [
+            "P4-01",
+            "P3-04",
+            "P2-03",
+            "P2-04",
+            "P2-06",
+            "P4-02"
+          ],
+          "first_release_coding_package_ref": "docs/04_开发与验收/编码任务包/P5-01.md",
+          "first_release_planned_window_id": "W00",
+          "implementation_closure": [
+            "P0-01",
+            "P5-01"
+          ],
+          "release_closure": [
+            "P0-01",
+            "P0-02",
+            "P0-03",
+            "P1-01",
+            "P1-02",
+            "P1-03",
+            "P1-04",
+            "P1-05",
+            "P2-01",
+            "P2-02",
+            "P2-03",
+            "P2-04",
+            "P2-05",
+            "P2-06",
+            "P3-01",
+            "P3-02",
+            "P3-03",
+            "P3-04",
+            "P4-01",
+            "P4-02",
+            "P5-01"
+          ]
+        }
+      },
+      "completed_now": "区分表现正确性与采用净收益；未把AI重开/修改自身快照计作用户节省时间。",
+      "next_executable_action": "按原C1/T1完成粗模型→真实行为细化→仅换表现→继续修改，保留同一工程/输入归属；真实操作者分别记录保留内容、重填和核对工作，再与可用基线比较。",
+      "external_input_required": [
+        "能独立执行目标任务的操作者及完整任务的原始人工记录。"
+      ],
+      "new_defect_ids": [],
+      "closed_regressions_not_reopened": [],
+      "actual_product_runtime": null
+    },
+    {
+      "original_id": "32",
+      "classification": "外部待证",
+      "current_conclusion": "本窗AI在同机浏览器重开NEW工位/修改成功，仅证明所测原型可编辑状态；不等于另一人理解并接手正式工程。",
+      "source_locations": [
+        {
+          "path": "docs/03_架构与契约/工程交接与打开.md",
+          "line": 98,
+          "anchor": "### 跨机重开、修改和重跑的确定顺序"
+        },
+        {
+          "path": "docs/00_项目基线/完整工作链竞品与差异.md",
+          "line": 62,
+          "anchor": "## 同任务比较的执行规格"
+        },
+        {
+          "path": "scenarios/模板与交接/expected-template-handoff.design.json",
+          "json_pointer": "/drf05_handoff_cases"
+        }
+      ],
+      "actual_execution_layer": "既有真实浏览器原型7组合及本轮原生文件读回；未取得真人/跨机/真实Engine接手",
+      "raw_outputs": [
+        "tools/design-quality-audit/prototype-parallel/window5/final/result.json",
+        "tools/design-quality-audit/report-linked/window5/windows/result.json"
+      ],
+      "implementation_missing_now": [
+        "正式依赖齐全的可编辑工程、缺项草稿/明确采用及真实Run接点待P2-03；16交接条目是预期，不是16项软件验收通过。",
+        "缺真实接手者完成指定变更、不重建/不重复追问及Agent核对成本的记录。"
+      ],
+      "original_tasks_and_prerequisites": {
+        "P2-03": {
+          "title": "方案比较与可接手工程交付",
+          "status": "planned",
+          "first_release_implementation_dependencies": [
+            "P2-02"
+          ],
+          "first_release_dependencies": [
+            "P2-02"
+          ],
+          "first_release_coding_package_ref": "docs/04_开发与验收/编码任务包/P2-03.md",
+          "first_release_planned_window_id": "W05",
+          "implementation_closure": [
+            "P0-01",
+            "P0-02",
+            "P1-01",
+            "P1-02",
+            "P1-03",
+            "P2-02",
+            "P2-03"
+          ],
+          "release_closure": [
+            "P0-01",
+            "P0-02",
+            "P1-01",
+            "P1-02",
+            "P1-03",
+            "P2-01",
+            "P2-02",
+            "P2-03"
+          ]
+        },
+        "P5-01": {
+          "title": "开源复现与比赛交付",
+          "status": "planned",
+          "first_release_implementation_dependencies": [
+            "P0-01"
+          ],
+          "first_release_dependencies": [
+            "P4-01",
+            "P3-04",
+            "P2-03",
+            "P2-04",
+            "P2-06",
+            "P4-02"
+          ],
+          "first_release_coding_package_ref": "docs/04_开发与验收/编码任务包/P5-01.md",
+          "first_release_planned_window_id": "W00",
+          "implementation_closure": [
+            "P0-01",
+            "P5-01"
+          ],
+          "release_closure": [
+            "P0-01",
+            "P0-02",
+            "P0-03",
+            "P1-01",
+            "P1-02",
+            "P1-03",
+            "P1-04",
+            "P1-05",
+            "P2-01",
+            "P2-02",
+            "P2-03",
+            "P2-04",
+            "P2-05",
+            "P2-06",
+            "P3-01",
+            "P3-02",
+            "P3-03",
+            "P3-04",
+            "P4-01",
+            "P4-02",
+            "P5-01"
+          ]
+        }
+      },
+      "completed_now": "明确原型订单9/NEW1-A01坐标/NEW1-P01工位保存重开是已有局部证据，不冒认第三人使用。",
+      "next_executable_action": "可运行候选与正式包就绪后，作者仅交说明和文件，接手者独立改指定供料/工时、保存重开并新跑；记录不理解处、追问、重建与核对人工。",
+      "external_input_required": [
+        "真实接手者的任务执行及回答；另一目录与另一Windows机器分别取证。"
+      ],
+      "new_defect_ids": [],
+      "closed_regressions_not_reopened": [],
+      "actual_product_runtime": null
+    },
+    {
+      "original_id": "34",
+      "classification": "外部待证",
+      "current_conclusion": "贡献者/维护者/用户发布责任和不可变版本已有源；catalog的21项全为design_example，不能作为行业知识已维护或社区已形成。",
+      "source_locations": [
+        {
+          "path": "docs/05_开源与参赛/社区贡献与版本维护.md",
+          "line": 70,
+          "anchor": "## DRF05：贡献采用、版本与发布是三个决定"
+        },
+        {
+          "path": "community/CONTRIBUTING.md",
+          "line": 42,
+          "anchor": "## 交付一个可审阅的候选"
+        },
+        {
+          "path": "community/GOVERNANCE.md",
+          "line": 32,
+          "anchor": "## 采用与发布的责任边界"
+        },
+        {
+          "path": "modules/catalog.json",
+          "json_pointer": "/modules"
+        }
+      ],
+      "actual_execution_layer": "治理/模板/目录静态核验；无真实外部贡献、维护或公开发布",
+      "raw_outputs": [
+        "tools/design-quality-audit/report-linked/window5/implementation-inventory.json"
+      ],
+      "implementation_missing_now": [
+        "本地类别导入/采用及实际消费者仍依赖原21任务；九类各一个真实贡献采用尚未完成。",
+        "没有真实贡献者/维护接手、问题修复/兼容回归/参数适用性维护工量和实际发布记录。"
+      ],
+      "original_tasks_and_prerequisites": {
+        "P5-01": {
+          "title": "开源复现与比赛交付",
+          "status": "planned",
+          "first_release_implementation_dependencies": [
+            "P0-01"
+          ],
+          "first_release_dependencies": [
+            "P4-01",
+            "P3-04",
+            "P2-03",
+            "P2-04",
+            "P2-06",
+            "P4-02"
+          ],
+          "first_release_coding_package_ref": "docs/04_开发与验收/编码任务包/P5-01.md",
+          "first_release_planned_window_id": "W00",
+          "implementation_closure": [
+            "P0-01",
+            "P5-01"
+          ],
+          "release_closure": [
+            "P0-01",
+            "P0-02",
+            "P0-03",
+            "P1-01",
+            "P1-02",
+            "P1-03",
+            "P1-04",
+            "P1-05",
+            "P2-01",
+            "P2-02",
+            "P2-03",
+            "P2-04",
+            "P2-05",
+            "P2-06",
+            "P3-01",
+            "P3-02",
+            "P3-03",
+            "P3-04",
+            "P4-01",
+            "P4-02",
+            "P5-01"
+          ]
+        }
+      },
+      "completed_now": "确认当前由项目作者负责首版种子/范围与整合；外部贡献必须声明真实行为/能力、来源/许可和版本，九类分类不替代行业知识。",
+      "next_executable_action": "现在可按已有模板整理本地设计提案/独立输入预期和权利缺项；产品消费者可用后，贡献者提交指定版本，维护者实际验证/修复并记录工量，用户另行明确授权发布才记录外部链接。",
+      "external_input_required": [
+        "真实领域参数/工艺核验者及适用范围。",
+        "实际贡献者/维护者确认、许可材料和真实审阅/修复记录；公开动作另需具体授权。"
+      ],
+      "new_defect_ids": [],
+      "closed_regressions_not_reopened": [],
+      "actual_product_runtime": null
+    }
+  ],
+  "new_findings": [
+    {
+      "id": "RR-W5-01",
+      "priority": "P2",
+      "status": "fixed_after_four_format_counterexample_recheck",
+      "original_ids": [
+        "12",
+        "26"
+      ],
+      "source": {
+        "path": "packages/reporting/evaluation_projection.proof.py",
+        "line": 174,
+        "anchor": "repr(value)"
+      },
+      "counterexample": "tools/design-quality-audit/report-linked/window5/precision/before.json",
+      "source_change": "仅将基础float的.9g格式改为repr以保留FiniteNumber可往返值；不改公开类型、成本范围或验收标准。",
+      "independent_expected": "同一合法冻结费率/计量的JSON number与CSV/HTML/PDF基础值保持同一FiniteNumber；未知/零与币种分离不变。",
+      "recheck": "tools/design-quality-audit/report-linked/window5/precision/after.json"
+    }
+  ],
+  "Windows_evidence": {
+    "raw_result": "tools/design-quality-audit/report-linked/window5/windows/result.json",
+    "actual_error_codes": [
+      2,
+      5,
+      32,
+      183
+    ],
+    "cases": 5,
+    "old_required_JSON_documents_reopened_per_case": 20,
+    "F01_F02_only_for_actual_failures": true,
+    "actual_1176_1177": false,
+    "actual_product_Save_Open": false,
+    "F03_F04_existing_evidence": "DQ02 constructed displaced-root postconditions plus isolated os.replace restoration, not actual ReplaceFileW1176/1177 recovery",
+    "official_platform_reference": {
+      "title": "Microsoft ReplaceFileW",
+      "url": "https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-replacefilew",
+      "verified_date": "2026-10-15",
+      "scope": "失败后的文件命名/位置必须按实际检查；不能把普通错误与1176/1177恢复分支视作同一证据。"
+    }
+  },
+  "implementation_inventory_ref": "tools/design-quality-audit/report-linked/window5/implementation-inventory.json",
+  "changed_sources": [
+    "packages/reporting/evaluation_projection.proof.py",
+    "packages/reporting/README.md"
+  ],
+  "public_type_API_or_gate_changes": [],
+  "product_gate": {
+    "preparation_phase": "S07",
+    "last_checkpoint_before_product_coding": "S07-05",
+    "first_product_coding_phase": "S08",
+    "required_preparation_review_ids": [
+      "S07-01",
+      "S07-02",
+      "S07-03",
+      "S07-04",
+      "S07-05"
+    ],
+    "needs_actual_build_start_and_test_configuration": true,
+    "status": "not_ready",
+    "actual_entry": null
+  },
+  "coordinator_next_actions": [
+    "接收RR-W5-01源修复/原始反例与复验；本窗未触碰公共类型/API/准入或报告。",
+    "先落实S07-01至S07-05的实际构建/启动/测试准备和原任务正式派发，再按P2-03/P2-06实现缺失接点；本通知不代替准入。",
+    "将同任务对照、真实目标读者/接手者、行业参数与贡献维护证据保持未取得，取得实际对象/权限后按原P5取证；不由AI自演补齐。"
+  ],
+  "summary": {
+    "original_items_checked": 8,
+    "new_defects": 1,
+    "new_defects_fixed_and_rechecked": 1,
+    "unfixed_new_owned_source_defects": 0,
+    "all_report_related_product_and_external_evidence_complete": false,
+    "permission_to_notify_report_window_final_ready_exercised": false,
+    "final_report_files_written": false,
+    "other_window_sources_written": false,
+    "product_coding_started": false,
+    "actual_product_runtime": null
+  }
+}

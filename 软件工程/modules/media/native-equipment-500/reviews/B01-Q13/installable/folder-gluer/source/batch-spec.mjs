@@ -1,0 +1,21 @@
+export const specs={'folder-gluer':{mode:'indexed_folder_gluer',surface:.90,inputX:-1.60,outputX:1.60,stagingX:1.25,initial:'precreased_blank',final:'glued_flat_sleeve',auxiliary:'metered_water_based_glue',volume:.00000056,extra_outputs:[]}};
+export const thickness=.0005,neutral=thickness/2,leftRadius=.0005,rightRadius=.0008,glueHeight=.0001,glueWidth=.014,glueQ=.113,length=.40;
+export const clamp=v=>Math.max(0,Math.min(1,v));
+export const seatX=(s,phase,u)=>phase==='load'?s.inputX*(1-u):phase==='unload'?s.stagingX*u:0;
+export const foldAngle=(side,phase,u)=>phase==='load'?0:phase==='unload'?Math.PI:Math.PI*clamp((u-(side<0?.30:.62))/(side<0?.18:.16));
+export const foldRetract=(side,phase,u)=>phase==='load'?.26*(1-clamp(u/.5)):phase==='unload'?.26: .26*clamp((u-(side<0?.55:.80))/.03);
+export const flapPath=(side,q,angle)=>{const r=side<0?leftRadius:rightRadius,a=Math.min(angle,q/r),tail=Math.max(0,q-r*angle);return {y:neutral+r*(1-Math.cos(a))+tail*Math.sin(angle),z:side*(.10+r*Math.sin(a)+tail*Math.cos(angle)),angle:-side*a};};
+export const panelPoints=side=>{const max=side<0?.12:.10,r=side<0?leftRadius:rightRadius;return [...new Set([0,.0002,max,...Array.from({length:81},(_,i)=>Math.PI*r*i/80),...Array.from({length:61},(_,i)=>max*i/60)])].sort((a,b)=>a-b);};
+export const cellPose=(side,a,b,angle)=>{const p=flapPath(side,(a+b)/2,angle);return{position:[0,p.y,p.z],angle:p.angle,depth:b-a,thickness:b<=.0002+1e-12?.0004:thickness};};
+export const glueFraction=(phase,u)=>phase==='load'?0:phase==='unload'?1:clamp((u-.10)/.15);
+export const gluePoint=(phase,u)=>{const a=foldAngle(-1,phase,u),p=flapPath(-1,glueQ,a);return {y:p.y-Math.cos(a)*(thickness/2+glueHeight/2),z:p.z-Math.sin(a)*(thickness/2+glueHeight/2),angle:a};};
+export const leftClampBottom=(phase,u)=>phase==='auto'?.93-.0285*clamp((u-.49)/.04)+.0285*clamp((u-.95)/.05):.93;
+export const pressBottom=(phase,u)=>phase==='auto'?.94-.0379*clamp((u-.84)/.04)+.0379*clamp((u-.95)/.05):.94;
+export const glueHeadX=(phase,u)=>-.20+.40*(phase==='auto'?clamp((u-.10)/.15):phase==='load'?0:1);
+export const glueHeadY=(phase,u)=>phase==='auto'?.892+.0079*clamp((u-.05)/.04)-.0079*clamp((u-.25)/.04):.892;
+export const auxSeat=s=>[.50,1.10,-.45],auxPort=s=>[-1.60,.908,-.75],inputPort=s=>[s.inputX,s.surface,0],outputPort=s=>[s.outputX,s.surface,0];
+export const doseRadius=.008,doseSegments=32,doseHeight=.00000056/(doseSegments/2*doseRadius**2*Math.sin(2*Math.PI/doseSegments));
+export const samples=[...new Set([0,1,.04,.90,.94,.05,.09,.10,.25,.29,.30,.48,.49,.53,.55,.58,.62,.78,.80,.83,.84,.88,.95,...Array.from({length:257},(_,i)=>i/256)])].sort((a,b)=>a-b);
+export const finalHeight=neutral+2*rightRadius+thickness/2;
+
+export const folderOffset=(phase,u)=>phase==='auto'?.26-.16*clamp(u/.04)+.16*clamp((u-.90)/.04):.26;

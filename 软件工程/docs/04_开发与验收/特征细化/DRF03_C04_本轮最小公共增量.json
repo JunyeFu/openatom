@@ -1,0 +1,106 @@
+{
+  "document_kind": "DRF03_C04_round3_selected_minimal_public_delta",
+  "status": "merged_canonical_types_Schema_TS_and_owned_inner_consumer_rechecked",
+  "public_owner": "复审窗口1",
+  "changes": [
+    {
+      "type": "HallDesign",
+      "field": "height_m",
+      "from": "FiniteNumber",
+      "to": "Option<FiniteNumber>",
+      "semantics": "null保持原未知高度，允许保存draft；静态场地/净高检查缺值必须返回缺输入/未定，不填3m，不判site Pass。width/depth的原24/16值不变。"
+    },
+    {
+      "type": "TemplateSubset",
+      "field": "locations",
+      "from": "absent",
+      "to": "Vec<StockLocation>",
+      "semantics": "正式模板携带原12库位；模板新命名空间同时重映射location id、连接端点、destination_store、line/hall引用。空列表合法仅代表确实无库位，不允许为省转换把本例12库位置空。"
+    },
+    {
+      "type": "MaterialConnection",
+      "field": "source/destination",
+      "from": "PortRef",
+      "to": "MaterialEndpoint = port(PortRef) | location(ObjectId)",
+      "semantics": "端口与库位明确区分。port仍需实际module_ref/instance_id/port_id；location只按实际StockLocation.id解析，不制造模块。destination_store保持现字段：终点是location时必须等于该id，终点是port时必须等于该端口明确绑定的接收库位。"
+    }
+  ],
+  "positive_cases": [
+    {
+      "id": "T3-P01",
+      "input": "hall.height_m=null",
+      "expected": "draft形状可保存；geometry_complete=false，不能site Pass"
+    },
+    {
+      "id": "T3-P02",
+      "input": {
+        "source": {
+          "kind": "location",
+          "data": "store-blank"
+        },
+        "destination": {
+          "kind": "port",
+          "data": {
+            "module_ref": {
+              "id": "community.fixed-transform",
+              "version": "0.1.0"
+            },
+            "instance_id": "CNC01",
+            "port_id": "input"
+          }
+        },
+        "destination_store": "store-blank"
+      },
+      "expected": "StockLocation和设备输入端口都真实存在，按显式绑定校核，不双建库存"
+    },
+    {
+      "id": "T3-P03",
+      "input": "12库位+18边完整重映射",
+      "expected": "所有内部引用仍可按id解析，原数值/数量/声明保留"
+    }
+  ],
+  "negative_cases": [
+    {
+      "id": "T3-N01",
+      "input": {
+        "kind": "location",
+        "data": "MISSING"
+      },
+      "expected": "MissingReference，不能按同名或虚构模块补齐"
+    },
+    {
+      "id": "T3-N02",
+      "input": "kind=location且data伪装PortRef对象",
+      "expected": "形状拒绝"
+    },
+    {
+      "id": "T3-N03",
+      "input": "port的module_ref与实际Device冻结定义不同",
+      "expected": "引用域拒绝"
+    },
+    {
+      "id": "T3-N04",
+      "input": "destination是store-shell而destination_store是store-blank",
+      "expected": "InvalidInput，不接受两个不同库位"
+    },
+    {
+      "id": "T3-N05",
+      "input": "高度未知但请求完整场地通过",
+      "expected": "缺输入/Undetermined，不因Schema可保存便Pass"
+    }
+  ],
+  "derive_consumers": [
+    "Rust/derived Schema/TS and fixtures",
+    "ModulePackage/TemplateSubset文件读取",
+    "InstantiateTemplate/ImportDraft",
+    "layout/check_factory_draft",
+    "simulation物料端点解析",
+    "ModuleKit/目标生成/工程保存导出/Agent"
+  ],
+  "scope": "新发布前设计变更，不加兼容包装层或第19操作。原PortRef保持原定义；旧端点转换由窗口1一次性更新实际夹具/消费者。",
+  "rust_fragment_ref": "docs/04_开发与验收/特征细化/DRF03_C04_内层最小公共Rust片段.rs",
+  "actual_Host": null,
+  "actual_current_TS_files": 411,
+  "owned_recheck_ref": "scenarios/九类模块采用/DRF03_第三轮核验结果.json",
+  "remaining_integration_ref": "docs/04_开发与验收/特征细化/DRF03_C04_伴随材料消费契约.json"
+}

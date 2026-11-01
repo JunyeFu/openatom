@@ -51,6 +51,9 @@ check('baseline_six_packages_identity_recipe_and_independent_expected_times', ()
 check('frame_step_size_does_not_change_business_events', () => {
   const coarse = new LineSimulation(config); coarse.advanceTo(350000);
   assert.deepEqual(coarse.result(), baseline.result());
+  const autoStop = new LineSimulation(config); autoStop.advanceTo(1000000, true);
+  assert.equal(autoStop.now, 330000); assert.equal(autoStop.order.accepted, 6);
+  assert.deepEqual(autoStop.events, coarse.events); consistent(autoStop);
 });
 check('missing_pcb_waits_then_manual_supply_completes_same_order', () => {
   const run = new LineSimulation(config, 'missing_pcb'); run.advanceTo(400000); consistent(run);

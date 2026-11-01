@@ -1,0 +1,1056 @@
+{
+  "document_kind": "DRF06_independent_business_timeline_expectations_not_Run",
+  "refinement_revision": "DRF06-2a",
+  "date": "2026-10-14",
+  "time_unit": "millisecond",
+  "units": {
+    "discrete_quantity": "integer piece/box explicit conversion only",
+    "claim": "units per declared resource",
+    "interval": "[start_ms,end_ms)",
+    "boundary_event": "point at closed timestamp"
+  },
+  "run_id": null,
+  "input_ref": null,
+  "fixture_contract_note": "TC01/TC02及本轮字段已合入；本文件仍manual_expected，非完整Run DTO或真实运行。协议投影按intervals+interval_end_causes平行数组，旧数值保持、实际结果为空。",
+  "phase_progress_note": "effective_progress_start/end均为该job该phase累计值；换phase归零，暂停/恢复不归零。",
+  "fixtures": [
+    {
+      "id": "DRF06-T01",
+      "title": "阶段上下料、等待与机器持有",
+      "source_refs": [
+        "scenarios/真实业务设计/business-inputs.design.json#phase_calendar",
+        "scenarios/真实业务设计/expected-business.design.json#phase_calendar"
+      ],
+      "contract_requests": [
+        "TC01",
+        "TC02",
+        "DRF06-H03"
+      ],
+      "observation_window_ms": [
+        0,
+        100000
+      ],
+      "expected": {
+        "job_id": "J-calendar-part1",
+        "task_ref": "T-calendar",
+        "execution_ref": {
+          "kind": "project_device",
+          "device_id": "CNC",
+          "route_step_id": "step-cnc",
+          "execution_capacity_ref": {
+            "kind": "device",
+            "id": "CNC"
+          }
+        },
+        "job_envelope_ms": [
+          0,
+          45000
+        ],
+        "phase_work_intervals": [
+          {
+            "job_id": "J-calendar-part1",
+            "phase_id": "load",
+            "interval": {
+              "start_ms": 0,
+              "end_ms": 5000
+            },
+            "effective_progress_start_ms": 0,
+            "effective_progress_end_ms": 5000,
+            "end_cause": "phase_completed"
+          },
+          {
+            "job_id": "J-calendar-part1",
+            "phase_id": "auto",
+            "interval": {
+              "start_ms": 5000,
+              "end_ms": 35000
+            },
+            "effective_progress_start_ms": 0,
+            "effective_progress_end_ms": 30000,
+            "end_cause": "phase_completed"
+          },
+          {
+            "job_id": "J-calendar-part1",
+            "phase_id": "unload",
+            "interval": {
+              "start_ms": 40000,
+              "end_ms": 45000
+            },
+            "effective_progress_start_ms": 0,
+            "effective_progress_end_ms": 5000,
+            "end_cause": "phase_completed"
+          }
+        ],
+        "claims": [
+          {
+            "id": "C-CNC",
+            "resource_id": "CNC",
+            "job_id": "J-calendar-part1",
+            "kind": "job",
+            "units": 1,
+            "phase_ref": null,
+            "intervals_ms": [
+              [
+                0,
+                45000
+              ]
+            ],
+            "protocol_intervals": [
+              {
+                "start_ms": 0,
+                "end_ms": 45000
+              }
+            ],
+            "protocol_interval_end_causes": [
+              "released"
+            ]
+          },
+          {
+            "id": "C-load",
+            "resource_id": "W-C",
+            "job_id": "J-calendar-part1",
+            "kind": "phase",
+            "units": 1,
+            "phase_ref": "load",
+            "intervals_ms": [
+              [
+                0,
+                5000
+              ]
+            ],
+            "protocol_intervals": [
+              {
+                "start_ms": 0,
+                "end_ms": 5000
+              }
+            ],
+            "protocol_interval_end_causes": [
+              "released"
+            ]
+          },
+          {
+            "id": "C-unload",
+            "resource_id": "W-C",
+            "job_id": "J-calendar-part1",
+            "kind": "phase",
+            "units": 1,
+            "phase_ref": "unload",
+            "intervals_ms": [
+              [
+                40000,
+                45000
+              ]
+            ],
+            "protocol_intervals": [
+              {
+                "start_ms": 40000,
+                "end_ms": 45000
+              }
+            ],
+            "protocol_interval_end_causes": [
+              "released"
+            ]
+          }
+        ],
+        "waits": [
+          {
+            "object_ref": {
+              "kind": "job",
+              "id": "J-calendar-part1"
+            },
+            "execution_ref": {
+              "kind": "project_device",
+              "device_id": "CNC",
+              "route_step_id": "step-cnc",
+              "execution_capacity_ref": {
+                "kind": "device",
+                "id": "CNC"
+              }
+            },
+            "phase_ref": "unload",
+            "interval_ms": [
+              35000,
+              40000
+            ],
+            "reasons": [
+              {
+                "kind": "calendar",
+                "blocking_object": {
+                  "kind": "resource",
+                  "id": "W-C"
+                },
+                "required": "unload需W-C一个人且连续5000ms可工作",
+                "next_known_boundary_ms": 40000
+              }
+            ],
+            "end_cause": "resolved"
+          }
+        ],
+        "group_segments": [
+          {
+            "interval_ms": [
+              0,
+              35000
+            ],
+            "B": [
+              "CNC"
+            ],
+            "W": [],
+            "O": [
+              "CNC"
+            ]
+          },
+          {
+            "interval_ms": [
+              35000,
+              40000
+            ],
+            "B": [],
+            "W": [
+              "CNC"
+            ],
+            "O": [
+              "CNC"
+            ]
+          },
+          {
+            "interval_ms": [
+              40000,
+              45000
+            ],
+            "B": [
+              "CNC"
+            ],
+            "W": [],
+            "O": [
+              "CNC"
+            ]
+          }
+        ],
+        "effective_work_ms": 40000,
+        "worker_occupied_ms": 10000,
+        "device_occupied_ms": 45000,
+        "wait_union_ms": 5000,
+        "description_at_37000": "等待下料人员；下一可用边界40秒；auto姿态停末端；unload尚未开始"
+      },
+      "source_kind": "manual_expected",
+      "actual_result": null,
+      "contract_status": {
+        "current_canonical_fields": "merged_unique_contract",
+        "actual_source": "manual_expected_not_Run"
+      }
+    },
+    {
+      "id": "DRF06-T02",
+      "title": "pause_resume与部分计算",
+      "source_refs": [
+        "scenarios/真实业务设计/business-rule-boundaries.design.json#B10",
+        "scenarios/真实业务设计/business-rule-boundaries.design.json#B12"
+      ],
+      "contract_requests": [
+        "TC02",
+        "DRF06-H03",
+        "DRF06-H08"
+      ],
+      "expected": {
+        "resume_job_id": "J-resume",
+        "execution_ref": {
+          "kind": "project_device",
+          "device_id": "MC8",
+          "route_step_id": "step-resume",
+          "execution_capacity_ref": {
+            "kind": "device",
+            "id": "MC8"
+          }
+        },
+        "phase_work_intervals": [
+          {
+            "job_id": "J-resume",
+            "phase_id": "work",
+            "interval": {
+              "start_ms": 5000,
+              "end_ms": 10000
+            },
+            "effective_progress_start_ms": 0,
+            "effective_progress_end_ms": 5000,
+            "end_cause": "interrupted"
+          },
+          {
+            "job_id": "J-resume",
+            "phase_id": "work",
+            "interval": {
+              "start_ms": 20000,
+              "end_ms": 23000
+            },
+            "effective_progress_start_ms": 5000,
+            "effective_progress_end_ms": 8000,
+            "end_cause": "phase_completed"
+          }
+        ],
+        "held_machine_ms": [
+          5000,
+          23000
+        ],
+        "worker_claims_ms": [
+          [
+            5000,
+            10000
+          ],
+          [
+            20000,
+            23000
+          ]
+        ],
+        "wait_ms": [
+          10000,
+          20000
+        ],
+        "partial": {
+          "computed_until_ms": 20000,
+          "phase_work_intervals": [
+            {
+              "job_id": "J-calendar-part1",
+              "phase_id": "auto",
+              "interval": {
+                "start_ms": 5000,
+                "end_ms": 20000
+              },
+              "effective_progress_start_ms": 0,
+              "effective_progress_end_ms": 15000,
+              "end_cause": "computed_boundary"
+            }
+          ],
+          "phase_completed": false,
+          "uncomputed_ms": [
+            20000,
+            35000
+          ],
+          "positive_wait_for_uncomputed_region": false
+        },
+        "closed_completion": {
+          "computed_until_ms": 35000,
+          "phase_work_intervals": [
+            {
+              "job_id": "J-calendar-part1",
+              "phase_id": "auto",
+              "interval": {
+                "start_ms": 5000,
+                "end_ms": 35000
+              },
+              "effective_progress_start_ms": 0,
+              "effective_progress_end_ms": 30000,
+              "end_cause": "phase_completed"
+            }
+          ],
+          "PhaseCompleted_at_ms": 35000
+        },
+        "replace_snapshot_rule": "新的同Run快照替换计算截断段；computed_boundary是读取边界，不是再次生产的中断事件",
+        "protocol_claim_examples": {
+          "machine": {
+            "phase_ref": null,
+            "kind": "job",
+            "intervals": [
+              {
+                "start_ms": 5000,
+                "end_ms": 23000
+              }
+            ],
+            "interval_end_causes": [
+              "released"
+            ]
+          },
+          "person": {
+            "phase_ref": "work",
+            "kind": "phase",
+            "intervals": [
+              {
+                "start_ms": 5000,
+                "end_ms": 10000
+              },
+              {
+                "start_ms": 20000,
+                "end_ms": 23000
+              }
+            ],
+            "interval_end_causes": [
+              "released",
+              "released"
+            ]
+          },
+          "prefix_example_ref": "docs/04_开发与验收/特征细化/DRF06_公共字段合入delta.json#D06-C05"
+        }
+      },
+      "source_kind": "manual_expected",
+      "actual_result": null,
+      "contract_status": {
+        "current_canonical_fields": "merged_unique_contract",
+        "actual_source": "manual_expected_not_Run"
+      }
+    },
+    {
+      "id": "DRF06-T03",
+      "title": "并行汇合三对照与hold_station",
+      "source_refs": [
+        "scenarios/并行汇合与返工/project.design.json",
+        "scenarios/并行汇合与返工/cases.design.json#A/Q/U"
+      ],
+      "contract_requests": [
+        "TC01",
+        "TC02",
+        "DRF06-H03"
+      ],
+      "expected": {
+        "case_A_phase_rows_ms": [
+          [
+            "M-01",
+            "shell1",
+            0,
+            30000
+          ],
+          [
+            "P-01",
+            "pcb1",
+            0,
+            20000
+          ],
+          [
+            "ASM-01",
+            "assembly1",
+            30000,
+            90000
+          ],
+          [
+            "QC-01",
+            "assembly1-first",
+            90000,
+            100000
+          ],
+          [
+            "RW-01",
+            "assembly1",
+            100000,
+            120000
+          ],
+          [
+            "QC-01",
+            "assembly1-recheck",
+            120000,
+            130000
+          ],
+          [
+            "PACK-01",
+            "package1",
+            130000,
+            145000
+          ],
+          [
+            "ASM-01",
+            "assembly2",
+            90000,
+            150000
+          ],
+          [
+            "QC-01",
+            "assembly2",
+            150000,
+            160000
+          ],
+          [
+            "PACK-01",
+            "package2",
+            160000,
+            175000
+          ]
+        ],
+        "case_A_summary": {
+          "packages": 2,
+          "rework_cycles": 1,
+          "inspection_started_count": 3,
+          "quality_decisions": 3
+        },
+        "case_Q_summary": {
+          "packages": 1,
+          "quarantined": 1,
+          "package_finish_ms": [
+            175000
+          ]
+        },
+        "case_U": {
+          "observation_end_ms": 180000,
+          "inspect_effective_ms": [
+            90000,
+            100000
+          ],
+          "inspect_job_claim_ms": [
+            90000,
+            180000
+          ],
+          "inspector_job_claim_ms": [
+            90000,
+            180000
+          ],
+          "first_quality_wait_ms": [
+            100000,
+            180000
+          ],
+          "first_wait_phase_ref": "inspect",
+          "second_wait_ms": [
+            150000,
+            180000
+          ],
+          "second_reason_bindings": [
+            "QC-01 busy by first job",
+            "W-Q busy by first job"
+          ],
+          "second_inspection_started": false,
+          "packages": 0,
+          "awaiting_result": 1,
+          "waiting_for_inspector": 1,
+          "quality_decisions": 0,
+          "open_end_cause": "observation_end",
+          "protocol_held_claim_intervals": [
+            {
+              "resource_id": "QC-01",
+              "kind": "job",
+              "phase_ref": null,
+              "intervals": [
+                {
+                  "start_ms": 90000,
+                  "end_ms": 180000
+                }
+              ],
+              "interval_end_causes": [
+                "observation_end"
+              ]
+            },
+            {
+              "resource_id": "W-Q",
+              "kind": "job",
+              "phase_ref": null,
+              "intervals": [
+                {
+                  "start_ms": 90000,
+                  "end_ms": 180000
+                }
+              ],
+              "interval_end_causes": [
+                "observation_end"
+              ]
+            }
+          ],
+          "protocol_wait_end_causes": {
+            "first_quality_wait": "observation_end",
+            "second_wait": "observation_end",
+            "same_prefix": "computed_boundary"
+          }
+        },
+        "queue_rule": "两个检验尝试不同job_id，同一设备QC-01；返工保持assembly1物品ID"
+      },
+      "source_kind": "manual_expected",
+      "actual_result": null,
+      "contract_status": {
+        "current_canonical_fields": "merged_unique_contract",
+        "actual_source": "manual_expected_not_Run"
+      }
+    },
+    {
+      "id": "DRF06-T04",
+      "title": "换单、待料与两趟客户接受",
+      "source_refs": [
+        "scenarios/真实业务设计/business-inputs.design.json#multi_order",
+        "scenarios/真实业务设计/expected-business.design.json#multi_a_first/multi_b_first"
+      ],
+      "contract_requests": [
+        "TC01",
+        "TC02"
+      ],
+      "expected": {
+        "variants": [
+          {
+            "id": "multi_a_first",
+            "setup_intervals_ms": [
+              {
+                "device": "Assembly",
+                "phase": "setup",
+                "interval_ms": [
+                  60000,
+                  75000
+                ],
+                "from_to": "A_to_B"
+              }
+            ],
+            "orders": [
+              {
+                "order": "A",
+                "demand": 2,
+                "accepted": 2,
+                "completion_ms": 145000,
+                "due_ms": 160000,
+                "tardiness_ms": 0
+              },
+              {
+                "order": "B",
+                "demand": 2,
+                "accepted": 2,
+                "completion_ms": 205000,
+                "due_ms": 200000,
+                "tardiness_ms": 5000
+              }
+            ],
+            "shipments": [
+              {
+                "order": "A",
+                "items": [
+                  "A1",
+                  "A2"
+                ],
+                "quantity": 2,
+                "depart_ms": 120000,
+                "accepted_ms": 145000,
+                "cart_available_ms": 165000,
+                "arrived_ms": 140000
+              },
+              {
+                "order": "B",
+                "items": [
+                  "B1",
+                  "B2"
+                ],
+                "quantity": 2,
+                "depart_ms": 180000,
+                "accepted_ms": 205000,
+                "cart_available_ms": 225000,
+                "arrived_ms": 200000
+              }
+            ],
+            "worker_a_occupied_ms": 135000
+          },
+          {
+            "id": "multi_b_first",
+            "setup_intervals_ms": [
+              {
+                "device": "Assembly",
+                "phase": "setup",
+                "interval_ms": [
+                  0,
+                  15000
+                ],
+                "from_to": "A_to_B"
+              },
+              {
+                "device": "Assembly",
+                "phase": "setup",
+                "interval_ms": [
+                  75000,
+                  100000
+                ],
+                "from_to": "B_to_A"
+              }
+            ],
+            "orders": [
+              {
+                "order": "A",
+                "demand": 2,
+                "accepted": 2,
+                "completion_ms": 205000,
+                "due_ms": 160000,
+                "tardiness_ms": 45000
+              },
+              {
+                "order": "B",
+                "demand": 2,
+                "accepted": 2,
+                "completion_ms": 145000,
+                "due_ms": 200000,
+                "tardiness_ms": 0
+              }
+            ],
+            "shipments": [
+              {
+                "order": "A",
+                "items": [
+                  "A1",
+                  "A2"
+                ],
+                "quantity": 2,
+                "depart_ms": 180000,
+                "accepted_ms": 205000,
+                "cart_available_ms": 225000,
+                "arrived_ms": 200000
+              },
+              {
+                "order": "B",
+                "items": [
+                  "B1",
+                  "B2"
+                ],
+                "quantity": 2,
+                "depart_ms": 120000,
+                "accepted_ms": 145000,
+                "cart_available_ms": 165000,
+                "arrived_ms": 140000
+              }
+            ],
+            "worker_a_occupied_ms": 160000
+          }
+        ],
+        "a_first_pre_start_wait": {
+          "task_ref": "T-B1",
+          "execution_ref": {
+            "kind": "project_device",
+            "device_id": "Assembly",
+            "route_step_id": "step-assembly",
+            "execution_capacity_ref": {
+              "kind": "device",
+              "id": "Assembly"
+            }
+          },
+          "phase_ref": "assembly",
+          "interval_ms": [
+            75000,
+            100000
+          ],
+          "reasons": [
+            {
+              "kind": "missing_material",
+              "blocking_object": {
+                "kind": "location",
+                "id": "pcb-store"
+              },
+              "required": "PCB1 piece到库且可领",
+              "next_known_boundary_ms": 100000
+            }
+          ],
+          "capacity_claim": false
+        },
+        "acceptance_marker_rules": "A/B在145000或205000ms接受；140000/200000为到达，165000/225000为小车返回；不可混成一个完成端"
+      },
+      "source_kind": "manual_expected",
+      "actual_result": null,
+      "contract_status": {
+        "current_canonical_fields": "merged_unique_contract",
+        "actual_source": "manual_expected_not_Run"
+      }
+    },
+    {
+      "id": "DRF06-T05",
+      "title": "待判、复检与报废保持位置",
+      "source_refs": [
+        "scenarios/真实业务设计/business-inputs.design.json#quality_pending_and_scrap",
+        "scenarios/真实业务设计/expected-business.design.json#quality_pending_and_scrap"
+      ],
+      "contract_requests": [
+        "TC01",
+        "TC02"
+      ],
+      "expected": {
+        "at_80000": {
+          "assembly3": {
+            "holder": "pending-store",
+            "lifecycle": "available",
+            "quality": "pending"
+          },
+          "assembly2": {
+            "holder": "J-reinspection-assembly2",
+            "lifecycle": "in_process",
+            "quality": "rejected",
+            "completed_reworks": 1
+          }
+        },
+        "rework_wait_ms": [
+          50000,
+          60000
+        ],
+        "rework_wait_reason": "W-A仍在assembly3作业",
+        "pending_transfer_ms": 70000,
+        "manual_release_preset_ms": 90000,
+        "reinspection_fail_ms": 85000,
+        "scrap_preset_ms": 100000,
+        "at_100000_closed": {
+          "assembly2": {
+            "holder": "isolation-store",
+            "lifecycle": "scrapped",
+            "quality": "rejected",
+            "completed_reworks": 1
+          },
+          "accepted_piece": 2,
+          "order_outstanding_piece": 1,
+          "order_completion_ms": null,
+          "empty_cartons": 1,
+          "isolation_non_scrapped_count": 0,
+          "isolation_physical_slots_used": 1
+        },
+        "source_event_interpretation": "原expected events的scrap_record是处置记录，不是新物理库位；不改原预期数量、不删除物品腾位",
+        "count_rules": "返工/复检尝试不重复计成品；UNKNOWN不是有效质量决定"
+      },
+      "source_kind": "manual_expected",
+      "actual_result": null,
+      "contract_status": {
+        "current_canonical_fields": "merged_unique_contract",
+        "actual_source": "manual_expected_not_Run"
+      }
+    },
+    {
+      "id": "DRF06-T06",
+      "title": "控制盒第六件接收阻塞与同刻腾位",
+      "source_refs": [
+        "scenarios/从零搭建控制盒厂房/expected-timeline.design.json#delayed_pcb",
+        "scenarios/调度算法设计/algorithm-cases.design.json#SCHED-11"
+      ],
+      "contract_requests": [
+        "TC01",
+        "TC02",
+        "DRF06-H03"
+      ],
+      "expected": {
+        "cargo": "shell006",
+        "carrier": "T1",
+        "departure_ms": 360000,
+        "arrival_ms": 370000,
+        "receive_ms": 420000,
+        "return_ms": 425000,
+        "carrier_claim_ms": [
+          360000,
+          425000
+        ],
+        "wait": {
+          "object_ref": {
+            "kind": "transport",
+            "id": "TR-shell006"
+          },
+          "execution_ref": null,
+          "phase_ref": "unload",
+          "interval_ms": [
+            370000,
+            420000
+          ],
+          "reasons": [
+            {
+              "kind": "receiver_capacity",
+              "blocking_object": {
+                "kind": "location",
+                "id": "shell-buffer"
+              },
+              "required": "有限缓冲2 piece至少释放1 piece",
+              "next_known_boundary_ms": 420000
+            }
+          ],
+          "end_cause": "resolved"
+        },
+        "point_sequence_at_420000": [
+          "PCB到料420000ms",
+          "assembly4原子取得shell004/PCB并释放缓冲位",
+          "shell006开始零时长卸载",
+          "zero unload completion",
+          "shell006 successful_receive一次移交",
+          "return starts"
+        ],
+        "buffer_at_420000_closed": [
+          "shell005",
+          "shell006"
+        ],
+        "transport_cargo_after_receive": [],
+        "transport_running_return": true,
+        "row_rule": "运输按transport/T1资源行显示，不伪造执行DeviceInstance；订单目标接受仍按后续包装阶段",
+        "protocol_carrier_claim": {
+          "kind": "transport",
+          "phase_ref": null,
+          "intervals": [
+            {
+              "start_ms": 360000,
+              "end_ms": 425000
+            }
+          ],
+          "interval_end_causes": [
+            "released"
+          ]
+        }
+      },
+      "source_kind": "manual_expected",
+      "actual_result": null,
+      "contract_status": {
+        "current_canonical_fields": "merged_unique_contract",
+        "actual_source": "manual_expected_not_Run"
+      }
+    },
+    {
+      "id": "DRF06-T07",
+      "title": "多原因、零时长和非部分订单容量",
+      "source_refs": [
+        "scenarios/真实业务设计/business-rule-boundaries.design.json#B09/B11/B16/B17/B18",
+        "scenarios/调度算法设计/algorithm-cases.design.json#SCHED-07"
+      ],
+      "contract_requests": [
+        "TC01",
+        "DRF06-H03",
+        "DRF06-H01"
+      ],
+      "expected": {
+        "multi_reason_wait_ref": "B09",
+        "calendar_zero_ref": "B11",
+        "same_timestamp_zero_ref": "B17",
+        "nonpartial_capacity_ref": "B16",
+        "execution_capacity_ref": "B18",
+        "visual_rules": [
+          "同一等待段原因并列，时长取并集",
+          "零时长仅点标记，不能伪造1ms工作条",
+          "期末未解等待开放端，业务未完成与计算完成分开",
+          "缺执行容量claim时不把人员占用计O",
+          "未释放任务/无需求不画等待"
+        ],
+        "events_at_window_end": "沿当前get_run同快照规范，观察窗末点按闭包closed membership包含，持续区间半开；interval=null仅去时间过滤仍Scope/稳定分页，FullResult同源去重；ObjectsAt不超该快照边界",
+        "output_wait_job": {
+          "input": {
+            "job_id": "J-output",
+            "device_id": "D-output",
+            "start_ms": 0,
+            "effective_duration_ms": 20000,
+            "receiver_frees_slot_ms": 40000,
+            "quantity": 1,
+            "observation_end_ms": 60000,
+            "device_job_held": true,
+            "person_phase_only": true,
+            "resource_calendars_ms": [
+              [
+                0,
+                60000
+              ]
+            ]
+          },
+          "execution_ref": {
+            "kind": "project_device",
+            "device_id": "D-output",
+            "route_step_id": "step-output",
+            "execution_capacity_ref": {
+              "kind": "device",
+              "id": "D-output"
+            }
+          },
+          "phase_work_ms": [
+            0,
+            20000
+          ],
+          "phase_completed_at_ms": 20000,
+          "wait_ms": [
+            20000,
+            40000
+          ],
+          "wait_phase_ref": null,
+          "wait_reason": "output_capacity",
+          "device_claim_ms": [
+            0,
+            40000
+          ],
+          "person_claim_ms": [
+            0,
+            20000
+          ],
+          "finished_at_ms": 40000,
+          "pending_output_count_before_transfer": 1,
+          "created_quantity": 1,
+          "transfer_commit_count": 1,
+          "before_transfer": {
+            "holder": "J-output",
+            "state": "waiting_output",
+            "finished_at_ms": null,
+            "accepted_quantity": 0
+          },
+          "after_transfer": {
+            "holder": "destination",
+            "state": "completed",
+            "accepted_quantity": 1
+          },
+          "end_cause": "resolved",
+          "protocol_claims": {
+            "device": {
+              "kind": "job",
+              "phase_ref": null,
+              "intervals": [
+                {
+                  "start_ms": 0,
+                  "end_ms": 40000
+                }
+              ],
+              "interval_end_causes": [
+                "released"
+              ]
+            },
+            "person": {
+              "kind": "phase",
+              "phase_ref": "work",
+              "intervals": [
+                {
+                  "start_ms": 0,
+                  "end_ms": 20000
+                }
+              ],
+              "interval_end_causes": [
+                "released"
+              ]
+            }
+          }
+        }
+      },
+      "source_kind": "manual_expected",
+      "actual_result": null,
+      "contract_status": {
+        "current_canonical_fields": "merged_unique_contract",
+        "actual_source": "manual_expected_not_Run"
+      }
+    },
+    {
+      "id": "DRF06-T08",
+      "title": "跨日接受与卸载班次",
+      "source_refs": [
+        "scenarios/真实业务设计/business-rule-boundaries.design.json#B13",
+        "scenarios/真实业务设计/business-rule-boundaries.design.json#B14"
+      ],
+      "contract_requests": [
+        "TC01",
+        "TC02"
+      ],
+      "expected": {
+        "cross_day_ref": "B13",
+        "unload_calendar_ref": "B14",
+        "cross_day_labels": {
+          "86390000": "第1日23:59:50出发",
+          "86410000": "第2日00:00:10到达",
+          "86425000": "第2日00:00:25接收/接受",
+          "86435000": "第2日00:00:35载具返回"
+        },
+        "daily_accepted_piece": [
+          0,
+          2
+        ],
+        "midnight_cargo_holder": "transport",
+        "unload_wait_phase_ref": "unload",
+        "daily_boundary_is_not_reset": true
+      },
+      "source_kind": "manual_expected",
+      "actual_result": null,
+      "contract_status": {
+        "current_canonical_fields": "merged_unique_contract",
+        "actual_source": "manual_expected_not_Run"
+      }
+    }
+  ],
+  "layout_consumer": {
+    "owner": "复审窗口2（本轮S04全线）",
+    "timeline_default_height_px": 160,
+    "description_separate_dock": true,
+    "tools_at_bottom": true,
+    "visibility_via_window_menu": true,
+    "new_visual_asset_created": false
+  },
+  "actual_product_runtime": null,
+  "actual_prototype_walkthrough": null,
+  "actual_human_walkthrough": null,
+  "selected_DTO_delta_ref": "docs/04_开发与验收/特征细化/DRF06_公共字段合入delta.json",
+  "protocol_alias_mapping": {
+    "manual_claim_intervals_ms": "手工intervals_ms [[a,b]]→intervals:[{start_ms:a,end_ms:b}] + interval_end_causes:[明确原因]，两数组等长同序逐项对应；不默认cause、不要求嵌套改型",
+    "manual_execution_ref": "旧手工平面kind/device_id等映射现行JobExecutionRef serde {kind,data}，不改设备身份/数值",
+    "B03_demand_label": "旧A/B为案例需求标签；公共初始硬预留demand_ref用显式承接该订单的ProductionTask.id，不按同名猜任务",
+    "scrap_record": "处置记录标签，不是holder目的库位",
+    "departures_ms": "整数点t→装载开始机会[t,t+1ms)，load后才depart"
+  }
+}

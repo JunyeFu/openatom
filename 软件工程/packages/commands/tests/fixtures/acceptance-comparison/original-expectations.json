@@ -1,0 +1,1365 @@
+{
+  "document_kind": "independent_original_expectations_before_runtime",
+  "two_halls": {
+    "document_kind": "hand_derived_expectations_not_executed",
+    "basis": "声明工时的手工事件推导；需P1/P2实际运行再验证",
+    "observation_end": 240,
+    "project": "project.design.json",
+    "variants_file": "variants.design.json",
+    "variants": [
+      {
+        "id": "A",
+        "expected_events": [
+          {
+            "time": 0,
+            "kind": "assembly_start",
+            "target": "ASM-01",
+            "inputs": [
+              "shell-001",
+              "pcb-001"
+            ],
+            "resource": "worker-assembly"
+          },
+          {
+            "time": 60,
+            "kind": "assembly_complete",
+            "target": "ASM-01",
+            "result": "assembly-001",
+            "components": [
+              "shell-001",
+              "pcb-001"
+            ],
+            "location": "assemblies-A"
+          },
+          {
+            "time": 60,
+            "kind": "loading_start",
+            "target": "SUP-AB",
+            "cargo": [
+              "assembly-001"
+            ],
+            "reserved_at": "assemblies-A",
+            "resource": "worker-transport"
+          },
+          {
+            "time": 60,
+            "kind": "assembly_wait",
+            "target": "ASM-01",
+            "reason": "缺PCB，剩余壳体1件"
+          },
+          {
+            "time": 70,
+            "kind": "shipment_depart",
+            "target": "SUP-AB",
+            "cargo": [
+              "assembly-001"
+            ]
+          },
+          {
+            "time": 100,
+            "kind": "shipment_arrive",
+            "target": "SUP-AB",
+            "cargo": [
+              "assembly-001"
+            ],
+            "state": "unloading"
+          },
+          {
+            "time": 110,
+            "kind": "shipment_receive",
+            "target": "SUP-AB",
+            "cargo": [
+              "assembly-001"
+            ],
+            "location": "assemblies-B"
+          },
+          {
+            "time": 110,
+            "kind": "pack_start",
+            "target": "PACK-01",
+            "content": "assembly-001",
+            "carton": "carton-001"
+          },
+          {
+            "time": 125,
+            "kind": "pack_complete",
+            "target": "PACK-01",
+            "result": "package-001",
+            "contents": [
+              "assembly-001"
+            ],
+            "location": "packages-B"
+          },
+          {
+            "time": 140,
+            "kind": "carrier_returned",
+            "target": "SUP-AB",
+            "resource": "worker-transport",
+            "location": "H-A"
+          }
+        ],
+        "expected_available_at_end": {
+          "shells-A": 1,
+          "pcbs-A": 0,
+          "assemblies-A": 0,
+          "assemblies-B": 0,
+          "cartons-B": 1,
+          "packages-B": 1
+        },
+        "expected_received": 1,
+        "expected_in_transit": 0,
+        "expected_order_remaining": 1,
+        "actual_result": null
+      },
+      {
+        "id": "B",
+        "expected_events": [
+          {
+            "time": 0,
+            "kind": "assembly_start",
+            "target": "ASM-01",
+            "inputs": [
+              "shell-001",
+              "pcb-001"
+            ],
+            "resource": "worker-assembly"
+          },
+          {
+            "time": 60,
+            "kind": "assembly_complete",
+            "target": "ASM-01",
+            "result": "assembly-001",
+            "components": [
+              "shell-001",
+              "pcb-001"
+            ],
+            "location": "assemblies-A"
+          },
+          {
+            "time": 60,
+            "kind": "loading_start",
+            "target": "SUP-AB",
+            "cargo": [
+              "assembly-001"
+            ],
+            "reserved_at": "assemblies-A",
+            "resource": "worker-transport"
+          },
+          {
+            "time": 60,
+            "kind": "assembly_start",
+            "target": "ASM-01",
+            "inputs": [
+              "shell-002",
+              "pcb-002"
+            ],
+            "resource": "worker-assembly"
+          },
+          {
+            "time": 70,
+            "kind": "shipment_depart",
+            "target": "SUP-AB",
+            "cargo": [
+              "assembly-001"
+            ]
+          },
+          {
+            "time": 100,
+            "kind": "shipment_arrive",
+            "target": "SUP-AB",
+            "cargo": [
+              "assembly-001"
+            ],
+            "state": "unloading"
+          },
+          {
+            "time": 110,
+            "kind": "shipment_receive",
+            "target": "SUP-AB",
+            "cargo": [
+              "assembly-001"
+            ],
+            "location": "assemblies-B"
+          },
+          {
+            "time": 110,
+            "kind": "pack_start",
+            "target": "PACK-01",
+            "content": "assembly-001",
+            "carton": "carton-001"
+          },
+          {
+            "time": 120,
+            "kind": "assembly_complete",
+            "target": "ASM-01",
+            "result": "assembly-002",
+            "components": [
+              "shell-002",
+              "pcb-002"
+            ],
+            "location": "assemblies-A"
+          },
+          {
+            "time": 120,
+            "kind": "transport_wait",
+            "target": "SUP-AB",
+            "cargo": [
+              "assembly-002"
+            ],
+            "reason": "运输资源返程中，尚不可用于下一批"
+          },
+          {
+            "time": 125,
+            "kind": "pack_complete",
+            "target": "PACK-01",
+            "result": "package-001",
+            "contents": [
+              "assembly-001"
+            ],
+            "location": "packages-B"
+          },
+          {
+            "time": 140,
+            "kind": "carrier_returned",
+            "target": "SUP-AB",
+            "resource": "worker-transport",
+            "location": "H-A"
+          },
+          {
+            "time": 140,
+            "kind": "loading_start",
+            "target": "SUP-AB",
+            "cargo": [
+              "assembly-002"
+            ],
+            "reserved_at": "assemblies-A",
+            "resource": "worker-transport"
+          },
+          {
+            "time": 150,
+            "kind": "shipment_depart",
+            "target": "SUP-AB",
+            "cargo": [
+              "assembly-002"
+            ]
+          },
+          {
+            "time": 180,
+            "kind": "shipment_arrive",
+            "target": "SUP-AB",
+            "cargo": [
+              "assembly-002"
+            ],
+            "state": "unloading"
+          },
+          {
+            "time": 190,
+            "kind": "shipment_receive",
+            "target": "SUP-AB",
+            "cargo": [
+              "assembly-002"
+            ],
+            "location": "assemblies-B"
+          },
+          {
+            "time": 190,
+            "kind": "pack_start",
+            "target": "PACK-01",
+            "content": "assembly-002",
+            "carton": "carton-002"
+          },
+          {
+            "time": 205,
+            "kind": "pack_complete",
+            "target": "PACK-01",
+            "result": "package-002",
+            "contents": [
+              "assembly-002"
+            ],
+            "location": "packages-B"
+          },
+          {
+            "time": 220,
+            "kind": "carrier_returned",
+            "target": "SUP-AB",
+            "resource": "worker-transport",
+            "location": "H-A"
+          }
+        ],
+        "expected_available_at_end": {
+          "shells-A": 0,
+          "pcbs-A": 0,
+          "assemblies-A": 0,
+          "assemblies-B": 0,
+          "cartons-B": 0,
+          "packages-B": 2
+        },
+        "expected_received": 2,
+        "expected_in_transit": 0,
+        "expected_order_remaining": 0,
+        "actual_result": null
+      }
+    ],
+    "quantity_bound": "可装盒数量不超过min(可用壳体,可用PCB,可用空盒)，并同时受作业及运输时间/资源/容量限制",
+    "first_package_derivation": "60+10+30+10+15=125秒",
+    "second_package_derivation": "第二件120秒完成，搬运人员140秒返程结束；140+10+30+10+15=205秒",
+    "carrier_wait_derivation": "140-120=20秒；仅是B方案第二件等待运输资源的示意时段"
+  },
+  "handoff": {
+    "document_kind": "finite_design_checks_not_product_acceptance",
+    "templates": [
+      {
+        "template": "machining-delivery",
+        "device_count": 3,
+        "mode": "declared_process",
+        "nominal_inputs_checked": true,
+        "actual_result": null
+      },
+      {
+        "template": "purchased-assembly",
+        "device_count": 3,
+        "mode": "declared_process",
+        "nominal_inputs_checked": true,
+        "actual_result": null
+      },
+      {
+        "template": "parallel-electromechanical",
+        "device_count": 6,
+        "mode": "declared_process",
+        "nominal_inputs_checked": true,
+        "actual_result": null
+      }
+    ],
+    "cases": [
+      {
+        "id": "machining_delivery",
+        "manual_expected": {
+          "jobs": [
+            {
+              "kind": "load",
+              "item": 0,
+              "start_ms": 0,
+              "end_ms": 10000,
+              "resources": [
+                "CNC01",
+                "W-C"
+              ]
+            },
+            {
+              "kind": "auto",
+              "item": 0,
+              "start_ms": 10000,
+              "end_ms": 55000,
+              "resources": [
+                "CNC01"
+              ]
+            },
+            {
+              "kind": "unload",
+              "item": 0,
+              "start_ms": 55000,
+              "end_ms": 60000,
+              "resources": [
+                "CNC01",
+                "W-C"
+              ]
+            },
+            {
+              "kind": "load",
+              "item": 1,
+              "start_ms": 60000,
+              "end_ms": 70000,
+              "resources": [
+                "CNC01",
+                "W-C"
+              ]
+            },
+            {
+              "kind": "auto",
+              "item": 1,
+              "start_ms": 70000,
+              "end_ms": 115000,
+              "resources": [
+                "CNC01"
+              ]
+            },
+            {
+              "kind": "unload",
+              "item": 1,
+              "start_ms": 115000,
+              "end_ms": 120000,
+              "resources": [
+                "CNC01",
+                "W-C"
+              ]
+            },
+            {
+              "kind": "inspection",
+              "item": 0,
+              "start_ms": 60000,
+              "end_ms": 70000,
+              "resources": [
+                "Inspection01",
+                "W-B"
+              ]
+            },
+            {
+              "kind": "packing",
+              "item": 0,
+              "start_ms": 70000,
+              "end_ms": 90000,
+              "resources": [
+                "Packing01",
+                "W-B"
+              ]
+            },
+            {
+              "kind": "inspection",
+              "item": 1,
+              "start_ms": 120000,
+              "end_ms": 130000,
+              "resources": [
+                "Inspection01",
+                "W-B"
+              ]
+            },
+            {
+              "kind": "packing",
+              "item": 1,
+              "start_ms": 130000,
+              "end_ms": 150000,
+              "resources": [
+                "Packing01",
+                "W-B"
+              ]
+            }
+          ],
+          "accepted_at_ms": [
+            90000,
+            150000
+          ],
+          "accepted_count": 2,
+          "acceptance_scope": "declared_factory_store",
+          "quality_source": "preset_or_declared_not_actual",
+          "initial_stock": {
+            "blank": 2,
+            "carton": 2
+          }
+        },
+        "actual_result": null
+      },
+      {
+        "id": "purchased_assembly",
+        "manual_expected": {
+          "jobs": [
+            {
+              "kind": "assembly",
+              "item": 0,
+              "start_ms": 0,
+              "end_ms": 40000,
+              "resources": [
+                "Assembly01",
+                "W-A"
+              ]
+            },
+            {
+              "kind": "inspection",
+              "item": 0,
+              "start_ms": 40000,
+              "end_ms": 50000,
+              "resources": [
+                "Inspection01",
+                "W-B"
+              ]
+            },
+            {
+              "kind": "packing",
+              "item": 0,
+              "start_ms": 50000,
+              "end_ms": 70000,
+              "resources": [
+                "Packing01",
+                "W-B"
+              ]
+            },
+            {
+              "kind": "assembly",
+              "item": 1,
+              "start_ms": 40000,
+              "end_ms": 80000,
+              "resources": [
+                "Assembly01",
+                "W-A"
+              ]
+            },
+            {
+              "kind": "inspection",
+              "item": 1,
+              "start_ms": 80000,
+              "end_ms": 90000,
+              "resources": [
+                "Inspection01",
+                "W-B"
+              ]
+            },
+            {
+              "kind": "packing",
+              "item": 1,
+              "start_ms": 90000,
+              "end_ms": 110000,
+              "resources": [
+                "Packing01",
+                "W-B"
+              ]
+            }
+          ],
+          "accepted_at_ms": [
+            70000,
+            110000
+          ],
+          "accepted_count": 2,
+          "acceptance_scope": "declared_factory_store",
+          "quality_source": "preset_or_declared_not_actual",
+          "initial_stock": {
+            "shell": 2,
+            "pcb": 2,
+            "fastener": 8,
+            "carton": 2
+          }
+        },
+        "actual_result": null
+      },
+      {
+        "id": "parallel_manufacturing",
+        "manual_expected": {
+          "jobs": [
+            {
+              "kind": "load",
+              "item": 0,
+              "start_ms": 0,
+              "end_ms": 10000,
+              "resources": [
+                "CNC01",
+                "W-C"
+              ]
+            },
+            {
+              "kind": "auto",
+              "item": 0,
+              "start_ms": 10000,
+              "end_ms": 55000,
+              "resources": [
+                "CNC01"
+              ]
+            },
+            {
+              "kind": "unload",
+              "item": 0,
+              "start_ms": 55000,
+              "end_ms": 60000,
+              "resources": [
+                "CNC01",
+                "W-C"
+              ]
+            },
+            {
+              "kind": "load",
+              "item": 1,
+              "start_ms": 60000,
+              "end_ms": 70000,
+              "resources": [
+                "CNC01",
+                "W-C"
+              ]
+            },
+            {
+              "kind": "auto",
+              "item": 1,
+              "start_ms": 70000,
+              "end_ms": 115000,
+              "resources": [
+                "CNC01"
+              ]
+            },
+            {
+              "kind": "unload",
+              "item": 1,
+              "start_ms": 115000,
+              "end_ms": 120000,
+              "resources": [
+                "CNC01",
+                "W-C"
+              ]
+            },
+            {
+              "kind": "setup",
+              "item": null,
+              "start_ms": 0,
+              "end_ms": 30000,
+              "resources": [
+                "Board01",
+                "W-E"
+              ]
+            },
+            {
+              "kind": "board_load",
+              "item": 0,
+              "start_ms": 30000,
+              "end_ms": 35000,
+              "resources": [
+                "Board01",
+                "W-E"
+              ]
+            },
+            {
+              "kind": "board_place",
+              "item": 0,
+              "start_ms": 35000,
+              "end_ms": 55000,
+              "resources": [
+                "Board01"
+              ]
+            },
+            {
+              "kind": "board_unload",
+              "item": 0,
+              "start_ms": 55000,
+              "end_ms": 60000,
+              "resources": [
+                "Board01",
+                "W-E"
+              ]
+            },
+            {
+              "kind": "board_finish",
+              "item": 0,
+              "start_ms": 60000,
+              "end_ms": 90000,
+              "resources": [
+                "BoardFinish01"
+              ]
+            },
+            {
+              "kind": "board_load",
+              "item": 1,
+              "start_ms": 60000,
+              "end_ms": 65000,
+              "resources": [
+                "Board01",
+                "W-E"
+              ]
+            },
+            {
+              "kind": "board_place",
+              "item": 1,
+              "start_ms": 65000,
+              "end_ms": 85000,
+              "resources": [
+                "Board01"
+              ]
+            },
+            {
+              "kind": "board_unload",
+              "item": 1,
+              "start_ms": 85000,
+              "end_ms": 90000,
+              "resources": [
+                "Board01",
+                "W-E"
+              ]
+            },
+            {
+              "kind": "board_finish",
+              "item": 1,
+              "start_ms": 90000,
+              "end_ms": 120000,
+              "resources": [
+                "BoardFinish01"
+              ]
+            },
+            {
+              "kind": "assembly",
+              "item": 0,
+              "start_ms": 90000,
+              "end_ms": 130000,
+              "resources": [
+                "Assembly01",
+                "W-A"
+              ]
+            },
+            {
+              "kind": "inspection",
+              "item": 0,
+              "start_ms": 130000,
+              "end_ms": 140000,
+              "resources": [
+                "Inspection01",
+                "W-B"
+              ]
+            },
+            {
+              "kind": "packing",
+              "item": 0,
+              "start_ms": 140000,
+              "end_ms": 160000,
+              "resources": [
+                "Packing01",
+                "W-B"
+              ]
+            },
+            {
+              "kind": "assembly",
+              "item": 1,
+              "start_ms": 130000,
+              "end_ms": 170000,
+              "resources": [
+                "Assembly01",
+                "W-A"
+              ]
+            },
+            {
+              "kind": "inspection",
+              "item": 1,
+              "start_ms": 170000,
+              "end_ms": 180000,
+              "resources": [
+                "Inspection01",
+                "W-B"
+              ]
+            },
+            {
+              "kind": "packing",
+              "item": 1,
+              "start_ms": 180000,
+              "end_ms": 200000,
+              "resources": [
+                "Packing01",
+                "W-B"
+              ]
+            }
+          ],
+          "accepted_at_ms": [
+            160000,
+            200000
+          ],
+          "accepted_count": 2,
+          "acceptance_scope": "declared_factory_store",
+          "quality_source": "preset_or_declared_not_actual",
+          "initial_stock": {
+            "blank": 2,
+            "bare_pcb": 2,
+            "component": 16,
+            "fastener": 8,
+            "carton": 2
+          }
+        },
+        "actual_result": null
+      },
+      {
+        "id": "parallel_board_preparation_90s",
+        "manual_expected": {
+          "jobs": [
+            {
+              "kind": "load",
+              "item": 0,
+              "start_ms": 0,
+              "end_ms": 10000,
+              "resources": [
+                "CNC01",
+                "W-C"
+              ]
+            },
+            {
+              "kind": "auto",
+              "item": 0,
+              "start_ms": 10000,
+              "end_ms": 55000,
+              "resources": [
+                "CNC01"
+              ]
+            },
+            {
+              "kind": "unload",
+              "item": 0,
+              "start_ms": 55000,
+              "end_ms": 60000,
+              "resources": [
+                "CNC01",
+                "W-C"
+              ]
+            },
+            {
+              "kind": "load",
+              "item": 1,
+              "start_ms": 60000,
+              "end_ms": 70000,
+              "resources": [
+                "CNC01",
+                "W-C"
+              ]
+            },
+            {
+              "kind": "auto",
+              "item": 1,
+              "start_ms": 70000,
+              "end_ms": 115000,
+              "resources": [
+                "CNC01"
+              ]
+            },
+            {
+              "kind": "unload",
+              "item": 1,
+              "start_ms": 115000,
+              "end_ms": 120000,
+              "resources": [
+                "CNC01",
+                "W-C"
+              ]
+            },
+            {
+              "kind": "setup",
+              "item": null,
+              "start_ms": 0,
+              "end_ms": 90000,
+              "resources": [
+                "Board01",
+                "W-E"
+              ]
+            },
+            {
+              "kind": "board_load",
+              "item": 0,
+              "start_ms": 90000,
+              "end_ms": 95000,
+              "resources": [
+                "Board01",
+                "W-E"
+              ]
+            },
+            {
+              "kind": "board_place",
+              "item": 0,
+              "start_ms": 95000,
+              "end_ms": 115000,
+              "resources": [
+                "Board01"
+              ]
+            },
+            {
+              "kind": "board_unload",
+              "item": 0,
+              "start_ms": 115000,
+              "end_ms": 120000,
+              "resources": [
+                "Board01",
+                "W-E"
+              ]
+            },
+            {
+              "kind": "board_finish",
+              "item": 0,
+              "start_ms": 120000,
+              "end_ms": 150000,
+              "resources": [
+                "BoardFinish01"
+              ]
+            },
+            {
+              "kind": "board_load",
+              "item": 1,
+              "start_ms": 120000,
+              "end_ms": 125000,
+              "resources": [
+                "Board01",
+                "W-E"
+              ]
+            },
+            {
+              "kind": "board_place",
+              "item": 1,
+              "start_ms": 125000,
+              "end_ms": 145000,
+              "resources": [
+                "Board01"
+              ]
+            },
+            {
+              "kind": "board_unload",
+              "item": 1,
+              "start_ms": 145000,
+              "end_ms": 150000,
+              "resources": [
+                "Board01",
+                "W-E"
+              ]
+            },
+            {
+              "kind": "board_finish",
+              "item": 1,
+              "start_ms": 150000,
+              "end_ms": 180000,
+              "resources": [
+                "BoardFinish01"
+              ]
+            },
+            {
+              "kind": "assembly",
+              "item": 0,
+              "start_ms": 150000,
+              "end_ms": 190000,
+              "resources": [
+                "Assembly01",
+                "W-A"
+              ]
+            },
+            {
+              "kind": "inspection",
+              "item": 0,
+              "start_ms": 190000,
+              "end_ms": 200000,
+              "resources": [
+                "Inspection01",
+                "W-B"
+              ]
+            },
+            {
+              "kind": "packing",
+              "item": 0,
+              "start_ms": 200000,
+              "end_ms": 220000,
+              "resources": [
+                "Packing01",
+                "W-B"
+              ]
+            },
+            {
+              "kind": "assembly",
+              "item": 1,
+              "start_ms": 190000,
+              "end_ms": 230000,
+              "resources": [
+                "Assembly01",
+                "W-A"
+              ]
+            },
+            {
+              "kind": "inspection",
+              "item": 1,
+              "start_ms": 230000,
+              "end_ms": 240000,
+              "resources": [
+                "Inspection01",
+                "W-B"
+              ]
+            },
+            {
+              "kind": "packing",
+              "item": 1,
+              "start_ms": 240000,
+              "end_ms": 260000,
+              "resources": [
+                "Packing01",
+                "W-B"
+              ]
+            }
+          ],
+          "accepted_at_ms": [
+            220000,
+            260000
+          ],
+          "accepted_count": 2,
+          "acceptance_scope": "declared_factory_store",
+          "quality_source": "preset_or_declared_not_actual",
+          "initial_stock": {
+            "blank": 2,
+            "bare_pcb": 2,
+            "component": 16,
+            "fastener": 8,
+            "carton": 2
+          }
+        },
+        "actual_result": null
+      },
+      {
+        "id": "insert_template_into_existing_project",
+        "manual_expected": {
+          "initial_stock_added": 0,
+          "demand_added": 0,
+          "cloned_object_ids": [
+            "copy1.CNC01",
+            "copy2.CNC01"
+          ],
+          "module_definition_identity_shared": true,
+          "basis": "explicit_template_import_policy_not_actual_editor_test"
+        },
+        "actual_result": null
+      },
+      {
+        "id": "missing_visual_asset",
+        "manual_expected": {
+          "choice": "explicit_native_or_icon_replacement",
+          "behavior_changed": false,
+          "stock_changed": false,
+          "missing_asset_disclosed": true
+        },
+        "actual_result": null
+      },
+      {
+        "id": "missing_behavior_definition",
+        "manual_expected": {
+          "affected_operation": "not_executable",
+          "whole_factory_result": "incomplete",
+          "unknown_operation_is_zero_time": false
+        },
+        "actual_result": null
+      },
+      {
+        "id": "missing_requested_professional_result",
+        "manual_expected": {
+          "selected_mode": "calculated_nominal",
+          "state": "awaiting_actual_supported_provider",
+          "automatic_declared_downgrade": false
+        },
+        "actual_result": null
+      },
+      {
+        "id": "declared_snapshot_continuation",
+        "manual_expected": {
+          "snapshot": {
+            "time_ms": 60000,
+            "origin": "same_project_origin",
+            "items": [
+              {
+                "id": "item-job",
+                "holder": "job1"
+              },
+              {
+                "id": "item-transit",
+                "holder": "vehicle1"
+              }
+            ],
+            "job": {
+              "id": "job1",
+              "definition_version": "0.1.0",
+              "effective_done_ms": 20000,
+              "effective_total_ms": 40000
+            },
+            "transport": {
+              "item": "item-transit",
+              "accept_at_ms": 75000
+            },
+            "future_arrival": {
+              "id": "new-input",
+              "at_ms": 90000
+            },
+            "accepted_base": 2,
+            "demand_total": 4,
+            "actual_result": null
+          },
+          "job_finish_at_ms": 80000,
+          "transport_accept_at_ms": 75000,
+          "future_arrival_kept_at_ms": 90000,
+          "past_events_replayed": false,
+          "accepted_increment": 2,
+          "accepted_cumulative": 4,
+          "remaining_demand_after": 0,
+          "source_stock_recreated": false,
+          "active_job_definition_preserved": "0.1.0",
+          "future_job_definition": "0.2.0",
+          "future_job_duration_ms": 30000,
+          "actual_resume_result": null
+        },
+        "actual_result": null
+      },
+      {
+        "id": "non_resumable_professional_state",
+        "manual_expected": {
+          "can_read": true,
+          "can_resume": false,
+          "permitted_next": "from_start_or_actual_supported_state",
+          "restarting_half_job_silently": false
+        },
+        "actual_result": null
+      }
+    ],
+    "refinement_ref": "docs/04_开发与验收/特征细化/DRF05_完整定义.json",
+    "drf05_handoff_cases": [
+      {
+        "id": "DRF05-HFC01",
+        "name": "save_revision_during_edit",
+        "input": {
+          "frozen_revision": 7,
+          "current_revision_at_finish": 8
+        },
+        "manual_expected": {
+          "saved_revision": 7,
+          "current_revision": 8,
+          "still_dirty": true,
+          "old_Run_input_rewritten": false
+        },
+        "actual_result": null
+      },
+      {
+        "id": "DRF05-HFC02",
+        "name": "write_failure_before_manifest",
+        "input": {
+          "old_generation": 1,
+          "prepared_new_generation": 2,
+          "error": "IoFailure before root commit"
+        },
+        "manual_expected": {
+          "committed_generation": 1,
+          "still_dirty": true,
+          "new_generation_is_success": false,
+          "old_data_overwritten": false
+        },
+        "actual_result": null
+      },
+      {
+        "id": "DRF05-HFC03",
+        "name": "cancel_commit_race",
+        "input": {
+          "cancel_before_commit": true,
+          "second_trial_commit_wins": true
+        },
+        "manual_expected": {
+          "first_task": "cancelled",
+          "first_old_manifest_retained": true,
+          "second_task": "completed",
+          "completed_file_rollback": false
+        },
+        "actual_result": null
+      },
+      {
+        "id": "DRF05-HFC04",
+        "name": "move_relative_resources",
+        "input": {
+          "from": "author-dir",
+          "to": "receiver-dir",
+          "module_ref": "cnc@0.1.0",
+          "asset_path": "assets/a000001/cnc.png"
+        },
+        "manual_expected": {
+          "same_id_and_version": true,
+          "path_base": "receiver-dir",
+          "absolute_author_path_required": false,
+          "auto_download": false
+        },
+        "actual_result": null
+      },
+      {
+        "id": "DRF05-HFC05",
+        "name": "same_version_conflict",
+        "input": {
+          "package_module": "cnc@0.1.0",
+          "local_module": "cnc@0.1.0",
+          "payload_differs": true
+        },
+        "manual_expected": {
+          "explicit_conflict": true,
+          "silent_latest_replacement": false,
+          "global_library_overwritten": false
+        },
+        "actual_result": null
+      },
+      {
+        "id": "DRF05-HFC06",
+        "name": "unknown_schema_open",
+        "input": {
+          "schema_version": "99.0",
+          "active_project_dirty": true
+        },
+        "manual_expected": {
+          "error": "UnsupportedSchema",
+          "original_package_preserved": true,
+          "active_project_replaced": false,
+          "dirty_preserved": true
+        },
+        "actual_result": null
+      },
+      {
+        "id": "DRF05-HFC07",
+        "name": "missing_behavior_draft",
+        "input": {
+          "missing": "required OperationDefinition",
+          "accept_missing_as_draft": true
+        },
+        "manual_expected": {
+          "editable_valid_layout": true,
+          "affected_job_executable": false,
+          "zero_duration_invented": false,
+          "complete_factory_result_claim": false
+        },
+        "actual_result": null
+      },
+      {
+        "id": "DRF05-HFC08",
+        "name": "foreign_rights_declaration",
+        "input": {
+          "redistribution_confirmed_in_package": true,
+          "host_authorized_export": false
+        },
+        "manual_expected": {
+          "include_asset_in_handoff": false,
+          "include_asset_in_community": false,
+          "replacement_and_impact_listed": true
+        },
+        "actual_result": null
+      },
+      {
+        "id": "DRF05-HFC09",
+        "name": "old_run_and_new_revision",
+        "input": {
+          "old_run_input_revision": 3,
+          "new_scenario_revision": 4,
+          "action": "modify supply then restart"
+        },
+        "manual_expected": {
+          "old_run_input_revision": 3,
+          "new_run_input_revision": 4,
+          "old_final_items_seed_initial_stock": false,
+          "new_run_id_required": true,
+          "old_result_readonly": true
+        },
+        "actual_result": null
+      },
+      {
+        "id": "DRF05-HFC10",
+        "name": "timeline_private_preferences",
+        "input": {
+          "timeline_group_overrides_on_author": true,
+          "receiver_has_local_preferences": false
+        },
+        "manual_expected": {
+          "preferences_in_project_package": false,
+          "receiver_grouping": "frozen project automatic grouping",
+          "default_timeline_height_px": 160,
+          "description_independent_dock": true,
+          "stock_or_clock_changed": false
+        },
+        "actual_result": null
+      },
+      {
+        "id": "DRF05-HFC11",
+        "name": "actual_cross_machine_entry",
+        "input": {
+          "target": "Windows11 x64 other machine",
+          "external_provider_available": false
+        },
+        "manual_expected": {
+          "claim_other_machine_test_passed_without_execution": false,
+          "missing_provider_disclosed": true,
+          "automatic_declared_mode_downgrade": false,
+          "restart_policy": "restart_from_initial_input"
+        },
+        "actual_result": null
+      },
+      {
+        "id": "DRF05-HFC12",
+        "name": "adoption_and_publication",
+        "input": {
+          "local_candidate_checked": true,
+          "issue_PR_sent": false,
+          "user_publish_authorized": false
+        },
+        "manual_expected": {
+          "explicit_local_adoption_allowed": true,
+          "published": false,
+          "submission_URL": null,
+          "community_count_invented": false
+        },
+        "actual_result": null
+      },
+      {
+        "id": "DRF05-HFC13",
+        "name": "zip_escape_and_collision",
+        "input": {
+          "member_examples": [
+            "../outside",
+            "C:/outside",
+            "A/file.json",
+            "a/FILE.json"
+          ],
+          "symlink_to_outside": true
+        },
+        "manual_expected": {
+          "adoption_rejected": true,
+          "files_written_outside_stage": false,
+          "active_project_replaced": false
+        },
+        "actual_result": null
+      },
+      {
+        "id": "DRF05-HFC14",
+        "name": "replacefile_failure_recovery",
+        "input": {
+          "error_code": 1176,
+          "old_preservation_path_supplied": true,
+          "restore_root_succeeds": false
+        },
+        "manual_expected": {
+          "task": "failed",
+          "error": "IoFailure",
+          "still_dirty": true,
+          "show_old_root_intact_claim": false,
+          "report_actual_recoverable_location": true
+        },
+        "actual_result": null
+      },
+      {
+        "id": "DRF05-HFC15",
+        "name": "same_target_ordered_commits",
+        "input": {
+          "admission_order": [
+            7,
+            8
+          ],
+          "worker_finish_order": [
+            8,
+            7
+          ],
+          "commit_order": [
+            7,
+            8
+          ]
+        },
+        "manual_expected": {
+          "commit_order": [
+            7,
+            8
+          ],
+          "last_committed_revision": 8,
+          "R7_while_edit_R8_still_dirty": true
+        },
+        "actual_result": null
+      },
+      {
+        "id": "DRF05-HFC16",
+        "name": "replace_failed_restored_old_root",
+        "input": {
+          "replace_failed": true,
+          "old_preservation_valid": true,
+          "restore_succeeds": true
+        },
+        "manual_expected": {
+          "task": "failed",
+          "error": "IoFailure",
+          "old_root_restored": true,
+          "still_dirty": true,
+          "new_generation_claimed_saved": false
+        },
+        "actual_result": null
+      }
+    ],
+    "refinement_generation_note": "原10例与HFC01-HFC14数值不变；本轮追加HFC15顺序提交/HFC16恢复成功。窗口1更新生成器保留refinement_ref/drf05_handoff_cases/refinement_generation_note；本窗口未运行覆写生成器或产品。"
+  },
+  "comparison_rules": [
+    "common start, window, acceptance scope and conditions before differences/outcomes",
+    "incompatible conditions not strict comparison",
+    "old Run and exact definitions/dependencies/source preserved",
+    "directory and ZIP real reopened modified and rerun",
+    "design no fabricated results; no supported full recovery means initial restart not snapshot resume"
+  ],
+  "actual_result": null
+}

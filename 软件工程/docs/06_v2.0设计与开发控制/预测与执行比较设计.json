@@ -1,0 +1,193 @@
+{
+  "document_kind": "v2_design_only",
+  "date": "2026-10-26",
+  "implementation_allowed": true,
+  "runtime_verified": false,
+  "contract_version": "sf.execution/2.0-draft11",
+  "decision": "V2-A14",
+  "requirement": "T8-A07/F06/F16: select actual local prediction Run and cloud execution; compare and deliver four formats",
+  "markdown_ref": "docs/06_v2.0设计与开发控制/预测与执行比较设计.md",
+  "schema_ref": "docs/06_v2.0设计与开发控制/接口契约.schema.design.json",
+  "views": {
+    "task_interaction": "在原报告区选择一个实际终态Run和已选执行源；不启动新的预测或生产",
+    "structure_data": "PredictionRunReference/ExecutionLink/RunSummary/Comparison/Condition及复用ReportRunInputRef；H10必填可空prediction，报告必填可空prediction_comparison",
+    "state_behavior": "真实终态Run冻结；输入/范围不等价时并列，未知不补零；原执行间比较保持",
+    "interface_collaboration": "原get_context/get_run发现和读取Run；原H10加入选源；无新增Host/HTTP操作或DB表",
+    "ui_consumer": "模型预测、软件在环/真机执行分列，时间偏差与数量差有单位及条件；不当作优化收益",
+    "deployment_verification": "PE01..08及同一canonical四格式；实际Host/Native/Agent/文件输出尚未运行"
+  },
+  "source_admission": {
+    "locator": "PredictionRunReference: actual RunId plus expected ReportRunInputRef(project/scenario ids and revisions); no caller supplied RunResult/FileRef",
+    "project": "same authorized actual Project, Project-scoped Run only; DefinitionDraft/other Project denied",
+    "terminal": [
+      "completed",
+      "failed",
+      "cancelled"
+    ],
+    "not_terminal": "running/queued/paused are not immutable prediction sources; H10 returns explicit invalid source, does not cancel/resume/wait forever or silently omit prediction",
+    "actual": "stored RunResult evidence_origin=actual_software; exact input reference and actual frozen Project/Scenario/modules must resolve; missing/conflicting sources error, no simulation repair",
+    "missing_frontier": "valid terminal source with absent computed frontier remains labelled source, all affected metrics unknown with reasons; not zero",
+    "execution": "link.execution must equal an explicitly selected H10 source including read_origin/identity/revision; all actual source pins agree",
+    "cloud": "execution may be read from cloud; prediction remains actual local archive source, no upload of Run to cloud or cloud reconstruction",
+    "privacy": "canonical report uses ReportRunInputRef without private frozen FileRefs; no absolute local paths or credentials"
+  },
+  "producer_boundary": {
+    "host": "L25共用注册/原请求派发；L60 H10选源/冻结工作描述与实际报告worker；文件/网络在锁外，L57纯指标生产者",
+    "prediction": "L57 pure producer consumes actual frozen Run input tuple and RunResult; reuse exact scoped acceptance/completion metric algorithms, not Engine or RunSummary.accepted shortcut",
+    "existing_precedent": "host_evaluation.rs:364 loads each Run's own Project/Scenario/modules; evaluation.rs:588 validates exact identity/frontier; metrics.rs:68 preserves overlapping-scope/unknown rules",
+    "differences": "new prediction summary is separate from legacy RunEvaluation/cost output; existing build_evaluation requires computed frontier, so missing-frontier summary must explicitly retain unknown, not claim the old function already supports it",
+    "receipt": "ExportExecutionReportResult.prediction is actual PredictionExecutionLink or null; UI/Agent correlate it with request plus existing execution source stamps and real file result"
+  },
+  "input_equivalence": {
+    "project": "compare actual typed frozen Project content including device geometry/routes/BOM/resources/calendars/bindings/setup/goal; ignore only revision/title/views metadata; never infer content equality from same revision",
+    "scenario": "compare actual typed Scenario content except revision/project_revision/title/window; window checked separately per metric; orders/tasks/initial_conditions/arrivals/supplies/overrides/quality/goals/scope/time reference retain semantics",
+    "modules": "same exact module/route references and resolved definitions; same ID/version with different content fails comparability; candidate binding must map actual fixed model device/action/port/resource identities; actual dispatch choices may differ without becoming model-input inequality",
+    "differences": "remaining unequal or unproved input conditions are listed and deny affected deltas; valid sources remain side-by-side, not rejected or rewritten",
+    "scope": "comparison_scope is unique matching actual acceptance scope(product revision/unit/destination/stage); overlapping/shared targets without exact allocation leave scope or affected metric null"
+  },
+  "metrics": {
+    "prediction_summary": "original window/frontier/status/goal flag, model virtual clock, time reference/scope/module versions, nullable actual declared target, scoped accepted quantities and target-reached time from actual acceptance events",
+    "common": "same project/scope, initial model input content, exact model binding, fixed positive target and unambiguous acceptance scope; actual source modes explicitly named; data/limitations may block affected conclusions",
+    "clock": "prediction window.start=0 matches existing ExecutionPolicy.source_prediction_window.start=0 and actual frozen time reference; Host elapsed starts at first run. Compare durations relative to those origins, never subtract UTC/wall timestamps or virtual time from device self-report",
+    "completion": "prediction target reached from exact metric producer; execution actual target reached plus settled obligations; valid clock/common conditions. delta=execution Host target ms-predicted model target ms. Different end windows alone do not erase a known same-target completion deviation",
+    "quantity": "common conditions plus prediction whole_window_computed, computed frontier reaches actual window end, actual execution coverage reaches exactly that same endpoint and selected R/F matches; delta=execution accepted-predicted accepted for comparison_scope only; no clipping final stock or resimulating another cutoff",
+    "availability": "actual availability changes are shown from fixed history with coverage; they may explain differences but do not establish causal attribution. Missing material coverage blocks affected delta",
+    "status": "observational only if at least one eligible delta is known; both unknown -> side_by_side_only; eligibility is metric-specific, not all condition booleans blindly ANDed",
+    "arithmetic": "signed ms within shared safe range; exact quantities use SignedQuantityChange. Overflow/unrepresentable is unknown with reason, no float rounding",
+    "interpretation": "positive time delta means execution later; negative earlier. It is prediction deviation, not measured AI speedup, cost improvement or physical effective work",
+    "waiting": "PredictionWaitingMetric来自实际Run.waits，候选对象为实际wait.object_ref及Run.jobs的Job引用，唯一排序。按metrics.rs:196对象关联规则保存真实source_intervals，度量时裁到[window.start,computed_until]并取区间并集；跨reason重叠不加倍。无计算前沿/对象/可证明覆盖则known_sim_ms=null；对象存在且已计算前缀确无等待才可0。",
+    "waiting_comparison": "模型对象/虚拟ms等待和Host逻辑工作queued/pre_start/output/reconciliation分别标源。waiting_basis对照实际对象映射、定义、窗口；缺等价条件时并列具体限制。原需求要求同口径展示，未要求跨定义等待差值；不输出无依据的等待改善。"
+  },
+  "wire_changes": {
+    "new_definitions": [
+      "ReportRunInputRef",
+      "PredictionRunReference",
+      "PredictionExecutionLink",
+      "PredictionRunSummary",
+      "PredictionComparisonCondition",
+      "PredictionExecutionComparison",
+      "PredictionWaitingMetric"
+    ],
+    "h10_request": "params.prediction required nullable PredictionExecutionLink; null preserves execution-only report",
+    "canonical": "ExecutionReport.prediction_comparison required nullable PredictionExecutionComparison; old execution-execution comparison remains separate",
+    "receipt": "ExportExecutionReportResult.prediction required nullable PredictionExecutionLink; exact expected source correlation",
+    "no_change": "11 Host operations,20 business cloud endpoints,16 tables,13 transactions,31 schema root variants; actual product0.1.0 and v1 APIs unchanged"
+  },
+  "formats": {
+    "canonical": "all PDF/HTML/CSV/JSON consume one actual ExecutionReport prediction_comparison; no separate numbers recomputed per renderer",
+    "headings": "模型预测 / 软件在环执行或真机执行 / 预测偏差及条件; both actual source references, windows, units and unknown reasons visible",
+    "csv_tables_added": [
+      "prediction_sources",
+      "prediction_accepted_by_scope",
+      "prediction_comparison",
+      "prediction_waiting"
+    ],
+    "csv_prefix": "new prediction tables share report_id/project_id and their actual Run/target execution identifiers, never manufacture session/epoch for Run",
+    "existing_outputs": "legacy Run reports/costs/images remain; old Run images cannot be labelled execution evidence; no new image generation required",
+    "empty": "null selection renders no prediction section and empty prediction CSV tables; no sample prediction substituted"
+  },
+  "source_locations": [
+    {
+      "id": "L24",
+      "change": "pure Run references, summary and comparison DTOs; reuse existing ReportRunInputRef/RunId"
+    },
+    {
+      "id": "L25",
+      "change": "H10 actual selected Run capture, frozen input resolution and expected source validation; request/receipt nullable field"
+    },
+    {
+      "id": "L30",
+      "change": "actual H11 request/source/receipt correlation and ReportPanel selection, no fake Run source"
+    },
+    {
+      "id": "L56",
+      "change": "get_context/get_run summary实际选源；H10预期引用及回执link，完整RunResult由Host读取，不由Agent注入"
+    },
+    {
+      "id": "L57",
+      "change": "prediction metrics, concrete typed input comparison and per-metric delta producer; no Engine"
+    },
+    {
+      "id": "L58",
+      "change": "same-object prediction section and17 CSV table projection across four formats"
+    },
+    {
+      "id": "L60",
+      "change": "H10实际报告worker持有授权冻结源，读取实际Run/执行，调用L57/L58输出；L25只共用注册与派发"
+    }
+  ],
+  "design_cases": [
+    {
+      "id": "PE01",
+      "trigger": "同输入实际预测Run和云执行，终态及固定来源一致",
+      "expected": "H10真实读取两源；四格式含预测/执行/条件/偏差；Run与执行仍各自归属",
+      "runtime_result": null
+    },
+    {
+      "id": "PE02",
+      "trigger": "跨工程/DefinitionDraft、非终态Run或缺冻结来源",
+      "expected": "明确拒绝相应源；不伪造、重算、自动取消或静默省略prediction",
+      "runtime_result": null
+    },
+    {
+      "id": "PE03",
+      "trigger": "预测目标2000ms，实际2500ms或1500ms",
+      "expected": "满足可比/结清条件时偏差+500或-500ms；不写成算法加速收益或跨UTC时差",
+      "runtime_result": null
+    },
+    {
+      "id": "PE04",
+      "trigger": "目标时间均已知但窗口末端不同/某前沿不足，模型等待区间重叠或两侧等待定义不同",
+      "expected": "时间偏差按独立条件判断；同窗数量差为null并列覆盖原因，不能截库存或重算新Run补齐；预测等待按对象裁剪并集、不重复算reason，标虚拟前沿；无共同对象/等待定义不混算",
+      "runtime_result": null
+    },
+    {
+      "id": "PE05",
+      "trigger": "合法终态Run无计算前沿，或接受产品口径重叠",
+      "expected": "保留真实来源/终态；相关指标及差值未知，不将缺项填零或用goal_met替代事件",
+      "runtime_result": null
+    },
+    {
+      "id": "PE06",
+      "trigger": "同修订/同模型版本实际内容不同或初始物料/路由变化",
+      "expected": "比较真实typed内容并列差异；受影响偏差不输出，不能仅比ID/版本声称可比",
+      "runtime_result": null
+    },
+    {
+      "id": "PE07",
+      "trigger": "H10 prediction=null，或所指执行源不在sources，或Task回执选源不匹配",
+      "expected": "null只导执行；不在sources拒绝；回执不匹配不认导出成功；旧Run/执行间比较保持",
+      "runtime_result": null
+    },
+    {
+      "id": "PE08",
+      "trigger": "四格式未知/负差值、实际文件发布失败及Agent大结果",
+      "expected": "同canonical数值/单位/来源及未知原因；负数正确；失败不报全套完成，managed沿原桥核对；四格式及CSV均含真实预测等待/前沿/未知原因",
+      "runtime_result": null
+    }
+  ],
+  "pending": [
+    "v1 final source and concrete Run/execution fixture IDs",
+    "full standard schema validation and actual Rust generation/roundtrip",
+    "actual Host/Agent/Native/frozen input/output four-format verification"
+  ],
+  "design_checks": {
+    "runtime_results": null,
+    "arithmetic": "pass_finite_sign_and_decimal_design_examples_only",
+    "schema_local_refs": "pass_pointer_closure_only",
+    "source_positions": "read_current_source_only",
+    "product_implementation_started": false
+  },
+  "historical_design_implementation_flags": {
+    "date": "2026-10-26",
+    "implementation_allowed": false,
+    "runtime_verified": false
+  },
+  "implementation_status_ref": "docs/06_v2.0设计与开发控制/开发控制计划.json#/packages",
+  "current_implementation_packages": [
+    "V2-06",
+    "V2-09"
+  ],
+  "status_projection_updated_at_utc": "2026-10-27T01:45:48.535491+00:00",
+  "runtime_verification_scope": "runtime_verified仅为本文全部设计用例通过声明；当前局部真实证据和剩余动作取主计划，不把设计期禁止实施作为现行限制。"
+}

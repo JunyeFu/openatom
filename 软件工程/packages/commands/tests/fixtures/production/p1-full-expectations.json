@@ -1,0 +1,234 @@
+{
+  "document_kind": "independent_original_expectations_not_implementation_outputs",
+  "batch": "seven_package_full_continuation",
+  "parallel_sources": [
+    "scenarios/并行汇合与返工/project.design.json",
+    "scenarios/并行汇合与返工/cases.design.json",
+    "modules/devices/manual-assembly/manifest.json",
+    "modules/devices/inspect-route/manifest.json",
+    "modules/devices/identity-rework/manifest.json",
+    "modules/devices/carton-pack/manifest.json"
+  ],
+  "parallel_cases": [
+    {
+      "id": "A",
+      "title": "首件返工一次后合格",
+      "quality_inputs": [
+        {
+          "ancestor_id": "raw_shell-001",
+          "inspection_results": [
+            "fail",
+            "pass"
+          ]
+        },
+        {
+          "ancestor_id": "raw_shell-002",
+          "inspection_results": [
+            "pass"
+          ]
+        }
+      ],
+      "expected": {
+        "package_finish_seconds": [
+          145,
+          175
+        ],
+        "packages": 2,
+        "quarantined": 0,
+        "awaiting_result": 0,
+        "rework_cycles": 1,
+        "inspection_started_count": 3,
+        "quality_decisions": 3,
+        "waiting_for_inspector": 0
+      },
+      "actual_result": null
+    },
+    {
+      "id": "Q",
+      "title": "复检仍失败进入隔离",
+      "quality_inputs": [
+        {
+          "ancestor_id": "raw_shell-001",
+          "inspection_results": [
+            "fail",
+            "fail"
+          ]
+        },
+        {
+          "ancestor_id": "raw_shell-002",
+          "inspection_results": [
+            "pass"
+          ]
+        }
+      ],
+      "expected": {
+        "package_finish_seconds": [
+          175
+        ],
+        "packages": 1,
+        "quarantined": 1,
+        "awaiting_result": 0,
+        "rework_cycles": 1,
+        "inspection_started_count": 3,
+        "quality_decisions": 3,
+        "waiting_for_inspector": 0
+      },
+      "actual_result": null
+    },
+    {
+      "id": "U",
+      "title": "首检结果缺失保持待判",
+      "quality_inputs": [
+        {
+          "ancestor_id": "raw_shell-001",
+          "inspection_results": [
+            null
+          ]
+        },
+        {
+          "ancestor_id": "raw_shell-002",
+          "inspection_results": [
+            "pass"
+          ]
+        }
+      ],
+      "expected": {
+        "package_finish_seconds": [],
+        "packages": 0,
+        "quarantined": 0,
+        "awaiting_result": 1,
+        "waiting_for_inspector": 1,
+        "rework_cycles": 0,
+        "inspection_started_count": 1,
+        "quality_decisions": 0
+      },
+      "actual_result": null
+    }
+  ],
+  "phase_sources": [
+    "scenarios/真实业务设计/business-inputs.design.json",
+    "scenarios/真实业务设计/expected-business.design.json",
+    "docs/03_架构与契约/全厂时间轴与阶段资源设计.md"
+  ],
+  "phase_cases": [
+    {
+      "id": "phase_calendar",
+      "family": "calendar",
+      "jobs": [
+        {
+          "kind": "load",
+          "item": "part1",
+          "start_ms": 0,
+          "end_ms": 5000,
+          "resources": [
+            "W-C",
+            "CNC"
+          ]
+        },
+        {
+          "kind": "auto",
+          "item": "part1",
+          "start_ms": 5000,
+          "end_ms": 35000,
+          "resources": [
+            "CNC"
+          ]
+        },
+        {
+          "kind": "wait_for_worker",
+          "item": "part1",
+          "start_ms": 35000,
+          "end_ms": 40000,
+          "resources": [
+            "CNC"
+          ]
+        },
+        {
+          "kind": "unload",
+          "item": "part1",
+          "start_ms": 40000,
+          "end_ms": 45000,
+          "resources": [
+            "W-C",
+            "CNC"
+          ]
+        }
+      ],
+      "expected_completion_ms": 45000,
+      "expected_process_ms": 40000,
+      "expected_worker_occupied_ms": 10000,
+      "expected_wait_ms": 5000,
+      "actual_result": null
+    },
+    {
+      "id": "coarse_full_worker",
+      "family": "refinement",
+      "declared_rule": "single40s_job_requires_worker_fulltime",
+      "expected_completion_ms": null,
+      "reason": "no continuous40s worker interval",
+      "jobs": [],
+      "actual_result": null
+    },
+    {
+      "id": "refined_phases",
+      "family": "refinement",
+      "declared_rule": "load5_auto30_unload5",
+      "expected_completion_ms": 45000,
+      "jobs": [
+        {
+          "kind": "load",
+          "item": "part1",
+          "start_ms": 0,
+          "end_ms": 5000,
+          "resources": [
+            "W-C",
+            "CNC"
+          ]
+        },
+        {
+          "kind": "auto",
+          "item": "part1",
+          "start_ms": 5000,
+          "end_ms": 35000,
+          "resources": [
+            "CNC"
+          ]
+        },
+        {
+          "kind": "wait_for_worker",
+          "item": "part1",
+          "start_ms": 35000,
+          "end_ms": 40000,
+          "resources": [
+            "CNC"
+          ]
+        },
+        {
+          "kind": "unload",
+          "item": "part1",
+          "start_ms": 40000,
+          "end_ms": 45000,
+          "resources": [
+            "W-C",
+            "CNC"
+          ]
+        }
+      ],
+      "reason": "behavior assumption changed; not an appearance-only edit",
+      "actual_result": null
+    }
+  ],
+  "ix01_preserved": {
+    "scope": "P2-04联合P2-02完整联合验收，当前无运输局部不替代",
+    "acceptance_seconds": [
+      440,
+      570
+    ],
+    "cart_wait_seconds": [
+      370,
+      420
+    ],
+    "return_seconds": 425
+  },
+  "actual_result": null
+}

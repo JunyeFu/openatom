@@ -1,0 +1,30 @@
+{
+  "task_id": "P2-01",
+  "observed_gap": "Current get_object(module,Draft) rejects if more than one exact version is declared, and public ObjectRef carries ID but no version. Real device ports/presentation must come from its exact ModuleRef, not latest or an ambiguous ID.",
+  "type_delta": "ObjectSource::ModuleVersion { module_ref: ModuleRef }, wire kind=module_version",
+  "preserved": "Old draft/run_snapshot request shapes,18 operation names and API0.1 remain.",
+  "admission": "Only object.kind=module with matching module ID; Project scope and current project exact module_refs membership plus actual loaded exact package required. No private/unreferenced/latest/name lookup, no edit grants, no arbitrary-source access.",
+  "consumer": "P2-01 actual renderer/port and definition display reads exact device/module source; all rendered states continue to share Project/Run.",
+  "status": "actual_Host_source_tests_and_both_codegen_passed_independent_reception_pending",
+  "source_refs": [
+    "packages/commands/src/api.rs",
+    "packages/commands/api.design.rs"
+  ],
+  "saved_Run_discovery": {
+    "task_id": "P2-01",
+    "observed_gap": "ProjectState has no Run IDs, get_context active_run_id is null and tasks are session-owned; a real frontend reopening a saved project cannot discover its frozen historical Runs.",
+    "field": "ProjectContext.run_summaries:Vec<RunSummary>",
+    "compatibility": "Absent reads empty; empty omitted on write, preserving existing empty-context fixtures. No operation name/API version change.",
+    "authority": "Only actual stored Runs visible in the authorized active Project; workspace without a visible Project and definition_draft get an empty list. Exact frozen input, time/acceptance scope, status/known frontier and unknown accepted values must come from the same existing summary producer used by get_run; no inferred output or other-project/session payload.",
+    "consumer": "P2-01 actual Run selector and same frozen-source rendering; P2-03 can select old RunIds without reading private file paths.",
+    "status": "actual_Host_source_tests_and_both_codegen_passed_independent_reception_pending"
+  },
+  "actual_checks": {
+    "Host_tests_ref": ".work/whole-packages/comparison-host-final-second.stdout.txt",
+    "commands_groups_passed": 174,
+    "Schema_cases": 87,
+    "Schema_ref": ".work/whole-packages/p201-read-schema.json",
+    "old_fixture_shapes_preserved": true,
+    "native_product_UI_acceptance": false
+  }
+}

@@ -1,0 +1,166 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Request",
+  "type": "object",
+  "properties": {
+    "api_version": {
+      "$ref": "#/$defs/ApiVersion"
+    },
+    "operation": {
+      "$ref": "#/$defs/SaveProjectTag"
+    },
+    "params": {
+      "$ref": "#/$defs/SaveProjectParams"
+    },
+    "project_id": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ProjectId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "request_id": {
+      "$ref": "#/$defs/ObjectId"
+    },
+    "scope": {
+      "$ref": "#/$defs/ApiScope"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "api_version",
+    "request_id",
+    "project_id",
+    "scope",
+    "operation",
+    "params"
+  ],
+  "$defs": {
+    "ApiScope": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "workspace"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "project"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "data": {
+              "$ref": "#/$defs/ModuleId"
+            },
+            "kind": {
+              "type": "string",
+              "const": "definition_draft"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "data"
+          ]
+        }
+      ]
+    },
+    "ApiVersion": {
+      "type": "string",
+      "enum": [
+        "0.1"
+      ]
+    },
+    "FilePurpose": {
+      "type": "string",
+      "enum": [
+        "import_package",
+        "save_project",
+        "export_package",
+        "export_evaluation",
+        "export_execution_report",
+        "export_cloud_data"
+      ]
+    },
+    "ModuleId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "ObjectId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "ProjectId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "SafeUint": {
+      "type": "integer",
+      "format": "uint64",
+      "maximum": 9007199254740991,
+      "minimum": 0
+    },
+    "SaveProjectParams": {
+      "type": "object",
+      "properties": {
+        "revision": {
+          "$ref": "#/$defs/SafeUint"
+        },
+        "selected_directory_ref": {
+          "$ref": "#/$defs/SelectedFileRef"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "revision",
+        "selected_directory_ref"
+      ]
+    },
+    "SaveProjectTag": {
+      "type": "string",
+      "enum": [
+        "save_project"
+      ]
+    },
+    "SelectedFileRef": {
+      "type": "object",
+      "properties": {
+        "purpose": {
+          "$ref": "#/$defs/FilePurpose"
+        },
+        "selection_id": {
+          "$ref": "#/$defs/ObjectId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "selection_id",
+        "purpose"
+      ]
+    }
+  }
+}

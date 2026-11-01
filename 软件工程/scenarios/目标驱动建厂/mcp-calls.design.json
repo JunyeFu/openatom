@@ -1,0 +1,46 @@
+{
+  "document_kind": "MCP_call_shape_examples_not_execution",
+  "source": "packages/commands/api.design.rs and same-source generated request schemas",
+  "condition": "use only if tools/list really exposes these tools and Host grants project/scope; sample IDs are explicit fictional placeholders",
+  "calls": [
+    {
+      "operation": "describe_capabilities",
+      "request": {"jsonrpc": "2.0", "id": 1, "method": "tools/call", "params": {"name": "superfactory_describe_capabilities", "arguments": {"api_version": "0.1", "request_id": "FC-call-1", "project_id": null, "scope": {"kind": "workspace"}, "operation": "describe_capabilities", "params": {}}}},
+      "expected": "typed Response<CapabilityCatalog>; only actual implemented_operations"
+    },
+    {
+      "operation": "get_context",
+      "request": {"jsonrpc": "2.0", "id": 2, "method": "tools/call", "params": {"name": "superfactory_get_context", "arguments": {"api_version": "0.1", "request_id": "FC-call-2", "project_id": "FC-Project", "scope": {"kind": "project"}, "operation": "get_context", "params": {"selection": []}}}},
+      "expected": "actual authorized Host/Project revision; no self-reported UI caller"
+    },
+    {
+      "operation": "run_scenario",
+      "request": {"jsonrpc": "2.0", "id": 3, "method": "tools/call", "params": {"name": "superfactory_run_scenario", "arguments": {"api_version": "0.1", "request_id": "FC-call-3", "project_id": "FC-Project", "scope": {"kind": "project"}, "operation": "run_scenario", "params": {"scenario_id": "FC-Scenario", "input_revision": 7, "observation_window": {"start_ms": 0, "end_ms": 300000}, "intent": {"kind": "project_scenario"}}}}},
+      "expected": "real TaskHandle, not RunResult; fictional input revision must be replaced by actual matching Host revision"
+    },
+    {
+      "operation": "get_task",
+      "request": {"jsonrpc": "2.0", "id": 4, "method": "tools/call", "params": {"name": "superfactory_get_task", "arguments": {"api_version": "0.1", "request_id": "FC-call-4", "project_id": "FC-Project", "scope": {"kind": "project"}, "operation": "get_task", "params": {"task_id": "FC-Task"}}}},
+      "expected": "TaskState task.id/originating_operation/allowed_controls/result; replace FC-Task with actual admitted TaskId"
+    },
+    {
+      "operation": "get_run",
+      "request": {"jsonrpc": "2.0", "id": 5, "method": "tools/call", "params": {"name": "superfactory_get_run", "arguments": {"api_version": "0.1", "request_id": "FC-call-5", "project_id": "FC-Project", "scope": {"kind": "project"}, "operation": "get_run", "params": {"run_id": "FC-Run", "query": {"kind": "summary"}}}}},
+      "expected": "RunView.Summary with actual frozen input/computed_until_ms/whole_window_computed/accepted/goal_met"
+    },
+    {
+      "operation": "get_run",
+      "request": {"jsonrpc": "2.0", "id": 6, "method": "tools/call", "params": {"name": "superfactory_get_run", "arguments": {"api_version": "0.1", "request_id": "FC-call-6", "project_id": "FC-Project", "scope": {"kind": "project"}, "operation": "get_run", "params": {"run_id": "FC-Run", "query": {"kind": "events", "data": {"interval": {"start_ms": 0, "end_ms": 300000}, "page": {"after_index": null, "limit": 100}}}}}}},
+      "expected": "RunEventsPage.next_index explicit; this page is not automatically complete history"
+    },
+    {
+      "operation": "cancel_task",
+      "request": {"jsonrpc": "2.0", "id": 7, "method": "tools/call", "params": {"name": "superfactory_cancel_task", "arguments": {"api_version": "0.1", "request_id": "FC-call-7", "project_id": "FC-Project", "scope": {"kind": "project"}, "operation": "cancel_task", "params": {"task_id": "FC-Task", "action": "cancel"}}}},
+      "expected": "CancellationState action_accepted/terminal_won/task; subsequent get_task confirms actual terminal"
+    }
+  ],
+  "structured_result": "MCP structuredContent holds canonical Response envelope conforming to outputSchema; same JSON may appear as TextContent. Protocol errors JSON-RPC; business execution ApiError uses isError=true; ordinary shortfall/Fail/Undetermined retains normal scoped business result.",
+  "not_requests": ["self-declared caller identity", "fabricated human approval", "arbitrary filesystem path", "set_stock", "set_clock", "device capability IDs as extra tools"],
+  "actual_result": null,
+  "actual_agent_execution": null
+}

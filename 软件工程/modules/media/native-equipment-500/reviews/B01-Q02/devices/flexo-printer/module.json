@@ -1,0 +1,308 @@
+{
+  "schema_version": "1.0",
+  "data": {
+    "definition": {
+      "id": "sf.native50.device.flexo-printer",
+      "version": "1.1.0",
+      "title": "双色柔版印刷机",
+      "definition_state": "runtime_candidate",
+      "contribution": {
+        "author": "Super Factory original equipment modeling",
+        "license": "CC0-1.0",
+        "assets": []
+      },
+      "parameters": [],
+      "attribute_schema": [],
+      "payload": {
+        "category": "devices",
+        "data": {
+          "placement": "fixed_during_simulation",
+          "ports": [
+            {
+              "id": "input",
+              "direction": "input",
+              "payload": {
+                "kind": "material",
+                "data": {
+                  "item_role": "input",
+                  "unit": "piece",
+                  "quantity_rule": null
+                }
+              }
+            },
+            {
+              "id": "auxiliary",
+              "direction": "input",
+              "payload": {
+                "kind": "material",
+                "data": {
+                  "item_role": "auxiliary",
+                  "unit": "piece",
+                  "quantity_rule": null
+                }
+              }
+            },
+            {
+              "id": "output",
+              "direction": "output",
+              "payload": {
+                "kind": "material",
+                "data": {
+                  "item_role": "output",
+                  "unit": "piece",
+                  "quantity_rule": null
+                }
+              }
+            },
+            {
+              "id": "auxiliary_red",
+              "direction": "input",
+              "payload": {
+                "kind": "material",
+                "data": {
+                  "item_role": "auxiliary_red",
+                  "unit": "piece",
+                  "quantity_rule": null
+                }
+              }
+            }
+          ],
+          "behavior": {
+            "selected": "inline",
+            "inline": {
+              "builtin": "transform",
+              "item_roles": [
+                "input",
+                "auxiliary",
+                "output",
+                "auxiliary_red"
+              ],
+              "inputs": [
+                {
+                  "role": "input",
+                  "port": "input",
+                  "quantity": {
+                    "value": {
+                      "coefficient": 1,
+                      "decimal_places": 0
+                    },
+                    "unit": "piece"
+                  },
+                  "required_quality": [
+                    "released"
+                  ],
+                  "declared_output_quality": null
+                },
+                {
+                  "role": "auxiliary",
+                  "port": "auxiliary",
+                  "quantity": {
+                    "value": {
+                      "coefficient": 1,
+                      "decimal_places": 0
+                    },
+                    "unit": "piece"
+                  },
+                  "required_quality": [
+                    "released"
+                  ],
+                  "declared_output_quality": null
+                },
+                {
+                  "role": "auxiliary_red",
+                  "port": "auxiliary_red",
+                  "quantity": {
+                    "value": {
+                      "coefficient": 1,
+                      "decimal_places": 0
+                    },
+                    "unit": "piece"
+                  },
+                  "required_quality": [
+                    "released"
+                  ],
+                  "declared_output_quality": null
+                }
+              ],
+              "outputs": [
+                {
+                  "role": "output",
+                  "port": "output",
+                  "quantity": {
+                    "value": {
+                      "coefficient": 1,
+                      "decimal_places": 0
+                    },
+                    "unit": "piece"
+                  },
+                  "required_quality": [],
+                  "declared_output_quality": "released"
+                }
+              ],
+              "resource_roles": [],
+              "duration": null,
+              "phases": [
+                {
+                  "id": "load",
+                  "duration": {
+                    "value": 5000,
+                    "unit": "millisecond",
+                    "basis": "module_declared",
+                    "source_ref": null
+                  },
+                  "phase_resources": [
+                    {
+                      "role": "operator",
+                      "quantity": {
+                        "unit": "person",
+                        "value": {
+                          "coefficient": 1,
+                          "decimal_places": 0
+                        }
+                      },
+                      "qualifications": []
+                    }
+                  ],
+                  "interruption_policy": "pause_resume",
+                  "work_kind": "loading"
+                },
+                {
+                  "id": "auto",
+                  "duration": {
+                    "value": 15000,
+                    "unit": "millisecond",
+                    "basis": "module_declared",
+                    "source_ref": null
+                  },
+                  "phase_resources": [
+                    {
+                      "role": "auto_fixture",
+                      "quantity": {
+                        "unit": "slot",
+                        "value": {
+                          "coefficient": 1,
+                          "decimal_places": 0
+                        }
+                      },
+                      "qualifications": []
+                    }
+                  ],
+                  "interruption_policy": "pause_resume",
+                  "work_kind": "processing"
+                },
+                {
+                  "id": "unload",
+                  "duration": {
+                    "value": 5000,
+                    "unit": "millisecond",
+                    "basis": "module_declared",
+                    "source_ref": null
+                  },
+                  "phase_resources": [
+                    {
+                      "role": "operator",
+                      "quantity": {
+                        "unit": "person",
+                        "value": {
+                          "coefficient": 1,
+                          "decimal_places": 0
+                        }
+                      },
+                      "qualifications": []
+                    }
+                  ],
+                  "interruption_policy": "pause_resume",
+                  "work_kind": "unloading"
+                }
+              ],
+              "hold_on_output_wait": [],
+              "quality_and_routes": null,
+              "identity_policy": "preserve",
+              "family": "flexo-printer",
+              "material_flow": {
+                "primary_role": "input",
+                "auxiliary_roles": [
+                  "auxiliary",
+                  "auxiliary_red"
+                ],
+                "acquire_after_phase": null,
+                "consume_after_phase": "auto",
+                "reserve_before_phase": "auto",
+                "deliver_after_phase": "unload",
+                "required_primary_attributes": {
+                  "presentation_state": {
+                    "kind": "enum",
+                    "value": "flat"
+                  }
+                },
+                "attributes_after_consume": {
+                  "presentation_state": {
+                    "kind": "enum",
+                    "value": "two_color_printed"
+                  }
+                }
+              }
+            },
+            "operation_ref": null
+          },
+          "configuration": {},
+          "presentation": {
+            "kind": "model",
+            "source": {
+              "kind": "media_ref",
+              "data": {
+                "id": "sf.native50.media.flexo-printer",
+                "version": "1.1.0"
+              }
+            },
+            "unit": "meter",
+            "coordinate_frame": "right_handed_y_up",
+            "scale": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            },
+            "nodes": [],
+            "poses": [],
+            "actions": [],
+            "timeline": [],
+            "tags": [],
+            "anchor_roles": {},
+            "port_anchors": {},
+            "lod": {
+              "detailed": null,
+              "simplified": {
+                "kind": "media_ref",
+                "data": {
+                  "id": "sf.native50.media.flexo-printer.simple",
+                  "version": "1.1.0"
+                }
+              },
+              "region": "device_icons"
+            },
+            "production_effect": "none"
+          },
+          "operations": [
+            "configure",
+            "inspect",
+            "preview_cycle"
+          ]
+        }
+      }
+    },
+    "files": [],
+    "dependencies": [
+      {
+        "id": "sf.native50.media.flexo-printer.simple",
+        "version": "1.1.0"
+      },
+      {
+        "id": "sf.native50.media.flexo-printer",
+        "version": "1.1.0"
+      }
+    ],
+    "assets": [],
+    "rights": [],
+    "issues": []
+  }
+}

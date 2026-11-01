@@ -1,0 +1,72 @@
+{
+  "document_kind": "actual_owned_pack_device_parameter_definition_and_generator_handoff",
+  "status": "actual_native_definition_and_request_parse_generator_branch_and_task_projection_rechecked_not_registered",
+  "definition_ref": "packages/packaging/consumer-device.design.json",
+  "module_ref": {
+    "id": "community.parameterized-pack",
+    "version": "0.2.0"
+  },
+  "selected_profile": "paper_packaging_complete_v1",
+  "parameters": [
+    {
+      "id": "packaging_job_id",
+      "label": "所选包装作业ID",
+      "value_type": "string",
+      "unit": null,
+      "binding": "/payload/data/configuration/packaging_job_id/value",
+      "minimum": null,
+      "maximum": null,
+      "integer": false,
+      "options": [],
+      "basis": "user_provided"
+    },
+    {
+      "id": "packaging_job_revision",
+      "label": "所选包装作业修订",
+      "value_type": "integer",
+      "unit": null,
+      "binding": "/payload/data/configuration/packaging_job_revision/value",
+      "minimum": null,
+      "maximum": null,
+      "integer": true,
+      "options": [],
+      "basis": "user_provided"
+    }
+  ],
+  "unselected_configuration": {},
+  "slot_rule": "Draft may omit the two values. Only explicitly selected instance values create declared configuration entries via reviewed PutObject(Device)/adoption. Missing entries are not zero or latest Job. Definition binding describes a declared typed slot; absence is shown as missing, not an arbitrary path grant.",
+  "selected_request_ref": "scenarios/九类模块采用/DRF03_C02_显式工位作业选择.request.json",
+  "legacy_0_1_0_and_catalog_changed": false,
+  "actual_Host": null,
+  "generator_handoffs": [
+    {
+      "file": "modules/templates/生成三类模板设计.py",
+      "location": "pack生成块（pack=read.../definitions）及Packing01模板装配处",
+      "delta": "保留原0.1.0声明过程模板、原工时/配比/数量。新增calculated_nominal分支明确读取consumer-device.design.json的0.2.0定义，参数声明直接取owned源；只有调用方明确提供Job id/revision时向所选实例configuration写两项TypedValue。缺选择列缺项，不种入任何演示/最新Job。",
+      "owner": "复审窗口1统筹生成器，协调模块模板维护窗口4",
+      "status": "actual_merge_observed_consumer_rechecked"
+    },
+    {
+      "file": "tools/type-contract-proof/src/main.rs",
+      "location": "模块/公共DTO夹具实际往返集合",
+      "delta": "增读owned consumer-device.design.json作定向派生/往返用例，验证参数声明及选定Device覆盖；不要把它当已注册Provider。",
+      "owner": "复审窗口1",
+      "status": "actual_merge_observed_consumer_rechecked"
+    },
+    {
+      "file": "tools/同步确认选择到任务.py",
+      "location": "P0-03/P4-02原任务包设计引用投影",
+      "delta": "沿原ID增加consumer-device.design.json及C02推导源引用，不更改任务状态/通过数。",
+      "owner": "复审窗口1",
+      "status": "actual_merge_observed_consumer_rechecked"
+    }
+  ],
+  "selected_request_limit": "形状/显式配置用例，LOCAL_CONTACT_JOB是原有限接触子例，不能满足完整纸包装profile；该请求不等于合格绑定或真实Host调用。",
+  "effective_operation_resolution_ref": "docs/04_开发与验收/特征细化/DRF03_C02_专业绑定推导.json",
+  "actual_merge_refs": [
+    "tools/type-contract-proof/output/c02-consumer-proof-result.json",
+    "docs/04_开发与验收/特征细化/DRF01_本轮公共字段合入.json",
+    "scenarios/九类模块采用/DRF03_第三轮核验结果.json"
+  ],
+  "generator_invocation_scope": "Actual pure select_packaging_branch AST only; no top-level generator write, template regeneration or Host adoption invoked here."
+}

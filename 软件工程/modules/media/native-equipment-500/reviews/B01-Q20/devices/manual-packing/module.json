@@ -1,0 +1,254 @@
+{
+  "schema_version": "1.0",
+  "data": {
+    "definition": {
+      "id": "sf.native50.device.manual-packing",
+      "version": "1.1.0",
+      "title": "人工助力装箱与折盖台（六件真空助力）",
+      "definition_state": "runtime_candidate",
+      "contribution": {
+        "author": "Super Factory original equipment modeling",
+        "license": "CC0-1.0",
+        "assets": []
+      },
+      "parameters": [],
+      "attribute_schema": [],
+      "payload": {
+        "category": "devices",
+        "data": {
+          "placement": "fixed_during_simulation",
+          "ports": [
+            {
+              "id": "input",
+              "direction": "input",
+              "payload": {
+                "kind": "material",
+                "data": {
+                  "item_role": "input",
+                  "unit": "piece",
+                  "quantity_rule": null
+                }
+              }
+            },
+            {
+              "id": "container",
+              "direction": "input",
+              "payload": {
+                "kind": "material",
+                "data": {
+                  "item_role": "container",
+                  "unit": "piece",
+                  "quantity_rule": null
+                }
+              }
+            },
+            {
+              "id": "output",
+              "direction": "output",
+              "payload": {
+                "kind": "material",
+                "data": {
+                  "item_role": "output",
+                  "unit": "piece",
+                  "quantity_rule": null
+                }
+              }
+            }
+          ],
+          "behavior": {
+            "selected": "inline",
+            "inline": {
+              "builtin": "pack",
+              "item_roles": [
+                "input",
+                "container",
+                "output"
+              ],
+              "inputs": [
+                {
+                  "role": "input",
+                  "port": "input",
+                  "quantity": {
+                    "value": {
+                      "coefficient": 6,
+                      "decimal_places": 0
+                    },
+                    "unit": "piece"
+                  },
+                  "required_quality": [
+                    "released"
+                  ],
+                  "declared_output_quality": null
+                },
+                {
+                  "role": "container",
+                  "port": "container",
+                  "quantity": {
+                    "value": {
+                      "coefficient": 1,
+                      "decimal_places": 0
+                    },
+                    "unit": "piece"
+                  },
+                  "required_quality": [
+                    "released"
+                  ],
+                  "declared_output_quality": null
+                }
+              ],
+              "outputs": [
+                {
+                  "role": "output",
+                  "port": "output",
+                  "quantity": {
+                    "value": {
+                      "coefficient": 1,
+                      "decimal_places": 0
+                    },
+                    "unit": "piece"
+                  },
+                  "required_quality": [],
+                  "declared_output_quality": "released"
+                }
+              ],
+              "resource_roles": [
+                {
+                  "role": "operator",
+                  "quantity": {
+                    "unit": "person",
+                    "value": {
+                      "coefficient": 1,
+                      "decimal_places": 0
+                    }
+                  },
+                  "qualifications": []
+                }
+              ],
+              "duration": null,
+              "phases": [
+                {
+                  "id": "load",
+                  "duration": {
+                    "value": 5000,
+                    "unit": "millisecond",
+                    "basis": "module_declared",
+                    "source_ref": null
+                  },
+                  "phase_resources": [],
+                  "interruption_policy": "pause_resume",
+                  "work_kind": "loading"
+                },
+                {
+                  "id": "auto",
+                  "duration": {
+                    "value": 15000,
+                    "unit": "millisecond",
+                    "basis": "module_declared",
+                    "source_ref": null
+                  },
+                  "phase_resources": [
+                    {
+                      "role": "auto_fixture",
+                      "quantity": {
+                        "unit": "slot",
+                        "value": {
+                          "coefficient": 1,
+                          "decimal_places": 0
+                        }
+                      },
+                      "qualifications": []
+                    }
+                  ],
+                  "interruption_policy": "pause_resume",
+                  "work_kind": "packing"
+                },
+                {
+                  "id": "unload",
+                  "duration": {
+                    "value": 5000,
+                    "unit": "millisecond",
+                    "basis": "module_declared",
+                    "source_ref": null
+                  },
+                  "phase_resources": [],
+                  "interruption_policy": "pause_resume",
+                  "work_kind": "unloading"
+                }
+              ],
+              "hold_on_output_wait": [],
+              "quality_and_routes": null,
+              "identity_policy": "container_with_contents",
+              "family": "manual-packing",
+              "pack_identity": {
+                "output_role": "output",
+                "container_material_roles": [
+                  "container"
+                ],
+                "content_roles": [
+                  "input"
+                ]
+              }
+            },
+            "operation_ref": null
+          },
+          "configuration": {},
+          "presentation": {
+            "kind": "model",
+            "source": {
+              "kind": "media_ref",
+              "data": {
+                "id": "sf.native50.media.manual-packing",
+                "version": "1.1.0"
+              }
+            },
+            "unit": "meter",
+            "coordinate_frame": "right_handed_y_up",
+            "scale": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            },
+            "nodes": [],
+            "poses": [],
+            "actions": [],
+            "timeline": [],
+            "tags": [],
+            "anchor_roles": {},
+            "port_anchors": {},
+            "lod": {
+              "detailed": null,
+              "simplified": {
+                "kind": "media_ref",
+                "data": {
+                  "id": "sf.native50.media.manual-packing.simple",
+                  "version": "1.1.0"
+                }
+              },
+              "region": "device_icons"
+            },
+            "production_effect": "none"
+          },
+          "operations": [
+            "configure",
+            "inspect",
+            "preview_cycle"
+          ]
+        }
+      }
+    },
+    "files": [],
+    "dependencies": [
+      {
+        "id": "sf.native50.media.manual-packing.simple",
+        "version": "1.1.0"
+      },
+      {
+        "id": "sf.native50.media.manual-packing",
+        "version": "1.1.0"
+      }
+    ],
+    "assets": [],
+    "rights": [],
+    "issues": []
+  }
+}

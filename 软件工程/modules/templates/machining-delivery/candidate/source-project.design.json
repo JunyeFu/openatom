@@ -1,0 +1,407 @@
+{
+  "document_kind": "factory_template_project_design_not_runtime",
+  "schema_revision": "draft-3-template",
+  "id": "template-machining-delivery",
+  "title": "机加工检验与包装交付",
+  "status": "design",
+  "actual_result": null,
+  "assumptions": [
+    "工时、尺寸、容量、物料与质量预设均为自行设计输入",
+    "工位间移交在本例为瞬时，不计算未声明走动/运输",
+    "专业完整输入与实际结果分开；当前仅声明流转，不计算名义几何/贴装/焊接或现场质量"
+  ],
+  "time": {
+    "unit": "millisecond",
+    "origin": "scenario_start",
+    "observation_end": 300000
+  },
+  "demand": {
+    "item_type": "package",
+    "quantity": 2,
+    "unit": "piece",
+    "destination": "store-package",
+    "acceptance_scope": "factory_store_not_customer"
+  },
+  "item_types": [
+    {
+      "id": "blank",
+      "unit": "piece",
+      "spec_ref": "self-blank-r1"
+    },
+    {
+      "id": "shell",
+      "unit": "piece",
+      "spec_ref": "self-shell-r1"
+    },
+    {
+      "id": "carton",
+      "unit": "piece",
+      "spec_ref": "self-carton-r1"
+    },
+    {
+      "id": "package",
+      "unit": "piece",
+      "spec_ref": "self-package-r1"
+    }
+  ],
+  "halls": [
+    {
+      "id": "H1",
+      "width_m": 24,
+      "depth_m": 16,
+      "height_m": null
+    }
+  ],
+  "layout_scope": "self_declared_plan_positions_not_clearance_or_safety_validation",
+  "resources": [
+    {
+      "id": "W-B",
+      "kind": "worker",
+      "capacity": 1,
+      "calendar_ms": [
+        [
+          0,
+          300000
+        ]
+      ]
+    },
+    {
+      "id": "W-C",
+      "kind": "worker",
+      "capacity": 1,
+      "calendar_ms": [
+        [
+          0,
+          300000
+        ]
+      ]
+    }
+  ],
+  "stores": [
+    {
+      "id": "store-blank",
+      "hall": "H1",
+      "item_type": "blank",
+      "capacity": 4,
+      "unit": "piece",
+      "layout_m": [
+        2,
+        2
+      ]
+    },
+    {
+      "id": "store-shell",
+      "hall": "H1",
+      "item_type": "shell",
+      "capacity": 4,
+      "unit": "piece",
+      "layout_m": [
+        5,
+        2
+      ]
+    },
+    {
+      "id": "store-carton",
+      "hall": "H1",
+      "item_type": "carton",
+      "capacity": 4,
+      "unit": "piece",
+      "layout_m": [
+        8,
+        2
+      ]
+    },
+    {
+      "id": "store-package",
+      "hall": "H1",
+      "item_type": "package",
+      "capacity": 4,
+      "unit": "piece",
+      "layout_m": [
+        11,
+        2
+      ]
+    },
+    {
+      "id": "store-released",
+      "hall": "H1",
+      "item_type": "shell",
+      "capacity": 2,
+      "unit": "piece",
+      "layout_m": [
+        14,
+        2
+      ]
+    },
+    {
+      "id": "store-isolate",
+      "hall": "H1",
+      "item_type": "shell",
+      "capacity": 2,
+      "unit": "piece",
+      "layout_m": [
+        17,
+        2
+      ]
+    }
+  ],
+  "initial_stock": [
+    {
+      "store": "store-blank",
+      "item_type": "blank",
+      "quantity": 2,
+      "unit": "piece"
+    },
+    {
+      "store": "store-carton",
+      "item_type": "carton",
+      "quantity": 2,
+      "unit": "piece"
+    }
+  ],
+  "module_refs": [
+    {
+      "id": "community.fixed-transform",
+      "version": "0.1.0",
+      "manifest": "../../devices/fixed-transform/manifest.json",
+      "status": "declaration_design"
+    },
+    {
+      "id": "community.parameterized-inspect",
+      "version": "0.1.0",
+      "manifest": "../../devices/parameterized-inspect/manifest.json",
+      "status": "declaration_design"
+    },
+    {
+      "id": "community.parameterized-pack",
+      "version": "0.1.0",
+      "manifest": "../../devices/parameterized-pack/manifest.json",
+      "status": "declaration_design"
+    }
+  ],
+  "devices": [
+    {
+      "id": "CNC01",
+      "kind": "fixed",
+      "module": "community.fixed-transform",
+      "process_mode": "declared_process",
+      "parameters": {
+        "input_item": "blank",
+        "output_item": "shell",
+        "cycle_seconds": 60
+      },
+      "port_bindings": {
+        "input": "store-blank",
+        "output": "store-shell"
+      },
+      "job_resources": [
+        "CNC01"
+      ],
+      "phases": [
+        {
+          "id": "load",
+          "duration_ms": 10000,
+          "phase_resources": [
+            "W-C"
+          ]
+        },
+        {
+          "id": "auto",
+          "duration_ms": 45000,
+          "phase_resources": []
+        },
+        {
+          "id": "unload",
+          "duration_ms": 5000,
+          "phase_resources": [
+            "W-C"
+          ]
+        }
+      ],
+      "artifact_ref": "machining-job",
+      "layout_m": [
+        4,
+        8
+      ]
+    },
+    {
+      "id": "Inspection01",
+      "kind": "fixed",
+      "module": "community.parameterized-inspect",
+      "process_mode": "declared_process",
+      "parameters": {
+        "product_item": "shell",
+        "cycle_seconds": 10,
+        "max_reworks": 0
+      },
+      "port_bindings": {
+        "input": "store-shell",
+        "passed": "store-released",
+        "rework": "store-isolate",
+        "quarantine": "store-isolate"
+      },
+      "job_resources": [
+        "Inspection01",
+        "W-B"
+      ],
+      "resource_bindings": {
+        "inspector": "W-B"
+      },
+      "quality_source": "preset_PASS_for_nominal_demo_not_field_inspection",
+      "layout_m": [
+        15,
+        8
+      ]
+    },
+    {
+      "id": "Packing01",
+      "kind": "fixed",
+      "module": "community.parameterized-pack",
+      "process_mode": "declared_process",
+      "parameters": {
+        "product_item": "shell",
+        "cycle_seconds": 20
+      },
+      "port_bindings": {
+        "product": "store-released",
+        "carton": "store-carton",
+        "packed": "store-package"
+      },
+      "job_resources": [
+        "Packing01",
+        "W-B"
+      ],
+      "resource_bindings": {
+        "packer": "W-B"
+      },
+      "input_quality": {
+        "shell": "released"
+      },
+      "layout_m": [
+        18,
+        8
+      ]
+    }
+  ],
+  "preparation_tasks": [],
+  "professional_artifacts": [
+    {
+      "id": "machining-job",
+      "artifact_type": "machining_job",
+      "accepted_scope": "declared_process_only",
+      "required_fields": [
+        "product_revision",
+        "stock",
+        "tools",
+        "fixture",
+        "nc_dialect",
+        "nominal_geometry",
+        "phase_plan"
+      ],
+      "producer_result": null
+    }
+  ],
+  "lines": [
+    {
+      "id": "L1",
+      "hall": "H1",
+      "members": [
+        "CNC01",
+        "Inspection01",
+        "Packing01"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "kind": "material",
+      "item_type": "blank",
+      "from": "store-blank",
+      "to": "CNC01.input"
+    },
+    {
+      "kind": "material",
+      "item_type": "shell",
+      "from": "CNC01.output",
+      "to": "store-shell"
+    },
+    {
+      "kind": "material",
+      "item_type": "shell",
+      "from": "store-shell",
+      "to": "Inspection01.input"
+    },
+    {
+      "kind": "material",
+      "item_type": "shell",
+      "from": "Inspection01.passed",
+      "to": "store-released"
+    },
+    {
+      "kind": "material",
+      "item_type": "shell",
+      "from": "Inspection01.rework",
+      "to": "store-isolate"
+    },
+    {
+      "kind": "material",
+      "item_type": "shell",
+      "from": "Inspection01.quarantine",
+      "to": "store-isolate"
+    },
+    {
+      "kind": "material",
+      "item_type": "shell",
+      "from": "store-released",
+      "to": "Packing01.product"
+    },
+    {
+      "kind": "material",
+      "item_type": "carton",
+      "from": "store-carton",
+      "to": "Packing01.carton"
+    },
+    {
+      "kind": "material",
+      "item_type": "package",
+      "from": "Packing01.packed",
+      "to": "store-package"
+    }
+  ],
+  "quality_inputs": [
+    "PASS",
+    "PASS"
+  ],
+  "quality_source": "preset",
+  "import_policy": {
+    "new_project": "use_explicit_demo_seed",
+    "into_existing_project": "preserve_existing_stock_and_demand_import_new_layout_and_definitions_without_sample_stock_or_demand_seed_requires_explicit_choice_in_new_scenario",
+    "object_ids": "new_namespace_and_rewrite_references",
+    "item_types": "explicit_match_of_id_unit_spec_not_display_name"
+  },
+  "entry_exit": {
+    "input_types": [
+      "blank",
+      "carton"
+    ],
+    "output_type": "package",
+    "track_start": "any_named_material_endpoint",
+    "track_end": "declared_legal_store_or_operation"
+  },
+  "professional_modes": {
+    "selected": "declared_process",
+    "calculated_nominal": "requires_actual_supported_producer_result",
+    "software_in_loop": "requires_actual_software_target_and_event_contract",
+    "silent_downgrade": false
+  },
+  "instantiation_contract_ref": "modules/templates/instantiation.design.json",
+  "canonical_file_conversion": "explicit design-to-domain mapping required; this design JSON is not Project file format 1.0",
+  "adoption_preview": {
+    "exact_module_versions": true,
+    "new_object_ids_and_references": true,
+    "explicit_existing_resource_bindings": true,
+    "supply_and_order_choices_separate": true,
+    "default_explicit_new_scenario_seed": null
+  },
+  "unresolved_geometry_rule": "absent height/footprint/clearance stays unresolved; existing XY plan alone is not site Pass"
+}

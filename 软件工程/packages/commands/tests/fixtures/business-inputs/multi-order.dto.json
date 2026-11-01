@@ -1,0 +1,397 @@
+{
+  "items": [
+    {
+      "id": "shell",
+      "revision": "r1",
+      "title": "shell",
+      "unit": "piece",
+      "tracking": "individual",
+      "spec_ref": null,
+      "attributes": {},
+      "attribute_schema": []
+    },
+    {
+      "id": "pcb",
+      "revision": "r1",
+      "title": "pcb",
+      "unit": "piece",
+      "tracking": "individual",
+      "spec_ref": null,
+      "attributes": {},
+      "attribute_schema": []
+    },
+    {
+      "id": "fastener",
+      "revision": "r1",
+      "title": "fastener",
+      "unit": "piece",
+      "tracking": "individual",
+      "spec_ref": null,
+      "attributes": {},
+      "attribute_schema": []
+    },
+    {
+      "id": "carton",
+      "revision": "r1",
+      "title": "carton",
+      "unit": "piece",
+      "tracking": "individual",
+      "spec_ref": null,
+      "attributes": {},
+      "attribute_schema": []
+    },
+    {
+      "id": "finished-A",
+      "revision": "r1",
+      "title": "finished-A",
+      "unit": "piece",
+      "tracking": "individual",
+      "spec_ref": null,
+      "attributes": {},
+      "attribute_schema": []
+    },
+    {
+      "id": "finished-B",
+      "revision": "r1",
+      "title": "finished-B",
+      "unit": "piece",
+      "tracking": "individual",
+      "spec_ref": null,
+      "attributes": {},
+      "attribute_schema": []
+    }
+  ],
+  "products": [
+    {
+      "id": "A",
+      "revision": "r1",
+      "item_type_ref": {
+        "id": "finished-A",
+        "revision": "r1"
+      },
+      "bom_ref": {
+        "id": "BOM-A",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "ROUTE-AB",
+        "revision": "r1"
+      },
+      "artifact_refs": []
+    },
+    {
+      "id": "B",
+      "revision": "r1",
+      "item_type_ref": {
+        "id": "finished-B",
+        "revision": "r1"
+      },
+      "bom_ref": {
+        "id": "BOM-B",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "ROUTE-AB",
+        "revision": "r1"
+      },
+      "artifact_refs": []
+    }
+  ],
+  "boms": [
+    {
+      "id": "BOM-A",
+      "revision": "r1",
+      "rows": [
+        {
+          "item_type_ref": {
+            "id": "shell",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "consume_at_operation": "step-assembly"
+        },
+        {
+          "item_type_ref": {
+            "id": "pcb",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "consume_at_operation": "step-assembly"
+        },
+        {
+          "item_type_ref": {
+            "id": "fastener",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 4,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "consume_at_operation": "step-assembly"
+        },
+        {
+          "item_type_ref": {
+            "id": "carton",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "consume_at_operation": "step-packing"
+        }
+      ]
+    },
+    {
+      "id": "BOM-B",
+      "revision": "r1",
+      "rows": [
+        {
+          "item_type_ref": {
+            "id": "shell",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "consume_at_operation": "step-assembly"
+        },
+        {
+          "item_type_ref": {
+            "id": "pcb",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "consume_at_operation": "step-assembly"
+        },
+        {
+          "item_type_ref": {
+            "id": "fastener",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 4,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "consume_at_operation": "step-assembly"
+        },
+        {
+          "item_type_ref": {
+            "id": "carton",
+            "revision": "r1"
+          },
+          "quantity": {
+            "value": {
+              "coefficient": 1,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "consume_at_operation": "step-packing"
+        }
+      ]
+    }
+  ],
+  "route": {
+    "id": "ROUTE-AB",
+    "revision": "r1",
+    "steps": [
+      {
+        "id": "step-assembly",
+        "operation_ref": {
+          "id": "demo.operations",
+          "version": "0.1.0"
+        },
+        "device_id": "D1",
+        "predecessors": [],
+        "item_bindings": {
+          "product": "T1"
+        },
+        "resource_bindings": {
+          "worker": "W1"
+        }
+      },
+      {
+        "id": "step-packing",
+        "operation_ref": {
+          "id": "demo.operations",
+          "version": "0.1.0"
+        },
+        "device_id": "D1",
+        "predecessors": [
+          "step-assembly"
+        ],
+        "item_bindings": {
+          "product": "T1"
+        },
+        "resource_bindings": {
+          "worker": "W1"
+        }
+      }
+    ]
+  },
+  "scenario": {
+    "quality_presets": [],
+    "id": "ORDERS",
+    "revision": 1,
+    "project_revision": 1,
+    "title": "multi_order formal input subset",
+    "time_reference": {
+      "label": "self-built multi_order milliseconds",
+      "origin_iso8601": null,
+      "timezone": null
+    },
+    "window": {
+      "start_ms": 0,
+      "end_ms": 240000
+    },
+    "initial_conditions": {
+      "items": [],
+      "initial_setup_families": {},
+      "declared_quality_decisions": [],
+      "material_allocations": []
+    },
+    "orders": [
+      {
+        "id": "ORDER-A",
+        "product_ref": {
+          "id": "A",
+          "revision": "r1"
+        },
+        "quantity": {
+          "value": {
+            "coefficient": 2,
+            "decimal_places": 0
+          },
+          "unit": "piece"
+        },
+        "release_at_ms": 0,
+        "due_at_ms": 160000,
+        "destination": "S2",
+        "acceptance_stage": "unloaded_and_released",
+        "allow_partial": false,
+        "priority": 0
+      },
+      {
+        "id": "ORDER-B",
+        "product_ref": {
+          "id": "B",
+          "revision": "r1"
+        },
+        "quantity": {
+          "value": {
+            "coefficient": 2,
+            "decimal_places": 0
+          },
+          "unit": "piece"
+        },
+        "release_at_ms": 0,
+        "due_at_ms": 200000,
+        "destination": "S2",
+        "acceptance_stage": "unloaded_and_released",
+        "allow_partial": false,
+        "priority": 0
+      }
+    ],
+    "production_tasks": [
+      {
+        "id": "TASK-A",
+        "routing_ref": {
+          "id": "ROUTE-AB",
+          "revision": "r1"
+        },
+        "order_allocations": [
+          {
+            "order_id": "ORDER-A",
+            "quantity": {
+              "value": {
+                "coefficient": 2,
+                "decimal_places": 0
+              },
+              "unit": "piece"
+            }
+          }
+        ],
+        "planned_quantity": {
+          "value": {
+            "coefficient": 2,
+            "decimal_places": 0
+          },
+          "unit": "piece"
+        },
+        "release_at_ms": 0,
+        "priority": 0
+      },
+      {
+        "id": "TASK-B",
+        "routing_ref": {
+          "id": "ROUTE-AB",
+          "revision": "r1"
+        },
+        "order_allocations": [
+          {
+            "order_id": "ORDER-B",
+            "quantity": {
+              "value": {
+                "coefficient": 2,
+                "decimal_places": 0
+              },
+              "unit": "piece"
+            }
+          }
+        ],
+        "planned_quantity": {
+          "value": {
+            "coefficient": 2,
+            "decimal_places": 0
+          },
+          "unit": "piece"
+        },
+        "release_at_ms": 0,
+        "priority": 0
+      }
+    ],
+    "arrivals": [],
+    "supplies": [],
+    "parameter_overrides": [],
+    "scope": [
+      {
+        "kind": "device",
+        "id": "D1"
+      }
+    ],
+    "issues": [],
+    "cost_inputs": []
+  }
+}

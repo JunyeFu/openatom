@@ -1,0 +1,116 @@
+{
+  "document_kind": "S05_01_independent_component_dependency_review_not_trial",
+  "checkpoint": "S05-01",
+  "date": "2026-10-14 Asia/Shanghai",
+  "status": "passed_document_specification",
+  "spec_ref": "docs/03_架构与契约/全层组件与接点.json",
+  "report_md_ref": "docs/04_开发与验收/S05-01_包职责与依赖复审.md",
+  "verification": {
+    "check_kind": "S05_01_architecture_specification_not_technical_trial",
+    "date": "2026-10-14 Asia/Shanghai",
+    "status": "passed_static_architecture_specification",
+    "components": 15,
+    "views_per_component": 6,
+    "cross_window_connections": 10,
+    "selected_task_coverage": 21,
+    "module_categories": 9,
+    "import_cycles": [],
+    "ownership_path_conflicts": [],
+    "actual_technical_trial": null,
+    "actual_product_runtime": null,
+    "errors": [],
+    "ownership_checks": {
+      "checkpoint": "S05-02",
+      "status": "passed_static_ownership_and_finite_reasoning",
+      "state_classes": 18,
+      "walkthroughs": 12,
+      "finite_revision_save_cancel_cases": 3,
+      "actual_concurrency_or_IPC": null
+    }
+  },
+  "criteria": [
+    {
+      "id": "C01",
+      "subject": "六窗口/所有源码职责",
+      "status": "passed_document_or_finite_reasoning",
+      "basis": "16组件计划代码位置均在现有主责独占范围，21首版任务有实际组件/接点映射，不扩P0-03"
+    },
+    {
+      "id": "C02",
+      "subject": "分层依赖与状态真值",
+      "status": "passed_document_or_finite_reasoning",
+      "basis": "代码依赖无环、domain基础、simulation无UI、桥不拥有Engine；runtime回传不冒充反向包导入"
+    },
+    {
+      "id": "C03",
+      "subject": "跨语言/跨窗口实际接点",
+      "status": "passed_document_or_finite_reasoning",
+      "basis": "十接点明确输入/回传/持有/责任，W02容器与W03表现、W04结果与工位、W05桥与Host完整"
+    },
+    {
+      "id": "C04",
+      "subject": "六视图/具体方法与消费者",
+      "status": "passed_document_or_finite_reasoning",
+      "basis": "每组件任务/结构/状态/接口/表现/部署六视图及方法可定位；具体版本/字段/函数/数值算法按S05-04/S06职责继续冻结"
+    },
+    {
+      "id": "C05",
+      "subject": "源修正/首版与后置",
+      "status": "passed_document_or_finite_reasoning",
+      "basis": "直接修目录/工程模型，投用/公用服务/路网/维修不混首版；九类/21任务/18操作保持"
+    },
+    {
+      "id": "C06",
+      "subject": "验证层级",
+      "status": "passed_document_or_finite_reasoning",
+      "basis": "DAG/窗口路径/21任务/九类/接点结构静态通过；没有实际技术试做或前端，不关闭S05-05/S04真实证据"
+    }
+  ],
+  "closed_findings": [
+    {
+      "id": "F501-01",
+      "before": "包名存在，但Rust与TS职责/生产者、消费者不具体",
+      "correction": "15组件技术族、源码位置、所有权、方法及六视图"
+    },
+    {
+      "id": "F501-02",
+      "before": "reporting说读取presentation，但Rust直接导入TS没有可接路径",
+      "correction": "Commands RenderPort→Host→UI/W02→W03→关联帧回传，细字段S06/真试做S05-05"
+    },
+    {
+      "id": "F501-03",
+      "before": "W05负责保存交接，却没有权限写W00宿主，职责接线空白",
+      "correction": "现有reporting/handoff子模块负责格式与授权文件读写，Host校验路径/唯一采用，不新建服务或Engine"
+    },
+    {
+      "id": "F501-04",
+      "before": "全生态路径/维修/投用段容易当首版依赖",
+      "correction": "源目录与工程模型直接标后置；保留当前固定时间物流和阶段规则"
+    }
+  ],
+  "actual_technical_trial": null,
+  "actual_product_runtime": null,
+  "actual_frontend_or_Figma": null,
+  "credit_change": false,
+  "product_scope_change": false,
+  "open_evidence": [
+    "S05-02详细所有权/生命周期",
+    "S05-03九类完整协议/消费者",
+    "S05-04实际版本/部署/许可",
+    "S05-05关键接点真实试做",
+    "S06完整类型/参数返回/具体算法与全链冻结",
+    "S04当前视觉/原型/本人操作仍待实际证据"
+  ],
+  "cross_file_verification_ref": "docs/04_开发与验收/主线同步检查结果.json",
+  "AQ03_current_revision": {
+    "components": 16,
+    "shared_ui_owner": "W02",
+    "existing_paths": [
+      "apps/planner/src/components",
+      "apps/planner/src/styles"
+    ],
+    "source_ref": "docs/03_架构与契约/全层组件与接点.json",
+    "proof_ref": "docs/04_开发与验收/架构质量抽查修复.json"
+  },
+  "previous_2026_10_14_component_count": 15
+}

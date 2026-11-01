@@ -1,0 +1,122 @@
+{
+  "document_kind": "DRF03_C02_selected_deterministic_packaging_binding_derivation",
+  "status": "public_derivation_merged_owned_definition_declared_generator_integration_pending",
+  "public_owner": "复审窗口1",
+  "new_shared_DTO_fields": [],
+  "consumer_profile": "首版paper_packaging_complete_v1；consumer_ref.kind=device，精确operation_ref须解析为RuleKind.pack，且为该Device或实际RouteStep当前工艺。",
+  "desired_job_selection": {
+    "storage": "DeviceInstance.configuration的两个已声明TypedValue键，沿现有SetDeclaredParameter/PutObject编辑，不增第19操作。",
+    "keys": {
+      "packaging_job_id": "TypedValue::String的Job id",
+      "packaging_job_revision": "TypedValue::Integer的Job revision"
+    },
+    "parameter_bindings": [
+      "/payload/data/configuration/packaging_job_id/value",
+      "/payload/data/configuration/packaging_job_revision/value"
+    ],
+    "rule": "Host按两个键解析已保存不可原地改写的PackageStructureJob精确版本。缺选择或版本不可取时列InvalidInput/MissingReference，不取最新Job、当前UI标签或artifact自身充当独立期望。",
+    "integration": "拥有者已提供Schema核验通过的精确0.2.0设计候选；生成/采用消费者按实际工位定义与生成接入.json接入，旧0.1.0不改、不注册。",
+    "declared_slot_rule": "Definition默认configuration可保持空以显式表示未选；按已声明ID的实例PutObject/采用只在用户明确选择后创建TypedValue条目。指针不是任意字段写权限；缺声明时即使同名键存在也拒绝。"
+  },
+  "derive": [
+    {
+      "n": 1,
+      "from": "可信Host上下文+consumer_ref+operation_ref",
+      "derive": "当前Project/base_revision、目标Device、其当前选定pack工艺及实际能力；检查允许操作/作用范围。"
+    },
+    {
+      "n": 2,
+      "from": "consumer.configuration两个Job键",
+      "derive": "desired_job和JobInputRevisionRef；不依artifact选择去决定当前Job。"
+    },
+    {
+      "n": 3,
+      "from": "desired_job.subject_ref+Project.products及其routing_ref",
+      "derive": "精确SubjectRevisionRef；对应产品/路线必须包含该consumer/operation；expected_subject_revision=所解析产品revision，而非复制artifact.revision。"
+    },
+    {
+      "n": 4,
+      "from": "paper_packaging_complete_v1+desired_job.conditions",
+      "derive": "required_purposes恒含forming/opening/linear_extraction/net_space/manufacturing；条件开关不得由请求方省略使完整profile降级。完整profile缺相应输入时未知/不可完整绑定。"
+    },
+    {
+      "n": 5,
+      "from": "desired_job.parts/panels/materials/connections/conditions",
+      "derive": "实际所用材料ID/厚度/几何/姿态/局部接触/过程/净空间/取物及数值预算全部冻结；artifact.result.job_ref必须等于desired_job，artifact.input_ref读取同一不可变输入。"
+    },
+    {
+      "n": 6,
+      "from": "required_purposes+desired_job拓扑",
+      "derive": "required_payload见下表；检查每个实际part制造文件、cut/fold/glue适用性、实际内容与可编辑Job依赖，不能只看字符串列表。"
+    },
+    {
+      "n": 7,
+      "from": "ArtifactRecord/PackagingResult",
+      "derive": "Host实际生成来源、subject/unit/frame/job_ref一致；所有必需checks覆盖且Pass，result/record outcome一致，内容实际存在；imported_claim/type_fixture不授通过。"
+    },
+    {
+      "n": 8,
+      "from": "请求requested_scope",
+      "derive": "必须覆盖完整profile且不得越过artifact.supported_scope和人认可accepted_scope；精确token集合，不按前缀；空/少勾不是降级许可。"
+    },
+    {
+      "n": 9,
+      "from": "Project.acknowledgments[acceptance_ref]",
+      "derive": "同artifact ID、同subject、同用途和适用条件；由可信人工调用通道已记录。Agent只能引用，HumanStatement文字不授人工权限。"
+    },
+    {
+      "n": 10,
+      "from": "全部校核+原base_revision",
+      "derive": "Host原子生成ConsumerBinding，其expected_subject_revision及required_payload来自上述推导；run_scenario再对冻结consumer选择/物料/资源校核，不产生库存。"
+    }
+  ],
+  "payload_derivation": [
+    {
+      "token": "editable_job",
+      "source": "artifact.input_ref",
+      "required": "完整可编辑冻结Job与实际材料/依赖"
+    },
+    {
+      "token": "forming",
+      "source": "checks[purpose=forming]",
+      "required": "非空完整覆盖且Pass"
+    },
+    {
+      "token": "opening",
+      "source": "checks[purpose=opening]",
+      "required": "非空完整覆盖且Pass"
+    },
+    {
+      "token": "linear_extraction",
+      "source": "checks[purpose=linear_extraction]",
+      "required": "固定姿态完整路径且Pass"
+    },
+    {
+      "token": "net_space",
+      "source": "checks[purpose=net_space]",
+      "required": "所选产品姿态/净空间检查且Pass"
+    },
+    {
+      "token": "manufacturing",
+      "source": "checks[purpose=manufacturing]+manufacturing_files+material_counts",
+      "required": "每个显式part的真实cut；折带存在有fold；胶接存在有生效共同glue；数量/面积/单位正确"
+    }
+  ],
+  "same_subject_material_change": "consumer选择Job J@2时，即使subject仍r1，旧artifact.job_ref=J@1也不匹配；旧Run冻结consumer=J@1仍不变。不用全局stale布尔或内容hash。",
+  "public_snippet_refs": [
+    "DRF03_C02_消费者参数片段.json"
+  ],
+  "source_refs": [
+    "packages/domain/types.design.rs",
+    "packages/commands/api.design.rs",
+    "packages/packaging/adoption-lifecycle.design.json"
+  ],
+  "mode_boundary": {
+    "calculated_nominal": "以上完整纸包装profile的唯一适用分支。",
+    "declared_process": "仍沿原声明工艺/工时/人认可用途，不以此路径生成真实纸包装结果或完成SF-12；不把它强行送入完整计算绑定门。",
+    "software_in_loop": "首版后置，不因契约存在可调用；禁止自动降级。"
+  },
+  "actual_consumer_definition_ref": "packages/packaging/consumer-device.design.json",
+  "effective_operation_resolution": "显式inline行为时operation_ref应等于所选Device.module_ref并读取该定义的selected inline builtin；显式独立operation时按现有Device.operation_binding/RouteStep.operation_ref解析对应Operations精确版本。两个分支均须是pack，不能用另一个未选分支替代。",
+  "consumer_recheck_ref": "docs/04_开发与验收/特征细化/DRF03_公共合入消费者复核.json"
+}

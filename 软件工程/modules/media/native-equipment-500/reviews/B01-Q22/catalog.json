@@ -1,0 +1,380 @@
+{
+  "review_batch": "B01-Q22",
+  "modeling_profile": "simulation-efficient-v1",
+  "status": "accepted_by_AI",
+  "version": "1.1.0",
+  "equipment": [
+    {
+      "index": 39,
+      "id": "six-axis-robot",
+      "title": "六轴机器人（夹持式箱件取放）",
+      "family": "robot",
+      "rule": "preserve",
+      "cycle_seconds": 20,
+      "flow": {
+        "input": "1件240×180×120mm已放行箱件",
+        "output": "同一箱件，身份/数量/质量保持"
+      },
+      "focus_node": "J6_ToolYaw",
+      "group": "common",
+      "definition_id": "sf.native50.device.six-axis-robot",
+      "media_id": "p302.line-grade.robot",
+      "version": "1.1.0",
+      "basis": "原创声明尺寸/工时；六轴、SCARA、龙门夹爪及真空放托的单箱取放。箱件保持原身份，夹持段跟随实际工具层级；固定示例行程，不声称通用工业机器人求解。",
+      "first_release_role": null,
+      "existing_media": {
+        "family": "robot",
+        "directory": "v04"
+      },
+      "media_version": "1.1.0",
+      "suffix": "detailed",
+      "module_id": "p302.line-grade.robot",
+      "directory": "installable/six-axis-robot",
+      "asset": {
+        "id": "p302.line-grade.robot.glb",
+        "path": "six-axis-robot.glb",
+        "kind": "glb"
+      },
+      "bytes": 627848,
+      "nodes": 102,
+      "triangles": 7610,
+      "animations": [
+        {
+          "index": 0,
+          "name": "approach"
+        },
+        {
+          "index": 1,
+          "name": "grip"
+        },
+        {
+          "index": 2,
+          "name": "loaded_move"
+        },
+        {
+          "index": 3,
+          "name": "release"
+        },
+        {
+          "index": 4,
+          "name": "return"
+        }
+      ],
+      "phase_ids": [
+        "load",
+        "auto",
+        "unload"
+      ],
+      "primary_phase": "auto",
+      "reused_exact_version": true,
+      "batch": "B01",
+      "kind": "six",
+      "initial": "carton_ready",
+      "final": "carton_ready",
+      "auxiliary": null,
+      "input_quantity": 1,
+      "component_quantity": 1,
+      "aux_quantity": 1,
+      "extra_outputs": [],
+      "acceptance_conditions": [],
+      "mechanisms": [
+        "six",
+        "named-independent-joints",
+        "tool-attached-held-item"
+      ],
+      "review_batch": "B01-Q22",
+      "bounds": {
+        "min": [
+          -0.889999994635582,
+          -1.862645142292063e-10,
+          -1.1500000029802322
+        ],
+        "max": [
+          1.6000000029802321,
+          1.4729432393059865,
+          0.48000000417232513
+        ]
+      },
+      "moving_names": [
+        "J1_BaseYaw",
+        "J2_Shoulder",
+        "J3_Elbow",
+        "J5_WristPitch",
+        "J6_ToolYaw",
+        "GripperJaw_-1",
+        "GripperJaw_1",
+        "PaperSeat"
+      ],
+      "service_circuits": []
+    },
+    {
+      "index": 40,
+      "id": "scara-robot",
+      "title": "SCARA机器人（平面关节与升降取放）",
+      "family": "scara",
+      "rule": "preserve",
+      "cycle_seconds": 16,
+      "flow": {
+        "input": "1件240×180×120mm已放行箱件",
+        "output": "同一箱件，身份/数量/质量保持"
+      },
+      "focus_node": "J4_SCARAToolYaw",
+      "group": "common",
+      "definition_id": "sf.native50.device.scara-robot",
+      "media_id": "sf.native50.media.scara-robot",
+      "version": "1.1.0",
+      "basis": "原创声明尺寸/工时；六轴、SCARA、龙门夹爪及真空放托的单箱取放。箱件保持原身份，夹持段跟随实际工具层级；固定示例行程，不声称通用工业机器人求解。",
+      "first_release_role": null,
+      "suffix": "detailed",
+      "module_id": "sf.native50.media.scara-robot",
+      "directory": "installable/scara-robot",
+      "asset": {
+        "id": "sf.native50.media.scara-robot.glb",
+        "path": "scara-robot.glb",
+        "kind": "glb"
+      },
+      "bytes": 632804,
+      "nodes": 98,
+      "triangles": 7322,
+      "animations": [
+        {
+          "index": 0,
+          "name": "load"
+        },
+        {
+          "index": 1,
+          "name": "auto"
+        },
+        {
+          "index": 2,
+          "name": "unload"
+        }
+      ],
+      "phase_ids": [
+        "load",
+        "auto",
+        "unload"
+      ],
+      "primary_phase": "auto",
+      "bounds": {
+        "min": [
+          -0.889999994635582,
+          -1.862645142292063e-10,
+          -1.1500000029802322
+        ],
+        "max": [
+          1.6000000029802321,
+          1.9750000059604644,
+          0.5089093126152846
+        ]
+      },
+      "batch": "B01",
+      "kind": "scara",
+      "initial": "carton_ready",
+      "final": "carton_ready",
+      "auxiliary": null,
+      "input_quantity": 1,
+      "component_quantity": 1,
+      "aux_quantity": 1,
+      "extra_outputs": [],
+      "acceptance_conditions": [],
+      "mechanisms": [
+        "scara",
+        "named-independent-joints",
+        "tool-attached-held-item"
+      ],
+      "media_version": "1.1.0",
+      "review_batch": "B01-Q22",
+      "moving_names": [
+        "J1_SCARAShoulder",
+        "J2_SCARAElbow",
+        "J3_SCARAVertical",
+        "J4_SCARAToolYaw",
+        "GripperJaw_-1",
+        "GripperJaw_1",
+        "PaperSeat"
+      ],
+      "service_circuits": []
+    },
+    {
+      "index": 41,
+      "id": "gantry-pick-place",
+      "title": "龙门搬运机（三轴夹爪取放）",
+      "family": "gantry",
+      "rule": "preserve",
+      "cycle_seconds": 18,
+      "flow": {
+        "input": "1件240×180×120mm已放行箱件",
+        "output": "同一箱件，身份/数量/质量保持"
+      },
+      "focus_node": "J3_VerticalTool",
+      "group": "common",
+      "definition_id": "sf.native50.device.gantry-pick-place",
+      "media_id": "sf.native50.media.gantry-pick-place",
+      "version": "1.1.0",
+      "basis": "原创声明尺寸/工时；六轴、SCARA、龙门夹爪及真空放托的单箱取放。箱件保持原身份，夹持段跟随实际工具层级；固定示例行程，不声称通用工业机器人求解。",
+      "first_release_role": null,
+      "suffix": "detailed",
+      "module_id": "sf.native50.media.gantry-pick-place",
+      "directory": "installable/gantry-pick-place",
+      "asset": {
+        "id": "sf.native50.media.gantry-pick-place.glb",
+        "path": "gantry-pick-place.glb",
+        "kind": "glb"
+      },
+      "bytes": 587292,
+      "nodes": 111,
+      "triangles": 5082,
+      "animations": [
+        {
+          "index": 0,
+          "name": "load"
+        },
+        {
+          "index": 1,
+          "name": "auto"
+        },
+        {
+          "index": 2,
+          "name": "unload"
+        }
+      ],
+      "phase_ids": [
+        "load",
+        "auto",
+        "unload"
+      ],
+      "primary_phase": "auto",
+      "bounds": {
+        "min": [
+          -1.399999976158142,
+          -1.862645142292063e-10,
+          -1.1500000029802322
+        ],
+        "max": [
+          1.6000000029802321,
+          2.1349999995529654,
+          0.7000000007450581
+        ]
+      },
+      "batch": "B01",
+      "media_version": "1.1.0",
+      "revised_from": "1.0.0",
+      "kind": "gantry",
+      "initial": "carton_ready",
+      "final": "carton_ready",
+      "auxiliary": null,
+      "input_quantity": 1,
+      "component_quantity": 1,
+      "aux_quantity": 1,
+      "extra_outputs": [],
+      "acceptance_conditions": [],
+      "mechanisms": [
+        "gantry",
+        "named-independent-joints",
+        "tool-attached-held-item"
+      ],
+      "review_batch": "B01-Q22",
+      "moving_names": [
+        "J1_XTravel",
+        "J2_ZTravel",
+        "TelescopingStage_1",
+        "TelescopingStage_2",
+        "J3_VerticalTool",
+        "GripperJaw_-1",
+        "GripperJaw_1",
+        "PaperSeat"
+      ],
+      "service_circuits": []
+    },
+    {
+      "index": 42,
+      "id": "vacuum-palletizer",
+      "title": "真空码垛机（单箱放入固定托盘槽位）",
+      "family": "palletizer",
+      "rule": "preserve",
+      "cycle_seconds": 22,
+      "flow": {
+        "input": "1件240×180×120mm已放行箱件",
+        "output": "同一箱件，身份/数量/质量保持"
+      },
+      "focus_node": "J3_VerticalTool",
+      "group": "common",
+      "definition_id": "sf.native50.device.vacuum-palletizer",
+      "media_id": "sf.native50.media.vacuum-palletizer",
+      "version": "1.1.0",
+      "basis": "原创声明尺寸/工时；六轴、SCARA、龙门夹爪及真空放托的单箱取放。箱件保持原身份，夹持段跟随实际工具层级；固定示例行程，不声称通用工业机器人求解。",
+      "first_release_role": null,
+      "suffix": "detailed",
+      "module_id": "sf.native50.media.vacuum-palletizer",
+      "directory": "installable/vacuum-palletizer",
+      "asset": {
+        "id": "sf.native50.media.vacuum-palletizer.glb",
+        "path": "vacuum-palletizer.glb",
+        "kind": "glb"
+      },
+      "bytes": 579956,
+      "nodes": 107,
+      "triangles": 5646,
+      "animations": [
+        {
+          "index": 0,
+          "name": "load"
+        },
+        {
+          "index": 1,
+          "name": "auto"
+        },
+        {
+          "index": 2,
+          "name": "unload"
+        }
+      ],
+      "phase_ids": [
+        "load",
+        "auto",
+        "unload"
+      ],
+      "primary_phase": "auto",
+      "bounds": {
+        "min": [
+          -1.399999976158142,
+          -7.450580569168253e-10,
+          -1.1500000029802322
+        ],
+        "max": [
+          1.6000000029802321,
+          2.1349999995529654,
+          0.7000000007450581
+        ]
+      },
+      "batch": "B01",
+      "media_version": "1.1.0",
+      "revised_from": "1.0.0",
+      "kind": "vacuum",
+      "initial": "carton_ready",
+      "final": "carton_ready",
+      "auxiliary": null,
+      "input_quantity": 1,
+      "component_quantity": 1,
+      "aux_quantity": 1,
+      "extra_outputs": [],
+      "acceptance_conditions": [],
+      "mechanisms": [
+        "vacuum",
+        "named-independent-joints",
+        "tool-attached-held-item"
+      ],
+      "review_batch": "B01-Q22",
+      "moving_names": [
+        "J1_XTravel",
+        "J2_ZTravel",
+        "TelescopingStage_1",
+        "TelescopingStage_2",
+        "J3_VerticalTool",
+        "PaperSeat"
+      ],
+      "service_circuits": []
+    }
+  ]
+}

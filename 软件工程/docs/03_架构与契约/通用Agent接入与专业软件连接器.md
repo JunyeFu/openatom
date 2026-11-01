@@ -1,5 +1,28 @@
 # 通用Agent API、插件与skills
 
+<!-- confirmed-choice-source:start -->
+## 已确认的本文件设计要求（2026-10-14）
+
+[统一选择](../00_项目基线/全量设计编码确认选择.json) · [SXX逐项要求](../04_开发与验收/全量设计编码确认/SXX-XX_确认选择落实.md)
+
+下列为本文件当前设计/验收要求，具体细节仍按所属S任务落实；原文中的历史候选不代替这些选择。
+
+|题号|已选A及本文件要求|
+|---|---|
+|Q10|加入本次会话内草稿编辑的撤销/重做；生产结果、人工认可和外部发布不能用它倒退。|
+|Q20|共同身份/版本/来源页，加各类载荷表单；均支持草稿、检查、适合的预览、明确采用和导出。|
+|Q28|纸包装可进入实际输入/计算/认可/绑定；其他提供者展示契约/缺能力，可保存定义，不伪装可算。|
+|Q33|事件驱动真实计算，可显示任务进度/已形成状态并回放真实事件；播放速度只改变呈现。|
+|Q45|先以你目前使用的Codex客户端为首个实际验证对象，其他客户端只在真实验证后声称支持。|
+|Q46|关键缺项集中询问，普通示例假设显式标注并可改；无数据不填虚构充足库存或产量。|
+|Q47|在本次选定草稿和字段范围内分批执行，展示变更；涉及超范围改动再由你决定。|
+|Q48|先限排期、可选模板布局与明确允许的设备实例数；工时/BOM/质量、人员增补和成本需明确授权。|
+|Q49|候选默认3轮，每轮真实检查/运行并保留变化；达标即停，关键缺项或无有效改动则说明。|
+|Q50|保存已完成草稿与缺项，给出人工创作/已有模块组合入口，不自行发明新工艺求解器。|
+|Q54|中文工程报告版：目标/输入/流程图景/指标/等待/比较/限制/接手；数据一致，PDF处理分页与中文。|
+|Q59|优先离线可运行的发布包及启动/桥配置说明；安装器按实际打包试做结果另列。|
+<!-- confirmed-choice-source:end -->
+
 状态：首版接入设计与契约，尚无运行桥/已注册工具。本项目采用外部现有Agent，工具是平台可执行业务API；skills是使用这些API完成任务的指导，不代替实现。
 
 ## 课程要求核对
@@ -89,3 +112,25 @@ stdio读写遵MCP协议，stdout仅为协议消息。MCP版本按实际选用SDK
 - [Tauri架构](https://v2.tauri.app/concept/architecture/)：Rust与WebView消息调用；不据文档确认本产品已运行。
 
 课程与赛道一要求的开发/交付对应已按[S01-03](../00_项目基线/课程与比赛适配.md)复审：SF-11/17是真实AI Agent业务；公开MCP/API是手段，不继承实验HTTP或强制ONNX任务。产品评估导出与作品介绍/视频用途分开，状态仍未运行。
+
+S05-02具体状态持有/处理责任和生命周期取[共享状态](共享状态与生命周期.md)及[JSON](共享状态与所有权.json)：Project/DefinitionDraft Scope分开、短事务与长工作分开；保存冻结R时的新R+1仍未保存，旧Run/回传不写错工程，人工认可/当前生产不在普通undo内。此为语义设计，精确Scope/控制/取消/回传字段已由S06-02/03同步现有18操作；实际产品执行尚未验证。
+
+## S05-04具体技术选择
+
+S05-04将桥统一为Rust/rmcp3.5.1原生exe，消解架构JSON暂写Node与既有README写Rust的冲突。Windows管道必须显式DACL/当前登录SID/远程拒绝及Host Scope授权，不能依赖默认ACL。协议/Windows现场接点仍须S05-05及S06完整落实。 [技术栈/部署](首版技术栈与部署设计.md)。
+
+现行公开字段／原子编辑／文件采用／真实任务回执统一消费[公开操作与宿主调用契约](公开操作与宿主调用契约.md)。设备功能ID不是新增MCP工具；九类载荷、原生部件／媒体／热点通过有类型定义编辑进入同一15分支命令，外部Agent不能填写Host身份、许可确认或人工认可。
+
+## DRF04 本轮授权与连接器收口
+
+本轮共同合同唯一写入归复审窗口1/W00，S04-02/04/05及docs/02归窗口2。HostEditGrant/FieldGrant/ObjectEditGrant/CreateAllowance及HostCallContext.edit_grants已在公共Rust源实际合入并原生编译；均为Host私有上下文，不带wire/Serde/Schema/TS派生。15分支完整候选都按当前对象/字段、数组成员身份、累计创建数量、选定版本和复用资源校核，再原子提交；客户端不能携带grant。准确展开表与40个允许/拒绝预期见[授权合入](../04_开发与验收/特征细化/DRF04_Host授权合入.json)。这不是实际Host已执行的声明。
+
+连接器源现为[stdio-connector.design.json](../../integrations/agent/stdio-connector.design.json)：给出真实Host启动接点、Windows连接身份、MCP与IPC分帧、失联后接收不明不重发、Task控制/取消竞争，以及受管只读图像句柄回传。Host实际打开受管文件并向桥PID复制只读句柄；桥不凭AssetRef路径得到磁盘权限。拟议私有IPC附件与SC01—05剩余接点均明确，业务API仍18项。
+
+TC01/TC02及RunResult.computed_until_ms已公共合入，Agent/报告/主子轴按真实execution_ref/blocked phase/phase_work_intervals和同一frontier读取。Events观察末刻点包含end，时长区间仍半开；部分/暂停/取消前缀不得冒充完成。字段存在与实际Engine结果分开。窗口2的32个具体控件绑定及6个状态预期见[H04-04](../04_开发与验收/特征细化/DRF04_H04-04界面绑定.json)。
+
+本批用现有exe/依赖完成原生rmcp stdio/当前会话管道fixture与Windows只读句柄进程间试做，没有安装依赖或修改锁。实际Codex、产品Host/Renderer、规范附件和整GF仍未执行；证据分别记录于[DRF04核验入口](../04_开发与验收/特征细化/DRF04_完整定义.md)，不改变阶段状态或本人结果。
+
+2026-10-15报告关联核验补齐共同大结果的桥消费者：沿[大结果传输设计](大结果传输设计.md)先解析ApiOutcome.Managed/managed_results，核对完整原Response的类型/请求/上下文及Run身份，再恢复原操作返回并处理独立图像附件。MCP小structuredContent同时携带完整application/json EmbeddedResource；原error决定isError，不能把managed当成功或要求新resources/read。[本轮9项OS消费者试做](../../tools/design-quality-audit/report-linked/window4/output/managed-consumer-result.json)包括1,319,773字节类型试样及大PermissionDenied错误，均不产生真实业务Run。
+
+既有[桌面试做](../04_开发与验收/特征细化/DRF04_S05-desktop-proof/handoff-result.json)实际接过Tauri/WebView2/Three/原生rmcp的lab状态和冻结PNG；这与产品Engine、完整18操作及真实Codex业务分别记证据。本轮Codex仅通过禁用stdio配置读回，正式路径仍是实际本地客户端启动原生桥，连接用户已打开且授权的Host。模型及联网条件来自外部客户端的实际可用配置；普通本地工程编辑不以购买模型为前置。产品链和原P依赖/缺产物见[RR窗口4](../04_开发与验收/特征细化/RR_窗口4_报告关联核验.json)，不以当前CLI存在或配置能解析判断SF-17完成。

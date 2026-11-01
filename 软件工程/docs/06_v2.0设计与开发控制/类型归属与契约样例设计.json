@@ -1,0 +1,1132 @@
+{
+  "document_kind": "superfactory_v2_type_ownership_and_contract_examples_design_not_runtime_tests",
+  "date": "2026-10-26",
+  "implementation_allowed": true,
+  "runtime_verified": false,
+  "contract_version": "sf.execution/2.0-draft11",
+  "markdown_ref": "docs/06_v2.0设计与开发控制/类型归属与契约样例设计.md",
+  "schema_ref": "docs/06_v2.0设计与开发控制/接口契约.schema.design.json",
+  "views": {
+    "task_interaction": "按已授权需求细化11操作及实际消费，本轮不实施",
+    "structure_data": "154定义各归一处，7个新身份值类型及字段的required-nullable规则",
+    "state_behavior": "request lookup关联真实operation/task kind；统一TaskState存储和原请求恢复规则保持",
+    "interface_collaboration": "域数据/Host封套/Native私有边界分离；生成产物从实际Rust输出，不手改generated",
+    "ui_consumer": "TS显示null或缺省的语义准确；普通Agent不获得Gateway角色；私有Native素材入口单独生成",
+    "deployment_verification": "Cloud闭包只消费纯domain；标准meta/格式/实例验证未取得，不据结构核对宣称运行通过"
+  },
+  "validator_availability": {
+    "status": "available_in_isolated_document_tool_target",
+    "tool_target": "D:\\Agent\\ICNSD-KEL\\.work\\sf-v2-schema-tools-20261026",
+    "product_dependencies_changed": false,
+    "versions": {
+      "jsonschema": "4.26.0",
+      "referencing": "0.37.0",
+      "rfc3339-validator": "0.1.4",
+      "jsonschema-specifications": "2025.9.1",
+      "rpds-py": "2026.9.1",
+      "attrs": "26.1.0",
+      "six": "1.17.0"
+    },
+    "previous_checked_environments": {
+      "checked": "2026-10-26 read-only discovery",
+      "bundled_runtime_version": "26.1020.11618",
+      "bundled_python_modules_absent": [
+        "jsonschema",
+        "referencing",
+        "jsonschema_specifications",
+        "fastjsonschema",
+        "jschon"
+      ],
+      "bundled_and_workspace_node_modules_absent": [
+        "ajv/dist/2020",
+        "ajv-formats",
+        "@hyperjump/json-schema/draft-2020-12",
+        "jsonschema"
+      ],
+      "standard_validator_found": false,
+      "packages_installed": false,
+      "scope": "仅上述实际运行时/包解析入口，未扫描整机；不是不存在其他工具的全局证明"
+    },
+    "receipt_ref": ".work/v2-design-schema-validation/receipt.json"
+  },
+  "ownership_groups": [
+    {
+      "id": "O1",
+      "owner": "existing sf-domain values or field-specific scalar placeholders",
+      "location_ids": [
+        "L03",
+        "L04"
+      ],
+      "definitions": [
+        "ExecutionRef",
+        "Id",
+        "Issue",
+        "ModuleRef",
+        "ObjectRef",
+        "Quantity",
+        "ReportRunInputRef",
+        "RunInputRef",
+        "SafeUint"
+      ],
+      "note": "Id不是待实现的全局Id类型；按字段语义选择既有/7个新身份类型；现有纯数据别名直接消费sf-domain"
+    },
+    {
+      "id": "O2",
+      "owner": "sf-domain::cloud_execution pure DTOs",
+      "location_ids": [
+        "L24",
+        "L05",
+        "L04"
+      ],
+      "definitions": [
+        "AcceptanceRow",
+        "AcceptedQuantityRow",
+        "ActiveExecutionSlot",
+        "AttemptRef",
+        "AttemptView",
+        "BoundExecutionJobSnapshot",
+        "BusinessFacts",
+        "CandidateBinding",
+        "CloudDataExportRecord",
+        "CloudDataExportSelection",
+        "CloudError",
+        "CloudEventRow",
+        "CloudEventsPage",
+        "CloudReceiptRequest",
+        "CloudReleaseRequest",
+        "CloudResponse",
+        "CloudSessionCreate",
+        "CloudTimestamp",
+        "CloudWithdrawRequest",
+        "Command",
+        "CommandCountRow",
+        "CommandReadEnvelope",
+        "CommandReceiptsCursor",
+        "CommandReceiptsPage",
+        "CommandReceiptsQuery",
+        "DaaSQuery",
+        "DaaSQueryResult",
+        "DatasetDescriptor",
+        "DeviceBoot",
+        "DeviceBootRegisterRequest",
+        "DeviceBootRetireRequest",
+        "DeviceMinuteCountRow",
+        "DevicePollRequest",
+        "DevicePollResult",
+        "DeviceReceipt",
+        "DispatchCandidateView",
+        "DispatchExplanation",
+        "ExecutionAcceptedMetric",
+        "ExecutionArchiveIndex",
+        "ExecutionAssetBinding",
+        "ExecutionAttemptRow",
+        "ExecutionCommandMetrics",
+        "ExecutionCursor",
+        "ExecutionDeviceView",
+        "ExecutionFrozenInputs",
+        "ExecutionHistoryCursor",
+        "ExecutionHistoryPage",
+        "ExecutionHistoryQuery",
+        "ExecutionIdentity",
+        "ExecutionObservationCursor",
+        "ExecutionObservationHistoryDocument",
+        "ExecutionObservationPage",
+        "ExecutionObservationQuery",
+        "ExecutionObservationRecord",
+        "ExecutionObservedObject",
+        "ExecutionObservedObjectRef",
+        "ExecutionPolicy",
+        "ExecutionReadAccess",
+        "ExecutionReadEnvelope",
+        "ExecutionReport",
+        "ExecutionReportAssetRights",
+        "ExecutionReportComparison",
+        "ExecutionReportCondition",
+        "ExecutionReportMetrics",
+        "ExecutionReportSession",
+        "ExecutionReportSource",
+        "ExecutionReportSourceStamp",
+        "ExecutionResourceMetric",
+        "ExecutionSnapshot",
+        "ExecutionTelemetryObservation",
+        "ExecutionWaitingMetric",
+        "GeneratedLoadEvent",
+        "GeneratedLoadRow",
+        "HostObservedDevice",
+        "ItemPick",
+        "LoadBatch",
+        "LogicalWorkView",
+        "ObservationProbe",
+        "PageSelection",
+        "PendingReservation",
+        "PortBinding",
+        "PredictionComparisonCondition",
+        "PredictionExecutionComparison",
+        "PredictionExecutionLink",
+        "PredictionRunReference",
+        "PredictionRunSummary",
+        "PredictionWaitingMetric",
+        "ProjectedResourceClaim",
+        "PublishAck",
+        "ReceiptAdmission",
+        "ResourceBinding",
+        "ResourceUnits",
+        "SignedQuantityChange",
+        "SnapshotPublication",
+        "SnapshotSelection",
+        "StoredReceipt",
+        "TelemetryCursor",
+        "TelemetryObservation",
+        "TelemetryOnlyObservation",
+        "TelemetryRow",
+        "WaitingTimeRow",
+        "WorkTiming"
+      ],
+      "note": "包含游标、归档和报告纯DTO；ExecutionReportSource由报告比较引用，须留纯domain而非commands；公开Rust类型不授予调用权限"
+    },
+    {
+      "id": "O3",
+      "owner": "sf-commands API/Host transport or operation-specific task views",
+      "location_ids": [
+        "L06",
+        "L25",
+        "L37"
+      ],
+      "definitions": [
+        "CloudDataExportDestination",
+        "CloudDataExportTaskOutput",
+        "CloudDataExportTaskState",
+        "CloudEffectAck",
+        "CloudProductionConfiguration",
+        "CloudReadResult",
+        "CloudReadSelection",
+        "CloudReadTaskHandle",
+        "CloudReadTaskOutput",
+        "CloudReadTaskState",
+        "CloudWorkBatch",
+        "CloudWorkItem",
+        "ControlAck",
+        "ControlAction",
+        "ExecutionPreparationTaskOutput",
+        "ExecutionPreparationTaskState",
+        "ExecutionReportDestination",
+        "ExecutionReportTaskOutput",
+        "ExecutionReportTaskState",
+        "ExecutionRequestStatus",
+        "ExecutionSourceSummary",
+        "ExecutionViewRead",
+        "ExecutionViewSelection",
+        "ExportCloudDataResult",
+        "ExportExecutionReportResult",
+        "ExportingTaskHandle",
+        "HostAckCloudWorkRequest",
+        "HostApplyReceiptRequest",
+        "HostCloudReadRequest",
+        "HostControlRequest",
+        "HostExecutionViewRequest",
+        "HostExportCloudDataRequest",
+        "HostExportExecutionReportRequest",
+        "HostGetCloudWorkRequest",
+        "HostObservationRequest",
+        "HostOkData",
+        "HostReadRequest",
+        "HostResponse",
+        "HostStartRequest",
+        "LocalExecutionCatalog",
+        "SessionAdmissionResult",
+        "StartupTaskHandle"
+      ],
+      "note": "Host请求封套/Task/云读取适配/原请求索引视图；实际运行时仍只有原TaskHandle/TaskState及单一注册表"
+    },
+    {
+      "id": "O4",
+      "owner": "Native private main-window boundary",
+      "location_ids": [
+        "L16",
+        "L39",
+        "L61"
+      ],
+      "definitions": [
+        "ExecutionMediaAssetRequest"
+      ],
+      "note": "私有执行素材请求；工程类型导出不把它注册为普通Agent/公网操作"
+    }
+  ],
+  "id_mapping": {
+    "new_transparent_string_ids": [
+      "ExecutionSessionId",
+      "ExecutionEpochId",
+      "DispatchCommandId",
+      "CloudProjectId",
+      "CloudDatasetId",
+      "DeviceBootId",
+      "ObservationProbeId"
+    ],
+    "reuse": [
+      "ProjectId for local project",
+      "ObjectId for device/logical job/Host context/receipt/work/request identifiers",
+      "PhaseId/PortId/RoleId for existing model identity",
+      "TaskId only for actual async Task",
+      "RunId only for actual local prediction Run; ReportRunInputRef is existing path-free Project/scenario identity",
+      "ObjectId for actual cloud data export_id; no new identity family"
+    ],
+    "rule": "复用现有string_id构造规则（非空无NUL）；cloud project与local Project不因字符串相同授权；身份值不是grant",
+    "revision_rule": "Project Revision和execution revision为不同语义字段；wire均SafeUint。类型名/字段匹配、实际比较来源必须明确，不以互相赋值混用"
+  },
+  "serialization_rules": {
+    "required_nullable": "新DTO中出现在required且允许null的字段，Rust Option字段显式present_nullable反序列化、schemars(required)，序列化不skip None；TS为T|null而不是可选属性",
+    "helper_placement": "commands沿用api.rs现有helper；domain/cloud_execution.rs需同义的窄本地helper，不能为了复用helper产生domain->commands依赖",
+    "legacy_exception": "原TaskState新增originating_request_id保留对旧任务可省略；选择把当前单个TaskState从model!等价展开为显式struct，只给新增字段default/skip_none/TS optional；不修改其他旧DTO语义",
+    "new_task_condition": "H01/H08/H10/H11来源Task必须填原request_id；get_task及managed原始数据先按originating_operation选择新任务严格视图，再转换统一TaskState。实际schema含新操作条件，旧宽分支不得放过新任务缺ID或错误kind/输出",
+    "task_handle_views": "Startup/CloudRead/ExportingTaskHandle先按新操作严格wire DTO反序列化（nullable字段必现），再核对kind并转换原TaskHandle；缺省字段必须在被Option归None之前拒绝。内部不建第二任务状态或TaskId；Rust schema/TS精化对应常量及必填字段",
+    "lookup_correlation": "ExecutionRequestStatus以4个互斥registered分支关联operation及特定handle，另有not_found；draft7修正旧独立组合的过宽形状",
+    "unknown_fields": "新对象/分支deny_unknown_fields；不采用会吞掉未知字段的Value封套或宽松catch；现有project_id显式nullable继续保留",
+    "formats_and_semantics": "format=date-time须在标准校验profile启用断言，String派生本身不算验证；业务身份/权限/epoch/时间关系和已注册Task查询另外由真实消费者证明，schema不替代",
+    "const_fields": "字符串const用封闭tag/单值枚举；const null字段用严格null表示；const bool由局部受限值/实际边界转换检查。普通String/bool/Option派生不自动等价于const约束；生成schema和typed decoder使用同一精化规则",
+    "scope_refinement": "现有Request<O,P>仍供新操作使用；实际新请求schema精化scope=project，Host仍按真实作用域授权。project_id字段显式null可通过结构但仍须由Host拒绝，保留原API约定",
+    "cloud_timestamp": "纯domain窄时间值；DateTime<Utc>内部值，显式parse/serialize；验证日历/已知offset/微秒/UTC年范围，拒绝-00:00和闰秒；输出UTC6位；TS string、schema format+pattern由实际wrapper导出，普通String或默认chrono serde派生不足",
+    "prediction_report": "H10 prediction、canonical prediction_comparison及回执prediction均必填可空；严格wrapper导出/解析；side_by_side两delta为null、observational至少一个已知、scope=null时数量delta=null；实际producer按每指标条件判断，schema不代替业务来源核对",
+    "cloud_data_export": "H10/H11共享ExportingTaskHandle但原operation/result不同；不在HostOkData重复同构oneOf；JSONL每记录精确类型；TelemetryCursor.after_row_index必填可空用于从index0前开始；selected_device_ids绑定实际筛选集合"
+  },
+  "generation_after_gates": [
+    {
+      "id": "G1",
+      "owner": "domain",
+      "locations": [
+        "L03",
+        "L04",
+        "L05",
+        "L24"
+      ],
+      "action": "实现纯DTO及7身份类型；在现有ContractTypeBundle加入纯执行生成根，涵盖所有wire/游标/归档/报告DTO；不改Project/Manifest旧格式；新增5预测引用/摘要/比较纯DTO，复用ReportRunInputRef/RunId，10个条件键及Report状态关联从实际类型/操作元数据导出"
+    },
+    {
+      "id": "G2",
+      "owner": "commands",
+      "locations": [
+        "L06",
+        "L07",
+        "L08",
+        "L25"
+      ],
+      "action": "注册11实际Host操作、泛型Request/tag与typed结果、Task枚举扩展/视图；精确权限来自实际Host；先落实producer/decoder再列catalog"
+    },
+    {
+      "id": "G3",
+      "owner": "Rust export-contracts",
+      "locations": [
+        "L37"
+      ],
+      "action": "继续唯一生成入口；新增11 request/response schemas及cloud/独立执行根。以Rust操作元数据精化project scope、Task kind、get_task新任务条件，不能手改产物或让schema宽于冻结规则"
+    },
+    {
+      "id": "G4",
+      "owner": "Native engineering exporter",
+      "locations": [
+        "L16",
+        "L39",
+        "L61"
+      ],
+      "action": "从实际私有类型生成素材请求/关闭所需TS依赖；类型可见性只为工程导出，不注册MCP调用"
+    },
+    {
+      "id": "G5",
+      "owner": "consumers",
+      "locations": [
+        "L13",
+        "L18",
+        "L19",
+        "L27",
+        "L28",
+        "L30",
+        "L47",
+        "L54",
+        "L55"
+      ],
+      "action": "前端/云服务/设备/Agent消费实际生成类型或schema。H01/H08/H10/H11 typed decoder精化kind；get_task新任务要求原request及正确输出；普通Agent排除H04-H07；不因新增枚举保留漏分支；设备保持stdlib窄wire解码，通过这些结构例与开发期标准schema对照，不给随包Python默认增加validator依赖"
+    },
+    {
+      "id": "G6",
+      "owner": "contract design validation",
+      "locations": [
+        "L37",
+        "L32"
+      ],
+      "action": "设计文档3元schema/26预期实例及显式date-time已过；实施准入后核对真实Rust生成/roundtrip及typed消费者，不以定义数相等证明wire等价"
+    }
+  ],
+  "cloud_boundary": {
+    "root_families": [
+      "CloudResponse",
+      "CloudSessionCreate",
+      "Command",
+      "CloudReceiptRequest",
+      "TelemetryObservation",
+      "DevicePollRequest",
+      "SnapshotPublication",
+      "CloudWithdrawRequest",
+      "CloudReleaseRequest",
+      "DaaSQuery",
+      "LoadBatch",
+      "CommandReceiptsQuery",
+      "ExecutionObservationQuery",
+      "ExecutionHistoryQuery",
+      "DeviceBootRegisterRequest",
+      "DeviceBootRetireRequest"
+    ],
+    "decoded_cursor_types": [
+      "TelemetryCursor",
+      "ExecutionCursor",
+      "CommandReceiptsCursor",
+      "ExecutionObservationCursor",
+      "ExecutionHistoryCursor"
+    ],
+    "rule": "Cloud的直接/间接设计引用必须只落纯domain；不得把生成schema存放commands目录理解为Cloud依赖Host库；actual Rust/Linux编译仍未执行",
+    "access_projection": "Cloud来源access不授予本机控制；控制按钮只消费原活跃Host实际权限，普通读者/公开DTO不生成caller/grants"
+  },
+  "schema_validation_profile": {
+    "dialect": "JSON Schema Draft2020-12",
+    "validate_meta_schema": true,
+    "assert_format": [
+      "date-time"
+    ],
+    "target": "每个样例schema_pointer对应精确定义，不能用大bundle根替代单接口预期",
+    "local_references": "原设计schema和现有get_run/get_task生成schema按各自文件URI注册；不把外部defs错解析到根文件",
+    "result": "pass_3_meta_schemas_26_expected_examples_date_time_asserted",
+    "rust_roundtrip_result": null,
+    "receipt_ref": ".work/v2-design-schema-validation/receipt.json"
+  },
+  "schema_examples": [
+    {
+      "id": "SC01",
+      "schema_pointer": "#/$defs/HostReadRequest",
+      "value": {
+        "api_version": "0.1",
+        "request_id": "example-request",
+        "project_id": "example-local-project",
+        "scope": {
+          "kind": "project"
+        },
+        "operation": "get_execution_snapshot",
+        "params": {
+          "execution_contract_version": "sf.execution/2.0-draft11",
+          "identity": {
+            "session_id": "example-session",
+            "execution_epoch_id": "example-epoch",
+            "project_id": "example-local-project",
+            "host_context_session_id": "example-host-context"
+          },
+          "selection": {
+            "kind": "latest"
+          }
+        }
+      },
+      "expected_schema_valid": true,
+      "purpose": "完整封套/显式project字段",
+      "business_expectation": "no runtime admission executed",
+      "standard_schema_validation_result": {
+        "result": "matches_expected",
+        "actual_schema_valid": true,
+        "receipt_ref": ".work/v2-design-schema-validation/receipt.json"
+      },
+      "host_runtime_result": null
+    },
+    {
+      "id": "SC02",
+      "schema_pointer": "#/$defs/HostReadRequest",
+      "value": {
+        "api_version": "0.1",
+        "request_id": "example-request",
+        "scope": {
+          "kind": "project"
+        },
+        "operation": "get_execution_snapshot",
+        "params": {
+          "execution_contract_version": "sf.execution/2.0-draft11",
+          "identity": {
+            "session_id": "example-session",
+            "execution_epoch_id": "example-epoch",
+            "project_id": "example-local-project",
+            "host_context_session_id": "example-host-context"
+          },
+          "selection": {
+            "kind": "latest"
+          }
+        }
+      },
+      "expected_schema_valid": false,
+      "purpose": "必填字段缺失",
+      "business_expectation": "no runtime admission executed",
+      "standard_schema_validation_result": {
+        "result": "matches_expected",
+        "actual_schema_valid": false,
+        "receipt_ref": ".work/v2-design-schema-validation/receipt.json"
+      },
+      "host_runtime_result": null
+    },
+    {
+      "id": "SC03",
+      "schema_pointer": "#/$defs/HostReadRequest",
+      "value": {
+        "api_version": "0.1",
+        "request_id": "example-request",
+        "project_id": null,
+        "scope": {
+          "kind": "project"
+        },
+        "operation": "get_execution_snapshot",
+        "params": {
+          "execution_contract_version": "sf.execution/2.0-draft11",
+          "identity": {
+            "session_id": "example-session",
+            "execution_epoch_id": "example-epoch",
+            "project_id": "example-local-project",
+            "host_context_session_id": "example-host-context"
+          },
+          "selection": {
+            "kind": "latest"
+          }
+        }
+      },
+      "expected_schema_valid": true,
+      "purpose": "可空字段与业务准入分层",
+      "business_expectation": "schema允许显式null；Host必须拒绝无实际Project作用域，不能以schema有效当准入",
+      "standard_schema_validation_result": {
+        "result": "matches_expected",
+        "actual_schema_valid": true,
+        "receipt_ref": ".work/v2-design-schema-validation/receipt.json"
+      },
+      "host_runtime_result": null
+    },
+    {
+      "id": "SC04",
+      "schema_pointer": "#/$defs/HostReadRequest",
+      "value": {
+        "api_version": "0.1",
+        "request_id": "example-request",
+        "project_id": "example-local-project",
+        "scope": {
+          "kind": "project"
+        },
+        "operation": "get_execution_snapshot",
+        "params": {
+          "execution_contract_version": "sf.execution/2.0-draft11",
+          "identity": {
+            "session_id": "example-session",
+            "execution_epoch_id": "example-epoch",
+            "project_id": "example-local-project",
+            "host_context_session_id": "example-host-context"
+          },
+          "selection": {
+            "kind": "latest"
+          }
+        },
+        "caller": {
+          "origin": "gateway"
+        }
+      },
+      "expected_schema_valid": false,
+      "purpose": "未知权限注入字段",
+      "business_expectation": "no runtime admission executed",
+      "standard_schema_validation_result": {
+        "result": "matches_expected",
+        "actual_schema_valid": false,
+        "receipt_ref": ".work/v2-design-schema-validation/receipt.json"
+      },
+      "host_runtime_result": null
+    },
+    {
+      "id": "SC05",
+      "schema_pointer": "#/$defs/ExecutionRequestStatus",
+      "value": {
+        "originating_request_id": "example-original-request",
+        "host_context_session_id": "example-host-context",
+        "state": "registered",
+        "operation": "start_execution_session",
+        "task": {
+          "id": "example-task",
+          "scope": {
+            "kind": "edit",
+            "data": {
+              "kind": "project",
+              "data": "example-local-project"
+            }
+          },
+          "kind": "execution_preparation",
+          "state": "queued",
+          "input_revision": 1,
+          "progress": null,
+          "result_ref": null,
+          "failure": null
+        }
+      },
+      "expected_schema_valid": true,
+      "purpose": "原请求operation与任务种类匹配",
+      "business_expectation": "no runtime admission executed",
+      "standard_schema_validation_result": {
+        "result": "matches_expected",
+        "actual_schema_valid": true,
+        "receipt_ref": ".work/v2-design-schema-validation/receipt.json"
+      },
+      "host_runtime_result": null
+    },
+    {
+      "id": "SC06",
+      "schema_pointer": "#/$defs/ExecutionRequestStatus",
+      "value": {
+        "originating_request_id": "example-original-request",
+        "host_context_session_id": "example-host-context",
+        "state": "registered",
+        "operation": "read_cloud_production",
+        "task": {
+          "id": "example-task",
+          "scope": {
+            "kind": "edit",
+            "data": {
+              "kind": "project",
+              "data": "example-local-project"
+            }
+          },
+          "kind": "execution_preparation",
+          "state": "queued",
+          "input_revision": 1,
+          "progress": null,
+          "result_ref": null,
+          "failure": null
+        }
+      },
+      "expected_schema_valid": false,
+      "purpose": "旧独立enum/oneOf会容许的错误配对，draft7显式关联",
+      "business_expectation": "no runtime admission executed",
+      "standard_schema_validation_result": {
+        "result": "matches_expected",
+        "actual_schema_valid": false,
+        "receipt_ref": ".work/v2-design-schema-validation/receipt.json"
+      },
+      "host_runtime_result": null
+    },
+    {
+      "id": "SC07",
+      "schema_pointer": "#/$defs/StartupTaskHandle",
+      "value": {
+        "id": "example-task",
+        "scope": {
+          "kind": "edit",
+          "data": {
+            "kind": "project",
+            "data": "example-local-project"
+          }
+        },
+        "kind": "execution_preparation",
+        "state": "queued",
+        "input_revision": 1,
+        "progress": null,
+        "result_ref": null,
+        "failure": null
+      },
+      "expected_schema_valid": true,
+      "purpose": "可空progress/result_ref/failure全部显式出现",
+      "business_expectation": "no runtime admission executed",
+      "standard_schema_validation_result": {
+        "result": "matches_expected",
+        "actual_schema_valid": true,
+        "receipt_ref": ".work/v2-design-schema-validation/receipt.json"
+      },
+      "host_runtime_result": null
+    },
+    {
+      "id": "SC08",
+      "schema_pointer": "#/$defs/StartupTaskHandle",
+      "value": {
+        "id": "example-task",
+        "scope": {
+          "kind": "edit",
+          "data": {
+            "kind": "project",
+            "data": "example-local-project"
+          }
+        },
+        "kind": "execution_preparation",
+        "state": "queued",
+        "input_revision": 1,
+        "result_ref": null,
+        "failure": null
+      },
+      "expected_schema_valid": false,
+      "purpose": "可空不等于可省略；Serde映射必须拒绝缺字段",
+      "business_expectation": "no runtime admission executed",
+      "standard_schema_validation_result": {
+        "result": "matches_expected",
+        "actual_schema_valid": false,
+        "receipt_ref": ".work/v2-design-schema-validation/receipt.json"
+      },
+      "host_runtime_result": null
+    },
+    {
+      "id": "SC09",
+      "schema_pointer": "#/$defs/DevicePollRequest",
+      "value": {
+        "contract_version": "sf.execution/2.0-draft11",
+        "session_id": "example-session",
+        "execution_epoch_id": "example-epoch",
+        "device_boot_id": "example-boot",
+        "poll_request_id": "example-poll",
+        "accept_commands": false
+      },
+      "expected_schema_valid": true,
+      "purpose": "busy设备可只取观测、不claim命令",
+      "business_expectation": "no runtime admission executed",
+      "standard_schema_validation_result": {
+        "result": "matches_expected",
+        "actual_schema_valid": true,
+        "receipt_ref": ".work/v2-design-schema-validation/receipt.json"
+      },
+      "host_runtime_result": null
+    },
+    {
+      "id": "SC10",
+      "schema_pointer": "#/$defs/DevicePollResult",
+      "value": {
+        "poll_request_id": "example-poll",
+        "state": "empty",
+        "command": null,
+        "observation_probe": null
+      },
+      "expected_schema_valid": true,
+      "purpose": "empty/command=null关联",
+      "business_expectation": "no runtime admission executed",
+      "standard_schema_validation_result": {
+        "result": "matches_expected",
+        "actual_schema_valid": true,
+        "receipt_ref": ".work/v2-design-schema-validation/receipt.json"
+      },
+      "host_runtime_result": null
+    },
+    {
+      "id": "SC11",
+      "schema_pointer": "#/$defs/DevicePollResult",
+      "value": {
+        "poll_request_id": "example-poll",
+        "state": "command",
+        "command": null,
+        "observation_probe": null
+      },
+      "expected_schema_valid": false,
+      "purpose": "command状态不能配null",
+      "business_expectation": "no runtime admission executed",
+      "standard_schema_validation_result": {
+        "result": "matches_expected",
+        "actual_schema_valid": false,
+        "receipt_ref": ".work/v2-design-schema-validation/receipt.json"
+      },
+      "host_runtime_result": null
+    },
+    {
+      "id": "SC12",
+      "schema_pointer": "#/$defs/TelemetryOnlyObservation",
+      "value": {
+        "contract_version": "sf.execution/2.0-draft11",
+        "session_id": null,
+        "execution_epoch_id": null,
+        "device_id": "example-sensor",
+        "device_boot_id": "example-sensor-boot",
+        "device_sequence": 1,
+        "device_timestamp": "2026-10-26T00:00:00Z",
+        "accept_new_work": false,
+        "device_state": "idle",
+        "active_command_id": null,
+        "dataset_id": "example-telemetry-dataset",
+        "source_purpose": "telemetry_only"
+      },
+      "expected_schema_valid": true,
+      "purpose": "独立采集无生产会话",
+      "business_expectation": "no runtime admission executed",
+      "standard_schema_validation_result": {
+        "result": "matches_expected",
+        "actual_schema_valid": true,
+        "receipt_ref": ".work/v2-design-schema-validation/receipt.json"
+      },
+      "host_runtime_result": null
+    },
+    {
+      "id": "SC13",
+      "schema_pointer": "#/$defs/TelemetryOnlyObservation",
+      "value": {
+        "contract_version": "sf.execution/2.0-draft11",
+        "session_id": "example-session",
+        "execution_epoch_id": null,
+        "device_id": "example-sensor",
+        "device_boot_id": "example-sensor-boot",
+        "device_sequence": 1,
+        "device_timestamp": "2026-10-26T00:00:00Z",
+        "accept_new_work": false,
+        "device_state": "idle",
+        "active_command_id": null,
+        "dataset_id": "example-telemetry-dataset",
+        "source_purpose": "telemetry_only"
+      },
+      "expected_schema_valid": false,
+      "purpose": "采集变体不能带生产session",
+      "business_expectation": "no runtime admission executed",
+      "standard_schema_validation_result": {
+        "result": "matches_expected",
+        "actual_schema_valid": false,
+        "receipt_ref": ".work/v2-design-schema-validation/receipt.json"
+      },
+      "host_runtime_result": null
+    },
+    {
+      "id": "SC14",
+      "schema_pointer": "#/$defs/TelemetryOnlyObservation",
+      "value": {
+        "contract_version": "sf.execution/2.0-draft11",
+        "session_id": null,
+        "execution_epoch_id": null,
+        "device_id": "example-sensor",
+        "device_boot_id": "example-sensor-boot",
+        "device_sequence": 1,
+        "device_timestamp": "2026-10-26T00:00:00Z",
+        "accept_new_work": false,
+        "device_state": "idle",
+        "active_command_id": null,
+        "dataset_id": "example-telemetry-dataset",
+        "source_purpose": "telemetry_only",
+        "observation_probe_id": "example-probe"
+      },
+      "expected_schema_valid": false,
+      "purpose": "采集变体不能混入执行probe字段",
+      "business_expectation": "no runtime admission executed",
+      "standard_schema_validation_result": {
+        "result": "matches_expected",
+        "actual_schema_valid": false,
+        "receipt_ref": ".work/v2-design-schema-validation/receipt.json"
+      },
+      "host_runtime_result": null
+    },
+    {
+      "id": "SC15",
+      "schema_pointer": "#/$defs/ExecutionTelemetryObservation",
+      "value": {
+        "contract_version": "sf.execution/2.0-draft11",
+        "session_id": "example-session",
+        "execution_epoch_id": "example-epoch",
+        "device_id": "example-device",
+        "device_boot_id": "example-boot",
+        "device_sequence": 1,
+        "device_timestamp": "2026-10-26T00:00:00Z",
+        "accept_new_work": true,
+        "device_state": "idle",
+        "active_command_id": null,
+        "dataset_id": "example-execution-dataset",
+        "source_purpose": "execution",
+        "observation_probe_id": null
+      },
+      "expected_schema_valid": true,
+      "purpose": "未探测原始执行遥测可存",
+      "business_expectation": "C04可按实际范围存原始消息；H07不能据null probe更新资格",
+      "standard_schema_validation_result": {
+        "result": "matches_expected",
+        "actual_schema_valid": true,
+        "receipt_ref": ".work/v2-design-schema-validation/receipt.json"
+      },
+      "host_runtime_result": null
+    },
+    {
+      "id": "SC16",
+      "schema_pointer": "#/$defs/ObservationProbe",
+      "value": {
+        "probe_id": "example-probe",
+        "device_id": "example-device",
+        "device_boot_id": "example-boot",
+        "issued_execution_revision": 1,
+        "issued_at_host_ms": 1000,
+        "expires_at_host_ms": 500
+      },
+      "expected_schema_valid": true,
+      "purpose": "跨字段期限不由普通schema大小范围证明",
+      "business_expectation": "Host构造/发布必须拒绝expires<=issued；schema有效不证明期限合法",
+      "standard_schema_validation_result": {
+        "result": "matches_expected",
+        "actual_schema_valid": true,
+        "receipt_ref": ".work/v2-design-schema-validation/receipt.json"
+      },
+      "host_runtime_result": null
+    },
+    {
+      "id": "SC17",
+      "schema_pointer": "#/$defs/PageSelection",
+      "value": {
+        "limit": 200,
+        "cursor": null
+      },
+      "expected_schema_valid": true,
+      "purpose": "固定页面上界与显式null cursor",
+      "business_expectation": "no runtime admission executed",
+      "standard_schema_validation_result": {
+        "result": "matches_expected",
+        "actual_schema_valid": true,
+        "receipt_ref": ".work/v2-design-schema-validation/receipt.json"
+      },
+      "host_runtime_result": null
+    },
+    {
+      "id": "SC18",
+      "schema_pointer": "#/$defs/PageSelection",
+      "value": {
+        "limit": 200
+      },
+      "expected_schema_valid": false,
+      "purpose": "cursor可空但必须出现",
+      "business_expectation": "no runtime admission executed",
+      "standard_schema_validation_result": {
+        "result": "matches_expected",
+        "actual_schema_valid": false,
+        "receipt_ref": ".work/v2-design-schema-validation/receipt.json"
+      },
+      "host_runtime_result": null
+    },
+    {
+      "id": "SC19",
+      "schema_pointer": "#/$defs/SafeUint",
+      "value": 9007199254740992,
+      "expected_schema_valid": false,
+      "purpose": "超JS安全整数上界",
+      "business_expectation": "no runtime admission executed",
+      "standard_schema_validation_result": {
+        "result": "matches_expected",
+        "actual_schema_valid": false,
+        "receipt_ref": ".work/v2-design-schema-validation/receipt.json"
+      },
+      "host_runtime_result": null
+    },
+    {
+      "id": "SC20",
+      "schema_pointer": "#/$defs/SafeUint",
+      "value": 9007199254740991,
+      "expected_schema_valid": true,
+      "purpose": "包含安全整数上界",
+      "business_expectation": "no runtime admission executed",
+      "standard_schema_validation_result": {
+        "result": "matches_expected",
+        "actual_schema_valid": true,
+        "receipt_ref": ".work/v2-design-schema-validation/receipt.json"
+      },
+      "host_runtime_result": null
+    },
+    {
+      "id": "SC21",
+      "schema_pointer": "#/$defs/StoredReceipt",
+      "value": {
+        "receipt_id": "example-receipt",
+        "cloud_received_at": "2026-10-26T00:00:00Z",
+        "storage_status": "stored",
+        "host_admission_state": "pending"
+      },
+      "expected_schema_valid": true,
+      "purpose": "标准date-time断言的正例",
+      "business_expectation": "no runtime admission executed",
+      "standard_schema_validation_result": {
+        "result": "matches_expected",
+        "actual_schema_valid": true,
+        "receipt_ref": ".work/v2-design-schema-validation/receipt.json"
+      },
+      "host_runtime_result": null
+    },
+    {
+      "id": "SC22",
+      "schema_pointer": "#/$defs/StoredReceipt",
+      "value": {
+        "receipt_id": "example-receipt",
+        "cloud_received_at": "not-a-date",
+        "storage_status": "stored",
+        "host_admission_state": "pending"
+      },
+      "expected_schema_valid": false,
+      "purpose": "标准date-time断言的反例；关闭format断言不能算通过",
+      "business_expectation": "no runtime admission executed",
+      "standard_schema_validation_result": {
+        "result": "matches_expected",
+        "actual_schema_valid": false,
+        "receipt_ref": ".work/v2-design-schema-validation/receipt.json"
+      },
+      "host_runtime_result": null
+    },
+    {
+      "id": "SC23",
+      "schema_pointer": "#/$defs/HostOkData",
+      "value": {
+        "id": "example-task",
+        "scope": {
+          "kind": "edit",
+          "data": {
+            "kind": "project",
+            "data": "example-local-project"
+          }
+        },
+        "kind": "exporting",
+        "state": "queued",
+        "input_revision": 1,
+        "progress": null,
+        "result_ref": null,
+        "failure": null
+      },
+      "expected_schema_valid": true,
+      "purpose": "共享exporting handle在oneOf只匹配一个分支",
+      "business_expectation": "synthetic structure only; actual source/Host admission not executed",
+      "standard_schema_validation_result": {
+        "result": "matches_expected",
+        "actual_schema_valid": true,
+        "receipt_ref": ".work/v2-design-schema-validation/receipt.json"
+      },
+      "host_runtime_result": null
+    },
+    {
+      "id": "SC24",
+      "schema_pointer": "#/$defs/ExecutionRequestStatus",
+      "value": {
+        "host_context_session_id": "example-host",
+        "state": "registered",
+        "operation": "export_cloud_data",
+        "task": {
+          "id": "example-task",
+          "scope": {
+            "kind": "edit",
+            "data": {
+              "kind": "project",
+              "data": "example-local-project"
+            }
+          },
+          "kind": "exporting",
+          "state": "queued",
+          "input_revision": 1,
+          "progress": null,
+          "result_ref": null,
+          "failure": null
+        },
+        "originating_request_id": "example-export-request"
+      },
+      "expected_schema_valid": true,
+      "purpose": "H11是第四原请求registered分支",
+      "business_expectation": "synthetic structure only; actual source/Host admission not executed",
+      "standard_schema_validation_result": {
+        "result": "matches_expected",
+        "actual_schema_valid": true,
+        "receipt_ref": ".work/v2-design-schema-validation/receipt.json"
+      },
+      "host_runtime_result": null
+    },
+    {
+      "id": "SC25",
+      "schema_pointer": "#/$defs/CloudDataExportTaskState",
+      "value": {
+        "task": {
+          "id": "example-task",
+          "scope": {
+            "kind": "edit",
+            "data": {
+              "kind": "project",
+              "data": "example-local-project"
+            }
+          },
+          "kind": "exporting",
+          "state": "queued",
+          "input_revision": 1,
+          "progress": null,
+          "result_ref": null,
+          "failure": null
+        },
+        "originating_operation": "export_execution_report",
+        "allowed_controls": [],
+        "result": null,
+        "failure": null,
+        "originating_request_id": "example-export-request"
+      },
+      "expected_schema_valid": false,
+      "purpose": "同为exporting不能接受错误原操作",
+      "business_expectation": "synthetic structure only; actual source/Host admission not executed",
+      "standard_schema_validation_result": {
+        "result": "matches_expected",
+        "actual_schema_valid": false,
+        "receipt_ref": ".work/v2-design-schema-validation/receipt.json"
+      },
+      "host_runtime_result": null
+    },
+    {
+      "id": "SC26",
+      "schema_pointer": "#/$defs/PredictionWaitingMetric",
+      "value": {
+        "object_ref": {
+          "kind": "job",
+          "id": "example-model-job"
+        },
+        "covered_from_sim_ms": 0,
+        "covered_until_sim_ms": 100,
+        "known_sim_ms": 0,
+        "basis": "model_object_interval_union",
+        "source_intervals": [],
+        "missing_conditions": []
+      },
+      "expected_schema_valid": true,
+      "purpose": "已知模型等待0的结构示例，不证明真实对象存在或已计算",
+      "business_expectation": "synthetic structure only; actual source/Host admission not executed",
+      "standard_schema_validation_result": {
+        "result": "matches_expected",
+        "actual_schema_valid": true,
+        "receipt_ref": ".work/v2-design-schema-validation/receipt.json"
+      },
+      "host_runtime_result": null
+    }
+  ],
+  "value_origin": "所有example-*身份仅为契约结构样例，不对应v1实际工程/设备/Task或可运行夹具",
+  "design_cases": [],
+  "pending": [
+    "实际Rust类型/生成/roundtrip及typed decoder对照，实施前禁止运行生成器",
+    "v1最终源码/工程ID重核与Linux/Native/Agent实际消费",
+    "actual v2 generated contracts/Rust roundtrip and real typed consumer verification after gates; document draft validation already passed"
+  ],
+  "design_checks": {
+    "ownership_exact_coverage": 154,
+    "pure_domain_edges_to_host_or_native": 0,
+    "cloud_plus_decoded_cursor_closure": 87,
+    "request_lookup_correlation": "4 paired registered operation branches + not_found;3 distinct TaskHandle kinds,1 shared exporting view",
+    "schema_example_target_refs": 26,
+    "standard_meta_instance_format_validation": true,
+    "schema_example_results": "26 match expected; all Host runtime results null",
+    "rust_generation_roundtrip": false,
+    "runtime_verified": false
+  },
+  "cloud_timestamp_design_ref": "docs/06_v2.0设计与开发控制/数据查询与规模验收设计.json",
+  "prediction_report_design_ref": "docs/06_v2.0设计与开发控制/预测与执行比较设计.json",
+  "data_export_design_ref": "docs/06_v2.0设计与开发控制/筛选数据导出设计.json",
+  "implementation_progress": {
+    "updated_at_utc": "2026-10-27T01:45:48.535491+00:00",
+    "status_ref": "docs/06_v2.0设计与开发控制/开发控制计划.json#/actual_v2_results",
+    "receipt_refs": [
+      ".work/v2-implementation-20261026/domain-wire-receipt.json",
+      ".work/v2-implementation-20261026/host-wire/receipt.json",
+      ".work/v2-implementation-20261026/native-workbench/receipt.json"
+    ],
+    "scope": "实际生成契约及Host/Native/MCP消费者已验；整版真实HTTPS联验未完成。"
+  },
+  "historical_design_implementation_flags": {
+    "date": "2026-10-26",
+    "implementation_allowed": true,
+    "runtime_verified": false
+  },
+  "implementation_status_ref": "docs/06_v2.0设计与开发控制/开发控制计划.json#/packages",
+  "current_implementation_packages": [
+    "V2-01"
+  ],
+  "status_projection_updated_at_utc": "2026-10-27T01:45:48.535491+00:00",
+  "runtime_verification_scope": "runtime_verified仅为本文全部设计用例通过声明；当前局部真实证据和剩余动作取主计划，不把设计期禁止实施作为现行限制。",
+  "historical_implementation_progress": {
+    "updated_at_utc": "2026-10-26T16:02:38.813588+00:00",
+    "O2_pure_domain_definitions_implemented": 102,
+    "id_types_implemented": 7,
+    "finite_design_oracle_cases_passed": 337,
+    "actual_schema_same_cases_passed": 337,
+    "actual_entire_typescript_bundle_compiled": true,
+    "receipt_ref": ".work/v2-implementation-20261026/domain-wire-receipt.json",
+    "Host_and_Native_implementation_verified": false
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "status": "shared_type_source_frozen_actual_Engine_Host_consumers_pending",
+  "observed_gaps": [
+    "One physical Assembly needs exact A/B operation/family choices; the current compiler accepts only one default operation binding",
+    "Flat TransportDefinition.resources cannot state loading-only/unloading-only requirements without name heuristics"
+  ],
+  "fields": {
+    "DeviceInstance.route_operation_refs": "Vec<ModuleRef>; default empty and skip empty",
+    "TransportDefinition.loading_resources": "Vec<ResourceRequirement>; default empty and skip empty",
+    "TransportDefinition.unloading_resources": "Vec<ResourceRequirement>; default empty and skip empty"
+  },
+  "compatibility": "New empty arrays omit on write and absent reads empty; all previous no-choice/no-phase inputs retain their exact shape. The existing default source and whole-trip resources are unchanged.",
+  "operation_choice": {
+    "selection": "For each RouteStep, use exactly its operation_ref if it matches the current explicit default/inline source or an explicitly listed route_operation_refs entry. Additional entries are exact loaded Operations modules, never latest/category/name fallback.",
+    "physical_owner": "All alternatives remain the same DeviceInstance and execution_capacity ResourceInstance; no second physical Assembly, clock, inventory or capacity.",
+    "per_job": "Every actual Job records its one selected exact source. Material roles, ports, parameters, family, duration and readiness come from that definition and the explicit step bindings; do not merge different source trees.",
+    "validation": "Missing/mismatched/duplicate choice, unsupported category, incompatible material/resource/unit/parameter or binding cannot execute. Existing professional producer/purpose/binding/selected-input authorization is not granted by this list; an actual professional operation must still match its real consumer gate."
+  },
+  "transport_resources": {
+    "resources": "Existing resources remain held for the whole actual trip, including declared waits and return; no role name is reinterpreted into a phase.",
+    "loading_resources": "Acquire only for actual loading; release on loading completion. Waiting does not manufacture elapsed work or cargo.",
+    "unloading_resources": "Acquire only for actual unloading; retain cargo and whole-trip resources while unavailable/blocked, release the phase requirement on completion.",
+    "binding": "All tables use explicit ResourceRequirement.role through SupplyRelation.resources to actual resources with exact quantity units/qualification/calendar. Roles may have arbitrary names; no loader/unloader string inference.",
+    "aliases": "Same physical resource aliased within one trip merges overlapping declared requirements by maximum, as existing job/phase rules; independent jobs/trips still compete on aggregate actual capacity.",
+    "boundaries": "Existing declared stage times and non-preemptive conditions remain; zero-duration stages cannot claim a closed calendar boundary. Unknown durations/resources remain named gaps, not zero/default availability."
+  },
+  "task_refs": [
+    "docs/04_开发与验收/整包派发/P1-04_整包执行.json",
+    "docs/04_开发与验收/整包派发/P2-02_整包执行.json"
+  ],
+  "actual_result": null
+}

@@ -1,0 +1,123 @@
+{
+  "document_kind": "P0_01_actual_Windows_directory_store_implementation",
+  "window": "实现窗口4",
+  "task_id": "P0-01",
+  "covered_original_steps": [
+    3,
+    4
+  ],
+  "date": "2026-10-15",
+  "status": "store_13_passed_received_and_global_native_evidence_available",
+  "scope_ref": "docs/04_开发与验收/P0-01_保存重开与会话历史切片.json",
+  "allowed_written_files": [
+    "packages/commands/src/project_store.rs",
+    "docs/04_开发与验收/P0-01_保存历史_窗口4.json"
+  ],
+  "frozen_refs": [
+    "docs/03_架构与契约/全层类型与工程格式.json#/storage",
+    "docs/03_架构与契约/全层类型与工程格式.json#/format",
+    "packages/domain/src/models.rs#PackageManifest",
+    "packages/domain/src/models.rs#DocumentEntry",
+    "packages/domain/src/models.rs#Versioned"
+  ],
+  "implemented": [
+    "ProjectArchive Clone / read_project_archive / write_project_archive保持已派发签名",
+    "真实打开Windows目录与文件句柄；子路径逐段拒绝reparse/junction，打开后的最终路径绑定实际包根",
+    "根Versioned<PackageManifest>、单一required active_project、ID/Revision、类型/版本/必需集合及角色匹配",
+    "完整storage角色按冻结类型解析；精确模块ID/SemVer、文件引用闭包、Run冻结输入、专业输入/结果身份、评估引用核验；显式命名草稿缺项保留但不忽略required文档",
+    "保存携带文档/九类ModulePackage/资产/SupportingFile原始bytes，资产权限不提升，路径不由OpaqueID构造",
+    "按目标目录当前实际根选择generation，跳过失败遗留目录；旧根引用数据绝不原位覆盖；同相对路径不同bytes拒绝",
+    "新文件全部write/flush/sync/close后初始同目录rename，已有根ReplaceFileW带唯一lpBackupFileName且flags0",
+    "提交前取消有效，成功提交后返回成功；原子提交失败解析旧根/保留根的ProjectID+generation+revision，实际恢复后再次解析，不能恢复保留文件并IoFailure"
+  ],
+  "expected_before_execution": true,
+  "native_unit_test_count": 13,
+  "finite_expectations": [
+    "初始/两代可重开，旧数据bytes不变；危险形状OpaqueID只作为数据",
+    "每次按当前磁盘根选代号，陈旧backing不能回用已有/孤立代目录",
+    "全部storage角色、九类模块、资产和support bytes异目录重开修改再保存无损",
+    "提交前取消保留旧根和旧代",
+    "未知schema、缺必需字段、角色错、revision错、必需文件缺失与载荷必需集合缺失拒绝",
+    "Windows保留名/尾点空格/路径越界/casefold/file-directory冲突拒绝",
+    "真实mklink /J目录逃逸由生产句柄边界拒绝",
+    "已被旧根引用的相关文件不同bytes不覆写",
+    "真实Windows文件共享锁迫使ReplaceFileW失败，解析并验证旧根",
+    "实际文件移动构造1177 aftermath，生产恢复代码重命名恢复并重新解析旧根（不声称1177为OS实际返回）",
+    "实际根路径阻挡恢复时保留保留根，IoFailure不声称旧根完好",
+    "仅文件名像保留根但generation不符时拒绝作为恢复源",
+    "明确报告的草稿引用缺项保持；同一缺项的required文件仍拒绝"
+  ],
+  "validation": {
+    "format": "rustfmt --edition 2024 assigned file only passed",
+    "cargo_execution": {
+      "executor": "统筹窗口W00集中执行，本窗口仅核读原始日志并更新专属JSON",
+      "suite": "workspace Rust tests",
+      "stdout_ref": ".work/p0-01-persistence-history/verification/workspace-tests.stdout.txt",
+      "stderr_ref": ".work/p0-01-persistence-history/verification/workspace-tests.stderr.txt",
+      "workspace_tests_passed": 79,
+      "workspace_tests_failed": 0,
+      "project_store_tests_passed": 13,
+      "project_store_tests_failed": 0,
+      "store_test_names": [
+        "project_store::tests::a_retained_filename_without_the_old_identity_is_not_a_recovery_source",
+        "project_store::tests::cancellation_before_commit_keeps_old_root_and_old_generation",
+        "project_store::tests::windows_path_components_casefold_and_file_directory_collisions_are_rejected",
+        "project_store::tests::explicitly_reported_draft_gaps_do_not_excuse_missing_required_documents",
+        "project_store::tests::actual_retained_root_is_restored_when_root_was_moved",
+        "project_store::tests::restoration_failure_retains_recoverable_files_and_does_not_claim_intact_root",
+        "project_store::tests::actual_replacefile_sharing_failure_parses_and_preserves_the_old_root",
+        "project_store::tests::typed_root_required_fields_versions_roles_and_revision_are_enforced",
+        "project_store::tests::initial_and_second_generation_reopen_without_overwriting_old_data",
+        "project_store::tests::stale_backing_does_not_reuse_a_committed_or_orphan_generation",
+        "project_store::tests::junction_escape_is_rejected_by_actual_directory_handles",
+        "project_store::tests::included_bytes_cannot_overwrite_an_old_root_referenced_path",
+        "project_store::tests::all_roles_nine_modules_and_related_bytes_survive_another_directory"
+      ],
+      "command": "npm.cmd run test:rust",
+      "exit_code": 0
+    },
+    "actual_result": {
+      "status": "passed",
+      "actual_Windows_directory_tests": 13,
+      "actual_ReplaceFileW_sharing_failure_and_old_root_verification": "passed",
+      "actual_retained_root_restore_and_restore_failure_retention": "passed; 1177 aftermath arranged with real file moves, not claimed as an OS-produced error",
+      "nine_module_and_storage_role_closure_across_directories": "passed",
+      "cancellation_required_fields_paths_casefold_and_junction_boundary": "passed",
+      "native_Tauri_same_Host_e2e": {
+        "status": "passed",
+        "check_count": 31,
+        "executor": "统筹W00集中执行／实现窗口2原生接线",
+        "evidence_ref": ".work/p0-01-persistence-history/verification/result.json",
+        "kind": "P0_01_host_smoke",
+        "this_window_role": "存储模块实现与13组真实目录测试；原生31项为统筹提供的全局接入证据"
+      },
+      "native_e2e_owner": "统筹及实现窗口2；最终真实原生结果已提供并核读"
+    },
+    "executor": "统筹窗口集中Cargo执行，当前窗口未重复运行",
+    "test_input_origin": "最小输入由实际ProjectHost创建读取；完整角色/九类模块使用冻结typed fixtures作为输入，断言通过生产store在真实临时目录执行，未调用旧design proof"
+  },
+  "official_source": {
+    "title": "Microsoft ReplaceFileW",
+    "url": "https://learn.microsoft.com/windows/win32/api/winbase/nf-winbase-replacefilew",
+    "used_for": "backup argument, flags0, 1175/1176/1177 aftermath and same-volume restore"
+  },
+  "implementation_scope_limit": "存储层不宣称完成工艺/几何/运行业务验证；Host采用门、同目录FIFO、dirty/Task/history归其他已派发窗口。SupportingFile中若出现storage未映射的DocumentKind则明确UnsupportedSchema，保留原文件，不能默丢。",
+  "public_configuration_or_other_window_files_modified": false,
+  "whole_P0_01_done_claimed": false,
+  "business_frontend_or_Figma_modified": false,
+  "prior_49_regression_tests": "统筹集中workspace79 passed/0 failed；本窗口未改原49组测试或预期",
+  "global_acceptance_evidence": {
+    "status": "passed",
+    "evidence_ref": ".work/p0-01-persistence-history/verification/result.json",
+    "workspace_Rust_tests": 79,
+    "native_same_managed_Host_checks": 31,
+    "all_check_exit_codes": 0,
+    "schema_counts_reported_by_coordinator": {
+      "schemas": 20,
+      "cases": 48
+    },
+    "typecheck_and_desktop_build": "passed per checked exit codes",
+    "store_component_received": true,
+    "scope": "全局验证回传；不扩大本窗口仅承担store的交付范围，不声称整项P0-01完成"
+  }
+}

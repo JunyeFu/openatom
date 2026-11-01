@@ -1,0 +1,576 @@
+{
+  "document_kind": "DRF06_selected_business_DTO_delta_for_single_canonical_writer",
+  "date": "2026-10-14",
+  "refinement_revision": "DRF06-2a",
+  "status": "canonical_DTO_merged_local_consumers_aligned_35_checks_passed",
+  "owner": "复审窗口1（本轮W00共同合同唯一写入）",
+  "local_owner": "复审窗口6",
+  "source_authority": "docs/04_开发与验收/本机并行窗口计划.json#/current_design_reassignment/contract_decisions",
+  "already_merged": {
+    "TC01": "JobState.execution_ref；WaitInterval.execution_ref/phase_ref，当前Rust及派生合同存在",
+    "TC02": "RunResult.phase_work_intervals、PhaseWorkInterval/PhaseWorkEndCause，当前Rust存在",
+    "H07": "同快照/期末点Events读取设计已入get_run条件与timeline_runtime_contract",
+    "H08": "RunResult.computed_until_ms已存在；本窗ALG-12补同刻闭包与控制封口语义",
+    "product_execution": null,
+    "remaining_business_fields": "material_allocations/split_from_ref/phase_ref/interval_end_causes/Wait.end_cause当前Rust已存在"
+  },
+  "source_files": [
+    "packages/domain/types.design.rs",
+    "packages/domain/type-inventory.design.json",
+    "packages/domain/module-field-bindings.design.json",
+    "packages/commands/api.design.rs",
+    "docs/03_架构与契约/全层类型与工程格式.json",
+    "docs/03_架构与契约/公开操作与宿主调用契约.json"
+  ],
+  "derived_consumers": [
+    "tools/type-contract-proof/output/schemas/run.schema.json",
+    "tools/type-contract-proof/output/schemas/scenario.schema.json",
+    "tools/type-contract-proof/output/typescript",
+    "tools/type-contract-proof/output/api-schemas/get_run.response.schema.json",
+    "tools/type-contract-proof/timeline-consumer.ts"
+  ],
+  "type_definitions": [
+    {
+      "name": "WaitEndCause",
+      "rust": "enum WaitEndCause { ConditionChanged, Resolved, ObservationEnd, ComputedBoundary }",
+      "wire": "snake_case",
+      "variants": [
+        "condition_changed",
+        "resolved",
+        "observation_end",
+        "computed_boundary"
+      ],
+      "meaning": "每一WaitInterval的实际结束或封口；condition_changed仍阻断、resolved已解除，其余仍未解",
+      "status": "canonical_merged"
+    },
+    {
+      "name": "ClaimIntervalEndCause",
+      "rust": "enum ClaimIntervalEndCause { Released, ObservationEnd, ComputedBoundary }",
+      "wire": "snake_case",
+      "variants": [
+        "released",
+        "observation_end",
+        "computed_boundary"
+      ],
+      "meaning": "单一持有段的真实释放或封口；不是整Claim生命周期的猜测",
+      "status": "canonical_merged"
+    }
+  ],
+  "field_changes": [
+    {
+      "handoff": "DRF06-H01",
+      "path": "ResourceClaim.phase_ref",
+      "before": "不存在",
+      "after": "Option<PhaseId>，沿现行nullable规则",
+      "constraints": [
+        "kind=phase必须Some且属于该job的冻结行为阶段；job/transport/output_hold为None",
+        "同资源job/phase重复取得用一个job Claim，不能再建phase Claim计两次"
+      ],
+      "producer": "simulation实际资源取得/释放",
+      "consumers": [
+        "阶段资源行",
+        "报告容量占用",
+        "设备O绑定"
+      ],
+      "status": "canonical_field_present_local_semantics_written"
+    },
+    {
+      "handoff": "DRF06-H01",
+      "path": "ResourceClaim.interval_end_causes",
+      "before": "原intervals缺逐段结束原因",
+      "after": "Vec<ClaimIntervalEndCause>，intervals仍Vec<IntervalMs>，等长按索引一一对应",
+      "constraints": [
+        "两数组等长、同序，第i原因只配第i段；不嵌套改型，不补默认cause",
+        "start_ms<end_ms，段在该快照已计算范围",
+        "真实释放标released；仍持有完整末窗标observation_end；前缀/暂停/取消标computed_boundary",
+        "同刻真实release先胜；零时长以原点事件表达",
+        "恢复快照替换computed_boundary临时段，不追加重叠段；不得按end_ms推结束"
+      ],
+      "producer": "simulation一致资源快照",
+      "consumers": [
+        "timeline细线/开放端",
+        "reporting并集与容量时间",
+        "Host同快照结果"
+      ],
+      "status": "canonical_field_present_local_semantics_written"
+    },
+    {
+      "handoff": "DRF06-H03",
+      "path": "WaitInterval.end_cause",
+      "before": "不存在",
+      "after": "现行WaitEndCause，WaitChanged复用WaitInterval",
+      "constraints": [
+        "原因集合/引用/条件变化仍不能推进=condition_changed；全解除=resolved",
+        "完整末窗仍阻断=observation_end；前缀/暂停/取消=computed_boundary",
+        "同刻真实解除/原因变化先胜；reasons多原因并列、时长取并集，next_known_boundary非开工承诺"
+      ],
+      "producer": "simulation阻断重评/封口",
+      "consumers": [
+        "timeline等待端帽和描述",
+        "reporting等待/未完成",
+        "Agent真实缺项"
+      ],
+      "status": "canonical_field_present_local_semantics_written"
+    },
+    {
+      "handoff": "DRF06-H04",
+      "path": "InitialConditions.material_allocations",
+      "before": "不存在",
+      "after": "现行Vec<MaterialAllocation>，仅soft_plan/hard_reserved",
+      "constraints": [
+        "首版同起点仅soft_plan/hard_reserved；committed/WIP恢复拒绝",
+        "hard_reserved.demand_ref明确引用现存ProductionTask，单源可部分，多源只整量同类型/版本/单位且quantity为总量",
+        "逐源硬预留总和<=初始实量且份额不重叠；全部准入成功才初始化",
+        "soft_plan可Order/Task、可空item_refs；不排他、不增加库存",
+        "pending可硬预留但不能绕过领用资格；预留单位/引用失配或多源部分量拒绝，保原输入"
+      ],
+      "producer": "表单/授权Agent经现行PutObject Scenario，Host冻结后Worker初始化",
+      "consumers": [
+        "齐套领用",
+        "保存重开",
+        "库存/订单计划",
+        "报告投入与余量"
+      ],
+      "status": "canonical_field_present_local_semantics_written"
+    },
+    {
+      "handoff": "DRF06-H05",
+      "path": "RuntimeItem.split_from_ref",
+      "before": "不存在",
+      "after": "现行Option<ObjectId>；完整源transformed、全部子批数量守恒",
+      "constraints": [
+        "仅拆分子批填已有源RuntimeItem ID；非拆分物品None",
+        "源transformed只作来源记录，不计现有/空间，子量和=源量且同单位/类型版本/质量",
+        "子批一个holder；ID来自源/分配逻辑ID/稳定拆分序，分配转实际子ID",
+        "完整取得/划分成功事务才拆；资源失败不重复拆既有预留"
+      ],
+      "producer": "simulation初始预留规范化/实际齐套拆批",
+      "consumers": [
+        "物品追踪",
+        "容器/组成来源",
+        "材料投入与库存报告"
+      ],
+      "status": "canonical_field_present_local_semantics_written"
+    },
+    {
+      "handoff": "DRF06-H01",
+      "path": "JobState.finished_at_ms/state/pending_outputs (semantics only)",
+      "before": "字段存在；旧消费者未区分phase结束与移交",
+      "after": "候选产出后未移交waiting_output、finished_at=None；全部声明输出/效果提交并释放后completed/finished_at=实际时刻",
+      "constraints": [
+        "PhaseCompleted只代表该phase；不能用它填Job完成",
+        "质量待判/输出容量等待保持Job包络和实际Claim",
+        "无物料输出按声明效果提交/释放完成，不虚构移交"
+      ],
+      "producer": "simulation结果槽/移交",
+      "consumers": [
+        "作业外框",
+        "原时间轴/报告完成口径"
+      ],
+      "local_algorithm_status": "written_ALG-06/07/08_not_product_execution",
+      "status": "canonical_field_present_local_semantics_written"
+    }
+  ],
+  "boundary_precedence": [
+    "先处理截点同刻真实resolved/released/phase_completed",
+    "仍阻断/持有且完整窗口结束→Wait/Claim observation_end",
+    "仍阻断/持有且只是前缀/暂停/取消→Wait/Claim computed_boundary",
+    "PhaseWorkEndCause仍只有phase_completed/interrupted/computed_boundary；完整窗末尚未完成的有效段仍computed_boundary，不混用Wait/Claim枚举"
+  ],
+  "alias_mapping": {
+    "manual_claim_intervals_ms": "手工intervals_ms [[a,b]]→intervals:[{start_ms:a,end_ms:b}] + interval_end_causes:[明确原因]，两数组等长同序逐项对应；不默认cause、不要求嵌套改型",
+    "manual_execution_ref": "旧手工平面kind/device_id等映射现行JobExecutionRef serde {kind,data}，不改设备身份/数值",
+    "B03_demand_label": "旧A/B为案例需求标签；公共初始硬预留demand_ref用显式承接该订单的ProductionTask.id，不按同名猜任务",
+    "scrap_record": "处置记录标签，不是holder目的库位",
+    "departures_ms": "整数点t→装载开始机会[t,t+1ms)，load后才depart"
+  },
+  "finite_cases": [
+    {
+      "id": "D06-C01",
+      "kind": "claim_phase_identity",
+      "input": {
+        "valid": {
+          "id": "C-load",
+          "resource_id": "W-C",
+          "job_id": "J-calendar-part1",
+          "kind": "phase",
+          "phase_ref": "load",
+          "units": 1,
+          "intervals": [
+            {
+              "start_ms": 0,
+              "end_ms": 5000
+            }
+          ],
+          "interval_end_causes": [
+            "released"
+          ]
+        },
+        "invalid_phase_ref": null,
+        "invalid_end_cause_count": [],
+        "invalid_end_cause_alias": "observed_end"
+      },
+      "expected": {
+        "valid": true,
+        "phase_without_phase_ref": false,
+        "cause_count_mismatch": false,
+        "unknown_cause_alias": false
+      },
+      "actual_result": null
+    },
+    {
+      "id": "D06-C02",
+      "kind": "same_endpoint_different_semantics",
+      "input": {
+        "interval_ms": [
+          0,
+          20000
+        ],
+        "contexts": [
+          {
+            "window_end_ms": 20000,
+            "computed_until_ms": 20000,
+            "whole_window_computed": true,
+            "still_blocked_or_held": true
+          },
+          {
+            "window_end_ms": 30000,
+            "computed_until_ms": 20000,
+            "whole_window_computed": false,
+            "still_blocked_or_held": true
+          },
+          {
+            "window_end_ms": 20000,
+            "computed_until_ms": 20000,
+            "whole_window_computed": true,
+            "still_blocked_or_held": false
+          }
+        ]
+      },
+      "expected": {
+        "wait_end_causes": [
+          "observation_end",
+          "computed_boundary",
+          "resolved"
+        ],
+        "claim_end_causes": [
+          "observation_end",
+          "computed_boundary",
+          "released"
+        ],
+        "cannot_infer_from_end_ms": true
+      },
+      "actual_result": null
+    },
+    {
+      "id": "D06-C03",
+      "kind": "initial_reservation_positive_negative",
+      "input": {
+        "source_id": "batch10",
+        "source_quantity": {
+          "value": {
+            "coefficient": 10,
+            "decimal_places": 0
+          },
+          "unit": "piece"
+        },
+        "source_quality": "pending",
+        "task_ids": [
+          "T-kit"
+        ],
+        "valid_allocation": {
+          "id": "reserve-4",
+          "demand_ref": "T-kit",
+          "item_refs": [
+            "batch10"
+          ],
+          "quantity": {
+            "value": {
+              "coefficient": 4,
+              "decimal_places": 0
+            },
+            "unit": "piece"
+          },
+          "mode": "hard_reserved"
+        },
+        "invalids": [
+          {
+            "name": "committed_start",
+            "mode": "committed"
+          },
+          {
+            "name": "exceeds_actual",
+            "quantity": {
+              "value": {
+                "coefficient": 11,
+                "decimal_places": 0
+              },
+              "unit": "piece"
+            }
+          },
+          {
+            "name": "wrong_unit",
+            "quantity": {
+              "value": {
+                "coefficient": 4,
+                "decimal_places": 0
+              },
+              "unit": "kg"
+            }
+          },
+          {
+            "name": "missing_task",
+            "demand_ref": "unknown-T"
+          },
+          {
+            "name": "multi_source_partial",
+            "item_refs": [
+              "batch10",
+              "batch2"
+            ],
+            "source_quantities": [
+              10,
+              2
+            ],
+            "quantity": {
+              "value": {
+                "coefficient": 4,
+                "decimal_places": 0
+              },
+              "unit": "piece"
+            }
+          }
+        ]
+      },
+      "expected": {
+        "valid": true,
+        "reserved_quantity": 4,
+        "free_ordinary_quantity": 0,
+        "unreserved_on_hand_quantity": 6,
+        "quality_not_bypassed": true,
+        "invalid_acceptance": [
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "actual_result": null
+    },
+    {
+      "id": "D06-C04",
+      "kind": "split_source_partition",
+      "input": {
+        "source_id": "batch10",
+        "source_quantity": 10,
+        "reserve_quantity": 4,
+        "quantity_unit": "piece",
+        "resource_available": false
+      },
+      "expected": {
+        "children_quantities": [
+          4,
+          6
+        ],
+        "split_from_refs": [
+          "batch10",
+          "batch10"
+        ],
+        "source_lifecycle": "transformed",
+        "source_counts_as_stock": false,
+        "on_hand": 10,
+        "quantity_acquired": 0,
+        "invalid_child_sum_11": false
+      },
+      "actual_result": null
+    },
+    {
+      "id": "D06-C05",
+      "kind": "claim_wait_prefix_replacement",
+      "input": {
+        "job_start_ms": 5000,
+        "work_calendar_ms": [
+          [
+            0,
+            10000
+          ],
+          [
+            20000,
+            30000
+          ]
+        ],
+        "effective_duration_ms": 8000,
+        "prefix_ms": 10000,
+        "window_end_ms": 30000
+      },
+      "expected": {
+        "prefix_machine": {
+          "intervals": [
+            {
+              "start_ms": 5000,
+              "end_ms": 10000
+            }
+          ],
+          "interval_end_causes": [
+            "computed_boundary"
+          ]
+        },
+        "prefix_phase_person": {
+          "intervals": [
+            {
+              "start_ms": 5000,
+              "end_ms": 10000
+            }
+          ],
+          "interval_end_causes": [
+            "released"
+          ]
+        },
+        "final_machine": {
+          "intervals": [
+            {
+              "start_ms": 5000,
+              "end_ms": 23000
+            }
+          ],
+          "interval_end_causes": [
+            "released"
+          ]
+        },
+        "final_phase_person": {
+          "intervals": [
+            {
+              "start_ms": 5000,
+              "end_ms": 10000
+            },
+            {
+              "start_ms": 20000,
+              "end_ms": 23000
+            }
+          ],
+          "interval_end_causes": [
+            "released",
+            "released"
+          ]
+        },
+        "final_wait": {
+          "interval_ms": [
+            10000,
+            20000
+          ],
+          "end_cause": "resolved"
+        },
+        "machine_union_ms": 18000,
+        "person_union_ms": 8000
+      },
+      "actual_result": null
+    },
+    {
+      "id": "D06-C06",
+      "kind": "job_completion_output_envelope",
+      "input": {
+        "work_start_ms": 0,
+        "work_duration_ms": 20000,
+        "receiver_available_ms": 40000,
+        "output_quantity": 1
+      },
+      "expected": {
+        "phase_completed_at_ms": 20000,
+        "job_finished_at_ms": 40000,
+        "waiting_output_finished_at_ms": null,
+        "device_claim_end_cause": "released",
+        "person_claim_end_cause": "released",
+        "invalid_finished_at_phase_end": false
+      },
+      "actual_result": null
+    },
+    {
+      "id": "D06-C07",
+      "kind": "C01_task_preparation_lowering",
+      "input": {
+        "route_device": "D1",
+        "module_category": "tasks",
+        "task_target_role": "workstation",
+        "role_targets": {
+          "workstation": "D1"
+        },
+        "duration_ms": 2000,
+        "initial_items": 5,
+        "repeated_same_configuration_requests": 2
+      },
+      "expected": {
+        "work_kind": "preparation",
+        "prepared_at_ms": 2000,
+        "created_job_count": 1,
+        "created_items": 0,
+        "initial_items_after": 5,
+        "readiness_same_target_and_configuration": true,
+        "readiness_other_target": false,
+        "readiness_changed_configuration": false,
+        "missing_explicit_target_mapping": false
+      },
+      "actual_result": null
+    },
+    {
+      "id": "D06-C08",
+      "kind": "C01_transport_supply_lowering",
+      "input": {
+        "module_category": "transport",
+        "supply_embedded_in": "ScenarioInput.supplies",
+        "initial_source_items": [
+          "p1",
+          "p2",
+          "p3"
+        ],
+        "target_quantity": 5,
+        "carrier_capacity": 4,
+        "allow_partial_load": true,
+        "depart_ms": 0,
+        "travel_ms": 1000,
+        "unload_ms": 500,
+        "return_ms": 500
+      },
+      "expected": {
+        "cargo_items": [
+          "p1",
+          "p2",
+          "p3"
+        ],
+        "shipped_quantity": 3,
+        "created_items": 0,
+        "received_ms": 1500,
+        "returned_ms": 2000,
+        "commit_via": "PutObject Scenario",
+        "new_EditableProjectObject_Supply_variant": false
+      },
+      "actual_result": null
+    }
+  ],
+  "acceptance_refs": [
+    "B01—B18数值/业务结论保留",
+    "DRF06-T01—T08保持manual_expected",
+    "H01/03/04/05剩余字段与段结束实际正反例"
+  ],
+  "after_merge_check": "按当前Rust/派生Schema/TS和20例证明，复核本窗平行数组/别名/守恒消费者；不写共享类型，不执行Engine",
+  "actual_Rust_API_written_by_this_window": false,
+  "actual_product_runtime": null,
+  "actual_result": null,
+  "canonical_contract_ref": "docs/03_架构与契约/全层类型与工程格式.json#/timeline_runtime_contract",
+  "merge_evidence_ref": "tools/type-contract-proof/output/timeline-contract-proof-result.json",
+  "current_receipt": "原13+新增7端点例共20；当前Rust/标准Schema/TS已合入，本窗只读核对和消费，Engine/Host未实现",
+  "canonical_claim_shape": {
+    "intervals": "Vec<IntervalMs> 保留原段数值形状",
+    "interval_end_causes": "Vec<ClaimIntervalEndCause>逐项同序与intervals对齐",
+    "phase_ref": "Option<PhaseId>",
+    "equal_length_required": true,
+    "nested_claim_interval_type_requested": false
+  },
+  "shared_split_wording_expectation": "已只读核对当前公共规范：完整源transformed留来源，全部子批守恒，原源不计现有/空间，失败不重复拆分",
+  "C01_alignment_ref": "docs/04_开发与验收/特征细化/DRF03_C01_逐类原子采用.json",
+  "C01_semantics": {
+    "task": "RouteStep.operation_ref按payload.category分Tasks/Operations；Tasks编Preparation，目标由RoleBindings.targets明示，资源同账本日历，完成派生本Run同目标/配置readiness且不造物品；已完成同配置不重复准备",
+    "transport": "ScenarioInput.supplies→SupplyRelation.transport_ref→Transport payload，实货同ID走现有物流；PutObject Scenario，不加Supply对象变体/库存"
+  },
+  "local_verification_ref": "docs/04_开发与验收/特征细化/DRF06_静态与有限计算核验.json"
+}

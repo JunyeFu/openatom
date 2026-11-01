@@ -1,0 +1,11 @@
+const fs=require('node:fs'),path=require('node:path'),{extract}=require('./capture-design.cjs');
+const {chromium}=require('C:/Users/fujunye/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');
+(async()=>{const b=await chromium.launch({headless:true,channel:'chrome'}),p=await b.newPage({viewport:{width:1920,height:1080}}),rows=[];
+const fresh=async id=>{await p.goto('http://127.0.0.1:8921/?frame='+id);await p.waitForFunction(()=>window.S04_READY);},click=a=>p.locator(`[data-action="${a}"]:visible`).first().click(),shot=async(id,t)=>rows.push(await extract(p,id,t));
+await fresh('VP20');await shot('VP20','纸包装成果/输入匹配/认可与绑定');
+await fresh('VP24');await p.getByRole('textbox',{name:'X',exact:true}).fill('8.2');await p.locator('#library [data-device="ROB01"]').click();await shot('SELDIRTY','切对象前三种决定 / 应用失败不切换');
+const doc=await p.evaluate(()=>window.S04_PROTOTYPE.snapshot());doc.project.dimensions[0]=55;
+await p.locator('dialog [data-action="dialog-close"]').click();await p.locator('#project-file').setInputFiles({name:'另一工程.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(doc))});await shot('OPENFIELDS','打开候选前处理未应用字段');await click('open-discard-fields');await shot('OPENUNSAVED','打开候选前处理未保存工程');
+await fresh('VP19');await click('paper-check');await click('frame-VP20');await p.locator('#paper-ack').check();await shot('PKGACK','当前输入匹配 / 已认可 / 尚未绑定');await click('paper-bind');await shot('PKGBOUND','当前输入匹配 / 显式工位绑定');await click('frame-VP18');await p.locator('[data-field="width"]').fill('200');await click('apply');await click('frame-VP20');await shot('PKGREVIEW','同产品版本改几何 / 旧结果保留而用途失配');
+const f=path.join(__dirname,'capture-index.json'),idx=JSON.parse(fs.readFileSync(f)),m=new Map(idx.map(x=>[x.id,x]));for(const r of rows)m.set(r.id,r);fs.writeFileSync(f,JSON.stringify([...m.values()],null,2));await b.close();console.log(JSON.stringify({added:rows.map(x=>x.id),total:m.size}));
+})().catch(e=>{console.error(e);process.exit(1)});

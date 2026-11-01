@@ -1,0 +1,876 @@
+{
+  "document_kind": "S06_04_passed_owned_design_review_after_shared_FixedPose_merge_not_product_runtime",
+  "checkpoint": "S06-04",
+  "date": "2026-10-14 Asia/Shanghai",
+  "status": "passed_document_specification",
+  "report_md_ref": "docs/04_开发与验收/S06-04_纸包装算法与数值方法复审.md",
+  "source_refs": [
+    "../../../../知识库/行业选题数据库/扩展研究/行业机会发现/2026-10-12_纸构研究定稿/纸构完整研究报告.md",
+    "packages/domain/types.design.rs",
+    "packages/packaging/README.md",
+    "tools/architecture-proof/src/geometry_report.rs",
+    "tools/architecture-proof/output/geometry-trial-result.json",
+    "packages/packaging/algorithm.design.json",
+    "docs/03_架构与契约/纸包装结构与过程算法.md",
+    "docs/03_架构与契约/纸包装数值与制造规则.md",
+    "tools/packaging-algorithm-proof/finite-expectations.json",
+    "tools/packaging-algorithm-proof/output/proof-result.json"
+  ],
+  "fidelity_scope": {
+    "mechanisms": [
+      "restricted_folded_container",
+      "outer_box_and_inner_liner",
+      "cover_or_sliding_sleeve"
+    ],
+    "blank_restricted_structure": true,
+    "changes": [
+      "product_function",
+      "material_approved",
+      "part_relations_or_repeat_order"
+    ],
+    "required_processes": [
+      "forming",
+      "opening",
+      "fixed_orientation_linear_extraction"
+    ],
+    "manufacturing": [
+      "cut",
+      "fold",
+      "glue",
+      "material_counts",
+      "editable_project"
+    ]
+  },
+  "open_findings": [],
+  "library_reading": {
+    "selected": "parry3d-f64 0.31.1",
+    "official_web_attempt": "docs.rs exact distance page inaccessible; not counted as read",
+    "exact_cached_source_root": "C:/Users/fujunye/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/parry3d-f64-0.31.1",
+    "read_files": [
+      {
+        "file": "src/query/distance/distance.rs",
+        "lines": [
+          61,
+          73
+        ],
+        "supports": "nonnegative distance zero means touching or penetrating"
+      },
+      {
+        "file": "src/query/shape_cast/shape_cast.rs",
+        "lines": [
+          7,
+          30
+        ],
+        "supports": "status and unreliable penetration witnesses"
+      },
+      {
+        "file": "src/query/nonlinear_shape_cast/nonlinear_shape_cast.rs",
+        "lines": [
+          23,
+          74
+        ],
+        "supports": "single rigid motion inputs and Unsupported; not articulated tree"
+      }
+    ],
+    "other_primary_sources": [
+      {
+        "url": "https://docs.python.org/3/library/fractions.html",
+        "supports": "exact rational arithmetic / float-as-integer-ratio input interpretation"
+      },
+      {
+        "url": "https://dlmf.nist.gov/4.19",
+        "supports": "sine/cosine series forms, remainder derivation in owned spec"
+      },
+      {
+        "url": "https://doc.rust-lang.org/std/primitive.f64.html#method.next_up",
+        "supports": "adjacent representable endpoints; actual program compiled on1.97.0"
+      }
+    ],
+    "new_dependencies_installed": false
+  },
+  "actual_complete_professional_trial": null,
+  "actual_product_runtime": null,
+  "frontend_or_Figma": null,
+  "review_passed": true,
+  "contact_contract_ref": "docs/03_架构与契约/纸包装局部接触与连接契约.json",
+  "findings": [
+    {
+      "id": "F64-01",
+      "severity": "design_blocker",
+      "subject": "允许接触必须局限于连接局部",
+      "required_fix": "增加可执行的局部接触区域/允许量载体或从显式折带/连接局部参数唯一推导；不能豁免整对面板。同步同源Rust/Schema/Job、编辑和制造胶层。",
+      "initial_observed": "现行PackagingConditions.allowed_contacts只有两对象ID，FixedConnection只有连接帧/allow_contact；不能表达原研究要求的局部许可区域。",
+      "status": "repaired_owned_design_and_finite_local_cases",
+      "resolution": "局部批准深度柱体分割、同一双面许可ID、有效步骤及剩余实体区间检查；非空公共Job直接读入过程/连接/制造，区域外/超量/错误板面/ID错配有独立反例。 全厚度或多区域联合整板授权必须输入拒绝；两新增反例实际匹配。",
+      "finite_case_ids": [
+        "LC01",
+        "LC02",
+        "LC03",
+        "LC04",
+        "LC07",
+        "LC08",
+        "LC11",
+        "PUBLIC01",
+        "LC12",
+        "LC13"
+      ],
+      "actual_product_completion": false
+    },
+    {
+      "id": "F64-02",
+      "severity": "design_blocker",
+      "subject": "旋转/树链过程不能套直线TOI",
+      "required_fix": "用区间有效位移上界与距离界细分，逐段覆盖全部过程；单点/终态/未收敛不得Pass。明确Parry原语适用范围及未支持判定。",
+      "initial_observed": "S05实际cast_shapes试做只覆盖固定姿态两立方体直线路径；成型/开合包含铰接树和闭合连接。",
+      "status": "repaired_design_and_independently_rechecked_after_shared_merge",
+      "resolution": "真实树矩阵区间传播、区间有效祖先半径、分离轴包含界与严格内部证据、左优先细分；端点/少量采样漏检反例实际匹配。FixedPoseMotion由W00合入唯一Rust源并同步Schema/TS/API消费者，本窗口独立验证目标保持、未知引用、禁止瞬移、构件/解析产品碰撞及已生效连接；合法输入的姿态不匹配按公共契约为专业Fail。",
+      "finite_case_ids": [
+        "KIN01",
+        "KIN02",
+        "KIN03",
+        "KIN04",
+        "KIN05",
+        "KIN06",
+        "KIN07",
+        "BOND01",
+        "BOND02",
+        "BOND03",
+        "HOLD01",
+        "HOLD02",
+        "HOLD03",
+        "HOLD04",
+        "HOLD05",
+        "HOLD06"
+      ],
+      "actual_product_completion": false
+    },
+    {
+      "id": "F64-03",
+      "severity": "design_blocker",
+      "subject": "结构操作和尺寸搜索仍缺实现规则",
+      "required_fix": "定义三机制/空白入口的实际结构动作、字段绑定、硬条件与有限候选/尺寸搜索，保留三变化；未找到候选不宣称全局无解。",
+      "initial_observed": "已有自由板片/折带/多件输入和StructuralVariable，但机制生成、变量绑定/合法候选、有限搜索顺序与完成判定未冻结。",
+      "status": "repaired_owned_design_and_actual_structure_expansion",
+      "resolution": "六结构操作、三机制与空白入口、明确变量叶子/模板联动、有限候选/顺序/剪枝及零候选Undetermined冻结；实际生成三机制/三变化六Job，未把Schema当几何。",
+      "finite_case_ids": [
+        "SEARCH01",
+        "SEARCH02"
+      ],
+      "actual_product_completion": false
+    },
+    {
+      "id": "F64-04",
+      "severity": "design_blocker",
+      "subject": "容差/预算必须有依据且与体验目标分开",
+      "required_fix": "提出模型尺度/距离/角度/约束容差依据与边界未知处理；具体候选/区间/细分预算独立，耗尽保留Undetermined，不以30秒删检查。",
+      "initial_observed": "NumericTolerance与CalculationBudget已有载体，值与数值适用条件未冻结；30秒只是完整体验试做目标。",
+      "status": "repaired_owned_numeric_design_and_native_primitive_examples",
+      "resolution": "按尺度声明比较/角/约束阈值；分清物理区间范围与数值误差，带余项三角函数和向外舍入，三个独立预算；30秒非硬时限，16组Rust真实输出受精确参考包围核对。",
+      "finite_case_ids": [
+        "NUM01",
+        "LC05",
+        "LC10",
+        "KIN05"
+      ],
+      "actual_product_completion": false
+    },
+    {
+      "id": "F64-05",
+      "severity": "design_blocker",
+      "subject": "制造输出与局部连接来源必须一致",
+      "required_fix": "逐构件平面展开和坐标/刀折胶生成、重复数与面积；缺局部胶区不得编造胶层或完整制造通过。",
+      "initial_observed": "制造层/材料数量已有类型，但刀折胶层如何从实际结构/折带/胶接局部生成、展开失败和重复件数量仍缺详细规则。",
+      "status": "repaired_owned_manufacturing_design_and_actual_SVG_examples",
+      "resolution": "真实平面blank并集外边/折带轴/生效胶区共同投影、显式重复part和mm²；缺胶未知、展开重叠失败。实际SVG独立回读与PUBLIC01公共ID一致。",
+      "finite_case_ids": [
+        "MAN01",
+        "MAN02",
+        "MAN03",
+        "MAN04",
+        "MAN05",
+        "PUBLIC01"
+      ],
+      "actual_product_completion": false
+    }
+  ],
+  "owned_algorithm_ref": "packages/packaging/algorithm.design.json",
+  "algorithm_spec_refs": [
+    "docs/03_架构与契约/纸包装结构与过程算法.md",
+    "docs/03_架构与契约/纸包装数值与制造规则.md"
+  ],
+  "handoff_ref": "docs/04_开发与验收/S06-04_公共契约交接.md",
+  "actual_isolated_methods": {
+    "result_ref": "tools/packaging-algorithm-proof/output/proof-result.json",
+    "case_count": 32,
+    "expected_business_outcomes": {
+      "Pass": 12,
+      "Fail": 12,
+      "Undetermined": 5,
+      "input_rejected": 3
+    },
+    "all_independent_expectations_matched": true,
+    "arithmetic": "exact rational interval enclosures of actual binary64 inputs; not nominal Parry distance certification",
+    "native_float_enclosure_cases": 16,
+    "native_result_ref": "tools/packaging-algorithm-proof/output/float-interval-result.json",
+    "actual_structure_expansion_ref": "tools/packaging-algorithm-proof/output/structure-expansion-result.json",
+    "schema_checked_structure_jobs": 6,
+    "nonempty_public_Job_and_API_schema_ref": "tools/packaging-algorithm-proof/output/fixture-schema-result.json",
+    "actual_SVG_readback_ref": "tools/packaging-algorithm-proof/output/svg-readback-result.json",
+    "fixed_pose_recheck": {
+      "result_ref": "tools/packaging-algorithm-proof/output/fixed-pose-result.json",
+      "case_count": 6,
+      "all_independent_expectations_matched": true,
+      "business_outcomes": {
+        "Pass": 1,
+        "Fail": 4,
+        "input_rejected": 1
+      },
+      "schema_positive_checks": 21,
+      "schema_negative_checks": 9,
+      "carriers": [
+        "Versioned<PackageStructureJob>",
+        "ComputePackagingParams.packaging_job",
+        "EditCommand.PutPackagingJob"
+      ],
+      "limited_geometry": "identity rotations, two rectangular panels; separately declared resolved product cube; constant full hold interval",
+      "actual_Host_invocation": false,
+      "classification_alignment": "HOLD03初稿为输入拒绝；合入API把合法输入中的明确姿态不匹配定为专业Fail，现按共享契约统一分类，禁止瞬移/不得Pass预期不变；原32项未改。"
+    }
+  },
+  "public_progress_written": false,
+  "shared_types_Commands_locks_written": false,
+  "not_claimed": [
+    "完整Rust专业内核/通用多边形裁剪完成",
+    "六个结构Job完整几何通过",
+    "滑套变体已经实际验证",
+    "工业纸材/折叠/胶接性能",
+    "产品SF/全S06冻结/编码准入"
+  ],
+  "owned_verification": {
+    "scope": "owned_design_sources_and_isolated_outputs_only",
+    "owned_text_files_checked": 47,
+    "JSON_parsed": 24,
+    "Python_AST_checked": 6,
+    "local_MD_links_checked": 89,
+    "finite_method_cases": 32,
+    "Rust_native_numeric_cases": 16,
+    "independent_expectations": "matched",
+    "remaining_public_design_blocker": null,
+    "public_progress_written": false,
+    "fixed_pose_semantic_cases": 6,
+    "fixed_pose_schema_negative_checks": 9,
+    "fixed_pose_schema_positive_checks": 21,
+    "SVG_XML_parsed": 8
+  },
+  "closed_shared_findings": [
+    {
+      "id": "H64-01",
+      "source": "packages/domain/types.design.rs",
+      "observed": "PackagingMotion::FixedPose(Pose) has no part_id",
+      "proposed": "FixedPoseMotion { part_id: ObjectId, pose: Pose }; PackagingMotion::FixedPose(FixedPoseMotion)",
+      "semantics": "hold/check explicitly targeted part current root pose; no teleport",
+      "owner": "W00_root_review_window_2",
+      "written_here": false,
+      "status": "closed_by_owner_merge_and_independent_recheck",
+      "actual": "PackagingMotion::FixedPose(FixedPoseMotion), with required part_id and pose",
+      "result_ref": "tools/packaging-algorithm-proof/output/fixed-pose-result.json"
+    }
+  ],
+  "remaining_public_blocker": null,
+  "shared_merge_verified": {
+    "owner": "W00_root_review_window_2",
+    "canonical_source": "packages/domain/types.design.rs",
+    "motion_type": "FixedPoseMotion",
+    "required_fields": [
+      "part_id",
+      "pose"
+    ],
+    "consumer_sources": [
+      "packages/commands/api.design.rs",
+      "packages/commands/command-catalog.design.json",
+      "packages/domain/type-inventory.design.json",
+      "docs/03_架构与契约/全层类型与工程格式.json",
+      "docs/03_架构与契约/公开操作与宿主调用契约.json",
+      "tools/type-contract-proof/fixed-pose-consumer.ts",
+      "integrations/agent/README.md"
+    ],
+    "native_result_ref": "tools/type-contract-proof/output/fixed-pose-native-result.json",
+    "native_shape_checks": 18,
+    "owner_finite_reference_ref": "tools/type-contract-proof/output/fixed-pose-contract-result.json",
+    "generated_TS_result_ref": "tools/type-contract-proof/output/typescript-check-result.json",
+    "generated_TS_files_checked": 388,
+    "public_API_operation_count": 18,
+    "actual_product_runtime": null,
+    "public_progress_owner": "W00_root_review_window_2",
+    "merge_report_ref": "docs/04_开发与验收/H64-01_公共契约合入.json",
+    "professional_form_mapping": "F19-05 /steps/{i}/motion/data/part_id and /steps/{i}/motion/data/pose",
+    "preparation_consumer": "PREP-PACKAGING in docs/04_开发与验收/首版需求验收追踪.json"
+  },
+  "next_gate": "本项已由W00归集；下一关口核验S06-05及剩余设计项，保持真实产品运行、SF/P任务状态及编码准入的独立关口。",
+  "public_aggregation": {
+    "status": "collected_by_W00",
+    "public_ref": "docs/04_开发与验收/检查项逐项复审.md",
+    "design_reviews_passed": 25,
+    "design_reviews_total": 30,
+    "remaining_design_reviews": [
+      "S04-02",
+      "S04-04",
+      "S04-05",
+      "S05-05",
+      "S06-05"
+    ],
+    "mainline_check_ref": "docs/04_开发与验收/主线同步检查结果.json",
+    "mainline_errors": [],
+    "public_progress_written_by_this_window": false
+  },
+  "AQ04_cost_followup": {
+    "status": "passed_isolated_reference_cost_and_explicit_design_policy",
+    "proof_ref": "tools/packaging-algorithm-proof/output/aq04-cost-result.json",
+    "current_algorithm_ref": "packages/packaging/algorithm.design.json#/cost_and_scaling_contract",
+    "product_runtime": null
+  },
+  "fixed_pose_reverification_2026_10_16": {
+    "date": "2026-10-16 Asia/Shanghai",
+    "status": "passed_current_sources_after_owner_confirmed_existing_merge",
+    "merge_action": "H64-01 was already merged on 2026-10-14; owner confirmed current source, no duplicate public edit",
+    "owner_receipt": {
+      "thread_id": "01a11f4e-f8a4-7a62-9d23-24834761b07e",
+      "current_title": "实现窗口2",
+      "user_requested_role": "复审窗口2",
+      "result": "current Rust/Schema/TS/API carriers confirmed read-only; existing merge closed",
+      "owner_shape_checks": 12,
+      "shared_files_written": false
+    },
+    "canonical_shape": "FixedPoseMotion { part_id: ObjectId, pose: Pose }; PackagingMotion::FixedPose(FixedPoseMotion)",
+    "schema_shape_totals": {
+      "schema_count": 5,
+      "positive_checks": 5,
+      "negative_checks": 15,
+      "invalid_shapes": [
+        "missing_part_id",
+        "missing_pose",
+        "old_bare_pose"
+      ]
+    },
+    "generated_TS": {
+      "current_proof_files": 428,
+      "current_product_files": 428,
+      "existing_authored_consumer": "tools/type-contract-proof/fixed-pose-consumer.ts",
+      "same_types": [
+        "FixedPoseMotion",
+        "PackagingMotion",
+        "ComputePackagingParams",
+        "ApplyCommandsParams",
+        "PackageStructureJob",
+        "EditCommand"
+      ],
+      "existing_consumer_compile": "passed",
+      "current_product_public_types_compile": "passed",
+      "count_observed_at": "2026-10-16T09:53:53+08:00"
+    },
+    "independent_fixed_pose": {
+      "cases": 6,
+      "all_matched": true,
+      "outcomes": {
+        "Pass": 1,
+        "Fail": 4,
+        "input_rejected": 1
+      },
+      "positive_carrier_checks": 21,
+      "negative_shape_checks": 9,
+      "actual_Host_invocation": false
+    },
+    "regression": {
+      "original_cases": 32,
+      "all_matched": true,
+      "native_numeric_enclosures": 16,
+      "SVG_readback": "passed"
+    },
+    "checks": [
+      {
+        "name": "independent_fixed_pose",
+        "command": "python -B -X utf8 tools/packaging-algorithm-proof/check_fixed_pose.py",
+        "exit_code": 0,
+        "raw_output": "{\"case_count\": 6, \"all_expected_matched\": true, \"schema_negative_checks\": 9, \"carrier_positive_checks\": 21, \"actual_Host_invocation\": false}\r\n"
+      },
+      {
+        "name": "original_32_cases",
+        "command": "python -B -X utf8 tools/packaging-algorithm-proof/prove.py",
+        "exit_code": 0,
+        "raw_output": "{\"case_count\": 32, \"all_expected_matched\": true, \"mismatches\": [], \"actual_product_runtime\": null}\r\n"
+      },
+      {
+        "name": "native_float_enclosures",
+        "command": "python -B -X utf8 tools/packaging-algorithm-proof/check_float_intervals.py",
+        "exit_code": 0,
+        "raw_output": "{\"actual_f64_primitive_cases\": 16, \"exact_enclosures\": \"passed\", \"full_geometry_kernel_proved\": false}\r\n"
+      },
+      {
+        "name": "existing_authored_TS_consumer",
+        "command": "node tools/type-contract-proof/node_modules/typescript/bin/tsc -p tools/type-contract-proof/tsconfig.json --noEmit",
+        "exit_code": 0,
+        "raw_output": ""
+      },
+      {
+        "name": "current_design_and_runtime_carriers",
+        "command": "read-only jsonschema: five current Job/compute/apply schemas; compare Rust required fields and FixedPose TS carriers",
+        "exit_code": 0,
+        "raw_output": "{\"status\": \"passed_current_shared_and_product_fixed_pose_carriers\", \"Rust_sources\": 2, \"TS_carriers_identical\": 2, \"positive_checks\": 5, \"negative_checks\": 15, \"schemas\": [{\"schema\": \"tools/type-contract-proof/output/schemas/packaging-job.schema.json\", \"positive_accepted\": true, \"negative_shapes_rejected\": [\"missing_part_id\", \"missing_pose\", \"old_bare_pose\"]}, {\"schema\": \"tools/type-contract-proof/output/api-schemas/compute_packaging.request.schema.json\", \"positive_accepted\": true, \"negative_shapes_rejected\": [\"missing_part_id\", \"missing_pose\", \"old_bare_pose\"]}, {\"schema\": \"tools/type-contract-proof/output/api-schemas/apply_commands.request.schema.json\", \"positive_accepted\": true, \"negative_shapes_rejected\": [\"missing_part_id\", \"missing_pose\", \"old_bare_pose\"]}, {\"schema\": \"packages/commands/generated/schemas/compute_packaging.request.schema.json\", \"positive_accepted\": true, \"negative_shapes_rejected\": [\"missing_part_id\", \"missing_pose\", \"old_bare_pose\"]}, {\"schema\": \"packages/commands/generated/schemas/apply_commands.request.schema.json\", \"positive_accepted\": true, \"negative_shapes_rejected\": [\"missing_part_id\", \"missing_pose\", \"old_bare_pose\"]}], \"shared_files_written\": false}\r\n"
+      },
+      {
+        "name": "SVG_readback",
+        "command": "python -B -X utf8 tools/packaging-algorithm-proof/inspect_outputs.py",
+        "exit_code": 0,
+        "raw_output": "{\"evidence_level\": \"independent_actual_SVG_readback_for_finite_rectangular_examples\", \"cut_length_mm\": 64, \"fold_length_mm\": 10, \"common_glue_area_mm2\": 100, \"actual_public_job_glue_area_mm2\": 100, \"units_and_layers\": \"passed\", \"cut_source_ids\": \"passed\", \"glue_connection_allowance_activation_refs\": \"passed\"}\r\n"
+      },
+      {
+        "name": "same_generated_public_consumer_types",
+        "command": "read-only exact text comparison of six named generated types",
+        "exit_code": 0,
+        "raw_output": "{\"status\": \"passed_same_generated_fixed_pose_and_API_consumer_types\", \"identical_types\": [\"FixedPoseMotion\", \"PackagingMotion\", \"ComputePackagingParams\", \"ApplyCommandsParams\", \"PackageStructureJob\", \"EditCommand\"], \"product_generated_TS_count\": 424, \"proof_generated_TS_count\": 424, \"writes\": false}\r\n"
+      },
+      {
+        "name": "current_runtime_TS_API",
+        "command": "node tools/type-contract-proof/node_modules/typescript/bin/tsc --noEmit --strict --target ES2022 --module ESNext --moduleResolution Bundler --skipLibCheck false packages/commands/generated/typescript/{FixedPoseMotion,PackagingMotion,ComputePackagingParams,ApplyCommandsParams,PackageStructureJob,EditCommand}.ts (six explicit arguments)",
+        "exit_code": 0,
+        "raw_output": ""
+      }
+    ],
+    "resolved_verification_invocations": [
+      {
+        "method": "CommonJS compiler-host experiment",
+        "exit_code": 1,
+        "result": "TypeScript 7 package does not expose the assumed legacy compiler module entry; no source modified; replaced by existing CLI"
+      },
+      {
+        "method": "CLI with all absolute generated TS paths",
+        "exit_code": 1,
+        "result": "Windows process argument length exceeded; no source modified; verified the six actual public carriers through CLI and existing full proof tsconfig"
+      },
+      {
+        "method": "default Python 3.14 with existing cp312 rpds extension",
+        "exit_code": 1,
+        "result": "rpds.rpds import ABI mismatch; rerun using existing bundled CPython 3.12.14 passed; no dependencies installed"
+      }
+    ],
+    "resulting_S06_04_status": "passed_document_specification",
+    "open_design_findings": [],
+    "public_progress_written": false,
+    "shared_contract_or_other_review_files_written": false,
+    "product_runtime_executed_in_this_recheck": false,
+    "design_review_is_not_full_Host_UI_or_industrial_acceptance": true,
+    "latest_execution": {
+      "status": "passed_current_sources_and_existing_merge",
+      "executed_at": "2026-10-16T09:53:53+08:00",
+      "checks": [
+        {
+          "command": [
+            "C:\\Users\\fujunye\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+            "-B",
+            "-X",
+            "utf8",
+            "tools/packaging-algorithm-proof/check_fixed_pose.py"
+          ],
+          "exit_code": 0,
+          "stdout": "{\"case_count\": 6, \"all_expected_matched\": true, \"schema_negative_checks\": 9, \"carrier_positive_checks\": 21, \"actual_Host_invocation\": false}\n",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "C:\\Users\\fujunye\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+            "-B",
+            "-X",
+            "utf8",
+            "tools/packaging-algorithm-proof/prove.py"
+          ],
+          "exit_code": 0,
+          "stdout": "{\"case_count\": 32, \"all_expected_matched\": true, \"mismatches\": [], \"actual_product_runtime\": null}\n",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "C:\\Users\\fujunye\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+            "-B",
+            "-X",
+            "utf8",
+            "tools/packaging-algorithm-proof/check_float_intervals.py"
+          ],
+          "exit_code": 0,
+          "stdout": "{\"actual_f64_primitive_cases\": 16, \"exact_enclosures\": \"passed\", \"full_geometry_kernel_proved\": false}\n",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "C:\\Users\\fujunye\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+            "-B",
+            "-X",
+            "utf8",
+            "tools/packaging-algorithm-proof/inspect_outputs.py"
+          ],
+          "exit_code": 0,
+          "stdout": "{\"evidence_level\": \"independent_actual_SVG_readback_for_finite_rectangular_examples\", \"cut_length_mm\": 64, \"fold_length_mm\": 10, \"common_glue_area_mm2\": 100, \"actual_public_job_glue_area_mm2\": 100, \"units_and_layers\": \"passed\", \"cut_source_ids\": \"passed\", \"glue_connection_allowance_activation_refs\": \"passed\"}\n",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "node",
+            "tools/type-contract-proof/node_modules/typescript/bin/tsc",
+            "-p",
+            "tools/type-contract-proof/tsconfig.json",
+            "--noEmit"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "node",
+            "tools/type-contract-proof/node_modules/typescript/bin/tsc",
+            "--noEmit",
+            "--strict",
+            "--target",
+            "ES2022",
+            "--module",
+            "ESNext",
+            "--moduleResolution",
+            "Bundler",
+            "--skipLibCheck",
+            "false",
+            "packages/commands/generated/typescript/FixedPoseMotion.ts",
+            "packages/commands/generated/typescript/PackagingMotion.ts",
+            "packages/commands/generated/typescript/ComputePackagingParams.ts",
+            "packages/commands/generated/typescript/ApplyCommandsParams.ts",
+            "packages/commands/generated/typescript/PackageStructureJob.ts",
+            "packages/commands/generated/typescript/EditCommand.ts"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "read_only_contract_check": {
+        "status": "passed",
+        "rust_sources": 2,
+        "identical_TS_consumers": [
+          "FixedPoseMotion",
+          "PackagingMotion",
+          "ComputePackagingParams",
+          "ApplyCommandsParams",
+          "PackageStructureJob",
+          "EditCommand"
+        ],
+        "product_TS_count": 428,
+        "proof_TS_count": 428,
+        "schema_count": 5,
+        "positive_checks": 5,
+        "negative_checks": 15,
+        "schemas": [
+          {
+            "schema": "tools/type-contract-proof/output/schemas/packaging-job.schema.json",
+            "positive_accepted": true,
+            "negative_shapes_rejected": [
+              "missing_part_id",
+              "missing_pose",
+              "old_bare_pose"
+            ]
+          },
+          {
+            "schema": "tools/type-contract-proof/output/api-schemas/compute_packaging.request.schema.json",
+            "positive_accepted": true,
+            "negative_shapes_rejected": [
+              "missing_part_id",
+              "missing_pose",
+              "old_bare_pose"
+            ]
+          },
+          {
+            "schema": "tools/type-contract-proof/output/api-schemas/apply_commands.request.schema.json",
+            "positive_accepted": true,
+            "negative_shapes_rejected": [
+              "missing_part_id",
+              "missing_pose",
+              "old_bare_pose"
+            ]
+          },
+          {
+            "schema": "packages/commands/generated/schemas/compute_packaging.request.schema.json",
+            "positive_accepted": true,
+            "negative_shapes_rejected": [
+              "missing_part_id",
+              "missing_pose",
+              "old_bare_pose"
+            ]
+          },
+          {
+            "schema": "packages/commands/generated/schemas/apply_commands.request.schema.json",
+            "positive_accepted": true,
+            "negative_shapes_rejected": [
+              "missing_part_id",
+              "missing_pose",
+              "old_bare_pose"
+            ]
+          }
+        ],
+        "shared_files_written": false
+      },
+      "resulting_status": "passed_document_specification",
+      "shared_contract_files_written": false,
+      "public_progress_written": false,
+      "other_review_files_written": false,
+      "actual_Host_UI_industrial_acceptance": false,
+      "handoff": {
+        "thread_id": "01a11f4e-f8a4-7a62-9d23-24834761b07e",
+        "title": "实现窗口2",
+        "user_requested_role": "复审窗口2",
+        "action": "本轮用户授权交接已送达；所有者已只读回执当前合入仍有效，无需重复修改公共源。",
+        "current_reply_received": true,
+        "prior_owner_receipt_preserved": true,
+        "existing_merge_independently_reverified": true,
+        "current_owner_confirmation": "设计/运行Rust、5份Schema、两代生成TS、PutPackagingJob/ComputePackagingParams的同一Job、实际专业UI和Agent说明一致；kinematics按part_id定位，kernel比较该part当前root pose，不瞬移。",
+        "owner_shared_or_other_review_files_written": false,
+        "owner_compilation_or_geometry_reexecution": false
+      },
+      "python_runtime": "existing bundled CPython 3.12.14"
+    },
+    "checks_record_scope": "Earlier same-day execution; latest_execution is authoritative for the current source verification and declaration counts."
+  },
+  "fixed_pose_reverification_2026_10_17": {
+    "executed_at": "2026-10-17T01:52:05.841784+08:00",
+    "checks": [
+      {
+        "command": [
+          "C:\\Users\\fujunye\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "tools/packaging-algorithm-proof/check_fixed_pose.py"
+        ],
+        "exit_code": 0,
+        "stdout": "{\"case_count\": 6, \"all_expected_matched\": true, \"schema_negative_checks\": 9, \"carrier_positive_checks\": 21, \"actual_Host_invocation\": false}\n",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "C:\\Users\\fujunye\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "tools/packaging-algorithm-proof/prove.py"
+        ],
+        "exit_code": 0,
+        "stdout": "{\"case_count\": 32, \"all_expected_matched\": true, \"mismatches\": [], \"actual_product_runtime\": null}\n",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "C:\\Users\\fujunye\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "tools/packaging-algorithm-proof/check_float_intervals.py"
+        ],
+        "exit_code": 0,
+        "stdout": "{\"actual_f64_primitive_cases\": 16, \"exact_enclosures\": \"passed\", \"full_geometry_kernel_proved\": false}\n",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "C:\\Users\\fujunye\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "tools/packaging-algorithm-proof/inspect_outputs.py"
+        ],
+        "exit_code": 0,
+        "stdout": "{\"evidence_level\": \"independent_actual_SVG_readback_for_finite_rectangular_examples\", \"cut_length_mm\": 64, \"fold_length_mm\": 10, \"common_glue_area_mm2\": 100, \"actual_public_job_glue_area_mm2\": 100, \"units_and_layers\": \"passed\", \"cut_source_ids\": \"passed\", \"glue_connection_allowance_activation_refs\": \"passed\"}\n",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "node",
+          "tools/type-contract-proof/node_modules/typescript/bin/tsc",
+          "-p",
+          "tools/type-contract-proof/tsconfig.json",
+          "--noEmit"
+        ],
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": "",
+        "execution_evidence": "actual exec_command result in this recheck"
+      },
+      {
+        "command": [
+          "node",
+          "tools/type-contract-proof/node_modules/typescript/bin/tsc",
+          "--noEmit",
+          "--strict",
+          "--target",
+          "ES2022",
+          "--module",
+          "ESNext",
+          "--moduleResolution",
+          "Bundler",
+          "--skipLibCheck",
+          "false",
+          "packages/commands/generated/typescript/FixedPoseMotion.ts",
+          "packages/commands/generated/typescript/PackagingMotion.ts",
+          "packages/commands/generated/typescript/ComputePackagingParams.ts",
+          "packages/commands/generated/typescript/ApplyCommandsParams.ts",
+          "packages/commands/generated/typescript/PackageStructureJob.ts",
+          "packages/commands/generated/typescript/EditCommand.ts"
+        ],
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": "",
+        "execution_evidence": "actual exec_command result in this recheck"
+      }
+    ],
+    "shared_contract_files_written": false,
+    "public_progress_written": false,
+    "other_review_files_written": false,
+    "actual_Host_UI_industrial_acceptance": false,
+    "read_only_contract_check": {
+      "status": "passed",
+      "rust_sources": [
+        "packages/domain/types.design.rs",
+        "packages/domain/src/models.rs"
+      ],
+      "identical_TS_consumers": [
+        "FixedPoseMotion",
+        "PackagingMotion",
+        "ComputePackagingParams",
+        "ApplyCommandsParams",
+        "PackageStructureJob",
+        "EditCommand"
+      ],
+      "schema_count": 5,
+      "positive_checks": 5,
+      "negative_checks": 15,
+      "schemas": [
+        {
+          "schema": "tools/type-contract-proof/output/schemas/packaging-job.schema.json",
+          "positive_accepted": true,
+          "negative_shapes_rejected": [
+            "missing_part_id",
+            "missing_pose",
+            "old_bare_pose"
+          ]
+        },
+        {
+          "schema": "tools/type-contract-proof/output/api-schemas/compute_packaging.request.schema.json",
+          "positive_accepted": true,
+          "negative_shapes_rejected": [
+            "missing_part_id",
+            "missing_pose",
+            "old_bare_pose"
+          ]
+        },
+        {
+          "schema": "tools/type-contract-proof/output/api-schemas/apply_commands.request.schema.json",
+          "positive_accepted": true,
+          "negative_shapes_rejected": [
+            "missing_part_id",
+            "missing_pose",
+            "old_bare_pose"
+          ]
+        },
+        {
+          "schema": "packages/commands/generated/schemas/compute_packaging.request.schema.json",
+          "positive_accepted": true,
+          "negative_shapes_rejected": [
+            "missing_part_id",
+            "missing_pose",
+            "old_bare_pose"
+          ]
+        },
+        {
+          "schema": "packages/commands/generated/schemas/apply_commands.request.schema.json",
+          "positive_accepted": true,
+          "negative_shapes_rejected": [
+            "missing_part_id",
+            "missing_pose",
+            "old_bare_pose"
+          ]
+        }
+      ],
+      "product_TS_count": 431,
+      "proof_TS_count": 431
+    },
+    "status": "passed_current_sources_and_existing_merge",
+    "resulting_status": "passed_document_specification",
+    "independent_consumer_source_checks": [
+      {
+        "path": "packages/commands/generated/schemas/get_object.response.schema.json",
+        "fixed_pose_branch_count": 1,
+        "required": [
+          "part_id",
+          "pose"
+        ]
+      },
+      {
+        "path": "packages/commands/generated/schemas/compute_packaging.request.schema.json",
+        "fixed_pose_branch_count": 1,
+        "required": [
+          "part_id",
+          "pose"
+        ]
+      },
+      {
+        "path": "packages/commands/generated/schemas/apply_commands.request.schema.json",
+        "fixed_pose_branch_count": 1,
+        "required": [
+          "part_id",
+          "pose"
+        ]
+      },
+      {
+        "path": "packages/commands/generated/schemas/get_task.response.schema.json",
+        "fixed_pose_branch_count": 1,
+        "required": [
+          "part_id",
+          "pose"
+        ]
+      },
+      {
+        "path": "apps/planner/src/features/packaging/schemas.ts",
+        "fixed_pose_branch_count": 1,
+        "required": [
+          "part_id",
+          "pose"
+        ]
+      }
+    ],
+    "independent_semantic_source_checks": [
+      {
+        "path": "packages/packaging/src/kinematics.rs",
+        "observed": "resolve m.part_id in actual parts; validate pose; FixedPose advance does not mutate roots"
+      },
+      {
+        "path": "packages/packaging/src/kernel.rs",
+        "observed": "compare state.roots[model.parts[&m.part_id]] against m.pose; continuity mismatch becomes Fail; no teleport"
+      },
+      {
+        "path": "apps/planner/src/features/packaging/model.ts",
+        "observed": "saveJob put_packaging_job and computeJob compute_packaging submit the same generated PackageStructureJob"
+      }
+    ],
+    "handoff": {
+      "thread_id": "01a11f4e-f8a4-7a62-9d23-24834761b07e",
+      "title": "实现窗口2",
+      "user_requested_role": "复审窗口2",
+      "current_reply_received": true,
+      "existing_merge_confirmed_effective": true,
+      "new_shared_merge_needed": false,
+      "owner_confirmation": "本轮只读确认H64-01既有合入有效；设计/运行Rust、四份现行API Schema、生成TS与专业UI均要求part_id和pose；同一Job进入ComputePackagingParams；kinematics与kernel按指定part核对当前姿态，不瞬移。",
+      "owner_compilation_or_geometry_reexecution": false,
+      "owner_shared_or_other_review_files_written": false
+    },
+    "original_expectations_modified": false,
+    "result_ref": "tools/packaging-algorithm-proof/output/fixed-pose-reverification-2026-10-17.json",
+    "review_scope": "S06-04 owned design recheck; current sources and finite methods; no Host/UI/industrial acceptance",
+    "open_design_findings": []
+  },
+  "latest_fixed_pose_reverification_ref": "tools/packaging-algorithm-proof/output/fixed-pose-reverification-2026-10-17.json",
+  "last_verified_at": "2026-10-17T01:52:05.841784+08:00"
+}

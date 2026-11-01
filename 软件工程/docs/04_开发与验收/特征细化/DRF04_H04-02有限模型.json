@@ -1,0 +1,243 @@
+{
+  "document_kind": "independent_new_attachment_identity_and_lifecycle_expectations_not_product_results",
+  "date": "2026-10-14",
+  "canonical_ref": "packages/commands/api.design.rs#IpcManagedAssetAttachment",
+  "canonical_schema_ref": "tools/type-contract-proof/output/schemas/api-all-types.schema.json#/properties/ipc_task_response",
+  "input_note": "Uses canonical IMA02 for shape only; handle12/length123 are replaced by actual duplicated fixture handle/file size and never used as OS capability. Request revision7 and scene revision7 are explicit independent test inputs.",
+  "independent_business_expected_after_event": {
+    "state": "running",
+    "admitted": true,
+    "cancel_calls": 0,
+    "resubmissions": 0,
+    "engine_instances": 1
+  },
+  "business_model_limit": "No actual Engine is started. This is an already-admitted Host business-task state model; EOF closes image leases without sending cancel/retry or creating a second modeled Engine.",
+  "cases": [
+    {
+      "id": "AL01",
+      "event": "matching_all",
+      "changes": [],
+      "expected": {
+        "status": "ok",
+        "returns_bytes": true,
+        "known_owned_handle_closed_if_transferred": true,
+        "actual_product_Host_execution": null
+      },
+      "actual_result": null
+    },
+    {
+      "id": "AL02",
+      "event": "old_R7_current_R8",
+      "changes": [
+        {
+          "pointer": "/reply/context/scope_revision",
+          "value": 8
+        },
+        {
+          "pointer": "/reply/context/project_revision",
+          "value": 8
+        }
+      ],
+      "expected": {
+        "status": "ok",
+        "returns_bytes": true,
+        "known_owned_handle_closed_if_transferred": true,
+        "actual_product_Host_execution": null
+      },
+      "actual_result": null
+    },
+    {
+      "id": "AL03",
+      "event": "wrong_task",
+      "changes": [
+        {
+          "pointer": "/managed_assets/0/task_id",
+          "value": "FOREIGN-TASK"
+        }
+      ],
+      "expected": {
+        "status": "PermissionDenied",
+        "returns_bytes": false,
+        "known_owned_handle_closed_if_transferred": true,
+        "actual_product_Host_execution": null
+      },
+      "actual_result": null
+    },
+    {
+      "id": "AL04",
+      "event": "wrong_asset",
+      "changes": [
+        {
+          "pointer": "/managed_assets/0/asset_id",
+          "value": "FOREIGN-ASSET"
+        }
+      ],
+      "expected": {
+        "status": "PermissionDenied",
+        "returns_bytes": false,
+        "known_owned_handle_closed_if_transferred": true,
+        "actual_product_Host_execution": null
+      },
+      "actual_result": null
+    },
+    {
+      "id": "AL05",
+      "event": "wrong_scope",
+      "changes": [
+        {
+          "pointer": "/managed_assets/0/scope/data",
+          "value": "P2"
+        }
+      ],
+      "expected": {
+        "status": "PermissionDenied",
+        "returns_bytes": false,
+        "known_owned_handle_closed_if_transferred": true,
+        "actual_product_Host_execution": null
+      },
+      "actual_result": null
+    },
+    {
+      "id": "AL06",
+      "event": "wrong_attachment_revision",
+      "changes": [
+        {
+          "pointer": "/managed_assets/0/scope_revision",
+          "value": 8
+        }
+      ],
+      "expected": {
+        "status": "PermissionDenied",
+        "returns_bytes": false,
+        "known_owned_handle_closed_if_transferred": true,
+        "actual_product_Host_execution": null
+      },
+      "actual_result": null
+    },
+    {
+      "id": "AL07",
+      "event": "wrong_requested_revision",
+      "changes": [
+        {
+          "pointer": "/reply/outcome/data/result/data/requested_scope_revision",
+          "value": 8
+        }
+      ],
+      "expected": {
+        "status": "PermissionDenied",
+        "returns_bytes": false,
+        "known_owned_handle_closed_if_transferred": true,
+        "actual_product_Host_execution": null
+      },
+      "actual_result": null
+    },
+    {
+      "id": "AL08",
+      "event": "wrong_scene_revision",
+      "changes": [
+        {
+          "pointer": "/reply/outcome/data/result/data/scene/scene_revision",
+          "value": 8
+        }
+      ],
+      "expected": {
+        "status": "PermissionDenied",
+        "returns_bytes": false,
+        "known_owned_handle_closed_if_transferred": true,
+        "actual_product_Host_execution": null
+      },
+      "actual_result": null
+    },
+    {
+      "id": "AL09",
+      "event": "wrong_session",
+      "changes": [
+        {
+          "pointer": "/client_session_id",
+          "value": "FOREIGN-SESSION"
+        }
+      ],
+      "expected": {
+        "status": "PermissionDenied",
+        "returns_bytes": false,
+        "known_owned_handle_closed_if_transferred": true,
+        "actual_product_Host_execution": null
+      },
+      "actual_result": null
+    },
+    {
+      "id": "AL10",
+      "event": "wrong_Host_instance",
+      "changes": [
+        {
+          "pointer": "/host_instance_id",
+          "value": "FOREIGN-HOST"
+        }
+      ],
+      "expected": {
+        "status": "PermissionDenied",
+        "returns_bytes": false,
+        "known_owned_handle_closed_if_transferred": true,
+        "actual_product_Host_execution": null
+      },
+      "actual_result": null
+    },
+    {
+      "id": "AL11",
+      "event": "wrong_registered_pid",
+      "changes": [],
+      "expected": {
+        "status": "PermissionDenied",
+        "returns_bytes": false,
+        "known_owned_handle_closed_if_transferred": true,
+        "actual_product_Host_execution": null
+      },
+      "actual_result": null
+    },
+    {
+      "id": "AL12",
+      "event": "disconnect",
+      "changes": [],
+      "expected": {
+        "status": "disconnected",
+        "returns_bytes": false,
+        "known_owned_handle_closed_if_transferred": true,
+        "actual_product_Host_execution": null
+      },
+      "actual_result": null
+    },
+    {
+      "id": "AL13",
+      "event": "wrong_byte_length",
+      "changes": [],
+      "expected": {
+        "status": "IoFailure",
+        "returns_bytes": false,
+        "known_owned_handle_closed_if_transferred": true,
+        "actual_product_Host_execution": null
+      },
+      "actual_result": null
+    },
+    {
+      "id": "AL14",
+      "event": "wrong_handle_value",
+      "changes": [],
+      "expected": {
+        "status": "PermissionDenied",
+        "returns_bytes": false,
+        "known_owned_handle_closed_if_transferred": true,
+        "actual_product_Host_execution": null
+      },
+      "actual_result": null
+    }
+  ],
+  "existing_evidence_reused_not_replayed": [
+    "docs/04_开发与验收/特征细化/DRF04_授权差异核验.json",
+    "docs/04_开发与验收/特征细化/DRF04_静态与数学核验.json",
+    "docs/04_开发与验收/特征细化/DRF04_stdio-proof/output/native-trial-result.json",
+    "docs/04_开发与验收/特征细化/DRF04_stdio-proof/output/managed-asset-result.json"
+  ],
+  "new_result_ref": "docs/04_开发与验收/特征细化/DRF04_stdio-proof/output/attachment-lifecycle-result.json",
+  "actual_product_runtime": null,
+  "actual_result": null
+}

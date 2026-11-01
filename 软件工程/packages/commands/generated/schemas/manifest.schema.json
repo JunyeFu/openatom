@@ -1,0 +1,368 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Versioned",
+  "type": "object",
+  "properties": {
+    "data": {
+      "$ref": "#/$defs/PackageManifest"
+    },
+    "schema_version": {
+      "$ref": "#/$defs/SchemaVersion"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "data"
+  ],
+  "$defs": {
+    "AssetId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "AssetRights": {
+      "type": "object",
+      "properties": {
+        "asset_ref": {
+          "$ref": "#/$defs/AssetId"
+        },
+        "license": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "missing_reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "redistribution_confirmed": {
+          "type": "boolean"
+        },
+        "source": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "asset_ref",
+        "redistribution_confirmed"
+      ]
+    },
+    "CapabilityPurpose": {
+      "type": "string",
+      "enum": [
+        "execution",
+        "preview",
+        "adoption",
+        "redistribution",
+        "complete_conclusion"
+      ]
+    },
+    "DocumentEntry": {
+      "type": "object",
+      "properties": {
+        "file_ref": {
+          "$ref": "#/$defs/FileRef"
+        },
+        "module_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ModuleRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "object_ref": {
+          "$ref": "#/$defs/ObjectRef"
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "revision": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SafeUint"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "role": {
+          "$ref": "#/$defs/DocumentRole"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "role",
+        "object_ref",
+        "file_ref",
+        "required"
+      ]
+    },
+    "DocumentKind": {
+      "type": "string",
+      "enum": [
+        "artifact_record",
+        "project",
+        "scenario",
+        "module",
+        "template",
+        "generation_profile",
+        "presentation",
+        "packaging_job",
+        "packaging_result",
+        "run_input",
+        "run_result",
+        "evaluation",
+        "execution_archive",
+        "asset"
+      ]
+    },
+    "DocumentRole": {
+      "type": "string",
+      "enum": [
+        "active_project",
+        "scenario_input",
+        "module_definition",
+        "template_data",
+        "generation_profile",
+        "presentation",
+        "asset",
+        "professional_input",
+        "professional_result",
+        "artifact_metadata",
+        "frozen_run_project",
+        "frozen_run_scenario",
+        "run_result",
+        "evaluation",
+        "supporting_file"
+      ]
+    },
+    "FileRef": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "$ref": "#/$defs/DocumentKind"
+        },
+        "path": {
+          "$ref": "#/$defs/RelativeFilePath"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "kind"
+      ]
+    },
+    "Issue": {
+      "type": "object",
+      "properties": {
+        "blocks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CapabilityPurpose"
+          }
+        },
+        "code": {
+          "type": "string"
+        },
+        "field_path": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "message": {
+          "type": "string"
+        },
+        "object_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ObjectRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "message",
+        "blocks"
+      ]
+    },
+    "ModuleId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "ModuleRef": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/ModuleId"
+        },
+        "version": {
+          "$ref": "#/$defs/VersionId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "version"
+      ]
+    },
+    "ObjectId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "ObjectKind": {
+      "type": "string",
+      "enum": [
+        "project",
+        "scenario",
+        "run",
+        "definition_draft",
+        "packaging_job",
+        "asset",
+        "native_scene",
+        "item_type",
+        "item",
+        "location",
+        "hall",
+        "line",
+        "device",
+        "resource",
+        "calendar",
+        "product",
+        "bom",
+        "route",
+        "connection",
+        "order",
+        "task",
+        "job",
+        "supply",
+        "transport",
+        "artifact",
+        "module",
+        "report"
+      ]
+    },
+    "ObjectRef": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "kind": {
+          "$ref": "#/$defs/ObjectKind"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "id"
+      ]
+    },
+    "PackageManifest": {
+      "type": "object",
+      "properties": {
+        "assets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AssetRights"
+          }
+        },
+        "documents": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/DocumentEntry"
+          }
+        },
+        "generation": {
+          "$ref": "#/$defs/SafeUint"
+        },
+        "missing": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Issue"
+          }
+        },
+        "module_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ModuleRef"
+          }
+        },
+        "project_id": {
+          "$ref": "#/$defs/ProjectId"
+        },
+        "project_revision": {
+          "$ref": "#/$defs/SafeUint"
+        },
+        "restart_policy": {
+          "$ref": "#/$defs/RestartPolicy"
+        },
+        "title": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "project_id",
+        "project_revision",
+        "title",
+        "generation",
+        "documents",
+        "module_refs",
+        "assets",
+        "missing",
+        "restart_policy"
+      ]
+    },
+    "ProjectId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "RelativeFilePath": {
+      "type": "string",
+      "pattern": "^(?!\\.{1,2}(?:/|$))[^/\\\\:\\u0000]+(?:/(?!\\.{1,2}(?:/|$))[^/\\\\:\\u0000]+)*$"
+    },
+    "RestartPolicy": {
+      "type": "string",
+      "enum": [
+        "restart_from_initial_input"
+      ]
+    },
+    "SafeUint": {
+      "type": "integer",
+      "format": "uint64",
+      "maximum": 9007199254740991,
+      "minimum": 0
+    },
+    "SchemaVersion": {
+      "type": "string",
+      "enum": [
+        "1.0"
+      ]
+    },
+    "VersionId": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)(?:\\.(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*)?(?:\\+[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?$"
+    }
+  }
+}

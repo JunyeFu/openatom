@@ -9,11 +9,13 @@ import json
 import re
 import runpy
 import sqlite3
+from datetime import datetime, timedelta, timezone
 
 S = Path(__file__).resolve().parent.parent
 P = S.parent
 D = S / 'docs/04_开发与验收'
 W = P.parents[2]
+CHECK_DATE = datetime.now(timezone(timedelta(hours=8))).date().isoformat()
 
 
 def read_json(path):
@@ -34,6 +36,18 @@ def source_record(path):
     return '阅读卡' in parts or path.name in ['来源目录.json', '来源目录.csv', '原资料引用目录.json', '模块资料映射.json', '补充来源.json', '补充人因与工时来源.json', '本轮补充来源.json', '投用与专业来源.json', '业务设计来源.json', '补充示例来源.json', '附加技术来源.json', 'NBS表格提取临时.json']
 
 
+def reference_parent(path):
+    # 已声明的逐字源码快照保留原相对链接；按清单中的原文件位置核验，不改快照。
+    if path.is_relative_to(S) and 'final-source' in path.relative_to(S).parts:
+        parts = path.relative_to(S).parts
+        cut = S.joinpath(*parts[:parts.index('final-source')]) / 'source-cut.json'
+        if cut.is_file():
+            for entry in read_json(cut).get('sources', []):
+                if (S / entry['snapshot']).resolve() == path.resolve():
+                    return (S / entry['path']).parent
+    return path.parent
+
+
 class Links(HTMLParser):
     def __init__(self):
         super().__init__()
@@ -46,6 +60,41 @@ class Links(HTMLParser):
 
 def main():
     errors = []
+    backend_ref = read_json(D / '完整设计与执行准入.json')['execution_entry']['current_backend_slice_ref']
+    backend_path = S / backend_ref
+    backend = read_json(backend_path) if backend_path.exists() else None
+    backend_dispatched = bool(backend and backend.get('dispatch'))
+    backend_reviewed = bool(backend and backend['status'] == 'implemented_and_reviewed')
+    selection = read_json(S / 'docs/00_项目基线/首版任务选择.json')
+    selected_tasks = {row['id']: row for row in selection['selected']}
+    package_index = read_json(S / selection['coding_package_index_ref'])
+    dispatched_packages = {row['task_id']: row for row in package_index['packages'] if row['actual_dispatch']}
+    dispatched_receipts = {ident: read_json(S / row['current_execution_ref'])
+                           for ident, row in dispatched_packages.items()}
+    for ident, receipt in dispatched_receipts.items():
+        assert ident in selected_tasks and receipt['task_id'] == ident
+        assert receipt['dispatch'] == dispatched_packages[ident]['actual_dispatch']
+        assert 1 <= receipt['within_original_step'] <= len(selected_tasks[ident]['execution_plan']['steps'])
+        if receipt['dispatch'].get('dispatch_mode') == 'whole_task_package':
+            source = selected_tasks[ident]
+            assert receipt['scope']['original_steps_scope'] == list(range(1, len(source['execution_plan']['steps']) + 1))
+            assert receipt['source_task_snapshot']['execution_plan']['steps'] == source['execution_plan']['steps']
+            assert receipt['source_task_snapshot']['release_acceptance'] == source['release_acceptance']
+            packet = (S / receipt['full_dispatch_packet_ref']).read_text(encoding='utf-8-sig')
+            assert all(step in packet for step in source['execution_plan']['steps'])
+            assert source['release_acceptance'] in packet
+    if backend_reviewed:
+        assert backend['task_id'] in selected_tasks
+        test_count = backend['actual_result']['tests']['distinct_tests']
+        assert test_count > 0
+        for run in backend['actual_result']['command_runs']:
+            assert run['exit_code'] == 0
+            if 'cargo test ' in run['command'] or run['command'] in ['npm run test:rust', 'npm.cmd run test:rust']:
+                log = (S / run['stdout_ref']).read_text(encoding='utf-8-sig')
+                passed = sum(map(int, re.findall(r'test result: ok\. (\d+) passed;', log)))
+                assert passed == run.get('distinct_tests_executed', test_count)
+        assert backend['actual_result']['tests']['failed'] == 0
+        assert backend['review']['confirmed_defects'] == [] and backend['whole_task_done'] is False
     row_issues = {}
     checked_links = 0
     matrix = read_json(D / '主线同步矩阵.json')
@@ -70,7 +119,6 @@ def main():
     commands = read_json(S / 'packages/commands/command-catalog.design.json')['operation_catalog']
     tasks_doc = read_json(S / 'docs/04_开发与验收/tasks.json')
     tasks = tasks_doc['tasks']
-    selection = read_json(S / 'docs/00_项目基线/首版任务选择.json')
     mapping_doc = read_json(S / 'docs/00_项目基线/用户任务与需求映射.json')
     mappings = mapping_doc['rows']
     maturity = read_json(S / 'docs/04_开发与验收/软件开发流程与当前成熟度评估.json')
@@ -78,9 +126,21 @@ def main():
     assert [x['id'] for x in catalog['categories']] == ids == [x['id'] for x in contracts['categories']]
     assert len(catalog['modules']) == 21
     assert len(commands) == 18 == len({x['operation'] for x in commands})
-    assert all(x['runtime_available'] is False and x['implementation_status'] == 'planned' for x in commands)
+    available_operations = [x['operation'] for x in commands if x['runtime_available']]
+    for operation in commands:
+        assert operation['implementation_status'] == ('implemented_minimal_scope' if operation['runtime_available'] else 'planned')
+    if available_operations:
+        execution = read_json(S / 'docs/03_架构与契约/公开操作与宿主调用契约.json')['actual_product_API_execution']
+        assert available_operations == execution['implemented_operations']
+        for operation in commands:
+            if operation['runtime_available']:
+                receipt = read_json(S / operation['implementation_ref'])
+                assert receipt['status'] == 'implemented_and_reviewed'
+                assert operation['operation'] in receipt['actual_result']['implemented_operations']
     assert len(tasks) == 28 and len(selection['selected']) == 21 and len(selection['deferred']) == 7
-    assert all(x['status'] == 'planned' and x['actual_result'] is None for x in tasks + selection['selected'])
+    for task in tasks + selection['selected']:
+        assert task['status'] == ('in_progress' if task['id'] in dispatched_packages else 'planned')
+        assert task['actual_result'] is None
     assert {r for row in mappings for r in row['requirements']} == {f'SF-{i:02}' for i in range(1, 18)}
     # 联合验收的三处已观测问题：逐行任务映射、通用计量与达标即交付分支。
     task_table = (S / 'docs/00_项目基线/用户任务与产品边界.md').read_text(encoding='utf-8')
@@ -123,6 +183,150 @@ def main():
     assert rule_verification['existing_expectations_rewritten'] is False
     assert rule_verification['actual_runtime'] is None and business['actual_result'] is None
     assert business_review['actual_runtime'] is None and business_review['external_actions'] == []
+    # S03-05验证具体节点/身份和真实消费者，不把准备配方当产品运行通过。
+    trace_verification = runpy.run_path(str(S / 'tools/检查需求验收追踪.py'))['verify']()
+    assert trace_verification == read_json(D / '需求验收追踪检查结果.json')
+    trace = read_json(D / '首版需求验收追踪.json')
+    trace_review = read_json(S / trace['report_ref'])
+    assert trace_review['checkpoint'] == 'S03-05'
+    assert trace_review['actual_runtime'] is None and trace_review['external_actions'] == []
+    # S03-04引用独立非功能规格及有限数学结果，不把声明负载当实际基准。
+    nfr_ref = selection['nonfunctional_spec_ref']
+    nfr = read_json(S / nfr_ref)
+    nfr_review = read_json(S / nfr['review_ref'])
+    nfr_result = read_json(S / 'docs/04_开发与验收/非功能规格检查结果.json')
+    assert nfr['checkpoint'] == nfr_review['checkpoint'] == 'S03-04'
+    assert nfr_review['status'] == 'passed_document_specification'
+    assert nfr_result['status'] == 'passed_static_specification_and_finite_math'
+    assert len(nfr['requirements']) == nfr_result['NFR_rows'] == 11
+    assert len(nfr_result['synthetic_math_results']) == 11 and nfr_result['errors'] == []
+    assert nfr_result['readiness_and_result_classification_checks'] == 'passed_static_specification_and_finite_cases'
+    assert nfr_result['confirmed_choices_covered'] == nfr['confirmation_coverage']
+    assert len(nfr['confirmation_coverage']) == 10
+    assert nfr_result['measurement_matrix'] == nfr['test_execution_contract']['matrix']
+    assert nfr['actual_runtime'] is None and nfr['actual_measurements'] == []
+    assert nfr_review['actual_performance_result'] is None and nfr_result['actual_performance_result'] is None
+    assert nfr_review['external_actions'] == [] and nfr_review['functional_source_edit_by_this_review'] is False
+    nav_ref = selection['navigation_spec_ref']
+    nav = read_json(S / nav_ref)
+    nav_review = read_json(S / nav['review_ref'])
+    nav_result = read_json(D / '交互导航检查结果.json')
+    assert nav_review['checkpoint'] == 'S04-01' and nav_review['status'] == 'passed_document_specification'
+    assert nav_result['errors'] == [] and nav_result['status'] == 'passed_static_navigation_specification'
+    assert nav['normal_canvases'] == ['line_canvas', 'multi_hall_canvas']
+    assert nav['zoom_opens_detail'] is False and nav['zoom_switches_canvas'] is False
+    assert nav_result['task_routes'] == 7 and nav_result['SF_coverage'] == 17 and nav_result['planned_operation_refs'] == 18
+    assert nav['runtime_available'] is False and nav_review['runtime_or_frontend'] is None
+    assert tasks_doc['first_release_navigation_spec_ref'] == nav_ref
+    assert read_json(D / '完整设计与执行准入.json')['navigation_spec_ref'] == nav_ref
+    form_ref = selection['form_spec_ref']
+    form_spec = read_json(S / form_ref)
+    form_review = read_json(S / form_spec['review_ref'])
+    assert form_review['checkpoint'] == 'S04-03' and form_review['status'] == 'passed_document_specification'
+    assert nav_result['form_spec_checks']['status'] == 'passed_static_form_and_feedback_specification'
+    assert tasks_doc['first_release_form_spec_ref'] == form_ref
+    assert form_spec['actual_frontend'] is None and form_review['actual_UI_or_product_execution'] is None
+    architecture_ref = selection['component_architecture_ref']
+    architecture = read_json(S / architecture_ref)
+    architecture_result = read_json(D / '架构接点检查结果.json')
+    architecture_review = read_json(S / architecture['review_ref'])
+    ownership = read_json(S / selection['ownership_spec_ref'])
+    ownership_review = read_json(S / ownership['review_ref'])
+    assert architecture_result['errors'] == [] and architecture_result['status'] == 'passed_static_architecture_specification'
+    assert architecture_review['status'] == ownership_review['status'] == 'passed_document_specification'
+    assert architecture_result['ownership_checks']['status'] == 'passed_static_ownership_and_finite_reasoning'
+    assert architecture['actual_runtime'] is None and ownership['actual_runtime'] is None
+    assert tasks_doc['first_release_component_architecture_ref'] == architecture_ref
+    assert tasks_doc['first_release_ownership_spec_ref'] == selection['ownership_spec_ref']
+    module_protocol = read_json(S / selection['module_protocol_ref'])
+    module_protocol_review = read_json(S / module_protocol['review_ref'])
+    module_protocol_result = read_json(S / 'docs/04_开发与验收/九类协议检查结果.json')
+    assert module_protocol_review['status'] == 'passed_document_specification'
+    assert module_protocol_result['status'] == 'passed_static_protocol_and_finite_reasoning'
+    assert module_protocol_result['payload_field_contracts'] == 61
+    assert module_protocol_result['checked_parameter_leaf_bindings'] == 28
+    assert len(module_protocol_result['finite_reasoning_cases']) == 9
+    assert module_protocol_result['actual_loader_or_engine_execution'] is None
+    assert tasks_doc['first_release_module_protocol_ref'] == selection['module_protocol_ref']
+    technical = read_json(S / selection['technical_selection_ref'])
+    technical_review = read_json(S / technical['review_ref'])
+    technical_result = read_json(S / 'docs/04_开发与验收/技术部署检查结果.json')
+    assert technical_review['status'] == 'passed_document_specification'
+    assert technical_result['status'] == 'passed_static_technical_and_deployment_design'
+    assert technical_result['selected_dependencies'] == 22
+    assert technical['actual_runtime'] is None and technical_result['actual_product_compile'] is None
+    assert tasks_doc['first_release_technical_selection_ref'] == selection['technical_selection_ref']
+    scheduler_ref = selection['scheduler_spec_ref']
+    scheduler = read_json(S / scheduler_ref)
+    scheduler_review = read_json(S / scheduler['review_ref'])
+    scheduler_result = read_json(D / '调度算法检查结果.json')
+    scheduler_trial = read_json(S / scheduler['isolated_std_trial_ref'])
+    assert scheduler_review['status'] == 'passed_document_specification'
+    assert scheduler_result['status'] == 'passed_static_specification_and_finite_reasoning'
+    assert scheduler_result['algorithm_rules'] == len(scheduler['rules']) == 14
+    assert len(scheduler_result['finite_cases']) == 21
+    assert scheduler_result['logical_handoffs'] == scheduler_result['applicable_views'] == 6
+    assert scheduler_result['actual_product_runtime'] is None and scheduler_result['actual_product_cases_executed'] == 0
+    assert scheduler_trial['status'] == 'passed_actual_std_queue_subset' and scheduler_trial['actual_product_engine'] is False
+    type_ref = selection['type_format_spec_ref']
+    type_spec = read_json(S / type_ref)
+    type_review = read_json(S / type_spec['review_ref'])
+    type_result = runpy.run_path(str(S / 'tools/检查类型与格式.py'))['verify']()
+    assert type_spec['status'] == type_review['status'] == 'passed_document_specification'
+    assert type_review['checkpoint'] == 'S06-02' and type_review['actual_product_runtime'] is None
+    assert type_result['category_fields_bound'] == 61 and type_result['common_fields_bound'] == 10
+    assert tasks_doc['first_release_type_format_spec_ref'] == type_ref
+    for ref in ['docs/04_开发与验收/完整设计与执行准入.json',
+                'docs/04_开发与验收/软件开发流程与当前成熟度评估.json',
+                'docs/04_开发与验收/任务框架与工量里程碑.json',
+                'docs/04_开发与验收/编码任务包/任务包索引.json']:
+        assert read_json(S / ref)['type_format_spec_ref'] == type_ref
+    assert contracts['type_field_bindings_ref'] == type_spec['module_field_bindings_ref']
+    api_ref = selection['api_contract_spec_ref']
+    api_spec = read_json(S / api_ref)
+    api_review = read_json(S / api_spec['review_ref'])
+    api_result = runpy.run_path(str(S / 'tools/检查公开操作契约.py'))['verify']()
+    assert api_spec['status'] == api_review['status'] == 'passed_document_specification'
+    assert api_result['operations'] == api_result['service_signatures'] == 18
+    assert api_result['product_operations_implemented'] == 0 and api_result['actual_product_API_execution'] is None
+    packaging_review_ref = 'docs/04_开发与验收/S06-04_纸包装算法与数值方法复审.json'
+    packaging_review = read_json(S / packaging_review_ref)
+    assert packaging_review['status'] == 'passed_document_specification'
+    assert packaging_review['review_passed'] is True
+    assert packaging_review['open_findings'] == [] and packaging_review['remaining_public_blocker'] is None
+    assert packaging_review['actual_product_runtime'] is None
+    assert packaging_review['actual_complete_professional_trial'] is None
+    packaging_proof = read_json(S / packaging_review['actual_isolated_methods']['result_ref'])
+    hold_proof = read_json(S / packaging_review['actual_isolated_methods']['fixed_pose_recheck']['result_ref'])
+    numeric_proof = read_json(S / packaging_review['actual_isolated_methods']['native_result_ref'])
+    assert packaging_proof['case_count'] == len(packaging_proof['cases']) == 32
+    assert packaging_proof['all_expected_matched'] is True
+    assert all(row['matches_independent_expectation'] for row in packaging_proof['cases'])
+    assert hold_proof['case_count'] == len(hold_proof['cases']) == 6
+    assert hold_proof['all_expected_matched'] is True
+    assert all(row['matches_independent_expectation'] for row in hold_proof['cases'])
+    assert hold_proof['carrier_positive_checks'] == 21 and hold_proof['schema_negative_checks'] == 9
+    assert hold_proof['existing_32_expectations_modified'] is False
+    assert hold_proof['actual_Host_invocation'] is False and hold_proof['actual_product_runtime'] is None
+    assert numeric_proof['case_count'] == len(numeric_proof['cases']) == 16
+    assert all(row['actual_Rust_f64_encloses_exact_reference'] for row in numeric_proof['cases'])
+    assert numeric_proof['full_geometry_kernel_proved'] is False
+    assert tasks_doc['first_release_api_contract_spec_ref'] == api_ref
+    for ref in ['docs/04_开发与验收/完整设计与执行准入.json',
+                'docs/04_开发与验收/软件开发流程与当前成熟度评估.json',
+                'docs/04_开发与验收/任务框架与工量里程碑.json',
+                'docs/04_开发与验收/编码任务包/任务包索引.json']:
+        assert read_json(S / ref)['api_contract_spec_ref'] == api_ref
+    assert scheduler['actual_full_engine_implemented'] is False
+    assert tasks_doc['first_release_scheduler_spec_ref'] == scheduler_ref
+    for task in selection['selected']:
+        if task['id'] in ['P1-01', 'P1-02', 'P1-03', 'P1-04', 'P1-05', 'P2-02', 'P2-04', 'P2-06']:
+            assert task['algorithm_spec_ref'] == scheduler_ref and scheduler_ref in task['execution_plan']['input_refs']
+    assert tasks_doc['first_release_nonfunctional_spec_ref'] == nfr_ref
+    for ref in ['docs/04_开发与验收/完整设计与执行准入.json', 'docs/04_开发与验收/任务框架与工量里程碑.json']:
+        assert read_json(S / ref)['nonfunctional_spec_ref'] == nfr_ref
+    assert read_json(S / 'docs/00_项目基线/项目主线.json')['development_responsibility']['nonfunctional_spec_ref'] == nfr_ref
+    assert maturity['phases'][2]['checkpoints'][3]['review']['status'] == 'passed'
     generation = read_json(S / 'packages/domain/factory-generation.design.json')
     policy = generation['delivery_policy']['initial_target_met']
     assert 'accepted_unit' in generation['goal_fields'] and 'acceptance_scope' in generation['goal_fields']
@@ -132,7 +336,10 @@ def main():
     cases = {c['id']: c for c in scenarios['cases']}
     assert 'no_required_change_revised_run_or_comparison' in cases['GF-07']['expectation']
     assert 'new_run_comparison_or_inability_reason' in cases['GF-05']['expectation']
-    assert {e['accepted_unit'] for e in scenarios['generic_unit_examples']} == {'carton', 'piece'}
+    assert {(e['product_family'], e['accepted_unit']) for e in scenarios['generic_unit_examples']} == {
+        ('die_cut_fold_glued_paper_carton', 'piece'), ('purchased_parts_assembly', 'piece')}
+    assert next(e for e in scenarios['generic_unit_examples']
+                if e['product_family'] == 'die_cut_fold_glued_paper_carton')['accepted_item_type'] == 'carton'
     reporting = read_json(S / 'packages/reporting/evaluation-report.contract.design.json')
     assert 'revised references optional' in reporting['optional_generation_context']['field_usage']['initial_and_revised_scenario_run_refs']
     assert scenarios['runtime_available'] is False and scenarios['actual_result'] is None
@@ -240,9 +447,26 @@ def main():
     assert window_plan['execution_policy']['integration_window'] == 'W00'
     assert window_plan['execution_policy']['planned_window_count'] == 6
     assert window_plan['execution_policy']['maximum_simultaneously_active_implementation_windows'] == 5
-    assert all(r['actual_thread_id'] is None and r['dispatch_status'] == 'planned' for r in roles.values())
-    assert window_plan['actual_execution']['windows_dispatched_by_this_plan'] == 0
-    assert window_plan['actual_execution']['actual_windows'] == []
+    support = next((entry for key in ['current_host_slice_dispatch', 'current_persistence_history_dispatch', 'current_business_inputs_dispatch', 'current_whole_package_dispatch']
+                    if (entry := window_plan.get(key, {})).get('scope_ref') == backend_ref), {})
+    support_by_role = ({r['window_id']: r for r in support['dispatches']}
+                       if support.get('scope_ref') == backend_ref else {})
+    for role in roles.values():
+        if role['id'] in support_by_role:
+            assert role['actual_thread_id'] == support_by_role[role['id']]['thread_id']
+            assert role['dispatch_status'] == ('current_slice_reviewed' if backend_reviewed else 'active_scoped_backend')
+        elif backend_dispatched and role['id'] == 'W00':
+            assert role['actual_thread_id'] == backend['dispatch']['thread_id']
+            assert role['dispatch_status'] == ('current_slice_reviewed' if backend_reviewed else 'active_scoped_backend')
+        else:
+            assert role['actual_thread_id'] is None and role['dispatch_status'] == 'planned'
+    expected_windows = len(support_by_role) if support_by_role else int(backend_dispatched)
+    assert window_plan['actual_execution']['windows_dispatched_by_this_plan'] == expected_windows
+    if backend_dispatched:
+        assert len(window_plan['actual_execution']['actual_windows']) == expected_windows
+        assert window_plan['actual_execution']['actual_windows'][0]['thread_id'] == backend['dispatch']['thread_id']
+    else:
+        assert window_plan['actual_execution']['actual_windows'] == []
     assert window_plan['actual_execution']['parallel_handoff_rehearsal'] is None
     assigned = {r['task_id']: r for r in window_plan['task_assignments']}
     assert len(assigned) == len(window_plan['task_assignments']) == 21 and set(assigned) == chosen
@@ -255,7 +479,8 @@ def main():
         assert owner in roles and row['id'] in roles[owner]['primary_tasks']
         assert assignment['primary_window'] == owner and assignment['accountable_owner'] == 'user'
         assert set(assignment['support_windows']) <= set(roles) - {owner}
-        assert assignment['status'] == 'planned' and assignment['actual_result'] is None
+        assert assignment['status'] == ('in_progress' if row['id'] in dispatched_packages else 'planned')
+        assert assignment['actual_result'] is None
         assert row['implementation_owner'] == 'user_with_ai_windows' and row['acceptance_owner'] == 'user'
         assert row['accountable_owner'] == 'user'
         for key in ['planned_window_id', 'implementation_owner', 'acceptance_owner', 'parallel_plan_ref']:
@@ -280,38 +505,124 @@ def main():
     assert design_gate['design_freeze']['currently_passed_design_reviews'] == 30 - len(pending_design_ids)
     assert design_gate['design_freeze']['currently_pending_design_reviews'] == pending_design_ids
     assert design_gate['design_freeze']['last_checkpoint'] == 'S06-05'
-    assert design_gate['design_freeze']['status'] == 'not_ready'
+    design_frozen = design_gate['design_freeze']['status'] == 'passed'
+    assert design_gate['design_freeze']['status'] in ['not_ready', 'passed']
+    if design_frozen:
+        assert not pending_design_ids
+        freeze_review = read_json(D / 'S06-05_全层贯通设计与冻结复审.json')
+        assert freeze_review['status'] == 'passed_all_layer_design_freeze'
+        assert not freeze_review['unresolved_design_findings'] and freeze_review['actual_freeze']
+        assert len(freeze_review['flows']) == 5 and len(freeze_review['task_design_matrix']) == 21
     assert design_gate['execution_entry']['last_checkpoint_before_product_coding'] == 'S07-05'
     assert design_gate['execution_entry']['first_product_coding_phase'] == 'S08'
-    assert design_gate['final_topic_pdf']['generated_this_turn'] is False
-    assert design_gate['final_topic_pdf']['actual_output'] is None
+    preparation_accepted = all(c['review']['status'] == 'passed' for c in maturity['phases'][6]['checkpoints'])
+    if preparation_accepted:
+        engineering = read_json(D / 'S07_工程准备与执行准入.json')
+        assert engineering['status'] == 'passed_engineering_preparation'
+        assert read_json(S / engineering['verification_ref'])['status'] == 'passed'
+        assert design_gate['execution_entry']['status'] == ('active_scoped_backend_execution' if backend_dispatched else 'ready_for_scoped_backend_dispatch')
+        assert design_gate['execution_entry']['actual_S08_dispatch_started'] is backend_dispatched
+    pdf_delivery = design_gate['final_topic_pdf']
+    if pdf_delivery['actual_output'] is not None:
+        assert design_frozen and pdf_delivery['status'] == 'delivered'
+        assert (S / pdf_delivery['software_engineering_relative_path']).is_file()
+        assert (S / pdf_delivery['editable_DOCX_relative_path']).is_file()
+    else:
+        assert pdf_delivery['generated_this_turn'] is False
     assert design_gate['frontend_supervision']['software'] == 'Figma'
-    for key in ['design_start_authorization', 'frontend_build_authorization', 'approved_figma_artifact']:
+    figma_authorization = design_gate['frontend_supervision']['design_start_authorization']
+    assert figma_authorization['decision'] == 'start_supervised_figma_design_and_clickable_prototype'
+    assert figma_authorization['checkpoints'] == ['S04-02', 'S04-04']
+    assert figma_authorization['user_supervision_required'] is True
+    assert figma_authorization['product_frontend_coding_authorized'] is False
+    for key in ['frontend_build_authorization', 'approved_figma_artifact']:
         assert design_gate['frontend_supervision'][key] is None
+    assert maturity['frontend_supervision'] == design_gate['frontend_supervision']
     assert window_plan['frontend_supervision'] == design_gate['frontend_supervision']
+    figma_execution = read_json(S / 'docs/02_交互设计/Figma执行状态.json')
+    assert design_gate['frontend_supervision']['current_figma_batch']['status'] == figma_execution['execution_state']
+    delivery_file, delivery_section = design_gate['current_report_delivery_ref'].split('#/')
+    current_report = read_json(S / delivery_file)[delivery_section]
+    assert current_report['artifacts']['PDF'] == pdf_delivery['software_engineering_relative_path']
+    assert current_report['verified_actual_PDF_pages'] == pdf_delivery['actual_output']['actual_pages']
     assert maturity['phases'][3]['checkpoints'][4]['checkpoint'] == '负责人实际原型走查'
-    assert maturity['phases'][3]['checkpoints'][4]['review']['status'] == 'pending'
+    if maturity['phases'][3]['checkpoints'][4]['review']['status'] == 'passed':
+        walk = read_json(S / 'docs/02_交互设计/S04_可操作设计原型/output/delegated-walkthrough/walkthrough-result.json')
+        assert walk['completed'] and walk['operator_kind'] == 'AI_delegated'
+        assert walk['authorization']['user_message_id'] == '01a13aec-61f5-7c82-9ef9-46d9a202d275'
+        assert len(walk['flows']) == 5 and len(walk['failure_checks']) == 8
+        assert all(step['result'] == 'passed' for flow in walk['flows'] for step in flow['steps'])
+        assert all(row['result'] == 'passed' for row in walk['failure_checks'])
+        assert not walk['page_errors'] and walk['actual_user_walkthrough'] is None
+        assert not walk['product_API_called']
+    else:
+        assert maturity['phases'][3]['checkpoints'][4]['review']['status'] == 'pending'
     prompt_index = read_json(D / '窗口启动提示词/启动提示词索引.json')
     assert {row['window_id'] for row in prompt_index['prompts']} == set(roles)
     assert len(prompt_index['prompts']) == 6
     for row in prompt_index['prompts']:
         assert row['primary_tasks'] == roles[row['window_id']]['primary_tasks']
-        assert row['launch_authorized'] is False
+        assert row['launch_authorized'] is (backend_dispatched and (row['window_id'] == 'W00' or row['window_id'] in support_by_role))
+        if row['launch_authorized']:
+            if row['window_id'] == 'W00':
+                if support.get('dispatch_mode') == 'whole_task_packages':
+                    assignment = support_by_role['W00']
+                    current = dispatched_receipts[assignment['task_id']]
+                    assert row['actual_dispatch'] == current['dispatch']
+                    assert row['actual_dispatch']['scope_ref'] == assignment['scope_ref']
+                    assert row['actual_dispatch']['thread_id'] == assignment['thread_id']
+                else:
+                    assert row['actual_dispatch'] == backend['dispatch']
+            else:
+                if support.get('dispatch_mode') == 'whole_task_packages':
+                    assignment = support_by_role[row['window_id']]
+                    assert row['actual_dispatch']['scope_ref'] == assignment['scope_ref']
+                    assert row['actual_dispatch']['task_id'] == assignment['task_id']
+                    assert assignment['task_id'] in dispatched_receipts
+                    assert assignment['scope_ref'] == dispatched_packages[assignment['task_id']]['current_execution_ref']
+                else:
+                    assert row['actual_dispatch']['scope_ref'] == backend_ref
+                    assert row['actual_dispatch']['task_id'] == backend['task_id']
+                assert row['actual_dispatch']['thread_id'] == support_by_role[row['window_id']]['thread_id']
         text = (S / row['prompt_ref']).read_text(encoding='utf-8-sig')
         assert all(token in text for token in ['S06-05', 'S07-05', 'Figma', 'explicit approval', 'module views', 'read-only review'])
         assert '阶段实现计划.json' in text and 'P work families do not introduce whole-family start barriers' in text
-    package_index = read_json(S / selection['coding_package_index_ref'])
     package_by_id = {r['task_id']: r for r in package_index['packages']}
     assert len(package_index['packages']) == len(package_by_id) == 21 and set(package_by_id) == chosen
     for row in selection['selected']:
         package = package_by_id[row['id']]
         assert package['primary_window'] == row['planned_window_id']
-        assert package['status'] == 'draft_not_dispatchable' and package['design_accepted'] is False
-        assert package['actual_dispatch'] is None and package['actual_commands'] is None
+        if row['id'] in dispatched_packages:
+            receipt = dispatched_receipts[row['id']]
+            assert package['status'] == 'in_progress'
+            assert package['prepared_slice']['within_original_step'] == receipt['within_original_step']
+            frontend = package['prepared_slice']['business_frontend_changes']
+            assert frontend is receipt['scope']['business_frontend_changes']
+            if frontend:
+                assert design_frozen and preparation_accepted
+                assert receipt['dispatch']['business_frontend_authorized'] is True
+                assert receipt['dispatch']['dispatch_mode'] == 'whole_task_package'
+        elif preparation_accepted and row['id'] == 'P0-01':
+            assert package['status'] == 'ready_for_dispatch'
+        else:
+            assert package['status'] == 'draft_not_dispatchable'
+        assert package['design_accepted'] is design_frozen
+        if design_frozen:
+            assert package['design_acceptance_ref'] == 'docs/04_开发与验收/S06-05_全层贯通设计与冻结复审.json'
+            assert len(package['design_view_refs']) == 6
+        if row['id'] in dispatched_packages:
+            receipt = dispatched_receipts[row['id']]
+            assert package['actual_dispatch'] == receipt['dispatch']
+            assert row['current_slice_result_ref'] == task_by_id[row['id']]['current_slice_result_ref'] == package['current_execution_ref']
+            if receipt['status'] == 'implemented_and_reviewed':
+                assert package['actual_commands'] == receipt['actual_result']['verification_commands']
+        else:
+            assert package['actual_dispatch'] is None
+            assert package['actual_commands'] == (engineering['verified_commands'] if preparation_accepted else None)
         assert package['package_ref'] == row['coding_package_ref'] == task_by_id[row['id']]['first_release_coding_package_ref']
         assert row['coding_protocol_ref'] == task_by_id[row['id']]['first_release_coding_protocol_ref'] == design_gate['coding_protocol_ref']
         text = (S / package['package_ref']).read_text(encoding='utf-8-sig')
-        assert row['scope'] in text and row['release_acceptance'] in text and 'draft_not_dispatchable' in text
+        assert row['scope'] in text and row['release_acceptance'] in text and package['status'] in text
     # 八项现行基线与无日程的任务工量/成果框架。
     effort_frame = read_json(S / selection['effort_framework_ref'])
     effort_rows = {r['task_id']: r for r in effort_frame['tasks']}
@@ -331,6 +642,9 @@ def main():
     assert effort_frame['totals']['actual_human_hours'] is None
     assert effort_frame['totals']['calendar_duration_or_deadline_guarantee'] is None
     milestones = {r['id']: r for r in effort_frame['milestones']}
+    assert milestones['MS-11']['required_functional_ids'] == [
+        sf for sf in selection['scope_freeze']['included_requirement_ids'] if sf != 'SF-15']
+    assert milestones['MS-12']['required_functional_ids'] == ['SF-15']
     assert len(milestones) == len(effort_frame['milestones']) == 13
     milestone_task_ids = [ident for r in milestones.values() for ident in r['complete_task_ids']]
     assert len(milestone_task_ids) == len(set(milestone_task_ids)) == 21 and set(milestone_task_ids) == chosen
@@ -391,7 +705,13 @@ def main():
         assert set(milestone['contributors']) <= set(roles) - {milestone['delivery_owner']}
         assert milestone['required_deliverables'] and milestone['acceptance_source_refs']
         assert all((S / ref).exists() for ref in milestone['acceptance_source_refs'])
-        if milestone['id'] != 'MS-00':
+        if milestone['id'] in ['MS-01', 'MS-02', 'MS-03'] and design_frozen:
+            assert milestone['status'] == 'accepted_design_milestone'
+            assert milestone['actual_result']['kind'] == 'accepted_design_not_product'
+        elif milestone['id'] == 'MS-04' and pdf_delivery['status'] == 'delivered':
+            assert milestone['status'] == 'accepted_design_milestone'
+            assert milestone['actual_result']['kind'] == 'accepted_design_not_product'
+        elif milestone['id'] != 'MS-00':
             assert milestone['status'] == 'planned' and milestone['actual_result'] is None
     assert next(r for r in effort_frame['shared_work'] if r['id'] == 'E-DESIGN')['scope_checkpoint_ids'] == pending_design_ids
     for row in effort_frame['shared_work']:
@@ -419,8 +739,17 @@ def main():
         assert lifecycle['required_review_ids'] == [row['id'] for row in phase['checkpoints']]
         assert lifecycle['delivery_owner'] in roles and lifecycle['acceptance_owner'] == 'user'
         assert lifecycle['inputs'] and lifecycle['outputs'] and lifecycle['exit_conditions']
-        assert lifecycle['actual_exit_result'] is None
+        if design_frozen and (phase['id'] in [f'S{i:02}' for i in range(1, 6)] or
+                              (phase['id'] == 'S06' and pdf_delivery['status'] == 'delivered')):
+            assert lifecycle['actual_exit_result']['kind'] == 'accepted_design_stage_exit_not_product_execution'
+        elif phase['id'] == 'S07' and preparation_accepted:
+            assert lifecycle['actual_exit_result']['status'] == 'passed_actual_engineering_preparation'
+            assert lifecycle['actual_exit_result']['ref'] == 'docs/04_开发与验收/S07_工程准备与执行准入.json'
+        else:
+            assert lifecycle['actual_exit_result'] is None
         expected_review_state = 'definitions_reviewed' if all(row['review']['status'] == 'passed' for row in phase['checkpoints']) else 'pending_reviews'
+        if phase['id'] == 'S07' and preparation_accepted:
+            expected_review_state = 'passed_actual_preparation_review'
         assert lifecycle['document_review_state'] == expected_review_state
     families = {row['id']: row for row in stage_plan['product_families']}
     assert len(families) == len(stage_plan['product_families']) == 6
@@ -433,7 +762,8 @@ def main():
         assert family['requirement_ids'] == sorted({sf for row in members for sf in row['requirement_ids']})
         assert family['delivery_owner'] in roles and family['acceptance_owner'] == 'user'
         assert family['inputs'] and family['outputs'] and family['exit_conditions']
-        assert family['status'] == 'planned' and family['actual_result'] is None
+        assert family['status'] == ('in_progress' if backend_dispatched and family_id == 'P0' else 'planned')
+        assert family['actual_result'] is None
         assert family['owned_ix_ids'] == [row['id'] for row in selection['shared_scenario_checks'] if row['owner'].split('-')[0] == family_id]
         assert len(family['task_contracts']) == len(members)
         for contract, row in zip(family['task_contracts'], members):
@@ -446,7 +776,8 @@ def main():
     for row in stage_plan['sf_evidence']:
         assert row['producer_tasks'] == [task['id'] for task in selection['selected'] if task['id'] != 'P5-01' and row['id'] in task['requirement_ids']]
         assert row['producer_tasks'] and row['closure_task'] == 'P5-01' and row['closure_window'] == 'W00'
-        assert row['verification_milestone'] == 'MS-11' and row['material_closure_milestone'] == 'MS-12'
+        assert row['verification_milestone'] == ('MS-12' if row['id'] == 'SF-15' else 'MS-11')
+        assert row['material_closure_milestone'] == 'MS-12'
         assert row['current_result'] == 'not_executed' and row['actual_result'] is None
     assert len(stage_plan['ix_evidence']) == 3
     for row, source in zip(stage_plan['ix_evidence'], selection['shared_scenario_checks']):
@@ -460,7 +791,16 @@ def main():
     assert stage_plan['lifecycle_phases'][-1]['gate_for_current_material_readiness'] is False
     assert all(token in stage_plan['evidence_policy']['business_outcome_vs_verdict'] for token in ['Fail', 'Undetermined', 'RevisionConflict'])
     assert stage_plan['failure_policy']['actions'] and stage_plan['evidence_policy']['minimum_exit_record']
-    assert all(stage_plan[key] is None for key in ['actual_product_execution', 'actual_lifecycle_exit_results', 'actual_product_family_exits', 'actual_sf_execution', 'actual_ix_execution'])
+    assert all(stage_plan[key] is None for key in ['actual_product_family_exits', 'actual_sf_execution', 'actual_ix_execution'])
+    if backend_dispatched:
+        assert stage_plan['actual_product_execution']['task_id'] == backend['task_id']
+        assert stage_plan['actual_product_execution']['whole_task_done'] is False
+    else:
+        assert stage_plan['actual_product_execution'] is None
+    if preparation_accepted:
+        assert set(stage_plan['actual_lifecycle_exit_results']) == {'S07'}
+    else:
+        assert stage_plan['actual_lifecycle_exit_results'] is None
     assert stage_plan['external_actions'] == stage_review['external_actions'] == []
     assert stage_review['actual_runtime'] is None and stage_review['actual_stage_exits'] is None
     assert len(stage_review['criteria']) == 7 and len(stage_review['finite_walkthroughs']) == 6
@@ -482,7 +822,7 @@ def main():
     assert maturity['checkpoint_review']['passed_reviews'] == len(passed_ids)
     assert maturity['checkpoint_review']['pending_reviews'] == len(checkpoints) - len(passed_ids)
     assert set(maturity['checkpoint_review']['completed_review']) == passed_ids
-    assert maturity['observations']['planned_operations'] == 18 and maturity['observations']['runtime_available_operations'] == 0
+    assert maturity['observations']['planned_operations'] == 18 and maturity['observations']['runtime_available_operations'] == len(available_operations)
     assert maturity['observations']['requirement_ids'] == 17
     for entry in catalog['modules']:
         manifest_path = S / 'modules' / entry['manifest']
@@ -506,7 +846,22 @@ def main():
         if not path.exists():
             path.write_text(initial, encoding='utf-8')
     edited = {x.replace('\\', '/') for x in read_json(D / '本轮已修改文件.json')['files']}
-    files = sorted(f for f in P.rglob('*') if f.is_file())
+    lab_builds = [S / 'tools/architecture-proof/target',
+                  S / 'tools/type-contract-proof/node_modules',
+                  S / 'tools/type-contract-proof/python-libs',
+                  S / 'target', S / 'node_modules', S / '.work',
+                  S / 'apps/planner/dist', S / 'apps/planner/src-tauri/gen']
+    # A fixture Junction can point back to canonical modules. Check each real
+    # project file once, with its real parent for relative documentation links.
+    files = set()
+    for candidate in P.rglob('*'):
+        if not candidate.is_file():
+            continue
+        physical = candidate.resolve()
+        path = physical if physical.is_relative_to(P) else candidate
+        if not any(path.is_relative_to(directory) for directory in lab_builds):
+            files.add(path)
+    files = sorted(files)
     files += [W / r for r in ['README.md', '大作业/README.md', '比赛/01_开放原子/README.md']]
     inventory = []
     for path in files:
@@ -545,12 +900,13 @@ def main():
                 parser = Links()
                 parser.feed(path.read_text(encoding='utf-8-sig'))
                 links = parser.links
+            link_parent = reference_parent(path) if links else path.parent
             for target in links:
                 target = unquote(target.strip('<>').split('#')[0])
                 if not target or re.match(r'(?:[a-zA-Z]+:|//)', target) and not re.match(r'^[A-Za-z]:[/\\]', target):
                     continue
                 checked_links += 1
-                if not (path.parent / target).exists():
+                if not (link_parent / target).exists():
                     issues.append('引用不存在: ' + target)
         if issues:
             errors.append({'path': key, 'issues': issues})
@@ -579,7 +935,7 @@ def main():
         writer = csv.DictWriter(f, fieldnames=['path', 'action', 'basis', 'check_status', 'issues'])
         writer.writeheader()
         writer.writerows(inventory)
-    output = {'check_kind': 'all_project_file_design_sync_not_runtime_acceptance', 'date': '2026-10-13', 'files': len(files), 'actions': dict(Counter(x['action'] for x in inventory)), 'matrix': results, 'checked_local_references': checked_links, 'errors': errors, 'runtime_available_operations': 0, 'completed_product_tasks': 0, 'maturity_percentages_unchanged': True, 'source_records': 87, 'professional_research_directions': 41, 'selected_professional_kernels': 1, 'existing_design_images': 22, 'preserved_assets_are_not_new_UI_coverage': True, 'joint_correction_checks': {'F01_generic_quantity_contract': 'passed', 'F02_initial_success_and_conditional_repair': 'passed', 'F03_all_seven_UT_SF_sets': 'passed'}}
+    output = {'check_kind': 'all_project_file_design_sync_not_runtime_acceptance', 'date': CHECK_DATE, 'files': len(files), 'actions': dict(Counter(x['action'] for x in inventory)), 'matrix': results, 'checked_local_references': checked_links, 'errors': errors, 'runtime_available_operations': len(available_operations), 'completed_product_tasks': 0, 'maturity_percentages_unchanged': True, 'source_records': 87, 'professional_research_directions': 41, 'selected_professional_kernels': 1, 'existing_design_images': 22, 'preserved_assets_are_not_new_UI_coverage': True, 'joint_correction_checks': {'F01_generic_quantity_contract': 'passed', 'F02_initial_success_and_conditional_repair': 'passed', 'F03_all_seven_UT_SF_sets': 'passed'}}
     output['task_decomposition_checks'] = {
         'checkpoint': 'S02-02', 'status': 'passed_static_specification',
         'selected_work_packages': len(selection['selected']),
@@ -591,11 +947,10 @@ def main():
         'shared_scenario_checks': [x['id'] for x in selection['shared_scenario_checks']],
         'actual_runtime_results': None,
     }
-    output['maturity_percentages_unchanged'] = True
+    output['maturity_percentages_unchanged'] = False
     output['maturity_credit_change_this_revision'] = {
-        'checkpoint': 'S03-02_independent_document_review', 'completion': [1, 1], 'evidence': [1, 1],
-        'S03_completion': maturity['phases'][2]['completion_percent'],
-        'S03_strength': maturity['phases'][2]['strength_percent'], 'changed_by_checker': False,
+        **maturity['latest_review_merge'], 'changed_checkpoints': maturity['latest_review_merge'].get('checkpoints', ['S06-04']),
+        'changed_by_checker': False,
     }
     output['parallel_window_plan_checks'] = {
         'checkpoint': 'S02-03', 'status': 'passed_static_plan', 'accountable_owner': 'user',
@@ -603,17 +958,23 @@ def main():
         'declared_write_ranges': len(write_ranges), 'overlapping_base_write_ranges': [],
         'shared_contract_and_build_configuration_owner': 'W00',
         'task_projection_and_document_mapping': 'passed',
-        'deferred_tasks_assigned_windows': [], 'actual_dispatched_by_this_plan': 0,
+        'deferred_tasks_assigned_windows': [], 'actual_dispatched_by_this_plan': int(backend_dispatched),
         'actual_parallel_handoff': None, 'speedup_measurement': None,
     }
     output['design_and_coding_entry_checks'] = {
-        'status': 'policy_and_drafts_synced_not_design_freeze',
+        'status': 'frozen_design_and_actual_preparation_synced' if preparation_accepted else 'frozen_design_and_pending_preparation_synced',
         'design_review_gate': 'S06-05', 'required_design_reviews': len(design_checkpoints),
         'pending_design_reviews': len(pending_design_ids), 'execution_preparation_gate': 'S07-05',
-        'startup_prompts': 6, 'coding_package_drafts': 21,
-        'frontend_software': 'Figma', 'frontend_authorized_or_started': False,
+        'startup_prompts': 6, 'coding_package_drafts': sum(p['status'] == 'draft_not_dispatchable' for p in package_index['packages']),
+        'coding_packages_ready_for_dispatch': sum(p['status'] == 'ready_for_dispatch' for p in package_index['packages']),
+        'S07_preparation_accepted': preparation_accepted,
+        'S08_backend_slice_dispatched': backend_dispatched,
+        'S08_backend_slice_reviewed': backend_reviewed,
+        'frontend_software': 'Figma', 'frontend_design_authorized': True,
+        'frontend_design_artifact_available': design_gate['frontend_supervision'].get('design_source_artifact') is not None,
+        'frontend_product_coding_authorized': False,
         'module_views_technology_interfaces_before_coding': True,
-        'final_topic_pdf_deferred': True,
+        'final_topic_pdf_deferred': pdf_delivery['status'] != 'delivered',
     }
     output['joint_baseline_and_effort_framework_checks'] = {
         'status': 'passed_static_document_and_arithmetic', 'joint_checkpoints': expected_joint_ids,
@@ -671,23 +1032,132 @@ def main():
         'pending_design_reviews': len(pending_design_ids), 'next_checkpoint': maturity['checkpoint_review']['next_checkpoint'],
         'actual_product_runtime': None, 'review_ref': business['review_ref'],
     }
+    output['S03_04_independent_review_checks'] = {
+        'checkpoint': 'S03-04', 'status': nfr_result['status'],
+        'NFR_rows': len(nfr['requirements']), 'synthetic_math_cases': len(nfr_result['synthetic_math_results']),
+        'confirmed_choices_covered': nfr_result['confirmed_choices_covered'],
+        'measurement_matrix': nfr_result['measurement_matrix'],
+        'readiness_and_result_classification_checks': nfr_result['readiness_and_result_classification_checks'],
+        'minimal_measurement_record_checks': nfr_result['minimal_measurement_record_checks'],
+        'required_check_group_count': nfr_result['required_check_group_count'],
+        'coordinate_mapping_checks': nfr_result['coordinate_mapping_checks'],
+        'readiness_and_clock_boundaries': nfr_result['readiness_and_clock_boundaries'],
+        'editor_attempt_plan_checks': nfr_result['editor_attempt_plan_checks'],
+        'measurement_type_binding_checks': nfr_result['measurement_type_binding_checks'],
+        'load_profile': nfr_result['load_profile'], 'numeric_targets': nfr['numeric_targets'],
+        'machine_evidence': 'inventory_only_not_rendering_or_performance',
+        'consumer_reference_sync': 'passed', 'no_new_wall_clock_engine': nfr_review['view_time_not_simulation_time'],
+        'actual_performance_result': None, 'actual_product_runtime': None,
+        'formal_reviews': len(passed_ids), 'pending_reviews': len(checkpoints) - len(passed_ids),
+        'pending_design_reviews': len(pending_design_ids), 'next_checkpoint': maturity['checkpoint_review']['next_checkpoint'],
+        'spec_ref': nfr_ref, 'review_ref': nfr['review_ref'],
+    }
+    output['S06_01_independent_review_checks'] = {
+        'checkpoint': 'S06-01', 'status': scheduler_result['status'],
+        'algorithm_rules': 14, 'finite_reasoning_cases': 21, 'logical_handoffs': 6,
+        'applicable_views': 6, 'std_API_trial': scheduler_trial['status'],
+        'actual_product_runtime': None, 'actual_product_cases_executed': 0,
+        'spec_ref': scheduler_ref, 'review_ref': scheduler['review_ref'],
+        'formal_reviews': len(passed_ids), 'pending_reviews': len(checkpoints) - len(passed_ids),
+        'pending_design_reviews': len(pending_design_ids),
+        'next_checkpoint': maturity['checkpoint_review']['next_checkpoint'],
+    }
+    output['S06_02_independent_review_checks'] = {
+        **type_result, 'spec_ref': type_ref, 'review_ref': type_spec['review_ref'],
+        'formal_reviews': len(passed_ids), 'pending_reviews': len(checkpoints) - len(passed_ids),
+        'pending_design_reviews': len(pending_design_ids),
+        'next_checkpoint': maturity['checkpoint_review']['next_checkpoint'],
+    }
+    output['S06_03_independent_review_checks'] = {
+        **api_result, 'spec_ref': api_ref, 'review_ref': api_spec['review_ref'],
+        'formal_reviews': len(passed_ids), 'pending_reviews': len(checkpoints) - len(passed_ids),
+        'pending_design_reviews': len(pending_design_ids),
+        'next_checkpoint': maturity['checkpoint_review']['next_checkpoint'],
+    }
+    output['S06_04_independent_review_checks'] = {
+        'checkpoint': 'S06-04', 'status': packaging_review['status'],
+        'evidence_check': 'recorded_owned_outputs_and_shared_carrier_consistency_not_product_execution',
+        'review_ref': packaging_review_ref,
+        'closed_findings': [row['id'] for row in packaging_review['findings']],
+        'remaining_public_blocker': None, 'finite_method_cases': packaging_proof['case_count'],
+        'fixed_pose_cases': hold_proof['case_count'],
+        'carrier_positive_checks': hold_proof['carrier_positive_checks'],
+        'carrier_negative_checks': hold_proof['schema_negative_checks'],
+        'native_numeric_cases': numeric_proof['case_count'],
+        'actual_product_runtime': None, 'complete_professional_trial': None,
+        'formal_reviews': len(passed_ids), 'pending_reviews': len(checkpoints) - len(passed_ids),
+        'pending_design_reviews': len(pending_design_ids),
+        'next_checkpoint': maturity['checkpoint_review']['next_checkpoint'],
+    }
+    output['S03_05_independent_review_checks'] = {
+        **trace_verification, 'checkpoint': 'S03-05', 'review_ref': trace['report_ref'],
+        'formal_reviews': len(passed_ids), 'pending_reviews': len(checkpoints) - len(passed_ids),
+        'pending_design_reviews': len(pending_design_ids), 'next_checkpoint': maturity['checkpoint_review']['next_checkpoint'],
+        'S03_completion_percent': maturity['phases'][2]['completion_percent'],
+        'S03_strength_percent': maturity['phases'][2]['strength_percent'],
+    }
+    output['S04_01_independent_review_checks'] = {
+        **nav_result, 'checkpoint': 'S04-01', 'review_ref': nav['review_ref'], 'spec_ref': nav_ref,
+        'formal_reviews': len(passed_ids), 'pending_reviews': len(checkpoints) - len(passed_ids),
+        'pending_design_reviews': len(pending_design_ids), 'next_checkpoint': maturity['checkpoint_review']['next_checkpoint'],
+    }
+    output['S04_03_independent_review_checks'] = {
+        **nav_result['form_spec_checks'], 'spec_ref': form_ref, 'review_ref': form_spec['review_ref'],
+        'formal_reviews': len(passed_ids), 'pending_reviews': len(checkpoints) - len(passed_ids),
+        'pending_design_reviews': len(pending_design_ids), 'earliest_pending_checkpoint': maturity['checkpoint_review']['next_checkpoint'],
+    }
+    output['S05_01_independent_review_checks'] = {
+        **architecture_result, 'checkpoint': 'S05-01', 'spec_ref': architecture_ref,
+        'review_ref': architecture['review_ref'], 'formal_reviews': len(passed_ids),
+        'pending_design_reviews': len(pending_design_ids),
+    }
+    output['S05_02_independent_review_checks'] = {
+        **architecture_result['ownership_checks'], 'spec_ref': selection['ownership_spec_ref'],
+        'review_ref': ownership['review_ref'], 'formal_reviews': len(passed_ids),
+        'pending_design_reviews': len(pending_design_ids),
+    }
+    output['S05_03_independent_review_checks'] = {
+        **module_protocol_result, 'checkpoint': 'S05-03', 'spec_ref': selection['module_protocol_ref'],
+        'review_ref': module_protocol['review_ref'], 'formal_reviews': len(passed_ids),
+        'pending_design_reviews': len(pending_design_ids),
+    }
+    output['S05_04_independent_review_checks'] = {
+        **technical_result, 'checkpoint': 'S05-04', 'spec_ref': selection['technical_selection_ref'],
+        'review_ref': technical['review_ref'], 'formal_reviews': len(passed_ids),
+        'pending_design_reviews': len(pending_design_ids),
+    }
     result_path.write_text(json.dumps(output, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
-    lines = ['# 全项目主线同步检查', '', f'2026-10-13。范围：超级工厂整个目录，以及工作区/大作业/开放原子三个阅读入口。检查的是文件主线一致与结构，不是软件功能验收；当前文档复审{len(passed_ids)}项通过/其余{len(checkpoints)-len(passed_ids)}项待复审。成熟度信用值与比例另按真实检查项记录，本工具不增加通过项。', '', '现行主线：九类自由创作与社区扩展的Windows工业模拟平台；外部Agent一句话产品/日产/场地→原生或导入社区行业模板/九类库→可编辑布局/连接/排期→静态检查/真实模拟→初案达标直接交付，不足时有限有据修正/说明→四格式评估和可编辑工程。', '', '|编号|逐项要求|更新检查|消费者数|', '|---|---|---|---|']
+    lines = ['# 全项目主线同步检查', '', f'{CHECK_DATE}。范围：超级工厂整个目录，以及工作区/大作业/开放原子三个阅读入口。检查的是文件主线一致与结构，不是软件功能验收；当前文档复审{len(passed_ids)}项通过/其余{len(checkpoints)-len(passed_ids)}项待复审。成熟度信用值与比例另按真实检查项记录，本工具不增加通过项。', '', '现行主线：九类自由创作与社区扩展的Windows工业模拟平台；外部Agent一句话产品/日产/场地→原生或导入社区行业模板/九类库→可编辑布局/连接/排期→静态检查/真实模拟→初案达标直接交付，不足时有限有据修正/说明→四格式评估和可编辑工程。', '', '|编号|逐项要求|更新检查|消费者数|', '|---|---|---|---|']
     lines += [f"|{x['id']}|{x['requirement']}|{x['status']}|{len(x['consumers'])}|" for x in results]
-    lines += ['', f'逐文件清单共{len(files)}项，已检查{checked_links}处本地引用。处理方式：' + '；'.join(f'{k} {v}项' for k, v in output['actions'].items()) + '。', '', '[逐文件CSV](逐文件主线同步检查.csv) · [机器结果及消费者](主线同步检查结果.json) · [现行主线](../00_项目基线/项目主线.json) · [目标生成验收](../../scenarios/目标驱动建厂/README.md)', '', '已直接消解旧正文把目标生成列为后置、API/需求/清单旧计数、入口只列部分九类、生成源覆盖新字段、专业候选版与平台首版混称及报告使用改名前路径等问题。', '', '原厂原文、历史判断、旧图像像素和生成记录保留，不能改成新要求的证据。已有22张AI图未完整展示新增目标生成面板，其阅读说明和计划已明确；本轮没有生成新图或产品运行截图。', '', '首版17项需求、18项计划操作、21项选择/7项后置；三通用离散模板＋纸箱行业配置，只选纸包装真实专业内核。实际Agent/软件调用、产能达标和用户效果仍待实现及验证。']
+    lines += ['', f'逐文件清单共{len(files)}项，已检查{checked_links}处本地引用。处理方式：' + '；'.join(f'{k} {v}项' for k, v in output['actions'].items()) + '。', '', '[逐文件CSV](逐文件主线同步检查.csv) · [机器结果及消费者](主线同步检查结果.json) · [现行主线](../00_项目基线/项目主线.json) · [目标生成验收](../../scenarios/目标驱动建厂/README.md)', '', '已直接消解旧正文把目标生成列为后置、API/需求/清单旧计数、入口只列部分九类、生成源覆盖新字段、专业候选版与平台首版混称及报告使用改名前路径等问题。', '', '原厂原文、历史判断、旧图像像素和生成记录保留，不能改成新要求的证据。原有22张AI图未完整展示新增目标生成面板，其阅读说明和计划已明确。S04-02的GPT v03已作为布局起点；用户指定draw.io接手后的[可编辑母版与字段细化](../02_交互设计/工业工作台母版与字段细化.md)是当前制作依据。26状态母版及24帧隔离原型为设计资产，视觉/操作接受取S04实际复审，不能当产品运行截图；[AI迭代记录](../02_交互设计/S04-02_AI母版迭代_20261014/README.md)保留原始版本。', '', '首版17项需求、18项计划操作、21项选择/7项后置；三通用离散模板＋纸箱行业配置，只选纸包装真实专业内核。实际Agent/软件调用、产能达标和用户效果仍待实现及验证。']
     if errors:
         lines += ['', '## 尚待修正', ''] + ['- ' + json.dumps(e, ensure_ascii=False) for e in errors]
     else:
         lines += ['', '上述12项设计同步检查通过，无未消解的本地引用/结构问题。历史复审中的15/16计数只对应当时记录，现行入口按17/18解释。']
     lines += ['', '联合修正静态检查：通用接受单位合同；初案达标无需修正RunId/比较与独立不足案例；七项UT文字表与JSON需求集合逐项一致。仅证明设计同步，不是Agent或仿真执行结果。']
     lines += ['', 'S02-02静态规格检查：21项启动/完整验收前置及产物理由、输入/输出/步骤/验证与真实task投影一致；依赖无环/无后置，P5覆盖其他20项；IX-01至03有可达生产者与验收所有者。逻辑波次不代表实际排期，运行结果仍空。', '', '[任务拆解与依赖](任务拆解与依赖.md) · [首版任务JSON](../00_项目基线/首版任务选择.json)']
-    lines += ['', 'S02-03六窗口计划检查：用户负责全项目；21首版任务各有唯一计划主责，六窗口基础写入范围无重叠，共同类型/配置归W00；任务投影及正文一致，7后置无窗口。S02-03信用不变；S02-04/05均独立文档复审通过，信用各1/0.5保持，S02文档100%/证据70%；实际阶段/运行未完成。没有派发或交接演练。', '', '[本机窗口计划](本机并行窗口计划.md) · [机器计划](本机并行窗口计划.json)']
-    lines += ['', f'完整设计关口为S01—S06全部30项/S06-05，尚需{len(pending_design_ids)}项；S07-05后进S08。6份启动提示词/21份任务包草案与主责/范围一致；模块视图、技术/实现/接口认可后方可派发。Figma已选择，但设计/前端构建须用户监督与明确授权，尚未开始；最终选题PDF按用户要求延后。规则同步不把后续项标通过。', '', '[设计与执行准入](完整设计与执行准入.md) · [编码规则](编码任务包与AI实现审查.md) · [启动提示词](窗口启动提示词/README.md) · [任务包](编码任务包/README.md)']
-    lines += ['', f'八项基线与现行任务框架检查：人/AI窗口/参赛成员分开，S01-01至S02-03消费者一致；21任务预算及共同工作加总、按窗口归集和13成果前置/完整任务覆盖正确，没有新任务依赖循环或每日日程。当前136—225人小时/251—438产品窗活动分别估计，未实测/不保证按期；正式过项{len(passed_ids)}，材料准备仍10月30日前。', '', '[八项联合复核](S01-01至S02-03_联合复核.md) · [任务工量/里程碑](任务框架与工量里程碑.md)']
+    lines += ['', 'S02-03六窗口计划检查：用户负责全项目；21首版任务各有唯一计划主责，六窗口基础写入范围无重叠，共同类型/配置归W00；任务投影及正文一致，7后置无窗口。S02-03信用不变；S02-04/05均独立文档复审通过，信用各1/0.5保持，S02文档100%/证据70%；设计阶段出口按当前实际接受记录；产品运行未完成、产品编码未派发；本轮设计复审派发按窗口计划独立记录，交接/提速尚无实测。', '', '[本机窗口计划](本机并行窗口计划.md) · [机器计划](本机并行窗口计划.json)']
+    pdf_state = '已实际交付并检查' if pdf_delivery['status'] == 'delivered' else ('冻结后实际生成检查中' if design_frozen else '待设计冻结后生成')
+    figma_batch = design_gate['frontend_supervision'].get('current_figma_batch')
+    figma_state = 'Figma当前66状态批次已授权并完成，实际覆盖取S04记录' if figma_batch and figma_batch.get('status') == 'completed_current_Figma_clickable_design_prototype' else 'Figma当前批次取执行状态记录'
+    if backend_dispatched:
+        phase = '实现及复审通过' if backend_reviewed else '实施中'
+        execution_scope = ('S08按原完整任务包持续推进，共同底座与各整包实施中；'
+                           if backend['dispatch'].get('dispatch_mode') == 'whole_task_package'
+                           else f'S08当前{backend["task_id"]}原步骤{backend["within_original_step"]}切片{phase}；')
+        coding_state = (f'S07准备通过，{execution_scope}'
+                        f'{len(dispatched_packages)}项任务已按明确范围派发、其余{21-len(dispatched_packages)}包draft_not_dispatchable；'
+                        f'已接收Host限定范围可用操作{len(available_operations)}/18，完整业务能力未验收')
+    else:
+        coding_state = 'S07实际准备已通过；P0-01后端切片ready_for_dispatch，其余20包draft_not_dispatchable' if preparation_accepted else 'S07实际准备尚未通过；21包draft_not_dispatchable'
+    lines += ['', f'完整设计关口为S01—S06全部30项/S06-05，尚需{len(pending_design_ids)}项。6份启动提示词/21任务包范围与主责一致，设计认可取实际冻结记录；{coding_state}。{figma_state}；当前报告PDF{pdf_state}，文件/QA取current_report_delivery_ref。产品前端构建、S10独立用户及外部提交各留原关口。', '', '[设计与执行准入](完整设计与执行准入.md) · [编码规则](编码任务包与AI实现审查.md) · [启动提示词](窗口启动提示词/README.md) · [任务包](编码任务包/README.md)']
+    lines += ['', f'八项基线与现行任务框架检查：人/AI窗口/参赛成员分开，S01-01至S02-03消费者一致；21任务预算及共同工作加总、按窗口归集和13成果前置/完整任务覆盖正确，没有新任务依赖循环或每日日程。当前{human_total[0] + shared_total[0]}—{human_total[1] + shared_total[1]}人小时/{window_total[0]}—{window_total[1]}产品窗活动分别估计，未实测/不保证按期；正式过项{len(passed_ids)}，材料准备仍10月30日前。', '', '[八项联合复核](S01-01至S02-03_联合复核.md) · [任务工量/里程碑](任务框架与工量里程碑.md)']
     lines += ['', 'S02-04规范静态检查：21包/五共同工作估量口径与输入依据、13节点交付/接收/证据责任、4材料准备项与1外部手续、实际校准及剩余处理、四例有限工作流程推演仍保持；只证明规范可执行，未测工时或运行产品。', '', '[S02-04独立复审](S02-04_工量与成果里程碑复审.md)']
-    lines += ['', 'S02-05独立复审静态检查：12生命周期与6工作族输入/输出/退出、21任务/17SF/3IX映射及原两种前置、预期业务结果/测试结论、失败与变更复核、候选测试/材料/维护边界保持。实际阶段和产品未退出。', '', '[阶段规范](阶段实现计划.md) · [S02-05独立复审](S02-05_阶段闭环与退出条件复审.md)']
+    lines += ['', 'S02-05独立复审静态检查：12生命周期与6工作族输入/输出/退出、21任务/17SF/3IX映射及原两种前置、预期业务结果/测试结论、失败与变更复核、候选测试/材料/维护边界保持。设计出口读取当前实际接受记录，产品阶段未退出。', '', '[阶段规范](阶段实现计划.md) · [S02-05独立复审](S02-05_阶段闭环与退出条件复审.md)']
     lines += ['', f'S03-01静态功能交接检查：七UT人工/Agent输入与动作、成功/未完成及下游交接字段齐全；17SF文字/映射一致，21所选任务及18计划操作引用覆盖。三例功能推演由独立复审记录；本工具验证引用/结构与原生成分支，未运行产品或验证目标使用者。当前下一项{maturity["checkpoint_review"]["next_checkpoint"]}。', '', '[S03-01独立复审](S03-01_用户任务与功能需求复审.md) · [七UT映射](../00_项目基线/用户任务与需求映射.json)']
     lines += ['', f'S03-02静态业务复核：9类现有业务对象、独立状态轴/预留与9条异常出口、派工/部分接受/取消及专业首版/后置范围一致；6边界与6既有案例有限复核通过，冻结预期未改写。当前下一项{maturity["checkpoint_review"]["next_checkpoint"]}，不代表产品执行。', '', '[S03-02独立复审](S03-02_业务对象规则与异常路径复审.md) · [业务JSON](../../packages/domain/business-objects.design.json)']
+    lines += ['', 'S03-04非功能规范静态检查：11条规范/10个已确认选择及责任/消费者一致，11例有限数学与判定、38必需组、120位置映射通过。48帧率窗口/1800编辑/40存取仅固定基准，真实重叠及其他子检查另做。04/05本机前置、同机工具/Renderer及新进程打开时钟明确；两机兼容、失败优先及四状态汇总保持。30FPS/200ms/3秒目标未改，30秒体验单列，无产品实测。', '', '[S03-04独立复审](S03-04_可测量非功能需求复审.md) · [非功能规范](../01_业务需求/非功能需求与测量验收.md) · [独立检查结果](非功能规格检查结果.json)']
+    lines += ['', f'S03-05完整追踪：17SF/11NFR/17AC/21任务/18操作/3IX及{trace_verification["checked_input_expected_and_result_references"]}处具体输入/预期/结果节点、原任务投影和生成消费者通过；六条业务边界进入验收，SF-15在MS-12收口。S03文档100%/支撑70%，下一项{maturity["checkpoint_review"]["next_checkpoint"]}。四PREP的实际候选/输入适配按后续产品用途执行，产品验收0；当前设计冻结状态见完整准入记录。', '', '[需求追踪](首版需求验收追踪.md) · [S03-05独立复审](S03-05_首版需求与验收追踪复审.md)']
     report_path.write_text('\n'.join(lines) + '\n', encoding='utf-8')
     print(json.dumps({'files': len(files), 'matrix_passed': sum(x['status'] == '设计同步通过' for x in results), 'references': checked_links, 'errors': errors, 'actions': output['actions']}, ensure_ascii=False))
     if errors:

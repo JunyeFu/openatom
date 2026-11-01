@@ -1,0 +1,66 @@
+import {createRequire} from 'node:module';
+import {mkdir,readFile,writeFile} from 'node:fs/promises';
+import {fileURLToPath} from 'node:url';
+import assert from 'node:assert/strict';
+const stage=process.argv[2];if(!stage)throw new Error('Pass evidence stage');
+const root=new URL('../../../',import.meta.url),out=new URL('scenarios/Agent共建/runtime-factory-render-surface/',root);
+const require=createRequire('C:/Users/fujunye/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/package.json');
+const {chromium}=require('playwright');
+await mkdir(out,{recursive:true});
+const url='http://127.0.0.1:8922/@fs/'+fileURLToPath(root).replaceAll('\\','/').replace(/\/$/,'')+'/tests/planner/render-surface/harness.html';
+const browser=await chromium.launch({headless:true,executablePath:'C:/Users/fujunye/AppData/Local/ms-playwright/chromium-1243/chrome-win64/chrome.exe'}),checks=[];
+const read=page=>page.evaluate(()=>window.__renderSurface.read());
+const capture=page=>page.evaluate(()=>window.__renderSurface.capture());
+const near=(actual,expected)=>assert.ok(actual.every((v,i)=>Math.abs(v-expected[i])<1e-6),`${actual} != ${expected}`);
+async function ready(page){await page.waitForFunction(()=>window.__renderSurface?.read().ready.length>0);return (await read(page)).ready.at(-1);}
+async function set(page,patch){await page.evaluate(p=>{window.__renderSurface.clear();window.__renderSurface.set(p);},patch);return ready(page);}
+async function check(name,execute,options={}){const page=await browser.newPage({viewport:{width:1200,height:850}}),errors=[],warnings=[],evidence=[];page.setDefaultTimeout(12000);page.on('pageerror',e=>errors.push(String(e)));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());if(m.type()==='warning')warnings.push(m.text());});const row={name,evidence,errors,warnings,expected_errors:options.expectedErrors??[]};checks.push(row);
+ try{if(options.beforeNavigate)await options.beforeNavigate(page);await page.goto(url+(options.query??''),{waitUntil:options.waitUntil??'load'});assert.equal(await page.title(),'同源厂房只读捕获验证');assert.ok(page.url().includes('/tests/planner/render-surface/harness.html'));assert.ok((await page.locator('body').innerText()).includes('同源厂房只读捕获验证'));assert.equal(await page.locator('vite-error-overlay').count(),0);await execute(page,evidence);assert.equal((await read(page)).originalRunsUnchanged,true);assert.deepEqual(errors,options.expectedErrors??[]);assert.ok(!warnings.some(value=>/Too many active WebGL|immutable.texture|GL_INVALID/i.test(value)),JSON.stringify(warnings));row.status='passed';console.log('PASS '+name);}
+ catch(error){row.status='failed';row.error=String(error);row.stack=error.stack;row.body=(await page.locator('body').innerText()).slice(-3500);row.actual=await read(page).catch(()=>null);console.log('FAIL '+name+' '+error);}
+ finally{row.screenshot=`${stage}-${checks.length}.png`;await page.screenshot({path:fileURLToPath(new URL(row.screenshot,out)),fullPage:true});await page.close();}}
+try{
+ await check('both original canvases honor two explicit cameras and identify only actual frustum geometry',async(page,evidence)=>{
+  const first=await ready(page),before=await capture(page);evidence.push({first,before});assert.equal(first.project_revision,1);assert.equal(first.scene_revision,9);assert.equal(first.lod,'detailed');assert.ok(first.visible_objects.some(r=>r.id==='CNC'));assert.ok(!first.visible_objects.some(r=>r.id==='REMOTE'));near(before.eye,[18,18,-36]);
+  const imageA=await page.locator('[aria-label="厂房只读捕获表面"]').screenshot();await writeFile(new URL(`${stage}-camera-A.png`,out),imageA);await page.evaluate(()=>window.__renderSurface.clear());await page.getByRole('button',{name:'相机B',exact:true}).click();const second=await ready(page),after=await capture(page),imageB=await page.locator('[aria-label="厂房只读捕获表面"]').screenshot();await writeFile(new URL(`${stage}-camera-B.png`,out),imageB);evidence.push({second,after});assert.ok(!imageA.equals(imageB));near(after.eye,[38,6,3]);assert.ok(second.visible_objects.some(r=>r.id==='REMOTE'));assert.ok(!second.visible_objects.some(r=>r.id==='CNC'));
+  const line=await set(page,{canvas:'line_canvas',camera:'A'});evidence.push({line,capture:await capture(page)});assert.equal(line.view.hall_id,'H-1');assert.ok(!line.visible_objects.some(r=>r.id==='REMOTE'));near((await capture(page)).eye,[15,18,-16]);assert.equal((await capture(page)).canvases,1);
+ });
+ await check('meter millimeter and Y-up cameras coincide, zoom is real, and readonly input does not alter camera',async(page,evidence)=>{
+  await ready(page);const a=await capture(page);await set(page,{camera:'mm'});near((await capture(page)).eye,a.eye);await set(page,{camera:'yup'});near((await capture(page)).eye,a.eye);const zoom=await set(page,{camera:'zoom'});assert.equal((await capture(page)).zoom,2);const canvas=page.locator('.factory-scene canvas'),box=await canvas.boundingBox();await page.mouse.move(box.x+400,box.y+300);await page.mouse.wheel(0,1800);await page.mouse.down({button:'right'});await page.mouse.move(box.x+700,box.y+500);await page.mouse.up({button:'right'});await page.mouse.click(box.x+200,box.y+200);const after=await capture(page);near(after.eye,a.eye);assert.equal(after.zoom,2);assert.ok(after.labels.every(l=>l.disabled));assert.equal(await page.locator('details[aria-label="实际物品与共享标签"]').count(),0);evidence.push({a,zoom,after});
+  const away=await set(page,{camera:'away'});assert.deepEqual(away.visible_objects,[]);evidence.push({away});
+ });
+ await check('fixed LOD consumes precise detailed and simplified assets, region reflects real group geometry',async(page,evidence)=>{
+  const detailed=await ready(page);assert.ok((await read(page)).reads.some(r=>r.request.asset.path==='station.glb'&&r.state==='returned'));const simple=await set(page,{lod:'simplified'});assert.ok((await read(page)).reads.some(r=>r.request.asset.path==='station-simple.glb'&&r.state==='returned'));const region=await set(page,{lod:'region'});assert.ok(region.visible_objects.some(r=>r.kind==='line'&&r.id==='L'));assert.ok(!region.visible_objects.some(r=>r.kind==='device'&&['CNC','B'].includes(r.id)));assert.equal((await read(page)).reads.length,0);evidence.push({detailed,simple,region});
+ });
+ await check('held exact resources block ready and cannot report an obsolete source after camera scope or unmount changes',async(page,evidence)=>{
+  await ready(page);await page.evaluate(()=>{window.__renderSurface.hold();window.__renderSurface.clear();window.__renderSurface.set({generation:2});});await page.waitForFunction(()=>window.__renderSurface.read().held>0);assert.equal((await read(page)).ready.length,0);await page.evaluate(()=>window.__renderSurface.set({generation:3,camera:'B'}));await page.waitForFunction(()=>window.__renderSurface.read().source_key?.includes('surface-3'));await page.evaluate(()=>window.__renderSurface.release());const frame=await ready(page);assert.equal(frame.source_key,(await read(page)).source_key);assert.ok(frame.source_key.includes('surface-3'));assert.ok((await read(page)).ready.every(r=>r.source_key===frame.source_key));evidence.push(frame);
+  await page.evaluate(()=>{window.__renderSurface.clear();window.__renderSurface.hold();window.__renderSurface.set({generation:4});});await page.waitForFunction(()=>window.__renderSurface.read().held>0);await page.evaluate(()=>window.__renderSurface.set({mounted:false}));await page.waitForFunction(()=>!document.querySelector('.factory-scene canvas'));await page.evaluate(()=>window.__renderSurface.release());await page.waitForFunction(()=>window.__renderSurface.read().reads.every(r=>r.state==='returned'));assert.equal((await read(page)).ready.length,0);assert.equal((await read(page)).failures.length,0);
+ });
+ await check('real byte-provider failure reports terminal failure rather than placeholder success',async(page,evidence)=>{
+  await ready(page);await page.evaluate(()=>{window.__renderSurface.clear();window.__renderSurface.reject(true);window.__renderSurface.set({generation:2});});await page.waitForFunction(()=>window.__renderSurface.read().failures.length>0);const value=await read(page);assert.equal(value.ready.length,0);assert.equal(value.failures[0].stage,'device_resource');assert.ok(value.failures[0].message.includes('observed-test'));evidence.push({failures:value.failures});
+ });
+ await check('zero dimensions never announce ready, real resize returns exact CSS and drawing buffer sizes',async(page,evidence)=>{
+  await ready(page);await page.evaluate(()=>{window.__renderSurface.clear();window.__renderSurface.set({width:0,height:0});});await page.waitForFunction(()=>document.querySelector('[aria-label="厂房只读捕获表面"]').getBoundingClientRect().width===0);assert.equal((await read(page)).ready.length,0);const frame=await set(page,{width:640,height:420});assert.equal(frame.pixels.css_width,640);assert.equal(frame.pixels.css_height,420);assert.equal(frame.pixels.width,640);assert.equal(frame.pixels.height,420);evidence.push(frame);
+ });
+ await check('contradictory canvas hall revision and Run time are explicitly refused, actual original Run stays unchanged',async(page,evidence)=>{
+  await ready(page);for(const invalid of ['revision','canvas','hall','time','scope','session']){await page.evaluate(invalid=>{window.__renderSurface.clear();window.__renderSurface.set({invalid});},invalid);await page.waitForFunction(()=>window.__renderSurface.read().failures.length>0);const value=await read(page);assert.equal(value.failures[0].stage,'input');assert.equal(value.ready.length,0);evidence.push({invalid,failure:value.failures[0]});await set(page,{invalid:null});}const actual=await set(page,{actual:true});assert.equal(actual.view.run_id,(await read(page)).view.run_id);assert.equal(actual.view.view_time_ms,35000);assert.ok(actual.visible_objects.some(ref=>ref.id==='CNC'));evidence.push(actual);
+ });
+ await check('declared missing device media terminates with a truthful visible layout-marker limitation',async(page,evidence)=>{
+  await ready(page);const frame=await set(page,{missingMedia:true});assert.equal((await read(page)).failures.length,0);assert.ok(frame.visible_objects.some(ref=>ref.kind==='device'&&ref.id==='CNC'));assert.ok(frame.limitations.some(issue=>issue.object_ref?.id==='CNC'&&issue.message.includes('定位标记')));evidence.push(frame);
+ });
+ await check('an explicit empty multi-hall source returns no physical objects and declares its actual missing halls',async(page,evidence)=>{
+  await ready(page);const frame=await set(page,{emptyHalls:true});assert.deepEqual(frame.visible_objects,[]);assert.ok(frame.limitations.some(issue=>issue.object_ref===null&&issue.message.includes('厂房')));evidence.push(frame);
+ });
+ await check('actual renderer initialization refusal terminates onFailure without publishing an empty successful frame',async(page,evidence)=>{
+  await page.waitForFunction(()=>window.__renderSurface?.read().failures.length>0);const value=await read(page);assert.equal(value.failures[0].stage,'initialize');assert.equal(value.ready.length,0);assert.equal(await page.locator('.factory-scene canvas').count(),0);evidence.push(value.failures[0]);
+ },{expectedErrors:['THREE.WebGLRenderer: THREE.WebGLRenderer: Error creating WebGL context.'],beforeNavigate:page=>page.addInitScript(()=>{const original=HTMLCanvasElement.prototype.getContext;HTMLCanvasElement.prototype.getContext=function(kind,...args){return ['webgl','webgl2','experimental-webgl'].includes(kind)?null:Reflect.apply(original,this,[kind,...args]);};})});
+ let releaseFont,requestedFont=false;
+ const fontGate=new Promise(resolve=>{releaseFont=resolve;});
+ await check('real delayed OpenType font blocks ready until loaded and labels have committed their measured layout',async(page,evidence)=>{
+  try{await page.waitForFunction(()=>document.fonts.status==='loading'&&window.__renderSurface?.read().reads.length>0&&window.__renderSurface.read().reads.every(read=>read.state==='returned'));assert.equal(requestedFont,true);assert.equal((await read(page)).ready.length,0);evidence.push({font_status:await page.evaluate(()=>document.fonts.status),ready_before_font:0});}finally{releaseFont();}
+  const frame=await ready(page);assert.equal(await page.evaluate(()=>document.fonts.status),'loaded');assert.ok(frame.visible_objects.some(ref=>ref.id==='CNC'));evidence.push(frame);
+ },{query:'?delayedFont=1',waitUntil:'domcontentloaded',beforeNavigate:async page=>{
+  const font=await readFile(new URL('tools/architecture-proof/assets/SourceHanSansCN-Regular.otf',root));
+  await page.route('**/__capture_font.otf',async route=>{requestedFont=true;await fontGate;await route.fulfill({status:200,contentType:'font/otf',body:font});});
+ }});
+}finally{await browser.close();await writeFile(new URL(`browser-${stage}.json`,out),JSON.stringify({url,Browser_plugin:'not available; project bundled Playwright workflow',viewports:[{width:1200,height:850},{surface_width:640,surface_height:420}],checks,real_original_FactoryScene:true,actual_native_capture:false,Host_fixture_ports:'explicit readonly canonical test inputs; no fake Engine',original_Run_results_changed:false},null,2)+'\n');}
+if(checks.some(row=>row.status!=='passed'))process.exitCode=1;

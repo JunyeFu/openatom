@@ -7,3 +7,9 @@
 完整电子专业输入保留板件版本、坐标/位置表、基准、供料器、吸嘴、机器与准备/阶段；声明后续处理不证明焊接、电气质量。采购完成PCB是明确的替代路线，不把它计成已运行电子装联支线。
 
 见[三类模板业务与边界](../../../docs/01_业务需求/三类工厂模板与接手.md)。当前actual_result为空，时间预期由独立设计推导说明。
+
+DRF04采用字段、ID/资源复用与供料/订单选择见[实例化契约](../instantiation.design.json)。高度/真实占地/间距未提供时保留未判定；平面位置不是场地Pass。
+
+## P4-01 当前公共类型候选与实际消费者
+
+本目录 `candidate/module.json`、`candidate/template.json`、`candidate/example-project.json`、`candidate/definitions.json` 是当前公共类型输入，与以上历史设计稿分开。Rust实例化、独立种子、来源/缺项以及实际Host运行/修改/保存重开证据见[实现与复现](../../../scenarios/模板与交接/runtime/README.md)。原设计输入保持，不将局部运行或未知许可当整包发布接收；共享采用记录/参数来源接点已由W00修复并经本窗口真实复验；完整UI/IX/NFR/最终接收仍独立。

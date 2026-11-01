@@ -1,0 +1,156 @@
+{
+  "document_kind": "S04_owned_prototype_logical_repair_handoff",
+  "date": "2026-10-15 Asia/Shanghai",
+  "status": "source_stable_repairs_and_regressions_completed",
+  "source_stable": true,
+  "owner": "复审窗口2 / S04",
+  "source_scope": "docs/02_交互设计/S04_可操作设计原型；非产品Engine/Host/Agent",
+  "repaired_groups": [
+    {
+      "id": "S04-G01",
+      "cases": [
+        "LC01",
+        "LC02",
+        "LC12"
+      ],
+      "change": "resetProjectSession统一新链/空工程/快照替换的会话隔离，清旧历史、结果、认可/绑定、待定选择；新空工程保留本次名称与场地",
+      "public_finding_ids": [
+        "PL-01"
+      ],
+      "kind": "defect_repair"
+    },
+    {
+      "id": "S04-G02",
+      "cases": [
+        "LC03",
+        "LC04",
+        "LC05"
+      ],
+      "change": "排期勾选项来自当前arrivals；空/未选不创建空预览，负/非有限时点在预览与提交入口均拒绝",
+      "public_finding_ids": [
+        "PL-02",
+        "PL-03"
+      ],
+      "kind": "defect_repair"
+    },
+    {
+      "id": "S04-G03",
+      "cases": [
+        "LC06",
+        "LC14"
+      ],
+      "change": "recordEdit覆盖实际支持的布局/连接/定义/设备表现草稿；新编辑清redo，认可及结果不由普通undo复活",
+      "public_finding_ids": [
+        "PL-04"
+      ],
+      "kind": "defect_repair"
+    },
+    {
+      "id": "S04-G04",
+      "cases": [
+        "LC07",
+        "LC15"
+      ],
+      "change": "名称/场地的实际直写更新修订及未保存反馈，拒绝非有限坐标/尺寸",
+      "public_finding_ids": [
+        "PL-05",
+        "PL-09"
+      ],
+      "kind": "defect_repair"
+    },
+    {
+      "id": "S04-G05",
+      "cases": [
+        "LC08",
+        "LC09"
+      ],
+      "change": "行为来源和包装机制select从已应用数据回显，不返回默认选项",
+      "public_finding_ids": [
+        "PL-06"
+      ],
+      "kind": "defect_repair"
+    },
+    {
+      "id": "S04-G06",
+      "cases": [
+        "LC10"
+      ],
+      "change": "比较只在两个引用的冻结样例都存在于run_evaluations时导出，否则明确缺失而不发无依据比较",
+      "public_finding_ids": [
+        "PL-07"
+      ],
+      "kind": "defect_repair"
+    },
+    {
+      "id": "S04-G07",
+      "cases": [
+        "LC11"
+      ],
+      "change": "LC11初检已通过；本轮正向回归确认打开结果页快照清旧结果且允许继续编辑，不计为新增修复缺陷",
+      "public_finding_ids": [],
+      "kind": "positive_regression"
+    },
+    {
+      "id": "S04-G08",
+      "cases": [
+        "LC13"
+      ],
+      "change": "包装用途目标独立于专业输入；拒绝不存在的消费者，可明确选择或单击当前真实包装工位（含NEW1-P01）后认可绑定，显示真实ID",
+      "public_finding_ids": [
+        "PL-08"
+      ],
+      "kind": "defect_repair"
+    },
+    {
+      "id": "S04-G09",
+      "cases": [
+        "LC16",
+        "LC17"
+      ],
+      "change": "点击结果段保存样例/物品/种类/资源/原区间；未映射T1明示且保留合法画布选择，不误指R01",
+      "public_finding_ids": [
+        "PL-10"
+      ],
+      "kind": "defect_repair"
+    }
+  ],
+  "changed_files": [
+    "docs/02_交互设计/S04_可操作设计原型/workbench.js",
+    "docs/02_交互设计/连续任务与原型制作依据.json",
+    "docs/02_交互设计/S04_可操作设计原型/逻辑连续性与状态约束.md",
+    "docs/02_交互设计/S04_可操作设计原型/README.md"
+  ],
+  "actual_regression": {
+    "independent_probe_script": "tools/design-quality-audit/prototype-logic/review-browser.cjs",
+    "assertions_modified": false,
+    "actual_result": "tools/design-quality-audit/prototype-logic/output/playwright/after-owned-final.json",
+    "passed": 17,
+    "failed": 0,
+    "case_count": 17,
+    "existing_16_browser_suites": "docs/02_交互设计/S04_可操作设计原型/output/playwright/browser-check-result.json",
+    "five_flows_and_eight_special": "docs/02_交互设计/S04_可操作设计原型/output/delegated-walkthrough/walkthrough-result.json",
+    "DQ_16_final_source_regression": "docs/02_交互设计/S04_可操作设计原型/output/dq-state/result.json",
+    "existing_16_browser_suites_result": {
+      "completed": true,
+      "passed": 16,
+      "failed": 0
+    },
+    "five_flows_and_eight_special_result": {
+      "completed": true,
+      "flows_passed": 5,
+      "special_passed": 8,
+      "failed": 0
+    },
+    "DQ_16_final_source_result": {
+      "completed": true,
+      "passed": 16,
+      "failed": 0
+    },
+    "coordinator_DQ_16_independent_result": "tools/design-quality-audit/prototype-logic/output/playwright/prior-dq/result.json"
+  },
+  "Figma_scope": "现行66个预设状态与五入口已完成；七个相关画面同步当前空工程、定义身份、实际作业/等待、消费者与订单版本、认可/绑定；不把固定连线当作任意数据执行",
+  "actual_product_runtime": null,
+  "actual_user_walkthrough": null,
+  "public_gate_update_owner": "复审窗口1",
+  "public_findings_ref": "docs/04_开发与验收/首版原型逻辑贯通复审.json"
+}

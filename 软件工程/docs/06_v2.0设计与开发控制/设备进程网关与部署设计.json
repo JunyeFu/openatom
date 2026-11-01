@@ -1,0 +1,385 @@
+{
+  "document_kind": "superfactory_v2_device_gateway_deployment_design_not_execution_authority",
+  "date": "2026-10-26",
+  "implementation_allowed": true,
+  "runtime_verified": false,
+  "markdown_ref": "docs/06_v2.0设计与开发控制/设备进程网关与部署设计.md",
+  "schema_ref": "docs/06_v2.0设计与开发控制/接口契约.schema.design.json",
+  "contract_version": "sf.execution/2.0-draft11",
+  "views": {
+    "task_interaction": "沿用云端生产面板；准备Task启动两个可信独立设备，运行后遥测/命令；人工停用接单及真实取消/完成；不新增设备注册UI",
+    "structure_data": "Command.target_device_boot_id、DB15 device_boots；TelemetryObservation分execution和telemetry_only；设备本地journal保留原poll/命令/事件",
+    "state_behavior": "prepared无运行时钟；boot active到retired；设备idle/accepted/started/terminal；取消与Started单写者互斥；异常退出不自动重启",
+    "interface_collaboration": "Native私有Gateway上下文；H04-H07与C01-C06/C09/C13/C14/C19/C20精确消费；无公网本机管道",
+    "ui_consumer": "设备卡同时显示注册boot、原Host观测新鲜度、人工允许接单；注册不当作在线；沿用关闭保护",
+    "deployment_verification": "一个Rust云服务＋托管PG＋现有Windows Native＋两个Python执行子进程；10路采集和百万生成负载分别验收，实际资源/运行未创建"
+  },
+  "architecture": {
+    "gateway": "Native内唯一受管actor，持有原Host共享句柄和内部已注册Gateway上下文；不新增独立gateway.py或远程Agent授权入口",
+    "native_execution_backend": "沿用现有RenderBackend注入先例，仅针对执行准备/自有设备启动与退出的窄接口；Native setup注册实际提供者；无Native运行时不在capabilities列H01/H03，不把standalone Host当成设备Host",
+    "backend_boundary": [
+      "准备工作按真实Task登记，通过受管worker在Host锁外冻结/C01/启动/核对boot；短事务提交Engine与r0，r0云确认后准备Task才completed",
+      "回执/观测由Gateway真实上下文通过同一Host dispatch准入，不通过ExternalAgent伪造UI",
+      "网络、进程等待、SQLite I/O不占Host/Engine锁；既有串行ProjectIoWork不被长期运行网关循环占用"
+    ],
+    "devices": "两独立Python进程，可信随包脚本；业务动作只有process_unit；自身单调时钟执行实际等待，不写物料/资源/接受结果",
+    "ordinary_agent_pipe": "保持原ExternalAgent认证/授权；不是Gateway启动或权限注入通道"
+  },
+  "boot_protocol": {
+    "register": "C19 bound device登记(session,epoch,boot)；同身份返回原记录，不同active boot冲突；Host从C13核对原boot目录",
+    "command": "Host命令冻结target_device_boot_id；C02发布/C03领取/C04回执/H04接纳核对原boot，H07只收同注册boot的execution观测",
+    "retire": "Native确认自有子进程正常退出及出站结清后C20；服务端要求已发布终态和该boot命令/预留/处置结清；退役修订固定",
+    "release": "本session全部boot退役后C10释放slot；部分启动的已注册boot也按同序结清",
+    "liveness": "注册只证明身份；prepared不伪造新鲜度，首次run之后的新有效观测才决定可选性",
+    "unexpected_exit": "不自动重启，不按TTL换boot，不按墙钟补Completed；原义务待核对"
+  },
+  "child_process": {
+    "launcher": "Native持有真实Child/创建身份；Windows隐藏窗口；仅执行已安装可信随包脚本，不接受工程上传脚本",
+    "bootstrap": "私有stdin一次传身份、固定HTTPS地址和设备专属token；保留同stdin的idle shutdown控制；不经命令行或工程JSON传密钥",
+    "runtime_files": "Native私有运行目录按host_context/session/device/boot隔离SQLite，不进工程导出；同boot单写者",
+    "journal_tables": [
+      "boot_state：固定身份、下一sequence及当前状态",
+      "poll_requests：发送前保存poll_request_id及原请求，收到command/empty后保存不可变结果",
+      "commands：保存原typed command和本地accepted/started/terminal状态",
+      "event_outbox：状态事务内生成不可变payload/boot/sequence，云确认后标记已存；非null observation_probe_id按boot唯一，保留原响应供精确复发"
+    ],
+    "execution_order": [
+      "持久poll后C03；未知复发原poll，包括empty",
+      "先持久原command与accepted/outbox，再考虑Started",
+      "单写者处理取消或Started；Started与对应outbox同事务落盘后才开始实际计时",
+      "实际单调计时达到设备自身处理时长后记录Completed与reported duration；网络未知不重复工作",
+      "一个wire FIFO发送boot/sequence消息；HTTP在journal事务外，重发使用原payload",
+      "无论是否接受加工命令都轮询probe；遇新probe先新采样再入outbox，禁止给旧payload换标识"
+    ],
+    "cancel": "处理C14.cloud_delivery.cancel_requested；未Started事务可记cancelled_not_started，已Started则cancel_rejected_started并继续原动作；云claimed或超时都不算取消成功",
+    "reconnect": "仅同存活进程续传原journal/outbox；崩溃后保留journal供核对，本切片不实现活跃动作跨进程续做",
+    "shutdown": "Native只对自己持有的、确认idle且出站义务已结清的进程发正常退出；不按名称/PID强杀。仍有未知命令时保持关闭阻塞"
+  },
+  "gateway": {
+    "outbound": "H05读取work；C02/C06/C09在锁外执行；明确原结果后H06；未知查原命令/快照/撤回结果，不建新work身份",
+    "inbound": "C05原前沿取页；prepared遥测只采集不送运行准入；run后逐行H04/H07，旧无probe/过期/已消费probe不能更新资格。原始流游标可走过明确拒绝行，但pending_dependency回执须由Host保留并重核，不能丢弃。",
+    "publication": "TX06可合并快照修订但不丢观察记录；入站游标/已接纳前沿按实际Host结果处理，网络确认不制造生产修订",
+    "lifecycle": "Native setup注册内部上下文；H01准备worker复用同一运行时，外部执行终态结清后回收本session任务；网关不是常驻ProjectIoWork.run循环",
+    "cadence_design_ms": {
+      "device_telemetry": 1000,
+      "device_command_or_cancel_poll": 200,
+      "device_main_tick": 20,
+      "gateway_work_or_ingress_poll": 100,
+      "local_ui_observation": 100,
+      "single_http_request_timeout": 5000,
+      "observation_probe": 1000
+    },
+    "cadence_scope": "轮询/超时是设计参数，不是2秒性能证明；HTTP超时只结束一次未知请求，不授权改派。所有性能样本仍按原100个实际记录"
+  },
+  "dataset_separation": {
+    "execution": "C01创建有session的dataset；两执行设备必须C19；C04 receipts与execution观测可进入C05/H04/H07",
+    "telemetry_only": "部署配置预置独立dataset及10个绑定；source_mode=software_in_loop，session/epoch/active_command=null、accept_new_work=false；C04只存采集，host_admission_state=not_applicable，不调用C03/C19",
+    "generated_load": "部署配置预置独立generated_load dataset；C11分批写百万合成事件；不是18000条实际采集或执行会话",
+    "load_acceptance": [
+      {
+        "target": "10 independent producers x 1/s x 1800s = 18000 scheduled telemetry records",
+        "runtime_result": null
+      },
+      {
+        "target": "1000000 generated events; query/aggregate 30 samples each on fixed frontier",
+        "runtime_result": null
+      },
+      {
+        "target": "original 100 end-to-end samples and p95<=2000ms with valid clock basis",
+        "runtime_result": null
+      }
+    ]
+  },
+  "deployment": {
+    "shape": "一个Rust HTTP进程＋托管PostgreSQL；PaaS TLS入口；Native仅HTTPS出站，不对公网开放本机Agent pipe/DB",
+    "verified_local_runtime": {
+      "python": "3.14.7",
+      "sqlite_stdlib": "3.53.1",
+      "rustc": "1.97.0",
+      "runtime_verification": "仅版本命令；无设备/网关/云互通"
+    },
+    "dependency_candidates": [
+      {
+        "name": "axum",
+        "version": "0.8.9",
+        "selection": "Tokio JSON routing; exact features/lock resolution at implementation",
+        "source": "https://docs.rs/axum/0.8.9/axum/"
+      },
+      {
+        "name": "reqwest",
+        "version": "0.13.5",
+        "selection": "Native async client; default-features=false, features=json/query/rustls; no arbitrary redirect credentials",
+        "source": "https://docs.rs/reqwest/0.13.5/reqwest/"
+      },
+      {
+        "name": "tokio-postgres",
+        "version": "0.7.18",
+        "selection": "with-serde_json-1；设计选择postgres-native-tls0.5.3/native-tls0.2.18验证TLS，实际锁解析/编译/连接仍未执行",
+        "source": "https://docs.rs/tokio-postgres/0.7.18/tokio_postgres/"
+      },
+      {
+        "name": "postgres-native-tls",
+        "version": "0.5.3",
+        "features": "MakeTlsConnector"
+      },
+      {
+        "name": "native-tls",
+        "version": "0.2.18",
+        "features": "platform default secure validation"
+      },
+      {
+        "name": "deadpool-postgres",
+        "version": "0.14.2",
+        "features": "rt_tokio_1"
+      }
+    ],
+    "configuration": "按gateway/device/reader/load producer区分固定作用域bearer token；服务端部署密钥和Native私有配置，devices.demo.json只含非密钥profile；Renderer/报告/工程不含token",
+    "resources": "参考选型Render同region付费Web＋PostgreSQL18已在V2-DEPLOYMENT-08列CPU/RAM/10GB及预算；实际账号/资源、小版本/TLS/网络测量尚未取得；没有创建资源",
+    "budget_gate": "现有资源先核对；付费实例先给出真实用量/价格后按用户当时有效授权处理。本设计不代替开通或部署授权",
+    "ports": "本轮无服务启动/端口占用；实施时按D:/Agent/全局端口注册表.md分配，不预填未核验端口",
+    "packaging_pending": "V2-DEPLOYMENT-08选官方CPython3.14.9 x64 embeddable及显式portable复制；本机3.14.7不是该随包运行时；下载/导入/实际资源目录/Native验证仍待执行",
+    "managed_reference_ref": "docs/06_v2.0设计与开发控制/托管部署配置与交付闭包设计.md"
+  },
+  "source_locations": [
+    "L01",
+    "L07",
+    "L08",
+    "L16",
+    "L17",
+    "L27",
+    "L28",
+    "L61",
+    "L62",
+    "L63",
+    "L64"
+  ],
+  "pending": [
+    "v1最终工程精确ID与源码接点重核",
+    "参考PaaS/PG18/TLS/预算及CPython3.14.9已细化；实际账号/基础镜像/资源/锁解析/随包运行仍待落实",
+    "真实v2生成契约核对与实际类型生成",
+    "真实设备进程/网关/云/Host/Native及负载测量"
+  ],
+  "design_cases": [
+    {
+      "id": "DG01",
+      "trigger": "同binding已有active boot时第二启动注册",
+      "expected": "C19冲突；不能按TTL或新进程覆盖原boot",
+      "runtime_result": null
+    },
+    {
+      "id": "DG02",
+      "trigger": "C19/C20响应丢失后重发原身份",
+      "expected": "返回原active/retired及原退役修订；retired不复活",
+      "runtime_result": null
+    },
+    {
+      "id": "DG03",
+      "trigger": "错boot领取或回执及新boot重放原命令",
+      "expected": "C02/C03/C04/H04/H07拒绝身份漂移，库存/接受量不变",
+      "runtime_result": null
+    },
+    {
+      "id": "DG04",
+      "trigger": "取令响应未知或原empty响应重试",
+      "expected": "持久原poll_request_id并取回原command/empty，不另领一条",
+      "runtime_result": null
+    },
+    {
+      "id": "DG05",
+      "trigger": "设备已保存命令或Started回执响应未知",
+      "expected": "复发原持久payload；本进程不重复动作，不以网络失败新建attempt",
+      "runtime_result": null
+    },
+    {
+      "id": "DG06",
+      "trigger": "Accepted到Started与cancel_requested同时到达",
+      "expected": "单写者事务只有一种结局：cancelled_not_started或Started后cancel_rejected_started",
+      "runtime_result": null
+    },
+    {
+      "id": "DG07",
+      "trigger": "Started后失联或设备异常退出",
+      "expected": "保留命令/物料/资源义务，禁止自动重启执行或直接改派",
+      "runtime_result": null
+    },
+    {
+      "id": "DG08",
+      "trigger": "网络恢复及outbox发送中设备崩溃",
+      "expected": "同存活进程恢复按boot/sequence FIFO；崩溃后不按墙钟补Completed，不自动续做",
+      "runtime_result": null
+    },
+    {
+      "id": "DG09",
+      "trigger": "准备阶段仅一个子进程启动或用户取消",
+      "expected": "不返回prepared；stopped前缀、空闲进程退出、C20/C10按证据结清，未知保持占位",
+      "runtime_result": null
+    },
+    {
+      "id": "DG10",
+      "trigger": "Host进程终止或原Engine不在",
+      "expected": "保留云slot/boot/原命令可查；不得从快照伪造活跃Engine",
+      "runtime_result": null
+    },
+    {
+      "id": "DG11",
+      "trigger": "网关在Host准入后、云快照确认前断连",
+      "expected": "查询/复发原work；receipt重复不重提生产，按原接纳前沿推进",
+      "runtime_result": null
+    },
+    {
+      "id": "DG12",
+      "trigger": "telemetry_only传入H07或伪造执行receipt",
+      "expected": "typed契约/数据集权限拒绝；不进入C05或生产接受量",
+      "runtime_result": null
+    },
+    {
+      "id": "DG13",
+      "trigger": "10个仅采集进程各1条/秒持续30分钟",
+      "expected": "实际运行1800秒；预定18000条按设备/秒核对并记录遗漏，未运行不计通过",
+      "runtime_result": null
+    },
+    {
+      "id": "DG14",
+      "trigger": "百万generated_load与执行/采集数据集并存",
+      "expected": "C11只写generated_load；查询各固定前沿，负载行不冒充实际设备或产量",
+      "runtime_result": null
+    },
+    {
+      "id": "DG15",
+      "trigger": "正常终态或停用后关闭窗口",
+      "expected": "先发布终态并结清命令/出站，再正常关闭自有空闲子进程，C20退役后C10释放；未知继续阻止关闭",
+      "runtime_result": null
+    },
+    {
+      "id": "DG16",
+      "trigger": "普通Agent注入gateway身份、URL或凭据",
+      "expected": "实际Host授权拒绝；密钥不进argv/Renderer/工程/报告；读权限不升级为网关权限",
+      "runtime_result": null
+    },
+    {
+      "id": "FR01",
+      "trigger": "prepared遥测在run后才补发或时间戳看似最近",
+      "expected": "无运行后probe，H07不更新资格；新派工等待有效回应",
+      "runtime_result": null
+    },
+    {
+      "id": "FR02",
+      "trigger": "probe于1000发起、4000到期，1700才接纳",
+      "expected": "3500的上界2500且fresh；4000边界stale，不能到4700才过期",
+      "runtime_result": null
+    },
+    {
+      "id": "FR03",
+      "trigger": "2900重复同receipt/回应",
+      "expected": "返回原接纳及4000原期限，不续为5900；业务无重复",
+      "runtime_result": null
+    },
+    {
+      "id": "FR04",
+      "trigger": "新sequence复用已消费probe或给旧遥测追加probe",
+      "expected": "设备journal禁止改payload，Host拒绝更新资格，不以新receipt绕过",
+      "runtime_result": null
+    },
+    {
+      "id": "FR05",
+      "trigger": "旧poll empty/probe重发及新的head已含下一probe",
+      "expected": "原poll响应全体不变；新poll才取新probe，旧回应不刷新下一轮资格",
+      "runtime_result": null
+    },
+    {
+      "id": "FR06",
+      "trigger": "设备busy或accept_new_work=false仍需确认状态",
+      "expected": "accept_commands=false返回empty加probe，不claim新命令；新采样可确认busy/停用",
+      "runtime_result": null
+    },
+    {
+      "id": "FR07",
+      "trigger": "断连后历史Started/Completed与过期遥测一起重放",
+      "expected": "原receipt仍按身份及依赖准入；过期遥测不恢复资格，不跳过生产回执流",
+      "runtime_result": null
+    },
+    {
+      "id": "FR08",
+      "trigger": "Host在期限边界或晚唤醒后试图新派工",
+      "expected": "先处理到期资格及必要观察记录，再判准入；原已发布/已开始义务不释放",
+      "runtime_result": null
+    },
+    {
+      "id": "FR09",
+      "trigger": "probe回答与下一probe发起/旧head发布交错",
+      "expected": "每boot只一个待答；接纳只消费精确原Host registry，旧head不会续旧期限",
+      "runtime_result": null
+    },
+    {
+      "id": "FR10",
+      "trigger": "重复run/resume、Host重启或只读归档加载",
+      "expected": "原锚点/原期限不重置；新Host不能凭云/归档probe成为旧会话控制者",
+      "runtime_result": null
+    },
+    {
+      "id": "FR11",
+      "trigger": "设备时钟/云时间大幅偏移或伪造issued_at",
+      "expected": "Host发起/接纳同钟计算；请求不能注入发起时刻；设备时间不改变资格",
+      "runtime_result": null
+    },
+    {
+      "id": "FR12",
+      "trigger": "固定R/F/T回看、报告或终态后迟到回应",
+      "expected": "按当时Host proof及到期记录呈现；读不发送probe，终态不复活；实际物理工时仍未知",
+      "runtime_result": null
+    }
+  ],
+  "freshness_protocol": {
+    "decision_id": "V2-A10",
+    "state": "selected_for_design_not_implemented",
+    "scope": "软件在环设备状态的新采样协议与原Host时钟上界；不证明物理有效加工时间",
+    "parameters": {
+      "frozen_observation_max_age_ms_demo": 3000,
+      "host_probe_interval_ms_demo": 1000,
+      "deadline_rule": "expires_at_host_ms=issued_at_host_ms+frozen observation_max_age_ms；Host整数毫秒原锚点，接纳/可用区间均strictly before expiry"
+    },
+    "first_run": "prepared无probe且freshness=unknown；首次H03 run定原时钟并为每boot生成probe，rN快照经既有C06发布；等待有效回应期间不新派工，报告时钟不再重置",
+    "descriptor": [
+      "probe_id",
+      "device_id",
+      "device_boot_id",
+      "issued_execution_revision",
+      "issued_at_host_ms",
+      "expires_at_host_ms"
+    ],
+    "poll": "C03返回不可变command/empty + observation_probe；忙碌/停止接单设备也继续poll，但accept_commands=false不取命令；复发旧poll只得旧probe",
+    "sample": "设备第一次看到该boot/probe时，在自身单写者循环重新采当前状态；将probe_id、当前状态和新sequence作为同一immutable outbox行提交。未发送旧遥测不能追加新probe_id；outbox中非null probe_id按boot唯一",
+    "host_admission": "H07只收原Host尚未消费的精确probe、相同session/epoch/boot及新sequence，且actual host_now<expires；HostObservedDevice保存原probe和实际接纳时刻。设备/云时间均不参与资格加减",
+    "duplicates": "同receipt/payload复发返回原接纳；不同sequence/payload复用已消费probe拒绝更新资格。相同probe不得生成第二份新采样或重设有效期",
+    "age_proof": "设备采样发生在看到probe之后、Host接纳之前；在Host观察时点T保守年龄上界为T-issued_at_host_ms；有效截至原expires，不能取received_at+3000",
+    "renewal": "每boot最多一个待应答probe；已应答且距上次发起>=1000ms，或原probe到期，才发新probe；发布可合并但不可修改旧probe身份/时刻；未到期的最近有效回应在新probe等待期继续按原期限有效",
+    "expiry": "Host外部驱动器处理已到期资格边界后才做任何新派工/发布决策；在真实观察前沿记录device stale/unknown变化，读接口不推进时钟。失效只阻止新工作，不释放已承诺命令/物料/资源",
+    "resume_reconnect": "不跳过C05原receipt前缀，不清原命令。旧prepared/补发/旧poll/云旧head无法重设原期限；没有新有效probe回应则保持unknown/stale。pause/resume不重置Host锚点，丢失Engine的Host不可从归档probe恢复控制",
+    "terminal": "终态后不生成新probe；迟到原始消息仍按既有云存储/退役规则处理，不复活生产会话",
+    "ui_history_report": "freshness只消费同R/F/T的Host状态；latest_observation.observation_probe保留原期限，pending_observation_probe单列。Renderer/Agent/报告不按本机Date.now或最新云时间重新判fresh；typed device history保留发起/接纳/到期状态",
+    "finite_example": {
+      "issued_ms": 1000,
+      "expires_ms": 4000,
+      "admitted_ms": 1700,
+      "read_at_ms": 3500,
+      "age_bound_ms": 2500,
+      "fresh_at_3500": true,
+      "fresh_at_4000": false,
+      "duplicate_at_2900_expires_ms": 4000,
+      "late_at_4200": "reject qualification update"
+    },
+    "limits": "该上界依赖可信设备实现确实在收到probe后新采样；真机接入另验该消费者，当前不填真机通过；不是跨设备时钟同步或物理加工测量",
+    "sequence_scope": "DB08按boot/sequence统一去重；H07只比较资格遥测的单调sequence。H04仍按原命令/phase/token/依赖处理，不能因为已见较大遥测sequence就丢掉较小但合法的Started/Completed。"
+  },
+  "historical_design_implementation_flags": {
+    "date": "2026-10-26",
+    "implementation_allowed": false,
+    "runtime_verified": false
+  },
+  "implementation_status_ref": "docs/06_v2.0设计与开发控制/开发控制计划.json#/packages",
+  "current_implementation_packages": [
+    "V2-03"
+  ],
+  "status_projection_updated_at_utc": "2026-10-27T01:45:48.535491+00:00",
+  "runtime_verification_scope": "runtime_verified仅为本文全部设计用例通过声明；当前局部真实证据和剩余动作取主计划，不把设计期禁止实施作为现行限制。"
+}

@@ -1,0 +1,1064 @@
+{
+  "document_kind": "RR_window6_report_linked_exact_scope_verification_not_final_report_or_product_acceptance",
+  "reviewed_on": "2026-10-15 Asia/Shanghai",
+  "authority": {
+    "source_thread_id": "01a1353e-da58-7671-837b-ee746a8bd9b4",
+    "human_turn_ref": "01a13dbd-3fad-7c50-9ded-80665f9f84c0",
+    "scope": "Only original04/06/08/11/13/14/15/28; design-owned corrections and necessary isolated key trials allowed. No final report files or other-window sources written."
+  },
+  "status": "received_bounded_source_verification_no_new_owned_design_blocker_product_evidence_open",
+  "scope_original_numbers": [
+    "04",
+    "06",
+    "08",
+    "11",
+    "13",
+    "14",
+    "15",
+    "28"
+  ],
+  "report_sources_readonly": [
+    "../模块研究/输出/报告/超级工厂_最终选题报告_34处疑点核对与修订.md",
+    "../模块研究/输出/报告/超级工厂_最终选题报告_逐字阅读问题记录.md"
+  ],
+  "summary": {
+    "original_numbers_reviewed": 8,
+    "new_confirmed_owned_design_defects": 0,
+    "new_owned_source_repairs": 0,
+    "python_selected_profile_assertions_passed": 20,
+    "native_Rust_counterexamples_passed": 4,
+    "product_Engine_found": false,
+    "product_APIs_implemented": false,
+    "conclusion": "8条现行算法/字段决定与本轮所列有限反例相容；未发现新的已证实调度/业务源冲突。实际产品缺口已按九类和原P明确列出，不能据此称真实Engine/Host接线或运行已完成。"
+  },
+  "items": [
+    {
+      "original_number": "04",
+      "topic": "布局、运输与产能关系",
+      "classification": "已有定义但产品待实做",
+      "source_repair_this_round": "未发现已证实的新源缺陷；不为已有设计通过记录重复立项。",
+      "actual_result": null,
+      "original_question": "拉远工位会不会自动改变运输时间；场地检查与生产参数如何相接。",
+      "source_refs": [
+        "docs/01_业务需求/物流与布局业务.md#移动产线后什么会变",
+        "docs/03_架构与契约/调度与状态转换算法.json#/rules/8",
+        "scenarios/两厂房装配包装/project.design.json#/assumptions"
+      ],
+      "actual_consumer_or_trial": [
+        "modules/transport/batch-transport/manifest.json#/behavior/times",
+        "tools/design-quality-audit/report-linked/window6/business_counterexamples.py#ab_profile"
+      ],
+      "executed_layer": "读取实际A/B声明和三个实际模块的固定时间，以受限算术profile复算；没有运行布局检查器或产品Engine。",
+      "raw_output_ref": "tools/design-quality-audit/report-linked/window6/business-counterexamples-result.json",
+      "counterexample_cases": [
+        "RR04-layout-only",
+        "RR04-explicit-time-change"
+      ],
+      "actual_observation": "仅将装盒工位局部坐标改为[2,1]不改变声明运输预期；outbound由30秒明确改40秒后，首/次成品变为135000/225000ms。",
+      "missing_actual_artifacts": [
+        "P2-01的真实布局编辑→同Project修订/静态包络检查消费",
+        "P2-02的固定耗时Transport状态机及同货物ID、装卸/接收/返程真实事件",
+        "P1-01/P1-03共享Run事件与资源账本"
+      ],
+      "P_refs": [
+        "P1-01",
+        "P1-03",
+        "P2-01",
+        "P2-02"
+      ],
+      "can_complete_now": "本轮已完成声明时长与坐标独立性的隔离复算；不需要真实道路资料。",
+      "external_pending": "真实场地包络/净空与现场运输标定仅影响对应实际用途验证；不是实现固定时间运输的前置。"
+    },
+    {
+      "original_number": "06",
+      "topic": "九类声明式创作的深度与真实消费者",
+      "classification": "已有定义但产品待实做",
+      "source_repair_this_round": "未发现已证实的新源缺陷；不为已有设计通过记录重复立项。",
+      "actual_result": null,
+      "original_question": "用户究竟能编辑输入输出、阶段、资源和失败规则到哪层；不等同任意脚本。",
+      "source_refs": [
+        "packages/module-kit/category-contracts.design.json#/categories",
+        "packages/domain/types.design.rs#ModulePayload",
+        "docs/02_交互设计/自定义设备创作与采用.md",
+        "docs/03_架构与契约/九类协议与采用设计.md"
+      ],
+      "actual_consumer_or_trial": [
+        "packages/module-kit/生成类别声明样例.py",
+        "scenarios/九类模块采用/adoption-output/template.json",
+        "scenarios/九类模块采用/adoption-output/definitions",
+        "docs/02_交互设计/S04_可操作设计原型/workbench.js"
+      ],
+      "executed_layer": "实际声明文件/类型载体及已有原型、适配候选；本轮读当前正式候选的CNC规则、准备Task和deferred_seed并执行局部核验。",
+      "raw_output_ref": "tools/design-quality-audit/report-linked/window6/business-counterexamples-result.json",
+      "counterexample_cases": [
+        "RR15-phase-source-once",
+        "RR15-preparation-no-material",
+        "RR06-no-invented-seed"
+      ],
+      "actual_observation": "CNC whole duration仍None，三phase总60000ms；准备Task30000ms且produces_material=false；缺实际Route时seed/routing_ref仍null。",
+      "missing_actual_artifacts": [
+        "产品ModulePackage加载/验证/库查询/DefinitionDraft编辑/原子采用编译器",
+        "RoleBindings/参数binding到有效Device/Operation/Task/Transport输入的实际编译",
+        "每类各自实际消费层与同一个simulation状态机接线，详见nine_category_gap_map"
+      ],
+      "P_refs": [
+        "P0-01",
+        "P0-02",
+        "P0-03",
+        "P3-01",
+        "P3-02",
+        "P3-03",
+        "P4-01",
+        "P4-02"
+      ],
+      "can_complete_now": "当前类型/归属/有类型缺项已可检查；已完成本轮受限候选消费。实现者进入已派发产品切片后可用自建合法数据实现，不必等待真实企业。",
+      "external_pending": "真实工业Job、许可素材、实际提供者和人工用途认可按对应专业/发布用途取得，不伪造。"
+    },
+    {
+      "original_number": "08",
+      "topic": "两厂房A/B的125秒、205秒",
+      "classification": "已有定义但产品待实做",
+      "source_repair_this_round": "未发现已证实的新源缺陷；不为已有设计通过记录重复立项。",
+      "actual_result": null,
+      "original_question": "初始料、三独立人员和装卸/返程时点是否足以复算。",
+      "source_refs": [
+        "scenarios/两厂房装配包装/README.md#基准参数",
+        "scenarios/两厂房装配包装/expected-events.design.json",
+        "scenarios/两厂房装配包装/variants.design.json"
+      ],
+      "actual_consumer_or_trial": [
+        "tools/design-quality-audit/report-linked/window6/business_counterexamples.py#ab_profile",
+        "modules/devices/manual-assembly/manifest.json#/behavior",
+        "modules/devices/carton-pack/manifest.json#/behavior",
+        "modules/transport/batch-transport/manifest.json#/behavior"
+      ],
+      "executed_layer": "本轮实际读取原始项目/变体和模块声明做独立有限时序递推；没有把手工预期JSON装成RunResult。",
+      "raw_output_ref": "tools/design-quality-audit/report-linked/window6/business-counterexamples-result.json#/ab_rows",
+      "counterexample_cases": [
+        "RR08-A",
+        "RR08-B"
+      ],
+      "actual_observation": "A接收110000、完成125000ms且1件；B第二件120000齐料完成、140000开始装载、190000接收、205000包装接受、220000载具可再用。",
+      "missing_actual_artifacts": [
+        "P0-02将产品/BOM/Route/Scenario和初始数量落实为实际冻结输入",
+        "P1-01实际物料/Job/Claim生产者",
+        "P2-02实际Transport归属/接收/返程生产者"
+      ],
+      "P_refs": [
+        "P0-02",
+        "P1-01",
+        "P1-03",
+        "P2-02",
+        "P2-03"
+      ],
+      "can_complete_now": "20项中的A/B断言已执行；自建参数已足够支持隔离profile，不缺企业实测输入。",
+      "external_pending": "要称实际产品A/B通过，必须由真实Engine生成新Run并逐事件/身份核对；不是补充报告文字即可。"
+    },
+    {
+      "original_number": "11",
+      "topic": "班次中断、机器与人员日历",
+      "classification": "已有定义但产品待实做",
+      "source_repair_this_round": "未发现已证实的新源缺陷；不为已有设计通过记录重复立项。",
+      "actual_result": null,
+      "original_question": "不能把所有物理工艺都解释为下班暂停；两策略及资源保持要明确。",
+      "source_refs": [
+        "docs/03_架构与契约/调度与状态转换算法.json#/rules/3",
+        "docs/01_业务需求/换单班次与质量处置.md",
+        "docs/03_架构与契约/全厂时间轴与阶段资源设计.md"
+      ],
+      "actual_consumer_or_trial": [
+        "scenarios/真实业务设计/复算业务案例.py#calendar_detail",
+        "docs/04_开发与验收/特征细化/DRF06_有限预期核验.py#first_fit",
+        "tools/design-quality-audit/report-linked/window6/business_counterexamples.py#calendar_work"
+      ],
+      "executed_layer": "调用现有calendar_detail实际函数，并运行新窗口日历受限反例；无Worker真实暂停/恢复。",
+      "raw_output_ref": "tools/design-quality-audit/report-linked/window6/business-counterexamples-result.json",
+      "counterexample_cases": [
+        "RR11-pause",
+        "RR11-nonpreemptive",
+        "RR11-closed-boundary",
+        "RR11-existing-consumer"
+      ],
+      "actual_observation": "60000ms工作对[0,40000)/[100000,170000)：pause_resume在0—40000、100000—120000；non_preemptive100000—160000；闭班末新工作不可开始。原函数仍给CNC45000完成/人10000/等待5000。",
+      "missing_actual_artifacts": [
+        "P1-03的多资源共同日历交集、进度打开/中断/恢复及phase-only释放",
+        "P1-01整Job容量/物料持有与输出等待衔接",
+        "P2-04真实Run phase/Claim/Wait快照及前缀消费者"
+      ],
+      "P_refs": [
+        "P1-01",
+        "P1-03",
+        "P2-04"
+      ],
+      "can_complete_now": "本轮已完成策略边界关键有限试做；工序真实物理是否允许中断要由实际规则声明，不由UI猜。",
+      "external_pending": "现场工序策略和实际员工/机位日历须用户明确选择；自建实现测试可立即准备，不受这类现场输入阻塞。"
+    },
+    {
+      "original_number": "13",
+      "topic": "同刻闭包、争用优先序与有限零时长",
+      "classification": "已有定义但产品待实做",
+      "source_repair_this_round": "未发现已证实的新源缺陷；不为已有设计通过记录重复立项。",
+      "actual_result": null,
+      "original_question": "不只要求重复结果相同，还应明确争用选择和零时长终止。",
+      "source_refs": [
+        "docs/03_架构与契约/调度与状态转换算法.json#/rules/0",
+        "docs/03_架构与契约/调度与状态转换算法.json#/rules/1"
+      ],
+      "actual_consumer_or_trial": [
+        "tools/scheduler-proof/queue.rs",
+        "tools/design-quality-audit/report-linked/window6/queue_counterexamples.rs"
+      ],
+      "executed_layer": "现有queue.rs只覆盖固定5事件排序/稳定键/末端接受；本轮独立std-only Rust实际编译执行4个扩展反例。",
+      "raw_output_ref": "tools/design-quality-audit/report-linked/window6/native-counterexamples-result.json",
+      "counterexample_cases": [
+        "RR13-boundary-before-dispatch",
+        "RR13-priority-due-ready-ID",
+        "RR13-dynamic-zero-closure",
+        "RR13-unbounded-cycle-admission"
+      ],
+      "actual_observation": "闭班与来料先处理再派工；排序A/B/C/null/low满足priority/due/ready/ID；high→low零时长链都在10ms闭包，反输入序仍同；无界循环拒绝准入。",
+      "missing_actual_artifacts": [
+        "P1-01把真实RunInput/库存/资源与堆和候选闭包接成Worker",
+        "P1-02有限返工回边展开",
+        "P1-04实际订单多级排序及不会改写ready_at的等待调度"
+      ],
+      "P_refs": [
+        "P1-01",
+        "P1-02",
+        "P1-04"
+      ],
+      "can_complete_now": "本轮4原生反例已完成；无需外部工厂数据或新依赖安装。",
+      "external_pending": "无此纯算法试做所需外部输入；真正产品完整调度仍需原任务实现与真实Run验收。"
+    },
+    {
+      "original_number": "14",
+      "topic": "批次部分领用、精确量与逐件身份",
+      "classification": "已有定义但产品待实做",
+      "source_repair_this_round": "未发现已证实的新源缺陷；不为已有设计通过记录重复立项。",
+      "actual_result": null,
+      "original_question": "整批10份用4份如何保持源、子批、库存和数量，不展开或重复计数。",
+      "source_refs": [
+        "docs/03_架构与契约/调度与状态转换算法.json#/rules/2",
+        "docs/03_架构与契约/调度与状态转换算法.json#/rules/5",
+        "docs/04_开发与验收/特征细化/DRF06_公共字段合入delta.json",
+        "scenarios/真实业务设计/business-rule-boundaries.design.json#B07"
+      ],
+      "actual_consumer_or_trial": [
+        "docs/04_开发与验收/特征细化/DRF06_有限预期核验.py#D06-C03_C04",
+        "tools/design-quality-audit/report-linked/window6/business_counterexamples.py#partition",
+        "tools/design-quality-audit/report-linked/window6/business_counterexamples.py#acquire_reserved"
+      ],
+      "executed_layer": "现有D06部分是固定算术；本轮执行受限精确Fraction分份和资源/质量门槛取得函数。没有实际Engine批次账本。",
+      "raw_output_ref": "tools/design-quality-audit/report-linked/window6/business-counterexamples-result.json",
+      "counterexample_cases": [
+        "RR14-partition",
+        "RR14-onhand-no-source-double-count",
+        "RR14-resource-unavailable",
+        "RR14-acquire-after-real-gates",
+        "RR14-exact-mass",
+        "RR14-noninteger-piece-rejected"
+      ],
+      "actual_observation": "10piece→4+6；源transformed不再与子批一起计20；资源缺失不取得，pending质量不取得；released且资源可用才取4并保留6。自建10kg→3.2+6.8精确，piece1.5拒绝。",
+      "missing_actual_artifacts": [
+        "P0-02规范初始MaterialAllocation和精确Quantity的实际领域校核",
+        "P1-01源归档/稳定子ID/排他预留/一次原子领用事务",
+        "P1-04多订单自有预留与自由份额选择",
+        "P2-04/P2-06真实库存/空间/报告只计当前实物"
+      ],
+      "P_refs": [
+        "P0-02",
+        "P1-01",
+        "P1-04",
+        "P2-04",
+        "P2-06"
+      ],
+      "can_complete_now": "本轮已完成正反有限函数与不部分领用反例；没有将源expected改成运行结果。",
+      "external_pending": "真实材料单位/批量数据由用户给；实现单件/批量通用算法可用当前自建精确输入，不需要外部实验。"
+    },
+    {
+      "original_number": "15",
+      "topic": "设备、工艺、任务与工时的字段归属",
+      "classification": "已有定义但产品待实做",
+      "source_repair_this_round": "未发现已证实的新源缺陷；不为已有设计通过记录重复立项。",
+      "actual_result": null,
+      "original_question": "60秒应写在哪一类，任务和定义之间怎样引用，不能多来源重算。",
+      "source_refs": [
+        "docs/03_架构与契约/调度与状态转换算法.json#/rules/13",
+        "docs/04_开发与验收/特征细化/DRF06_C04_显式绑定收口.json#/field_mapping",
+        "packages/domain/types.design.rs#DeviceDefinition_OperationDefinition_RouteStep_ProductionTask_JobState"
+      ],
+      "actual_consumer_or_trial": [
+        "scenarios/九类模块采用/adoption-output/definitions/CNC01/module.json",
+        "scenarios/九类模块采用/adoption-output/definitions/preparation-board-preparation/module.json",
+        "tools/design-quality-audit/report-linked/window6/business_counterexamples.py"
+      ],
+      "executed_layer": "读取精确当前定义、phase及Task完成效果，并做实际字段算术；没有生产参数编译器或任务Job执行。",
+      "raw_output_ref": "tools/design-quality-audit/report-linked/window6/business-counterexamples-result.json",
+      "counterexample_cases": [
+        "RR15-phase-source-once",
+        "RR15-preparation-no-material"
+      ],
+      "actual_observation": "有效工时由已选inline/Operations的duration或phases确定，phased CNC不再加整段cycle。RouteStep/ProductionTask组织步骤和需求；Job引用冻结实际设备/步骤；独立准备Task只提交readiness，不产出物料。",
+      "missing_actual_artifacts": [
+        "P0-01/P3-01实际参数binding和精确版本/角色原子采用",
+        "P0-02实际Route/ProductionTask/Scenario引用解析",
+        "P1-01/P1-03把选定行为唯一降成Job/Phase/Claim",
+        "Task准备readiness的同Run/目标/配置完成证据消费者"
+      ],
+      "P_refs": [
+        "P0-01",
+        "P0-02",
+        "P1-01",
+        "P1-03",
+        "P3-01"
+      ],
+      "can_complete_now": "现行归属和C04关键实际定义已核对，无需增加公共字段或第二时钟。",
+      "external_pending": "真实产品/BOM/Route和C04工人/机位选择仍是采用义务，不能为形状通过捏造实际路线。"
+    },
+    {
+      "original_number": "28",
+      "topic": "类型载体一致与真实接线的证据范围",
+      "classification": "已有定义但产品待实做",
+      "source_repair_this_round": "未发现已证实的新源缺陷；不为已有设计通过记录重复立项。",
+      "actual_result": null,
+      "original_question": "形状、可序列化、正反例、消费者实际接入不是同一层。",
+      "source_refs": [
+        "packages/domain/types.design.rs",
+        "packages/commands/api.design.rs#CommandsService",
+        "docs/03_架构与契约/全层类型与工程格式.json",
+        "tools/type-contract-proof/src/timeline_contract_proof.rs"
+      ],
+      "actual_consumer_or_trial": [
+        "tools/type-contract-proof/output/type-proof-result.json",
+        "tools/type-contract-proof/timeline-contract-cases.design.json",
+        "tools/type-contract-proof/output/timeline-contract-proof-result.json",
+        "tools/design-quality-audit/report-linked/window6/business_counterexamples.py"
+      ],
+      "executed_layer": "当前原生编译/派生回执只读；本轮实际标准Schema校验TCF01/09/15，并对照已有原生有限语义回执，未重写公共检查。",
+      "raw_output_ref": "tools/design-quality-audit/report-linked/window6/business-counterexamples-result.json",
+      "counterexample_cases": [
+        "RR28-TCF01",
+        "RR28-TCF09",
+        "RR28-TCF15"
+      ],
+      "actual_observation": "TCF01形状及有限语义均接受；TCF09/15形状接受而有限语义拒绝。说明Schema正形状不能替跨对象语义，更不能替产品run_scenario/get_run接线。",
+      "missing_actual_artifacts": [
+        "CommandsService产品impl与同Host任务分派/校核/取消/结果所有权",
+        "真实RunInput编译及Worker产出RunResult",
+        "UI/时间轴/报告从同Run经get_run读取并做语义使用，而不是读静态fixture",
+        "九类产品加载与实际采用/运行接点"
+      ],
+      "P_refs": [
+        "P0-01",
+        "P0-02",
+        "P1-01",
+        "P2-04",
+        "P3-01",
+        "P3-04"
+      ],
+      "can_complete_now": "本轮已明确形状与语义的实际差异；当前423TS/15Schema/36API夹具回执不能填产品API可用。",
+      "external_pending": "纯产品接线不需要真实工厂数据；Codex、第二机及真人接手等原后续验收另属实际证据。"
+    }
+  ],
+  "confirmed_new_design_defects": [],
+  "owned_source_changes": [],
+  "public_DTO_or_API_differences_for_window1": [],
+  "old_findings_policy": {
+    "AQ01_05_DQ01_05_PL01_10_PR01_18": "沿既有关闭历史，不重新报错；本轮不重跑其整套或把旧通过数当当前产品完成。",
+    "R1_R3": "撤回历史保持，不恢复宽泛分派。"
+  },
+  "actual_implementation_inventory": {
+    "simulation_root": "packages/simulation",
+    "files": [
+      "README.md"
+    ],
+    "modulekit_executable_sources": [
+      "packages\\module-kit\\生成类别声明样例.py",
+      "packages\\module-kit\\demo-equipment\\check_requirements.py"
+    ],
+    "planner_source_entries": [
+      "apps\\planner\\README.md"
+    ],
+    "API_trait": {
+      "path": "packages/commands/api.design.rs",
+      "line": 659,
+      "run_scenario_line": 690,
+      "get_run_line": 696,
+      "product_impl": "当前产品源码未提供CommandsService的实际run_scenario/get_run执行实现；API/README和当前回执均明确运行不可用。"
+    },
+    "distinction": ".design.rs为真实可编译载体/服务签名，有限proof是可执行程序；它们不是产品simulation crate/Host分派。仅按目标包检索，不扫描/修改tools/3d-proof。"
+  },
+  "nine_category_gap_map": [
+    {
+      "category": "items",
+      "defined_carrier": "ModulePayload::Items(ItemDefinition) → ItemType; ScenarioInput creates actual stock",
+      "present": "类型/设计样例和声明生成器；没有产品领域库存消费者",
+      "missing": "P0-02实际规格/版本/单位/初始量校核；P1-01 RuntimeItem唯一holder/lifecycle/quality/allocation/拆分与守恒事务",
+      "P": [
+        "P0-01",
+        "P0-02",
+        "P1-01"
+      ],
+      "external_needed_for_code": false
+    },
+    {
+      "category": "devices",
+      "defined_carrier": "DeviceDefinition + DeviceInstance(module_ref, configuration, RoleBindings)",
+      "present": "正式定义/Schema和原型实例；没有真实有效行为编译器或设备Job执行",
+      "missing": "P0-01/P3-01精确版本与参数binding编译；P1-01唯一inline或Operations选定来源、真实JobExecutionRef与容量Claim；P1-03 phases",
+      "P": [
+        "P0-01",
+        "P1-01",
+        "P1-03",
+        "P3-01"
+      ],
+      "external_needed_for_code": false
+    },
+    {
+      "category": "resources",
+      "defined_carrier": "ResourceDefinition → ResourceInstance + Calendar",
+      "present": "资源/日历载体和有限班次算术；没有运行账本",
+      "missing": "P0-02显式实际资源/日历引用；P1-01原子齐套/同resource合并占用；P1-03共同可用段/真实释放/跨暂停保持",
+      "P": [
+        "P0-02",
+        "P1-01",
+        "P1-03"
+      ],
+      "external_needed_for_code": false
+    },
+    {
+      "category": "tasks",
+      "defined_carrier": "TaskDefinition + RouteStep.operation_ref + targets/resources",
+      "present": "30秒准备真实定义和有限readiness规则；不是已执行Preparation Job",
+      "missing": "P3-01 Task精确采用和目标映射；P0-02真实Route/ProductionTask引用；P1-01/03 Preparation Job/Phase及同Run/Task/目标/配置完成标记消费者",
+      "P": [
+        "P0-02",
+        "P1-01",
+        "P1-03",
+        "P3-01"
+      ],
+      "external_needed_for_code": false
+    },
+    {
+      "category": "operations",
+      "defined_carrier": "OperationDefinition or selected same-device inline → RouteStep",
+      "present": "BOM/端口/材料/phase声明和固定样例；无通用执行器",
+      "missing": "P0-02版本/配比/Route输入；P1-01原子领料/转换/装配/输出槽；P1-02检查单出口/有限返工；P1-04/05订单/换单/质量处置",
+      "P": [
+        "P0-02",
+        "P1-01",
+        "P1-02",
+        "P1-04",
+        "P1-05"
+      ],
+      "external_needed_for_code": false
+    },
+    {
+      "category": "transport",
+      "defined_carrier": "TransportDefinition + ScenarioInput.supplies/SupplyRelation",
+      "present": "固定10/30/10/30秒和ID保留声明；A/B有限算术，无实际搬运状态机",
+      "missing": "P2-02来源预留/装载/发出/在途/卸载/接收/返程以及共享载具日历；P1-03阶段时间；P2-01当前几何检查和两画布同工程引用",
+      "P": [
+        "P1-03",
+        "P2-01",
+        "P2-02"
+      ],
+      "external_needed_for_code": false
+    },
+    {
+      "category": "templates",
+      "defined_carrier": "TemplateSubset + TemplateAdoption + deferred_seed",
+      "present": "实际7定义/C04 0.3.0候选及强类型义务；实例化尚无产品事务",
+      "missing": "P3-01库查询/ID全映射/明确resource_choices/采用原子发布；P0-01/02保存实际对象与义务；P4-01模板生成并交真实Engine验证",
+      "P": [
+        "P0-01",
+        "P0-02",
+        "P3-01",
+        "P4-01"
+      ],
+      "external_needed_for_code": false
+    },
+    {
+      "category": "professional",
+      "defined_carrier": "ProfessionalDefinition → actual result/artifact/HumanAcknowledgment/consumer binding",
+      "present": "提供者声明、隔离纸包装方法/绑定设计；不是全部工业提供者或完整真实专业→Run链",
+      "missing": "P0-03当前成果/人工用途认可/消费者绑定实际校核；P4-02完整纸包装；P1按有效绑定门禁；其他专业仍按已选declared_process范围",
+      "P": [
+        "P0-03",
+        "P1-01",
+        "P4-02"
+      ],
+      "external_needed_for_code": false,
+      "external_for_real_use": "专业资料/实际完整结果/可信人工用途认可与现场适用条件，不能用本轮fixture代造"
+    },
+    {
+      "category": "media",
+      "defined_carrier": "Presentation → presentation_override/anchors/phase mapping",
+      "present": "原型真实3D/媒体播放与手工样例；没有与产品实际Run接线",
+      "missing": "P3-02/03从同Run phase_work_intervals/进度/状态取姿态和读数；P2-04真实快照/前缀查询；表现不写物料/工时/库存",
+      "P": [
+        "P2-04",
+        "P3-02",
+        "P3-03"
+      ],
+      "external_needed_for_code": false,
+      "external_for_real_use": "实际资产/可再分发许可和冻结性能资产另按原发布/NFR取得"
+    }
+  ],
+  "existing_native_type_receipt": {
+    "source_ref": "tools/type-contract-proof/output/type-proof-result.json",
+    "snapshot": {
+      "actual_product_runtime": null,
+      "api_fixture_roundtrips": 36,
+      "api_operation_schemas": 36,
+      "boundary_negative_checks": 10,
+      "domain_schema_documents": 13,
+      "fixture_roundtrips": 20,
+      "product_APIs_implemented": false,
+      "schema_documents": 15,
+      "source_ref": "packages/domain/types.design.rs",
+      "status": "passed_actual_native_type_compile_and_codegen",
+      "typescript_files": 423
+    },
+    "rerun_this_round": false,
+    "coverage": "当前Rust类型编译、15派生Schema、423TS、20夹具往返、36 API夹具和10边界反例；不代表18产品方法可调用。"
+  },
+  "actual_P_and_preconditions": [
+    {
+      "id": "P0-01",
+      "status": "planned",
+      "implementation_dependencies": [],
+      "release_dependencies": [],
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P0-01.md"
+    },
+    {
+      "id": "P0-02",
+      "status": "planned",
+      "implementation_dependencies": [
+        "P0-01"
+      ],
+      "release_dependencies": [
+        "P0-01"
+      ],
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P0-02.md"
+    },
+    {
+      "id": "P0-03",
+      "status": "planned",
+      "implementation_dependencies": [
+        "P0-02"
+      ],
+      "release_dependencies": [
+        "P0-02"
+      ],
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P0-03.md"
+    },
+    {
+      "id": "P1-01",
+      "status": "planned",
+      "implementation_dependencies": [
+        "P0-02"
+      ],
+      "release_dependencies": [
+        "P0-02"
+      ],
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P1-01.md"
+    },
+    {
+      "id": "P1-02",
+      "status": "planned",
+      "implementation_dependencies": [
+        "P1-01"
+      ],
+      "release_dependencies": [
+        "P1-01"
+      ],
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P1-02.md"
+    },
+    {
+      "id": "P1-03",
+      "status": "planned",
+      "implementation_dependencies": [
+        "P1-02"
+      ],
+      "release_dependencies": [
+        "P1-02"
+      ],
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P1-03.md"
+    },
+    {
+      "id": "P1-04",
+      "status": "planned",
+      "implementation_dependencies": [
+        "P1-03"
+      ],
+      "release_dependencies": [
+        "P1-03",
+        "P0-02",
+        "P2-02"
+      ],
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P1-04.md"
+    },
+    {
+      "id": "P1-05",
+      "status": "planned",
+      "implementation_dependencies": [
+        "P1-02"
+      ],
+      "release_dependencies": [
+        "P1-02",
+        "P0-02"
+      ],
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P1-05.md"
+    },
+    {
+      "id": "P2-01",
+      "status": "planned",
+      "implementation_dependencies": [
+        "P1-01"
+      ],
+      "release_dependencies": [
+        "P1-01"
+      ],
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P2-01.md"
+    },
+    {
+      "id": "P2-02",
+      "status": "planned",
+      "implementation_dependencies": [
+        "P1-03"
+      ],
+      "release_dependencies": [
+        "P1-03",
+        "P2-01"
+      ],
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P2-02.md"
+    },
+    {
+      "id": "P2-04",
+      "status": "planned",
+      "implementation_dependencies": [
+        "P1-03"
+      ],
+      "release_dependencies": [
+        "P1-03",
+        "P2-02"
+      ],
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P2-04.md"
+    },
+    {
+      "id": "P2-06",
+      "status": "planned",
+      "implementation_dependencies": [
+        "P2-03"
+      ],
+      "release_dependencies": [
+        "P0-03",
+        "P2-05",
+        "P2-03"
+      ],
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P2-06.md"
+    },
+    {
+      "id": "P3-01",
+      "status": "planned",
+      "implementation_dependencies": [
+        "P0-03",
+        "P2-01"
+      ],
+      "release_dependencies": [
+        "P0-03",
+        "P2-02"
+      ],
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P3-01.md"
+    },
+    {
+      "id": "P3-02",
+      "status": "planned",
+      "implementation_dependencies": [
+        "P3-01",
+        "P1-03"
+      ],
+      "release_dependencies": [
+        "P3-01",
+        "P1-03"
+      ],
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P3-02.md"
+    },
+    {
+      "id": "P3-03",
+      "status": "planned",
+      "implementation_dependencies": [
+        "P3-01",
+        "P1-03"
+      ],
+      "release_dependencies": [
+        "P3-01",
+        "P1-03"
+      ],
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P3-03.md"
+    },
+    {
+      "id": "P3-04",
+      "status": "planned",
+      "implementation_dependencies": [
+        "P0-01"
+      ],
+      "release_dependencies": [
+        "P3-02",
+        "P3-03",
+        "P2-04",
+        "P4-01",
+        "P2-06"
+      ],
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P3-04.md"
+    },
+    {
+      "id": "P4-01",
+      "status": "planned",
+      "implementation_dependencies": [
+        "P0-03"
+      ],
+      "release_dependencies": [
+        "P3-01",
+        "P1-04",
+        "P1-05"
+      ],
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P4-01.md"
+    },
+    {
+      "id": "P4-02",
+      "status": "planned",
+      "implementation_dependencies": [
+        "P0-03"
+      ],
+      "release_dependencies": [
+        "P0-03",
+        "P3-01",
+        "P2-06"
+      ],
+      "coding_package_ref": "docs/04_开发与验收/编码任务包/P4-02.md"
+    }
+  ],
+  "what_can_finish_now": [
+    "本轮20条业务/字段/标准Schema断言已在隔离目录执行，并调用现有calendar_detail函数，未运行会写回源预期的main。",
+    "本轮4条std-only Rust队列/争用/同刻零闭包/有环拒绝反例已实际编译运行。",
+    "当前自建A/B、正式C04候选和精确量fixture足够做设计内关键试做；编写领域/Engine实现不以真实企业资料为必要前置，但仍受原S07-05和实际派发约束。"
+  ],
+  "nearest_executable_actions_after_original_entry": [
+    {
+      "step": 1,
+      "P": [
+        "P0-01"
+      ],
+      "precondition": "原S07-01..05实际准备通过并实际派发该原任务切片",
+      "action": "按现有P0-01任务包落实真实产品工程/Host入口、Project修订/保存和CommandsService最小实现；使用当前Rust/Schema作为输入，不能把tools私有proof当Host。",
+      "output": "可启动产品入口及实际apply_commands/Project持久化调用，实际构建/测试证据"
+    },
+    {
+      "step": 2,
+      "P": [
+        "P0-02",
+        "P0-03"
+      ],
+      "precondition": "按现行implementation_dependencies取得P0-01；P0-03仅首版已选绑定部分",
+      "action": "在真实Host建立合法自建Product/BOM/Route/Scenario、资源/日历/Quantity/MaterialAllocation与专业用途引用校核；真实C04没有用户Route时保留typed义务，不回填伪造路线。",
+      "output": "可冻结供真实Worker消费的同版RunInput和明确准入错误"
+    },
+    {
+      "step": 3,
+      "P": [
+        "P1-01"
+      ],
+      "precondition": "P0-02实际产物；原P1-01切片派发",
+      "action": "实现同一Worker最小堆/候选闭包、一次原子齐套、Job/物品holder与资源Claim、唯一结果槽/完成；先在规范有类型自建fixture取得真实RunResult，再与独立预期对比。",
+      "output": "真实事件/Job/RuntimeItem/Claim/Wait/accepted量，actual_result只在实际产品执行后按规范填写"
+    },
+    {
+      "step": 4,
+      "P": [
+        "P1-02",
+        "P1-03",
+        "P1-04",
+        "P1-05",
+        "P2-02"
+      ],
+      "precondition": "严格依现行startup/release依赖，P2-02启动须P1-03，完整验收还含P2-01；不创建新P或提前done",
+      "action": "增补检查/有限返工、共同日历两策略/phase-only资源释放、多订单换单及质量处置、真实运输装卸接收返程；运行A/B核对110/125/190/205/220与身份/空间/数量。",
+      "output": "对应原任务实际消费者和旧预期不改的正反运行证据"
+    },
+    {
+      "step": 5,
+      "P": [
+        "P3-01",
+        "P2-04",
+        "P3-02",
+        "P3-03",
+        "P4-01"
+      ],
+      "precondition": "按表中各原P implementation_dependencies；当前21包仍不可派发",
+      "action": "将九类真实库/参数/RoleBindings采用编译接到前述Worker；模板只创建明确工程输入，媒体/UI/报告只从同Run读取；完成当前类别限定的实际闭环。",
+      "output": "真实九类定义→采用→运行/表现/报告消费者接线；不执行任意第三方脚本"
+    }
+  ],
+  "external_or_user_inputs": {
+    "not_required_for_bounded_algorithms": "当前8条有限关键试做无外部输入阻碍；产品算法代码可用合法自建输入实现。",
+    "required_for_real_factory_or_complete_claims": [
+      "真实场地/包络/净空及现场运输标定",
+      "实际机位/人员/日历、产品/BOM/Route及初始质量/预设匹配选择",
+      "真实专业Job/输出/许可及可信人工用途认可",
+      "实际性能冻结资产/第二机/他人或目标用户接手证据"
+    ],
+    "C04_handling": "未选Resource/Route/preset范围/initial quality保持TemplateAdoption有类型义务，不能为运行或Schema通过虚造真实对象。"
+  },
+  "verification": {
+    "business_source": "tools/design-quality-audit/report-linked/window6/business_counterexamples.py",
+    "business_raw_output": "tools/design-quality-audit/report-linked/window6/business-counterexamples-result.json",
+    "native_source": "tools/design-quality-audit/report-linked/window6/queue_counterexamples.rs",
+    "native_raw_output": "tools/design-quality-audit/report-linked/window6/native-counterexamples-result.json",
+    "commands": [
+      "C:/Users/fujunye/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe tools/design-quality-audit/report-linked/window6/business_counterexamples.py",
+      "rustc --edition=2024 tools/design-quality-audit/report-linked/window6/queue_counterexamples.rs -o tools/design-quality-audit/report-linked/window6/queue-counterexamples.exe",
+      "tools/design-quality-audit/report-linked/window6/queue-counterexamples.exe"
+    ],
+    "python_environment": "使用现有bundled CPython3.12与现有tools/type-contract-proof/python-libs；该rpds为cp312，默认3.14不适用。无依赖安装/更新。",
+    "actual_layers": [
+      "Python受限算术/分份/门槛函数",
+      "现有calendar_detail实际函数，无main写文件",
+      "标准JSON Schema实际校验",
+      "本轮std-only Rust实际执行",
+      "既有native DTO有限语义回执只读"
+    ],
+    "not_executed": [
+      "真实产品Engine/Host或18产品操作",
+      "九类通用加载/参数编译与运行接线",
+      "真实运输/批次账本/暂停恢复控制",
+      "真实工厂/专业提供者/Windows恢复/用户验收"
+    ],
+    "expected_files_rewritten": false,
+    "public_synchronizers_called": false,
+    "actual_result": null
+  },
+  "preserved": {
+    "task_statuses": [
+      {
+        "id": "P0-01",
+        "status": "planned"
+      },
+      {
+        "id": "P0-02",
+        "status": "planned"
+      },
+      {
+        "id": "P0-03",
+        "status": "planned"
+      },
+      {
+        "id": "P1-01",
+        "status": "planned"
+      },
+      {
+        "id": "P1-02",
+        "status": "planned"
+      },
+      {
+        "id": "P1-03",
+        "status": "planned"
+      },
+      {
+        "id": "P1-04",
+        "status": "planned"
+      },
+      {
+        "id": "P1-05",
+        "status": "planned"
+      },
+      {
+        "id": "P2-01",
+        "status": "planned"
+      },
+      {
+        "id": "P2-02",
+        "status": "planned"
+      },
+      {
+        "id": "P2-03",
+        "status": "planned"
+      },
+      {
+        "id": "P2-04",
+        "status": "planned"
+      },
+      {
+        "id": "P2-05",
+        "status": "planned"
+      },
+      {
+        "id": "P2-06",
+        "status": "planned"
+      },
+      {
+        "id": "P3-01",
+        "status": "planned"
+      },
+      {
+        "id": "P3-02",
+        "status": "planned"
+      },
+      {
+        "id": "P3-03",
+        "status": "planned"
+      },
+      {
+        "id": "P3-04",
+        "status": "planned"
+      },
+      {
+        "id": "P4-01",
+        "status": "planned"
+      },
+      {
+        "id": "P4-02",
+        "status": "planned"
+      },
+      {
+        "id": "P5-01",
+        "status": "planned"
+      }
+    ],
+    "packages": [
+      {
+        "task_id": "P0-01",
+        "status": "draft_not_dispatchable",
+        "actual_dispatch": null
+      },
+      {
+        "task_id": "P0-02",
+        "status": "draft_not_dispatchable",
+        "actual_dispatch": null
+      },
+      {
+        "task_id": "P0-03",
+        "status": "draft_not_dispatchable",
+        "actual_dispatch": null
+      },
+      {
+        "task_id": "P1-01",
+        "status": "draft_not_dispatchable",
+        "actual_dispatch": null
+      },
+      {
+        "task_id": "P1-02",
+        "status": "draft_not_dispatchable",
+        "actual_dispatch": null
+      },
+      {
+        "task_id": "P1-03",
+        "status": "draft_not_dispatchable",
+        "actual_dispatch": null
+      },
+      {
+        "task_id": "P1-04",
+        "status": "draft_not_dispatchable",
+        "actual_dispatch": null
+      },
+      {
+        "task_id": "P1-05",
+        "status": "draft_not_dispatchable",
+        "actual_dispatch": null
+      },
+      {
+        "task_id": "P2-01",
+        "status": "draft_not_dispatchable",
+        "actual_dispatch": null
+      },
+      {
+        "task_id": "P2-02",
+        "status": "draft_not_dispatchable",
+        "actual_dispatch": null
+      },
+      {
+        "task_id": "P2-03",
+        "status": "draft_not_dispatchable",
+        "actual_dispatch": null
+      },
+      {
+        "task_id": "P2-04",
+        "status": "draft_not_dispatchable",
+        "actual_dispatch": null
+      },
+      {
+        "task_id": "P2-05",
+        "status": "draft_not_dispatchable",
+        "actual_dispatch": null
+      },
+      {
+        "task_id": "P2-06",
+        "status": "draft_not_dispatchable",
+        "actual_dispatch": null
+      },
+      {
+        "task_id": "P3-01",
+        "status": "draft_not_dispatchable",
+        "actual_dispatch": null
+      },
+      {
+        "task_id": "P3-02",
+        "status": "draft_not_dispatchable",
+        "actual_dispatch": null
+      },
+      {
+        "task_id": "P3-03",
+        "status": "draft_not_dispatchable",
+        "actual_dispatch": null
+      },
+      {
+        "task_id": "P3-04",
+        "status": "draft_not_dispatchable",
+        "actual_dispatch": null
+      },
+      {
+        "task_id": "P4-01",
+        "status": "draft_not_dispatchable",
+        "actual_dispatch": null
+      },
+      {
+        "task_id": "P4-02",
+        "status": "draft_not_dispatchable",
+        "actual_dispatch": null
+      },
+      {
+        "task_id": "P5-01",
+        "status": "draft_not_dispatchable",
+        "actual_dispatch": null
+      }
+    ],
+    "execution_entry": {
+      "preparation_phase": "S07",
+      "last_checkpoint_before_product_coding": "S07-05",
+      "first_product_coding_phase": "S08",
+      "required_preparation_review_ids": [
+        "S07-01",
+        "S07-02",
+        "S07-03",
+        "S07-04",
+        "S07-05"
+      ],
+      "needs_actual_build_start_and_test_configuration": true,
+      "status": "not_ready",
+      "actual_entry": null
+    },
+    "actual_product_runtime": null,
+    "actual_Engine": null,
+    "report_MD_PDF_DOCX_written": false,
+    "report_owned_check_files_written": false,
+    "other_window_sources_written": false,
+    "global_task_status_written": false,
+    "report_window_notified": false
+  },
+  "acceptance_scope": "仅本窗口八条原编号的源/实际有限实现/具体缺口核验已完成；是否所有报告关联缺陷闭环及何时通知报告窗口，由窗口1汇总决定。",
+  "write_scope": [
+    "docs/04_开发与验收/特征细化/RR_窗口6_报告关联核验.json",
+    "tools/design-quality-audit/report-linked/window6/"
+  ]
+}
