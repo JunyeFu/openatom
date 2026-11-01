@@ -99,7 +99,7 @@ git -C D:/sf/openatom lfs pull --include="软件工程/modules/**,软件工程/r
 
 ## 7. 本卡验收状态
 
-A当前任务已更新：[协作入口中的A队列](GitHub协作入口.md)；#1保留输入接收和预算冻结，下一张前端实施卡为[#5](https://github.com/JunyeFu/openatom/issues/5)。已交付输入不重做，任务更新不代表产品已开始修改。
+A当前任务已更新：[协作入口中的A队列](GitHub协作入口.md)；#1是当前主任务，先收口FV0；随后FV1处理停止排空，再到FV2的[#5前端卡](https://github.com/JunyeFu/openatom/issues/5)。#5当前待启动。已交付输入不重做，任务更新不代表产品已开始修改。
 
 已交付：冻结源码与集成分支、既存增量分类、L1/C1逐订单预期、H1和报告入口、LFS资源取用说明、当前控制入口纠正、赛事索引与待定项。静态核对不算产品运行验收。
 

@@ -268,13 +268,35 @@
     "a_task_queue": {
       "updated_on": "2026-11-01",
       "owner": "JunyeFu",
-      "authority": "用户要求更新A任务；本次更新派发，不执行产品修复",
+      "authority": "用户要求明确阶段顺序；纠正将FV2前端卡置于当前主线前的安排",
       "coordination_issue": "https://github.com/JunyeFu/openatom/issues/1",
       "next_implementation": {
+        "stage": "FV1",
+        "card": "V2-04/FV01",
+        "state": "after_fv0_intake_and_valid_reproduction"
+      },
+      "b_dispatch": "https://github.com/JunyeFu/openatom/issues/2#issuecomment-6555414822",
+      "receive_then_freeze": [
+        "B环境/H1/停止归档通信诊断及PR4复核",
+        "C本人操作复测、实际耗时与必要图片"
+      ],
+      "next_business_priority": {
+        "card": "V2-04/FV01",
+        "gate": "先完成FV0适用接收，并具备B关联问题有效定位/复现；按FV1主线处理停止排空"
+      },
+      "owner_decisions_pending": [
+        "实际投入与交付日期",
+        "下一赛段新通知与评委源码访问",
+        "对应云卡开始前确认余额/规格/操作权限"
+      ],
+      "simultaneous_implementation_cards": 1,
+      "product_implementation_started": false,
+      "formal_release_changed": false,
+      "frontend_card": {
         "card": "V2-07/FV02",
         "issue": "https://github.com/JunyeFu/openatom/issues/5",
         "milestone": "FV2",
-        "state": "ready_not_started",
+        "state": "queued_after_fv1_not_started",
         "first_batch": [
           "Q3",
           "Q7",
@@ -302,23 +324,22 @@
           "Q18_full_reorganization"
         ]
       },
-      "b_dispatch": "https://github.com/JunyeFu/openatom/issues/2#issuecomment-6555414822",
-      "receive_then_freeze": [
-        "B环境/H1/停止归档通信诊断及PR4复核",
-        "C本人操作复测、实际耗时与必要图片"
-      ],
-      "next_business_priority": {
-        "card": "V2-04/FV01",
-        "gate": "收到B关联问题有效定位/复现；当前UI小批次收口后再切换"
+      "current_primary": {
+        "stage": "FV0",
+        "card": "V2-00/FV01",
+        "issue": "https://github.com/JunyeFu/openatom/issues/1",
+        "state": "input_delivery_done_intake_and_budget_freeze_pending"
       },
-      "owner_decisions_pending": [
-        "实际投入与交付日期",
-        "下一赛段新通知与评委源码访问",
-        "对应云卡开始前确认余额/规格/操作权限"
+      "default_stage_order": [
+        "FV0",
+        "FV1",
+        "FV2",
+        "FV3",
+        "FV4"
       ],
-      "simultaneous_implementation_cards": 1,
-      "product_implementation_started": false,
-      "formal_release_changed": false
+      "fv0_exit": "接收B基线与C本人操作结果，冻结适用指标/输入/分工，明确未测与阻断路径；不要求先修完所有缺陷",
+      "waiting_work": "只读整理停止失败路径、准备复现步骤、核对输入与外部条件；当前不启动#5编码",
+      "early_implementation_exception": "若今后提前调度独立修复，在卡中另记范围/验证/恢复主线条件；当前未安排，不据此标阶段通过"
     }
   },
   "date": "2026-10-27",
