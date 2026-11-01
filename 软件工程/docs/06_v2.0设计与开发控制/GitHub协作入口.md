@@ -20,13 +20,15 @@
 
 第二遍复核已明确：H1为现有失败输入，FV3最终历史不阻塞FV0；A补齐报告样例及构建资源入口，B按独立云Cargo工作区执行检查；查询页面归B、云容器归A。C在自己的账户和新工程中查验，不靠换解压目录假定配置已隔离。上述是任务安排修正，未执行产品测试。
 
+第三方复核意见已核实：补环境报告接收、内置测试位置和构建profile；A在FV2末准备历史联验脚本，实际硬编码问题见输入说明，不只补参数文字。B的环境报告交#2、A在#1接收，期限按双方实际工作时段约定。具备自身输入的修复可按卡推进，FV0整体未满足仍保留开放。
+
 ## 五个阶段
 
 |阶段|里程碑|出口|
 |---|---|---|
 |FV0 缺陷与基线|[打开FV0](https://github.com/JunyeFu/openatom/milestone/1)|事实分类、版本、输入、指标和责任明确|
 |FV1 阻塞修复|[打开FV1](https://github.com/JunyeFu/openatom/milestone/2)|停止/排空、归档与链路的已复现阻塞闭合|
-|FV2 完整工作流|[打开FV2](https://github.com/JunyeFu/openatom/milestone/3)|用户任务和消费者一致；交付候选包与隔离云候选供FV3|
+|FV2 完整工作流|[打开FV2](https://github.com/JunyeFu/openatom/milestone/3)|用户任务和消费者一致；交候选包、隔离云候选及A的联验启动说明/短链结果供FV3|
 |FV3 整厂与独立使用|[打开FV3](https://github.com/JunyeFu/openatom/milestone/4)|整厂全订单、长历史、实际负载与独立使用通过|
 |FV4 正式交付|[打开FV4](https://github.com/JunyeFu/openatom/milestone/5)|源码、包、指南、示例和材料版本一致，可实际接手|
 

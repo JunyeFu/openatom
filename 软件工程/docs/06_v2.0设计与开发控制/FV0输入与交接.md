@@ -36,9 +36,24 @@ A交H1时提供：候选/源码版本、文件目录与打开方式、最短触�
 
 - 从[根README](../../README.md#开发环境与启动)读取构建方法；命令工作目录统一为`软件工程/`。当前声明为Windows 11 x64、MSVC构建工具、WebView2、Rust 1.97、Node 24.15.0、npm 12.0.1；实际使用以冻结提交的`rust-toolchain.toml`、`Cargo.toml`、`package.json`和锁文件为准。这是源码声明，尚未验证B机器已具备环境。
 - B先报告已有工具版本和缺项；安装依赖按现有锁文件及README，不升级全局工具来迁就任务卡。Python设备/制包入口见[integrations/devices说明](../../integrations/devices/README.md)和现有脚本。
+- 环境报告由B在双方约定的首个工作时段提交#2，A在#1引用接收，字段为`工具/实际版本或可用性/缺项/影响的步骤/处理人`。FV0关闭前确认基线测量环境可用；未确认投入时间不硬设1日承诺，不把安装版本清单当实际测试通过。
 - 云服务是独立Cargo工作区，检查命令为`cargo test --locked --manifest-path apps/cloud-service/Cargo.toml --lib`；配置含义见[云服务说明](../../apps/cloud-service/README.md)。本文不要求执行其中的生产部署命令。
 - A交出候选打包所需模型/运行资源/示例的已有取得位置和适用版本；B先确认资源可得，FV2再构建。打包脚本`tools/release-preparation/package_v2.py`不会编译exe，且需要显式输入；不能只交一个打包命令而把资源准备留空。
 - C用自己的Windows账户和新工程查验。首次使用状态须实际确认，单独解压应用不能隔离Tauri用户配置；已有配置则注明复测，不清除原连接或个人数据。
+
+### FV3脚本启动准备
+
+下表仅核对`add556d0`中现存脚本的参数，尚不是可直接执行的FV3交接。脚本都会连接实际Native并可能操作生产/保存；没有`--help`处理。A在V2-10/FV02的FV2启动准备检查点完成必要适配和短链接线，完整负载仍在FV3运行。
+
+|脚本（均在`tools/v2-demo/`）|当前位置参数|实际依赖与待处理项|
+|---|---|---|
+|`check_factory_cloud_native.mjs`|`base attempt [resume]`|读取`base/attempt/launch.json`、`base/st03-template-02/flow/actual-run.json`，另有写死的旧F盘receipt；Playwright/PowerShell指向原操作者目录|
+|`check_factory_cloud_drain_native.mjs`|`base attempt [resume]`|同样依赖旧路径；约32行把目标填成`167`、单位选`piece`，不能代表混合单位的C1逐产品预期|
+|`check_factory_cloud_visual_native.mjs`|`base [attempt=native-01] [resume]`|读取现用launch文件；Playwright位置及视图/时点选择需核对当前候选|
+|`save_factory_cloud_native.mjs`|`base attempt [production=factory-live] [output=save] [resume]`|读取对应生产目录的`terminal.json`，使用`base/owned-dialog.ps1`；不能与不同输出名的生产记录混用|
+|`reopen_factory_cloud_native.mjs`|`base attempt previous [resume]`|读取新旧launch、旧`save/receipt.json`和`factory-live/terminal.json`及固定模板记录；新进程与输入对应关系必须按本轮候选核对|
+
+接线要求：复用现有脚本，替换已观察到的不适用路径和旧场景常量，按C1各产品/单位核对，不新增通用自动化平台。A交当前准确调用、输入/输出映射、有效launch文件、停止条件和短链结果；B消费运行标识采样，C只需可理解的观察步骤。云连接仍走应用已有私有配置，不虚构这些脚本拥有端点/令牌命令行参数。仅参数说明完成不等于脚本已适配或整厂已通过。
 
 ## 3. 需要调查的历史现象
 
