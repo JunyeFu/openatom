@@ -12,7 +12,7 @@
 |产品实现 / 已交付源码|`580d829b297228b87b7fe8389693a2a4cd363f1b` / `19d789b9520251ed2e9854e35c93b53f90227282`；源码与展示文案版本分别记录|
 |正式发行|[v2.0.1](https://github.com/JunyeFu/superfactory-releases/releases/tag/v2.0.1)：应用137,252,162字节、示例310,750,775字节、HTML指南26,639字节，仍使用原链接|
 
-A负责本卡和集成；B复核版本/输入并在[#2](https://github.com/JunyeFu/openatom/issues/2)交环境与测量；C继续在[#3](https://github.com/JunyeFu/openatom/issues/3)使用正式包查验。两名已有write协作者与B/C的对应、三人投入时段及日历目标尚未确认，不代填账号。
+A负责本卡和集成；B复核版本/输入并在[#2](https://github.com/JunyeFu/openatom/issues/2)交环境与测量；C继续在[#3](https://github.com/JunyeFu/openatom/issues/3)使用正式包查验。用户已确认B为`wwl-ww`、C为`Jacky-z-q-wan`，分别负责#2和#3；两人已有write权限。三人投入时段及日历目标尚未确认。
 
 ### 已有工作区增量的处理决定
 
@@ -101,4 +101,4 @@ git -C D:/sf/openatom lfs pull --include="软件工程/modules/**,软件工程/r
 
 已交付：冻结源码与集成分支、既存增量分类、L1/C1逐订单预期、H1和报告入口、LFS资源取用说明、当前控制入口纠正、赛事索引与待定项。静态核对不算产品运行验收。
 
-待接收：B对本交付的复核及#2环境/基线；C首次体验时间；A确认账号角色、投入/交期、必要云资源额度与评委源码访问。第二检查点完成后再关闭#1；不因缺外部决定而扣住已可使用的输入。
+待接收：B对本交付的复核及#2环境/基线；C首次体验时间；A确认投入/交期、必要云资源额度与评委源码访问。第二检查点完成后再关闭#1；不因缺外部决定而扣住已可使用的输入。
