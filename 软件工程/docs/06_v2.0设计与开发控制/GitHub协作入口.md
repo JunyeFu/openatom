@@ -2,6 +2,8 @@
 
 2026-10-31。五个阶段和FV0首批三张Issue已建立；任务目前待认领，未绑定具体账号。后续12张任务保留设计，尚未建立Issue。任务进展在对应Issue记录。
 
+2026-11-01安排已复核：A先交最小输入，B据此诊断，再由A冻结预算；候选包在FV2末准备供FV3使用，FV4复用验收结果正式接收。保留五阶段与15卡，原发布渠道保持。修正后的净工作量参考为11—22工作日，实际日历待三人可投入时间与输入就绪后确定。
+
 ## 从这里开始
 
 - [完整制作与验收方案](入围后完整版制作与验收方案.md)：范围、质量标准、性能要求、阶段和分工。
@@ -10,7 +12,7 @@
 
 |发给谁|第一张任务|现在做什么|交付到哪里|
 |---|---|---|---|
-|角色A：项目负责人/核心开发（你）|[#1 固定版本、范围和交接输入](https://github.com/JunyeFu/openatom/issues/1)|确定集成基点和负载，提供H1复现输入，明确范围与指标|#1结果，必要文档PR|
+|角色A：项目负责人/核心开发（你）|[#1 固定版本、范围和交接输入](https://github.com/JunyeFu/openatom/issues/1)|先交基点/H1/环境说明；收到B基线后再冻结指标，无需等整张Issue关闭才交输入|#1分段结果，必要文档PR|
 |角色B：另一位大规模开发者|[#2 诊断失败与性能基线](https://github.com/JunyeFu/openatom/issues/2)|先读代码和记录；H1拿到后做一次有边界的归档复现与测量|#2诊断结果，必要测量脚本PR|
 |角色C：前端纠偏/真实使用同伴|[#3 首轮界面纠偏与独立使用查验](https://github.com/JunyeFu/openatom/issues/3)|用正式包和指南独立完成基础/进阶任务，记录看不懂、找不到、做不下去的位置|#3步骤结果和问题清单|
 
@@ -22,7 +24,7 @@
 |---|---|---|
 |FV0 缺陷与基线|[打开FV0](https://github.com/JunyeFu/openatom/milestone/1)|事实分类、版本、输入、指标和责任明确|
 |FV1 阻塞修复|[打开FV1](https://github.com/JunyeFu/openatom/milestone/2)|停止/排空、归档与链路的已复现阻塞闭合|
-|FV2 完整工作流|[打开FV2](https://github.com/JunyeFu/openatom/milestone/3)|用户任务和数据、画面、报告、Agent消费者一致|
+|FV2 完整工作流|[打开FV2](https://github.com/JunyeFu/openatom/milestone/3)|用户任务和消费者一致；交付候选包与隔离云候选供FV3|
 |FV3 整厂与独立使用|[打开FV3](https://github.com/JunyeFu/openatom/milestone/4)|整厂全订单、长历史、实际负载与独立使用通过|
 |FV4 正式交付|[打开FV4](https://github.com/JunyeFu/openatom/milestone/5)|源码、包、指南、示例和材料版本一致，可实际接手|
 
