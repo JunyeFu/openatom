@@ -3,7 +3,7 @@
   "next_full_version_plan": {
     "date": "2026-10-31",
     "authority": "用户授权同步方案与任务卡、建立五阶段和FV0三张Issue；人员按角色标注；不影响已提交发布链接。 用户已授权执行角色A第一卡。",
-    "state": "fv0_a_inputs_delivered_waiting_b_review_and_baseline",
+    "state": "fv0_a_independent_work_delivered_waiting_bc_intake",
     "spec_ref": "docs/06_v2.0设计与开发控制/入围后完整版制作与验收方案.md",
     "task_cards_ref": "docs/06_v2.0设计与开发控制/入围后完整版任务卡.md",
     "source_packages": "V2-00至V2-11保持，FV0至FV4为下一轮执行批次，ST01至ST08历史验收不改",
@@ -183,7 +183,7 @@
       "date": "2026-11-01",
       "card": "V2-00/FV01",
       "issue": "https://github.com/JunyeFu/openatom/issues/1",
-      "state": "inputs_delivered_pending_b_review_and_budget_freeze",
+      "state": "independent_work_delivered_pending_bc_intake_and_decisions",
       "issue_closed": false,
       "source_commit": "4ff2fc17cf678071f4b3bd93674dafdb8b90695b",
       "integration_branch": "codex/full-version-integration-20261101",
@@ -211,7 +211,9 @@
         "A确认评委源码访问和个人新通知"
       ],
       "protected_release_changed": false,
-      "historical_controls": "根级v1/ST/旧current字段和window_stage_plan是历史记录；本轮执行入口为next_full_version_plan"
+      "historical_controls": "根级v1/ST/旧current字段和window_stage_plan是历史记录；本轮执行入口为next_full_version_plan",
+      "intake_contract_ref": "docs/06_v2.0设计与开发控制/FV0冻结基点与输入.md#8-a独立工作收口与bc补交标准2026-11-01",
+      "independent_work_completed": true
     },
     "role_accounts": {
       "B": "wwl-ww",
@@ -251,9 +253,9 @@
       },
       "pending": [
         "C本人基础/进阶操作复测及真实耗时求助记录",
-        "Q14遮挡/重叠图片上传及必要原图读取",
-        "Q1启动与Q8报告可操作性待B测量",
-        "Q15校验缺失及其他动态现象待对应修复卡复现"
+        "C补Q14上传失败图；原6图无需重复提交",
+        "C补Q8已有输入与导出元信息；B测量仍未完成",
+        "Q15及其他动态现象留在后续卡复现，本轮不修产品"
       ],
       "decisions": [
         "不把全部不可比认定为数值计算错误",
@@ -268,7 +270,7 @@
     "a_task_queue": {
       "updated_on": "2026-11-01",
       "owner": "JunyeFu",
-      "authority": "用户要求明确阶段顺序；纠正将FV2前端卡置于当前主线前的安排",
+      "authority": "用户明确先推进FV0，完成A可独立部分并在GitHub说明B/C补交；暂不启动后续阶段",
       "coordination_issue": "https://github.com/JunyeFu/openatom/issues/1",
       "next_implementation": {
         "stage": "FV1",
@@ -339,7 +341,41 @@
       ],
       "fv0_exit": "接收B基线与C本人操作结果，冻结适用指标/输入/分工，明确未测与阻断路径；不要求先修完所有缺陷",
       "waiting_work": "只读整理停止失败路径、准备复现步骤、核对输入与外部条件；当前不启动#5编码",
-      "early_implementation_exception": "若今后提前调度独立修复，在卡中另记范围/验证/恢复主线条件；当前未安排，不据此标阶段通过"
+      "early_implementation_exception": "本轮不启动后续阶段，没有提前实施例外；后续安排改变时再更新任务"
+    },
+    "fv0_intake_contract": {
+      "date": "2026-11-01",
+      "scope": "FV0_only_no_later_stage_implementation",
+      "ref": "docs/06_v2.0设计与开发控制/FV0冻结基点与输入.md",
+      "b_required": [
+        "环境/预计交回时段",
+        "本人H1实际输出及量测边界",
+        "停止/归档/通信事实分类",
+        "Q1/Q8一次观察或具体输入缺项",
+        "PR4输入与边界复核"
+      ],
+      "b_h1_files": [
+        "report.json",
+        "codec-metrics.json",
+        "save-metrics.json",
+        "reopen-metrics.json"
+      ],
+      "b_failure_handling": "允许有效失败诊断；中止阶段之后未产生的文件不补造，不将未运行写成已测",
+      "c_required": [
+        "本人基础/进阶操作复测、时间和求助",
+        "Q14上传失败图片",
+        "Q8现有工程/运行/修改与导出选项元信息"
+      ],
+      "existing_c_images": {
+        "attachment_links": 6,
+        "resubmit_required": false,
+        "a_visual_review_completed": false,
+        "read_limitation": "接口未取到原图；本轮浏览器读取超时"
+      },
+      "numeric_thresholds_frozen": false,
+      "material_acceptance_is_product_pass": false,
+      "new_product_runs": false,
+      "later_stages_started": false
     }
   },
   "date": "2026-10-27",

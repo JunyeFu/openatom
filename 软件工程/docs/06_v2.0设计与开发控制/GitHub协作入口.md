@@ -30,6 +30,8 @@ C首轮状态（2026-11-01）：[操作报告](https://github.com/JunyeFu/openat
 
 ## A当前任务与顺序（2026-11-01纠正）
 
+A独立项已收口，B/C尚需补交的文件、动作和接收标准统一见[FV0交付第8节](FV0冻结基点与输入.md)。本轮用户明确只推进FV0，后续阶段不启动；失败诊断可以交回，不能冒充产品通过。
+
 **当前主任务是FV0的[Issue #1](https://github.com/JunyeFu/openatom/issues/1)。FV0尚未完成；[#5前端卡](https://github.com/JunyeFu/openatom/issues/5)仅提前建好，排在FV2，当前待启动。** 版本/输入交付完成只完成了A首卡的前半段，不能据此把整个阶段标完成。
 
 |顺序|A负责做什么|进入下一步的条件|
