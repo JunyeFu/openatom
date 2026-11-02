@@ -1,3 +1,5 @@
+> A首卡输入已交付（2026-11-01）：[冻结基点、逐订单预期、模型资源与待接收项](FV0冻结基点与输入.md)。共享基点为`4ff2fc17cf678071f4b3bd93674dafdb8b90695b`，B本机环境/测量仍须交回。源码取用须按该页执行Git LFS步骤。
+
 # FV0输入与交接
 
 本页供A/B/C接手首批任务。日期：2026-10-31。历史结论来自现有验收和控制记录，本轮没有重新测试产品。当前任务与角色见[协作入口](GitHub协作入口.md)。
@@ -19,7 +21,7 @@
 
 不需要所有人下载源码：C使用正式应用和指南即可；B按需要拉取本规划分支，工作目录为仓库内`软件工程`。已有本地仓库可fetch分支，不必另复制整套依赖和模型。
 
-2026-11-01已核对：21个首轮核心源码/环境/控制文件及四份协作文档的相对链接均在规划提交中存在；所查资源路径无Git符号链接或子模块。GitHub已有`wwl-ww`、`Jacky-z-q-wan`两位write协作者，尚未替负责人决定谁是B/C。第三方AI仍须使用有该私有仓库访问权的连接。
+2026-11-01已核对：21个首轮核心源码/环境/控制文件及四份协作文档的相对链接均在规划提交中存在；所查资源路径无Git符号链接或子模块。GitHub已有`wwl-ww`、`Jacky-z-q-wan`两位write协作者，用户已确认B为`wwl-ww`、C为`Jacky-z-q-wan`。第三方AI仍须使用有该私有仓库访问权的连接。
 
 |角色|文件可用性|关闭任务还需要什么|
 |---|---|---|
@@ -40,7 +42,7 @@ git -C D:/sf/openatom checkout codex/full-version-planning-20261031
 ## 2. 三种输入的可用性
 
 - **L1本地工厂：可直接使用。** 正式程序内置92设备模板，从模板开始创建；参考本地记录为69订单、162制造作业、273运输。逐产品结果和单位仍以冻结输入为准。
-- **C1整厂云输入：源码设计和相关生成工具可读取，实际运行配置由A交接。** 93端点、身份绑定、云连接和精确工艺版本不能从“打开本地模板”推断已经就绪；FV0不要求C发起实时生产。
+- **C1整厂云输入：工程/场景及944绑定已由A冻结，实际云候选接线在链路/联验卡交接。** 93端点、身份绑定、云连接和精确工艺版本不能从“打开本地模板”推断已经就绪；FV0不要求C发起实时生产。
 - **H1原始输入与历史载荷：已上传私有仓库。** 从上表内部输入下载页取得`SuperFactory-FV0-Inputs-20261101.zip`。其中`H1/source-project`为云执行前的原工程；`actual-frozen-inputs.json`、`actual-PG-snapshot.json`和`actual-PG-history.jsonl`为同一真实执行的冻结输入、R15904快照和63,584条原始观察记录。另附SDK发送计时CSV与输入摘要，不包含私有连接或SDK请求/响应载荷。
 
 H1原长历史保存失败，已核对其目标目录为空；不能承诺这里有“保存成功的长执行工程”。现已补充[H1离线复现入口](../../tools/fv0-h1/README.md)：同一私有Release下载输入包与`SuperFactory-FV0-H1-Repro-20261101.zip`，按说明运行一条命令。工具使用全部真实观察历史、派生R0基线及保留的R93/R15904，调用生产Host保存、新进程重开和完整历史分页查询；原始完整快照密度及Native界面仍单列。C1实际最终历史是FV3输出，不是FV0/FV1前置。
@@ -73,7 +75,7 @@ H1原长历史保存失败，已核对其目标目录为空；不能承诺这里
 |脚本（均在`tools/v2-demo/`）|当前位置参数|实际依赖与待处理项|
 |---|---|---|
 |`check_factory_cloud_native.mjs`|`base attempt [resume]`|读取`base/attempt/launch.json`、`base/st03-template-02/flow/actual-run.json`，另有写死的旧F盘receipt；Playwright/PowerShell指向原操作者目录|
-|`check_factory_cloud_drain_native.mjs`|`base attempt [resume]`|同样依赖旧路径；约32行把目标填成`167`、单位选`piece`，不能代表混合单位的C1逐产品预期|
+|`check_factory_cloud_drain_native.mjs`|`base attempt [resume]`|同样依赖旧路径；约32行把目标填成`167`、单位选`piece`，不能代表C1各产品分别验收的预期（当前存储单位均为piece）|
 |`check_factory_cloud_visual_native.mjs`|`base [attempt=native-01] [resume]`|读取现用launch文件；Playwright位置及视图/时点选择需核对当前候选|
 |`save_factory_cloud_native.mjs`|`base attempt [production=factory-live] [output=save] [resume]`|读取对应生产目录的`terminal.json`，使用`base/owned-dialog.ps1`；不能与不同输出名的生产记录混用|
 |`reopen_factory_cloud_native.mjs`|`base attempt previous [resume]`|读取新旧launch、旧`save/receipt.json`和`factory-live/terminal.json`及固定模板记录；新进程与输入对应关系必须按本轮候选核对|

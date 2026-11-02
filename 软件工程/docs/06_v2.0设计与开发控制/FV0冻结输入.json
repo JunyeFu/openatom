@@ -1,0 +1,2086 @@
+{
+  "document_kind": "fv0_frozen_input_expectations",
+  "date": "2026-11-01",
+  "source_commit": "4ff2fc17cf678071f4b3bd93674dafdb8b90695b",
+  "integration_branch": "codex/full-version-integration-20261101",
+  "input_release": "https://github.com/JunyeFu/openatom/releases/tag/fv0-inputs-20261101",
+  "input_asset": "SuperFactory-FV0-Inputs-20261101.zip",
+  "input_paths": {
+    "project": "H1/source-project",
+    "frozen": "H1/actual-frozen-inputs.json"
+  },
+  "template": {
+    "id": "community.template-paper-packaging-factory",
+    "version": "1.7.1"
+  },
+  "project_ref": {
+    "id": "desktop-host-113016-1793178970914358700:project:1",
+    "revision": 2
+  },
+  "scenario_ref": {
+    "id": "纸包装演示生产",
+    "revision": 1
+  },
+  "counts": {
+    "devices": 92,
+    "halls": 1,
+    "lines": 12,
+    "connections": 266,
+    "locations": 395,
+    "module_refs": 995,
+    "products": 71,
+    "boms": 71,
+    "routes": 102,
+    "orders": 69,
+    "production_tasks": 71,
+    "candidate_bindings": 944,
+    "endpoints": 93
+  },
+  "acceptance_rule": "逐订单核对product_ref、quantity的精确值和unit、destination与acceptance_stage；完整完成必须满足每个订单目标，不能用异种产品的数量合计替代。allow_partial只允许过程中部分接收，不降低最终目标。",
+  "execution_identity_rule": "复用工程、场景和绑定定义；新执行必须产生新的会话/Run和候选连接。原冻结identity、云地址及历史回执不能作为新执行身份或成功回执。",
+  "historical_references": {
+    "local_run": {
+      "orders": 69,
+      "manufacturing_jobs": 162,
+      "transports": 273,
+      "wait_records": 38849
+    },
+    "undisturbed_1_7_1_stage_commands": 1578,
+    "command_count_is_acceptance_target": false,
+    "notes": "1578仅为旧1.7.1无扰动参考；故障、维护与改派可能改变命令数。H1历史89条已完成物理命令不等于整厂完成；1.6的962条参考不得混入。"
+  },
+  "endpoint_ids": [
+    "演示工厂:PF-CARRIERS",
+    "演示工厂:PF-adhesive-dispenser",
+    "演示工厂:PF-air-table-loader",
+    "演示工厂:PF-bag-handle-attacher",
+    "演示工厂:PF-belt-conveyor",
+    "演示工厂:PF-blank-stripper",
+    "演示工厂:PF-blind-embosser",
+    "演示工厂:PF-board-edge-trimmer",
+    "演示工厂:PF-board-pile-palletizer",
+    "演示工厂:PF-book-cover-caser",
+    "演示工厂:PF-box-lid-former",
+    "演示工厂:PF-carton-counter-stacker",
+    "演示工厂:PF-carton-erector",
+    "演示工厂:PF-carton-stitcher",
+    "演示工厂:PF-case-packer",
+    "演示工厂:PF-compression-stack",
+    "演示工厂:PF-corner-board-former",
+    "演示工厂:PF-corner-rounding-machine",
+    "演示工厂:PF-corrugated-slotter",
+    "演示工厂:PF-crash-lock-gluer",
+    "演示工厂:PF-curved-conveyor",
+    "演示工厂:PF-digital-flatbed-cutter",
+    "演示工厂:PF-digital-label-printer",
+    "演示工厂:PF-divider-assembler",
+    "演示工厂:PF-envelope-folder",
+    "演示工厂:PF-film-laminator",
+    "演示工厂:PF-flexo-printer",
+    "演示工厂:PF-flexo-slotter",
+    "演示工厂:PF-flute-laminator",
+    "演示工厂:PF-folder-gluer",
+    "演示工厂:PF-gantry-pick-place",
+    "演示工厂:PF-guillotine-paper-cutter",
+    "演示工厂:PF-honeycomb-laminator",
+    "演示工厂:PF-hot-foil-stamper",
+    "演示工厂:PF-inkjet-marker",
+    "演示工厂:PF-label-applicator",
+    "演示工厂:PF-label-die-cutter",
+    "演示工厂:PF-label-peeler",
+    "演示工厂:PF-label-web-inspector",
+    "演示工厂:PF-lift-conveyor",
+    "演示工厂:PF-mailing-bag-sealer",
+    "演示工厂:PF-manual-packing",
+    "演示工厂:PF-offset-printer",
+    "演示工厂:PF-pad-print-press",
+    "演示工厂:PF-pallet-stretch-wrapper",
+    "演示工厂:PF-paper-bag-bottomer",
+    "演示工厂:PF-paper-bag-tuber",
+    "演示工厂:PF-paper-bowl-former",
+    "演示工厂:PF-paper-core-grinder",
+    "演示工厂:PF-paper-cup-former",
+    "演示工厂:PF-paper-drilling-machine",
+    "演示工厂:PF-paper-jogger",
+    "演示工厂:PF-paper-perforator",
+    "演示工厂:PF-paper-plate-former",
+    "演示工厂:PF-paper-rewinder",
+    "演示工厂:PF-paper-tube-cutoff",
+    "演示工厂:PF-paper-tube-winder",
+    "演示工厂:PF-paper-unwinder",
+    "演示工厂:PF-paper-waste-baler",
+    "演示工厂:PF-partition-slotter",
+    "演示工厂:PF-pile-lift",
+    "演示工厂:PF-pile-turner",
+    "演示工厂:PF-platen-creaser",
+    "演示工厂:PF-platen-die-cutter",
+    "演示工厂:PF-right-angle-transfer",
+    "演示工厂:PF-rigid-box-wrapper",
+    "演示工厂:PF-roller-conveyor",
+    "演示工厂:PF-rope-handle-twister",
+    "演示工厂:PF-rotary-die-cutter",
+    "演示工厂:PF-rotary-scorer",
+    "演示工厂:PF-rotary-sheet-cutter",
+    "演示工厂:PF-saddle-stitcher",
+    "演示工厂:PF-scara-robot",
+    "演示工厂:PF-screen-print-press",
+    "演示工厂:PF-sheet-feeder",
+    "演示工厂:PF-sheet-slitter",
+    "演示工厂:PF-shrink-wrapper",
+    "演示工厂:PF-six-axis-robot",
+    "演示工厂:PF-sleeve-former",
+    "演示工厂:PF-slitter-rewinder",
+    "演示工厂:PF-spine-gluer",
+    "演示工厂:PF-spot-uv-printer",
+    "演示工厂:PF-strapper",
+    "演示工厂:PF-suction-separator",
+    "演示工厂:PF-tape-case-sealer",
+    "演示工厂:PF-three-knife-trimmer",
+    "演示工厂:PF-tray-former",
+    "演示工厂:PF-uv-curer",
+    "演示工厂:PF-vacuum-palletizer",
+    "演示工厂:PF-varnish-coater",
+    "演示工厂:PF-vision-carton-inspector",
+    "演示工厂:PF-window-patcher",
+    "演示工厂:PF-wire-o-binder"
+  ],
+  "orders": [
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-SHIPPING",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-ORDER-SLEEVE",
+      "priority": 10,
+      "product_ref": {
+        "id": "演示工厂:PF-PRODUCT-SLEEVE",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 3,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:folder-gluer-output",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:PF-ROUTE-SLEEVE",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-SHIPPING",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-ORDER-PALLET",
+      "priority": 10,
+      "product_ref": {
+        "id": "演示工厂:PF-PRODUCT-PALLET",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:PF-PALLET-loaded",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:PF-ROUTE-PALLET",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-SHIPPING",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-ORDER-TUBE",
+      "priority": 10,
+      "product_ref": {
+        "id": "演示工厂:PF-PRODUCT-TUBE",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 6,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:paper-core-grinder-output",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:PF-ROUTE-TUBE",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-SHIPPING",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-ORDER-LABEL",
+      "priority": 10,
+      "product_ref": {
+        "id": "演示工厂:PF-PRODUCT-LABEL",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 18,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:label-peeler-output",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:PF-ROUTE-LABEL",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-SHIPPING",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-ORDER-BAG",
+      "priority": 10,
+      "product_ref": {
+        "id": "演示工厂:PF-PRODUCT-BAG",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 3,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:PF-BAG-finished-bag",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:PF-ROUTE-BAG",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-SHIPPING",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-ORDER-SHEETS",
+      "priority": 10,
+      "product_ref": {
+        "id": "演示工厂:PF-PRODUCT-SHEETS",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 60,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:rotary-sheet-cutter-output",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:PF-ROUTE-SHEETS",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-SHIPPING",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-ORDER-BOARDS",
+      "priority": 10,
+      "product_ref": {
+        "id": "演示工厂:PF-PRODUCT-BOARDS",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 6,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:sheet-slitter-output",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:PF-ROUTE-BOARDS",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-SHIPPING",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-ORDER-CURED",
+      "priority": 10,
+      "product_ref": {
+        "id": "演示工厂:PF-PRODUCT-CURED",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 3,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:varnish-coater-input",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:PF-ROUTE-CURED",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-adhesive-dispenser",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-adhesive-dispenser",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-adhesive-dispenser",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:adhesive-dispenser-output",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-adhesive-dispenser--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-air-table-loader",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-air-table-loader",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-air-table-loader",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:air-table-loader-input",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-air-table-loader--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-blank-stripper",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-blank-stripper",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-blank-stripper",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:blank-stripper-output",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-blank-stripper--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-blind-embosser",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-blind-embosser",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-blind-embosser",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:blind-embosser-input",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-blind-embosser--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-board-pile-palletizer",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-board-pile-palletizer",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-board-pile-palletizer",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:board-pile-palletizer-output",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-board-pile-palletizer--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-book-cover-caser",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-book-cover-caser",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-book-cover-caser",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:book-cover-caser-output",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-book-cover-caser--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-box-lid-former",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-box-lid-former",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-box-lid-former",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:box-lid-former-output",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-box-lid-former--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-carton-counter-stacker",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-carton-counter-stacker",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-carton-counter-stacker",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 6,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:carton-counter-stacker-input",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-carton-counter-stacker--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-carton-erector",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-carton-erector",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-carton-erector",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:carton-erector-output",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-carton-erector--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-carton-stitcher",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-carton-stitcher",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-carton-stitcher",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:carton-stitcher-output",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-carton-stitcher--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-case-packer",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-case-packer",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-case-packer",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:case-packer-output",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-case-packer--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-compression-stack",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-compression-stack",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-compression-stack",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:compression-stack-input",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-compression-stack--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-corner-board-former",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-corner-board-former",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-corner-board-former",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:corner-board-former-output",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-corner-board-former--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-corner-rounding-machine",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-corner-rounding-machine",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-corner-rounding-machine",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:corner-rounding-machine-output",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-corner-rounding-machine--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-corrugated-slotter",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-corrugated-slotter",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-corrugated-slotter",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:corrugated-slotter-output",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-corrugated-slotter--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-crash-lock-gluer",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-crash-lock-gluer",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-crash-lock-gluer",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:crash-lock-gluer-output",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-crash-lock-gluer--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-curved-conveyor",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-curved-conveyor",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-curved-conveyor",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:curved-conveyor-input",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-curved-conveyor--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-digital-flatbed-cutter",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-digital-flatbed-cutter",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-digital-flatbed-cutter",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:digital-flatbed-cutter-output",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-digital-flatbed-cutter--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-divider-assembler",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-divider-assembler",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-divider-assembler",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:divider-assembler-output",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-divider-assembler--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-envelope-folder",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-envelope-folder",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-envelope-folder",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:envelope-folder-output",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-envelope-folder--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-film-laminator",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-film-laminator",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-film-laminator",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:film-laminator-input",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-film-laminator--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-flexo-printer",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-flexo-printer",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-flexo-printer",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:flexo-printer-input",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-flexo-printer--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-flexo-slotter",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-flexo-slotter",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-flexo-slotter",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:flexo-slotter-output",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-flexo-slotter--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-flute-laminator",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-flute-laminator",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-flute-laminator",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:flute-laminator-output",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-flute-laminator--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-gantry-pick-place",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-gantry-pick-place",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-gantry-pick-place",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:gantry-pick-place-input",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-gantry-pick-place--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-guillotine-paper-cutter",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-guillotine-paper-cutter",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-guillotine-paper-cutter",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:guillotine-paper-cutter-output",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-guillotine-paper-cutter--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-honeycomb-laminator",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-honeycomb-laminator",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-honeycomb-laminator",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:honeycomb-laminator-output",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-honeycomb-laminator--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-hot-foil-stamper",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-hot-foil-stamper",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-hot-foil-stamper",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:hot-foil-stamper-output",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-hot-foil-stamper--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-inkjet-marker",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-inkjet-marker",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-inkjet-marker",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:inkjet-marker-input",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-inkjet-marker--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-lift-conveyor",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-lift-conveyor",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-lift-conveyor",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:lift-conveyor-input",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-lift-conveyor--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-mailing-bag-sealer",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-mailing-bag-sealer",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-mailing-bag-sealer",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:mailing-bag-sealer-output",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-mailing-bag-sealer--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-offset-printer",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-offset-printer",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-offset-printer",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:offset-printer-input",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-offset-printer--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-pad-print-press",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-pad-print-press",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-pad-print-press",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:pad-print-press-input",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-pad-print-press--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-paper-bowl-former",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-paper-bowl-former",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-paper-bowl-former",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:paper-bowl-former-output",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-paper-bowl-former--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-paper-cup-former",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-paper-cup-former",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-paper-cup-former",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:paper-cup-former-output",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-paper-cup-former--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-paper-drilling-machine",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-paper-drilling-machine",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-paper-drilling-machine",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:paper-drilling-machine-output",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-paper-drilling-machine--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-paper-jogger",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-paper-jogger",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-paper-jogger",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:paper-jogger-input",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-paper-jogger--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-paper-perforator",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-paper-perforator",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-paper-perforator",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:paper-perforator-output",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-paper-perforator--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-paper-plate-former",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-paper-plate-former",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-paper-plate-former",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:paper-plate-former-output",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-paper-plate-former--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-paper-waste-baler",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-paper-waste-baler",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-paper-waste-baler",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:paper-waste-baler-output",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-paper-waste-baler--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-partition-slotter",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-partition-slotter",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-partition-slotter",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:partition-slotter-output",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-partition-slotter--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-pile-lift",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-pile-lift",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-pile-lift",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:pile-lift-input",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-pile-lift--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-pile-turner",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-pile-turner",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-pile-turner",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:pile-turner-input",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-pile-turner--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-platen-die-cutter",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-platen-die-cutter",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-platen-die-cutter",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:platen-die-cutter-output",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-platen-die-cutter--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-rigid-box-wrapper",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-rigid-box-wrapper",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-rigid-box-wrapper",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:rigid-box-wrapper-output",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-rigid-box-wrapper--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-rotary-die-cutter",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-rotary-die-cutter",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-rotary-die-cutter",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:rotary-die-cutter-output",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-rotary-die-cutter--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-rotary-scorer",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-rotary-scorer",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-rotary-scorer",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:rotary-scorer-input",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-rotary-scorer--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-saddle-stitcher",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-saddle-stitcher",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-saddle-stitcher",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:saddle-stitcher-output",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-saddle-stitcher--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-scara-robot",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-scara-robot",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-scara-robot",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:scara-robot-input",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-scara-robot--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-screen-print-press",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-screen-print-press",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-screen-print-press",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:screen-print-press-input",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-screen-print-press--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-shrink-wrapper",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-shrink-wrapper",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-shrink-wrapper",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:shrink-wrapper-input",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-shrink-wrapper--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-six-axis-robot",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-six-axis-robot",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-six-axis-robot",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:six-axis-robot-input",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-six-axis-robot--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-sleeve-former",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-sleeve-former",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-sleeve-former",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:sleeve-former-output",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-sleeve-former--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-slitter-rewinder",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-slitter-rewinder",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-slitter-rewinder",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 2,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:slitter-rewinder-output",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-slitter-rewinder--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-spine-gluer",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-spine-gluer",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-spine-gluer",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:spine-gluer-output",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-spine-gluer--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-spot-uv-printer",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-spot-uv-printer",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-spot-uv-printer",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:spot-uv-printer-input",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-spot-uv-printer--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-suction-separator",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-suction-separator",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-suction-separator",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:suction-separator-input",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-suction-separator--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-three-knife-trimmer",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-three-knife-trimmer",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-three-knife-trimmer",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:three-knife-trimmer-output",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-three-knife-trimmer--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-tray-former",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-tray-former",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-tray-former",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:tray-former-output",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-tray-former--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-window-patcher",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-window-patcher",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-window-patcher",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:window-patcher-output",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-window-patcher--normal",
+        "revision": "r1"
+      }
+    },
+    {
+      "acceptance_stage": "unloaded_and_released",
+      "allow_partial": true,
+      "destination": "演示工厂:PF-BRANCH-OUT-wire-o-binder",
+      "due_at_ms": 28800000,
+      "id": "纸包装演示生产:seed:PF-BRANCH-ORDER-wire-o-binder",
+      "priority": 0,
+      "product_ref": {
+        "id": "演示工厂:PF-BRANCH-PRODUCT-wire-o-binder",
+        "revision": "r1"
+      },
+      "quantity": {
+        "unit": "piece",
+        "value": {
+          "coefficient": 1,
+          "decimal_places": 0
+        }
+      },
+      "release_at_ms": 0,
+      "item_type_ref": {
+        "id": "演示工厂:wire-o-binder-output",
+        "revision": "r1"
+      },
+      "routing_ref": {
+        "id": "演示工厂:route-wire-o-binder--normal",
+        "revision": "r1"
+      }
+    }
+  ],
+  "current_validation": {
+    "kind": "static_input_alignment",
+    "new_full_factory_execution_run": false,
+    "b_review": "pending"
+  }
+}
