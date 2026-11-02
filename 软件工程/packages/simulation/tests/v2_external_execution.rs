@@ -1206,6 +1206,7 @@ fn external_flow_reserves_destination_before_dispatch_and_releases_on_cancel() {
     }
     let first=prepare_phase(&mut e,&jobs[0],"L1-D01","unload",3,20).unwrap();publish(&mut e,&first,20);
     assert_eq!(prepare_phase(&mut e,&jobs[1],"L1-D02","unload",3,21).unwrap_err().code,"external.output_capacity");
+    assert!(e.external_output_capacity_waits().any(|(job, location)| job == &jobs[1] && location.as_str() == "L1-SINK"));
     e.apply_external_receipt(receipt(&first,3,wire::DeviceReceiptKind::CancelledNotStarted {}),uint(22)).unwrap();
     let next=prepare_phase(&mut e,&jobs[1],"L1-D02","unload",3,23).unwrap();publish(&mut e,&next,23);
     e.apply_external_receipt(started(&next),uint(24)).unwrap();e.apply_external_receipt(completed(&next),uint(25)).unwrap();

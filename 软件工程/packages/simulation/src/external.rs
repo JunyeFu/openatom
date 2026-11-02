@@ -1277,6 +1277,22 @@ impl Engine {
             transport: actual.transport,
         })
     }
+    /// Current receiving-capacity blockers for jobs already admitted before stopping.
+    pub fn external_output_capacity_waits(&self) -> impl Iterator<Item = (&ObjectId, &ObjectId)> {
+        self.open_waits.iter().filter_map(|(index, wait)| {
+            let job = &self.jobs[*index];
+            if job.state.started_at_ms.is_none() || !matches!(job.state.state, JobStatus::WaitingOutput) {
+                return None;
+            }
+            wait.reasons.iter().find_map(|reason| {
+                let blocker = reason.blocking_object.as_ref()?;
+                (matches!(reason.kind, WaitReasonKind::OutputCapacity)
+                    && matches!(blocker.kind, ObjectKind::Location))
+                    .then_some((&job.spec.id, &blocker.id))
+            })
+        })
+    }
+
     pub fn external_cutoff_observation(&self) -> Option<&ExternalObservation> {
         self.external.as_ref()?.cutoff.as_deref()
     }

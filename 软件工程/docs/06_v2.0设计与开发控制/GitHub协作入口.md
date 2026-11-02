@@ -1,3 +1,5 @@
+> **FV1 阻塞修复已启动（2026-11-02）** 以合并提交 `332bc2c0` 为基点。A 正在处理[停止与在途排空 #6](https://github.com/JunyeFu/openatom/issues/6)，B 已获派[长历史归档 #7](https://github.com/JunyeFu/openatom/issues/7)，[设备通信 #8](https://github.com/JunyeFu/openatom/issues/8)排在归档后。C 在候选可用后复验实际提示。下方 FV0 内容为阶段接收记录。
+
 > **当前状态** FV0 已收口，A 已接收 B 的诊断及 C 经授权的 UIA 复测，冻结以下验收目标。FV1—FV4 待启动。 详见《FV0冻结基点与输入》第10节。以下保留各次交接记录。
 
 > 阶段任务 #1、#2、#3 已完成。
