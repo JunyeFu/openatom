@@ -13,10 +13,22 @@ fn archive_open(host:&mut ProjectHost,ui:&ObjectId,path:&Path) {
     archive_ok(invoke(host,ui,"archive-adopt","apply_commands",json!({"base_revision":null,"commands":[{"kind":"adopt_imported_draft","data":{"task_id":task["id"],"choices":{"chosen_policy":"open_project","objects_to_create":[],"module_versions":[],"reused_bindings":{"item_types":{},"resources":{},"targets":{},"ports":{}},"selected_assets":[],"accept_missing_as_draft":false,"departure":"discard_after_tasks_terminal"}}}]}),true));
 }
 fn archive_r4()->(ProjectHost,ObjectId,ExecutionPreparationJob,ExecutionGatewayLease,PathBuf) {
+    archive_r4_sink(false)
+}
+fn archive_r4_sink(full: bool)->(ProjectHost,ObjectId,ExecutionPreparationJob,ExecutionGatewayLease,PathBuf) {
     let ui=id("archive-original-ui");let mut host=ProjectHost::new(id("archive-original-host"),ui.clone());
     let source=PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../resources/v2-demo/geometry-v4/project");archive_open(&mut host,&ui,&source);
     assert_eq!(host.project.as_ref().unwrap().revision.0.value(),4);assert_eq!(host.runs.len(),3);
     let project=host.project.as_ref().unwrap().id.clone();
+    if full {
+        let sink = host.project.as_mut().unwrap().locations.iter_mut().find(|x| x.id.as_str()=="L1-SINK").unwrap();
+        sink.capacity = Some(serde_json::from_value(json!({"unit":"piece","value":{"coefficient":1,"decimal_places":0}})).unwrap());
+        let scenario = host.scenarios.values_mut().find(|s| s.id.as_str() == "Task8-six-units").unwrap();
+        let mut blocker = scenario.initial_conditions.items[0].clone();
+        blocker.id = id("occupied-sink");
+        blocker.holder = HolderRef::Location(id("L1-SINK"));
+        scenario.initial_conditions.items.push(blocker);
+    }
     let candidates=serde_json::from_slice(&fs::read(source.parent().unwrap().join("candidate-bindings.json")).unwrap()).unwrap();
     host.install_cloud_read_connection(&ui,CloudReadConnection::local_loopback(id("archive-private-connection"),project.clone(),"archive-cloud-project".to_owned().try_into().unwrap(),"http://127.0.0.1:9".into(),"archive-never-export-reader-secret".into(),candidates).unwrap()).unwrap();
     let (sender,receiver)=mpsc::channel();host.install_execution_preparation_runtime(&ui,project,ExecutionPreparationRuntime::new(sender,id("archive-private-connection"))).unwrap();
@@ -132,4 +144,106 @@ fn execution_archive_project_export_keeps_closed_source_and_module_export_exclud
         else {assert!(!reopened.manifest.documents.iter().any(|entry|matches!(entry.file_ref.kind,DocumentKind::ExecutionArchive)));assert!(!reopened.files.keys().any(|path|path.contains("/execution-")));}
     }
     fs::write(evidence.join("export-result.json"),serde_json::to_vec_pretty(&json!({"status":"actual_project_and_module_export_scope_passed","project_export_contains_readonly_source":true,"module_export_has_no_execution_data":true,"native_cloud_or_physical_execution":false})).unwrap()).unwrap();
+}
+
+
+#[test]
+fn fv1_stop_with_an_admitted_job_saves_its_actual_terminal_or_capacity_wait() {
+    for full in [false, true] {
+        let (mut host, ui, _job, gateway, evidence) = archive_r4_sink(full);
+        let now = std::time::Instant::now;
+        let identity = &gateway.identity;
+        host.execution_gateway_tick(&gateway, now()).unwrap();
+        let snap = host.execution_gateway_snapshot(&gateway).unwrap();
+        let d = snap
+            .devices
+            .iter()
+            .find(|d| d.binding.device_id.as_str() == "L1-D01")
+            .unwrap();
+        let stamp = || "2026-11-02T10:00:00Z".to_owned().try_into().unwrap();
+        let dataset = &host.executions[&identity.session_id].core.dataset_id;
+        let obs = serde_json::from_value(json!({"contract_version":EXECUTION_CONTRACT_VERSION,"session_id":identity.session_id,
+            "execution_epoch_id":identity.execution_epoch_id,"device_id":d.binding.device_id,"device_boot_id":d.registered_device_boot_id,
+            "device_sequence":1,"device_timestamp":"fixture-clock","accept_new_work":true,"device_state":"idle","active_command_id":null,
+            "dataset_id":dataset,"source_purpose":"execution","observation_probe_id":d.pending_observation_probe.as_ref().unwrap().probe_id})).unwrap();
+        host.execution_gateway_observation(&gateway, id("fv1-ready"), stamp(), obs, now())
+            .unwrap();
+        let cmd = host
+            .execution_gateway_cloud_work(&gateway)
+            .unwrap()
+            .items
+            .into_iter()
+            .find_map(|work| match work {
+                crate::CloudWorkItem::PublishCommand { command, .. } => Some(command),
+                _ => None,
+            })
+            .unwrap();
+        let receipt = |seq: u64, kind: Value| {
+            serde_json::from_value(json!({"session_id":identity.session_id,
+            "execution_epoch_id":identity.execution_epoch_id,"command_id":cmd.attempt.command_id,"device_id":cmd.device_id,
+            "phase_id":cmd.attempt.phase_id,"phase_token":cmd.attempt.phase_token,"device_boot_id":cmd.target_device_boot_id,
+            "device_sequence":seq,"device_timestamp":"fixture-clock","receipt":kind})).unwrap()
+        };
+        host.execution_gateway_receipt(
+            &gateway,
+            id("fv1-started"),
+            stamp(),
+            receipt(2, json!({"kind":"started"})),
+            now(),
+        )
+        .unwrap();
+        let revision = host.executions[&identity.session_id].core.revision;
+        archive_ok(invoke(
+            &mut host,
+            &ui,
+            "fv1-stop",
+            "control_execution_session",
+            json!({"execution_contract_version":EXECUTION_CONTRACT_VERSION,
+            "identity":identity,"expected_execution_revision":revision,"action":{"kind":"stop_dispatch"}}),
+            false,
+        ));
+        host.execution_gateway_receipt(
+            &gateway,
+            id("fv1-done"),
+            stamp(),
+            receipt(
+                3,
+                json!({"kind":"completed","device_reported_duration_ms":1}),
+            ),
+            now(),
+        )
+        .unwrap();
+        let snap = host.execution_gateway_snapshot(&gateway).unwrap();
+        assert_eq!(snap.attempts.len(), 1);
+        assert!(!snap.lifecycle.new_dispatch_allowed);
+        if full {
+            assert!(matches!(
+                snap.lifecycle.state,
+                ExecutionSnapshotLifecycleState::Draining
+            ));
+            assert!(
+                snap.lifecycle
+                    .reason
+                    .as_ref()
+                    .unwrap()
+                    .as_str()
+                    .contains("L1-SINK")
+            );
+            assert_eq!(snap.business_facts.pending_output_refs.len(), 1);
+        } else {
+            assert!(matches!(
+                snap.lifecycle.state,
+                ExecutionSnapshotLifecycleState::Stopped
+            ));
+            assert_eq!(snap.business_facts.acceptance_events.len(), 1);
+        }
+        let saved = evidence.join("project");
+        let (task, work) = archive_queue_save(&mut host, &ui, &saved);
+        host.finish_io(work.run());
+        assert_eq!(
+            task_state(&mut host, &ui, &task)["task"]["state"],
+            "completed"
+        );
+        println!("FV1_SAVED full={full} {}", saved.display());
+    }
 }

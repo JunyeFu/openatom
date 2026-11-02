@@ -173,7 +173,34 @@ pub fn run() {
             if capture_smoke {
                 project_api::native_capture_probe::record(app.handle(),"window-build.requested",serde_json::json!({}))?;
             }
+            // Verification windows must be born on the selected display, even with mixed DPI.
+            let verify_monitor = if std::env::args().any(|arg| arg == "--verify-on-secondary") {
+                let primary = app.primary_monitor()?.ok_or_else(|| std::io::Error::other("No primary display"))?;
+                let target = app.available_monitors()?.into_iter()
+                    .find(|monitor| monitor.position() != primary.position())
+                    .ok_or_else(|| std::io::Error::other("Enable an extended secondary display before verification"))?;
+                let area = target.work_area();
+                let scale = target.scale_factor();
+                window_builder = window_builder.visible(false).maximized(false)
+                    .position((f64::from(area.position.x) + 48.0) / scale,
+                              (f64::from(area.position.y) + 48.0) / scale)
+                    .inner_size((f64::from(area.size.width) - 96.0) / scale,
+                                (f64::from(area.size.height) - 128.0) / scale);
+                Some(target)
+            } else {
+                None
+            };
             let main_window = window_builder.build()?;
+            if let Some(target) = verify_monitor {
+                let actual = main_window.current_monitor()?;
+                if main_window.is_visible()? || actual.as_ref().map(|m| m.position()) != Some(target.position()) {
+                    return Err(std::io::Error::other("Could not create the hidden window on the secondary display").into());
+                }
+                let origin = main_window.outer_position()?;
+                main_window.show()?;
+                println!("{}", serde_json::json!({"event":"verification_first_show",
+                    "monitor":target.name(), "created_hidden":true, "origin":[origin.x,origin.y]}));
+            }
             if capture_smoke {
                 project_api::native_capture_probe::window_built(&main_window).map_err(std::io::Error::other)?;
             }
