@@ -1512,7 +1512,7 @@ impl ProjectHost {
                     .documents
                     .iter()
                     .find(|e| exact_data(&e.file_ref, reference))?;
-                archive.files.get(reference.path.as_str()).cloned()
+                archive.files.read(reference.path.as_str()).map(|bytes| bytes.into_owned())
             })
     }
 

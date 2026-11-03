@@ -213,7 +213,7 @@ impl ProjectHost {
                 })?;
                 Some((
                     entry.file_ref.clone(),
-                    archive.files.get(path.as_str())?.clone(),
+                    archive.files.read(path.as_str())?.into_owned(),
                 ))
             })
     }

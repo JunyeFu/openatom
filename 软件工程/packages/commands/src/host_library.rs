@@ -608,7 +608,7 @@ impl ProjectHost {
         let mut files = self
             .backing
             .as_ref()
-            .map(|archive| archive.files.as_ref().clone())
+            .map(|archive| Arc::unwrap_or_clone(archive.files.materialize()))
             .unwrap_or_default();
         for addition in &self.additions {
             files.insert(

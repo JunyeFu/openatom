@@ -31,8 +31,109 @@ pub struct ProjectArchive {
     pub manifest: PackageManifest,
     /// Exact included file bytes, keyed by package-relative paths; excludes project.json.
     /// Validation and save candidates share them; explicit edits use Arc::make_mut.
-    pub files: Arc<BTreeMap<String, Vec<u8>>>,
+    pub files: Arc<ProjectFiles>,
     pub(crate) execution_sources: crate::execution_archive::ArchivedExecutions,
+}
+
+/// Preserve the original bytes of an open directory package without keeping every
+/// unused catalogue model expanded. Public byte reads remain immutable.
+#[derive(Clone, Default)]
+pub struct ProjectFiles {
+    raw: Arc<BTreeMap<String, Vec<u8>>>,
+    packed: BTreeMap<String, Arc<ColdProjectFile>>,
+}
+struct ColdProjectFile {
+    deflated: Vec<u8>,
+    length: usize,
+    decoded: std::sync::OnceLock<Vec<u8>>,
+}
+impl std::fmt::Debug for ProjectFiles {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("ProjectFiles").field("count", &self.len()).field("packed", &self.packed.len()).finish()
+    }
+}
+impl ColdProjectFile {
+    fn decode(&self) -> Vec<u8> {
+        let mut bytes = Vec::with_capacity(self.length);
+        flate2::read::DeflateDecoder::new(self.deflated.as_slice()).read_to_end(&mut bytes)
+            .expect("immutable in-memory project stream");
+        bytes
+    }
+}
+impl ProjectFiles {
+    fn compact_models(&mut self) {
+        let raw = Arc::make_mut(&mut self.raw);
+        let candidates: Vec<_> = raw.iter().filter(|(path, bytes)| bytes.len() >= 64 * 1024
+            && path.starts_with("bundled/") && (path.ends_with(".glb") || path.ends_with("/original-module.json")))
+            .map(|(path, _)| path.clone()).collect();
+        for path in candidates {
+            let bytes = &raw[&path];
+            let mut encoder = flate2::write::DeflateEncoder::new(Vec::new(), flate2::Compression::fast());
+            encoder.write_all(bytes).expect("in-memory project compression");
+            let packed = encoder.finish().expect("complete in-memory project stream");
+            if packed.len() < bytes.len() {
+                self.packed.insert(path.clone(), Arc::new(ColdProjectFile {
+                    deflated: packed, length: bytes.len(), decoded: Default::default(),
+                }));
+                raw.remove(&path);
+            }
+        }
+    }
+    pub fn get(&self, path: &str) -> Option<&Vec<u8>> {
+        self.raw.get(path).or_else(|| self.packed.get(path).map(|file| file.decoded.get_or_init(|| file.decode())))
+    }
+    pub fn contains_key(&self, path: &str) -> bool { self.raw.contains_key(path) || self.packed.contains_key(path) }
+    pub fn len(&self) -> usize { self.raw.len() + self.packed.len() }
+    pub fn is_empty(&self) -> bool { self.len() == 0 }
+    pub fn keys(&self) -> impl Iterator<Item=&String> {
+        let mut raw = self.raw.keys().peekable();
+        let mut packed = self.packed.keys().peekable();
+        std::iter::from_fn(move || match (raw.peek(), packed.peek()) {
+            (Some(a), Some(b)) if a > b => packed.next(),
+            (Some(_), _) => raw.next(),
+            _ => packed.next(),
+        })
+    }
+    pub fn values(&self) -> impl Iterator<Item=&Vec<u8>> { self.iter().map(|(_,v)| v) }
+    pub fn remove(&mut self, path: &str) -> Option<Vec<u8>> {
+        Arc::make_mut(&mut self.raw).remove(path).or_else(|| self.packed.remove(path).map(|file| file.decode()))
+    }
+    pub fn get_mut(&mut self, path: &str) -> Option<&mut Vec<u8>> {
+        let raw = Arc::make_mut(&mut self.raw);
+        if let Some(file) = self.packed.remove(path) { raw.insert(path.to_owned(), file.decode()); }
+        raw.get_mut(path)
+    }
+    pub(super) fn read(&self, path: &str) -> Option<std::borrow::Cow<'_, [u8]>> {
+        self.raw.get(path).map(|bytes| std::borrow::Cow::Borrowed(bytes.as_slice())).or_else(|| {
+            let file = self.packed.get(path)?;
+            Some(match file.decoded.get() {
+                Some(bytes) => std::borrow::Cow::Borrowed(bytes.as_slice()),
+                None => std::borrow::Cow::Owned(file.decode()),
+            })
+        })
+    }
+    pub fn iter(&self) -> impl Iterator<Item=(&String, &Vec<u8>)> {
+        self.keys().map(|k| (k, self.get(k).expect("existing project file")))
+    }
+    pub fn insert(&mut self, path: String, bytes: Vec<u8>) -> Option<Vec<u8>> {
+        let prior = self.packed.remove(&path);
+        Arc::make_mut(&mut self.raw).insert(path, bytes).or_else(|| prior.map(|f| f.decode()))
+    }
+    pub(super) fn materialize(&self) -> Arc<BTreeMap<String, Vec<u8>>> {
+        if self.packed.is_empty() { return self.raw.clone(); }
+        let mut files = self.raw.as_ref().clone();
+        files.extend(self.packed.iter().map(|(p,f)| (p.clone(), f.decode())));
+        Arc::new(files)
+    }
+}
+impl PartialEq for ProjectFiles {
+    fn eq(&self, other: &Self) -> bool {
+        self.len() == other.len() && self.keys().all(|path| self.read(path) == other.read(path))
+    }
+}
+impl std::ops::Index<&str> for ProjectFiles {
+    type Output = Vec<u8>;
+    fn index(&self, path: &str) -> &Self::Output { self.get(path).expect("declared archive file") }
 }
 
 /// Host-owned immutable files produced from an actual frozen execution or
@@ -817,7 +918,10 @@ pub fn read_project_archive(directory: &Path) -> Result<ProjectArchive, ApiError
 }
 
 fn read_root(directory: &Directory, root_name: &str) -> Result<ProjectArchive, ApiError> {
-    read_root_with_documents(directory, root_name).map(|(archive, _)| archive)
+    let (mut archive, decoded) = read_root_with_documents(directory, root_name)?;
+    drop(decoded);
+    Arc::make_mut(&mut archive.files).compact_models();
+    Ok(archive)
 }
 
 fn read_root_with_documents(
@@ -899,7 +1003,7 @@ fn validate_archive_reusing_documents(
             Some(bytes) => {
                 let reused = reusable.as_mut().and_then(|(archive, parsed)| {
                     let prior = *prior_entries.get(path)?;
-                    if same(prior, entry) && archive.files.get(path) == Some(bytes) {
+                    if same(prior, entry) && archive.files.read(path).as_deref() == Some(bytes.as_slice()) {
                         parsed.remove(path)
                     } else {
                         None
@@ -1035,7 +1139,7 @@ fn validate_archive_reusing_documents(
         scenarios,
         professional,
         manifest,
-        files,
+        files: Arc::new(ProjectFiles { raw: files, packed: BTreeMap::new() }),
         execution_sources: BTreeMap::new(),
     };
     let execution_documents = documents.iter().filter_map(|(path, document)| match document {
@@ -1519,8 +1623,8 @@ fn retained_paths(
     let mut parsed = BTreeMap::new();
     for entry in &source.manifest.documents {
         let path = entry.file_ref.path.as_str();
-        if let Some(bytes) = source.files.get(path) {
-            parsed.insert(path.to_owned(), parse_document(entry, bytes)?);
+        if let Some(bytes) = source.files.read(path) {
+            parsed.insert(path.to_owned(), parse_document(entry, &bytes)?);
         }
     }
     retained_paths_from_documents(draft, source, &parsed)
@@ -1653,7 +1757,7 @@ pub(crate) fn snapshot_project_archive(
                 "backing archive belongs to another project",
             ));
         }
-        validate_archive(source.manifest.clone(), source.files.clone())?;
+        validate_archive(source.manifest.clone(), source.files.materialize())?;
     }
     let mut generation = backing.map_or(0, |archive| archive.manifest.generation.value());
     loop {
@@ -1758,7 +1862,7 @@ pub(crate) fn write_evaluation_directory(
             "one report directory name required",
         ));
     }
-    validate_archive(project.manifest.clone(), project.files.clone())?;
+    validate_archive(project.manifest.clone(), project.files.materialize())?;
     let project_root = encode(&project.manifest);
     let entries = std::iter::once(("project/project.json".to_owned(), &project_root))
         .chain(
@@ -1888,7 +1992,7 @@ pub(crate) fn write_project_archive_with_additions(
             let reusable = old_with_documents.as_mut()
                 .map(|(archive, parsed)| (&*archive, parsed));
             let (_validated, parsed) = validate_archive_reusing_documents(
-                source.manifest.clone(), source.files.clone(), reusable,
+                source.manifest.clone(), source.files.materialize(), reusable,
             )?;
             let retained = retained_paths_from_documents(draft, source, &parsed)?;
             parsed_backing = Some(parsed);
@@ -2230,6 +2334,24 @@ mod tests {
         })).unwrap());
         assert_eq!(read["outcome"]["status"], "ok", "{read:#}");
         serde_json::from_value(read["outcome"]["data"]["data"].clone()).unwrap()
+    }
+
+    #[test]
+    fn cold_models_preserve_original_bytes_sorted_paths_and_copy_on_write() {
+        let bytes: Vec<u8> = (0u8..=255).cycle().take(256 * 1024).collect();
+        let path = "bundled/device.glb";
+        let raw = BTreeMap::from([(path.to_owned(), bytes.clone()), ("a/data".into(), vec![1]), ("z/data".into(), vec![2])]);
+        let mut files = ProjectFiles { raw: Arc::new(raw.clone()), packed: Default::default() };
+        files.compact_models();
+        assert_eq!(files.keys().collect::<Vec<_>>(), raw.keys().collect::<Vec<_>>());
+        assert!(files.packed.contains_key(path));
+        assert_eq!(files.read(path).unwrap().as_ref(), bytes.as_slice());
+        assert_eq!(*files.materialize(), raw);
+        assert!(files.packed[path].decoded.get().is_none());
+        let mut edited = files.clone();
+        edited.get_mut(path).unwrap()[0] = 42;
+        assert_eq!(files[path], bytes);
+        assert_eq!(edited[path][0], 42);
     }
 
     #[test]
@@ -4151,7 +4273,7 @@ pub(crate) fn prepare_handoff_archive(
                 "Backing archive belongs to a different project",
             ));
         }
-        validate_archive(source.manifest.clone(), source.files.clone()).map_err(|mut error| {
+        validate_archive(source.manifest.clone(), source.files.materialize()).map_err(|mut error| {
             error.message = format!("Invalid backing archive: {}", error.message);
             error
         })?;
@@ -4493,7 +4615,7 @@ pub(crate) fn prepare_handoff_archive(
         .assets
         .retain(|r| asset_ids.contains(r.asset_ref.as_str()));
     manifest.restart_policy = RestartPolicy::RestartFromInitialInput;
-    let mut files: BTreeMap<_, _> = Arc::unwrap_or_clone(full.files)
+    let mut files: BTreeMap<_, _> = Arc::unwrap_or_clone(full.files.materialize())
         .into_iter()
         .filter(|(p, _)| keep.contains(p))
         .collect();
@@ -4607,7 +4729,7 @@ pub(crate) fn write_package_directory(
     archive: &ProjectArchive,
     cancelled: &AtomicBool,
 ) -> Result<(), ApiError> {
-    validate_archive(archive.manifest.clone(), archive.files.clone())?;
+    validate_archive(archive.manifest.clone(), archive.files.materialize())?;
     check_cancelled(cancelled)?;
     let directory = Directory::open(destination)?;
     let old = match directory.read("project.json") {
@@ -4733,7 +4855,7 @@ pub(crate) fn write_project_zip(
     archive: &ProjectArchive,
     cancelled: &AtomicBool,
 ) -> Result<(), ApiError> {
-    validate_archive(archive.manifest.clone(), archive.files.clone())?;
+    validate_archive(archive.manifest.clone(), archive.files.materialize())?;
     check_cancelled(cancelled)?;
     let parent = destination
         .parent()
@@ -4873,12 +4995,8 @@ fn assemble_archive_with_retained(
 ) -> Result<ProjectArchive, ApiError> {
     let project = &draft.project;
     let active_path = format!("data/g{generation:06}/project-state.json");
-    let mut files = backing.map_or_else(BTreeMap::new, |a| {
-        a.files
-            .iter()
-            .filter(|(path, _)| retained.contains(*path))
-            .map(|(path, bytes)| (path.clone(), bytes.clone()))
-            .collect()
+    let mut files = backing.map_or_else(BTreeMap::new, |archive| {
+        retained.iter().filter_map(|path| archive.files.read(path).map(|bytes| (path.clone(), bytes.into_owned()))).collect()
     });
     let mut manifest = backing.map_or_else(
         || PackageManifest {
