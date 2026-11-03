@@ -179,6 +179,8 @@ export function FactoryScene({ project: inputProject, canvas, hallId, selection,
           asset_loading: {
             pending_devices: pendingMedia,
             devices: mediaSlots.map(slot => ({ id: slot.device.id, lod: slot.lod, loaded: !!slot.instance, visible: slot.group.visible, title: slot.annotation.title,
+              model_visible: !!slot.instance?.root.visible && slot.group.visible, model_source: slot.instance?.source.kind ?? null,
+              model_run_id: slot.instance?.source.kind === 'run_module_version' ? slot.instance.source.data.run_id : null,
               phase: slot.instance?.root.userData.mqSource?.phase ?? null, progress: slot.instance?.root.userData.mqSource?.progress ?? null,
               effective_ms: slot.instance?.root.userData.mqSource?.effective_ms ?? null, duration_ms: slot.instance?.root.userData.mqSource?.duration_ms ?? null })),
             items: (() => { const state = itemLayer?.renderState(pendingMedia === 0); return state && { pending: state.pending, failures: state.failures, unavailable: state.unavailable }; })(),
