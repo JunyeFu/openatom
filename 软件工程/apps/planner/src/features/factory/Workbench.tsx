@@ -229,26 +229,39 @@ export function Workbench() {
   const factoryReader = useMemo(() => createFactoryPresentation(() => factoryCurrent.current), []);
   const [factorySource, setFactorySource] = useState<FactoryPresentationSource | null>(null);
   const factorySourceContext = useRef<FactoryPresentationContext | null>(null);
+  const previousFrames = useRef<{draft: FactoryPresentationSource | null; run: FactoryPresentationSource | null}>({draft:null,run:null});
+  const frameKind = source === 'run' ? 'run' : 'draft';
+  const reusableFrame = frameKind === 'draft' || !!run && ['completed','cancelled','failed'].includes(run.computation_status);
+  const previous = previousFrames.current[frameKind];
+  const cachedFrame = reusableFrame && previous?.key === factoryKey && previous?.project === displayedProject
+    && previous.run === (frameKind === 'run' ? run : null) ? previous : null;
   const sameFactoryContext = factoryCurrent.current && factorySourceContext.current
     && factorySource?.run?.id === (source === 'run' ? run?.id : undefined)
     && factoryContextKey({ ...factorySourceContext.current, view: factoryCurrent.current.view }) === factoryKey;
   // Keep this Run's real frame while the next is read; changing session, scope,
   // revision or Run still clears it. A seek must not rebuild the physical scene.
-  const visibleFactorySource = factorySource?.key === factoryKey || sameFactoryContext ? factorySource : null;
+  const visibleFactorySource = factorySource?.key === factoryKey && factorySource?.project === displayedProject || sameFactoryContext ? factorySource : cachedFrame;
   const factoryViewPending = !!visibleFactorySource && visibleFactorySource.key !== factoryKey;
   useEffect(() => {
     const captured = factoryCurrent.current;
-    if (!captured) { factorySourceContext.current = null; setFactorySource(null); return; }
+    if (!captured) { previousFrames.current = {draft:null,run:null}; factorySourceContext.current = null; setFactorySource(null); return; }
     // A seek publishes the actual observation and its presentation together.
-    if (factorySource?.key === factoryKey) return;
+    if (factorySource?.key === factoryKey && factorySource.project === captured.project) {
+      if (reusableFrame) previousFrames.current[frameKind] = factorySource;
+      return;
+    }
+    if (cachedFrame) { factorySourceContext.current = captured; setFactorySource(cachedFrame); return; }
     let live = true;
     factoryReader.read(captured).then(value => {
-      if (live && factoryCurrent.current && value.key === factoryContextKey(factoryCurrent.current)) { factorySourceContext.current = captured; setFactorySource(value); }
+      if (live && factoryCurrent.current?.project === captured.project && value.key === factoryContextKey(factoryCurrent.current)) {
+        if (reusableFrame) previousFrames.current[frameKind] = value;
+        factorySourceContext.current = captured; setFactorySource(value);
+      }
     }, error => {
       if (live && factoryCurrent.current && factoryContextKey(factoryCurrent.current) === factoryContextKey(captured)) setFailure(error instanceof Error ? error : new Error(String(error)));
     });
     return () => { live = false; };
-  }, [factoryReader, factoryKey]);
+  }, [factoryReader, factoryKey, displayedProject]);
 
   async function refresh(resetResults = false) {
     const epoch = ++refreshEpoch.current;
@@ -265,6 +278,7 @@ export function Workbench() {
       if (!nodeDirtyRef.current) setDeviceProcess(null);
     }
     const reset = resetResults || changedProject || (run !== null && !next.context.run_summaries?.some(summary => summary.run_id === run.id));
+    if (reset || project?.revision !== next.project?.revision || snapshot?.context.host.session_id !== next.context.host.session_id) previousFrames.current = {draft:null,run:null};
     if (reset) {
         observation.current++; comparisonEpoch.current++; pendingRun.current = null; primaryRun.current = null; setComparison(null); setSelection(null); setTimelineSelection(null); setRun(null); setRunProject(null); setRunInputs(null); setObservationPage(null); setAtMs(null); setSource('draft'); setHallId(null);
     } else if (comparison && !next.context.run_summaries?.some(summary => summary.run_id === comparison.run.id)) {

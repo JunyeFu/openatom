@@ -1047,6 +1047,12 @@ fn validate_project_files_with_sources(
         if let Some((prior, frozen)) = files.parsed.get(path) {
             if same(prior, entry) { documents.insert(path.to_owned(), frozen.document()); continue; }
         }
+        // Binary entries validate their manifest role and presence; their contents
+        // are compared at frozen bindings and during persistence.
+        if matches!(entry.file_ref.kind, DocumentKind::Asset) && files.contains_key(path) {
+            documents.insert(path.to_owned(), parse_document(entry, &[])?);
+            continue;
+        }
         if let Some(cold) = files.packed.get(path) {
             let reused = reusable.as_mut().and_then(|(prior, parsed)| {
                 if prior.files.packed.get(path).is_some_and(|old| Arc::ptr_eq(old, cold))
