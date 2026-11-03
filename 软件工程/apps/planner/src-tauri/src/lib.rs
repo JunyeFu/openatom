@@ -78,6 +78,7 @@ pub fn run() {
             project_api::project_select_directory,
             project_api::project_select_file,
             project_api::project_read_media_asset,
+            project_api::project_read_full_run,
             project_api::project_read_execution_media_asset,
             project_api::project_read_stored_packaging,
             project_api::project_read_stored_manufacturing_file,

@@ -232,7 +232,7 @@ impl ProjectHost {
                 .iter()
                 .find(|file| file.entry.file_ref.path == asset.path)
                 .filter(|file| matches!(file.entry.file_ref.kind, DocumentKind::Asset))
-                .map(|file| file.bytes.clone())
+                .map(|file| file.bytes().into_owned())
         }
     }
     pub(super) fn draft_media_package(&self, id: &ModuleId) -> Result<ModulePackage, ApiError> {

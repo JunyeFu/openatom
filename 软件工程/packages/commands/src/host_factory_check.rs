@@ -2588,7 +2588,7 @@ impl ProjectHost {
                                         )
                                 })
                             })
-                            .map(|a| a.bytes.as_slice())
+                            .and_then(|a| a.profile_bytes())
                     })
             } else {
                 None

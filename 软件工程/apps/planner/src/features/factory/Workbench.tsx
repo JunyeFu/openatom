@@ -829,6 +829,14 @@ export function Workbench() {
 
   async function chooseRun(id: string, requestedTime?: number) {
     if (!project || !id) return;
+    // A finished Run and its frozen inputs do not change when returning from the draft.
+    if (run?.id === id && runInputs && primaryRun.current === id && projectIdentity.current === project.id
+      && ['completed', 'cancelled', 'failed'].includes(run.computation_status)
+      && atMs !== null && atMs === (requestedTime ?? run.computed_until_ms)) {
+      comparisonEpoch.current++;
+      switchSource('run');
+      return;
+    }
     const projectId = project.id, epoch = ++observation.current;
     comparisonEpoch.current++;
     pendingRun.current = id;
@@ -838,7 +846,7 @@ export function Workbench() {
     const frontier = view.data.computed_until_ms;
     if (frontier == null) throw new Error('该 Run 尚无已计算边界，不能显示实际状态。');
     const time = requestedTime ?? frontier;
-    const frozen = await host.readRunInputs(projectId, view.data, frontier);
+    const frozen = await host.readRunInputs(projectId, view.data, frontier, true);
     if (!ownsObservation(epoch, projectId, id)) return;
     const presentation = await readFactoryObservation(view.data, frozen, time, projectId, epoch);
     if (presentation === null) return;

@@ -142,7 +142,8 @@ export async function createFactoryMedia(device: DeviceInstance, input: FactoryD
   host.setAttribute('aria-hidden', 'true');
   let surface: Awaited<ReturnType<typeof createImageSurface>> | null = null;
   try {
-    surface = await createImageSurface(host, resolved, asset, clip, () => {}, () => {});
+    const textureEdge = lod === 'simplified' ? Math.ceil(512 * devicePixelRatio) : undefined;
+    surface = await createImageSurface(host, resolved, asset, clip, () => {}, () => {}, undefined, textureEdge);
     document.body.append(host);
     await surface.draw(point, clip);
     const canvas = host.querySelector('canvas')!;

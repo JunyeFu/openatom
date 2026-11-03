@@ -1689,13 +1689,18 @@ impl ProjectHost {
         ))
     }
 
-    fn get_run(
-        &self,
-        _: &HostCallContext,
-        scope: &ApiScope,
-        params: GetRunParams,
-    ) -> Result<RunView, ApiError> {
-        let run = self.runs.get(&params.run_id).ok_or_else(|| {
+    pub fn read_full_run_bytes(&self, ui: &ObjectId, project: ProjectId, id: &RunId) -> Result<Vec<u8>, ApiError> {
+        self.require_registered_ui(ui)?;
+        self.admit(&self.sessions[ui], &Some(project), &ApiScope::Project, &OperationName::GetRun)?;
+        let run = self.scoped_run(&ApiScope::Project, id)?;
+        let mut gzip = flate2::write::GzEncoder::new(Vec::new(), flate2::Compression::fast());
+        serde_json::to_writer(&mut gzip, &run.result)
+            .map_err(|e| error(ErrorCode::IoFailure, &e.to_string(), None))?;
+        gzip.finish().map_err(|e| error(ErrorCode::IoFailure, &e.to_string(), None))
+    }
+
+    fn scoped_run(&self, scope: &ApiScope, id: &RunId) -> Result<&HostRun, ApiError> {
+        let run = self.runs.get(id).ok_or_else(|| {
             error(
                 ErrorCode::MissingReference,
                 "Run does not exist in the active project",
@@ -1718,6 +1723,16 @@ impl ProjectHost {
                 None,
             ));
         }
+        Ok(run)
+    }
+
+    fn get_run(
+        &self,
+        _: &HostCallContext,
+        scope: &ApiScope,
+        params: GetRunParams,
+    ) -> Result<RunView, ApiError> {
+        let run = self.scoped_run(scope, &params.run_id)?;
         match params.query {
             RunQuery::Summary => Ok(RunView::Summary(run_summary(&run.result))),
             RunQuery::FullResult => Ok(RunView::Full(Box::new(run.result.clone()))),
@@ -8938,7 +8953,7 @@ mod tests {
                     .path
                     .as_str()
                     .ends_with("/original-module.json")
-                    && serde_json::from_slice::<Versioned<ModulePackage>>(&addition.bytes)
+                    && serde_json::from_slice::<Versioned<ModulePackage>>(&addition.bytes())
                         .is_ok_and(|original| exact_data(&original.data, &raw.data))
             }));
             assert!(exact_data(
@@ -8953,7 +8968,7 @@ mod tests {
                     .all(|rights| !rights.redistribution_confirmed)
             );
             for file in &raw.data.files {
-                assert!(registered.additions.iter().any(|addition| addition.bytes
+                assert!(registered.additions.iter().any(|addition| addition.bytes().as_ref()
                     == std::fs::read(directory.join(file.path.as_str())).unwrap()));
             }
             references.push(reference);
@@ -9065,7 +9080,7 @@ mod tests {
         assert!(matches!(failure.code, ErrorCode::InvalidInput));
         assert_eq!(host.bundled_modules.len(), 1);
         assert!(exact_data(
-            &host.bundled_modules[&module_key(&reference)].package,
+            &*host.bundled_modules[&module_key(&reference)].package,
             &exact
         ));
         assert!(exact_data(host.project.as_ref().unwrap(), &before.project));
@@ -9694,7 +9709,7 @@ mod tests {
                 assert!(
                     host.additions
                         .iter()
-                        .any(|actual| actual.bytes == file.bytes
+                        .any(|actual| actual.bytes.as_slice() == file.bytes().as_ref()
                             && exact_data(&actual.entry, &file.entry))
                 );
             }
@@ -10760,6 +10775,19 @@ mod tests {
         assert_eq!(result.acceptance_events.len(), 1);
         assert_eq!(result.acceptance_events[0].at_ms.0.value(), 75000);
         result
+    }
+
+    #[test]
+    fn binary_history_read_preserves_the_full_run_and_project_authority() {
+        let mut host = local_production_host();
+        let run = actual_local_run(&mut host);
+        let ui = host.sessions.values().find(|caller| matches!(caller.origin, CallerOrigin::InteractiveUi)).unwrap().session_id.clone();
+        let project = host.project.as_ref().unwrap().id.clone();
+        let bytes = host.read_full_run_bytes(&ui, project.clone(), &run.id).unwrap();
+        let decoded: RunResult = serde_json::from_reader(flate2::read::GzDecoder::new(bytes.as_slice())).unwrap();
+        assert!(exact_data(&run, &decoded));
+        assert!(host.read_full_run_bytes(&ObjectId::try_from("unregistered".to_owned()).unwrap(), project, &run.id).is_err());
+        assert!(host.read_full_run_bytes(&ui, ProjectId::try_from("another-project".to_owned()).unwrap(), &run.id).is_err());
     }
 
     #[test]

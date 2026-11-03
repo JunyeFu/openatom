@@ -1397,7 +1397,7 @@ impl ProjectHost {
             for package in self
                 .modules
                 .values()
-                .chain(self.bundled_modules.values().map(|b| &b.package))
+                .chain(self.bundled_modules.values().map(|b| &*b.package))
             {
                 let reference = ModuleRef {
                     id: package.definition.id.clone(),

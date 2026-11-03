@@ -138,11 +138,23 @@ export function FactoryScene({ project: inputProject, canvas, hallId, selection,
     if (expected.size === hiddenLabelKeys.size && [...expected].every(key => hiddenLabelKeys.has(key))) captureLayout.current?.(captureFrame);
   }, [capture, captureFrame, labels, hiddenLabelKeys]);
 
+  const viewportRenderer = useRef<THREE.WebGLRenderer | null>(null);
+  // A source change can invalidate dozens of device loads before their GLBs finish decoding.
+  const mediaWorkers = useRef(Array.from({length: 4}, () => Promise.resolve()));
+
+  useEffect(() => () => {
+    const renderer = viewportRenderer.current;
+    renderer?.dispose();
+    renderer?.forceContextLoss();
+    renderer?.domElement.remove();
+    viewportRenderer.current = null;
+  }, []);
+
   useEffect(() => {
     let { mediaSource, observation, regionActualPending, resourceSources } = frameInput.current;
     const node = host.current!;
     let renderer: THREE.WebGLRenderer;
-    try { renderer = new THREE.WebGLRenderer({ antialias: true }); }
+    try { renderer = viewportRenderer.current ??= new THREE.WebGLRenderer({ antialias: true }); }
     catch (reason) {
       setError('三维画布无法初始化，请检查图形环境。工程数据未改变。');
       capture?.onFailure({ key: capture.key, stage: 'initialize', message: reason instanceof Error ? reason.message : String(reason) });
@@ -393,6 +405,12 @@ export function FactoryScene({ project: inputProject, canvas, hallId, selection,
     const grid = createAdaptiveViewportGrid(); grid.mesh.position.y = -.02; scene.add(grid.mesh);
     let scaleState: ViewportScaleValues | null = null;
     let lastLod: LodMode | null = null;
+    function loadDevice(device: NonNullable<typeof project>['devices'][number], input: FactoryDeviceMedia, level: LodMode, current: () => boolean) {
+      const worker = mediaWorkers.current.shift()!;
+      const result = worker.then(() => current() ? createFactoryMedia(device, input, level) : null);
+      mediaWorkers.current.push(result.then(() => undefined, () => undefined));
+      return result;
+    }
     const loadLod = (current: LodMode, layersChanged: boolean) => {
       if (layersChanged) {
         itemLayer?.dispose(); itemLayer = null;
@@ -410,8 +428,9 @@ export function FactoryScene({ project: inputProject, canvas, hallId, selection,
         slot.annotation.title = `${slot.baseTitle} · ${current === 'region' ? '区域定位' : regionActualPending && !slot.input ? '正在读取此时点表现来源…' : slot.input?.unavailable ?? (slot.input?.media ? '读取素材中' : '表现素材未连接')}`;
         if (current === 'region' || !slot.input?.media) continue;
         pendingMedia++;
-        createFactoryMedia(slot.device, slot.input, deviceLod).then(instance => {
+        loadDevice(slot.device, slot.input, deviceLod, () => live && ticket === slot.ticket).then(instance => {
           pendingMedia--;
+          if (!instance) return;
           if (!live || ticket !== slot.ticket) { instance.dispose(); return; }
           slot.instance = instance;
           instance.root.traverse(object => { object.userData.ref = { kind: 'device', id: slot.device.id }; });
@@ -705,8 +724,9 @@ export function FactoryScene({ project: inputProject, canvas, hallId, selection,
           slot.annotation.title = `${slot.baseTitle} · ${current === 'region' ? '区域定位' : next.regionActualPending && !input ? '正在读取此时点表现来源…' : input?.unavailable ?? (input?.media ? '读取素材中' : '表现素材未连接')}`;
           if (current === 'region' || !input?.media) return;
           pendingMedia++;
-          let instance: FactoryMediaInstance;
-          try { instance = await createFactoryMedia(slot.device, input, deviceLod); } finally { pendingMedia--; }
+          let instance: FactoryMediaInstance | null;
+          try { instance = await loadDevice(slot.device, input, deviceLod, owns); } finally { pendingMedia--; }
+          if (!instance) return;
           if (!owns()) { instance.dispose(); return; }
           slot.instance = instance;
           instance.root.traverse(object => { object.userData.ref = { kind: 'device', id: slot.device.id }; });
@@ -767,7 +787,7 @@ export function FactoryScene({ project: inputProject, canvas, hallId, selection,
           materials.forEach(material => material.dispose());
         }
       });
-      renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove();
+      renderer.renderLists.dispose();
     };
   }, [project, canvas, hallId, lod, autoLod, resetKey, run, inputModules, !!mediaSource, capture, captureSource]);
 

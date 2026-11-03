@@ -20,8 +20,15 @@ export function staticMime(asset: AssetRef, bytes: ArrayBuffer): string {
   }
   throw new UnsupportedMedia('素材类型或文件签名不属于支持的静态 PNG/JPEG/SVG。', asset);
 }
-export async function decodeStatic(asset: AssetRef, bytes: ArrayBuffer): Promise<ImageBitmap> {
+export async function decodeStatic(asset: AssetRef, bytes: ArrayBuffer, textureEdge?: number): Promise<ImageBitmap> {
   const blob=new Blob([bytes], { type: staticMime(asset, bytes) });
+  if (textureEdge && asset.kind === 'png' && bytes.byteLength >= 24) {
+    const header = new DataView(bytes), width = header.getUint32(16), height = header.getUint32(20);
+    if (Math.max(width, height) > textureEdge) {
+      // Only the offscreen, simplified factory texture requests a raster at its output resolution.
+      return createImageBitmap(blob, width >= height ? {resizeWidth: textureEdge} : {resizeHeight: textureEdge});
+    }
+  }
   if(asset.kind!=='svg')return createImageBitmap(blob);
   // Chromium does not decode an SVG Blob directly with createImageBitmap.
   // The already validated static SVG is rasterized by its image decoder first.

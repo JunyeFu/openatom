@@ -51,11 +51,13 @@ function Timeline(props: Props) {
     const devices = new Set(viewProject.devices.map(d => d.id)), resources = new Set(viewProject.resources.map(r => r.id));
     return [...new Set([...prefs.group_overrides.flatMap(g => g.members), ...prefs.independent_device_ids].filter(id => !devices.has(id)).concat(prefs.pinned_resource_ids.filter(id => !resources.has(id))))];
   }, [viewProject, prefs.group_overrides, prefs.independent_device_ids, prefs.pinned_resource_ids]);
-  const actual = useMemo(() => project && run ? actualProjection(project, run) : [], [project, run]);
+  const showActual = mode !== 'input' && !props.hidden;
+  const actual = useMemo(() => showActual && project && run ? actualProjection(project, run) : [], [showActual, project, run]);
   const inputs = useMemo(() => scenario ? inputProjection(scenario) : [], [scenario]);
   const calendarInputs = useMemo(() => scenario && viewProject ? calendarInputProjection(viewProject, scenario) : [], [viewProject, scenario]);
   const oldInputs = useMemo(() => runScenario ? inputProjection(runScenario) : [], [runScenario]);
-  const other = useMemo(() => comparison ? actualProjection(comparison.project, comparison.run) : [], [comparison]);
+  const showComparison = mode === 'comparison' && !props.hidden;
+  const other = useMemo(() => showComparison && comparison ? actualProjection(comparison.project, comparison.run) : [], [showComparison, comparison]);
   const events = useMemo(() => run ? uniqueEvents(run) : [], [run]);
   const items = useMemo(() => observedItems(props.observation, run, atMs), [props.observation, run, atMs]);
   const item = items?.find(i => i.id === itemId), history = useMemo(() => itemId ? itemEvents(events, itemId) : [], [events, itemId]);
