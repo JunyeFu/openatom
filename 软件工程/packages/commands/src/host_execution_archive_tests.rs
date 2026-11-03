@@ -117,6 +117,47 @@ fn execution_archive_corruption_has_no_latest_draft_or_cloud_fallback() {
 }
 
 #[test]
+fn execution_archive_index_preserves_exact_file_and_asset_validation() {
+    let (mut host,ui,_job,_gateway,evidence)=archive_r4();let saved=evidence.join("indexed-validation");
+    let (task,work)=archive_queue_save(&mut host,&ui,&saved);host.finish_io(work.run());
+    assert_eq!(task_state(&mut host,&ui,&task)["task"]["state"],"completed");
+    let archive=read_project_archive(&saved).unwrap();
+    let source=archive.manifest.documents.iter().find(|e|matches!(e.file_ref.kind,DocumentKind::ExecutionArchive)).unwrap().file_ref.path.as_str();
+    let record=crate::execution_archive::decode_archive_document(&archive.files[source],source).unwrap();
+    assert!(crate::execution_archive::ArchivedExecutionSource::load(std::sync::Arc::new(record.clone()),&archive).is_ok());
+    assert!(record.files.len()>1 && !record.frozen_inputs.asset_bindings.is_empty());
+
+    let mut without_required=archive.clone();
+    let stored=record.files[0].stored_file.path.as_str();
+    without_required.manifest.documents.iter_mut().find(|e|e.file_ref.path.as_str()==stored).unwrap().required=false;
+    assert!(crate::execution_archive::ArchivedExecutionSource::load(std::sync::Arc::new(record.clone()),&without_required).is_err());
+
+    let mut earlier_unmatched=archive.clone();
+    let mut candidate=earlier_unmatched.manifest.documents.iter().find(|e|e.file_ref.path.as_str()==stored).unwrap().clone();
+    candidate.file_ref.kind=DocumentKind::Module;
+    earlier_unmatched.manifest.documents.insert(0,candidate);
+    assert!(crate::execution_archive::ArchivedExecutionSource::load(std::sync::Arc::new(record.clone()),&earlier_unmatched).is_ok());
+
+    let mut wrong_kind=record.clone();wrong_kind.files[0].stored_file.kind=DocumentKind::Module;
+    assert!(crate::execution_archive::ArchivedExecutionSource::load(std::sync::Arc::new(wrong_kind),&archive).is_err());
+    let mut wrong_original_kind=record.clone();
+    let project_path=wrong_original_kind.frozen_inputs.project_input_ref.frozen_project_file.path.as_str().to_owned();
+    wrong_original_kind.files.iter_mut().find(|f|f.original_file.path.as_str()==project_path).unwrap().original_file.kind=DocumentKind::Asset;
+    assert!(crate::execution_archive::ArchivedExecutionSource::load(std::sync::Arc::new(wrong_original_kind),&archive).is_err());
+    let mut missing_bytes=archive.clone();std::sync::Arc::make_mut(&mut missing_bytes.files).remove(stored);
+    assert!(crate::execution_archive::ArchivedExecutionSource::load(std::sync::Arc::new(record.clone()),&missing_bytes).is_err());
+    let mut wrong_length=record.clone();wrong_length.files[0].byte_length=(wrong_length.files[0].byte_length.value()+1).try_into().unwrap();
+    assert!(crate::execution_archive::ArchivedExecutionSource::load(std::sync::Arc::new(wrong_length),&archive).is_err());
+    let mut duplicate_original=record.clone();duplicate_original.files[1].original_file=duplicate_original.files[0].original_file.clone();
+    assert!(crate::execution_archive::ArchivedExecutionSource::load(std::sync::Arc::new(duplicate_original),&archive).is_err());
+    let mut duplicate_stored=record.clone();duplicate_stored.files[1].stored_file=duplicate_stored.files[0].stored_file.clone();
+    assert!(crate::execution_archive::ArchivedExecutionSource::load(std::sync::Arc::new(duplicate_stored),&archive).is_err());
+    let mut duplicate_asset=record.clone();let binding=duplicate_asset.frozen_inputs.asset_bindings[0].clone();
+    std::sync::Arc::make_mut(&mut duplicate_asset.frozen_inputs).asset_bindings.push(binding);
+    assert!(crate::execution_archive::ArchivedExecutionSource::load(std::sync::Arc::new(duplicate_asset),&archive).is_err());
+}
+
+#[test]
 fn execution_archive_project_export_keeps_closed_source_and_module_export_excludes_it() {
     let (mut host,ui,_job,_gateway,evidence)=archive_r4();
     let saved=evidence.join("project");let (task,work)=archive_queue_save(&mut host,&ui,&saved);host.finish_io(work.run());assert_eq!(task_state(&mut host,&ui,&task)["task"]["state"],"completed");

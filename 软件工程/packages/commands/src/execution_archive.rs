@@ -77,19 +77,27 @@ impl ArchivedExecutionSource {
             || !same(&frozen.scenario.project_revision,&frozen.project.revision) {
             return Err(fail("Execution frozen project/scenario identity or revision conflicts"));
         }
+        let mut manifest_by_path:BTreeMap<&str,Vec<&DocumentEntry>>=BTreeMap::new();
+        for entry in &archive.manifest.documents {
+            manifest_by_path.entry(entry.file_ref.path.as_str()).or_default().push(entry);
+        }
         let mut original=BTreeSet::new();let mut stored=BTreeSet::new();let mut files=vec![];
         for binding in &record.files {
             if !original.insert(binding.original_file.path.as_str()) || !stored.insert(binding.stored_file.path.as_str())
                 || !matches!(binding.stored_file.kind,DocumentKind::Asset) {
                 return Err(fail("Duplicate or invalid execution frozen-file mapping"));
             }
-            let entry=archive.manifest.documents.iter().find(|e|same(&e.file_ref,&binding.stored_file)&&e.required)
+            let entry=manifest_by_path.get(binding.stored_file.path.as_str())
+                .and_then(|entries|entries.iter().copied().find(|e|same(&e.file_ref,&binding.stored_file)&&e.required))
                 .ok_or_else(||fail("Execution frozen file has no required manifest reference"))?;
             let bytes=archive.files.get(entry.file_ref.path.as_str()).ok_or_else(||fail("Execution frozen file is missing"))?;
             if bytes.len() as u64!=binding.byte_length.value() {return Err(fail("Execution frozen file length differs from its original capture"));}
             files.push(FrozenExecutionFile {file:binding.original_file.clone(),bytes:bytes.clone()});
         }
-        let get=|reference:&FileRef|->Result<&[u8],ApiError>{files.iter().find(|f|same(&f.file,reference)).map(|f|f.bytes.as_slice()).ok_or_else(||fail("Required original frozen reference is absent"))};
+        let files_by_original:BTreeMap<&str,&FrozenExecutionFile>=files.iter().map(|f|(f.file.path.as_str(),f)).collect();
+        let get=|reference:&FileRef|->Result<&[u8],ApiError>{files_by_original.get(reference.path.as_str())
+            .filter(|f|same(&f.file,reference)).map(|f|f.bytes.as_slice())
+            .ok_or_else(||fail("Required original frozen reference is absent"))};
         let project:ProjectState=document(get(&frozen.project_input_ref.frozen_project_file)?)?;
         let scenario:ScenarioInput=document(get(&frozen.project_input_ref.frozen_scenario_file)?)?;
         if !same(&project,&frozen.project)||!same(&scenario,&frozen.scenario) {return Err(fail("Frozen project/scenario bytes differ from execution inputs"));}
@@ -107,13 +115,19 @@ impl ArchivedExecutionSource {
         }
         if modules.len()!=frozen.modules.len() {return Err(fail("Incomplete frozen module byte closure"));}
         let module=|reference:&ModuleRef|modules.get(&serde_json::to_string(&(reference.id.clone(),reference.version.clone())).unwrap());
+        let mut asset_bindings_by_module:BTreeMap<String,Vec<&ExecutionAssetBinding>>=BTreeMap::new();
+        for binding in &frozen.asset_bindings {
+            asset_bindings_by_module.entry(serde_json::to_string(&binding.module_ref).unwrap()).or_default().push(binding);
+        }
         for package in &frozen.modules {
             let reference=ModuleRef {id:package.definition.id.clone(),version:package.definition.version.clone()};
             if module(&reference).is_none_or(|m|!same(m,package)) || package.dependencies.iter().any(|r|module(r).is_none()) {
                 return Err(fail("Frozen exact module bytes or dependency closure conflict"));
             }
             for asset in &package.assets {
-                if frozen.asset_bindings.iter().filter(|b|same(&b.module_ref,&reference)&&same(&b.asset,asset)).count()!=1 {
+                let count=asset_bindings_by_module.get(&serde_json::to_string(&reference).unwrap())
+                    .map_or(0,|bindings|bindings.iter().filter(|b|same(&b.module_ref,&reference)&&same(&b.asset,asset)).count());
+                if count!=1 {
                     return Err(fail("Frozen module asset has no unique exact binding"));
                 }
             }
