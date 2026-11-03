@@ -81,15 +81,35 @@ function shareAttributeBuffers(gltf:GLTF) {
     group.push({bytes,attribute});
     return attribute;
   };
-  const visited=new Set<Mesh['geometry']>();
+  const ids=new WeakMap<object,number>();
+  let nextId=0;
+  const id=(buffer:object) => {
+    let existing=ids.get(buffer);
+    if (existing===undefined) { existing=++nextId; ids.set(buffer,existing); }
+    return existing;
+  };
+  const binding=(attribute:Attribute) => attribute instanceof InterleavedBufferAttribute
+    ? [id(attribute.data),attribute.offset,attribute.itemSize,attribute.normalized,attribute.constructor.name]
+    : id(attribute);
+  const geometries=new Map<string,BufferGeometry>();
+  const visited=new WeakMap<BufferGeometry,BufferGeometry>();
   for (const scene of gltf.scenes) scene.traverse(object=>{
-    if (!(object instanceof Mesh) || visited.has(object.geometry)) return;
+    if (!(object instanceof Mesh)) return;
     const geometry:BufferGeometry=object.geometry;
-    visited.add(geometry);
+    const previous=visited.get(geometry);
+    if(previous){object.geometry=previous;return;}
     for (const [name,attribute] of Object.entries(geometry.attributes)) {
       geometry.setAttribute(name,unique(name,attribute));
     }
     if (geometry.index) geometry.setIndex(unique('index',geometry.index) as BufferAttribute);
+    if(Object.keys(geometry.userData).length) { visited.set(geometry,geometry); return; }
+    const key=JSON.stringify([geometry.name,geometry.index && id(geometry.index),
+      Object.keys(geometry.attributes).sort().map(name=>[name,binding(geometry.getAttribute(name))]),
+      geometry.groups,geometry.drawRange.start,String(geometry.drawRange.count),geometry.boundingBox,geometry.boundingSphere]);
+    const canonical=geometries.get(key) ?? geometry;
+    geometries.set(key,canonical);
+    visited.set(geometry,canonical);
+    object.geometry=canonical;
   });
 }
 async function decodeTemplate(bytes:ArrayBuffer, textureEdge?:number):Promise<DecodedModel> {

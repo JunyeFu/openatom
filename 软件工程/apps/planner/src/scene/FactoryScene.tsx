@@ -742,6 +742,8 @@ export function FactoryScene({ project: inputProject, canvas, hallId, selection,
             return;
           }
           if (current !== 'region' && input?.media && slot.instance) {
+            slot.instance.root.visible = false;
+            slot.marker.visible = true;
             const kept = await slot.instance.update(input, deviceLod);
             if (!owns()) return;
             if (kept) {
@@ -751,15 +753,20 @@ export function FactoryScene({ project: inputProject, canvas, hallId, selection,
             }
           }
           if (!owns()) return;
-          if (slot.instance) { slot.group.remove(slot.instance.root); slot.instance.dispose(); slot.instance = null; }
           slot.marker.visible = true;
           slot.annotation.title = `${slot.baseTitle} · ${current === 'region' ? '区域定位' : next.regionActualPending && !input ? '正在读取此时点表现来源…' : input?.unavailable ?? (input?.media ? '读取素材中' : '表现素材未连接')}`;
-          if (current === 'region' || !input?.media) return;
+          if (current === 'region' || !input?.media) {
+            if (slot.instance) { slot.group.remove(slot.instance.root); slot.instance.dispose(); slot.instance = null; }
+            return;
+          }
+          // Keep the prior rig hidden while the replacement loads. A rapid return can
+          // reuse it only after its original source is authorized again.
           pendingMedia++;
           let instance: FactoryMediaInstance | null;
           try { instance = await loadDevice(slot.device, input, deviceLod, owns); } finally { pendingMedia--; }
           if (!instance) return;
           if (!owns()) { instance.dispose(); return; }
+          if (slot.instance) { slot.group.remove(slot.instance.root); slot.instance.dispose(); }
           slot.instance = instance;
           instance.root.traverse(object => { object.userData.ref = { kind: 'device', id: slot.device.id }; });
           slot.group.add(instance.root); slot.marker.visible = outsideHallFloor(project!, slot.device) === true;
