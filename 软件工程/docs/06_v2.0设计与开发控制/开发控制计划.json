@@ -3,7 +3,7 @@
   "next_full_version_plan": {
     "date": "2026-10-31",
     "authority": "用户授权同步方案与任务卡、建立五阶段和FV0三张Issue；人员按角色标注；不影响已提交发布链接。 用户已授权执行角色A第一卡。",
-    "state": "fv1_in_progress",
+    "state": "fv1_accepted_fv2_not_dispatched",
     "spec_ref": "docs/06_v2.0设计与开发控制/入围后完整版制作与验收方案.md",
     "task_cards_ref": "docs/06_v2.0设计与开发控制/入围后完整版任务卡.md",
     "source_packages": "V2-00至V2-11保持，FV0至FV4为下一轮执行批次，ST01至ST08历史验收不改",
@@ -41,7 +41,7 @@
       {
         "number": 2,
         "title": "FV1 阻塞修复",
-        "state": "open",
+        "state": "closed",
         "html_url": "https://github.com/JunyeFu/openatom/milestone/2"
       },
       {
@@ -294,17 +294,16 @@
       "authority": "2026-11-03 用户指定 FV1 全阶段由 A 完成，FV2 启用8–10小时独立包",
       "coordination_issue": "https://github.com/JunyeFu/openatom/issues/1",
       "next_implementation": {
-        "stage": "FV1",
-        "card": "V2-04/FV01",
-        "state": "primary_stop_verified_remaining_native_metrics"
+        "stage": "FV2",
+        "state": "ready_not_dispatched"
       },
       "b_dispatch": "https://github.com/JunyeFu/openatom/issues/2#issuecomment-6555414822",
       "receive_then_freeze": [
-        "FV0 已收口，A 已接收 B 的诊断及 C 经授权的 UIA 复测，冻结以下验收目标。FV1—FV4 待启动。"
+        "FV0 已收口。A 已接收 B 的诊断及 C 经授权的 UIA 复测，并冻结验收目标。"
       ],
       "next_business_priority": {
-        "card": "V2-04/FV01",
-        "gate": "先完成FV0适用接收，并具备B关联问题有效定位/复现；按FV1主线处理停止排空"
+        "stage": "FV2",
+        "gate": "工作包待派发"
       },
       "owner_decisions_pending": [
         "实际投入与交付日期",
@@ -352,7 +351,7 @@
         "stage": "FV1",
         "card": "V2-09/FV01",
         "issue": "https://github.com/JunyeFu/openatom/issues/7",
-        "state": "native_pf07_verified_pf06_local_failed"
+        "state": "native_pf06_pf07_verified"
       },
       "default_stage_order": [
         "FV0",
@@ -361,8 +360,8 @@
         "FV3",
         "FV4"
       ],
-      "fv0_exit": "FV0 已收口，A 已接收 B 的诊断及 C 经授权的 UIA 复测，冻结以下验收目标。FV1—FV4 待启动。",
-      "waiting_work": "A 已在主屏验证 #6 正常停止、满库提示和新进程重开，已在主屏测得 #7 的 PF07 保存与打开时间，已完成 PF06 本机进程树验收，结果未通过，#8 隔离短流程已核对同一入站记录，Host 接纳查询至主屏可见上界 233.5 毫秒。远端整厂 PF05 留 FV3。",
+      "fv0_exit": "FV0 已收口。A 已接收 B 的诊断及 C 经授权的 UIA 复测，并冻结验收目标。",
+      "waiting_work": "A 已验收 #6 停止与满库提示、#8 隔离短链及桌面反馈。#7 本机修复复验。同一 H1 的固定 Run 在 600 秒内完成 55 次回看并返回。进程树从 4.42 GiB 到 4.84 GiB，增量 433.88 MiB。打开与回看的 10 分钟内峰值为 4.93 GiB，计入另存、正常退出和新进程重开后的实测峰值为 5.66 GiB。PF06 与 PF07 均通过。 FV2 工作包待派发。",
       "early_implementation_exception": "本轮不启动后续阶段，没有提前实施例外；后续安排改变时再更新任务"
     },
     "fv0_intake_contract": {
@@ -483,9 +482,10 @@
         "card": "V2-09/FV01",
         "owner": "JunyeFu",
         "issue": "https://github.com/JunyeFu/openatom/issues/7",
-        "state": "native_pf07_verified_pf06_local_failed",
+        "state": "native_pf06_pf07_verified",
         "receipt": "FV1归档与通信验收/archive.json",
-        "memory_receipt": "FV1归档与通信验收/本机内存验收.json"
+        "memory_receipt": "FV1归档与通信验收/历史回看修复复验.json",
+        "baseline_memory_receipt": "FV1归档与通信验收/本机内存验收.json"
       },
       "communication": {
         "card": "V2-03/FV01",
@@ -496,7 +496,8 @@
       },
       "full_factory": "deferred_to_fv3",
       "owner": "JunyeFu",
-      "review": "A 接管阶段验收，并采用 B 对运输卸货等待、窗口定位和混合 DPI 客户区尺寸的代码复核。"
+      "review": "A 接管阶段验收，并采用 B 对运输卸货等待、窗口定位和混合 DPI 客户区尺寸的代码复核。",
+      "state": "accepted"
     },
     "from_fv2": {
       "hours": [
@@ -510,7 +511,7 @@
       ],
       "gate": "FV1_closed",
       "plan": "docs/06_v2.0设计与开发控制/完整版工作包与阶段分工.md",
-      "status": "planned_not_dispatched"
+      "status": "ready_not_dispatched"
     }
   },
   "date": "2026-10-27",
