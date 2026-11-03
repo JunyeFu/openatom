@@ -1,9 +1,11 @@
 use std::{cell::Cell, io, ptr};
 use windows_sys::Win32::{
+    Foundation::{HWND, RECT},
     System::Threading::GetCurrentThreadId,
     UI::WindowsAndMessaging::{
-        CBT_CREATEWNDW, CallNextHookEx, GetClassNameW, HCBT_CREATEWND, HHOOK, SetWindowsHookExW,
-        UnhookWindowsHookEx, WH_CBT,
+        CBT_CREATEWNDW, CallNextHookEx, GetClassNameW, GetClientRect, GetWindowRect,
+        HCBT_CREATEWND, HHOOK, SWP_NOACTIVATE, SWP_NOMOVE, SWP_NOZORDER, SetWindowPos,
+        SetWindowsHookExW, UnhookWindowsHookEx, WH_CBT,
     },
 };
 
@@ -67,11 +69,46 @@ pub(super) fn creation_origin(left: i32, top: i32) -> (i32, i32) {
     (left + 48, top + 48)
 }
 
+// The hidden HWND has already been placed on the target monitor. Both rectangles are now
+// measured at that HWND's DPI, including its actual title bar and frame.
+pub(super) fn fit_hidden_client(hwnd: HWND, work_width: u32, work_height: u32) -> io::Result<()> {
+    let width = work_width.saturating_sub(96).max(1) as i32;
+    let height = work_height.saturating_sub(128).max(1) as i32;
+    let mut outer = RECT::default();
+    let mut client = RECT::default();
+    unsafe {
+        if GetWindowRect(hwnd, &mut outer) == 0 || GetClientRect(hwnd, &mut client) == 0 {
+            return Err(io::Error::last_os_error());
+        }
+        let frame_width = (outer.right - outer.left) - (client.right - client.left);
+        let frame_height = (outer.bottom - outer.top) - (client.bottom - client.top);
+        if SetWindowPos(
+            hwnd,
+            ptr::null_mut(),
+            0,
+            0,
+            width + frame_width,
+            height + frame_height,
+            SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE,
+        ) == 0
+            || GetClientRect(hwnd, &mut client) == 0
+        {
+            return Err(io::Error::last_os_error());
+        }
+    }
+    if (client.right - client.left, client.bottom - client.top) != (width, height) {
+        return Err(io::Error::other(
+            "Hidden window client size differs from the target work area",
+        ));
+    }
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     #[test]
-    fn physical_origin_for_200_percent_screen_to_right_of_100_percent_primary() {
+    fn hidden_window_uses_target_physical_origin_and_client_size_in_both_dpi_directions() {
         // Primary physical range [0,1920), secondary [1920,3840).
         // At 200%, a global logical x of 984 also falls inside the primary.
         assert_eq!(creation_origin(1920, 0), (1968, 48));
@@ -81,7 +118,7 @@ mod tests {
             System::LibraryLoader::GetModuleHandleW,
             UI::WindowsAndMessaging::{
                 CreateWindowExW, DefWindowProcW, DestroyWindow, GetWindowRect, IsWindowVisible,
-                RegisterClassW, WNDCLASSW, WS_POPUP,
+                RegisterClassW, WNDCLASSW, WS_OVERLAPPEDWINDOW,
             },
         };
         let name: Vec<u16> = "Tauri Window".encode_utf16().chain(Some(0)).collect();
@@ -95,30 +132,35 @@ mod tests {
                 ..Default::default()
             };
             RegisterClassW(&class);
-            let hook = CreationHook::install(creation_origin(1920, 0)).unwrap();
-            let window = CreateWindowExW(
-                0,
-                name.as_ptr(),
-                name.as_ptr(),
-                WS_POPUP,
-                984,
-                24,
-                200,
-                100,
-                ptr::null_mut(),
-                ptr::null_mut(),
-                instance,
-                ptr::null(),
-            );
-            assert!(!window.is_null());
-            let mut rect = RECT::default();
-            let read = GetWindowRect(window, &mut rect);
-            let visible = IsWindowVisible(window);
-            DestroyWindow(window);
-            assert!(hook.applied());
-            assert_ne!(read, 0);
-            assert_eq!(visible, 0);
-            assert_eq!((rect.left, rect.top), (1968, 48));
+            for (primary_percent, secondary_percent) in [(100, 200), (200, 100)] {
+                let hook = CreationHook::install(creation_origin(1920, 0)).unwrap();
+                let window = CreateWindowExW(
+                    0,
+                    name.as_ptr(),
+                    name.as_ptr(),
+                    WS_OVERLAPPEDWINDOW,
+                    984,
+                    24,
+                    1824 * primary_percent / secondary_percent,
+                    912 * primary_percent / secondary_percent,
+                    ptr::null_mut(),
+                    ptr::null_mut(),
+                    instance,
+                    ptr::null(),
+                );
+                assert!(!window.is_null());
+                fit_hidden_client(window, 1920, 1040).unwrap();
+                let mut rect = RECT::default();
+                let mut client = RECT::default();
+                assert_ne!(GetWindowRect(window, &mut rect), 0);
+                assert_ne!(GetClientRect(window, &mut client), 0);
+                let visible = IsWindowVisible(window);
+                DestroyWindow(window);
+                assert!(hook.applied());
+                assert_eq!(visible, 0);
+                assert_eq!((rect.left, rect.top), (1968, 48));
+                assert_eq!((client.right, client.bottom), (1824, 912));
+            }
         }
     }
 }

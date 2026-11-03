@@ -181,11 +181,8 @@ pub fn run() {
                 let target = app.available_monitors()?.into_iter()
                     .find(|monitor| monitor.position() != primary.position())
                     .ok_or_else(|| std::io::Error::other("Enable an extended secondary display before verification"))?;
-                let area = target.work_area();
-                let scale = target.scale_factor();
                 window_builder = window_builder.visible(false).maximized(false)
-                    .inner_size((f64::from(area.size.width) - 96.0) / scale,
-                                (f64::from(area.size.height) - 128.0) / scale);
+                    .inner_size(320.0, 200.0);
                 Some(target)
             } else {
                 None
@@ -205,14 +202,21 @@ pub fn run() {
             #[cfg(windows)]
             drop(creation_hook);
             if let Some(target) = verify_monitor {
+                #[cfg(windows)]
+                {
+                    let area = target.work_area().size;
+                    verification_display::fit_hidden_client(main_window.hwnd()?.0, area.width, area.height)?;
+                }
                 let actual = main_window.current_monitor()?;
                 if main_window.is_visible()? || actual.as_ref().map(|m| m.position()) != Some(target.position()) {
                     return Err(std::io::Error::other("Could not create the hidden window on the secondary display").into());
                 }
                 let origin = main_window.outer_position()?;
+                let client = main_window.inner_size()?;
                 main_window.show()?;
                 println!("{}", serde_json::json!({"event":"verification_first_show",
-                    "monitor":target.name(), "created_hidden":true, "origin":[origin.x,origin.y]}));
+                    "monitor":target.name(), "created_hidden":true, "origin":[origin.x,origin.y],
+                    "client_size":[client.width,client.height]}));
             }
             if capture_smoke {
                 project_api::native_capture_probe::window_built(&main_window).map_err(std::io::Error::other)?;
