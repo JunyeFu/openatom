@@ -1,6 +1,6 @@
-> **当前分工（2026-11-03）** FV1 的 #6 停止、#7 归档、#8 通信统一由 A 完成。B/C 在 FV2 按每包8–10小时接手，见[统一工作包](https://github.com/JunyeFu/openatom/blob/73836ff6782c3418a6116a09fba70ba48e751a1f/软件工程/docs/06_v2.0设计与开发控制/完整版工作包与阶段分工.md)。
+> **FV02 已启动**　[A 集成验收 #13](https://github.com/JunyeFu/openatom/issues/13) · [B 订单与工程操作 #5](https://github.com/JunyeFu/openatom/issues/5) · [C 独立走查与复验 #12](https://github.com/JunyeFu/openatom/issues/12)。每张 18 人时。[现行分工](完整版工作包与阶段分工.md)。
 
-> **当前状态** FV0 已收口。FV1 已验收，FV2 工作包待派发。 A 已在主屏核对 [#6 停止与满库提示](FV1停止验收/主屏验收.json)、[#7 同一 H1 修复复验](FV1归档与通信验收/历史回看修复复验.json)和 [#8 隔离通信反馈](FV1归档与通信验收/主屏通信反馈.json)。
+> **当前状态** FV0 已收口。FV1 已验收，FV2 首批三卡已派发。 A 已在主屏核对 [#6 停止与满库提示](FV1停止验收/主屏验收.json)、[#7 同一 H1 修复复验](FV1归档与通信验收/历史回看修复复验.json)和 [#8 隔离通信反馈](FV1归档与通信验收/主屏通信反馈.json)。
 
 > 阶段任务 #1、#2、#3 已完成。
 
