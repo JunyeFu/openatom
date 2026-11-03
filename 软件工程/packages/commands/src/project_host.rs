@@ -7657,10 +7657,17 @@ mod tests {
         let first = actual_local_run(&mut host);
         let mut settings = settings_value(host.project.as_ref().unwrap());
         settings["title"] = json!("second frozen scenario");
+        let mut scenario = serde_json::to_value(host.scenarios.get(&first.input_ref.scenario_id).unwrap()).unwrap();
+        assert_eq!(scenario["orders"][0]["id"], "ORDER-01");
+        assert_eq!(scenario["orders"][0]["priority"], 0);
+        scenario["orders"][0]["priority"] = json!(90);
         let response = packaging_call(
             &mut host,
             "apply_commands",
-            json!({"base_revision":1,"commands":[{"kind":"set_project_settings","data":settings}]}),
+            json!({"base_revision":1,"commands":[
+                {"kind":"set_project_settings","data":settings},
+                {"kind":"put_object","data":{"kind":"scenario","data":scenario}}
+            ]}),
         );
         assert_eq!(response["outcome"]["status"], "ok", "{response}");
         let second = actual_local_run(&mut host);
@@ -7736,6 +7743,10 @@ mod tests {
         let reopened = host
             .comparison_inputs(&[first.id.clone(), second.id.clone()])
             .unwrap();
+        for (input, priority) in reopened.iter().zip([0, 90]) {
+            assert_eq!(input.1.orders[0].id.as_str(), "ORDER-01");
+            assert_eq!(serde_json::to_value(&input.1.orders[0].priority).unwrap(), json!(priority));
+        }
         for (expected, actual) in snapshots.iter().zip(&reopened) {
             assert!(exact_data(&expected.0, &actual.0));
             assert!(exact_data(&expected.1, &actual.1));
