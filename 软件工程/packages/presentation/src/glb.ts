@@ -1,4 +1,4 @@
-import { AnimationClip, LoadingManager, Object3D } from 'three';
+import { AnimationClip, BufferAttribute, type BufferGeometry, InterleavedBufferAttribute, LoadingManager, Mesh, Object3D } from 'three';
 import { GLTFLoader, type GLTF } from 'three/addons/loaders/GLTFLoader.js';
 import { UnsupportedMedia } from './types';
 
@@ -51,6 +51,47 @@ async function sizeFactoryTextures(gltf:GLTF, edge:number) {
     image.close();
   }
 }
+// Industrial GLBs often repeat the exact same attribute bytes under different
+// accessors. Share those GPU uploads inside one authorized simplified model.
+function shareAttributeBuffers(gltf:GLTF) {
+  type Attribute = BufferAttribute | InterleavedBufferAttribute;
+  const buckets = new Map<string, { bytes:Uint8Array; attribute:Attribute }[]>();
+  const unique = (semantic:string, attribute:Attribute):Attribute => {
+    const storage = attribute instanceof InterleavedBufferAttribute ? attribute.data : attribute;
+    const array = storage.array;
+    const bytes = new Uint8Array(array.buffer, array.byteOffset, array.byteLength);
+    if (!bytes.length) return attribute;
+    const stride = attribute instanceof InterleavedBufferAttribute ? attribute.data.stride : 0;
+    const key = [semantic, array.constructor.name, attribute.constructor.name, stride, attribute.itemSize,
+      attribute.normalized, storage.usage, attribute instanceof BufferAttribute ? attribute.gpuType : 0,
+      bytes.length, bytes[0], bytes[bytes.length >> 1], bytes[bytes.length - 1]].join('/');
+    let group = buckets.get(key);
+    if (!group) { group = []; buckets.set(key,group); }
+    for (const other of group) {
+      if (attribute === other.attribute) return attribute;
+      let i=0;
+      while (i<bytes.length && bytes[i]===other.bytes[i]) i++;
+      if (i!==bytes.length) continue;
+      if (attribute instanceof InterleavedBufferAttribute && other.attribute instanceof InterleavedBufferAttribute) {
+        attribute.data=other.attribute.data;
+        return attribute;
+      }
+      return other.attribute;
+    }
+    group.push({bytes,attribute});
+    return attribute;
+  };
+  const visited=new Set<Mesh['geometry']>();
+  for (const scene of gltf.scenes) scene.traverse(object=>{
+    if (!(object instanceof Mesh) || visited.has(object.geometry)) return;
+    const geometry:BufferGeometry=object.geometry;
+    visited.add(geometry);
+    for (const [name,attribute] of Object.entries(geometry.attributes)) {
+      geometry.setAttribute(name,unique(name,attribute));
+    }
+    if (geometry.index) geometry.setIndex(unique('index',geometry.index) as BufferAttribute);
+  });
+}
 async function decodeTemplate(bytes:ArrayBuffer, textureEdge?:number):Promise<DecodedModel> {
   const doc=inspectGlb(bytes);
   const manager=new LoadingManager();
@@ -58,7 +99,7 @@ async function decodeTemplate(bytes:ArrayBuffer, textureEdge?:number):Promise<De
   const gltf=await new GLTFLoader(manager).parseAsync(bytes,'');
   const nodes=new Map<number,Object3D>();
   for (let i=0;i<(doc.nodes?.length??0);i++) nodes.set(i,await gltf.parser.getDependency('node',i));
-  if(textureEdge)await sizeFactoryTextures(gltf,textureEdge);
+  if(textureEdge){shareAttributeBuffers(gltf);await sizeFactoryTextures(gltf,textureEdge);}
   return {gltf,nodes,dispose(){
     const geometries=new Set<{dispose():void}>(), materials=new Set<{dispose():void}>(), textures=new Set<{dispose():void}>();
     for (const root of gltf.scenes) root.traverse(object=>{ const mesh=object as unknown as {geometry?:{dispose():void};material?:any};if(mesh.geometry) geometries.add(mesh.geometry);if(mesh.material) for(const mat of Array.isArray(mesh.material)?mesh.material:[mesh.material]){ materials.add(mat);for(const item of Object.values(mat)) if((item as any)?.isTexture) textures.add(item as any); } });

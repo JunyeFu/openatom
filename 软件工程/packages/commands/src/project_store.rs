@@ -72,24 +72,21 @@ impl ColdProjectFile {
     }
 }
 impl ProjectFiles {
-    fn compact_models(&mut self) {
-        let raw = Arc::make_mut(&mut self.raw);
-        let candidates: Vec<_> = raw.iter().filter(|(path, bytes)| bytes.len() >= 64 * 1024
+    fn store_original(&mut self, path: &str, bytes: Vec<u8>) {
+        if bytes.len() >= 64 * 1024
             && ((path.starts_with("bundled/") && (path.ends_with(".glb") || path.ends_with(".json")))
-                || (path.starts_with("documents/") && path.ends_with("/result.json"))))
-            .map(|(path, _)| path.clone()).collect();
-        for path in candidates {
-            let bytes = &raw[&path];
+                || (path.starts_with("documents/") && path.ends_with("/result.json"))) {
             let mut encoder = flate2::write::DeflateEncoder::new(Vec::new(), flate2::Compression::fast());
-            encoder.write_all(bytes).expect("in-memory project compression");
+            encoder.write_all(&bytes).expect("in-memory project compression");
             let packed = encoder.finish().expect("complete in-memory project stream");
             if packed.len() < bytes.len() {
-                self.packed.insert(path.clone(), Arc::new(ColdProjectFile {
+                self.packed.insert(path.to_owned(), Arc::new(ColdProjectFile {
                     deflated: packed, length: bytes.len(), decoded: Default::default(),
                 }));
-                raw.remove(&path);
+                return;
             }
         }
+        Arc::make_mut(&mut self.raw).insert(path.to_owned(), bytes);
     }
     pub fn get(&self, path: &str) -> Option<&Vec<u8>> {
         self.raw.get(path).or_else(|| self.packed.get(path).map(|file| file.decoded.get_or_init(|| file.decode())))
@@ -947,8 +944,6 @@ fn read_root(directory: &Directory, root_name: &str) -> Result<ProjectArchive, A
         };
         files.parsed.insert(path.to_owned(), (entry.clone(), frozen));
     }
-    drop(decoded);
-    Arc::make_mut(&mut archive.files).compact_models();
     Ok(archive)
 }
 
@@ -957,18 +952,18 @@ fn read_root_with_documents(
     root_name: &str,
 ) -> Result<(ProjectArchive, BTreeMap<String, Document>), ApiError> {
     let manifest: PackageManifest = decode(&directory.read(root_name)?, root_name)?;
-    let mut files = BTreeMap::new();
+    let mut files = ProjectFiles::default();
     for entry in &manifest.documents {
         let path = entry.file_ref.path.as_str();
         match directory.read(path) {
             Ok(bytes) => {
-                files.insert(path.into(), bytes);
+                files.store_original(path, bytes);
             }
             Err(e) if matches!(e.code, ErrorCode::MissingReference) && !entry.required => {}
             Err(e) => return Err(e),
         }
     }
-    validate_archive_with_documents(manifest, files)
+    validate_project_files(manifest, Arc::new(files), None)
 }
 
 fn validate_archive(
@@ -2399,8 +2394,8 @@ mod tests {
         let bytes: Vec<u8> = (0u8..=255).cycle().take(256 * 1024).collect();
         let path = "bundled/device.glb";
         let raw = BTreeMap::from([(path.to_owned(), bytes.clone()), ("a/data".into(), vec![1]), ("z/data".into(), vec![2])]);
-        let mut files = ProjectFiles { raw: Arc::new(raw.clone()), packed: Default::default(), parsed: Default::default() };
-        files.compact_models();
+        let mut files = ProjectFiles::default();
+        for (path, bytes) in &raw { files.store_original(path, bytes.clone()); }
         assert_eq!(files.keys().collect::<Vec<_>>(), raw.keys().collect::<Vec<_>>());
         assert!(files.packed.contains_key(path));
         assert_eq!(files.read(path).unwrap().as_ref(), bytes.as_slice());
