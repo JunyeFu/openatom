@@ -399,7 +399,7 @@ impl ProjectHost {
                 .map(|reference| self.modules.get(&module_key(reference)).map(|package| package.definition.clone())
                     .ok_or_else(|| error(ErrorCode::MissingReference, "Exact frozen Run module version is absent; current/latest definitions cannot replace it", Some("/params/run_ids"))))
                 .collect::<Result<Vec<_>, _>>()?;
-            Ok((project, scenario, definitions, run.result.clone()))
+            Ok((project, scenario, definitions, run.result.as_ref().clone()))
         }).collect()
     }
 }

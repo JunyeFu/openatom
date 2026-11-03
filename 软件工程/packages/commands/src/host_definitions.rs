@@ -200,7 +200,7 @@ impl ProjectHost {
         // requirements; the typed immutable metadata was compared above.
         bundle.additions.iter().filter(|addition| bundle.package.files.iter().any(|file|
             file.path == addition.entry.file_ref.path)).any(|addition|
-            self.project_file_bytes(addition.entry.file_ref.path.as_str()) != Some(addition.bytes().as_ref()))
+            self.project_file_bytes(addition.entry.file_ref.path.as_str()).as_deref() != Some(addition.bytes().as_ref()))
     }
 
     pub(super) fn query_modules(
@@ -282,7 +282,7 @@ impl ProjectHost {
                         self.bundled_modules[&module_key(&reference)].additions.iter()
                             .find(|file| file.entry.file_ref.path == *path).map(|file| file.bytes())
                     } else {
-                        self.project_file_bytes(path.as_str()).map(std::borrow::Cow::Borrowed)
+                        self.project_file_bytes(path.as_str())
                     }?;
                     serde_json::from_slice::<Versioned<TemplateGenerationProfile>>(&bytes).ok().map(|v| v.data)
                 })

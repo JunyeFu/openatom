@@ -1091,10 +1091,14 @@ pub struct ExecutionProjector {
     latest_snapshot: Option<std::sync::Arc<w::ExecutionSnapshot>>,
     cutoff_snapshot: Option<std::sync::Arc<w::ExecutionSnapshot>>,
     records: Vec<w::ExecutionObservationRecord>,
+    archived_history: Option<std::sync::Arc<w::ExecutionObservationHistoryDocument>>,
     cutoff_revision: Option<u64>,
     last_engine_event_sequence: u64,
 }
 impl ExecutionProjector {
+    fn observation_records(&self) -> &[w::ExecutionObservationRecord] {
+        self.archived_history.as_ref().map_or(&self.records, |history| &history.records)
+    }
     pub fn new() -> Self {
         Self::default()
     }
@@ -1273,9 +1277,10 @@ impl ExecutionProjector {
     /// Restore only immutable read history. This never resumes an Engine/clock or grants control.
     /// Restored archives can be queried, but not appended (their original live Engine is absent).
     pub fn from_archive(
-        history: w::ExecutionObservationHistoryDocument,
+        history: impl Into<std::sync::Arc<w::ExecutionObservationHistoryDocument>>,
         snapshots: Vec<std::sync::Arc<StoredExecutionSnapshot>>,
     ) -> Result<ExecutionArchiveReader> {
+        let history = history.into();
         let mut saved = BTreeMap::new();
         for snapshot in snapshots {
             if !equal(&snapshot.identity, &history.identity)
@@ -1297,11 +1302,12 @@ impl ExecutionProjector {
         let mut store = Self {
             latest_snapshot: None, cutoff_snapshot: None,
             snapshots: saved,
-            records: history.records,
+            records: Vec::new(),
+            archived_history: Some(history.clone()),
             cutoff_revision,
             last_engine_event_sequence: 0,
         };
-        if history.observation_frontier.value() != store.records.len() as u64
+        if history.observation_frontier.value() != store.observation_records().len() as u64
             || !store.snapshots.contains_key(&0)
         {
             return Err(fail(
@@ -1318,7 +1324,7 @@ impl ExecutionProjector {
             ));
         }
         let mut previous = (0, 0);
-        for (i, record) in store.records.iter().enumerate() {
+        for (i, record) in store.observation_records().iter().enumerate() {
             let ordering = (record.execution_revision.value(), record.at_host_ms.value());
             if record.record_sequence.value() != i as u64 + 1
                 || ordering.0 < previous.0
@@ -1391,7 +1397,7 @@ impl ExecutionProjector {
         snapshot: &w::ExecutionSnapshot,
     ) -> Result<&'a [w::ExecutionObservationRecord]> {
         let frontier = snapshot.observation_frontier.value();
-        let prefix = self.records.get(..frontier as usize).ok_or_else(|| {
+        let prefix = self.observation_records().get(..frontier as usize).ok_or_else(|| {
             fail(
                 "projection.history_gap",
                 "Requested observation frontier is absent",

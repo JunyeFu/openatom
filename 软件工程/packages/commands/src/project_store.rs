@@ -41,6 +41,17 @@ pub struct ProjectArchive {
 pub struct ProjectFiles {
     raw: Arc<BTreeMap<String, Vec<u8>>>,
     packed: BTreeMap<String, Arc<ColdProjectFile>>,
+    parsed: BTreeMap<String, (DocumentEntry, FrozenDocument)>,
+}
+#[derive(Clone)]
+enum FrozenDocument {
+    Run(Arc<RunResult>),
+    Execution(Arc<crate::StoredExecutionArchive>),
+}
+impl FrozenDocument {
+    fn document(&self) -> Document {
+        match self { Self::Run(run) => Document::Run(run.clone()), Self::Execution(record) => Document::ExecutionArchive(record.clone()) }
+    }
 }
 struct ColdProjectFile {
     deflated: Vec<u8>,
@@ -64,7 +75,8 @@ impl ProjectFiles {
     fn compact_models(&mut self) {
         let raw = Arc::make_mut(&mut self.raw);
         let candidates: Vec<_> = raw.iter().filter(|(path, bytes)| bytes.len() >= 64 * 1024
-            && path.starts_with("bundled/") && (path.ends_with(".glb") || path.ends_with("/original-module.json")))
+            && ((path.starts_with("bundled/") && (path.ends_with(".glb") || path.ends_with(".json")))
+                || (path.starts_with("documents/") && path.ends_with("/result.json"))))
             .map(|(path, _)| path.clone()).collect();
         for path in candidates {
             let bytes = &raw[&path];
@@ -96,9 +108,11 @@ impl ProjectFiles {
     }
     pub fn values(&self) -> impl Iterator<Item=&Vec<u8>> { self.iter().map(|(_,v)| v) }
     pub fn remove(&mut self, path: &str) -> Option<Vec<u8>> {
+        self.parsed.remove(path);
         Arc::make_mut(&mut self.raw).remove(path).or_else(|| self.packed.remove(path).map(|file| file.decode()))
     }
     pub fn get_mut(&mut self, path: &str) -> Option<&mut Vec<u8>> {
+        self.parsed.remove(path);
         let raw = Arc::make_mut(&mut self.raw);
         if let Some(file) = self.packed.remove(path) { raw.insert(path.to_owned(), file.decode()); }
         raw.get_mut(path)
@@ -116,6 +130,7 @@ impl ProjectFiles {
         self.keys().map(|k| (k, self.get(k).expect("existing project file")))
     }
     pub fn insert(&mut self, path: String, bytes: Vec<u8>) -> Option<Vec<u8>> {
+        self.parsed.remove(&path);
         let prior = self.packed.remove(&path);
         Arc::make_mut(&mut self.raw).insert(path, bytes).or_else(|| prior.map(|f| f.decode()))
     }
@@ -152,21 +167,24 @@ impl ProjectArchive {
             .filter(|entry| matches!(entry.file_ref.kind, DocumentKind::Module))
             .filter_map(|entry| {
                 self.files
-                    .get(entry.file_ref.path.as_str())
-                    .map(|bytes| decode(bytes, entry.file_ref.path.as_str()))
+                    .read(entry.file_ref.path.as_str())
+                    .map(|bytes| decode(&bytes, entry.file_ref.path.as_str()))
             })
             .collect()
     }
 
-    pub(crate) fn run_results(&self) -> Result<Vec<RunResult>, ApiError> {
+    pub(crate) fn run_results(&self) -> Result<Vec<Arc<RunResult>>, ApiError> {
         self.manifest
             .documents
             .iter()
             .filter(|entry| matches!(entry.file_ref.kind, DocumentKind::RunResult))
             .filter_map(|entry| {
+                if let Some((prior, FrozenDocument::Run(run))) = self.files.parsed.get(entry.file_ref.path.as_str()) {
+                    if same(prior, entry) { return Some(Ok(run.clone())); }
+                }
                 self.files
-                    .get(entry.file_ref.path.as_str())
-                    .map(|bytes| decode(bytes, entry.file_ref.path.as_str()))
+                    .read(entry.file_ref.path.as_str())
+                    .map(|bytes| decode(&bytes, entry.file_ref.path.as_str()))
             })
             .collect()
     }
@@ -705,7 +723,7 @@ enum Document {
     Job(PackageStructureJob),
     Result(PackagingResult),
     Artifact(ArtifactRecord),
-    Run(RunResult),
+    Run(Arc<RunResult>),
     Evaluation(EvaluationReport),
     ExecutionArchive(std::sync::Arc<crate::StoredExecutionArchive>),
     Binary,
@@ -807,7 +825,7 @@ fn parse_document(entry: &DocumentEntry, bytes: &[u8]) -> Result<Document, ApiEr
         K::PackagingJob => Document::Job(decode(bytes, path)?),
         K::PackagingResult => Document::Result(decode(bytes, path)?),
         K::ArtifactRecord => Document::Artifact(decode(bytes, path)?),
-        K::RunResult => Document::Run(decode(bytes, path)?),
+        K::RunResult => Document::Run(Arc::new(decode(bytes, path)?)),
         K::Evaluation => Document::Evaluation(decode(bytes, path)?),
         K::ExecutionArchive => Document::ExecutionArchive(std::sync::Arc::new(crate::execution_archive::decode_archive_document(bytes, path)?)),
         K::Asset => Document::Binary,
@@ -918,7 +936,17 @@ pub fn read_project_archive(directory: &Path) -> Result<ProjectArchive, ApiError
 }
 
 fn read_root(directory: &Directory, root_name: &str) -> Result<ProjectArchive, ApiError> {
-    let (mut archive, decoded) = read_root_with_documents(directory, root_name)?;
+    let (mut archive, mut decoded) = read_root_with_documents(directory, root_name)?;
+    let files = Arc::make_mut(&mut archive.files);
+    for entry in &archive.manifest.documents {
+        let path = entry.file_ref.path.as_str();
+        let frozen = match decoded.remove(path) {
+            Some(Document::Run(run)) => FrozenDocument::Run(run),
+            Some(Document::ExecutionArchive(record)) => FrozenDocument::Execution(record),
+            _ => continue,
+        };
+        files.parsed.insert(path.to_owned(), (entry.clone(), frozen));
+    }
     drop(decoded);
     Arc::make_mut(&mut archive.files).compact_models();
     Ok(archive)
@@ -962,13 +990,23 @@ fn validate_archive_reusing_documents(
     files: impl Into<Arc<BTreeMap<String, Vec<u8>>>>,
     reusable: Option<(&ProjectArchive, &mut BTreeMap<String, Document>)>,
 ) -> Result<(ProjectArchive, BTreeMap<String, Document>), ApiError> {
-    validate_project_files(manifest, Arc::new(ProjectFiles { raw: files.into(), packed: BTreeMap::new() }), reusable)
+    validate_project_files(manifest, Arc::new(ProjectFiles { raw: files.into(), packed: BTreeMap::new(), parsed: BTreeMap::new() }), reusable)
 }
 
 fn validate_project_files(
     manifest: PackageManifest,
     files: Arc<ProjectFiles>,
+    reusable: Option<(&ProjectArchive, &mut BTreeMap<String, Document>)>,
+) -> Result<(ProjectArchive, BTreeMap<String, Document>), ApiError> {
+    let prior_sources = reusable.as_ref().map(|(archive, _)| &archive.execution_sources);
+    validate_project_files_with_sources(manifest, files, reusable, prior_sources)
+}
+
+fn validate_project_files_with_sources(
+    manifest: PackageManifest,
+    files: Arc<ProjectFiles>,
     mut reusable: Option<(&ProjectArchive, &mut BTreeMap<String, Document>)>,
+    prior_sources: Option<&crate::execution_archive::ArchivedExecutions>,
 ) -> Result<(ProjectArchive, BTreeMap<String, Document>), ApiError> {
     check_paths(manifest.documents.iter().map(|e| e.file_ref.path.as_str()))?;
     check_paths(files.keys().map(String::as_str))?;
@@ -1006,6 +1044,9 @@ fn validate_project_files(
     let mut documents = BTreeMap::new();
     for entry in &manifest.documents {
         let path = entry.file_ref.path.as_str();
+        if let Some((prior, frozen)) = files.parsed.get(path) {
+            if same(prior, entry) { documents.insert(path.to_owned(), frozen.document()); continue; }
+        }
         if let Some(cold) = files.packed.get(path) {
             let reused = reusable.as_mut().and_then(|(prior, parsed)| {
                 if prior.files.packed.get(path).is_some_and(|old| Arc::ptr_eq(old, cold))
@@ -1161,7 +1202,7 @@ fn validate_project_files(
     let execution_documents = documents.iter().filter_map(|(path, document)| match document {
         Document::ExecutionArchive(record) => Some((path.clone(), record.clone())), _ => None,
     }).collect();
-    archive.execution_sources = crate::execution_archive::load_sources(&archive, &execution_documents)?;
+    archive.execution_sources = crate::execution_archive::load_sources(&archive, &execution_documents, prior_sources)?;
     Ok((archive, documents))
 }
 
@@ -2007,8 +2048,8 @@ pub(crate) fn write_project_archive_with_additions(
         } else {
             let reusable = old_with_documents.as_mut()
                 .map(|(archive, parsed)| (&*archive, parsed));
-            let (_validated, parsed) = validate_project_files(
-                source.manifest.clone(), source.files.clone(), reusable,
+            let (_validated, parsed) = validate_project_files_with_sources(
+                source.manifest.clone(), source.files.clone(), reusable, Some(&source.execution_sources),
             )?;
             let retained = retained_paths_from_documents(draft, source, &parsed)?;
             parsed_backing = Some(parsed);
@@ -2358,7 +2399,7 @@ mod tests {
         let bytes: Vec<u8> = (0u8..=255).cycle().take(256 * 1024).collect();
         let path = "bundled/device.glb";
         let raw = BTreeMap::from([(path.to_owned(), bytes.clone()), ("a/data".into(), vec![1]), ("z/data".into(), vec![2])]);
-        let mut files = ProjectFiles { raw: Arc::new(raw.clone()), packed: Default::default() };
+        let mut files = ProjectFiles { raw: Arc::new(raw.clone()), packed: Default::default(), parsed: Default::default() };
         files.compact_models();
         assert_eq!(files.keys().collect::<Vec<_>>(), raw.keys().collect::<Vec<_>>());
         assert!(files.packed.contains_key(path));
@@ -2369,6 +2410,24 @@ mod tests {
         edited.get_mut(path).unwrap()[0] = 42;
         assert_eq!(files[path], bytes);
         assert_eq!(edited[path][0], 42);
+    }
+
+    #[test]
+    fn reopened_run_reuses_validated_data_only_until_bytes_or_entry_change() {
+        let original = complete_archive();
+        let directory = TempDirectory::new();
+        let root = Directory::open(&directory.path).unwrap();
+        for (path, bytes) in original.files.iter() { root.write_new(path, bytes).unwrap(); }
+        root.write_new("project.json", &encode(&original.manifest)).unwrap();
+        let opened = read_project_archive(&directory.path).unwrap();
+        assert!(Arc::ptr_eq(&opened.run_results().unwrap()[0], &opened.run_results().unwrap()[0]));
+        let mut bytes_changed = opened.clone();
+        Arc::make_mut(&mut bytes_changed.files).get_mut("run.json").unwrap().clear();
+        assert!(bytes_changed.run_results().is_err());
+        let mut owner_changed = opened.clone();
+        owner_changed.manifest.documents.iter_mut().find(|entry| entry.file_ref.path.as_str()=="run.json").unwrap().object_ref.id = "other".to_owned().try_into().unwrap();
+        assert!(validate_project_files(owner_changed.manifest, owner_changed.files, None).is_err());
+        assert!(opened.run_results().is_ok());
     }
 
     #[test]
@@ -5020,6 +5079,7 @@ fn assemble_archive_with_retained(
             } else if let Some(bytes) = archive.files.raw.get(path) {
                 files.insert(path.clone(), bytes.clone());
             }
+            if let Some(frozen) = archive.files.parsed.get(path) { files.parsed.insert(path.clone(), frozen.clone()); }
         }
     }
     let mut manifest = backing.map_or_else(

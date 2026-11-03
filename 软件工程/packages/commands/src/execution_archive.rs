@@ -25,7 +25,9 @@ pub struct StoredExecutionArchive {
     #[ts(as = "Vec<ExecutionSnapshot>")]
     pub snapshots:Vec<Arc<StoredExecutionSnapshot>>,
     // Unbuilt H01 preparation has frozen bytes but no actual r0/history yet.
-    pub history:Option<ExecutionObservationHistoryDocument>,
+    #[schemars(with = "Option<ExecutionObservationHistoryDocument>")]
+    #[ts(as = "Option<ExecutionObservationHistoryDocument>")]
+    pub history:Option<Arc<ExecutionObservationHistoryDocument>>,
     pub published_revisions:Vec<SafeUint>,
     pub files:Vec<StoredExecutionFile>,
 }
@@ -163,8 +165,9 @@ impl ArchivedExecutionSource {
         self.record.published_revisions.iter().all(|r|new.record.published_revisions.contains(r))
     }
 }
-pub(crate) fn load_sources(archive:&ProjectArchive,documents:&BTreeMap<String,Arc<StoredExecutionArchive>>)->Result<ArchivedExecutions,ApiError> {
+pub(crate) fn load_sources(archive:&ProjectArchive,documents:&BTreeMap<String,Arc<StoredExecutionArchive>>,prior:Option<&ArchivedExecutions>)->Result<ArchivedExecutions,ApiError> {
     let mut result=ArchivedExecutions::new();
+    let entries:BTreeMap<_,_>=archive.manifest.documents.iter().map(|e|(e.file_ref.path.as_str(),e)).collect();
     for entry in &archive.manifest.documents {
         if !matches!(entry.file_ref.kind,DocumentKind::ExecutionArchive) {continue;}
         if !entry.required||!matches!(entry.role,DocumentRole::SupportingFile)||!matches!(entry.object_ref.kind,ObjectKind::Project)
@@ -172,8 +175,21 @@ pub(crate) fn load_sources(archive:&ProjectArchive,documents:&BTreeMap<String,Ar
         let bytes=archive.files.get(entry.file_ref.path.as_str()).ok_or_else(||fail("Execution archive document is missing"))?;
         let _ = bytes; // Presence checked above; reuse the already parsed immutable document.
         let record=documents.get(entry.file_ref.path.as_str()).ok_or_else(||fail("Execution archive document was not parsed"))?.clone();
-        let source=Arc::new(ArchivedExecutionSource::load(record,archive)?);
-        let key=key(&source.record.frozen_inputs.identity);
+        let key=key(&record.frozen_inputs.identity);
+        // Only a previously validated immutable record with its complete, byte-identical
+        // frozen file closure can reuse the reader. Manifest ownership is checked above.
+        let same_source=prior.and_then(|sources|sources.get(&key)).filter(|source|
+            Arc::ptr_eq(&source.record,&record) && record.frozen_inputs.identity.project_id==archive.project.id
+            && record.files.len()==source.files.len()
+            && record.files.iter().zip(source.files.iter()).all(|(binding,original)| {
+                let path=binding.stored_file.path.as_str();
+                entries.get(path).is_some_and(|entry|entry.required && same(&entry.file_ref,&binding.stored_file))
+                    && archive.files.read(path).as_deref()==Some(original.bytes.as_slice())
+            }));
+        let source=match same_source {
+            Some(source)=>source.clone(),
+            None=>Arc::new(ArchivedExecutionSource::load(record,archive)?),
+        };
         if let Some(old)=result.get(&key) {
             if old.is_prefix_of(&source) {result.insert(key,source);}
             else if !source.is_prefix_of(old) {return Err(fail("Saved records for one full execution identity are conflicting prefixes"));}
@@ -207,7 +223,7 @@ impl ExecutionArchiveCapture {
                 revision:None,file_ref:stored.clone(),required:true},bytes:file.bytes.clone()});
             bindings.push(StoredExecutionFile {original_file:file.file.clone(),stored_file:stored,byte_length:(file.bytes.len() as u64).try_into().map_err(|_|fail("Frozen file exceeds safe length"))?});
         }
-        let record=StoredExecutionArchive {frozen_inputs:self.frozen,snapshots:self.snapshots,history:self.history,published_revisions:self.published,files:bindings};
+        let record=StoredExecutionArchive {frozen_inputs:self.frozen,snapshots:self.snapshots,history:self.history.map(Arc::new),published_revisions:self.published,files:bindings};
         additions.push(ArchiveAddition {entry:DocumentEntry {role:DocumentRole::SupportingFile,module_ref:None,object_ref:owner,revision:None,
             file_ref:FileRef {path:format!("{}/source.json.gz",self.directory).try_into().unwrap(),kind:DocumentKind::ExecutionArchive},required:true},bytes:encode_compressed_document(&record)});
         Ok(additions)

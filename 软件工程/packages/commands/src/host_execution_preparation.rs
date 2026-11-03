@@ -922,7 +922,7 @@ impl ProjectHost {
                 capture.inherited=Some(old.record.files.clone());
                 for revision in &old.record.published_revisions {if !capture.published.contains(revision){capture.published.push(revision.clone());}}
                 capture.published.sort_by_key(|r|r.value());
-                if old.record.snapshots.len()==capture.snapshots.len()&&crate::execution_archive::snapshot_prefix(&old.record.snapshots,&capture.snapshots)&&crate::execution_archive::same_history(old.record.history.as_ref(),capture.history.as_ref())&&same(&old.record.published_revisions,&capture.published){continue;}
+                if old.record.snapshots.len()==capture.snapshots.len()&&crate::execution_archive::snapshot_prefix(&old.record.snapshots,&capture.snapshots)&&crate::execution_archive::same_history(old.record.history.as_deref(),capture.history.as_ref())&&same(&old.record.published_revisions,&capture.published){continue;}
             }
             capture.directory=self.next_document_directory("execution");
             captures.push(capture);

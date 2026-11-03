@@ -77,7 +77,7 @@ impl LocalExecutionSource<'_> {
     pub(super) fn history_document(&self) -> Result<ExecutionObservationHistoryDocument,ApiError> {
         match self {
             Self::Live(v) => v.core.projector.history_document().map_err(projection_failure),
-            Self::Archive(v) => v.record.history.clone().ok_or_else(||error(ErrorCode::MissingReference,"Execution history is unavailable",None)),
+            Self::Archive(v) => v.record.history.as_deref().cloned().ok_or_else(||error(ErrorCode::MissingReference,"Execution history is unavailable",None)),
         }
     }
     pub(super) fn published_revision(&self) -> Option<SafeUint> {

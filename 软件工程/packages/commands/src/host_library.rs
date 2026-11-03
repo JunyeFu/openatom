@@ -598,10 +598,10 @@ impl ProjectHost {
         path.clone()
     }
 
-    pub(super) fn project_file_bytes(&self, path: &str) -> Option<&[u8]> {
+    pub(super) fn project_file_bytes(&self, path: &str) -> Option<std::borrow::Cow<'_, [u8]>> {
         self.additions.iter().rev().find(|a| a.entry.file_ref.path.as_str() == path)
-            .map(|a| a.bytes.as_slice())
-            .or_else(|| self.backing.as_ref()?.files.get(path).map(Vec::as_slice))
+            .map(|a| std::borrow::Cow::Borrowed(a.bytes.as_slice()))
+            .or_else(|| self.backing.as_ref()?.files.read(path))
     }
 
     pub(super) fn module_source_files(&self, reference: &ModuleRef) -> BTreeMap<String, Vec<u8>> {
@@ -694,7 +694,7 @@ impl ProjectHost {
                     .find(|entry| entry.file_ref.path.as_str().eq_ignore_ascii_case(path))
                 {
                     if !exact_data(entry, &addition.entry)
-                        || archive.files.get(path).map(Vec::as_slice) != Some(addition.bytes().as_ref())
+                        || archive.files.read(path).as_deref() != Some(addition.bytes().as_ref())
                     {
                         return Err(library_error(
                             "Bundled file conflicts with archived Project content",

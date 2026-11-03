@@ -443,7 +443,7 @@ impl ProjectHost {
                             .map(|package| package.definition)
                     })
                     .collect::<Result<Vec<_>, _>>()?;
-                Ok((project, scenario, definitions, run.result.clone()))
+                Ok((project, scenario, definitions, run.result.as_ref().clone()))
             })
             .collect()
     }

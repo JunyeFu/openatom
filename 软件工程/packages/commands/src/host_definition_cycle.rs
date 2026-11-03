@@ -445,7 +445,7 @@ impl ProjectHost {
             self.runs.insert(
                 result.id.clone(),
                 HostRun {
-                    result,
+                    result: Arc::new(result),
                     engine: Some(engine),
                     history: Some(history),
                     scope,
