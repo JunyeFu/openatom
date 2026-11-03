@@ -1290,7 +1290,15 @@ impl Engine {
                     && matches!(blocker.kind, ObjectKind::Location))
                     .then_some((&job.spec.id, &blocker.id))
             })
-        })
+        }).chain(self.trips.iter().filter_map(|(index, trip)| {
+            let job = &self.jobs[*index];
+            if job.phase != 2 || trip.arrived_ms.is_none() || trip.received_ms.is_some()
+                || !matches!(job.state.state, JobStatus::WaitingResource) {
+                return None;
+            }
+            self.receive_reasons(*index).iter().any(|r| matches!(r.kind, WaitReasonKind::OutputCapacity))
+                .then(|| (&job.spec.id, &job.spec.transport.as_ref().unwrap().supply.destination))
+        }))
     }
 
     pub fn external_cutoff_observation(&self) -> Option<&ExternalObservation> {

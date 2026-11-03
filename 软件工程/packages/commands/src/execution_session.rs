@@ -485,6 +485,29 @@ pub(crate) mod tests {
         }
     }
 
+
+    #[test]
+    fn stopping_an_arrived_transport_names_the_full_destination() {
+        let mut input: Value = serde_json::from_str(include_str!("../tests/fixtures/production/p202-halls-B.json")).unwrap();
+        let sink = input["scenario"]["supplies"][0]["destination"].clone();
+        input["project"]["locations"].as_array_mut().unwrap().iter_mut()
+            .find(|l| l["id"] == sink).unwrap()["capacity"]["value"]["coefficient"] = json!(0);
+        let mut session = semantic_session(input);
+        let before = drive_semantic_prefix(&mut session, usize::MAX);
+        let trip = before.business_facts.transport.iter()
+            .find(|t| t.arrived_ms.is_some() && t.received_ms.is_none()).unwrap();
+        let now = session.clock_anchor.unwrap() + std::time::Duration::from_millis(before.coverage.observed_until_host_ms.value()+1);
+        session.control(id("operator"), id("stop-arrived"), session.revision, ControlAction::StopDispatch {}, now).unwrap();
+        let after = session.projector.snapshot(&SnapshotSelection::Latest {}).unwrap();
+        assert!(matches!(after.lifecycle.state, ExecutionSnapshotLifecycleState::Draining));
+        assert!(!after.lifecycle.new_dispatch_allowed);
+        let reason = after.lifecycle.reason.as_ref().unwrap().as_str();
+        assert!(reason.contains(trip.id.as_str()) && reason.contains(sink.as_str().unwrap()));
+        assert_eq!(before.attempts.len(), after.attempts.len());
+        assert!(equal(&before.business_facts.transport, &after.business_facts.transport));
+        assert!(equal(&before.business_facts.acceptance_events, &after.business_facts.acceptance_events));
+    }
+
     fn multiphase_session(cutoff: u64) -> ExecutionSession {
         let seed = session_with(cutoff, false);
         let mut frozen = serde_json::to_value(&seed.frozen).unwrap();

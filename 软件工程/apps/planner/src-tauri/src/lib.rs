@@ -3,6 +3,8 @@ use tauri::{Manager, WebviewUrl, WebviewWindowBuilder};
 use ts_rs::TS;
 
 #[cfg(windows)]
+mod verification_display;
+#[cfg(windows)]
 mod agent_pipe;
 #[cfg(windows)]
 mod native_render;
@@ -182,15 +184,26 @@ pub fn run() {
                 let area = target.work_area();
                 let scale = target.scale_factor();
                 window_builder = window_builder.visible(false).maximized(false)
-                    .position((f64::from(area.position.x) + 48.0) / scale,
-                              (f64::from(area.position.y) + 48.0) / scale)
                     .inner_size((f64::from(area.size.width) - 96.0) / scale,
                                 (f64::from(area.size.height) - 128.0) / scale);
                 Some(target)
             } else {
                 None
             };
+            #[cfg(not(windows))]
+            if verify_monitor.is_some() { return Err(std::io::Error::other("Secondary verification requires Windows").into()); }
+            #[cfg(windows)]
+            let creation_hook = verify_monitor.as_ref().map(|m| {
+                let p = m.work_area().position;
+                verification_display::CreationHook::install(verification_display::creation_origin(p.x, p.y))
+            }).transpose()?;
             let main_window = window_builder.build()?;
+            #[cfg(windows)]
+            if creation_hook.as_ref().is_some_and(|hook| !hook.applied()) {
+                return Err(std::io::Error::other("Secondary HWND creation hook was not applied").into());
+            }
+            #[cfg(windows)]
+            drop(creation_hook);
             if let Some(target) = verify_monitor {
                 let actual = main_window.current_monitor()?;
                 if main_window.is_visible()? || actual.as_ref().map(|m| m.position()) != Some(target.position()) {
