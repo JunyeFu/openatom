@@ -1,0 +1,40 @@
+{
+  "scope": "isolated loopback, real PostgreSQL + Axum + SDK, not Sealos WAN or FV3 PF05",
+  "image_digest": "sha256:fd3f600991c2c8964bfab5ce6be7c9a01f5b6cefddfaa7b3ead4adf709a6ec45",
+  "database_version": "PostgreSQL 18.6 (Debian 18.6-1.pgdg13+2) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit",
+  "component_checks": 111,
+  "component_passed": true,
+  "same_100_event_recipe": [
+    {
+      "runtime": "frozen_source_windows_debug",
+      "send_ms": {
+        "count": 100,
+        "median_ms": 26.828049999999998,
+        "p95_ms": 31.7129
+      },
+      "stored_once": 100,
+      "restart_replay": true
+    },
+    {
+      "runtime": "existing_oci_candidate",
+      "send_ms": {
+        "count": 100,
+        "median_ms": 15.684149999999999,
+        "p95_ms": 30.1205
+      },
+      "stored_once": 100,
+      "restart_replay": true
+    }
+  ],
+  "reader_request_p95_ms": 27.0246,
+  "fixed_frontier_short_host_read": {
+    "events": 5,
+    "passed": true
+  },
+  "sdk_unit_tests": 32,
+  "host_stale_and_retry_test": true,
+  "million_row_check": "not run on a million-row fixture; five rows are validated under a separate test",
+  "network_decision": "no transport change on loopback evidence; preserve boot, sequence and retry semantics",
+  "real_remote_candidate_used": false,
+  "production_deployment_changed": false
+}

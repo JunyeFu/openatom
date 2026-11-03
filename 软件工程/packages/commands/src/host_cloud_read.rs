@@ -890,6 +890,16 @@ mod tests {
     #[test]
     #[ignore = "requires the owned real HTTP service and private scoped reader environment"]
     fn actual_loopback_cloud_reads_complete_in_the_original_host_task_registry() {
+        verify_real_host_reads(json!(["G000"]), 1_000_000, 200, true);
+    }
+
+    #[test]
+    #[ignore = "requires the owned FV1 five-event component fixture and scoped reader"]
+    fn actual_fv1_short_chain_cloud_reads_in_host() {
+        verify_real_host_reads(json!([]), 5, 5, false);
+    }
+
+    fn verify_real_host_reads(devices: Value, frontier: u64, rows: usize, more: bool) {
         let endpoint = std::env::var("SF_V2_HOST_READ_ENDPOINT").unwrap();
         let token = std::env::var("SF_V2_HOST_READER_TOKEN").unwrap();
         let (mut host, ui, project, _) = setup();
@@ -901,7 +911,7 @@ mod tests {
         let generation = host.content_generation;
         let selections = [json!({"kind":"dataset_catalog"}), json!({"kind":"active_execution"}),
             json!({"kind":"data_query","query":{"dataset":"telemetry","contract_version":EXECUTION_CONTRACT_VERSION,
-                "cloud_project_id":"example","dataset_id":"load-fixture","device_ids":["G000"],
+                "cloud_project_id":"example","dataset_id":"load-fixture","device_ids":devices,
                 "received_from":"2020-01-01T00:00:00.000000Z","received_until":"2090-01-01T00:00:00.000000Z",
                 "aggregation":"rows","page":{"limit":200,"cursor":null}}})];
         for (n, selection) in selections.into_iter().enumerate() {
@@ -921,9 +931,9 @@ mod tests {
             let data = &state["result"]["data"]["data"];
             if n == 0 { assert!(data["datasets"].as_array().unwrap().iter().any(|d| d["dataset_id"] == "load-fixture")); }
             if n == 2 {
-                assert_eq!(data["selected_visible_frontier"], 1_000_000);
-                assert_eq!(data["rows"].as_array().unwrap().len(), 200);
-                assert!(data["next_cursor"].is_string());
+                assert_eq!(data["selected_visible_frontier"], frontier);
+                assert_eq!(data["rows"].as_array().unwrap().len(), rows);
+                assert_eq!(data["next_cursor"].is_string(), more);
             }
             assert_eq!(host.project.as_ref().unwrap().revision.0.value(), revision.0.value());
             assert_eq!(host.content_generation, generation);

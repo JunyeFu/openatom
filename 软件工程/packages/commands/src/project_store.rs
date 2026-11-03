@@ -353,7 +353,8 @@ fn check_paths<'a>(paths: impl IntoIterator<Item = &'a str>) -> Result<(), ApiEr
                 return Err(invalid(path, "file/directory path collision"));
             }
         }
-        if names.iter().any(|n| n.starts_with(&(key.clone() + "/"))) {
+        let prefix = key + "/";
+        if names.range(prefix.clone()..).next().is_some_and(|name| name.starts_with(&prefix)) {
             return Err(invalid(path, "file/directory path collision"));
         }
     }
@@ -860,12 +861,8 @@ fn validate_archive_reusing_documents(
     let files = files.into();
     check_paths(manifest.documents.iter().map(|e| e.file_ref.path.as_str()))?;
     check_paths(files.keys().map(String::as_str))?;
-    if files.keys().any(|path| {
-        !manifest
-            .documents
-            .iter()
-            .any(|e| e.file_ref.path.as_str() == path)
-    }) {
+    let declared: BTreeSet<_> = manifest.documents.iter().map(|e| e.file_ref.path.as_str()).collect();
+    if files.keys().any(|path| !declared.contains(path.as_str())) {
         return Err(invalid(
             "project.json",
             "included bytes require explicit manifest entries",
@@ -892,14 +889,16 @@ fn validate_archive_reusing_documents(
             "exactly one required active_project document is required",
         ));
     }
+    let prior_entries: BTreeMap<_, _> = reusable.as_ref().into_iter()
+        .flat_map(|(prior, _)| prior.manifest.documents.iter())
+        .map(|entry| (entry.file_ref.path.as_str(), entry)).collect();
     let mut documents = BTreeMap::new();
     for entry in &manifest.documents {
         let path = entry.file_ref.path.as_str();
         match files.get(path) {
             Some(bytes) => {
                 let reused = reusable.as_mut().and_then(|(archive, parsed)| {
-                    let prior = archive.manifest.documents.iter()
-                        .find(|prior| prior.file_ref.path.as_str() == path)?;
+                    let prior = *prior_entries.get(path)?;
                     if same(prior, entry) && archive.files.get(path) == Some(bytes) {
                         parsed.remove(path)
                     } else {
@@ -1868,6 +1867,7 @@ pub(crate) fn write_project_archive_with_additions(
         Err(e) if matches!(e.code, ErrorCode::MissingReference) => None,
         Err(e) => return Err(e),
     };
+    let mut parsed_backing = None;
     let retained = if let Some(source) = backing {
         if source.project.id != project.id || source.manifest.project_id != project.id {
             return Err(invalid(
@@ -1877,23 +1877,27 @@ pub(crate) fn write_project_archive_with_additions(
         }
         // This call already validated the target. Reuse only exact entries and
         // bytes; backing metadata and its reference closure still need validation.
-        let reusable = old_with_documents.as_ref().filter(|(old, _)| {
+        let reusable = old_with_documents.as_mut().filter(|(old, _)| {
             same(&old.manifest, &source.manifest) && old.files == source.files
         });
         if let Some((_, parsed)) = reusable {
-            retained_paths_from_documents(draft, source, parsed)?
+            let retained = retained_paths_from_documents(draft, source, parsed)?;
+            parsed_backing = Some(std::mem::take(parsed));
+            retained
         } else {
             let reusable = old_with_documents.as_mut()
                 .map(|(archive, parsed)| (&*archive, parsed));
             let (_validated, parsed) = validate_archive_reusing_documents(
                 source.manifest.clone(), source.files.clone(), reusable,
             )?;
-            retained_paths_from_documents(draft, source, &parsed)?
+            let retained = retained_paths_from_documents(draft, source, &parsed)?;
+            parsed_backing = Some(parsed);
+            retained
         }
     } else {
         BTreeSet::new()
     };
-    // Release the parsed Run documents before assembling the new archive.
+    // Transfer matching parsed documents into assembly instead of decoding retained Runs again.
     let old = old_with_documents.map(|(archive, _)| archive);
     let mut generation = old.as_ref().map_or(0, |a| a.manifest.generation.value());
     loop {
@@ -1921,11 +1925,12 @@ pub(crate) fn write_project_archive_with_additions(
             Err(e) => return Err(io_failure(&relative, e)),
         }
     }
-    let archive = assemble_archive_with_retained(draft, backing, additions, generation, retained)?;
-    for (path, bytes) in archive.files.iter() {
+    let archive = assemble_archive_with_retained(draft, backing, additions, generation, retained, parsed_backing.as_mut())?;
+    // All independently named payloads must reach disk before committing project.json.
+    let persist = |path: &str, bytes: &[u8]| -> Result<(), ApiError> {
         check_cancelled(cancelled)?;
         match directory.read(path) {
-            Ok(existing) if &existing == bytes => {}
+            Ok(existing) if existing == bytes => {}
             Ok(_) => {
                 return Err(failure(
                     ErrorCode::IoFailure,
@@ -1938,6 +1943,21 @@ pub(crate) fn write_project_archive_with_additions(
             }
             Err(e) => return Err(e),
         }
+        Ok(())
+    };
+    let entries: Vec<_> = archive.files.iter().collect();
+    let workers = std::thread::available_parallelism().map_or(1, |n| n.get()).min(4);
+    let batch = entries.len().div_ceil(workers).max(256);
+    if entries.len() <= batch {
+        for (path, bytes) in entries { persist(path, bytes)?; }
+    } else {
+        std::thread::scope(|scope| {
+            let handles: Vec<_> = entries.chunks(batch).map(|chunk| {
+                let persist = &persist;
+                scope.spawn(move || chunk.iter().try_for_each(|(path, bytes)| persist(path, bytes)))
+            }).collect();
+            handles.into_iter().try_for_each(|handle| handle.join().expect("payload writer panicked"))
+        })?;
     }
     check_cancelled(cancelled)?;
     let replacement = internal_name(&directory, "new-root")?;
@@ -4840,7 +4860,7 @@ fn assemble_archive(
         Some(source) => retained_paths(draft, source)?,
         None => BTreeSet::new(),
     };
-    assemble_archive_with_retained(draft, backing, additions, generation, retained)
+    assemble_archive_with_retained(draft, backing, additions, generation, retained, None)
 }
 
 fn assemble_archive_with_retained(
@@ -4849,6 +4869,7 @@ fn assemble_archive_with_retained(
     additions: &[ArchiveAddition],
     generation: u64,
     retained: BTreeSet<String>,
+    parsed_backing: Option<&mut BTreeMap<String, Document>>,
 ) -> Result<ProjectArchive, ApiError> {
     let project = &draft.project;
     let active_path = format!("data/g{generation:06}/project-state.json");
@@ -5006,7 +5027,7 @@ fn assemble_archive_with_retained(
             manifest.missing.push(issue.clone());
         }
     }
-    validate_archive(manifest, files)
+    validate_archive_reusing_documents(manifest, files, backing.zip(parsed_backing)).map(|(archive, _)| archive)
 }
 #[cfg(test)]
 mod optimization_reference_tests {

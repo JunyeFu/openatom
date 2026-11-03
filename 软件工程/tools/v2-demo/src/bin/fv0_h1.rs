@@ -55,12 +55,15 @@ impl Host {
         }
     }
     fn finish(&mut self, project: bool, handle: &Value) -> Value {
+        let state = self.io_result(project, handle);
+        assert_eq!(state["task"]["state"], "completed", "task failed: {state}");
+        state
+    }
+    fn io_result(&mut self, project: bool, handle: &Value) -> Value {
         let mut work = self.host.drain_io_work();
         assert_eq!(work.len(), 1);
         self.host.finish_io(work.pop().unwrap().run());
-        let state = self.call(project, "get_task", json!({"task_id":handle["id"]}));
-        assert_eq!(state["task"]["state"], "completed", "task failed: {state}");
-        state
+        self.call(project, "get_task", json!({"task_id":handle["id"]}))
     }
     fn open(&mut self, path: &Path) {
         let start = Instant::now();
@@ -104,19 +107,22 @@ impl Host {
     fn save(&mut self, path: &Path) {
         let start = Instant::now();
         fs::create_dir(path).unwrap();
+        let handle = self.queue_save(path);
+        let state = self.finish(true, &handle);
+        assert_eq!(state["result"]["kind"], "save");
+        emit("host_save", start, json!({"saved":true}));
+    }
+    fn queue_save(&mut self, path: &Path) -> Value {
         let selected = self
             .host
             .select_directory(&self.ui, FilePurpose::SaveProject, path.to_owned())
             .unwrap();
         let context = self.call(true, "get_context", json!({"selection":[]}));
-        let handle = self.call(
+        self.call(
             true,
             "save_project",
             json!({"revision":context["project"]["revision"],"selected_directory_ref":selected}),
-        );
-        let state = self.finish(true, &handle);
-        assert_eq!(state["result"]["kind"], "save");
-        emit("host_save", start, json!({"saved":true}));
+        )
     }
 }
 fn codec(input: &Path, output: &Path) {
@@ -178,6 +184,26 @@ fn main() {
                 assert_eq!(a.len(), 5);
                 host.save(Path::new(&a[4]));
             }
+        }
+        #[cfg(windows)]
+        "check-failed-replace" => {
+            assert_eq!(a.len(), 4, "expected a disposable copy and expected snapshot");
+            use std::os::windows::fs::OpenOptionsExt;
+            let copy = Path::new(&a[2]);
+            let expected = read(Path::new(&a[3]));
+            let root = copy.join("project.json");
+            let before = fs::read(&root).unwrap();
+            let mut host = Host::new();
+            host.open(copy);
+            host.verify(&expected);
+            let held = fs::OpenOptions::new().read(true).share_mode(1).open(&root).unwrap();
+            let handle = host.queue_save(copy);
+            let state = host.io_result(true, &handle);
+            assert_eq!(state["task"]["state"], "failed", "{state}");
+            assert!(state.to_string().contains("old project ID/generation/revision verified"), "{state}");
+            drop(held);
+            assert_eq!(before, fs::read(root).unwrap());
+            println!("Verified old root after controlled replacement failure");
         }
         _ => panic!("unknown mode"),
     }
