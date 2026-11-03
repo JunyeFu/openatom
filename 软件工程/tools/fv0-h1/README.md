@@ -61,3 +61,5 @@ cargo build --locked --manifest-path tools/v2-demo/Cargo.toml --bin fv0_h1
 ```
 
 Rust 及 MSVC 环境按仓库 README 准备。默认产物位于 `tools/v2-demo/target/debug/fv0_h1.exe`；若设置了 `CARGO_TARGET_DIR`，在该目录的 `debug` 下取文件。仅替换自己的工具副本中的 exe，并在回报写明构建提交、profile 和改动。Python 入口在 `tools/fv0-h1/run_h1.py`，Rust 入口在 `tools/v2-demo/src/bin/fv0_h1.rs`。本工具不修改产品源码、正式安装包或已提交的公开下载页。
+
+FV1 保存失败验证仅在一次性 H1 存档副本运行。先用 save 生成独立输出目录，再用 `fv0_h1.exe check-failed-replace 副本目录 actual-PG-snapshot.json` 锁住副本根清单并尝试保存，核对失败及旧根字节。最后以独立进程运行 `fv0_h1.exe reopen 副本目录 actual-PG-snapshot.json` 检查原快照与全部历史。该命令会写入副本目录，保留原始输入。

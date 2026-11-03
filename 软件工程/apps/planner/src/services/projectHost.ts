@@ -101,9 +101,9 @@ export async function readWorkspace(): Promise<WorkspaceSnapshot> {
   const project = object.data;
   if (project.revision !== context.project.revision) throw new Error('读取期间工程已变化，请刷新后继续。');
   const [moduleObjects, scenarioObjects] = await Promise.all([
-    Promise.allSettled(project.module_refs.map(ref => dispatch<DomainObject>({ ...header(project.id), operation: 'get_object', params: {
+    readModuleBatch(project.module_refs, ref => dispatch<DomainObject>({ ...header(project.id), operation: 'get_object', params: {
       object_id: { kind: 'module', id: ref.id }, source: { kind: 'module_version', data: { module_ref: ref } }, node_index: null,
-    } }))),
+    } })),
     Promise.allSettled(project.scenario_refs.map(id => dispatch<DomainObject>({ ...header(project.id), operation: 'get_object', params: {
       object_id: { kind: 'scenario', id }, source: { kind: 'draft' }, node_index: null,
     } }))),
@@ -283,8 +283,26 @@ export async function runScenario(project: ProjectState, scenario: ScenarioInput
   return awaitTask(task, onState);
 }
 
-export function getRun(projectId: string, runId: string, query: RunQuery) {
-  return dispatch<RunView>({ ...header(projectId), operation: 'get_run', params: { run_id: runId, query } });
+export async function getRun(projectId: string, runId: string, query: RunQuery): Promise<RunView> {
+  const request = { ...header(projectId), operation: 'get_run' as const, params: { run_id: runId, query } };
+  if (query.kind === 'full_result' && nativeHostAvailable()) {
+    nfr.mark('ipc_request', { operation: request.operation, request_id: request.request_id });
+    let bytes: ArrayBuffer;
+    try { bytes = await invoke<ArrayBuffer>('project_read_full_run', { projectId, runId }); }
+    catch (error) {
+      if (error && typeof error === 'object' && 'code' in error && 'message' in error) {
+        nfr.reply(request.request_id, request.operation, {status: 'error', data: error});
+        throw new HostFailure(error as ApiError);
+      }
+      throw error;
+    }
+    const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
+    const data: RunResult = await new globalThis.Response(stream).json();
+    const view: RunView = { kind: 'full', data };
+    nfr.reply(request.request_id, request.operation, {status: 'ok', data: view});
+    return view;
+  }
+  return dispatch<RunView>(request);
 }
 
 export function cancelTask(task: TaskHandle, definitionProjectId?: string) {
@@ -318,29 +336,46 @@ export async function readRunProject(projectId: string, runId: string, atMs: num
   return object.data;
 }
 
-export async function readRunInputs(projectId: string, run: RunResult, atMs: number) {
+// Port geometry and the device inspector need these exact frozen versions. Media dependencies
+// resolve on demand through the same Run source in factoryPresentation.
+function factoryViewModules(project: ProjectState): ModuleRef[] {
+  const keys = new Set(project.devices.flatMap(device => [device.module_ref, ...(device.route_operation_refs ?? [])]).map(moduleKey));
+  for (const route of project.routes) for (const step of route.steps) keys.add(moduleKey(step.operation_ref));
+  return project.module_refs.filter(ref => keys.has(moduleKey(ref)));
+}
+
+async function readModuleBatch<T>(refs: ModuleRef[], read: (ref: ModuleRef) => Promise<T>) {
+  const result: PromiseSettledResult<T>[] = [];
+  for (let i = 0; i < refs.length; i += 16) {
+    result.push(...await Promise.allSettled(refs.slice(i, i + 16).map(read)));
+  }
+  return result;
+}
+
+export async function readRunInputs(projectId: string, run: RunResult, atMs: number, factoryView = false) {
   const project = await readRunProject(projectId, run.id, atMs);
   const scenarioObject = await dispatch<DomainObject>({ ...header(projectId), operation: 'get_object', params: {
     object_id: { kind: 'scenario', id: run.input_ref.scenario_id },
     source: { kind: 'run_snapshot', data: { run_id: run.id, at_ms: atMs } }, node_index: null,
   } });
   if (scenarioObject.kind !== 'scenario') throw new Error('Host 未返回该 Run 的冻结方案。');
-  const moduleObjects = await Promise.allSettled(project.module_refs.map(ref => dispatch<DomainObject>({
+  const references = factoryView ? factoryViewModules(project) : project.module_refs;
+  const moduleObjects = await readModuleBatch(references, ref => dispatch<DomainObject>({
     ...header(projectId), operation: 'get_object', params: {
       object_id: { kind: 'module', id: ref.id },
       source: { kind: 'run_module_version', data: { run_id: run.id, at_ms: atMs, module_ref: ref } }, node_index: null,
     },
-  })));
+  }));
   const modules = new Map<string, ModulePackage>();
   const moduleIssues: WorkspaceSnapshot['moduleIssues'] = [];
   moduleObjects.forEach((result, i) => {
     if (result.status === 'rejected') {
       if (!(result.reason instanceof HostFailure) || result.reason.detail.code !== 'MissingReference') throw result.reason;
-      moduleIssues.push({ ref: project.module_refs[i], error: result.reason.detail });
+      moduleIssues.push({ ref: references[i], error: result.reason.detail });
       return;
     }
     if (result.value.kind !== 'module') throw new Error('Host 未返回该 Run 的精确版本模块。');
-    modules.set(moduleKey(project.module_refs[i]), result.value.data);
+    modules.set(moduleKey(references[i]), result.value.data);
   });
   return { project, scenario: scenarioObject.data, modules, moduleIssues };
 }

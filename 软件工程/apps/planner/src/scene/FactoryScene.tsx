@@ -73,8 +73,8 @@ export function FactoryScene({ project: inputProject, canvas, hallId, selection,
   const regionActualPending = !!run && observation?.run_id === run.id && !mediaSource;
   const resourceSources = mediaSource?.resources ?? declaredFactoryWorkers(project);
   const modules = mediaSource?.modules ?? inputModules;
-  const frameInput = useRef({ mediaSource, observation, regionActualPending, resourceSources });
-  frameInput.current = { mediaSource, observation, regionActualPending, resourceSources };
+  const frameInput = useRef({ mediaSource, observation, regionActualPending, resourceSources, run, modules });
+  frameInput.current = { mediaSource, observation, regionActualPending, resourceSources, run, modules };
   const updateFrame = useRef<((frame: typeof frameInput.current) => Promise<void>) | null>(null);
   const captureSource = capture ? mediaSource : null;
   const host = useRef<HTMLDivElement>(null);
@@ -138,11 +138,23 @@ export function FactoryScene({ project: inputProject, canvas, hallId, selection,
     if (expected.size === hiddenLabelKeys.size && [...expected].every(key => hiddenLabelKeys.has(key))) captureLayout.current?.(captureFrame);
   }, [capture, captureFrame, labels, hiddenLabelKeys]);
 
+  const viewportRenderer = useRef<THREE.WebGLRenderer | null>(null);
+  // A source change can invalidate dozens of device loads before their GLBs finish decoding.
+  const mediaWorkers = useRef(Array.from({length: 4}, () => Promise.resolve()));
+
+  useEffect(() => () => {
+    const renderer = viewportRenderer.current;
+    renderer?.dispose();
+    renderer?.forceContextLoss();
+    renderer?.domElement.remove();
+    viewportRenderer.current = null;
+  }, []);
+
   useEffect(() => {
-    let { mediaSource, observation, regionActualPending, resourceSources } = frameInput.current;
+    let { mediaSource, observation, regionActualPending, resourceSources, run, modules } = frameInput.current;
     const node = host.current!;
     let renderer: THREE.WebGLRenderer;
-    try { renderer = new THREE.WebGLRenderer({ antialias: true }); }
+    try { renderer = viewportRenderer.current ??= new THREE.WebGLRenderer({ antialias: true }); }
     catch (reason) {
       setError('三维画布无法初始化，请检查图形环境。工程数据未改变。');
       capture?.onFailure({ key: capture.key, stage: 'initialize', message: reason instanceof Error ? reason.message : String(reason) });
@@ -167,6 +179,8 @@ export function FactoryScene({ project: inputProject, canvas, hallId, selection,
           asset_loading: {
             pending_devices: pendingMedia,
             devices: mediaSlots.map(slot => ({ id: slot.device.id, lod: slot.lod, loaded: !!slot.instance, visible: slot.group.visible, title: slot.annotation.title,
+              model_visible: !!slot.instance?.root.visible && slot.group.visible, model_source: slot.instance?.source.kind ?? null,
+              model_run_id: slot.instance?.source.kind === 'run_module_version' ? slot.instance.source.data.run_id : null,
               phase: slot.instance?.root.userData.mqSource?.phase ?? null, progress: slot.instance?.root.userData.mqSource?.progress ?? null,
               effective_ms: slot.instance?.root.userData.mqSource?.effective_ms ?? null, duration_ms: slot.instance?.root.userData.mqSource?.duration_ms ?? null })),
             items: (() => { const state = itemLayer?.renderState(pendingMedia === 0); return state && { pending: state.pending, failures: state.failures, unavailable: state.unavailable }; })(),
@@ -333,9 +347,25 @@ export function FactoryScene({ project: inputProject, canvas, hallId, selection,
       }
     };
     refreshObservedAnnotations();
-    const connections = project ? createFactoryConnectionLayer(project, modules, physical, anchors, selection) : null;
-    setConnectionRows(connections?.rows ?? []);
-    if (connections) { physical.add(connections.root); if (connections.drawn) selectable.push(connections.root); }
+    let connections: ReturnType<typeof createFactoryConnectionLayer> | null = null;
+    const updateConnections = () => {
+      if (connections) {
+        physical.remove(connections.root);
+        const index = selectable.indexOf(connections.root);
+        if (index >= 0) selectable.splice(index, 1);
+        connections.root.geometry.dispose();
+        connections.root.material.dispose();
+      }
+      const {selection: selected, showConnections: show} = interaction.current;
+      connections = project ? createFactoryConnectionLayer(project, modules, physical, anchors, selected) : null;
+      setConnectionRows(connections?.rows ?? []);
+      if (connections) {
+        connections.root.visible = show || selected?.kind === 'connection';
+        physical.add(connections.root);
+        if (connections.drawn) selectable.push(connections.root);
+      }
+    };
+    updateConnections();
     const bounds = new THREE.Box3().setFromObject(physical);
     const declaredBounds = bounds.clone();
     for (const device of project?.devices ?? []) {
@@ -393,6 +423,12 @@ export function FactoryScene({ project: inputProject, canvas, hallId, selection,
     const grid = createAdaptiveViewportGrid(); grid.mesh.position.y = -.02; scene.add(grid.mesh);
     let scaleState: ViewportScaleValues | null = null;
     let lastLod: LodMode | null = null;
+    function loadDevice(device: NonNullable<typeof project>['devices'][number], input: FactoryDeviceMedia, level: LodMode, current: () => boolean) {
+      const worker = mediaWorkers.current.shift()!;
+      const result = worker.then(() => current() ? createFactoryMedia(device, input, level) : null);
+      mediaWorkers.current.push(result.then(() => undefined, () => undefined));
+      return result;
+    }
     const loadLod = (current: LodMode, layersChanged: boolean) => {
       if (layersChanged) {
         itemLayer?.dispose(); itemLayer = null;
@@ -410,8 +446,9 @@ export function FactoryScene({ project: inputProject, canvas, hallId, selection,
         slot.annotation.title = `${slot.baseTitle} · ${current === 'region' ? '区域定位' : regionActualPending && !slot.input ? '正在读取此时点表现来源…' : slot.input?.unavailable ?? (slot.input?.media ? '读取素材中' : '表现素材未连接')}`;
         if (current === 'region' || !slot.input?.media) continue;
         pendingMedia++;
-        createFactoryMedia(slot.device, slot.input, deviceLod).then(instance => {
+        loadDevice(slot.device, slot.input, deviceLod, () => live && ticket === slot.ticket).then(instance => {
           pendingMedia--;
+          if (!instance) return;
           if (!live || ticket !== slot.ticket) { instance.dispose(); return; }
           slot.instance = instance;
           instance.root.traverse(object => { object.userData.ref = { kind: 'device', id: slot.device.id }; });
@@ -683,9 +720,14 @@ export function FactoryScene({ project: inputProject, canvas, hallId, selection,
       render();
     };
     updateInteraction.current();
-    let frameEpoch = 0;
+    let frameEpoch = 0, requestedFrame = frameInput.current;
     updateFrame.current = async next => {
-      if (next.mediaSource === mediaSource && next.observation === observation) return;
+      // A return to the previous source also supersedes a still-loading frame.
+      if (next.mediaSource === requestedFrame.mediaSource && next.observation === requestedFrame.observation
+        && next.run === requestedFrame.run && next.modules === requestedFrame.modules) return;
+      requestedFrame = next;
+      run = next.run;
+      if (modules !== next.modules) { modules = next.modules; updateConnections(); }
       const epoch = ++frameEpoch, current = lastLod ?? lod;
       const inputs = new Map(next.mediaSource?.devices.map(input => [input.device_id, input]) ?? []);
       itemLayer?.detach();
@@ -694,20 +736,37 @@ export function FactoryScene({ project: inputProject, canvas, hallId, selection,
         slot.input = input;
         const owns = () => live && epoch === frameEpoch && ticket === slot.ticket;
         try {
+          if (!next.mediaSource && slot.instance) {
+            // Hide the previous source while the replacement is being authorized and loaded.
+            slot.instance.root.visible = false; slot.marker.visible = true;
+            return;
+          }
           if (current !== 'region' && input?.media && slot.instance) {
+            slot.instance.root.visible = false;
+            slot.marker.visible = true;
             const kept = await slot.instance.update(input, deviceLod);
             if (!owns()) return;
-            if (kept) return;
+            if (kept) {
+              slot.instance.root.visible = true;
+              slot.marker.visible = outsideHallFloor(project!, slot.device) === true;
+              return;
+            }
           }
           if (!owns()) return;
-          if (slot.instance) { slot.group.remove(slot.instance.root); slot.instance.dispose(); slot.instance = null; }
           slot.marker.visible = true;
           slot.annotation.title = `${slot.baseTitle} · ${current === 'region' ? '区域定位' : next.regionActualPending && !input ? '正在读取此时点表现来源…' : input?.unavailable ?? (input?.media ? '读取素材中' : '表现素材未连接')}`;
-          if (current === 'region' || !input?.media) return;
+          if (current === 'region' || !input?.media) {
+            if (slot.instance) { slot.group.remove(slot.instance.root); slot.instance.dispose(); slot.instance = null; }
+            return;
+          }
+          // Keep the prior rig hidden while the replacement loads. A rapid return can
+          // reuse it only after its original source is authorized again.
           pendingMedia++;
-          let instance: FactoryMediaInstance;
-          try { instance = await createFactoryMedia(slot.device, input, deviceLod); } finally { pendingMedia--; }
+          let instance: FactoryMediaInstance | null;
+          try { instance = await loadDevice(slot.device, input, deviceLod, owns); } finally { pendingMedia--; }
+          if (!instance) return;
           if (!owns()) { instance.dispose(); return; }
+          if (slot.instance) { slot.group.remove(slot.instance.root); slot.instance.dispose(); }
           slot.instance = instance;
           instance.root.traverse(object => { object.userData.ref = { kind: 'device', id: slot.device.id }; });
           slot.group.add(instance.root); slot.marker.visible = outsideHallFloor(project!, slot.device) === true;
@@ -767,13 +826,13 @@ export function FactoryScene({ project: inputProject, canvas, hallId, selection,
           materials.forEach(material => material.dispose());
         }
       });
-      renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove();
+      renderer.renderLists.dispose();
     };
-  }, [project, canvas, hallId, lod, autoLod, resetKey, run, inputModules, !!mediaSource, capture, captureSource]);
+  }, [project, canvas, hallId, lod, autoLod, resetKey, capture, captureSource]);
 
   useEffect(() => {
     void updateFrame.current?.(frameInput.current);
-  }, [mediaSource, observation]);
+  }, [mediaSource, observation, run, modules]);
 
   useEffect(() => {
     updateInteraction.current?.();

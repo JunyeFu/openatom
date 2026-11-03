@@ -180,7 +180,7 @@ struct CommittedNominalBinding {
 }
 
 struct HostRun {
-    result: RunResult,
+    result: Arc<RunResult>,
     engine: Option<sf_simulation::Engine>,
     history: Option<StoredRunHistory>,
     scope: EditScope,
@@ -935,7 +935,7 @@ impl ProjectHost {
                     self.runs.insert(
                         result.id.clone(),
                         HostRun {
-                            result,
+                            result: Arc::new(result),
                             engine: Some(engine),
                             history: Some(history),
                             scope: scope.clone(),
@@ -1689,13 +1689,18 @@ impl ProjectHost {
         ))
     }
 
-    fn get_run(
-        &self,
-        _: &HostCallContext,
-        scope: &ApiScope,
-        params: GetRunParams,
-    ) -> Result<RunView, ApiError> {
-        let run = self.runs.get(&params.run_id).ok_or_else(|| {
+    pub fn read_full_run_bytes(&self, ui: &ObjectId, project: ProjectId, id: &RunId) -> Result<Vec<u8>, ApiError> {
+        self.require_registered_ui(ui)?;
+        self.admit(&self.sessions[ui], &Some(project), &ApiScope::Project, &OperationName::GetRun)?;
+        let run = self.scoped_run(&ApiScope::Project, id)?;
+        let mut gzip = flate2::write::GzEncoder::new(Vec::new(), flate2::Compression::fast());
+        serde_json::to_writer(&mut gzip, &run.result)
+            .map_err(|e| error(ErrorCode::IoFailure, &e.to_string(), None))?;
+        gzip.finish().map_err(|e| error(ErrorCode::IoFailure, &e.to_string(), None))
+    }
+
+    fn scoped_run(&self, scope: &ApiScope, id: &RunId) -> Result<&HostRun, ApiError> {
+        let run = self.runs.get(id).ok_or_else(|| {
             error(
                 ErrorCode::MissingReference,
                 "Run does not exist in the active project",
@@ -1718,9 +1723,19 @@ impl ProjectHost {
                 None,
             ));
         }
+        Ok(run)
+    }
+
+    fn get_run(
+        &self,
+        _: &HostCallContext,
+        scope: &ApiScope,
+        params: GetRunParams,
+    ) -> Result<RunView, ApiError> {
+        let run = self.scoped_run(scope, &params.run_id)?;
         match params.query {
             RunQuery::Summary => Ok(RunView::Summary(run_summary(&run.result))),
-            RunQuery::FullResult => Ok(RunView::Full(Box::new(run.result.clone()))),
+            RunQuery::FullResult => Ok(RunView::Full(Box::new(run.result.as_ref().clone()))),
             RunQuery::Events { interval, page } => {
                 if interval
                     .as_ref()
@@ -6454,7 +6469,7 @@ mod tests {
             actual["outcome"]["data"],
             json!({"kind":"project","data":expected_project})
         );
-        assert!(exact_data(&host.runs[&run.id].result, &run));
+        assert!(exact_data(host.runs[&run.id].result.as_ref(), &run));
         let project_before = host.project.as_ref().unwrap().clone();
         for (kind, id, mut invalid, code) in [
             ("module", "different-id", source.clone(), "InvalidInput"),
@@ -6623,7 +6638,7 @@ mod tests {
         );
         std::sync::Arc::make_mut(&mut host.backing.as_mut().unwrap().files).insert(path, original);
         assert!(exact_data(host.project.as_ref().unwrap(), &project_before));
-        assert!(exact_data(&host.runs[&run.id].result, &run));
+        assert!(exact_data(host.runs[&run.id].result.as_ref(), &run));
         let created = packaging_call(
             &mut host,
             "apply_commands",
@@ -7361,7 +7376,7 @@ mod tests {
             panic!("stored frozen Project")
         };
         assert!(exact_data(&expected, &reopened));
-        assert!(exact_data(&host.runs[&run.id].result, &run));
+        assert!(exact_data(host.runs[&run.id].result.as_ref(), &run));
         let external = ObjectId::try_from("out-of-project-run-read".to_owned()).unwrap();
         host.register_external_session(HostCallContext {
             origin: CallerOrigin::ExternalAgent,
@@ -7980,8 +7995,8 @@ mod tests {
             serde_json::to_value(host.project.as_ref().unwrap()).unwrap(),
             before
         );
-        assert!(exact_data(&host.runs[&first.id].result, &first));
-        assert!(exact_data(&host.runs[&second.id].result, &second));
+        assert!(exact_data(host.runs[&first.id].result.as_ref(), &first));
+        assert!(exact_data(host.runs[&second.id].result.as_ref(), &second));
         let external = ObjectId::try_from("no-comparison-authority".to_owned()).unwrap();
         let project = host.project.as_ref().unwrap().id.clone();
         host.register_external_session(HostCallContext {
@@ -8064,7 +8079,7 @@ mod tests {
         assert_eq!(archive.project.revision.0.value(), 1);
         let saved_runs = archive.run_results().unwrap();
         assert_eq!(saved_runs.len(), 1);
-        assert!(exact_data(&saved_runs[0], &first));
+        assert!(exact_data(saved_runs[0].as_ref(), &first));
         assert!(!saved_runs.iter().any(|run| run.id == excluded.id));
         assert!(matches!(
             archive.manifest.restart_policy,
@@ -8133,12 +8148,12 @@ mod tests {
             2
         );
         reopen_test_project(&mut host, &destination);
-        assert!(exact_data(&host.runs[&first.id].result, &first));
+        assert!(exact_data(host.runs[&first.id].result.as_ref(), &first));
         assert!(!host.runs.contains_key(&excluded.id));
         let repeated = actual_local_run(&mut host);
         assert_ne!(repeated.id, first.id);
         assert_eq!(repeated.acceptance_events[0].at_ms.0.value(), 75000);
-        assert!(exact_data(&host.runs[&first.id].result, &first));
+        assert!(exact_data(host.runs[&first.id].result.as_ref(), &first));
     }
 
     fn template_reception_host(
@@ -8376,7 +8391,7 @@ mod tests {
             report_history
         );
         assert_eq!(host.additions.len(), old_additions);
-        assert!(exact_data(&host.runs[&run.id].result, &run));
+        assert!(exact_data(host.runs[&run.id].result.as_ref(), &run));
         let json_file = output
             .files
             .iter()
@@ -8449,7 +8464,7 @@ mod tests {
             reopened.project.as_ref().unwrap(),
             &frozen.project
         ));
-        assert!(exact_data(&reopened.runs[&run.id].result, &run));
+        assert!(exact_data(reopened.runs[&run.id].result.as_ref(), &run));
         let readback: Versioned<EvaluationReport> =
             serde_json::from_slice(&std::fs::read(moved_report.join("report.json")).unwrap())
                 .unwrap();
@@ -8509,8 +8524,8 @@ mod tests {
             );
         }
         assert!(exact_data(&before.project, host.project.as_ref().unwrap()));
-        assert!(exact_data(&host.runs[&first.id].result, &first));
-        assert!(exact_data(&host.runs[&second.id].result, &second));
+        assert!(exact_data(host.runs[&first.id].result.as_ref(), &first));
+        assert!(exact_data(host.runs[&second.id].result.as_ref(), &second));
         let mut invalid = host.scenarios.values().next().unwrap().clone();
         invalid.title = "current design inputs with unknown material price".into();
         invalid.cost_inputs[0].rate = None;
@@ -8938,7 +8953,7 @@ mod tests {
                     .path
                     .as_str()
                     .ends_with("/original-module.json")
-                    && serde_json::from_slice::<Versioned<ModulePackage>>(&addition.bytes)
+                    && serde_json::from_slice::<Versioned<ModulePackage>>(&addition.bytes())
                         .is_ok_and(|original| exact_data(&original.data, &raw.data))
             }));
             assert!(exact_data(
@@ -8953,7 +8968,7 @@ mod tests {
                     .all(|rights| !rights.redistribution_confirmed)
             );
             for file in &raw.data.files {
-                assert!(registered.additions.iter().any(|addition| addition.bytes
+                assert!(registered.additions.iter().any(|addition| addition.bytes().as_ref()
                     == std::fs::read(directory.join(file.path.as_str())).unwrap()));
             }
             references.push(reference);
@@ -9065,7 +9080,7 @@ mod tests {
         assert!(matches!(failure.code, ErrorCode::InvalidInput));
         assert_eq!(host.bundled_modules.len(), 1);
         assert!(exact_data(
-            &host.bundled_modules[&module_key(&reference)].package,
+            &*host.bundled_modules[&module_key(&reference)].package,
             &exact
         ));
         assert!(exact_data(host.project.as_ref().unwrap(), &before.project));
@@ -9148,7 +9163,7 @@ mod tests {
             next.acceptance_events.last().unwrap().at_ms.0.value(),
             205000
         );
-        assert!(exact_data(&host.runs[&run.id].result, &run));
+        assert!(exact_data(host.runs[&run.id].result.as_ref(), &run));
         let mut legacy = settings_value(host.project.as_ref().unwrap());
         legacy.as_object_mut().unwrap().remove("setup_policies");
         legacy["title"] = json!("legacy title-only carrier keeps matrix");
@@ -9238,8 +9253,8 @@ mod tests {
             &host.project.as_ref().unwrap().setup_policies,
             &changed
         ));
-        assert!(exact_data(&host.runs[&run.id].result, &run));
-        assert!(exact_data(&host.runs[&next.id].result, &next));
+        assert!(exact_data(host.runs[&run.id].result.as_ref(), &run));
+        assert!(exact_data(host.runs[&next.id].result.as_ref(), &next));
     }
 
     #[test]
@@ -9694,7 +9709,7 @@ mod tests {
                 assert!(
                     host.additions
                         .iter()
-                        .any(|actual| actual.bytes == file.bytes
+                        .any(|actual| actual.bytes.as_slice() == file.bytes().as_ref()
                             && exact_data(&actual.entry, &file.entry))
                 );
             }
@@ -9742,7 +9757,7 @@ mod tests {
         let Some(TaskOutput::Run(summary)) = state.result else {
             panic!("real Run output")
         };
-        let old_run = host.runs[&summary.run_id].result.clone();
+        let old_run = host.runs[&summary.run_id].result.as_ref().clone();
         assert_eq!(
             old_run
                 .acceptance_events
@@ -9804,7 +9819,7 @@ mod tests {
                     .collect::<Vec<_>>(),
                 expected
             );
-            assert!(exact_data(&host.runs[&old_run.id].result, &old_run));
+            assert!(exact_data(host.runs[&old_run.id].result.as_ref(), &old_run));
         }
         let directory = ProfessionalTestDirectory::new();
         let moved = ProfessionalTestDirectory::new();
@@ -9835,7 +9850,7 @@ mod tests {
         let project_before = host.project.as_ref().unwrap().clone();
         reopen_test_project(&mut host, &moved.root);
         assert!(exact_data(host.project.as_ref().unwrap(), &project_before));
-        assert!(exact_data(&host.runs[&old_run.id].result, &old_run));
+        assert!(exact_data(host.runs[&old_run.id].result.as_ref(), &old_run));
         for device in &project_before.devices {
             let read = packaging_call(
                 &mut host,
@@ -9855,7 +9870,7 @@ mod tests {
         let mut standalone = packaging_host();
         reopen_test_project(&mut standalone, &moved.root);
         assert!(standalone.bundled_modules.is_empty());
-        assert!(exact_data(&standalone.runs[&old_run.id].result, &old_run));
+        assert!(exact_data(standalone.runs[&old_run.id].result.as_ref(), &old_run));
         let template_ref = ModuleRef {
             id: source.package.definition.id.clone(),
             version: source.package.definition.version.clone(),
@@ -9889,7 +9904,7 @@ mod tests {
             reply["outcome"]["status"], "ok",
             "standalone archived source: {reply}"
         );
-        assert!(exact_data(&standalone.runs[&old_run.id].result, &old_run));
+        assert!(exact_data(standalone.runs[&old_run.id].result.as_ref(), &old_run));
         // A registered library must not repair a missing current-archive file
         // behind the caller's back or contaminate the saved version boundary.
         let ModulePayload::Templates(template) =
@@ -10756,10 +10771,23 @@ mod tests {
         let Some(TaskOutput::Run(summary)) = state.result else {
             panic!("actual RunSummary")
         };
-        let result = host.runs[&summary.run_id].result.clone();
+        let result = host.runs[&summary.run_id].result.as_ref().clone();
         assert_eq!(result.acceptance_events.len(), 1);
         assert_eq!(result.acceptance_events[0].at_ms.0.value(), 75000);
         result
+    }
+
+    #[test]
+    fn binary_history_read_preserves_the_full_run_and_project_authority() {
+        let mut host = local_production_host();
+        let run = actual_local_run(&mut host);
+        let ui = host.sessions.values().find(|caller| matches!(caller.origin, CallerOrigin::InteractiveUi)).unwrap().session_id.clone();
+        let project = host.project.as_ref().unwrap().id.clone();
+        let bytes = host.read_full_run_bytes(&ui, project.clone(), &run.id).unwrap();
+        let decoded: RunResult = serde_json::from_reader(flate2::read::GzDecoder::new(bytes.as_slice())).unwrap();
+        assert!(exact_data(&run, &decoded));
+        assert!(host.read_full_run_bytes(&ObjectId::try_from("unregistered".to_owned()).unwrap(), project, &run.id).is_err());
+        assert!(host.read_full_run_bytes(&ui, ProjectId::try_from("another-project".to_owned()).unwrap(), &run.id).is_err());
     }
 
     #[test]
@@ -10861,7 +10889,7 @@ mod tests {
             &host.project.as_ref().unwrap().acknowledgments[0],
             &old_ack
         ));
-        assert!(exact_data(&host.runs[&old_run.id].result, &old_run));
+        assert!(exact_data(host.runs[&old_run.id].result.as_ref(), &old_run));
         assert_eq!(
             host.additions
                 .iter()
@@ -10903,7 +10931,7 @@ mod tests {
             &host.project.as_ref().unwrap().bindings,
             &history
         ));
-        assert!(exact_data(&host.runs[&old_run.id].result, &old_run));
+        assert!(exact_data(host.runs[&old_run.id].result.as_ref(), &old_run));
         let catalog = workspace_test_call(&mut host, "describe_capabilities", json!({}));
         assert!(
             catalog["outcome"]["data"]["implemented_operations"]
@@ -11178,8 +11206,8 @@ mod tests {
             serde_json::to_value(&host.project.as_ref().unwrap().acknowledgments).unwrap(),
             old_acknowledgments
         );
-        assert!(exact_data(&host.runs[&run_r1.id].result, &run_r1));
-        assert!(exact_data(&host.runs[&run_r2.id].result, &run_r2));
+        assert!(exact_data(host.runs[&run_r1.id].result.as_ref(), &run_r1));
+        assert!(exact_data(host.runs[&run_r2.id].result.as_ref(), &run_r2));
         for (path, bytes) in frozen_inputs {
             assert_eq!(host.backing.as_ref().unwrap().files[path.as_str()], bytes);
         }

@@ -42,9 +42,11 @@ export interface PresentationScene {
   dispose:()=>void;
 }
 /** GLB stays intrinsically metre/Y-up. Canonical per-node poses are converted explicitly. */
-export async function bindScene(p:Presentation, read:AssetByteReader, model?:{assetKey:string;decoded:DecodedModel}):Promise<PresentationScene> {
+export async function bindScene(p:Presentation, read:AssetByteReader, model?:{assetKey:string;decoded:DecodedModel}, textureEdge?:number):Promise<PresentationScene> {
   const root=new Group(), nodes=new Map<number,Object3D>();
   const owned:{dispose():void}[]=[];
+  const shapes=new Map<string,BoxGeometry|CylinderGeometry|PlaneGeometry>();
+  const materials=new Map<string,MeshStandardMaterial>();
   root.scale.set(p.scale.x,p.coordinate_frame==='right_handed_z_up'?p.scale.z:p.scale.y,p.coordinate_frame==='right_handed_z_up'?p.scale.y:p.scale.z);
   if(model) root.add(model.decoded.gltf.scene);
   try {
@@ -58,15 +60,24 @@ export async function bindScene(p:Presentation, read:AssetByteReader, model?:{as
         object=found;
       } else {
         const size=n.geometry.data, factor=p.unit==='millimeter'?0.001:1;
-        const geometry=n.geometry.kind==='box'?new BoxGeometry((size as any).x*factor,(p.coordinate_frame==='right_handed_z_up'?(size as any).z:(size as any).y)*factor,(p.coordinate_frame==='right_handed_z_up'?(size as any).y:(size as any).z)*factor):n.geometry.kind==='cylinder'?new CylinderGeometry((size as any).radius*factor,(size as any).radius*factor,(size as any).height*factor,24):new PlaneGeometry((size as any).x*factor,(size as any).y*factor);
-        const [r,g,b,a]=n.material.color_rgba;
-        const material=new MeshStandardMaterial({color:new Color(r,g,b),opacity:a,transparent:a<1,metalness:n.material.metallic,roughness:n.material.roughness});
-        owned.push(geometry,material);
-        if(n.material.texture) {
-          const decoded=await decodeStatic(n.material.texture,await read(n.material.texture));
-          let bitmap:ImageBitmap;try {bitmap=await createImageBitmap(decoded,{imageOrientation:'flipY'});} finally {decoded.close();}
-          // WebGL ignores UNPACK_FLIP_Y for ImageBitmap; apply the UV orientation at decode.
-          const texture=new CanvasTexture(bitmap);texture.flipY=false;texture.colorSpace=SRGBColorSpace;material.map=texture;owned.push(texture,{dispose:()=>bitmap.close()});
+        const shapeKey=JSON.stringify(n.geometry);
+        let geometry=shapes.get(shapeKey);
+        if(!geometry){
+          geometry=n.geometry.kind==='box'?new BoxGeometry((size as any).x*factor,(p.coordinate_frame==='right_handed_z_up'?(size as any).z:(size as any).y)*factor,(p.coordinate_frame==='right_handed_z_up'?(size as any).y:(size as any).z)*factor):n.geometry.kind==='cylinder'?new CylinderGeometry((size as any).radius*factor,(size as any).radius*factor,(size as any).height*factor,24):new PlaneGeometry((size as any).x*factor,(size as any).y*factor);
+          shapes.set(shapeKey,geometry);owned.push(geometry);
+        }
+        const materialKey=JSON.stringify(n.material);
+        let material=materials.get(materialKey);
+        if(!material){
+          const [r,g,b,a]=n.material.color_rgba;
+          material=new MeshStandardMaterial({color:new Color(r,g,b),opacity:a,transparent:a<1,metalness:n.material.metallic,roughness:n.material.roughness});
+          materials.set(materialKey,material);owned.push(material);
+          if(n.material.texture){
+            const decoded=await decodeStatic(n.material.texture,await read(n.material.texture),textureEdge);
+            let bitmap:ImageBitmap;try {bitmap=await createImageBitmap(decoded,{imageOrientation:'flipY'});} finally {decoded.close();}
+            const texture=new CanvasTexture(bitmap);texture.flipY=false;texture.colorSpace=SRGBColorSpace;
+            material.map=texture;owned.push(texture,{dispose:()=>bitmap.close()});
+          }
         }
         object=new Mesh(geometry,material);object.name=n.name;
       }

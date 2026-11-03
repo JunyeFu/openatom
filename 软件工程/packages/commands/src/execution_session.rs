@@ -485,6 +485,29 @@ pub(crate) mod tests {
         }
     }
 
+
+    #[test]
+    fn stopping_an_arrived_transport_names_the_full_destination() {
+        let mut input: Value = serde_json::from_str(include_str!("../tests/fixtures/production/p202-halls-B.json")).unwrap();
+        let sink = input["scenario"]["supplies"][0]["destination"].clone();
+        input["project"]["locations"].as_array_mut().unwrap().iter_mut()
+            .find(|l| l["id"] == sink).unwrap()["capacity"]["value"]["coefficient"] = json!(0);
+        let mut session = semantic_session(input);
+        let before = drive_semantic_prefix(&mut session, usize::MAX);
+        let trip = before.business_facts.transport.iter()
+            .find(|t| t.arrived_ms.is_some() && t.received_ms.is_none()).unwrap();
+        let now = session.clock_anchor.unwrap() + std::time::Duration::from_millis(before.coverage.observed_until_host_ms.value()+1);
+        session.control(id("operator"), id("stop-arrived"), session.revision, ControlAction::StopDispatch {}, now).unwrap();
+        let after = session.projector.snapshot(&SnapshotSelection::Latest {}).unwrap();
+        assert!(matches!(after.lifecycle.state, ExecutionSnapshotLifecycleState::Draining));
+        assert!(!after.lifecycle.new_dispatch_allowed);
+        let reason = after.lifecycle.reason.as_ref().unwrap().as_str();
+        assert!(reason.contains(trip.id.as_str()) && reason.contains(sink.as_str().unwrap()));
+        assert_eq!(before.attempts.len(), after.attempts.len());
+        assert!(equal(&before.business_facts.transport, &after.business_facts.transport));
+        assert!(equal(&before.business_facts.acceptance_events, &after.business_facts.acceptance_events));
+    }
+
     fn multiphase_session(cutoff: u64) -> ExecutionSession {
         let seed = session_with(cutoff, false);
         let mut frozen = serde_json::to_value(&seed.frozen).unwrap();
@@ -570,6 +593,39 @@ pub(crate) mod tests {
             assert_eq!(s.observe().unwrap().acceptance_events.len(),if n==2 {1}else{0});
         }
     }
+    #[test]
+    fn stopping_at_full_sink_exposes_blocked_job_and_location() {
+        let seed = session();
+        let mut frozen = serde_json::to_value(&seed.frozen).unwrap();
+        let sink = frozen["project"]["locations"].as_array_mut().unwrap().iter_mut()
+            .find(|location| location["id"] == "L1-SINK").unwrap();
+        sink["capacity"]["value"]["coefficient"] = json!(1);
+        let items = frozen["scenario"]["initial_conditions"]["items"].as_array_mut().unwrap();
+        let mut blocker = items[0].clone();
+        blocker["id"] = json!("occupied-sink");
+        blocker["holder"]["id"] = json!("L1-SINK");
+        items.push(blocker);
+        let mut s = ExecutionSession::prepare(serde_json::from_value(frozen).unwrap(),
+            seed.policy, seed.dataset_id.unwrap(), seed.provenance.cloud_connection_ref).unwrap();
+        let start = Instant::now();
+        run(&mut s, start);
+        ready(&mut s, "L1-D01", 1, at(start, 1));
+        let cmd = commands(&s)[0].clone();
+        s.apply_receipt(id("start"), stamp(), receipt(&cmd, 2, json!({"kind":"started"})), at(start, 2)).unwrap();
+        s.control(id("operator"), id("stop"), s.revision, ControlAction::StopDispatch {}, at(start, 3)).unwrap();
+        let before = s.projector.snapshot(&SnapshotSelection::Latest {}).unwrap();
+        assert!(before.lifecycle.reason.is_none());
+        s.apply_receipt(id("done"), stamp(), receipt(&cmd, 3, json!({"kind":"completed","device_reported_duration_ms":10})), at(start, 12)).unwrap();
+        let after = s.projector.snapshot(&SnapshotSelection::Latest {}).unwrap();
+        assert!(matches!(after.lifecycle.state, ExecutionSnapshotLifecycleState::Draining));
+        let reason = after.lifecycle.reason.as_ref().unwrap().as_str();
+        assert!(reason.contains(cmd.attempt.logical_job_id.as_str()) && reason.contains("L1-SINK"));
+        assert!(!after.lifecycle.new_dispatch_allowed);
+        assert_eq!(after.business_facts.pending_output_refs.len(), 1);
+        assert!(after.business_facts.acceptance_events.is_empty());
+        assert_eq!(after.attempts.len(), 1);
+    }
+
     #[test]
     fn shared_device_bindings_dispatch_all_phases_and_drain_started_work() {
         let mut s = multiphase_session(20);
@@ -1613,14 +1669,18 @@ impl ExecutionSession {
             policy: self.policy.clone(),
             provenance: self.provenance.clone(),
             lifecycle_state: self.phase.clone(),
-            lifecycle_reason: matches!(
-                self.phase,
-                ExecutionSnapshotLifecycleState::NeedsResolution
-            )
-            .then(|| {
-                DeviceText::try_from("Original execution facts require reconciliation".to_owned())
-                    .unwrap()
-            }),
+            lifecycle_reason: match self.phase {
+                ExecutionSnapshotLifecycleState::NeedsResolution => Some(
+                    DeviceText::try_from("Original execution facts require reconciliation".to_owned()).unwrap()
+                ),
+                ExecutionSnapshotLifecycleState::Draining => {
+                    let waits: Vec<_> = self.engine.external_output_capacity_waits()
+                        .map(|(job, location)| format!("作业 {} 等待库位 {} 腾出容量", job.as_str(), location.as_str()))
+                        .collect();
+                    (!waits.is_empty()).then(|| DeviceText::try_from(waits.join("；")).unwrap())
+                }
+                _ => None,
+            },
             new_dispatch_allowed: matches!(self.phase, ExecutionSnapshotLifecycleState::Running)
                 && !observation.dispatch_stopped
                 && !observation.drained,

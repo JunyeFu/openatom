@@ -195,13 +195,12 @@ impl ProjectHost {
         if !exact_data(current, &bundle.package) {
             return true;
         }
-        let files = self.module_source_files(reference);
         // Contribution archives carry the declared source files. The library's
         // original-module.json and generated metadata are not additional source
         // requirements; the typed immutable metadata was compared above.
         bundle.additions.iter().filter(|addition| bundle.package.files.iter().any(|file|
             file.path == addition.entry.file_ref.path)).any(|addition|
-            files.get(addition.entry.file_ref.path.as_str()) != Some(&addition.bytes))
+            self.project_file_bytes(addition.entry.file_ref.path.as_str()).as_deref() != Some(addition.bytes().as_ref()))
     }
 
     pub(super) fn query_modules(
@@ -231,7 +230,7 @@ impl ProjectHost {
             selected.extend(
                 self.bundled_modules
                     .iter()
-                    .map(|(key, module)| (key.clone(), (&module.package, true))),
+                    .map(|(key, module)| (key.clone(), (&*module.package, true))),
             );
         }
         if params
@@ -277,34 +276,17 @@ impl ProjectHost {
                 id: module.definition.id.clone(),
                 version: module.definition.version.clone(),
             };
-            let files = if *bundled {
-                self.bundled_modules[&module_key(&reference)]
-                    .additions
-                    .iter()
-                    .map(|addition| {
-                        (
-                            addition.entry.file_ref.path.as_str().to_owned(),
-                            addition.bytes.clone(),
-                        )
-                    })
-                    .collect()
-            } else {
-                self.module_source_files(&reference)
-            };
-            let template_profile = if let ModulePayload::Templates(template) =
-                &module.definition.payload
-            {
-                template
-                    .generation_profile
-                    .as_ref()
-                    .and_then(|path| files.get(path.as_str()))
-                    .and_then(|bytes| {
-                        serde_json::from_slice::<Versioned<TemplateGenerationProfile>>(bytes).ok()
-                    })
-                    .map(|versioned| versioned.data)
-            } else {
-                None
-            };
+            let template_profile = if let ModulePayload::Templates(template) = &module.definition.payload {
+                template.generation_profile.as_ref().and_then(|path| {
+                    let bytes = if *bundled {
+                        self.bundled_modules[&module_key(&reference)].additions.iter()
+                            .find(|file| file.entry.file_ref.path == *path).map(|file| file.bytes())
+                    } else {
+                        self.project_file_bytes(path.as_str())
+                    }?;
+                    serde_json::from_slice::<Versioned<TemplateGenerationProfile>>(&bytes).ok().map(|v| v.data)
+                })
+            } else { None };
             let (conditions, mismatched) = module_application_conditions(&module.definition, template_profile.as_ref(), &params);
             missing.extend(conditions);
             if mismatched {

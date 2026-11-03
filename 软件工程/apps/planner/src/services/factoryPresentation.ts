@@ -283,6 +283,7 @@ export function createFactoryPresentation(current: () => FactoryPresentationCont
           return value.data;
         })();
         modules.set(id, pending);
+        void pending.catch(() => { if (modules.get(id) === pending) modules.delete(id); });
       }
       return pending;
     };
@@ -329,7 +330,11 @@ export async function projectFactoryPresentation(context: FactoryPresentationCon
         if (request.project_id !== context.project_id || JSON.stringify(request.scope) !== JSON.stringify(context.scope) || request.scope_revision !== context.scope_revision) throw new ProcessUnavailable('媒体字节改变了已绑定工程或Scope修订。');
         const key = JSON.stringify([request.source, request.asset]);
         let pending = assetReads.get(key);
-        if (!pending) { pending = ports.readAsset(request); assetReads.set(key, pending); }
+        if (!pending) {
+          pending = ports.readAsset(request);
+          assetReads.set(key, pending);
+          void pending.catch(() => { if (assetReads.get(key) === pending) assetReads.delete(key); });
+        }
         const bytes = await pending; assertCurrent(); return bytes;
       }, async resolveModule(source) { assertSource(source); return module(source.data.module_ref); } };
     };

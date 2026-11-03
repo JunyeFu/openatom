@@ -3,13 +3,71 @@ use super::*;
 use std::path::Path;
 
 /// Immutable bytes loaded by trusted native startup. They are not Project state.
-#[derive(Clone)]
 pub(super) struct BundledModule {
-    original: ModulePackage,
-    pub package: ModulePackage,
-    pub additions: Vec<ArchiveAddition>,
+    original: BundledMetadata,
+    pub package: BundledMetadata,
+    pub additions: Vec<BundledFile>,
 }
 
+// Validation constructs both exact versions. Afterwards the catalogue can recreate either
+// from its own immutable bytes without keeping all unused templates and definitions resident.
+pub(super) struct BundledMetadata {
+    file: BundledFile,
+    parsed: std::sync::OnceLock<ModulePackage>,
+}
+impl BundledMetadata {
+    fn new(file: BundledFile, package: ModulePackage) -> Self {
+        Self { file, parsed: std::sync::OnceLock::from(package) }
+    }
+}
+impl std::ops::Deref for BundledMetadata {
+    type Target = ModulePackage;
+    fn deref(&self) -> &Self::Target {
+        self.parsed.get_or_init(|| serde_json::from_slice::<Versioned<ModulePackage>>(&self.file.bytes())
+            .expect("catalogue metadata encoded during registration").data)
+    }
+}
+
+// The installed catalogue owns an immutable copy even if its source directory is moved.
+// Keep large media packed while idle; opening a project need not expand the whole catalogue.
+#[derive(Clone)]
+pub(super) struct BundledFile {
+    pub entry: DocumentEntry,
+    data: Arc<Vec<u8>>,
+    expanded_len: Option<usize>,
+}
+impl BundledFile {
+    fn new(file: ArchiveAddition) -> Self {
+        use std::io::Write;
+        let mut data = file.bytes;
+        let mut expanded_len = None;
+        if !matches!(file.entry.file_ref.kind, DocumentKind::GenerationProfile) && data.len() >= 64 * 1024 {
+            let mut encoder = flate2::write::DeflateEncoder::new(Vec::new(), flate2::Compression::fast());
+            encoder.write_all(&data).expect("in-memory catalogue compression");
+            let packed = encoder.finish().expect("complete in-memory catalogue stream");
+            if packed.len() < data.len() {
+                expanded_len = Some(data.len());
+                data = packed;
+            }
+        }
+        Self { entry: file.entry, data: Arc::new(data), expanded_len }
+    }
+    pub(super) fn bytes(&self) -> std::borrow::Cow<'_, [u8]> {
+        use std::io::Read;
+        match self.expanded_len {
+            None => std::borrow::Cow::Borrowed(self.data.as_slice()),
+            Some(len) => {
+                let mut bytes = Vec::with_capacity(len);
+                flate2::read::DeflateDecoder::new(self.data.as_slice())
+                    .read_to_end(&mut bytes).expect("catalogue stream produced in memory");
+                std::borrow::Cow::Owned(bytes)
+            }
+        }
+    }
+    pub(super) fn profile_bytes(&self) -> Option<&[u8]> {
+        matches!(self.entry.file_ref.kind, DocumentKind::GenerationProfile).then(|| self.data.as_slice())
+    }
+}
 #[derive(Default)]
 pub(super) struct LibraryImports {
     pub modules: BTreeMap<(String, String), ModulePackage>,
@@ -320,9 +378,10 @@ fn relocate_package(original: &ModulePackage, root: &Path) -> Result<BundledModu
             bytes: encode_document(&package),
         },
     );
+    let additions: BTreeMap<_, _> = additions.into_iter().map(|(p, a)| (p, BundledFile::new(a))).collect();
     Ok(BundledModule {
-        original: original.clone(),
-        package,
+        original: BundledMetadata::new(additions[&format!("{prefix}original-module.json")].clone(), original.clone()),
+        package: BundledMetadata::new(additions[&format!("{prefix}module.json")].clone(), package),
         additions: additions.into_values().collect(),
     })
 }
@@ -491,19 +550,23 @@ impl ProjectHost {
                 package.package.definition.id.as_str().to_owned(),
                 String::from(package.package.definition.version.clone()),
             )) {
-                if !exact_data(&existing.original, &package.original)
+                if !exact_data(&*existing.original, &*package.original)
                     || existing.additions.len() != package.additions.len()
                     || existing
                         .additions
                         .iter()
                         .zip(&package.additions)
-                        .any(|(a, b)| !exact_data(&a.entry, &b.entry) || a.bytes != b.bytes)
+                        .any(|(a, b)| !exact_data(&a.entry, &b.entry) || a.expanded_len != b.expanded_len || a.data != b.data)
                 {
                     return Err(library_error(
                         "Registered exact bundled version is immutable",
                     ));
                 }
             }
+        }
+        for package in packages.values_mut() {
+            package.original.parsed.take();
+            package.package.parsed.take();
         }
         self.bundled_modules.extend(packages);
         Ok(())
@@ -513,7 +576,7 @@ impl ProjectHost {
         self.modules.get(&module_key(reference)).or_else(|| {
             self.bundled_modules
                 .get(&module_key(reference))
-                .map(|entry| &entry.package)
+                .map(|entry| &*entry.package)
         })
     }
 
@@ -535,11 +598,17 @@ impl ProjectHost {
         path.clone()
     }
 
+    pub(super) fn project_file_bytes(&self, path: &str) -> Option<std::borrow::Cow<'_, [u8]>> {
+        self.additions.iter().rev().find(|a| a.entry.file_ref.path.as_str() == path)
+            .map(|a| std::borrow::Cow::Borrowed(a.bytes.as_slice()))
+            .or_else(|| self.backing.as_ref()?.files.read(path))
+    }
+
     pub(super) fn module_source_files(&self, reference: &ModuleRef) -> BTreeMap<String, Vec<u8>> {
         let mut files = self
             .backing
             .as_ref()
-            .map(|archive| archive.files.as_ref().clone())
+            .map(|archive| Arc::unwrap_or_clone(archive.files.materialize()))
             .unwrap_or_default();
         for addition in &self.additions {
             files.insert(
@@ -556,7 +625,7 @@ impl ProjectHost {
             for addition in &package.additions {
                 files
                     .entry(addition.entry.file_ref.path.as_str().to_owned())
-                    .or_insert_with(|| addition.bytes.clone());
+                    .or_insert_with(|| addition.bytes().into_owned());
             }
         }
         files
@@ -609,7 +678,7 @@ impl ProjectHost {
                         .eq_ignore_ascii_case(path)
                 });
             if let Some(existing) = existing {
-                if existing.bytes != addition.bytes || !exact_data(&existing.entry, &addition.entry)
+                if !exact_data(&existing.entry, &addition.entry) || existing.bytes.as_slice() != addition.bytes().as_ref()
                 {
                     return Err(library_error(
                         "Bundled file conflicts with immutable Project content",
@@ -625,7 +694,7 @@ impl ProjectHost {
                     .find(|entry| entry.file_ref.path.as_str().eq_ignore_ascii_case(path))
                 {
                     if !exact_data(entry, &addition.entry)
-                        || archive.files.get(path) != Some(&addition.bytes)
+                        || archive.files.read(path).as_deref() != Some(addition.bytes().as_ref())
                     {
                         return Err(library_error(
                             "Bundled file conflicts with archived Project content",
@@ -634,7 +703,7 @@ impl ProjectHost {
                     continue;
                 }
             }
-            imports.additions.insert(path.to_owned(), addition.clone());
+            imports.additions.insert(path.to_owned(), ArchiveAddition { entry: addition.entry.clone(), bytes: addition.bytes().into_owned() });
         }
         Ok(())
     }

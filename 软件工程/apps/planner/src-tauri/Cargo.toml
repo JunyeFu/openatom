@@ -17,6 +17,7 @@ path = "src/main.rs"
 custom-protocol = ["tauri/custom-protocol"]
 nfr-devtools = ["tauri/devtools"]
 nfr-path-fixture = []
+fv1-reader-fixture = []
 nfr06-save-faults = ["sf-commands/nfr06-save-faults"]
 
 [build-dependencies]
@@ -31,7 +32,7 @@ ts-rs.workspace = true
 tauri.workspace = true
 tauri-plugin-dialog.workspace = true
 tokio.workspace = true
-windows-sys.workspace = true
+windows-sys = { workspace = true, features = ["Win32_UI_WindowsAndMessaging"] }
 
 [target.'cfg(windows)'.dependencies]
 webview2-com = "=0.39.1"

@@ -3,6 +3,8 @@ use tauri::{Manager, WebviewUrl, WebviewWindowBuilder};
 use ts_rs::TS;
 
 #[cfg(windows)]
+mod verification_display;
+#[cfg(windows)]
 mod agent_pipe;
 #[cfg(windows)]
 mod native_render;
@@ -76,6 +78,7 @@ pub fn run() {
             project_api::project_select_directory,
             project_api::project_select_file,
             project_api::project_read_media_asset,
+            project_api::project_read_full_run,
             project_api::project_read_execution_media_asset,
             project_api::project_read_stored_packaging,
             project_api::project_read_stored_manufacturing_file,
@@ -173,7 +176,49 @@ pub fn run() {
             if capture_smoke {
                 project_api::native_capture_probe::record(app.handle(),"window-build.requested",serde_json::json!({}))?;
             }
+            // Verification windows must be born on the selected display, even with mixed DPI.
+            let verify_monitor = if std::env::args().any(|arg| arg == "--verify-on-secondary") {
+                let primary = app.primary_monitor()?.ok_or_else(|| std::io::Error::other("No primary display"))?;
+                let target = app.available_monitors()?.into_iter()
+                    .find(|monitor| monitor.position() != primary.position())
+                    .ok_or_else(|| std::io::Error::other("Enable an extended secondary display before verification"))?;
+                window_builder = window_builder.visible(false).maximized(false)
+                    .inner_size(320.0, 200.0);
+                Some(target)
+            } else {
+                None
+            };
+            #[cfg(not(windows))]
+            if verify_monitor.is_some() { return Err(std::io::Error::other("Secondary verification requires Windows").into()); }
+            #[cfg(windows)]
+            let creation_hook = verify_monitor.as_ref().map(|m| {
+                let p = m.work_area().position;
+                verification_display::CreationHook::install(verification_display::creation_origin(p.x, p.y))
+            }).transpose()?;
             let main_window = window_builder.build()?;
+            #[cfg(windows)]
+            if creation_hook.as_ref().is_some_and(|hook| !hook.applied()) {
+                return Err(std::io::Error::other("Secondary HWND creation hook was not applied").into());
+            }
+            #[cfg(windows)]
+            drop(creation_hook);
+            if let Some(target) = verify_monitor {
+                #[cfg(windows)]
+                {
+                    let area = target.work_area().size;
+                    verification_display::fit_hidden_client(main_window.hwnd()?.0, area.width, area.height)?;
+                }
+                let actual = main_window.current_monitor()?;
+                if main_window.is_visible()? || actual.as_ref().map(|m| m.position()) != Some(target.position()) {
+                    return Err(std::io::Error::other("Could not create the hidden window on the secondary display").into());
+                }
+                let origin = main_window.outer_position()?;
+                let client = main_window.inner_size()?;
+                main_window.show()?;
+                println!("{}", serde_json::json!({"event":"verification_first_show",
+                    "monitor":target.name(), "created_hidden":true, "origin":[origin.x,origin.y],
+                    "client_size":[client.width,client.height]}));
+            }
             if capture_smoke {
                 project_api::native_capture_probe::window_built(&main_window).map_err(std::io::Error::other)?;
             }

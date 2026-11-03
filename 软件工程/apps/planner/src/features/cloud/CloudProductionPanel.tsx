@@ -649,6 +649,7 @@ export function CloudProductionPanel(props: CloudProductionPanelProps) {
         {!currentLatest && <Notice>历史版本、其他生产会话和云端存档只能查看。需要操作时，请选择当前本机会话。</Notice>}
         {!snapshot ? <Notice>尚未选择生产记录。准备新的会话或选择已保存记录后，可查看状态与结果。</Notice> : <>
           <div className="cloud-facts"><div><span>生产状态</span><strong>{labels[snapshot.lifecycle.state]}</strong></div><div><span>最终目标 {quantityText(snapshot.policy.target_quantity)}</span><strong>{labels[snapshot.goal_at_snapshot]}</strong><small>停止新派工时间 {elapsed(snapshot.policy.report_cutoff_ms)}：{labels[snapshot.goal_at_cutoff]}</small></div><div><span>待核对指令 / 等待出料 / 已预留</span><strong>{snapshot.lifecycle.unresolved_command_ids.length} / {snapshot.business_facts.pending_output_refs.length} / {snapshot.pending_reservations.length}</strong></div></div>
+          {snapshot.lifecycle.state === 'draining' && snapshot.lifecycle.reason && <Notice>{snapshot.lifecycle.reason}</Notice>}
           <details className="cloud-execution-details"><summary>执行明细与诊断</summary>
           <Json value={snapshot.business_facts} label="完整物品、占用与接收事实"/>
           <h4>同R接受事件（{snapshot.business_facts.acceptance_events.length}）</h4><div className="cloud-table-scroll"><table><thead><tr><th>Host时间</th><th>接受量</th><th>去向</th><th>阶段</th></tr></thead><tbody>{snapshot.business_facts.acceptance_events.map((a, i) => <tr key={i}><td>{a.at_ms}ms</td><td>{formatQuantity(a.quantity)}</td><td>{a.destination}</td><td>{a.acceptance_stage}</td></tr>)}</tbody></table></div>

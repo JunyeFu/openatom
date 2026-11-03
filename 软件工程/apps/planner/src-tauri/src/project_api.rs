@@ -36,6 +36,8 @@ pub struct ProjectApiState {
     io_sender: mpsc::Sender<ProjectIoWork>,
     io_completed: Arc<(Mutex<()>, Condvar)>,
     pub(super) host_instance_id: ObjectId,
+    #[cfg(feature = "fv1-reader-fixture")]
+    fv1_reader_installed: Arc<std::sync::OnceLock<()>>,
     observation_frames: Arc<Mutex<run_observation::ObservationFrameCache>>,
     execution: Arc<Mutex<Option<crate::execution_setup::NativeExecutionInstallation>>>,
 }
@@ -494,6 +496,8 @@ impl ProjectApiState {
             io_sender,
             io_completed,
             host_instance_id: host_id,
+            #[cfg(feature = "fv1-reader-fixture")]
+            fv1_reader_installed: Arc::default(),
             observation_frames: Arc::new(Mutex::new(run_observation::ObservationFrameCache::default())),
             execution: Arc::new(Mutex::new(None)),
         }
@@ -504,6 +508,11 @@ impl ProjectApiState {
         resource_root: &Path,
         private_app_data_dir: &Path,
     ) -> Result<(), ApiError> {
+        #[cfg(feature = "fv1-reader-fixture")]
+        if std::env::var_os("SF_FV1_READER_TOKEN").is_some() {
+            // This isolated measurement uses only the read-only fixture, never the user's gateway.
+            return Ok(());
+        }
         let installation = crate::execution_setup::NativeExecutionInstallation::load(
             self.host.clone(), resource_root, private_app_data_dir,
         )?;
@@ -673,6 +682,22 @@ impl ProjectApiState {
                 );
             }
         };
+        #[cfg(feature = "fv1-reader-fixture")]
+        if self.fv1_reader_installed.get().is_none() && std::env::var_os("SF_FV1_READER_TOKEN").is_some() {
+            if let Some(project) = host.desktop_close_state().project_id.filter(|id| id.as_str() == "Task8-two-device-six-units") {
+                let fixture = std::env::var("SF_FV1_READER_TOKEN")
+                    .map_err(|_| host_error(ErrorCode::InvalidInput, "Missing isolated FV1 reader"))
+                    .and_then(|token| sf_commands::CloudReadConnection::local_loopback(
+                        "fv1-local-reader".to_owned().try_into().expect("fixed fixture ID"), project,
+                        "example".to_owned().try_into().expect("fixed cloud project"),
+                        "http://127.0.0.1:23270".to_owned(), token, Vec::new()))
+                    .and_then(|connection| host.install_cloud_read_connection(&self.ui_session_id, connection));
+                if let Err(error) = fixture {
+                    return boundary_error(request_id, error.code, error.message, error.field_errors);
+                }
+                let _ = self.fv1_reader_installed.set(());
+            }
+        }
         let installed = self.execution.lock()
             .map_err(|_| host_error(ErrorCode::ComputationFailed, "Native execution state is poisoned"))
             .and_then(|installation| match installation.as_ref() {
@@ -837,6 +862,20 @@ pub(super) fn directory_dialog_title(
             "This Host selects project, handoff and evaluation directories",
         )),
     }
+}
+
+#[tauri::command]
+pub fn project_read_full_run(
+    window: tauri::WebviewWindow,
+    state: tauri::State<'_, ProjectApiState>,
+    project_id: ProjectId,
+    run_id: sf_domain::RunId,
+) -> Result<tauri::ipc::Response, ApiError> {
+    if window.label() != "main" {
+        return Err(host_error(ErrorCode::PermissionDenied, "Run history requires the main desktop window"));
+    }
+    state.host.lock().map_err(|_| host_error(ErrorCode::ComputationFailed, "Project Host state is poisoned"))?
+        .read_full_run_bytes(&state.ui_session_id, project_id, &run_id).map(tauri::ipc::Response::new)
 }
 
 #[tauri::command]

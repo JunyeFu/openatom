@@ -149,3 +149,24 @@ fn supply_transport_waits_for_each_actual_phase_and_preserves_cargo() {
     }
     }
 }
+
+#[test]
+fn arrived_transport_reports_full_receiver_during_drain() {
+    let mut input: Value = serde_json::from_str(include_str!("../../commands/tests/fixtures/production/p202-halls-B.json")).unwrap();
+    let sink = input["scenario"]["supplies"][0]["destination"].clone();
+    let locations = input["project"]["locations"].as_array_mut().unwrap();
+    locations.iter_mut().find(|l| l["id"] == sink).unwrap()["capacity"]["value"]["coefficient"] = json!(0);
+    let mut engine = engine(input);
+    let before = drive(&mut engine);
+    let trip = before.transport.iter().find(|trip| trip.arrived_ms.is_some() && trip.received_ms.is_none()).unwrap();
+    let destination = &engine.jobs.iter().find(|job| job.spec.id == trip.id).unwrap().spec.transport.as_ref().unwrap().supply.destination;
+    let destination = destination.clone();
+    engine.cancel();
+    let after = engine.external_observation().unwrap();
+    assert!(after.dispatch_stopped && !after.drained);
+    assert!(engine.external_output_capacity_waits().any(|(job, location)| job == &trip.id && location == &destination));
+    assert_eq!(after.attempts.len(), before.attempts.len());
+    for item in &trip.cargo {
+        assert!(after.items.iter().any(|i| i.id == *item && matches!(&i.holder, HolderRef::Transport(id) if id == &trip.id)));
+    }
+}

@@ -330,7 +330,7 @@ impl Engine {
             Ok(picks)
         }
     }
-    fn receive_reasons(&self, index: usize) -> Vec<WaitReason> {
+    pub(super) fn receive_reasons(&self, index: usize) -> Vec<WaitReason> {
         let plan = self.jobs[index].spec.transport.as_ref().unwrap();
         let supply = &plan.supply;
         let mut reasons = vec![];

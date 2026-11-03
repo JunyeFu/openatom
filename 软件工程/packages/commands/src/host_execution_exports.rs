@@ -133,7 +133,7 @@ mod tests {
             "finish_policy":"drain_admitted_then_finish","target_quantity":{"value":{"coefficient":6,"decimal_places":0},"unit":"piece"},
             "source_prediction_window":{"start_ms":0,"end_ms":scenario.window.end_ms},"observation_max_age_ms":2000})).unwrap();
         let prediction = PredictionRunReference {
-            run_id: run.id,
+            run_id: run.id.clone(),
             input_ref: ReportRunInputRef {
                 project_id: project.id.clone(),
                 project_revision: project.revision,
@@ -1649,7 +1649,7 @@ impl ProjectHost {
             project: frozen,
             scenario,
             definitions,
-            run: run.result.clone(),
+            run: run.result.as_ref().clone(),
             execution: link.execution.clone(),
         })
     }

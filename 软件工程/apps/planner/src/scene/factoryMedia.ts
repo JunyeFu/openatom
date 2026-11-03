@@ -77,10 +77,11 @@ async function prepare(input: FactoryMediaInput, lod: LodLevel) {
 const reusable = (before: Awaited<ReturnType<typeof prepare>>, next: Awaited<ReturnType<typeof prepare>>) =>
   before.owner === next.owner && before.resolved.presentation === next.resolved.presentation
   && (before.asset ? !!next.asset && assetKey(before.asset) === assetKey(next.asset) : next.asset === null);
-async function modelMedia(initial: Awaited<ReturnType<typeof prepare>>): Promise<FactoryMediaInstance> {
+async function modelMedia(initial: Awaited<ReturnType<typeof prepare>>, lod: LodLevel): Promise<FactoryMediaInstance> {
   const { resolved, source, asset, point, clip } = initial;
-  const decoded = asset ? await decodeGlb(await resolved.read(asset)) : undefined;
-  const rig = await bindScene(resolved.presentation, resolved.read, decoded && asset ? { assetKey: assetKey(asset), decoded } : undefined);
+  const textureEdge = lod === 'simplified' ? Math.ceil(512 * devicePixelRatio) : undefined;
+  const decoded = asset ? await decodeGlb(await resolved.read(asset), textureEdge) : undefined;
+  const rig = await bindScene(resolved.presentation, resolved.read, decoded && asset ? { assetKey: assetKey(asset), decoded } : undefined, textureEdge);
   try { rig.apply(point, clip); } catch (error) { rig.dispose(); throw error; }
   const root = new THREE.Group(); root.rotation.x = Math.PI / 2; root.add(rig.root);
   root.userData.mqSource={asset,source,phase:point?.display_phase_id??null,progress:point?.progress??null,effective_ms:point?.effective_ms??null,duration_ms:point?.duration_ms??null};
@@ -115,11 +116,11 @@ export function factoryMediaLabels(presentation: ResolvedMedia['presentation'], 
 export async function createFactoryItemMedia(input: FactoryActualItem, lod: LodLevel): Promise<FactoryMediaInstance> {
   // Finite instance state is read from the actual RuntimeItem at this seek time.
   // Qualified item clips read only the actual holding Job; no synthetic Job or clock.
-  return modelMedia(await prepare(input, lod));
+  return modelMedia(await prepare(input, lod), lod);
 }
 
 export async function createFactoryResourceMedia(input: FactoryResourceMedia, lod: LodLevel): Promise<FactoryMediaInstance> {
-  return modelMedia(await prepare(input, lod));
+  return modelMedia(await prepare(input, lod), lod);
 }
 
 /** One device's owned scene objects; no renderer, clock or business state. */
@@ -130,7 +131,7 @@ export async function createFactoryMedia(device: DeviceInstance, input: FactoryD
   const root = new THREE.Group(); root.userData.ref = { kind: 'device', id: device.id };
   if (resolved.locator?.kind === 'native_scene' || asset?.kind === 'glb') {
     // Shared rigs are meters/Y-up; the parent physical hierarchy is meters/Z-up.
-    return modelMedia(prepared);
+    return modelMedia(prepared, lod);
   }
   const xs = device.footprint_m.map(p => p.x), ys = device.footprint_m.map(p => p.y);
   const width = Math.max(...xs) - Math.min(...xs), depth = Math.max(...ys) - Math.min(...ys);
@@ -142,7 +143,8 @@ export async function createFactoryMedia(device: DeviceInstance, input: FactoryD
   host.setAttribute('aria-hidden', 'true');
   let surface: Awaited<ReturnType<typeof createImageSurface>> | null = null;
   try {
-    surface = await createImageSurface(host, resolved, asset, clip, () => {}, () => {});
+    const textureEdge = lod === 'simplified' ? Math.ceil(512 * devicePixelRatio) : undefined;
+    surface = await createImageSurface(host, resolved, asset, clip, () => {}, () => {}, undefined, textureEdge);
     document.body.append(host);
     await surface.draw(point, clip);
     const canvas = host.querySelector('canvas')!;

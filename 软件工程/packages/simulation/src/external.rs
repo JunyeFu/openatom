@@ -1277,6 +1277,30 @@ impl Engine {
             transport: actual.transport,
         })
     }
+    /// Current receiving-capacity blockers for jobs already admitted before stopping.
+    pub fn external_output_capacity_waits(&self) -> impl Iterator<Item = (&ObjectId, &ObjectId)> {
+        self.open_waits.iter().filter_map(|(index, wait)| {
+            let job = &self.jobs[*index];
+            if job.state.started_at_ms.is_none() || !matches!(job.state.state, JobStatus::WaitingOutput) {
+                return None;
+            }
+            wait.reasons.iter().find_map(|reason| {
+                let blocker = reason.blocking_object.as_ref()?;
+                (matches!(reason.kind, WaitReasonKind::OutputCapacity)
+                    && matches!(blocker.kind, ObjectKind::Location))
+                    .then_some((&job.spec.id, &blocker.id))
+            })
+        }).chain(self.trips.iter().filter_map(|(index, trip)| {
+            let job = &self.jobs[*index];
+            if job.phase != 2 || trip.arrived_ms.is_none() || trip.received_ms.is_some()
+                || !matches!(job.state.state, JobStatus::WaitingResource) {
+                return None;
+            }
+            self.receive_reasons(*index).iter().any(|r| matches!(r.kind, WaitReasonKind::OutputCapacity))
+                .then(|| (&job.spec.id, &job.spec.transport.as_ref().unwrap().supply.destination))
+        }))
+    }
+
     pub fn external_cutoff_observation(&self) -> Option<&ExternalObservation> {
         self.external.as_ref()?.cutoff.as_deref()
     }
