@@ -13,6 +13,7 @@ import { SchemaField, labels } from './SchemaForm';
 import { sections } from './sections';
 import { BusinessRuntime } from './BusinessRuntime';
 import { DeclaredParameters } from './DeclaredParameters';
+import { previewCommands } from './preview';
 import { historyBoundaryLabel, scenarioName } from '../../services/workbenchLabels';
 import './business.css';
 
@@ -140,7 +141,7 @@ function BusinessSession(props: BusinessEditorProps & {project:NonNullable<Busin
     {failure&&<div role="alert" className="sf-business-errors"><strong>{failure.code}</strong>：{failure.message}{failure.field_errors.map((f,i)=><p key={i}>{f.pointer}：{f.reason}</p>)}{failure.object_refs.map(o=><button key={`${o.kind}:${o.id}`} onClick={()=>props.onLocate({object:o,source:'draft'})}>定位 {o.id}</button>)}</div>}
     {notice&&<p role="status" className="sf-business-note">{notice}</p>}
     <footer><button disabled={busy||!dirty||!catalog} onClick={checkProposal}>检查变更</button><button disabled={busy||!dirty} onClick={discard}>放弃本地表单变更</button><span>Ctrl+Enter 检查/应用 · 文本框保留原生文字撤销</span></footer>
-    {proposal&&<div className="sf-business-dialog" role="dialog" aria-label="业务变更预览"><h2>应用到同一工程草稿</h2><p>工程 r{proposal.base_project_revision} · {proposal.commands.length}条共同命令 · 不重跑或回滚当前Run</p><ol>{proposal.commands.map((c,i)=><li key={i}>{c.kind==='put_object'?`${c.data.kind}：${'id' in c.data.data?c.data.data.id:''}`:c.kind==='remove_object'?`移除 ${c.data.kind} ${c.data.id}`:c.kind==='set_declared_parameter'?`声明参数 ${c.data.target.id} / ${c.data.parameter_id}`:'工程设置与来源'}</li>)}</ol><button disabled={busy} onClick={()=>void submit(proposal)}>确认应用草稿</button><button disabled={busy} onClick={()=>setProposal(null)}>返回继续编辑</button></div>}
+    {proposal&&<div className="sf-business-dialog" role="dialog" aria-label="业务变更预览"><h2>应用到同一工程草稿</h2><p>工程 r{proposal.base_project_revision} · {proposal.commands.length}条共同命令 · 不重跑或回滚当前Run</p><ol>{previewCommands(base,draft,proposal.commands).map((group,i)=><li key={i}><strong>{group.title}</strong>{group.changes.length>0?<ul>{group.changes.map((change,j)=><li key={j}>{change.field}：{change.before} → {change.after}</li>)}</ul>:<p>命令无可比较字段；请返回表单核对。</p>}</li>)}</ol><button disabled={busy} onClick={()=>void submit(proposal)}>确认应用草稿</button><button disabled={busy} onClick={()=>setProposal(null)}>返回继续编辑</button></div>}
     {mergeOpen&&<div className="sf-business-dialog" role="dialog" aria-label="修订冲突字段核对"><h2>按当前修订核对字段</h2><p>未同时修改的字段自动保留；下列冲突须明确选择。</p>{merged.conflicts.map((c:MergeConflict)=><fieldset key={c.path}><legend>{c.path}</legend><p>你的输入：{labelForObject(c.mine)}</p><p>当前工程：{labelForObject(c.current)}</p><details><summary>查看完整冲突值</summary><pre>{JSON.stringify({mine:c.mine,current:c.current},null,2)}</pre></details><button onClick={()=>setMergeChoices({...mergeChoices,[c.path]:'mine'})}>采用我的此字段</button><button onClick={()=>setMergeChoices({...mergeChoices,[c.path]:'current'})}>保留当前此字段</button></fieldset>)}<button disabled={!!merged.conflicts.length} onClick={acceptMerge}>接受核对并重新检查</button><button onClick={()=>setMergeOpen(false)}>保留原表单返回</button></div>}
     {closing&&<div className="sf-business-dialog" role="dialog" aria-label="保留未应用表单"><h2>还有未应用的业务输入</h2><button onClick={()=>setClosing(false)}>返回保留表单</button><button onClick={()=>{discard();props.onClose?.();}}>放弃这些本地输入并关闭</button></div>}
   </section>;

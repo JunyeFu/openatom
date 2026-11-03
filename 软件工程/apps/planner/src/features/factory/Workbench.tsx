@@ -8,7 +8,8 @@ import type { EditCommit } from '../../../../../packages/commands/generated/type
 import type { HistoryAvailability } from '../../../../../packages/commands/generated/typescript/HistoryAvailability';
 import type { WorkspaceSnapshot, DepartureDecision, EditCommand, TaskHandle, ImportDraft, ProjectState } from '../../services/projectHost';
 import * as host from '../../services/projectHost';
-import { runRecordLabel, scenarioName } from '../../services/workbenchLabels';
+import { readRememberedRun, rememberRunSelection, selectRunForWorkspace } from './runSelection';
+import { runRecordLabel, taskStateLabel, scenarioName } from '../../services/workbenchLabels';
 import { nfr } from '../../services/nfrMeasure';
 import { useWindowClose, type WindowCloseDecision } from '../../services/windowClose';
 import type { PresentationEditorState } from '../presentation-editor';
@@ -153,7 +154,7 @@ export function Workbench() {
   const [propertyTextScale, setPropertyTextScale] = useState(1);
   const returnFocus = useRef<HTMLElement | null>(null);
   const overlayWasOpen = useRef(false);
-  const [departure, setDeparture] = useState<DepartureDecision>('stay');
+  const [departure, setDeparture] = useState<DepartureDecision | 'save_before_leave'>('stay');
   const [windowClosePrompt, setWindowClosePrompt] = useState<{ resolve: (decision: WindowCloseDecision) => void } | null>(null);
   const [opening, setOpening] = useState<{ task: TaskHandle; draft: ImportDraft } | null>(null);
   const [allowMissing, setAllowMissing] = useState(false);
@@ -170,6 +171,7 @@ export function Workbench() {
   const [taskState, setTaskState] = useState<TaskState | null>(null);
   const [scenarioId, setScenarioId] = useState('');
   const [run, setRun] = useState<RunResult | null>(null);
+  const [runToRestore, setRunToRestore] = useState<{ projectId: string; sessionId: string; runId: string } | null>(null);
   const [runProject, setRunProject] = useState<ProjectState | null>(null);
   const [runInputs, setRunInputs] = useState<Awaited<ReturnType<typeof host.readRunInputs>> | null>(null);
   const [comparison, setComparison] = useState<TimelineComparison | null>(null);
@@ -268,7 +270,8 @@ export function Workbench() {
     if (resetResults) { observation.current++; pendingRun.current = null; }
     const next = await host.readWorkspace();
     if (epoch !== refreshEpoch.current) throw new Error('旧的工程读取已被较新的读取取代，请在当前工程继续。');
-    const changedProject = projectIdentity.current !== (next.project?.id ?? null);
+    const changedProject = projectIdentity.current !== (next.project?.id ?? null)
+      || workspaceRef.current?.context.host.session_id !== next.context.host.session_id;
     if (changedProject) {
       setCloudOpen(false); setCloudDirty(false); setCloudClosePrompt(false);
       setSelections([]); setLayoutMode('select');
@@ -290,7 +293,17 @@ export function Workbench() {
     setSnapshot(next);
     const graph = !reset && source === 'run' ? runProject : next.project;
     setHallId(current => graph?.halls.some(hall => hall.id === current) ? current : graph?.halls[0]?.id ?? null);
-    setScenarioId(current => next.scenarios.some(scenario => scenario.id === current) ? current : next.scenarios[0]?.id ?? '');
+    const nextScenario = next.scenarios.some(scenario => scenario.id === scenarioId) ? scenarioId : next.scenarios[0]?.id ?? '';
+    setScenarioId(nextScenario);
+    if ((resetResults || changedProject) && next.project) {
+      const id = selectRunForWorkspace({ projectId: next.project.id, scenarioId: nextScenario,
+        runs: next.context.run_summaries ?? [], selectedRunId: readRememberedRun(next.project.id), selectedProjectId: next.project.id,
+        completedRunId: null, projectOpened: true });
+      setRunToRestore(id ? { projectId: next.project.id, sessionId: next.context.host.session_id, runId: id } : null);
+    } else if (reset || !next.project) {
+      setRunToRestore(null);
+      if (next.project && run) setMessage('所选运行记录当前不可用，请从历史结果中选择其他记录。');
+    }
     return next;
   }
 
@@ -672,6 +685,15 @@ export function Workbench() {
     finally { actionCount.current--; setBusy(actionCount.current > 0); }
   }
   useEffect(() => { if (connected) void action(refresh); }, []);
+  useEffect(() => {
+    if (!runToRestore || snapshot?.project?.id !== runToRestore.projectId
+      || snapshot.context.host.session_id !== runToRestore.sessionId) return;
+    setRunToRestore(null);
+    void action(async () => {
+      const restored = await chooseRun(runToRestore.runId, undefined, 'draft');
+      if (restored) setMessage('已读取保存的运行记录；当前仍为工程草稿，可点击“运行回看”查看原冻结输入和结果。');
+    });
+  }, [snapshot, runToRestore]);
 
   function rememberCommit(commit: EditCommit) {
     setFailure(null);
@@ -690,6 +712,24 @@ export function Workbench() {
     setMessage(`已保存 r${result.data.saved_revision}${result.data.still_dirty ? '；当前仍有新修订未保存' : ''}。`);
     await refresh();
   }
+  async function prepareDeparture(): Promise<DepartureDecision | null> {
+    if (departure === 'stay') return null;
+    if (departure !== 'save_before_leave') return departure;
+    if (!project) return 'already_saved';
+    const leavingProjectId = project.id;
+    try { await saveCurrentProject(); }
+    catch (error) {
+      if (error instanceof host.HostFailure && error.detail.code === 'Cancelled') {
+        setMessage('已取消保存，仍在当前工程。');
+        return null;
+      }
+      throw error;
+    }
+    const actual = await refresh();
+    if (actual.project?.id !== leavingProjectId) throw new Error('保存期间工程已切换，未继续离开。');
+    if (actual.context.project?.dirty !== false) throw new Error('工程仍有未保存更改，未继续离开。请先核对当前修订。');
+    return 'already_saved';
+  }
   function beginProject(intent: 'empty' | 'template' | 'demonstration', reuseEmpty: boolean) {
     if (intent === 'demonstration') { void action(() => openPackage('directory')); return; }
     if (reuseEmpty && project && !project.halls.length && !project.devices.length) {
@@ -698,7 +738,7 @@ export function Workbench() {
       return;
     }
     setStartIntent(intent); setNewTitle('');
-    setDeparture(project ? 'stay' : 'already_saved'); setNewDialog(true);
+    setDeparture(project && snapshot?.context.project?.dirty !== false ? 'stay' : 'already_saved'); setNewDialog(true);
   }
   async function commitItemLayout(commandsToApply: EditCommand[], base: ProjectState): Promise<ProjectState> {
     actionCount.current++; setBusy(true); setFailure(null); setMessage('');
@@ -841,37 +881,43 @@ export function Workbench() {
     setWindowClosePrompt(null);
   }
 
-  async function chooseRun(id: string, requestedTime?: number) {
-    if (!project || !id) return;
+  async function chooseRun(id: string, requestedTime?: number, display: 'draft' | 'run' = 'run'): Promise<RunResult | null> {
+    const currentProject = workspaceRef.current?.project;
+    if (!currentProject || !id || projectIdentity.current !== currentProject.id) return null;
     // A finished Run and its frozen inputs do not change when returning from the draft.
-    if (run?.id === id && runInputs && primaryRun.current === id && projectIdentity.current === project.id
+    if (run?.id === id && runInputs && primaryRun.current === id && projectIdentity.current === currentProject.id
       && ['completed', 'cancelled', 'failed'].includes(run.computation_status)
       && atMs !== null && atMs === (requestedTime ?? run.computed_until_ms)) {
       comparisonEpoch.current++;
-      switchSource('run');
-      return;
+      switchSource(display);
+      rememberRunSelection(currentProject.id, id);
+      return run;
     }
-    const projectId = project.id, epoch = ++observation.current;
+    const projectId = currentProject.id, epoch = ++observation.current;
     comparisonEpoch.current++;
     pendingRun.current = id;
+    setMessage('正在读取所选运行记录及其冻结输入，请稍候。');
     const view = await host.getRun(projectId, id, { kind: 'full_result' });
-    if (!ownsObservation(epoch, projectId, id)) return;
+    if (!ownsObservation(epoch, projectId, id)) return null;
     if (view.kind !== 'full') throw new Error('Host 未返回完整 Run。');
     const frontier = view.data.computed_until_ms;
     if (frontier == null) throw new Error('该 Run 尚无已计算边界，不能显示实际状态。');
     const time = requestedTime ?? frontier;
     const frozen = await host.readRunInputs(projectId, view.data, frontier, true);
-    if (!ownsObservation(epoch, projectId, id)) return;
+    if (!ownsObservation(epoch, projectId, id)) return null;
     // Use the same layout object only when the independently read frozen project is identical.
-    if (frozen.project.id === project.id && frozen.project.revision === project.revision
-      && JSON.stringify(frozen.project) === JSON.stringify(project)) frozen.project = project;
+    if (frozen.project.id === currentProject.id && frozen.project.revision === currentProject.revision
+      && JSON.stringify(frozen.project) === JSON.stringify(currentProject)) frozen.project = currentProject;
     const presentation = await readFactoryObservation(view.data, frozen, time, projectId, epoch);
-    if (presentation === null) return;
+    if (presentation === null) return null;
     if (comparison?.run.id === id && run && runProject) setComparison({ project: runProject, run, scenario: runInputs?.scenario });
     primaryRun.current = id;
-    setFactorySource(presentation);
-    setRun(view.data); setRunProject(frozen.project); setRunInputs(frozen); setAtMs(time); setObservationPage(presentation.observation); setTimelineSelection(current => current?.run_id === id ? current : null); setSource('run');
-    setHallId(current => frozen.project.halls.some(hall => hall.id === current) ? current : frozen.project.halls[0]?.id ?? null);
+    rememberRunSelection(currentProject.id, id);
+    if (display === 'run') setFactorySource(presentation);
+    setRun(view.data); setRunProject(frozen.project); setRunInputs(frozen); setAtMs(time); setObservationPage(presentation.observation); setTimelineSelection(current => current?.run_id === id ? current : null); setSource(display);
+    const graph = display === 'run' ? frozen.project : currentProject;
+    setHallId(current => graph.halls.some(hall => hall.id === current) ? current : graph.halls[0]?.id ?? null);
+    return view.data;
   }
   async function chooseComparison(id: string) {
     const epoch = ++comparisonEpoch.current;
@@ -962,7 +1008,7 @@ export function Workbench() {
     try {
       const result = await host.runScenario(project, scenario, setTaskState);
       if (result.kind !== 'run') throw new Error('Host 未返回实际 Run。');
-      await refresh(); await chooseRun(result.data.run_id); setBusinessOpen(false);
+      await showFinishedRun(result.data.run_id, project.id); setBusinessOpen(false);
     } finally { setBusy(false); }
   }
   async function runSelectedScenario() {
@@ -970,7 +1016,21 @@ export function Workbench() {
     if (!project || !scenario) return;
     const result = await host.runScenario(project, scenario, setTaskState);
     if (result.kind !== 'run') throw new Error('未读取到本次运行记录。');
-    await refresh(); await chooseRun(result.data.run_id);
+    await showFinishedRun(result.data.run_id, project.id);
+  }
+  async function showFinishedRun(runId: string, projectId: string) {
+    setMessage('方案已完成计算，正在读取本次运行记录。');
+    const next = await refresh();
+    if (next.project?.id !== projectId) throw new Error('运行结束后工程已切换，请在原工程查看运行记录。');
+    const id = selectRunForWorkspace({ projectId, scenarioId: null, runs: next.context.run_summaries ?? [],
+      selectedRunId: null, selectedProjectId: null, completedRunId: runId, projectOpened: false });
+    if (!id) throw new Error('本次运行尚无可读结果，请核对任务状态和当前工程的历史记录。');
+    const selected = await chooseRun(id);
+    if (!selected) return;
+    const summaries = next.context.run_summaries ?? [];
+    const index = summaries.findIndex(value => value.run_id === id);
+    const label = runRecordLabel(summaries[index], index, next.scenarios);
+    setMessage(`已选中${label}。${selected.goal_met === true ? '已达到目标。' : selected.goal_met === false ? '尚未达到目标。' : ''}可查看产量与等待或导出报告。`);
   }
   function locateBusiness(request: BusinessLocateRequest) {
     setSelection(request.object); setTimelineSelection(null);
@@ -1012,7 +1072,7 @@ export function Workbench() {
       throw error;
     }
     setOpening(await host.stageOpen(selected, setTaskState));
-    setDeparture(project ? 'stay' : 'already_saved'); setAllowMissing(false);
+    setDeparture(project && snapshot?.context.project?.dirty !== false ? 'stay' : 'already_saved'); setAllowMissing(false);
   }
   const deliveryServices = useMemo<DeliveryServices>(() => ({
     readEvidence: readDeliveryEvidence,
@@ -1128,7 +1188,8 @@ export function Workbench() {
       });
     }}>
       <details><summary>文件</summary><div className="menu-popup">
-        <button disabled={!connected || busy || editing} onClick={() => beginProject('empty', false)}>新建工程…</button>
+        {editing && <p className="menu-context-hint" role="status">当前工作区已打开。请先返回画布并处理未应用输入，再新建或打开其他工程。</p>}
+        <button disabled={!connected || busy || editing} onClick={() => beginProject('empty', false)}>新建空工程…</button>
         <button disabled={!connected || busy || editing} onClick={() => void action(() => openPackage('directory'))}>打开工程目录…</button><button disabled={!connected || busy || editing} onClick={() => void action(() => openPackage('file'))}>打开工程ZIP…</button>
         <button disabled={!project || busy} onClick={() => void action(saveCurrentProject)}>保存工程…</button>
         <button disabled={!connected || busy} onClick={() => void action(refresh)}>刷新工程</button>
@@ -1143,7 +1204,7 @@ export function Workbench() {
       <button className="menu-action" disabled={!project || busy || editing} onClick={() => void action(() => openAuthoring())}>定义创作</button><button className="menu-action" disabled={!project || busy || editing} onClick={() => void action(async () => { await refresh(); setBusinessEditIntent(undefined); setBusinessOpen(true); })}>业务输入</button><span className="menu-spacer" /><select aria-label="当前方案" value={scenarioId} disabled={busy || editing} onChange={event => setScenarioId(event.target.value)}><option value="">未选择方案</option>{snapshot?.scenarios.map(scenario => <option key={scenario.id} value={scenario.id}>{scenarioName(scenario)}</option>)}</select><button className="primary" disabled={!project || !scenarioId || busy || editing} onClick={() => void action(runSelectedScenario)}>运行方案</button>
     </nav>
     <div className={`notice ${failure ? 'notice-error' : ''}`} role={failure ? 'alert' : 'status'}>
-      {!connected ? '浏览器预览 · 工程操作请使用桌面应用' : failure ? `${failure.name}: ${failure.message}` : activeTask ? `任务 ${activeTask.task.id} · ${activeTask.task.state}` : message}
+      {!connected ? '浏览器预览 · 工程操作请使用桌面应用' : failure ? `${failure.name}: ${failure.message}` : activeTask ? `任务${taskStateLabel[activeTask.task.state]}` : message}
       {failure instanceof host.HostFailure && failure.detail.actual_revision != null && <span>当前 r{failure.detail.actual_revision}；表单仍保留原值，请返回核对。</span>}
       {failure instanceof host.HostFailure && <HostFailureDetails detail={failure.detail} onLocate={busy||editing?undefined:object=>{
         locateBusiness({object,source:'draft'});
@@ -1181,7 +1242,7 @@ export function Workbench() {
           onClose={closeCloud} onRefresh={async () => { await refreshLatest.current(); }}
           onLocateDevice={deviceId => { selectObject({ kind: 'device', id: deviceId }); setMessage('已定位当前工程设备；生产事实以云端生产所选来源为准。'); }}
           onLocateExecutionObject={() => setMessage('已选中执行记录中的对象。状态与详情见当前观察页。')}
-        /> : agentOpen && snapshot ? <AgentWorkspace key={agentEditorIdentity(snapshot)} workspace={snapshot} onRefresh={() => refreshLatest.current()} onClose={() => setAgentOpen(false)} onEditorStateChanged={receiveAgentEditorState} /> : checkOpen && project && snapshot ? <FactoryCheckWorkspace project={project} supported={snapshot.capabilities.implemented_operations.some(value => value.operation === 'check_factory_draft')} selection={selections} busy={busy} onDirtyChange={setCheckDirty} onClose={() => setCheckOpen(false)} onLocate={selectObject} /> : transformProposal ? <LayoutTransformProposal proposal={transformProposal} busy={busy} onApply={applyTransform} onReload={reloadLayout} onClose={() => setTransformProposal(null)} onDirtyChange={setLayoutDirty} /> : layoutEditor ? <LayoutSelectionEditor project={layoutEditor.project} selection={layoutEditor.selection} mode={layoutEditor.mode} busy={busy} onDirtyChange={setLayoutDirty} onApply={async (commands, base) => { await commitLayout(commands, base); setLayoutEditor(null); }} onReload={reloadLayout} onClose={() => setLayoutEditor(null)} /> : itemLayout && snapshot ? <ItemLayoutWorkspace onDirtyChange={setItemLayoutDirty} workspace={snapshot} initialOwner={itemLayout.initialOwner} busy={busy} onApply={commitItemLayout} onClose={() => setItemLayout(null)} /> : deviceProcess && snapshot && processAuthoringIO && processProjectRevision !== undefined ? <DeviceProcessWorkspace key={deviceProcess.id} workspace={snapshot} scope={deviceProcess.scope} scopeRevision={deviceProcess.scope.kind === 'definition_draft' ? deviceProcess.draft!.summary.revision : processProjectRevision} selection={deviceProcess.selection} actions={processActions} editor={{ onEditorStateChanged: receiveProcessEditorState, draft: deviceProcess.draft, source: deviceProcess.module, io: processAuthoringIO, samples: processSamples, scenario: snapshot.scenarios.find(value => value.id === scenarioId) ?? null, actions: { configure: inspectSavedProcessDraft, inspect: inspectSavedProcessDraft, preview_cycle: runProcessCycle }, run: deviceProcess.selection.kind === 'actual_run' && deviceProcess.scope.kind === 'project' && run?.id === deviceProcess.selection.run_id ? run : null, observation: deviceProcess.selection.kind === 'actual_run' && observationPage?.run_id === deviceProcess.selection.run_id ? observationPage : null, instance: selectedDevice ? { id: selectedDevice.id, module_ref: selectedDevice.module_ref } : null, onDraftChanged: receiveProcessDraft, onCommitted: async commit => { rememberCommit(commit); await refreshLatest.current(); }, onSampleRun: receiveProcessSample, onAdoptionRequested: reference => { setDeviceProcess(null); void action(() => openAuthoring(reference)); }, onImportPackageRequested: () => returnToAuthoring(deviceProcess.draft) }} onSelectionChanged={value => { setDeviceProcess(current => current ? { ...current, selection: value } : current); if (deviceProcess.scope.kind === 'project' && (value.kind === 'actual_run' || value.kind === 'frozen_device') && run?.id === value.run_id) void action(() => seekRun(value.run_id, value.at_ms)); }} onReturnToAuthoring={returnToAuthoring} onInspectItem={inspectProcessItem} onApplyNode={commitProcessNode} onEditNodeSource={editProcessNodeSource} onNodeDirtyChange={receiveNodeDirty} onClose={() => setDeviceProcess(null)} /> : packagingScope && packagingWorkspace && project && authoringIO && packagingRevision !== undefined ? <PackagingWorkspace onEditorStateChanged={receivePackagingEditorState} key={JSON.stringify([snapshot?.context.host.session_id, project.id, packagingScope])} workspace={packagingWorkspace} scope={packagingScope} scopeRevision={packagingRevision} io={authoringIO} manufacturingExport={{ status: 'available', start: startManufacturingPackageExport }} readManufacturingFile={readManufacturingFile} storedArtifacts={{ status: 'available', list: async () => listStoredPackaging(await packagingReadIdentity()), read: async artifactId => { const current = workspaceRef.current; if (!current?.project || current.project.id !== project.id) throw new Error('工程已切换，请在当前工程重新读取成果。'); const context = await readPackagingContext(current, packagingScope); const revision = packagingScope.kind === 'definition_draft' ? context.definition?.revision : current.project.revision; if (revision === undefined) throw new Error('未读取到此实际专业 Scope 修订。'); const value = await readStoredPackaging({ project_id: current.project.id, scope: packagingScope, scope_revision: revision, artifact_id: artifactId }); return { ...value, inputReadIssue: null }; } }} onCommitted={async commit => { rememberCommit(commit); await refreshPackaging(); }} onRefresh={refreshPackaging} onClose={() => { setPackagingScope(null); setPackagingContext(null); }} /> : authoring && snapshot && authoringIO && authoringTemplates ? <div className={`module-authoring-integrated ${authoringPresentation ? 'has-preview' : ''}`}><ModuleAuthoringWorkspace onDirtyChange={setDefinitionDirty} key={`${snapshot.context.host.session_id}:${project?.id}:${authoring.id}`} workspace={snapshot} busy={busy} io={authoringIO} samples={authoringSamples} templates={authoringTemplates} initialModule={authoring.module} initialDraft={authoring.draft} onNavigationGuard={registerAuthoringNavigation} onDraftChanged={setAuthoringDraft} onCommitted={async commit => { rememberCommit(commit); await refreshLatest.current(); }} onPreviewChange={(presentation, source) => setAuthoringPresentation(presentation ? { presentation, source: source ?? null } : null)} onConsumerRequested={(category, reference) => void action(() => openAuthoringConsumer(category, reference))} onClose={closeAuthoring} />{authoringPresentation && <AuthoringPresentationPreview value={authoringPresentation} />}</div> : deliveryTab && snapshot ? <DeliveryWorkspace key={`${project?.id}:${deliveryTab}`} workspace={snapshot} services={deliveryServices} initialTab={deliveryTab} onClose={() => setDeliveryTab(null)} onInspectRun={id => { setDeliveryTab(null); void action(() => chooseRun(id)); }} onLocate={(id, object) => { setDeliveryTab(null); setSelection(object); void action(() => chooseRun(id)); }} onOpenPackage={() => { setDeliveryTab(null); void action(() => openPackage('file')); }} onEditModule={reference => void action(() => openAuthoring(reference))} /> : businessOpen && snapshot ? <BusinessEditor onDirtyChange={setBusinessDirty} editIntent={businessEditIntent} project={project} scenarios={snapshot.scenarios} modules={snapshot.modules} scenarioId={scenarioId || null} history={history} run={run} frozenProject={runProject} frozenScenario={runInputs?.scenario ?? null} observation={observationPage} atMs={atMs} busy={busy} canEditSetupPolicies onCommit={commitBusiness} onRefresh={async () => { await refresh(); }} onRun={runBusiness} onScenarioChange={setScenarioId} onLocate={locateBusiness} onClose={() => setBusinessOpen(false)} /> : libraryOpen ? <ModuleLibrary onDirtyChange={setLibraryDirty} key={libraryModule ? host.moduleKey(libraryModule) : 'library'} initialModule={libraryModule} initialCategory={libraryCategory} onTemplate={async (base, preview) => { setBusy(true); setMessage(''); setFailure(null); try { rememberCommit(await host.applyTemplate(base, preview)); const next = await refresh(); const created = preview.command?.explicit_new_scenario_seed; if (created && next.scenarios.some(value => value.id === created.id)) setScenarioId(created.id); setLibraryOpen(false); setMessage('模板工厂已创建。下一步点击“配置订单”，核对供料和生产任务，再运行方案。'); } finally { setBusy(false); } }} project={project} busy={busy} onClose={() => setLibraryOpen(false)} onAdopt={async (base, reference) => { setBusy(true); setMessage(''); setFailure(null); try { rememberCommit(await host.adoptDefinition(base, reference)); await refresh(); setLibraryOpen(false); setMessage('定义已添加。可在画布中添加设备，或在业务输入中配置相应数据。'); } finally { setBusy(false); } }} /> : connectionEditor && connectionEditor.base.project ? <ConnectionEditor onDirtyChange={setConnectionDirty} project={connectionEditor.base.project} modules={connectionEditor.base.modules} value={connectionEditor.value} busy={busy} onClose={() => setConnectionEditor(null)} onApply={async values => { setBusy(true); setMessage(''); setFailure(null); try { await edit(values, connectionEditor.base.project); setConnectionEditor(null); } finally { setBusy(false); } }} /> : editor && editor.base.project ? <ObjectEditor onDirtyChange={setObjectDirty} key={`${editor.target.kind}-${editor.target.value?.id ?? 'new'}-${editor.base.project.revision}`} onReload={reloadObjectEditor} project={editor.base.project} modules={editor.base.modules} target={editor.target} busy={busy} onClose={() => setEditor(null)} onApply={async values => { setBusy(true); setMessage(''); setFailure(null); try { await edit(values, editor.base.project); setEditor(null); } finally { setBusy(false); } }} /> : <><FactoryScene project={displayedProject} modules={displayedModules} canvas={canvas} hallId={hallId} selection={selection} selections={selections} layoutControl={layoutControl} onTransform={transformLayout} onSelect={selectObject} onSelectMany={source === 'draft' && layoutMode === 'select' && !busy && !editing ? selectObjects : undefined} lod={lod} autoLod={autoLod} resetKey={resetKey} run={source === 'run' ? run : null} observation={source === 'run' ? observationPage : null} mediaSource={visibleFactorySource} />{factoryViewPending && <div role="status" style={{ position: 'absolute', inset: 0, zIndex: 5, background: '#ffffff70', display: 'grid', placeItems: 'center' }}><span style={{ background: '#fff', padding: '10px 16px', border: '1px solid #c7d4e2' }}>正在读取运行画面 · 当前画面 {visibleFactorySource?.observation ? visibleFactorySource.observation.at_ms / 1000 : '—'} 秒</span></div>}</>}{(!project || !project.halls.length && !project.devices.length) && !editing && <section className="project-start" aria-label="工程开始方式"><header><img className="project-start-mark" src="/superfactory-icon.png" alt="超级工厂" width="64" height="64" /><h2>选择开始方式</h2></header><div>{([['demonstration', '展示任务', '打开展示任务工程目录，核对其精确模块与实际输入。'], ['template', '从模板开始', '浏览实际模板，明确采用的对象与精确版本。'], ['empty', '空工程', '从厂房与设备开始，逐步补齐必要参数。']] as const).map(([intent, title, detail]) => <button id={`start-${intent}`} key={intent} disabled={!connected || busy} onClick={() => beginProject(intent, true)}><strong>{title}</strong><span>{detail}</span></button>)}</div></section>}</div>
+        /> : agentOpen && snapshot ? <AgentWorkspace key={agentEditorIdentity(snapshot)} workspace={snapshot} onRefresh={() => refreshLatest.current()} onClose={() => setAgentOpen(false)} onEditorStateChanged={receiveAgentEditorState} /> : checkOpen && project && snapshot ? <FactoryCheckWorkspace project={project} supported={snapshot.capabilities.implemented_operations.some(value => value.operation === 'check_factory_draft')} selection={selections} busy={busy} onDirtyChange={setCheckDirty} onClose={() => setCheckOpen(false)} onLocate={selectObject} /> : transformProposal ? <LayoutTransformProposal proposal={transformProposal} busy={busy} onApply={applyTransform} onReload={reloadLayout} onClose={() => setTransformProposal(null)} onDirtyChange={setLayoutDirty} /> : layoutEditor ? <LayoutSelectionEditor project={layoutEditor.project} selection={layoutEditor.selection} mode={layoutEditor.mode} busy={busy} onDirtyChange={setLayoutDirty} onApply={async (commands, base) => { await commitLayout(commands, base); setLayoutEditor(null); }} onReload={reloadLayout} onClose={() => setLayoutEditor(null)} /> : itemLayout && snapshot ? <ItemLayoutWorkspace onDirtyChange={setItemLayoutDirty} workspace={snapshot} initialOwner={itemLayout.initialOwner} busy={busy} onApply={commitItemLayout} onClose={() => setItemLayout(null)} /> : deviceProcess && snapshot && processAuthoringIO && processProjectRevision !== undefined ? <DeviceProcessWorkspace key={deviceProcess.id} workspace={snapshot} scope={deviceProcess.scope} scopeRevision={deviceProcess.scope.kind === 'definition_draft' ? deviceProcess.draft!.summary.revision : processProjectRevision} selection={deviceProcess.selection} actions={processActions} editor={{ onEditorStateChanged: receiveProcessEditorState, draft: deviceProcess.draft, source: deviceProcess.module, io: processAuthoringIO, samples: processSamples, scenario: snapshot.scenarios.find(value => value.id === scenarioId) ?? null, actions: { configure: inspectSavedProcessDraft, inspect: inspectSavedProcessDraft, preview_cycle: runProcessCycle }, run: deviceProcess.selection.kind === 'actual_run' && deviceProcess.scope.kind === 'project' && run?.id === deviceProcess.selection.run_id ? run : null, observation: deviceProcess.selection.kind === 'actual_run' && observationPage?.run_id === deviceProcess.selection.run_id ? observationPage : null, instance: selectedDevice ? { id: selectedDevice.id, module_ref: selectedDevice.module_ref } : null, onDraftChanged: receiveProcessDraft, onCommitted: async commit => { rememberCommit(commit); await refreshLatest.current(); }, onSampleRun: receiveProcessSample, onAdoptionRequested: reference => { setDeviceProcess(null); void action(() => openAuthoring(reference)); }, onImportPackageRequested: () => returnToAuthoring(deviceProcess.draft) }} onSelectionChanged={value => { setDeviceProcess(current => current ? { ...current, selection: value } : current); if (deviceProcess.scope.kind === 'project' && (value.kind === 'actual_run' || value.kind === 'frozen_device') && run?.id === value.run_id) void action(() => seekRun(value.run_id, value.at_ms)); }} onReturnToAuthoring={returnToAuthoring} onInspectItem={inspectProcessItem} onApplyNode={commitProcessNode} onEditNodeSource={editProcessNodeSource} onNodeDirtyChange={receiveNodeDirty} onClose={() => setDeviceProcess(null)} /> : packagingScope && packagingWorkspace && project && authoringIO && packagingRevision !== undefined ? <PackagingWorkspace onEditorStateChanged={receivePackagingEditorState} key={JSON.stringify([snapshot?.context.host.session_id, project.id, packagingScope])} workspace={packagingWorkspace} scope={packagingScope} scopeRevision={packagingRevision} io={authoringIO} manufacturingExport={{ status: 'available', start: startManufacturingPackageExport }} readManufacturingFile={readManufacturingFile} storedArtifacts={{ status: 'available', list: async () => listStoredPackaging(await packagingReadIdentity()), read: async artifactId => { const current = workspaceRef.current; if (!current?.project || current.project.id !== project.id) throw new Error('工程已切换，请在当前工程重新读取成果。'); const context = await readPackagingContext(current, packagingScope); const revision = packagingScope.kind === 'definition_draft' ? context.definition?.revision : current.project.revision; if (revision === undefined) throw new Error('未读取到此实际专业 Scope 修订。'); const value = await readStoredPackaging({ project_id: current.project.id, scope: packagingScope, scope_revision: revision, artifact_id: artifactId }); return { ...value, inputReadIssue: null }; } }} onCommitted={async commit => { rememberCommit(commit); await refreshPackaging(); }} onRefresh={refreshPackaging} onClose={() => { setPackagingScope(null); setPackagingContext(null); }} /> : authoring && snapshot && authoringIO && authoringTemplates ? <div className={`module-authoring-integrated ${authoringPresentation ? 'has-preview' : ''}`}><ModuleAuthoringWorkspace onDirtyChange={setDefinitionDirty} key={`${snapshot.context.host.session_id}:${project?.id}:${authoring.id}`} workspace={snapshot} busy={busy} io={authoringIO} samples={authoringSamples} templates={authoringTemplates} initialModule={authoring.module} initialDraft={authoring.draft} onNavigationGuard={registerAuthoringNavigation} onDraftChanged={setAuthoringDraft} onCommitted={async commit => { rememberCommit(commit); await refreshLatest.current(); }} onPreviewChange={(presentation, source) => setAuthoringPresentation(presentation ? { presentation, source: source ?? null } : null)} onConsumerRequested={(category, reference) => void action(() => openAuthoringConsumer(category, reference))} onClose={closeAuthoring} />{authoringPresentation && <AuthoringPresentationPreview value={authoringPresentation} />}</div> : deliveryTab && snapshot ? <DeliveryWorkspace key={`${project?.id}:${deliveryTab}`} workspace={snapshot} services={deliveryServices} initialTab={deliveryTab} onClose={() => setDeliveryTab(null)} onInspectRun={id => { setDeliveryTab(null); void action(() => chooseRun(id)); }} onLocate={(id, object) => { setDeliveryTab(null); setSelection(object); void action(() => chooseRun(id)); }} onOpenPackage={() => { setDeliveryTab(null); void action(() => openPackage('file')); }} onEditModule={reference => void action(() => openAuthoring(reference))} /> : businessOpen && snapshot ? <BusinessEditor onDirtyChange={setBusinessDirty} editIntent={businessEditIntent} project={project} scenarios={snapshot.scenarios} modules={snapshot.modules} scenarioId={scenarioId || null} history={history} run={run} frozenProject={runProject} frozenScenario={runInputs?.scenario ?? null} observation={observationPage} atMs={atMs} busy={busy} canEditSetupPolicies onCommit={commitBusiness} onRefresh={async () => { await refresh(); }} onRun={runBusiness} onScenarioChange={setScenarioId} onLocate={locateBusiness} onClose={() => setBusinessOpen(false)} /> : libraryOpen ? <ModuleLibrary onDirtyChange={setLibraryDirty} key={libraryModule ? host.moduleKey(libraryModule) : 'library'} initialModule={libraryModule} initialCategory={libraryCategory} onTemplate={async (base, preview) => { setBusy(true); setMessage(''); setFailure(null); try { rememberCommit(await host.applyTemplate(base, preview)); const next = await refresh(); const created = preview.command?.explicit_new_scenario_seed; if (created && next.scenarios.some(value => value.id === created.id)) setScenarioId(created.id); setLibraryOpen(false); setMessage('模板工厂已创建。下一步点击“配置订单”，核对供料和生产任务，再运行方案。'); } finally { setBusy(false); } }} project={project} busy={busy} onClose={() => setLibraryOpen(false)} onAdopt={async (base, reference) => { setBusy(true); setMessage(''); setFailure(null); try { rememberCommit(await host.adoptDefinition(base, reference)); await refresh(); setLibraryOpen(false); setMessage('定义已添加。可在画布中添加设备，或在业务输入中配置相应数据。'); } finally { setBusy(false); } }} /> : connectionEditor && connectionEditor.base.project ? <ConnectionEditor onDirtyChange={setConnectionDirty} project={connectionEditor.base.project} modules={connectionEditor.base.modules} value={connectionEditor.value} busy={busy} onClose={() => setConnectionEditor(null)} onApply={async values => { setBusy(true); setMessage(''); setFailure(null); try { await edit(values, connectionEditor.base.project); setConnectionEditor(null); } finally { setBusy(false); } }} /> : editor && editor.base.project ? <ObjectEditor onDirtyChange={setObjectDirty} key={`${editor.target.kind}-${editor.target.value?.id ?? 'new'}-${editor.base.project.revision}`} onReload={reloadObjectEditor} project={editor.base.project} modules={editor.base.modules} target={editor.target} busy={busy} onClose={() => setEditor(null)} onApply={async values => { setBusy(true); setMessage(''); setFailure(null); try { await edit(values, editor.base.project); setEditor(null); } finally { setBusy(false); } }} /> : <><FactoryScene project={displayedProject} modules={displayedModules} canvas={canvas} hallId={hallId} selection={selection} selections={selections} layoutControl={layoutControl} onTransform={transformLayout} onSelect={selectObject} onSelectMany={source === 'draft' && layoutMode === 'select' && !busy && !editing ? selectObjects : undefined} lod={lod} autoLod={autoLod} resetKey={resetKey} run={source === 'run' ? run : null} observation={source === 'run' ? observationPage : null} mediaSource={visibleFactorySource} />{factoryViewPending && <div role="status" style={{ position: 'absolute', inset: 0, zIndex: 5, background: '#ffffff70', display: 'grid', placeItems: 'center' }}><span style={{ background: '#fff', padding: '10px 16px', border: '1px solid #c7d4e2' }}>正在读取运行画面 · 当前画面 {visibleFactorySource?.observation ? visibleFactorySource.observation.at_ms / 1000 : '—'} 秒</span></div>}</>}{(!project || !project.halls.length && !project.devices.length) && !editing && <section className="project-start" aria-label="工程开始方式"><header><img className="project-start-mark" src="/superfactory-icon.png" alt="超级工厂" width="64" height="64" /><h2>选择开始方式</h2></header><div>{([['demonstration', '展示任务', '打开展示任务工程目录，核对其精确模块与实际输入。'], ['template', project ? '在当前工程使用模板' : '从模板开始', '浏览实际模板，明确采用的对象与精确版本。'], ['empty', project ? '继续当前空布局' : '空工程', project ? '在当前工程添加厂房；如需新建，使用“文件 → 新建空工程”。' : '从厂房与设备开始，逐步补齐必要参数。']] as const).map(([intent, title, detail]) => <button id={`start-${intent}`} key={intent} disabled={!connected || busy} onClick={() => beginProject(intent, true)}><strong>{title}</strong><span>{detail}</span></button>)}</div></section>}</div>
         <div className="canvas-status" style={{ display: cloudOpen ? 'none' : undefined }}><span>{currentHall?.title ?? '未选择厂房'} · {source === 'run' ? '只读结果' : '布局编辑'}</span><span>{source === 'run' ? `实际对象 ${runObjects.length}` : '占地与高度取工程声明'}</span></div>
       </section>
       <div className="resize-handle" role="separator" aria-label="属性栏宽度" onPointerDown={event => resize(event, 'right')} />
@@ -1211,8 +1272,8 @@ export function Workbench() {
       <RunTimeline {...timelineProps} hidden={!timelineVisible && !canvasFocused || cloudOpen} inputTextScale={propertyTextScale} />
     </div>
     <footer className="app-status"><span>{connected ? '桌面 Host' : '浏览器预览'} · {busy ? '正在处理' : '就绪'}</span><span>{hasUnappliedInput ? `本地输入未应用${snapshot?.context.project?.dirty ? ' · 有未保存修订' : ''}` : source === 'run' ? '回看不改变工程库存' : snapshot?.context.project?.dirty ? '有未保存修订' : '工程状态'}</span></footer>
-    {newDialog && <WorkbenchModal labelId="new-project-title" busy={busy} onDismiss={() => setNewDialog(false)}><form className="modal" onSubmit={event => { event.preventDefault(); void action(async () => { rememberCommit(await host.createProject(newTitle, departure)); await refresh(); setNewDialog(false); if (startIntent !== 'empty') { setLibraryModule(undefined); setLibraryCategory('templates'); setLibraryOpen(true); } }); }}><h2 id="new-project-title">{({ empty: '新建空工程', template: '从模板开始', demonstration: '从展示任务开始' })[startIntent]}</h2><label>工程名称<input value={newTitle} onChange={event => setNewTitle(event.target.value)} required autoFocus /></label>{departureChoice()}<footer><button type="button" disabled={busy} onClick={() => setNewDialog(false)}>取消</button><button className="primary" disabled={busy || !newTitle.trim() || !!project && departure === 'stay'}>创建</button></footer></form></WorkbenchModal>}
-    {opening && <WorkbenchModal labelId="open-project-title" busy={busy} onDismiss={() => setOpening(null)}><section className="modal"><h2 id="open-project-title">打开工程 · 采纳前核对</h2><p>{opening.draft.proposed_objects.length} 个对象 · {opening.draft.proposed_definitions.length} 个精确模块版本</p>{[...opening.draft.missing, ...opening.draft.conflicts].map((issue, i) => <p className="issue-row" key={i}>{issue.message}</p>)}{opening.draft.required_human_choices.map((choice, i) => <p key={i}>{choice}</p>)}{opening.draft.missing.length > 0 && <label className="check-label"><input type="checkbox" checked={allowMissing} onChange={event => setAllowMissing(event.target.checked)} />保留缺项，以可编辑草稿打开</label>}{departureChoice()}<footer><button disabled={busy} onClick={() => setOpening(null)}>取消</button><button className="primary" disabled={busy || !!project && departure === 'stay' || opening.draft.missing.length > 0 && !allowMissing} onClick={() => void action(async () => { rememberCommit(await host.adoptOpen(opening.task, opening.draft, departure, allowMissing)); await refresh(true); setOpening(null); })}>确认打开</button></footer></section></WorkbenchModal>}
+    {newDialog && <WorkbenchModal labelId="new-project-title" busy={busy} onDismiss={() => setNewDialog(false)}><form className="modal" onSubmit={event => { event.preventDefault(); void action(async () => { const decision = await prepareDeparture(); if (!decision) return; rememberCommit(await host.createProject(newTitle, decision)); await refresh(); setNewDialog(false); setMessage(`已创建工程“${newTitle.trim()}”。${startIntent === 'empty' ? '下一步添加厂房与设备。' : '下一步选择模板。'}`); if (startIntent !== 'empty') { setLibraryModule(undefined); setLibraryCategory('templates'); setLibraryOpen(true); } }); }}><h2 id="new-project-title">{({ empty: '新建空工程', template: '从模板开始', demonstration: '从展示任务开始' })[startIntent]}</h2><label>工程名称<input value={newTitle} onChange={event => setNewTitle(event.target.value)} required autoFocus /></label>{departureChoice()}{!newTitle.trim() && <p role="status">请填写工程名称后创建。</p>}<footer><button type="button" disabled={busy} onClick={() => setNewDialog(false)}>取消</button><button className="primary" disabled={busy || !newTitle.trim() || !!project && departure === 'stay'}>创建</button></footer></form></WorkbenchModal>}
+    {opening && <WorkbenchModal labelId="open-project-title" busy={busy} onDismiss={() => setOpening(null)}><section className="modal"><h2 id="open-project-title">打开工程 · 采纳前核对</h2><p>{opening.draft.proposed_objects.length} 个对象 · {opening.draft.proposed_definitions.length} 个精确模块版本</p>{[...opening.draft.missing, ...opening.draft.conflicts].map((issue, i) => <p className="issue-row" key={i}>{issue.message}</p>)}{opening.draft.required_human_choices.map((choice, i) => <p key={i}>{choice}</p>)}{opening.draft.missing.length > 0 && <label className="check-label"><input type="checkbox" checked={allowMissing} onChange={event => setAllowMissing(event.target.checked)} />保留缺项，以可编辑草稿打开</label>}{departureChoice()}{opening.draft.missing.length > 0 && !allowMissing && <p role="status">请先确认是否保留缺项，以可编辑草稿打开。</p>}<footer><button disabled={busy} onClick={() => setOpening(null)}>取消</button><button className="primary" disabled={busy || !!project && departure === 'stay' || opening.draft.missing.length > 0 && !allowMissing} onClick={() => void action(async () => { const decision = await prepareDeparture(); if (!decision) return; rememberCommit(await host.adoptOpen(opening.task, opening.draft, decision, allowMissing)); await refresh(true); setOpening(null); })}>确认打开</button></footer></section></WorkbenchModal>}
     {processSampleChoice && <ProcessSampleChooser key={`${processSampleChoice.run_id}:${processSampleChoice.draft_revision}`} choice={processSampleChoice} onDismiss={() => setProcessSampleChoice(null)} />}
     {cloudClosePrompt && <WorkbenchModal labelId="cloud-close-title" busy={false} onDismiss={() => setCloudClosePrompt(false)}><section className="modal">
       <h2 id="cloud-close-title">准备表单尚未提交</h2>
@@ -1234,7 +1295,7 @@ export function Workbench() {
     return <button key={id} className={`tree-leaf ${selections.some(ref => same(ref, { kind: 'device', id })) ? 'selected' : ''}`} onClick={event => selectObject({ kind: 'device', id }, event.shiftKey || event.ctrlKey || event.metaKey)}>▣ {title}</button>;
   }
   function departureChoice() {
-    return project && <><p>保存工程不会提交定义草稿。未提交的定义草稿须先在对应工作区提交，再确认离开。</p><label>离开当前工程<select value={departure} onChange={event => setDeparture(event.target.value as DepartureDecision)}><option value="stay">留在当前工程</option>{!snapshot?.context.project?.dirty && <option value="already_saved">工程已保存、定义已提交，继续</option>}<option value="discard_after_tasks_terminal">任务结束后放弃当前未保存更改</option></select></label></>;
+    return project && <><p>保存工程不会提交定义草稿。未提交的定义草稿须先在对应工作区提交，再确认离开。</p><label>离开当前工程<select value={departure} onChange={event => setDeparture(event.target.value as DepartureDecision | 'save_before_leave')}><option value="stay">留在当前工程</option>{!snapshot?.context.project?.dirty && <option value="already_saved">工程无未保存更改，继续</option>}<option value="save_before_leave">保存工程后继续</option><option value="discard_after_tasks_terminal">任务结束后明确放弃当前未保存更改</option></select></label>{departure === 'stay' && <p role="status">已选择留在当前工程，创建或打开操作暂不可用。点击“取消”返回，或选择保存后继续、明确放弃。</p>}</>;
   }
 }
 

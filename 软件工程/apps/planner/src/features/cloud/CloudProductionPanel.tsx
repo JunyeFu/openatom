@@ -137,14 +137,17 @@ export function CloudProductionPanel(props: CloudProductionPanelProps) {
   const lanes = useRef(new Map<Lane, AbortController>());
   const mounted = useRef(true);
   const selectedSource = useRef<Source | null>(null);
+  const sourceChoiceMade = useRef(false);
   const sourceGeneration = useRef(0);
   const previousFormOwner = useRef('');
   const sourcePollingPaused = useRef(false);
   const viewTimeEdited = useRef(false);
   const [tab, setTab] = useState<Tab>('devices');
   const [config, setConfig] = useState<CloudProductionConfiguration | null>(null);
+  const [configStatus, setConfigStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [datasets, setDatasets] = useState<DatasetDescriptor[]>([]);
   const [catalog, setCatalog] = useState<ExecutionSourceSummary[]>([]);
+  const [catalogStatus, setCatalogStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [envelope, setEnvelope] = useState<ExecutionReadEnvelope | null>(null);
   const [source, setSource] = useState<Source | null>(null);
   const [busy, setBusy] = useState<string[]>([]);
@@ -170,6 +173,9 @@ export function CloudProductionPanel(props: CloudProductionPanelProps) {
   const id = useId();
   const available = (op: ApiRequest['operation']) => hasCloudOperation(capabilities, op);
   const currentLatest = source?.origin === 'host' && source.selection.kind === 'latest' && envelope?.access.ownership === 'current_host_owner';
+  const historyReadOnly = !!source && (source.origin !== 'host' || source.selection.kind !== 'latest'
+    || (!!envelope && envelope.access.ownership !== 'current_host_owner'));
+  const canPresentProduction = !source || currentLatest;
   const snapshot = envelope?.snapshot ?? null;
   const frozenNameKey = snapshot ? JSON.stringify([identityKey(snapshot.identity), snapshot.project_input_ref]) : '';
   const currentInputsMatch = !snapshot || project?.revision === snapshot.project_input_ref.project_revision
@@ -201,9 +207,12 @@ export function CloudProductionPanel(props: CloudProductionPanelProps) {
   function fail(lease: ReturnType<typeof begin>, e: unknown) {
     if (!lease.live()) return;
     if (lease.lane === 'source') sourcePollingPaused.current = true;
+    if (lease.lane === 'configuration') setConfigStatus('error');
+    if (lease.lane === 'catalog') setCatalogStatus('error');
     const code = cloudErrorCode(e);
     if (code === 'PermissionDenied' || code === 'NoActiveProject') {
       setConfig(null); setDatasets([]); setCatalog([]); setEnvelope(null); setSource(null); setPage(null); setCommand(null); setReceipts(null); setFrozenNames(null); setKnownDeviceSet(null); setDeviceFilter([]);
+      setConfigStatus('error'); setCatalogStatus('error');
       selectedSource.current = null; sourceGeneration.current += 1;
       // Permission rejection clears protected views rather than disguising it as an empty query.
       for (const [lane, c] of lanes.current) if (lane !== 'mutation') c.abort();
@@ -230,11 +239,13 @@ export function CloudProductionPanel(props: CloudProductionPanelProps) {
   async function configuration() {
     if (!context || !scenario || !available('read_cloud_production')) return;
     const lease = begin('configuration');
+    setConfigStatus('loading'); setConfig(null); setDatasets([]);
     try {
       const r = await readCloud(context, { kind: 'configuration', base_revision: context.projectRevision, scenario_id: scenario.id, scenario_revision: scenario.revision }, tracked(lease));
-      if (lease.live() && r.kind === 'configuration') {
+      if (lease.live()) {
+        if (r.kind !== 'configuration') throw new CloudProductionError('configuration_mismatch', '未取得当前工程的连接配置。');
         if (r.data.project_revision !== context.projectRevision || r.data.scenario_id !== scenario.id || r.data.scenario_revision !== scenario.revision) throw new CloudProductionError('configuration_mismatch', '配置不属于所选工程/方案修订。');
-        setConfig(r.data); setBindings(old => old.filter(b => r.data.candidate_bindings.some(c => c.binding_id === b)));
+        setConfig(r.data); setConfigStatus('ready'); setBindings(old => old.filter(b => r.data.candidate_bindings.some(c => c.binding_id === b)));
         if (r.data.cloud_connection_ref && r.data.cloud_project_id) void datasetCatalog(r.data);
         else setDatasets([]);
       }
@@ -251,22 +262,33 @@ export function CloudProductionPanel(props: CloudProductionPanelProps) {
   async function localCatalog() {
     if (!context || !available('read_execution_view')) return;
     const lease = begin('catalog');
+    setCatalogStatus('loading'); setCatalog([]);
     try {
       const r = await readLocalView(context, { kind: 'catalog' });
-      if (lease.live() && r.kind === 'catalog') {
+      if (lease.live()) {
+        if (r.kind !== 'catalog') throw new CloudProductionError('catalog_mismatch', '未取得当前工程的生产记录列表。');
+        setCatalogStatus('ready');
         setCatalog(r.data.entries);
         const first = r.data.entries.find(e => e.active_owner) ?? r.data.entries[0];
-        if (!selectedSource.current && first) await chooseSource({ identity: first.identity, origin: 'host', selection: first.active_owner ? { kind: 'latest' } : { kind: 'revision', execution_revision: first.execution_revision } });
+        if (!selectedSource.current && !sourceChoiceMade.current && first) await chooseSource({ identity: first.identity, origin: 'host', selection: first.active_owner ? { kind: 'latest' } : { kind: 'revision', execution_revision: first.execution_revision } });
       }
     } catch (e) { fail(lease, e); } finally { finish(lease); }
   }
   async function chooseSource(next: Source) {
     sourcePollingPaused.current = false; viewTimeEdited.current = false;
-    selectedSource.current = next; sourceGeneration.current += 1;
+    selectedSource.current = next; sourceChoiceMade.current = true; sourceGeneration.current += 1;
     setSource(next); setEnvelope(null); setCommand(null); setReceipts(null); setReceiptPages(0); setPage(null);
     for (const lane of ['query', 'command', 'receipts'] as const) { lanes.current.get(lane)?.abort(); lanes.current.delete(lane); }
     setBusy(old => old.filter(v => !['query', 'command', 'receipts'].includes(v)));
     await refreshSource(next);
+  }
+  function clearSource() {
+    selectedSource.current = null; sourceChoiceMade.current = true; sourceGeneration.current += 1;
+    sourcePollingPaused.current = false; viewTimeEdited.current = false;
+    for (const lane of ['source', 'query', 'command', 'receipts'] as const) { lanes.current.get(lane)?.abort(); lanes.current.delete(lane); }
+    setBusy(old => old.filter(v => !['source', 'query', 'command', 'receipts'].includes(v)));
+    setSource(null); setEnvelope(null); setFrozenNames(null); setCommand(null); setReceipts(null); setReceiptPages(0); setPage(null);
+    setDataSet(old => old === '@execution' ? '' : old);
   }
   async function refreshSource(next = selectedSource.current, background = false) {
     if (!context || !next) return;
@@ -303,8 +325,8 @@ export function CloudProductionPanel(props: CloudProductionPanelProps) {
   useEffect(() => {
     mounted.current = true;
     sourcePollingPaused.current = false; viewTimeEdited.current = false;
-    setError(''); setErrorDetail(''); setMessage(''); setConfig(null); setDatasets([]); setCatalog([]); setEnvelope(null); setSource(null); setPage(null); setTaskRecord(null); setFrozenNames(null); setKnownDeviceSet(null);
-    setCommand(null); setReceipts(null); setBusy([]); selectedSource.current = null; sourceGeneration.current += 1;
+    setError(''); setErrorDetail(''); setMessage(''); setConfig(null); setConfigStatus('loading'); setDatasets([]); setCatalog([]); setCatalogStatus('loading'); setEnvelope(null); setSource(null); setPage(null); setTaskRecord(null); setFrozenNames(null); setKnownDeviceSet(null);
+    setCommand(null); setReceipts(null); setBusy([]); selectedSource.current = null; sourceChoiceMade.current = false; sourceGeneration.current += 1;
     const owner = `${hostContextId}:${project?.id ?? ''}:${scenario?.id ?? ''}`;
     if (previousFormOwner.current !== owner) {
       previousFormOwner.current = owner; setTarget(''); setUnit(''); setCutoffSeconds(''); setMaxAgeSeconds(''); setBindings([]); setDirty(false);
@@ -331,7 +353,7 @@ export function CloudProductionPanel(props: CloudProductionPanelProps) {
   }, [key, source, currentLatest, tab, envelope?.snapshot.lifecycle.state, envelope?.delivery.relation]);
 
   async function prepare() {
-    if (!context || !scenario || !config || mutationBusy || unresolvedTask) return;
+    if (!context || !scenario || !config || mutationBusy || unresolvedTask || (source && !currentLatest)) return;
     const lease = begin('mutation'); const generation = sourceGeneration.current; setError(''); setMessage('');
     try {
       const chosen = config.candidate_bindings.filter(b => bindings.includes(b.binding_id));
@@ -356,7 +378,7 @@ export function CloudProductionPanel(props: CloudProductionPanelProps) {
     } finally { finish(lease); }
   }
   async function control(action: ControlAction) {
-    if (!context || !envelope || mutationBusy) return;
+    if (!context || !envelope || mutationBusy || !currentLatest) return;
     const lease = begin('mutation'); const original = envelope; const generation = sourceGeneration.current; setError('');
     try {
       await controlExecution(context, original, action, currentLatest);
@@ -469,9 +491,9 @@ export function CloudProductionPanel(props: CloudProductionPanelProps) {
     } catch (e) { fail(lease, e); } finally { finish(lease); }
   }
   function switchTab(next: Tab) {
-    // These view reads stop on tab changes; shared configuration/catalog requests remain valid.
-    for (const lane of ['source', 'query', 'command', 'receipts'] as const) { lanes.current.get(lane)?.abort(); lanes.current.delete(lane); }
-    setBusy(old => old.filter(lane => !['source', 'query', 'command', 'receipts'].includes(lane)));
+    // The selected source is shared by all three tabs; only tab-specific reads stop here.
+    for (const lane of ['query', 'command', 'receipts'] as const) { lanes.current.get(lane)?.abort(); lanes.current.delete(lane); }
+    setBusy(old => old.filter(lane => !['query', 'command', 'receipts'].includes(lane)));
     setTab(next);
     if (next === 'data' && !datasets.length && !lanes.current.has('datasets')) void datasetCatalog();
   }
@@ -493,7 +515,13 @@ export function CloudProductionPanel(props: CloudProductionPanelProps) {
       const work = snapshot.logical_work.filter(work => work.route_step_id === step.id);
       return { step, total: work.length, completed: work.filter(work => work.state === 'business_effect_committed' || work.state === 'accepted').length };
     }) : [];
-  const configured = !!config?.cloud_connection_ref && !!config.cloud_project_id;
+  const configured = configStatus === 'ready' && !!config?.cloud_connection_ref && !!config.cloud_project_id;
+  const selectedActiveOwner = source && catalog.find(entry => entry.active_owner && identityKey(entry.identity) === identityKey(source.identity));
+  const connectionStatus = !available('read_cloud_production') ? '当前程序没有云端读取能力'
+    : !scenario ? '尚未选择方案，未读取连接配置'
+    : configStatus === 'loading' ? '正在读取连接配置'
+    : configStatus === 'error' ? '连接配置读取失败，状态未确认'
+    : configured ? '本机已配置云连接' : '本机尚未配置云连接';
   const dataExportReason = !available('export_cloud_data') ? '当前程序尚未提供筛选结果导出。' : !props.directories?.data ? exportDirectoryUnavailable : !page ? '请先查询一次，确定要导出的数据范围。' : '';
   const reportReason = !available('export_execution_report') ? '当前程序尚未提供生产报告导出。' : !props.directories?.report ? exportDirectoryUnavailable : !snapshot ? '请先选择生产记录。' : '';
   const descriptor = datasets.find(d => d.dataset_id === dataSet);
@@ -528,8 +556,9 @@ export function CloudProductionPanel(props: CloudProductionPanelProps) {
     <header className="cloud-heading"><div><h2>云端生产</h2><span>{snapshot ? sourceModeLabel[snapshot.provenance.mode] : config ? sourceModeLabel[config.source_mode] : '连接设备、查询数据并管理生产'}</span></div><button type="button" onClick={() => { abortReads(); props.onClose(); }}>返回画布</button></header>
     <div className="cloud-source" aria-label="当前来源">
       <span>工厂：<strong>{project?.title ?? '尚未打开工厂'}</strong></span>
-      <span>{snapshot ? `${source?.origin === 'cloud' ? '云端存档（只读）' : currentLatest ? '当前本机会话' : '本机历史记录（只读）'} · 第 ${snapshot.execution_revision} 版` : '尚未选择生产记录'}</span>
-      <span>{snapshot ? `可回看至 ${elapsed(snapshot.coverage.observed_until_host_ms)}` : '选择记录后可查看生产状态'}</span>
+      <span>云连接：{connectionStatus}</span>
+      <span>{snapshot ? `${source?.origin === 'cloud' ? '云端存档（只读）' : currentLatest ? '当前本机会话' : source?.selection.kind === 'latest' ? '其他本机会话（只读）' : '本机历史记录（只读）'} · 快照修订 R${snapshot.execution_revision}` : source ? '正在读取所选生产记录' : '尚未选择生产记录'}</span>
+      <span>{snapshot ? `观察记录前沿 F${snapshot.observation_frontier} · 可回看至 ${elapsed(snapshot.coverage.observed_until_host_ms)}` : '选择记录后可查看生产状态'}</span>
       {envelope && <span>{({ synced: '已同步云端', publication_pending: '正在等待云端同步', unknown: '云端同步状态未确认' })[envelope.delivery.relation]}</span>}
       {snapshot && <details><summary>来源技术详情</summary><dl>{Object.entries(snapshot.identity).map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
         <Json value={{ project_input_ref: snapshot.project_input_ref, execution_revision: snapshot.execution_revision, delivery: envelope?.delivery, access: envelope?.access }} label="版本与权限字段"/>
@@ -548,24 +577,33 @@ export function CloudProductionPanel(props: CloudProductionPanelProps) {
     {busy.length > 0 && <p className="cloud-loading" role="status">正在处理：{busy.map(lane => ({ configuration: '读取连接配置', datasets: '读取数据集', catalog: '读取生产记录', source: '读取所选记录', query: '查询数据', command: '读取指令', receipts: '读取回执', mutation: '提交操作', request: '查询操作状态' })[lane]).join('、')}。切换页面不会停止生产。</p>}
     <div role="tablist" aria-label="云端生产页签" className="cloud-tabs">{tabs.map(([value, label], index) => <button type="button" role="tab" id={`${id}-${value}`} key={value} aria-selected={tab === value} aria-controls={`${id}-panel-${value}`} tabIndex={tab === value ? 0 : -1} onKeyDown={e => tabKey(e, index)} onClick={() => switchTab(value)}>{label}</button>)}</div>
     {!project || !scenario ? <Notice>请先打开工程并选择方案。面板没有创建演示数据或生产会话。</Notice> : <>
-      <div className="cloud-source-picker"><label>生产记录<select aria-label="生产记录" value={source ? identityKey(source.identity) : ''} onChange={e => { const entry = catalog.find(c => identityKey(c.identity) === e.target.value); if (entry) void chooseSource({ identity: entry.identity, origin: 'host', selection: entry.active_owner ? { kind: 'latest' } : { kind: 'revision', execution_revision: entry.execution_revision } }); }}>
-        <option value="">请选择生产记录</option>{catalog.map((c, index) => <option key={identityKey(c.identity)} value={identityKey(c.identity)}>{c.active_owner ? '当前会话' : `已保存记录 ${index + 1}`} · {labels[c.lifecycle_state]} · {elapsed(c.observed_until_host_ms)} · {labels[c.goal_at_snapshot]}</option>)}
+      <div className="cloud-source-picker"><label>生产记录<select aria-label="生产记录" value={source ? identityKey(source.identity) : ''} onChange={e => { if (!e.target.value) { clearSource(); return; } const entry = catalog.find(c => identityKey(c.identity) === e.target.value); if (entry) void chooseSource({ identity: entry.identity, origin: 'host', selection: entry.active_owner ? { kind: 'latest' } : { kind: 'revision', execution_revision: entry.execution_revision } }); }}>
+        <option value="">不选择记录 · 可准备新会话</option>{catalog.map((c, index) => <option key={identityKey(c.identity)} value={identityKey(c.identity)}>{c.active_owner ? '当前会话' : `已保存记录 ${catalog.slice(0, index + 1).filter(entry => !entry.active_owner).length}`} · 快照 R{c.execution_revision} · {labels[c.lifecycle_state]} · {elapsed(c.observed_until_host_ms)} · {labels[c.goal_at_snapshot]}</option>)}
       </select></label>
+        {historyReadOnly && selectedActiveOwner && <button type="button" onClick={() => void chooseSource({ identity: selectedActiveOwner.identity, origin: 'host', selection: { kind: 'latest' } })}>返回当前本机会话</button>}
+        {historyReadOnly && <button type="button" onClick={clearSource}>退出只读回看，准备新会话</button>}
         <button type="button" disabled={!available('read_execution_view')} onClick={() => void localCatalog()}>刷新记录列表</button>
         <button type="button" disabled={!source} onClick={() => void refreshSource()}>刷新所选记录</button>
-        <button type="button" disabled={!source || !snapshot || !available('read_cloud_production')} onClick={() => { if (source && snapshot) void chooseSource({ identity: source.identity, origin: 'cloud', selection: { kind: 'revision', execution_revision: snapshot.execution_revision } }); }}>云端存档</button>
+        <button type="button" disabled={!source || !snapshot || !configured || !available('read_cloud_production')} onClick={() => { if (source && snapshot) void chooseSource({ identity: source.identity, origin: 'cloud', selection: { kind: 'revision', execution_revision: snapshot.execution_revision } }); }}>云端存档</button>
         <details className="cloud-version-options"><summary>版本选项</summary><div>
           <button type="button" disabled={!source || !snapshot} onClick={() => { if (source && snapshot) void chooseSource({ identity: source.identity, origin: source.origin, selection: { kind: 'revision', execution_revision: snapshot.execution_revision } }); }}>固定当前版本</button>
-          <button type="button" disabled={!source || !available('get_execution_snapshot')} onClick={() => { if (source) void chooseSource({ identity: source.identity, origin: 'host', selection: { kind: 'latest' } }); }}>跟随本机会话</button>
-          <label className="cloud-revision">记录版本<input aria-label="记录版本" inputMode="numeric" value={revisionDraft} onChange={e => setRevisionDraft(e.target.value)}/></label>
+          <button type="button" disabled={!selectedActiveOwner || !available('get_execution_snapshot')} onClick={() => { if (selectedActiveOwner) void chooseSource({ identity: selectedActiveOwner.identity, origin: 'host', selection: { kind: 'latest' } }); }}>跟随本机会话</button>
+          <label className="cloud-revision">快照修订 R<input aria-label="快照修订" inputMode="numeric" value={revisionDraft} onChange={e => setRevisionDraft(e.target.value)}/></label>
           <button type="button" disabled={!source} onClick={() => { if (!source) return; try { const r = safeInteger(revisionDraft, '记录版本'); void chooseSource({ identity: source.identity, origin: source.origin, selection: { kind: 'revision', execution_revision: r } }); } catch (e) { showError(e); } }}>读取这个版本</button>
         </div></details>
       </div>
+      {!available('read_execution_view') && <Notice>当前程序没有本机生产记录读取能力。</Notice>}
+      {available('read_execution_view') && catalogStatus === 'loading' && <Notice>正在读取本机生产记录列表。</Notice>}
+      {available('read_execution_view') && catalogStatus === 'error' && <Notice>生产记录列表未能读取；请查看上方错误并刷新记录列表。</Notice>}
+      {available('read_execution_view') && catalogStatus === 'ready' && catalog.length === 0 && <Notice>当前工程尚无本机生产记录；可在“执行”页准备新会话。</Notice>}
       <div role="tabpanel" id={`${id}-panel-${tab}`} aria-labelledby={`${id}-${tab}`} tabIndex={0} className="cloud-tab-content">
       {tab === 'devices' && <>
         <div className="cloud-section-heading"><h3>设备与接单状态</h3><button type="button" disabled={mutationBusy} onClick={() => void (async () => { const lease=begin('mutation'); setError(''); try { const count=await invoke<number|null>('project_import_cloud_connection'); if(lease.live() && count!==null)setMessage(`已校验并保存 ${count} 台设备的连接。请保存工程、退出并重新打开应用后使用新连接；当前生产连接未切换。`); } catch(e) { if(lease.live())showError(typeof e==='object' && e && 'message' in e ? new Error(String(e.message)) : e); } finally { finish(lease); } })()}>导入连接文件…</button><button type="button" disabled={!available('read_cloud_production')} onClick={() => void configuration()}>刷新连接配置</button></div>
-        {!available('read_cloud_production') && <Notice>当前程序尚未提供云端读取功能。</Notice>}
-        {!configured && <Notice>正在读取云连接，或本机尚未完成连接配置。</Notice>}
+        {!available('read_cloud_production') && <Notice>当前程序尚未提供云端读取功能；已保存的本机生产记录仍可选择回看。</Notice>}
+        {available('read_cloud_production') && !scenario && <Notice>请选择当前方案后读取连接配置。已保存记录可以独立回看。</Notice>}
+        {available('read_cloud_production') && scenario && configStatus === 'loading' && <Notice>正在读取本机连接配置。已保存记录可以独立回看。</Notice>}
+        {available('read_cloud_production') && configStatus === 'error' && <Notice>连接配置未能读取；请查看上方错误并刷新配置。不能据此判断本机是否已配置。</Notice>}
+        {available('read_cloud_production') && configStatus === 'ready' && !configured && <Notice>本机尚未配置云连接。可导入连接文件，保存工程并重启应用；已保存记录仍可只读回看。</Notice>}
         <div className="cloud-table-scroll"><table><thead><tr><th>设备与工序</th><th>调度设置</th><th>设备上报</th><th>报告状态</th><th>当前能否接单</th><th>操作</th></tr></thead><tbody>
           {[...new Map((snapshot?.devices ?? []).map(d => [d.binding.device_id,d])).values()].map(d => <tr key={d.binding.device_id}>
             <td><strong>{bindingCaption(d.binding, true)}</strong><Json value={d.binding} label="绑定技术详情"/></td>
@@ -574,8 +612,8 @@ export function CloudProductionPanel(props: CloudProductionPanelProps) {
             <td>{labels[d.freshness]}</td><td>{d.effective_accept_new_work === null ? '尚未确认' : d.effective_accept_new_work ? '可以接新任务' : '暂不能接新任务'}
               {d.blocking_reasons.length > 0 && <small>{d.blocking_reasons.map(reason => blockingLabel[reason] ?? '限制说明见详情').join('；')}</small>}<Json value={d} label="状态技术详情"/></td>
             <td><button type="button" disabled={project.revision !== snapshot!.project_input_ref.project_revision || !project.devices.some(device => device.id === d.binding.device_id)} onClick={() => props.onLocateDevice(d.binding.device_id)}>在工厂中定位</button>
-              <button type="button" disabled={mutationBusy || !canControl(envelope, { kind: 'set_device_acceptance', device_id: d.binding.device_id, accept_new_work: !d.operator_accept_new_work }, currentLatest)} onClick={() => void control({ kind: 'set_device_acceptance', device_id: d.binding.device_id, accept_new_work: !d.operator_accept_new_work })}>{d.operator_accept_new_work ? '暂停接新任务' : '允许接新任务'}</button>
-              {snapshot?.provenance.mode === 'software_in_loop' && <><button type="button" disabled={mutationBusy || !canControl(envelope,{kind:'set_device_acceptance',device_id:d.binding.device_id,accept_new_work:true},currentLatest)} onClick={() => void deviceMaintenance(d.binding.device_id,true)}>模拟设备维护</button><button type="button" disabled={mutationBusy || !canControl(envelope,{kind:'set_device_acceptance',device_id:d.binding.device_id,accept_new_work:true},currentLatest)} onClick={() => void deviceMaintenance(d.binding.device_id,false)}>恢复模拟设备</button></>}
+              {!historyReadOnly && <button type="button" disabled={mutationBusy || !canControl(envelope, { kind: 'set_device_acceptance', device_id: d.binding.device_id, accept_new_work: !d.operator_accept_new_work }, currentLatest)} onClick={() => void control({ kind: 'set_device_acceptance', device_id: d.binding.device_id, accept_new_work: !d.operator_accept_new_work })}>{d.operator_accept_new_work ? '暂停接新任务' : '允许接新任务'}</button>}
+              {!historyReadOnly && snapshot?.provenance.mode === 'software_in_loop' && <><button type="button" disabled={mutationBusy || !canControl(envelope,{kind:'set_device_acceptance',device_id:d.binding.device_id,accept_new_work:true},currentLatest)} onClick={() => void deviceMaintenance(d.binding.device_id,true)}>模拟设备维护</button><button type="button" disabled={mutationBusy || !canControl(envelope,{kind:'set_device_acceptance',device_id:d.binding.device_id,accept_new_work:true},currentLatest)} onClick={() => void deviceMaintenance(d.binding.device_id,false)}>恢复模拟设备</button></>}
             </td>
           </tr>)}
           {!snapshot?.devices.length && bindingGroups.map(({items}) => items[0]).map(b => <tr key={b.device_id}><td><strong>{bindingCaption(b)}</strong><Json value={b} label="绑定技术详情"/></td><td colSpan={4}>已配置为候选设备；选择生产记录后才能查看上报状态与接单资格。</td><td><button type="button" onClick={() => props.onLocateDevice(b.device_id)}>在工厂中定位</button></td></tr>)}
@@ -587,7 +625,7 @@ export function CloudProductionPanel(props: CloudProductionPanelProps) {
         <div className="cloud-section-heading"><h3>查询生产与设备数据</h3><button type="button" disabled={!configured || !available('read_cloud_production')} onClick={() => void datasetCatalog()}>刷新数据集</button></div>
         <form className="cloud-filter" onSubmit={e => { e.preventDefault(); void queryData(); }}>
           <label>数据集<select aria-label="数据集" value={dataSet} onChange={e => invalidateQuery(() => { setDataSet(e.target.value); setAggregation('rows'); setDeviceFilter([]); setKnownDeviceSet(null); })}>
-            <option value="">请选择数据集</option>{datasets.map((d,index) => <option key={`${d.cloud_project_id}:${d.dataset_id}`} value={d.dataset_id}>{datasetTitle(d,index)}</option>)}{snapshot && <option value="@execution">所选生产记录 · 第 {snapshot.execution_revision} 版</option>}
+            <option value="">请选择数据集</option>{datasets.map((d,index) => <option key={`${d.cloud_project_id}:${d.dataset_id}`} value={d.dataset_id}>{datasetTitle(d,index)}</option>)}{snapshot && <option value="@execution">所选生产记录 · 快照 R{snapshot.execution_revision}</option>}
           </select></label>
           <label>查看内容<select aria-label="查看内容" value={aggregation} onChange={e => invalidateQuery(() => setAggregation(e.target.value))}><option value="rows">逐条记录</option>{dataSet === '@execution' ? <><option value="accepted_quantity">已接收数量</option><option value="command_counts">指令状态数量</option><option value="waiting_time">已记录等待时长</option></> : <option value="count_by_device_minute">每台设备每分钟的记录数</option>}</select></label>
           {dataSet === '@execution' ? <>
@@ -623,8 +661,10 @@ export function CloudProductionPanel(props: CloudProductionPanelProps) {
         <div className="cloud-export"><button type="button" title={dataExportReason} disabled={!!dataExportReason || mutationBusy || unresolvedTask} onClick={() => void exportResult('data')}>导出全部筛选结果</button><span>{dataExportReason || '导出全部固定筛选结果，包含尚未翻阅的分页。'}</span></div>
       </>}
       {tab === 'execution' && <>
-        <div className="cloud-section-heading"><h3>准备与运行生产</h3><span>{dirty ? '表单有待提交输入' : '准备完成后仍需手动启动'}</span></div>
-        <form className="cloud-prepare" onSubmit={e => { e.preventDefault(); void prepare(); }}>
+        <div className="cloud-section-heading"><h3>{historyReadOnly ? '只读生产记录' : '准备与运行生产'}</h3><span>{historyReadOnly ? '只读回看' : dirty ? '表单有待提交输入' : '准备完成后仍需手动启动'}</span></div>
+        {historyReadOnly && <Notice>所选记录不是当前可控制的本机会话，仅供查看；这里不发送准备、启动或设备控制命令。需要新建生产会话时，先退出只读回看。</Notice>}
+        {source && !envelope && !historyReadOnly && <Notice>正在确认所选会话的来源与操作权限；读取完成后再提供生产操作。</Notice>}
+        {canPresentProduction && scenario && <form className="cloud-prepare" onSubmit={e => { e.preventDefault(); void prepare(); }}>
           <fieldset disabled={mutationBusy}><legend>新建生产会话 · {scenario.title}</legend>
             <div className="cloud-field-grid"><label>最终目标数量（整数）<input aria-label="最终目标数量" inputMode="numeric" value={target} onChange={e => changeForm(() => setTarget(e.target.value))}/></label>
               <label>目标单位<select aria-label="目标单位" value={unit} onChange={e => changeForm(() => setUnit(e.target.value))}><option value="">请选择单位</option>{targetUnits.map(value => <option key={value} value={value}>{factoryUnitLabel(value)}</option>)}</select></label>
@@ -644,9 +684,8 @@ export function CloudProductionPanel(props: CloudProductionPanelProps) {
             <button type="submit" disabled={!configured || !available('start_execution_session') || unresolvedTask}>准备生产</button>
             {!available('start_execution_session') && <small>{configured ? '当前连接未提供生产准备功能。' : '请先在“设备”页导入连接文件，保存工程并重启应用后准备生产。'}</small>}
           </fieldset>
-        </form>
-        <div className="cloud-controls">{([['run', '启动'], ['pause_dispatch', '暂停新派工'], ['resume_dispatch', '继续新派工'], ['stop_dispatch', '停止新派工'], ['request_reconciliation', '请求原命令核对']] as const).map(([kind, label]) => <button type="button" key={kind} disabled={mutationBusy || !available('control_execution_session') || !canControl(envelope, { kind }, currentLatest)} onClick={() => void control({ kind })}>{label}</button>)}</div>
-        {!currentLatest && <Notice>历史版本、其他生产会话和云端存档只能查看。需要操作时，请选择当前本机会话。</Notice>}
+        </form>}
+        {canPresentProduction && <div className="cloud-controls">{([['run', '启动'], ['pause_dispatch', '暂停新派工'], ['resume_dispatch', '继续新派工'], ['stop_dispatch', '停止新派工'], ['request_reconciliation', '请求原命令核对']] as const).map(([kind, label]) => <button type="button" key={kind} disabled={mutationBusy || !available('control_execution_session') || !canControl(envelope, { kind }, currentLatest)} onClick={() => void control({ kind })}>{label}</button>)}</div>}
         {!snapshot ? <Notice>尚未选择生产记录。准备新的会话或选择已保存记录后，可查看状态与结果。</Notice> : <>
           <div className="cloud-facts"><div><span>生产状态</span><strong>{labels[snapshot.lifecycle.state]}</strong></div><div><span>最终目标 {quantityText(snapshot.policy.target_quantity)}</span><strong>{labels[snapshot.goal_at_snapshot]}</strong><small>停止新派工时间 {elapsed(snapshot.policy.report_cutoff_ms)}：{labels[snapshot.goal_at_cutoff]}</small></div><div><span>待核对指令 / 等待出料 / 已预留</span><strong>{snapshot.lifecycle.unresolved_command_ids.length} / {snapshot.business_facts.pending_output_refs.length} / {snapshot.pending_reservations.length}</strong></div></div>
           {snapshot.lifecycle.state === 'draining' && snapshot.lifecycle.reason && <Notice>{snapshot.lifecycle.reason}</Notice>}
