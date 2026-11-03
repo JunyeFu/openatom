@@ -42,7 +42,7 @@ export interface PresentationScene {
   dispose:()=>void;
 }
 /** GLB stays intrinsically metre/Y-up. Canonical per-node poses are converted explicitly. */
-export async function bindScene(p:Presentation, read:AssetByteReader, model?:{assetKey:string;decoded:DecodedModel}):Promise<PresentationScene> {
+export async function bindScene(p:Presentation, read:AssetByteReader, model?:{assetKey:string;decoded:DecodedModel}, textureEdge?:number):Promise<PresentationScene> {
   const root=new Group(), nodes=new Map<number,Object3D>();
   const owned:{dispose():void}[]=[];
   const shapes=new Map<string,BoxGeometry|CylinderGeometry|PlaneGeometry>();
@@ -73,7 +73,7 @@ export async function bindScene(p:Presentation, read:AssetByteReader, model?:{as
           material=new MeshStandardMaterial({color:new Color(r,g,b),opacity:a,transparent:a<1,metalness:n.material.metallic,roughness:n.material.roughness});
           materials.set(materialKey,material);owned.push(material);
           if(n.material.texture){
-            const decoded=await decodeStatic(n.material.texture,await read(n.material.texture));
+            const decoded=await decodeStatic(n.material.texture,await read(n.material.texture),textureEdge);
             let bitmap:ImageBitmap;try {bitmap=await createImageBitmap(decoded,{imageOrientation:'flipY'});} finally {decoded.close();}
             const texture=new CanvasTexture(bitmap);texture.flipY=false;texture.colorSpace=SRGBColorSpace;
             material.map=texture;owned.push(texture,{dispose:()=>bitmap.close()});

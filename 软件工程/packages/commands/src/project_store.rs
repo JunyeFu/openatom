@@ -960,9 +960,16 @@ fn validate_archive_with_documents(
 fn validate_archive_reusing_documents(
     manifest: PackageManifest,
     files: impl Into<Arc<BTreeMap<String, Vec<u8>>>>,
+    reusable: Option<(&ProjectArchive, &mut BTreeMap<String, Document>)>,
+) -> Result<(ProjectArchive, BTreeMap<String, Document>), ApiError> {
+    validate_project_files(manifest, Arc::new(ProjectFiles { raw: files.into(), packed: BTreeMap::new() }), reusable)
+}
+
+fn validate_project_files(
+    manifest: PackageManifest,
+    files: Arc<ProjectFiles>,
     mut reusable: Option<(&ProjectArchive, &mut BTreeMap<String, Document>)>,
 ) -> Result<(ProjectArchive, BTreeMap<String, Document>), ApiError> {
-    let files = files.into();
     check_paths(manifest.documents.iter().map(|e| e.file_ref.path.as_str()))?;
     check_paths(files.keys().map(String::as_str))?;
     let declared: BTreeSet<_> = manifest.documents.iter().map(|e| e.file_ref.path.as_str()).collect();
@@ -999,11 +1006,20 @@ fn validate_archive_reusing_documents(
     let mut documents = BTreeMap::new();
     for entry in &manifest.documents {
         let path = entry.file_ref.path.as_str();
-        match files.get(path) {
+        if let Some(cold) = files.packed.get(path) {
+            let reused = reusable.as_mut().and_then(|(prior, parsed)| {
+                if prior.files.packed.get(path).is_some_and(|old| Arc::ptr_eq(old, cold))
+                    && prior_entries.get(path).is_some_and(|old| same(*old, entry)) {
+                    parsed.remove(path)
+                } else { None }
+            });
+            if let Some(document) = reused { documents.insert(path.to_owned(), document); continue; }
+        }
+        match files.read(path) {
             Some(bytes) => {
                 let reused = reusable.as_mut().and_then(|(archive, parsed)| {
                     let prior = *prior_entries.get(path)?;
-                    if same(prior, entry) && archive.files.read(path).as_deref() == Some(bytes.as_slice()) {
+                    if same(prior, entry) && archive.files.read(path).as_deref() == Some(bytes.as_ref()) {
                         parsed.remove(path)
                     } else {
                         None
@@ -1011,7 +1027,7 @@ fn validate_archive_reusing_documents(
                 });
                 let document = match reused {
                     Some(document) => document,
-                    None => parse_document(entry, bytes)?,
+                    None => parse_document(entry, &bytes)?,
                 };
                 documents.insert(path.to_owned(), document);
             }
@@ -1139,7 +1155,7 @@ fn validate_archive_reusing_documents(
         scenarios,
         professional,
         manifest,
-        files: Arc::new(ProjectFiles { raw: files, packed: BTreeMap::new() }),
+        files,
         execution_sources: BTreeMap::new(),
     };
     let execution_documents = documents.iter().filter_map(|(path, document)| match document {
@@ -1289,7 +1305,7 @@ fn reported_current_transport(
 fn validate_closure(
     manifest: &PackageManifest,
     documents: &BTreeMap<String, Document>,
-    files: &BTreeMap<String, Vec<u8>>,
+    files: &ProjectFiles,
     project: &ProjectState,
     scenarios: &BTreeMap<ScenarioId, ScenarioInput>,
 ) -> Result<(), ApiError> {
@@ -1757,7 +1773,7 @@ pub(crate) fn snapshot_project_archive(
                 "backing archive belongs to another project",
             ));
         }
-        validate_archive(source.manifest.clone(), source.files.materialize())?;
+        validate_project_files(source.manifest.clone(), source.files.clone(), None)?;
     }
     let mut generation = backing.map_or(0, |archive| archive.manifest.generation.value());
     loop {
@@ -1862,7 +1878,7 @@ pub(crate) fn write_evaluation_directory(
             "one report directory name required",
         ));
     }
-    validate_archive(project.manifest.clone(), project.files.materialize())?;
+    validate_project_files(project.manifest.clone(), project.files.clone(), None)?;
     let project_root = encode(&project.manifest);
     let entries = std::iter::once(("project/project.json".to_owned(), &project_root))
         .chain(
@@ -1991,8 +2007,8 @@ pub(crate) fn write_project_archive_with_additions(
         } else {
             let reusable = old_with_documents.as_mut()
                 .map(|(archive, parsed)| (&*archive, parsed));
-            let (_validated, parsed) = validate_archive_reusing_documents(
-                source.manifest.clone(), source.files.materialize(), reusable,
+            let (_validated, parsed) = validate_project_files(
+                source.manifest.clone(), source.files.clone(), reusable,
             )?;
             let retained = retained_paths_from_documents(draft, source, &parsed)?;
             parsed_backing = Some(parsed);
@@ -2049,16 +2065,17 @@ pub(crate) fn write_project_archive_with_additions(
         }
         Ok(())
     };
-    let entries: Vec<_> = archive.files.iter().collect();
+    let entries: Vec<_> = archive.files.keys().collect();
+    let write_path = |path: &String| persist(path, &archive.files.read(path).expect("declared payload"));
     let workers = std::thread::available_parallelism().map_or(1, |n| n.get()).min(4);
     let batch = entries.len().div_ceil(workers).max(256);
     if entries.len() <= batch {
-        for (path, bytes) in entries { persist(path, bytes)?; }
+        for path in entries { write_path(path)?; }
     } else {
         std::thread::scope(|scope| {
             let handles: Vec<_> = entries.chunks(batch).map(|chunk| {
-                let persist = &persist;
-                scope.spawn(move || chunk.iter().try_for_each(|(path, bytes)| persist(path, bytes)))
+                let write_path = &write_path;
+                scope.spawn(move || chunk.iter().try_for_each(|path| write_path(path)))
             }).collect();
             handles.into_iter().try_for_each(|handle| handle.join().expect("payload writer panicked"))
         })?;
@@ -4729,7 +4746,7 @@ pub(crate) fn write_package_directory(
     archive: &ProjectArchive,
     cancelled: &AtomicBool,
 ) -> Result<(), ApiError> {
-    validate_archive(archive.manifest.clone(), archive.files.materialize())?;
+    validate_project_files(archive.manifest.clone(), archive.files.clone(), None)?;
     check_cancelled(cancelled)?;
     let directory = Directory::open(destination)?;
     let old = match directory.read("project.json") {
@@ -4855,7 +4872,7 @@ pub(crate) fn write_project_zip(
     archive: &ProjectArchive,
     cancelled: &AtomicBool,
 ) -> Result<(), ApiError> {
-    validate_archive(archive.manifest.clone(), archive.files.materialize())?;
+    validate_project_files(archive.manifest.clone(), archive.files.clone(), None)?;
     check_cancelled(cancelled)?;
     let parent = destination
         .parent()
@@ -4995,9 +5012,16 @@ fn assemble_archive_with_retained(
 ) -> Result<ProjectArchive, ApiError> {
     let project = &draft.project;
     let active_path = format!("data/g{generation:06}/project-state.json");
-    let mut files = backing.map_or_else(BTreeMap::new, |archive| {
-        retained.iter().filter_map(|path| archive.files.read(path).map(|bytes| (path.clone(), bytes.into_owned()))).collect()
-    });
+    let mut files = ProjectFiles::default();
+    if let Some(archive) = backing {
+        for path in &retained {
+            if let Some(cold) = archive.files.packed.get(path) {
+                files.packed.insert(path.clone(), cold.clone());
+            } else if let Some(bytes) = archive.files.raw.get(path) {
+                files.insert(path.clone(), bytes.clone());
+            }
+        }
+    }
     let mut manifest = backing.map_or_else(
         || PackageManifest {
             project_id: project.id.clone(),
@@ -5065,8 +5089,8 @@ fn assemble_archive_with_retained(
     let professional = professional_additions(draft, backing, generation)?;
     for addition in additions.iter().chain(&professional) {
         let path = addition.entry.file_ref.path.as_str();
-        if let Some(existing) = files.get(path) {
-            if existing != &addition.bytes
+        if let Some(existing) = files.read(path) {
+            if existing.as_ref() != addition.bytes.as_slice()
                 || !manifest
                     .documents
                     .iter()
@@ -5145,7 +5169,7 @@ fn assemble_archive_with_retained(
             manifest.missing.push(issue.clone());
         }
     }
-    validate_archive_reusing_documents(manifest, files, backing.zip(parsed_backing)).map(|(archive, _)| archive)
+    validate_project_files(manifest, Arc::new(files), backing.zip(parsed_backing)).map(|(archive, _)| archive)
 }
 #[cfg(test)]
 mod optimization_reference_tests {

@@ -73,8 +73,8 @@ export function FactoryScene({ project: inputProject, canvas, hallId, selection,
   const regionActualPending = !!run && observation?.run_id === run.id && !mediaSource;
   const resourceSources = mediaSource?.resources ?? declaredFactoryWorkers(project);
   const modules = mediaSource?.modules ?? inputModules;
-  const frameInput = useRef({ mediaSource, observation, regionActualPending, resourceSources });
-  frameInput.current = { mediaSource, observation, regionActualPending, resourceSources };
+  const frameInput = useRef({ mediaSource, observation, regionActualPending, resourceSources, run, modules });
+  frameInput.current = { mediaSource, observation, regionActualPending, resourceSources, run, modules };
   const updateFrame = useRef<((frame: typeof frameInput.current) => Promise<void>) | null>(null);
   const captureSource = capture ? mediaSource : null;
   const host = useRef<HTMLDivElement>(null);
@@ -151,7 +151,7 @@ export function FactoryScene({ project: inputProject, canvas, hallId, selection,
   }, []);
 
   useEffect(() => {
-    let { mediaSource, observation, regionActualPending, resourceSources } = frameInput.current;
+    let { mediaSource, observation, regionActualPending, resourceSources, run, modules } = frameInput.current;
     const node = host.current!;
     let renderer: THREE.WebGLRenderer;
     try { renderer = viewportRenderer.current ??= new THREE.WebGLRenderer({ antialias: true }); }
@@ -345,9 +345,25 @@ export function FactoryScene({ project: inputProject, canvas, hallId, selection,
       }
     };
     refreshObservedAnnotations();
-    const connections = project ? createFactoryConnectionLayer(project, modules, physical, anchors, selection) : null;
-    setConnectionRows(connections?.rows ?? []);
-    if (connections) { physical.add(connections.root); if (connections.drawn) selectable.push(connections.root); }
+    let connections: ReturnType<typeof createFactoryConnectionLayer> | null = null;
+    const updateConnections = () => {
+      if (connections) {
+        physical.remove(connections.root);
+        const index = selectable.indexOf(connections.root);
+        if (index >= 0) selectable.splice(index, 1);
+        connections.root.geometry.dispose();
+        connections.root.material.dispose();
+      }
+      const {selection: selected, showConnections: show} = interaction.current;
+      connections = project ? createFactoryConnectionLayer(project, modules, physical, anchors, selected) : null;
+      setConnectionRows(connections?.rows ?? []);
+      if (connections) {
+        connections.root.visible = show || selected?.kind === 'connection';
+        physical.add(connections.root);
+        if (connections.drawn) selectable.push(connections.root);
+      }
+    };
+    updateConnections();
     const bounds = new THREE.Box3().setFromObject(physical);
     const declaredBounds = bounds.clone();
     for (const device of project?.devices ?? []) {
@@ -704,7 +720,9 @@ export function FactoryScene({ project: inputProject, canvas, hallId, selection,
     updateInteraction.current();
     let frameEpoch = 0;
     updateFrame.current = async next => {
-      if (next.mediaSource === mediaSource && next.observation === observation) return;
+      if (next.mediaSource === mediaSource && next.observation === observation && next.run === run && next.modules === modules) return;
+      run = next.run;
+      if (modules !== next.modules) { modules = next.modules; updateConnections(); }
       const epoch = ++frameEpoch, current = lastLod ?? lod;
       const inputs = new Map(next.mediaSource?.devices.map(input => [input.device_id, input]) ?? []);
       itemLayer?.detach();
@@ -713,10 +731,19 @@ export function FactoryScene({ project: inputProject, canvas, hallId, selection,
         slot.input = input;
         const owns = () => live && epoch === frameEpoch && ticket === slot.ticket;
         try {
+          if (!next.mediaSource && slot.instance) {
+            // Hide the previous source while the replacement is being authorized and loaded.
+            slot.instance.root.visible = false; slot.marker.visible = true;
+            return;
+          }
           if (current !== 'region' && input?.media && slot.instance) {
             const kept = await slot.instance.update(input, deviceLod);
             if (!owns()) return;
-            if (kept) return;
+            if (kept) {
+              slot.instance.root.visible = true;
+              slot.marker.visible = outsideHallFloor(project!, slot.device) === true;
+              return;
+            }
           }
           if (!owns()) return;
           if (slot.instance) { slot.group.remove(slot.instance.root); slot.instance.dispose(); slot.instance = null; }
@@ -789,11 +816,11 @@ export function FactoryScene({ project: inputProject, canvas, hallId, selection,
       });
       renderer.renderLists.dispose();
     };
-  }, [project, canvas, hallId, lod, autoLod, resetKey, run, inputModules, !!mediaSource, capture, captureSource]);
+  }, [project, canvas, hallId, lod, autoLod, resetKey, capture, captureSource]);
 
   useEffect(() => {
     void updateFrame.current?.(frameInput.current);
-  }, [mediaSource, observation]);
+  }, [mediaSource, observation, run, modules]);
 
   useEffect(() => {
     updateInteraction.current?.();

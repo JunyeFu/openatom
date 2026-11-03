@@ -284,18 +284,25 @@ export async function runScenario(project: ProjectState, scenario: ScenarioInput
 }
 
 export async function getRun(projectId: string, runId: string, query: RunQuery): Promise<RunView> {
+  const request = { ...header(projectId), operation: 'get_run' as const, params: { run_id: runId, query } };
   if (query.kind === 'full_result' && nativeHostAvailable()) {
+    nfr.mark('ipc_request', { operation: request.operation, request_id: request.request_id });
     let bytes: ArrayBuffer;
     try { bytes = await invoke<ArrayBuffer>('project_read_full_run', { projectId, runId }); }
     catch (error) {
-      if (error && typeof error === 'object' && 'code' in error && 'message' in error) throw new HostFailure(error as ApiError);
+      if (error && typeof error === 'object' && 'code' in error && 'message' in error) {
+        nfr.reply(request.request_id, request.operation, {status: 'error', data: error});
+        throw new HostFailure(error as ApiError);
+      }
       throw error;
     }
     const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
     const data: RunResult = await new globalThis.Response(stream).json();
-    return { kind: 'full', data };
+    const view: RunView = { kind: 'full', data };
+    nfr.reply(request.request_id, request.operation, {status: 'ok', data: view});
+    return view;
   }
-  return dispatch<RunView>({ ...header(projectId), operation: 'get_run', params: { run_id: runId, query } });
+  return dispatch<RunView>(request);
 }
 
 export function cancelTask(task: TaskHandle, definitionProjectId?: string) {

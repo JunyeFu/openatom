@@ -848,6 +848,9 @@ export function Workbench() {
     const time = requestedTime ?? frontier;
     const frozen = await host.readRunInputs(projectId, view.data, frontier, true);
     if (!ownsObservation(epoch, projectId, id)) return;
+    // Use the same layout object only when the independently read frozen project is identical.
+    if (frozen.project.id === project.id && frozen.project.revision === project.revision
+      && JSON.stringify(frozen.project) === JSON.stringify(project)) frozen.project = project;
     const presentation = await readFactoryObservation(view.data, frozen, time, projectId, epoch);
     if (presentation === null) return;
     if (comparison?.run.id === id && run && runProject) setComparison({ project: runProject, run, scenario: runInputs?.scenario });

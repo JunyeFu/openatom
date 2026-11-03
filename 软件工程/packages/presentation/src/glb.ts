@@ -29,13 +29,36 @@ export function inspectGlb(bytes:ArrayBuffer):GlbDocument {
   return json;
 }
 export interface DecodedModel { gltf:GLTF; nodes:Map<number,Object3D>; dispose:()=>void }
-async function decodeTemplate(bytes:ArrayBuffer):Promise<DecodedModel> {
+async function sizeFactoryTextures(gltf:GLTF, edge:number) {
+  const uses=new Map<ImageBitmap,Set<import('three').Texture>>();
+  for(const scene of gltf.scenes) scene.traverse(object=>{
+    const materials=(object as import('three').Mesh).material;
+    for(const mat of Array.isArray(materials)?materials:materials?[materials]:[]) {
+      for(const property of Object.values(mat)) {
+        const texture=property as import('three').Texture|undefined;
+        if(!texture?.isTexture)continue;
+        const image=texture.source.data;
+        if(!(image instanceof ImageBitmap)||Math.max(image.width,image.height)<=edge)continue;
+        let group=uses.get(image);
+        if(!group){group=new Set();uses.set(image,group);}
+        group.add(texture);
+      }
+    }
+  });
+  for(const [image,textures] of uses) {
+    const resized=await createImageBitmap(image,image.width>=image.height?{resizeWidth:edge}:{resizeHeight:edge});
+    for(const texture of textures){texture.source.data=resized;texture.needsUpdate=true;}
+    image.close();
+  }
+}
+async function decodeTemplate(bytes:ArrayBuffer, textureEdge?:number):Promise<DecodedModel> {
   const doc=inspectGlb(bytes);
   const manager=new LoadingManager();
   manager.setURLModifier(url=>{ if (!url.startsWith('blob:')) throw new UnsupportedMedia('GLB 尝试加载外部资源。'); return url; });
   const gltf=await new GLTFLoader(manager).parseAsync(bytes,'');
   const nodes=new Map<number,Object3D>();
   for (let i=0;i<(doc.nodes?.length??0);i++) nodes.set(i,await gltf.parser.getDependency('node',i));
+  if(textureEdge)await sizeFactoryTextures(gltf,textureEdge);
   return {gltf,nodes,dispose(){
     const geometries=new Set<{dispose():void}>(), materials=new Set<{dispose():void}>(), textures=new Set<{dispose():void}>();
     for (const root of gltf.scenes) root.traverse(object=>{ const mesh=object as unknown as {geometry?:{dispose():void};material?:any};if(mesh.geometry) geometries.add(mesh.geometry);if(mesh.material) for(const mat of Array.isArray(mesh.material)?mesh.material:[mesh.material]){ materials.add(mat);for(const item of Object.values(mat)) if((item as any)?.isTexture) textures.add(item as any); } });
@@ -51,14 +74,18 @@ async function decodeTemplate(bytes:ArrayBuffer):Promise<DecodedModel> {
 
 // Bytes are shared only by the exact authorized reader. No global path/Run cache:
 // the last instance releases its template, textures and decoded ImageBitmaps.
-const decodedModels=new WeakMap<ArrayBuffer,{users:number;template:Promise<DecodedModel>}>();
-export async function decodeGlb(bytes:ArrayBuffer):Promise<DecodedModel> {
-  let entry=decodedModels.get(bytes);
-  if(!entry) {entry={users:0,template:decodeTemplate(bytes)};decodedModels.set(bytes,entry);}
+const decodedModels=new WeakMap<ArrayBuffer,Map<number,{users:number;template:Promise<DecodedModel>}>>();
+export async function decodeGlb(bytes:ArrayBuffer, textureEdge?:number):Promise<DecodedModel> {
+  const key=textureEdge??0;
+  let sizes=decodedModels.get(bytes);
+  if(!sizes){sizes=new Map();decodedModels.set(bytes,sizes);}
+  const entries=sizes;
+  let entry=entries.get(key);
+  if(!entry){entry={users:0,template:decodeTemplate(bytes,textureEdge)};entries.set(key,entry);}
   const shared=entry;shared.users++;
   let template:DecodedModel;
   try {template=await shared.template;}
-  catch(error) {if(--shared.users===0)decodedModels.delete(bytes);throw error;}
+  catch(error) {if(--shared.users===0)entries.delete(key);throw error;}
   const copies=new Map<Object3D,Object3D>();
   function copy(object:Object3D):Object3D {
     const existing=copies.get(object);if(existing)return existing;
@@ -86,6 +113,6 @@ export async function decodeGlb(bytes:ArrayBuffer):Promise<DecodedModel> {
   let live=true;
   return {gltf:{...template.gltf,scene,scenes,animations},nodes,dispose(){
     if(!live)return;live=false;
-    if(--shared.users===0){decodedModels.delete(bytes);template.dispose();}
+    if(--shared.users===0){entries.delete(key);template.dispose();}
   }};
 }
