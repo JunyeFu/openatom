@@ -718,9 +718,12 @@ export function FactoryScene({ project: inputProject, canvas, hallId, selection,
       render();
     };
     updateInteraction.current();
-    let frameEpoch = 0;
+    let frameEpoch = 0, requestedFrame = frameInput.current;
     updateFrame.current = async next => {
-      if (next.mediaSource === mediaSource && next.observation === observation && next.run === run && next.modules === modules) return;
+      // A return to the previous source also supersedes a still-loading frame.
+      if (next.mediaSource === requestedFrame.mediaSource && next.observation === requestedFrame.observation
+        && next.run === requestedFrame.run && next.modules === requestedFrame.modules) return;
+      requestedFrame = next;
       run = next.run;
       if (modules !== next.modules) { modules = next.modules; updateConnections(); }
       const epoch = ++frameEpoch, current = lastLod ?? lod;
