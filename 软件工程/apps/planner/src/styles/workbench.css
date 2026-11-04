@@ -49,3 +49,12 @@
 .canvas-tabs>button{flex:0 0 auto;height:auto;min-height:34px;white-space:nowrap}
 .canvas-tabs>select{flex:1 1 120px;max-width:100%;min-width:0}
 .menu-context-hint{max-width:260px;margin:4px 6px 8px;font-size:12px;line-height:1.6;white-space:normal}
+
+/* Keep low-height canvas controls reachable without collapsing the canvas. */
+.sourcebar,.canvas-tabs,.canvas-status{flex-shrink:0}
+@media(max-height:650px){
+  .central-workspace:has(>.canvas-content){overflow-y:auto}
+  .central-workspace>.canvas-content{flex:1 0 120px;min-height:120px}
+  .source-details[open]{flex-basis:100%}
+  .source-details[open]>dl{position:static;width:100%;max-width:100%}
+}
