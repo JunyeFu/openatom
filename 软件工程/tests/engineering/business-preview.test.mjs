@@ -129,3 +129,36 @@ test('negative fractional Decimal keeps its sign and leading zero', () => {
   assert.equal(changes[0].before, '-0.05');
   assert.equal(changes[0].after, '0.03');
 });
+
+test('a provenance-only parameter edit shows the old and new source basis', () => {
+  const parameterId = 'cycle/~duration';
+  const device = { ...structuredClone(fixture.project.devices[0]),
+    configuration: { [parameterId]: { kind: 'integer', value: 5 } } };
+  const project = { ...structuredClone(fixture.project), devices: [device], parameter_sources: [
+    { target: { kind: 'device', id: device.id }, field_path: '/configuration/cycle~1~0duration/value',
+      value: device.configuration[parameterId], basis: 'module_declared' },
+    { target: { kind: 'device', id: device.id }, field_path: '/configuration/other/value', basis: 'unknown' },
+  ] };
+  const snapshot = { project, scenarios: [] };
+  const original = JSON.stringify(snapshot);
+  const group = previewCommands(snapshot, snapshot, [{ kind: 'set_declared_parameter', data: {
+    target: { kind: 'device', id: device.id }, parameter_id: parameterId,
+    value: device.configuration[parameterId], basis: 'user_provided',
+  } }])[0];
+  assert(group.changes.some(change => change.field === '来源性质'
+    && change.before === '模块声明' && change.after === '人工/企业声明'));
+  assert.equal(JSON.stringify(snapshot), original, 'preview rewrote the stored source basis');
+});
+
+test('an unset stored parameter source remains unknown in the preview', () => {
+  const device = { ...structuredClone(fixture.project.devices[0]),
+    configuration: { cycle: { kind: 'integer', value: 5 } } };
+  const project = { ...structuredClone(fixture.project), devices: [device], parameter_sources: [] };
+  const snapshot = { project, scenarios: [] };
+  const group = previewCommands(snapshot, snapshot, [{ kind: 'set_declared_parameter', data: {
+    target: { kind: 'device', id: device.id }, parameter_id: 'cycle',
+    value: { kind: 'integer', value: 6 }, basis: 'template_declared_example',
+  } }])[0];
+  assert(group.changes.some(change => change.field === '来源性质'
+    && change.before === '待补' && change.after === '模板示例'));
+});

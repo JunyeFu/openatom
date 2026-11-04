@@ -1,7 +1,7 @@
 import type { EditCommand } from '../../../../../packages/commands/generated/typescript/EditCommand';
 import type { BusinessSnapshot } from './types';
 import { collectionKinds, equal } from './draft';
-import { labels } from './SchemaForm';
+import { labels, term } from './SchemaForm';
 import { sections } from './sections';
 import { decimalText } from './schema';
 import { factoryItemTypeTitle, factoryUnitLabel } from '../../scene/factoryLabels';
@@ -146,8 +146,14 @@ export function previewCommands(base: BusinessSnapshot, draft: BusinessSnapshot,
     }
     if (command.kind === 'set_declared_parameter') {
       const device = base.project.devices.find(row => row.id === command.data.target.id);
+      const parameterPath = `/configuration/${command.data.parameter_id.replaceAll('~', '~0').replaceAll('/', '~1')}/value`;
+      const source = base.project.parameter_sources?.find(row => row.target.kind === command.data.target.kind
+        && row.target.id === command.data.target.id && row.field_path === parameterPath);
       return {title: `设备参数 · ${name(device, command.data.target.id)} · ${command.data.parameter_id}`,
-        changes: [{field:'声明值', before:format(device?.configuration[command.data.parameter_id]), after:format(command.data.value)}]};
+        changes: [
+          {field:'声明值', before:format(device?.configuration[command.data.parameter_id]), after:format(command.data.value)},
+          {field:'来源性质', before:term(source?.basis ?? 'unknown'), after:term(command.data.basis)}
+        ]};
     }
     return {title:command.kind, changes:[]};
   });
