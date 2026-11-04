@@ -1,6 +1,6 @@
-export interface BusinessSection { id: string; title: string; owner: 'project' | 'scenario'; path: string[]; type: string; note: string }
+export interface BusinessSection { id: string; title: string; owner: 'project' | 'scenario'; path: string[]; type: string; note: string; detail?: string }
 export const sections: BusinessSection[] = [
-  {id:'orders',title:'任务与订单',owner:'scenario',path:['orders'],type:'OrderLine',note:'优先序越大越先；订单与任务的显式优先序分别展示；释放不是实际开工，交期留空时不计算准时率。'},
+  {id:'orders',title:'任务与订单',owner:'scenario',path:['orders'],type:'OrderLine',note:'先核对每条订单的产品、接受阶段、接受库位和数量，再检查变更并应用。',detail:'优先序数值越大越优先；订单与任务各有自己的优先序。释放时点表示允许开始安排，实际开工见运行结果。填写交期后才能计算准时率。'},
   {id:'tasks',title:'生产任务与分配',owner:'scenario',path:['production_tasks'],type:'ProductionTask',note:'计划数量与订单分配分开；显式预留不代表实际接受。'},
   {id:'products',title:'产品与版本',owner:'project',path:['products'],type:'ProductRevision',note:'明确物品、BOM及路线版本；已有Run仍使用原冻结输入。'},
   {id:'boms',title:'BOM用料',owner:'project',path:['boms'],type:'BomDefinition',note:'逐行指定消耗工序；不将全BOM自动绑定首工序。'},

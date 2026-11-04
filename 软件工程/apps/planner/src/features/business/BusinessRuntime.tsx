@@ -23,7 +23,7 @@ export function BusinessRuntime(props:BusinessEditorProps){
   };
   const match=(id:string)=>[id,objectName(id)].some(value=>value.toLowerCase().includes(filter.toLowerCase()));
   const locate=(kind:Parameters<BusinessEditorProps['onLocate']>[0]['object']['kind'],id:string,at=props.atMs??run.computed_until_ms??run.window.start_ms)=>props.onLocate({object:{kind,id},source:'run',run_id:run.id,at_ms:at});
-  return <><h2>实际接受与等待 · 只读</h2><p>{props.frozenScenario?.title || '所选历史方案'} · 运行结果</p><details><summary>运行来源详情</summary><p>运行编号：{run.id} · 来源：{run.evidence_origin} · 工程版本：{run.input_ref.project_revision} · 方案版本：{run.input_ref.scenario_revision}</p></details><p>观察窗 {timeText(run.window.start_ms)}—{timeText(run.window.end_ms)}；已计算至 {run.computed_until_ms==null?'未知':timeText(run.computed_until_ms)}。未完成不记作0秒。</p>
+  return <><h2>实际接受与等待 · 只读</h2><p>{props.frozenScenario?.title || '所选历史方案'} · 运行结果</p><details><summary>运行来源详情</summary><p>运行编号：{run.id} · 来源：{run.evidence_origin} · 工程版本：{run.input_ref.project_revision} · 方案版本：{run.input_ref.scenario_revision}</p></details><p>观察窗 {timeText(run.window.start_ms)}—{timeText(run.window.end_ms)}；已计算至 {run.computed_until_ms==null?'未知':timeText(run.computed_until_ms)}。</p><p>先核对下方订单的需求、实际接受和未满足数量；选择订单或等待对象可定位到画布。</p><details><summary>完成时刻的口径</summary><p>尚未完成的订单显示“未完成”；完成时刻取实际完成事件。</p></details>
     {!frozenProjectMatches(props.frozenProject??null,run)&&<p role="alert">未提供匹配的冻结工程；下列结果保留原ID，不用当前草稿重解释历史。</p>}
     <p>{runStatusLabel[run.computation_status]} · 接受目标 {run.goal_met===true?'已达到':run.goal_met===false?'尚未达到':'未评价'}；计算结束不等于订单履行完成。</p>
     <input aria-label="查找实际身份" placeholder="按订单、设备名称或编号查找" value={filter} onChange={e=>setFilter(e.target.value)}/>
