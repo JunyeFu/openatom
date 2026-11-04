@@ -4,11 +4,64 @@ import type { Props, Primitive, TimeWindow, TimelineInputCommit, TimelineSelecti
 import { clipInterval, densityBuckets, intervalDensity, gridTicks, pointVisible, snapTime, timeText, timeX, xTime, zoomWindow } from './time';
 import { fieldKey, fieldTime, inputProposal } from './input';
 import { actualProjection, deviceDetailProjection, calendarInputProjection, comparisonConditions, comparisonInputs, displayGroups, frozenProjectMatches, inputProjection, itemEvents, observedItems, quantityText, quantityTotals, summarizeGroup, uniqueEvents, executionDevice, resourceUsage, holderObject, waitContext, eventNames } from './projection';
-import type { Track } from './projection';
+import type { Track, SummaryBand } from './projection';
 import { jobPredecessors } from './projection';
 import { preferenceKey, useViewPreferences } from './preferences';
 import {domPainted} from '../render-surface/visualCapture';
 import './timeline.css';
+
+export interface TimelineGroupSummary extends SummaryBand {
+  runId: string; groupId: string; groupTitle: string; recordLabel: string; secondary: boolean;
+}
+export function groupSummaryKey(value: TimelineGroupSummary): string {
+  return JSON.stringify([value.runId, value.groupId, value.interval.start_ms, value.interval.end_ms]);
+}
+export function groupSummaryLabel(value: TimelineGroupSummary): string {
+  return `${value.recordLabel} · ${value.groupTitle}；区间 ${timeText(value.interval.start_ms)}—${timeText(value.interval.end_ms)}；有效加工 ${value.busy}/${value.total}；等待 ${value.waiting}/${value.total}；容量占用 ${value.occupied}/${value.total}；计数允许重叠；运行记录 ${value.runId}`;
+}
+export function groupSummaryLayout(value: SummaryBand, availableWidth: number): 'counts' | 'band' {
+  const labels = [`B${value.busy}/${value.total}`, `W${value.waiting}/${value.total}`, `O${value.occupied}/${value.total}`];
+  // The chart font is 12px; reserve a conservative 8px per ASCII character and
+  // padding. A narrow interval contains no text, rather than clipped letters.
+  return availableWidth >= Math.max(56, ...labels.map(label => label.length * 8 + 10)) ? 'counts' : 'band';
+}
+export function resolveGroupSummary(key: string | null, values: readonly TimelineGroupSummary[], visible: TimeWindow): TimelineGroupSummary | null {
+  return key ? values.find(value => groupSummaryKey(value) === key && clipInterval(value.interval, visible)) ?? null : null;
+}
+function groupSummaryData(value: TimelineGroupSummary) {
+  return { 'data-summary-run-id': value.runId, 'data-summary-group-id': value.groupId,
+    'data-summary-start-ms': value.interval.start_ms, 'data-summary-end-ms': value.interval.end_ms,
+    'data-summary-busy': value.busy, 'data-summary-waiting': value.waiting,
+    'data-summary-occupied': value.occupied, 'data-summary-total': value.total };
+}
+export function GroupSummaryBand({ value, left, width, selected, onInspect }: {
+  value: TimelineGroupSummary; left: number; width: number; selected: boolean;
+  onInspect: (value: TimelineGroupSummary, target: HTMLButtonElement) => void;
+}) {
+  const layout = groupSummaryLayout(value, width), label = groupSummaryLabel(value);
+  return <button type="button" className={`sf-tl-summary ${value.secondary ? 'sf-tl-summary-b' : ''}`}
+    {...groupSummaryData(value)} data-summary-layout={layout} aria-label={label} title={label} aria-pressed={selected}
+    style={{ top: value.secondary ? 41 : 1, left, width }}
+    onFocus={event => onInspect(value, event.currentTarget)} onClick={event => onInspect(value, event.currentTarget)}>
+    <span className="sf-tl-summary-bands" aria-hidden="true">{([
+      ['busy', value.busy], ['waiting', value.waiting], ['occupied', value.occupied],
+    ] as const).map(([kind, count]) => <span className={`sf-tl-summary-band sf-tl-summary-${kind}`} key={kind}>
+      <span className="sf-tl-summary-fill" style={{ width: `${value.total > 0 ? Math.max(0, Math.min(1, count / value.total)) * 100 : 0}%` }} />
+    </span>)}</span>
+    {layout === 'counts' && <span className="sf-tl-summary-labels" aria-hidden="true"><span>B{value.busy}/{value.total}</span><span>W{value.waiting}/{value.total}</span><span>O{value.occupied}/{value.total}</span></span>}
+  </button>;
+}
+export function GroupSummaryDetails({ value }: { value: TimelineGroupSummary }) {
+  return <div className="sf-tl-summary-details" aria-label="分组区间详情" role="status" tabIndex={0}
+    {...groupSummaryData(value)} onKeyDown={event => {
+      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End', 'PageUp', 'PageDown'].includes(event.key)) event.stopPropagation();
+    }}>
+    <strong>{value.recordLabel} · {value.groupTitle}</strong>
+    <span>区间 {timeText(value.interval.start_ms)}—{timeText(value.interval.end_ms)}</span>
+    <span>有效加工 {value.busy}/{value.total} · 等待 {value.waiting}/{value.total} · 容量占用 {value.occupied}/{value.total}（计数可重叠）</span>
+    <small>运行记录 <code>{value.runId}</code></small>
+  </div>;
+}
 
 export function RunTimeline(props: Props) {
   return <Timeline key={`${props.project?.id ?? props.draftProject?.id ?? 'none'}:${props.run?.id ?? 'draft'}:${props.scenario?.id ?? ''}:${props.comparison?.run.id ?? ''}`} {...props} />;
@@ -25,6 +78,8 @@ function Timeline(props: Props) {
   const [checked, setChecked] = useState<string[]>([]), [groupName, setGroupName] = useState(''), [groupTarget, setGroupTarget] = useState('new');
   const [details, setDetails] = useState<Detail[]>([]), [selectedRow, setSelectedRow] = useState(''), [range, setRange] = useState<TimeWindow | null>(null);
   const [localSelection, setLocalSelection] = useState<TimelineSelection | null>(null), [notice, setNotice] = useState(''), [ghost, setGhost] = useState<number | null>(null);
+  const [summaryChoice, setSummaryChoice] = useState<TimelineGroupSummary | null>(null);
+  const summaryFocus = useRef<HTMLButtonElement | null>(null);
   const [reference, setReference] = useState<TimelineSelection | null>(null);
   const [seekInput, setSeekInput] = useState(String(atMs ?? run?.computed_until_ms ?? 0)), [playing, setPlaying] = useState(false), [speed, setSpeed] = useState(1);
   const [fields, setFields] = useState<InputField[]>([]), [numeric, setNumeric] = useState(''), [preview, setPreview] = useState<Preview | null>(null), [committing, setCommitting] = useState(false);
@@ -113,6 +168,29 @@ function Timeline(props: Props) {
   }, [inspectedDevice, inspected, inspectedOther, mode, details, viewProject, groups, filter, expanded, prefs.independent_device_ids, prefs.pinned_resource_ids, project, run, comparison, resourcesOpen]);
   const rows = useMemo(() => { let top = 0; return baseRows.map(r => { const h = r.kind === 'group' ? (mode === 'comparison' ? 80 : 40) : r.kind === 'hall' ? 28 : mode === 'comparison' ? 64 : 32, row = { ...r, top, height: h }; top += h; return row; }); }, [baseRows, mode]);
   const selectedTrack = baseRows.find(r => r.id === selectedRow), selectedDevices = selectedTrack?.devices ?? [];
+  const selectedSummary = useMemo(() => {
+    if (!summaryChoice || mode === 'input' || selectedRow !== summaryChoice.groupId) return null;
+    const owner = summaryChoice.secondary ? comparison?.run : run;
+    const row = baseRows.find(value => value.id === summaryChoice.groupId && value.kind === 'group');
+    if (!owner || owner.id !== summaryChoice.runId || !row || summaryChoice.secondary && mode !== 'comparison') return null;
+    const source = (summaryChoice.secondary ? otherSummaries : summaries).get(row.id) ?? [];
+    return resolveGroupSummary(groupSummaryKey(summaryChoice), source.map(band => ({ ...band, runId: owner.id,
+      groupId: row.id, groupTitle: row.title, recordLabel: summaryChoice.secondary ? '对比记录 B' : mode === 'comparison' ? '基准记录 A' : '当前记录', secondary: summaryChoice.secondary })),
+      { start_ms: window.start_ms, end_ms: Math.min(window.end_ms, owner.computed_until_ms ?? window.start_ms) });
+  }, [summaryChoice, mode, selectedRow, run, comparison, baseRows, summaries, otherSummaries, window]);
+  useEffect(() => {
+    if (summaryChoice && !selectedSummary) {
+      setSummaryChoice(null);
+      setRange(current => current === summaryChoice.interval ? null : current);
+    }
+  }, [summaryChoice, selectedSummary]);
+  useLayoutEffect(() => {
+    const target = summaryFocus.current;
+    if (selectedSummary && target?.isConnected && document.activeElement === target) target.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+  }, [selectedSummary ? groupSummaryKey(selectedSummary) : null, height]);
+  function inspectSummary(value: TimelineGroupSummary, target: HTMLButtonElement) {
+    summaryFocus.current = target; setSelectedRow(value.groupId); setRange(value.interval); setSummaryChoice(value);
+  }
   const visibleItems = useMemo(() => (items ?? []).filter(i => `${i.id} ${i.item_type_ref.id} ${i.holder.id}`.toLowerCase().includes(itemFilter.toLowerCase())), [items, itemFilter]);
   const totals = useMemo(() => items ? quantityTotals(items) : [], [items]);
   const waiting = useMemo(() => mode === 'input' ? null : waitContext(selected, run, atMs, items), [mode, selected, run, atMs, items]);
@@ -206,7 +284,7 @@ function Timeline(props: Props) {
     inputDrag.current = null; rangeDrag.current = null; seekDrag.current = null;
     for (const d of drags) if (d?.target.hasPointerCapture(d.pointer)) d.target.releasePointerCapture(d.pointer);
     if (pointer !== null && ruler.current?.hasPointerCapture(pointer)) ruler.current.releasePointerCapture(pointer);
-    setPreview(null); setRange(null); setGhost(null); setNotice('');
+    setPreview(null); setRange(null); setGhost(null); setNotice(''); setSummaryChoice(null);
   }
   function changeMode(value: TimelineMode) {
     cancel(); setPlaying(false); setItemsOpen(false); setDense([]);
@@ -311,6 +389,7 @@ function Timeline(props: Props) {
     {preview && <div className="sf-tl-preview" aria-label="输入编辑预览"><strong>尚未应用 · 工程 r{preview.proposal.base_project_revision} / 方案 r{preview.proposal.base_scenario_revision}</strong>{preview.proposal.changes.map(c => <span key={fieldKey(c)}>{c.id}：{timeText(c.before_ms)} → {timeText(c.after_ms)}</span>)}<span>锚点 {preview.proposal.changes[0]?.after_ms} ms · Δt {preview.proposal.changes[0] ? preview.proposal.changes[0].after_ms - preview.proposal.changes[0].before_ms : 0} ms</span>{preview.snap && <span>吸附 {preview.snap.label} · {preview.snap.at_ms} ms</span>}{preview.error && <span role="alert">{preview.error}；预览已保留</span>}<button disabled={committing || !props.onCommitInput} onClick={() => void commit()}>{committing ? '正在应用' : '确认应用一次'}</button><button disabled={committing} onClick={cancel}>取消预览</button>{preview.error && <><button disabled={!props.onRefreshInput || committing} onClick={() => { if (props.onRefreshInput) void props.onRefreshInput().then(() => setNotice("输入已刷新；检查保留的预览后重新预览并确认。"), error => setNotice((error as Error).message)); }}>刷新当前输入</button><button onClick={numericPreview}>按已刷新输入重新预览</button></>}{!props.onCommitInput && <span>方案提交尚未接入</span>}</div>}
     {notice && <div className="sf-tl-notice" role="status">{notice}</div>}
     </div></div>}
+    {selectedSummary && <GroupSummaryDetails value={selectedSummary} />}
     <div className="sf-tl-ruler"><span>对象 / 轨道 · 绝对秒</span><div ref={ruler} className="sf-tl-ruler-axis" onPointerDown={props.readonly?undefined:e => { if (mode === 'input') return; e.currentTarget.setPointerCapture(e.pointerId); seekDrag.current = e.pointerId; setGhost(pointerTime(e.clientX)); }} onPointerMove={props.readonly?undefined:e => { if (seekDrag.current === e.pointerId) setGhost(pointerTime(e.clientX)); }} onPointerUp={props.readonly?undefined:e => { if (seekDrag.current === e.pointerId) { seekDrag.current = null; if (e.currentTarget.hasPointerCapture(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId); seek(pointerTime(e.clientX)); } }} onPointerCancel={props.readonly?undefined:cancel} onLostPointerCapture={props.readonly?undefined:e => { if (seekDrag.current === e.pointerId && ruler.current === e.currentTarget) cancel(); }}>{gridTicks(window, width).map(t => <span key={t} style={{ left: x(t) }}>{timeText(t)}</span>)}{atMs != null && pointVisible(atMs, window) && <i className="sf-tl-head" style={{ left: Math.min(width - 2, x(atMs)) }} />}{ghost != null && pointVisible(ghost, window) && <i className="sf-tl-head sf-tl-ghost" style={{ left: Math.min(width - 2, x(ghost)) }} />}</div></div>
     <div className="sf-tl-viewport" ref={viewport} onScroll={e => setScroll(e.currentTarget.scrollTop)} onBlur={() => { if (scroll !== prefs.row_scroll) save({ ...prefs, row_scroll: scroll }); }} onPointerUp={() => { if (!inputDrag.current && !rangeDrag.current && scroll !== prefs.row_scroll) save({ ...prefs, row_scroll: scroll }); }}>
       <div className="sf-tl-virtual" style={{ height: totalHeight }}>{visibleRows.map(row => <div className={`sf-tl-row sf-tl-${row.kind} ${selectedRow === row.id ? 'sf-tl-selected' : ''}`} key={row.id} style={{ top: row.top, height: row.height }}><div className="sf-tl-name" style={{ paddingLeft: 6 + row.depth * 12 }} title={row.warning ?? row.title}>{row.kind === 'group' && <button aria-label={`${expanded.has(row.id) ? '折叠' : '展开'} ${row.title}`} onClick={() => toggleGroup(row.id)}>{expanded.has(row.id) ? '▾' : '▸'}</button>}<button className="sf-tl-row-label" onClick={() => { setSelectedRow(row.id); if (row.object) onSelect(row.object); }}>{row.title}{row.warning ? ' ⚠' : ''}</button>{row.kind === 'group' && <><button aria-label={`上移 ${row.title}`} onClick={() => reorder(row.id, -1)}>↑</button><button aria-label={`下移 ${row.title}`} onClick={() => reorder(row.id, 1)}>↓</button></>}{row.kind === 'resource' && <button aria-label={`固定 ${row.title}`} aria-pressed={prefs.pinned_resource_ids.includes(row.object!.id)} onClick={() => save({ ...prefs, pinned_resource_ids: prefs.pinned_resource_ids.includes(row.object!.id) ? prefs.pinned_resource_ids.filter(id => id !== row.object!.id) : [...prefs.pinned_resource_ids, row.object!.id] })}>⌖</button>}</div>
@@ -318,7 +397,16 @@ function Timeline(props: Props) {
         {mode !== 'input' && frontier != null && frontier < window.end_ms && <div className="sf-tl-unknown" style={{ bottom:mode === "comparison" ? "50%" : 0, left: Math.max(0, x(frontier)), width: Math.max(0, width - Math.max(0, x(frontier))) }} title="未计算区域">{row.kind === 'hall' ? '未计算 · 未知' : ''}</div>}
         {mode === "comparison" && comparison?.run.computed_until_ms != null && comparison.run.computed_until_ms < window.end_ms && <div className="sf-tl-unknown" style={{top:"50%",left:Math.max(0,x(comparison.run.computed_until_ms)),width:Math.max(0,width-Math.max(0,x(comparison.run.computed_until_ms)))}} title="B 未计算区域" />}
         {gridTicks(window, width).map(t => <i className="sf-tl-gridline" key={t} style={{ left: x(t) }} />)}
-        {row.kind === 'group' ? [...(summaries.get(row.id) ?? []).map(band => ({...band, secondary:false})), ...(mode === 'comparison' ? (otherSummaries.get(row.id) ?? []).map(band => ({...band, secondary:true})) : [])].map((band, i) => { const clip = clipInterval(band.interval, { start_ms: window.start_ms, end_ms: Math.min(window.end_ms, (band.secondary ? comparison?.run.computed_until_ms : frontier) ?? window.start_ms) }); return clip && <button key={i} className={`sf-tl-summary ${band.secondary ? "sf-tl-summary-b" : ""}`} style={{ top:band.secondary ? 41 : 1, left: x(clip.visible.start_ms), width: Math.max(1, x(clip.visible.end_ms) - x(clip.visible.start_ms)) }} aria-label={`${band.secondary ? "B · " : "A · "}${row.title} B ${band.busy}/${band.total} W ${band.waiting}/${band.total} O ${band.occupied}/${band.total}`} title={`有效加工 B ${band.busy}/${band.total} · 等待 W ${band.waiting}/${band.total} · 容量占用 O ${band.occupied}/${band.total}；允许重叠`} onClick={() => { setSelectedRow(row.id); setRange(band.interval); }}><span>B{band.busy}/{band.total}</span><span>W{band.waiting}/{band.total}</span><span>O{band.occupied}/{band.total}</span></button>; }) : bars(byRow.get(row.id) ?? [], false)}
+        {row.kind === 'group' ? [...(summaries.get(row.id) ?? []).map(band => ({...band, secondary:false})), ...(mode === 'comparison' ? (otherSummaries.get(row.id) ?? []).map(band => ({...band, secondary:true})) : [])].map(band => {
+          const owner = band.secondary ? comparison?.run : run;
+          const clip = clipInterval(band.interval, { start_ms: window.start_ms, end_ms: Math.min(window.end_ms, (band.secondary ? comparison?.run.computed_until_ms : frontier) ?? window.start_ms) });
+          if (!clip || !owner) return null;
+          const value: TimelineGroupSummary = { ...band, runId: owner.id, groupId: row.id, groupTitle: row.title,
+            recordLabel: band.secondary ? '对比记录 B' : mode === 'comparison' ? '基准记录 A' : '当前记录' };
+          return <GroupSummaryBand key={groupSummaryKey(value)} value={value} left={x(clip.visible.start_ms)}
+            width={Math.max(1, x(clip.visible.end_ms) - x(clip.visible.start_ms))}
+            selected={!!selectedSummary && groupSummaryKey(selectedSummary) === groupSummaryKey(value)} onInspect={inspectSummary} />;
+        }) : bars(byRow.get(row.id) ?? [], false)}
         {mode === 'comparison' && row.kind !== 'group' && row.kind !== 'hall' && bars(otherByRow.get(row.id) ?? [], true)}
         {mode !== 'input' && row.id === 'events:arrivals' && oldInputs.filter(p => p.input_field?.kind === 'arrival').map(p => pointVisible(p.point_ms!, window) && <i key={p.key} className="sf-tl-input-reference" title={`冻结输入 · ${p.label}`} style={{ left: Math.min(width - 8, x(p.point_ms!)) }} />)}
         {props.expected?.spans.filter(p => p.object.id === row.object?.id).map(p => { const clip = clipInterval(p.interval, window); return clip && <button className="sf-tl-expected" key={p.id} title={`手算来源 ${props.expected!.source_ref}`} style={{ left: x(clip.visible.start_ms), width: x(clip.visible.end_ms) - x(clip.visible.start_ms) }} onClick={() => select({ key: `expected:${p.id}`, source: 'manual_expected', run_id: null, object: p.object, label: `手算 · ${p.label}`, true_interval: p.interval, fields: [{ label: '来源', value: props.expected!.source_ref }], related_objects: [] })}>{p.label}</button>; })}

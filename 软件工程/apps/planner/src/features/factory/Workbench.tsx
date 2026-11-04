@@ -9,6 +9,7 @@ import type { HistoryAvailability } from '../../../../../packages/commands/gener
 import type { WorkspaceSnapshot, DepartureDecision, EditCommand, TaskHandle, ImportDraft, ProjectState } from '../../services/projectHost';
 import * as host from '../../services/projectHost';
 import { readRememberedRun, rememberRunSelection, selectRunForWorkspace } from './runSelection';
+import { RunReplayControl } from './RunReplayControl';
 import { runRecordLabel, taskStateLabel, scenarioName } from '../../services/workbenchLabels';
 import { nfr } from '../../services/nfrMeasure';
 import { useWindowClose, type WindowCloseDecision } from '../../services/windowClose';
@@ -1229,9 +1230,12 @@ export function Workbench() {
       <div className="resize-handle" role="separator" aria-label="对象树宽度" onPointerDown={event => resize(event, 'left')} />
       <section className="central-workspace"><div className="canvas-tabs" style={{ display: cloudOpen ? 'none' : undefined }}><button className={canvas === 'line_canvas' ? 'active' : ''} onClick={() => setCanvas('line_canvas')}>流水线画布</button><button className={canvas === 'multi_hall_canvas' ? 'active' : ''} onClick={() => setCanvas('multi_hall_canvas')}>多厂房画布</button><button disabled={!project || editing} aria-pressed={canvasFocused} onClick={() => setCanvasFocused(value => !value)}>{canvasFocused ? '返回编辑布局' : '工厂全景模式'}</button><span /><select aria-label="画布厂房" value={hallId ?? ''} onChange={event => setHallId(event.target.value)}>{displayedProject?.halls.map(hall => <option key={hall.id} value={hall.id}>{hall.title}</option>)}</select></div>
         <div className="sourcebar" style={{ display: cloudOpen ? 'none' : undefined }}>
-          <button className={source === 'draft' ? 'active' : ''} disabled={busy || editing} onClick={() => switchSource('draft')}>输入草稿</button><button disabled={!runProject || busy || editing} className={source === 'run' ? 'active' : ''} onClick={() => switchSource('run')}>运行回看</button>
+          <button className={source === 'draft' ? 'active' : ''} disabled={busy || editing} onClick={() => switchSource('draft')}>输入草稿</button>
+          <RunReplayControl hasProject={!!project} hasRecords={runs.length > 0} hasSelection={!!run}
+            hasFrozenInput={!!runProject} busy={busy} editing={editing} active={source === 'run'}
+            onReplay={() => switchSource('run')} />
           <span aria-label={source === 'run' ? '实际结果冻结输入' : '当前工程草稿'}>{source === 'run' ? `${runInputs?.scenario.title || '历史方案'} · ${atMs == null ? '时点未知' : `${atMs / 1000} 秒`}` : '正在编辑工厂与生产输入'}</span>
-          <select aria-label="历史结果" value={run?.id ?? ''} disabled={!project || busy || editing} onChange={event => void action(() => chooseRun(event.target.value))}><option value="">选择运行记录</option>{runs.map((summary,index) => <option key={summary.run_id} value={summary.run_id}>{labelForRun(summary,index)}</option>)}</select>
+          <select aria-label="历史结果" value={run?.id ?? ''} disabled={!project || runs.length === 0 || busy || editing} onChange={event => void action(() => chooseRun(event.target.value))}><option value="">{project && runs.length === 0 ? '暂无运行记录' : '选择运行记录'}</option>{runs.map((summary,index) => <option key={summary.run_id} value={summary.run_id}>{labelForRun(summary,index)}</option>)}</select>
           <select aria-label="时间轴比较结果" value={comparison?.run.id ?? ''} disabled={!run || busy || editing} onChange={event => void action(() => chooseComparison(event.target.value))}><option value="">选择比较记录</option>{runs.map((summary,index) => summary.run_id !== run?.id && <option key={summary.run_id} value={summary.run_id}>{labelForRun(summary,index)}</option>)}</select>
           <details className="source-details"><summary>记录详情</summary><dl><dt>工程版本</dt><dd>{source === 'run' ? runProject?.revision : project?.revision}</dd>{run && <><dt>运行编号</dt><dd>{run.id}</dd><dt>冻结方案编号</dt><dd>{run.input_ref.scenario_id}</dd><dt>冻结方案版本</dt><dd>{run.input_ref.scenario_revision}</dd></>}</dl></details>
         </div>
