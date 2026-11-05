@@ -22,7 +22,7 @@ interface Props {
 
 export function CloudProductionWorkspace(props: Props) {
   const { workspace } = props;
-  const [selection, setSelection] = useState<ExecutionViewSelection | null>(null);
+  const [inspected, setInspected] = useState<{ contextKey: string; selection: ExecutionViewSelection } | null>(null);
   const directories = useMemo(createExecutionExportDirectories, []);
   const context = useMemo(() => workspace.project && workspace.hostContext ? {
     projectId: workspace.project.id,
@@ -31,6 +31,8 @@ export function CloudProductionWorkspace(props: Props) {
   } : null, [workspace.project?.id, workspace.project?.revision, workspace.hostContext?.host_instance_id]);
   const readAsset = useMemo(() => context ? createExecutionAssetPort(context) : undefined, [context]);
   if (!context || !workspace.hostContext) return <section role="alert">尚未取得当前 Native 工程会话，请刷新工程后再打开云端生产。</section>;
+  const contextKey = cloudContextKey(context);
+  const selection = inspected?.contextKey === contextKey ? inspected.selection : null;
   const currentTasks = props.retainedTasks.filter(record => record.operation !== 'read_cloud_production' && cloudContextKey(record.context) === cloudContextKey(context));
   const retained = [...currentTasks].reverse().find(record => !['completed', 'failed', 'cancelled', 'rejected'].includes(record.status)) ?? currentTasks.at(-1);
   const predictions = (workspace.context.run_summaries ?? [])
@@ -46,13 +48,13 @@ export function CloudProductionWorkspace(props: Props) {
         retainedTask={retained} onTaskRegistered={props.onTaskRegistered}
         onUnappliedInputChanged={props.onDirtyChange} onRefreshProject={props.onRefresh}
         predictionRuns={predictions} directories={directories} onClose={props.onClose}
-        onLocateDevice={props.onLocateDevice} onInspectExecution={setSelection}/>
+        onLocateDevice={props.onLocateDevice} onInspectExecution={next => setInspected({ contextKey, selection: next })}/>
     </div>
     {!selection && <RetainedCloudTasks context={context} records={props.retainedTasks} onTaskRegistered={props.onTaskRegistered}/>}
     {selection && <ExecutionObservationView context={context}
       nativeSessionId={workspace.hostContext.session_id} selection={selection}
-      readAsset={readAsset} onClose={() => setSelection(null)}
-      onSelectionChange={setSelection}
+      readAsset={readAsset} onClose={() => setInspected(null)}
+      onSelectionChange={next => setInspected({ contextKey, selection: next })}
       onLocateObject={reference => props.onLocateExecutionObject(reference.kind, reference.id)}/>} 
   </div>;
 }

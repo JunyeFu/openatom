@@ -8,6 +8,7 @@ import type { EditableProjectObject } from '../../../../../packages/commands/gen
 import type { EditCommand, ProjectState, ModulePackage } from '../../services/projectHost';
 import { HostFailure, moduleKey } from '../../services/projectHost';
 import { deviceHallPosition, devicePlacementCommands, identityPose, rotatePoseZ } from '../../scene/layout';
+import { hallOptionLabel } from './hallLabels';
 
 export type EditorTarget = { kind: 'hall'; value?: HallDesign } | { kind: 'device'; value?: DeviceInstance; moduleRef?: ModuleRef } | { kind: 'line'; value?: LineGroup };
 interface Props {
@@ -114,7 +115,7 @@ export function ObjectEditor({ project, modules, target, busy, onApply, onReload
     <p className="form-hint">应用会形成工程新修订。尚未应用的字段只保留在此表单中。</p>
     <fieldset disabled={busy || reloading}>
       <label>名称<input value={title} onChange={event => setTitle(event.target.value)} required /></label>
-      {target.kind !== 'hall' && <label>所属厂房<select value={hallId} onChange={event => setHallId(event.target.value)} disabled={!!value} required><option value="">请选择</option>{project.halls.map(hall => <option key={hall.id} value={hall.id}>{hall.title} · {hall.id}</option>)}</select></label>}
+      {target.kind !== 'hall' && <><label>所属厂房<select value={hallId} onChange={event => setHallId(event.target.value)} disabled={!!value} required><option value="">请选择</option>{project.halls.map(hall => <option key={hall.id} value={hall.id}>{hallOptionLabel(project.halls, hall)}</option>)}</select></label>{hallId && <details><summary>所选厂房编号</summary><code>{hallId}</code></details>}</>}
       {target.kind === 'device' && <label>设备定义 · 精确版本<select value={module} onChange={event => setModule(event.target.value)} disabled={!!value} required><option value="">请选择</option>{target.value && !modules.has(moduleKey(target.value.module_ref)) && <option value={moduleKey(target.value.module_ref)}>{target.value.module_ref.id} @ {target.value.module_ref.version} · 缺少定义</option>}{devices.map(item => <option key={moduleKey({ id: item.definition.id, version: item.definition.version })} value={moduleKey({ id: item.definition.id, version: item.definition.version })}>{item.definition.title} · {item.definition.version}</option>)}</select></label>}
       {target.kind === 'device' && <label>所属线组<select value={lineId} onChange={event => setLineId(event.target.value)}><option value="">不编组 · 厂房坐标</option>{project.lines.filter(line => line.hall_id === hallId).map(line => <option key={line.id} value={line.id}>{line.title}</option>)}</select></label>}
       {target.kind === 'device' && itemRoles.length > 0 && <section><h3>物品角色绑定</h3>{itemRoles.map(role => <label key={role}>{role}<select value={itemBindings[role] ?? ''} onChange={event => setItemBindings(previous => { const next = { ...previous }; if (event.target.value) next[role] = event.target.value; else delete next[role]; return next; })}><option value="">未绑定 · 保留为草稿缺项</option>{project.item_types.map(item => <option key={item.id} value={item.id}>{item.title} · {item.id} · {item.unit}</option>)}</select></label>)}</section>}
