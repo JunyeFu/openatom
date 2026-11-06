@@ -444,7 +444,7 @@ pub(crate) mod tests {
         let v = json!({"project":read("actual-frozen-project.json"),"scenario":read("actual-scenario.json"), "modules":packages,
             "definitions":packages.as_array().unwrap().iter().map(|p| p["definition"].clone()).collect::<Vec<_>>()});
         let mut s = semantic_session(v);
-        assert_eq!(s.frozen.candidate_bindings.len(), 456);
+        assert_eq!(s.frozen.candidate_bindings.len(), 944);
         assert_eq!(s.devices.len(), 93);
         let snapshot = drive_semantic_prefix(&mut s, 20);
         assert_eq!(snapshot.attempts.iter().filter(|a| a.completed_at_host_ms.is_some()).count(), 20);
@@ -846,6 +846,72 @@ pub(crate) mod tests {
                 .unwrap()
                 .operator_accept_new_work
         );
+    }
+    #[test]
+    fn device_maintenance_requests_safe_withdrawal_before_reassignment() {
+        let mut s = session();
+        let start = Instant::now();
+        run(&mut s, start);
+        ready(&mut s, "L1-D01", 1, at(start, 1));
+        let original = commands(&s)[0].clone();
+        s.tick(at(start, 2)).unwrap();
+        let mut report = observation(&s, "L1-D01", 2);
+        report.accept_new_work = false;
+        s.apply_observation(id("maintenance"), stamp(), report, at(start, 2)).unwrap();
+        let work = s.cloud_work().items.into_iter().find_map(|w| match w {
+            CloudWorkItem::WithdrawCommand { work_id, command_id, .. }
+                if command_id == original.attempt.command_id => Some((work_id, command_id)),
+            _ => None,
+        }).expect("device maintenance must request withdrawal of unstarted work");
+        assert_eq!(s.observe().unwrap().attempts.len(), 1);
+        s.acknowledge_cloud_work(CloudEffectAck::WithdrawalResult {
+            work_id: work.0, command_id: work.1,
+            state: CloudResponseVariant0ResultWithdrawalDataState::WithdrawnBeforeDelivery,
+        }, at(start, 3)).unwrap();
+        ready(&mut s, "L1-D02", 1, at(start, 4));
+        let view = s.observe().unwrap();
+        let replacement = view.attempts.iter().find(|a|
+            a.command.attempt.logical_job_id == original.attempt.logical_job_id
+                && a.command.device_id == id("L1-D02")).expect("same logical work uses compatible replacement");
+        assert_eq!(replacement.command.attempt.attempt_ordinal.value(), 2);
+        assert!(view.allocations.is_empty());
+        assert!(view.acceptance_events.is_empty());
+        ready(&mut s, "L1-D01", 3, at(start, 5));
+        assert!(s.observe().unwrap().attempts.iter().any(|a|
+            a.command.device_id == id("L1-D01") && a.state == ExternalAttemptState::Published));
+        assert!(s.devices[&id("L1-D01")].operator_accept);
+    }
+    #[test]
+    fn device_maintenance_keeps_started_work_and_rejects_unproved_refusal() {
+        let mut s = session();
+        let start = Instant::now();
+        run(&mut s, start);
+        ready(&mut s, "L1-D01", 1, at(start, 1));
+        let command = commands(&s)[0].clone();
+        s.apply_receipt(id("started-before-maintenance"), stamp(),
+            receipt(&command, 2, json!({"kind":"started"})), at(start, 2)).unwrap();
+        s.tick(at(start, 3)).unwrap();
+        let mut report = observation(&s, "L1-D01", 3);
+        report.accept_new_work = false;
+        report.device_state = ExecutionTelemetryObservationDeviceState::Busy;
+        report.active_command_id = Some(command.attempt.command_id.clone());
+        s.apply_observation(id("busy-maintenance"), stamp(), report, at(start, 3)).unwrap();
+        assert!(!s.cloud_work().items.iter().any(|w| matches!(w, CloudWorkItem::WithdrawCommand { .. })));
+        let done = receipt(&command, 4, json!({"kind":"completed","device_reported_duration_ms":null}));
+        s.apply_receipt(id("maintenance-done"), stamp(), done.clone(), at(start, 4)).unwrap();
+        let completed = s.observe().unwrap();
+        assert_eq!(completed.acceptance_events.len(), 1);
+        s.apply_receipt(id("maintenance-done"), stamp(), done, at(start, 5)).unwrap();
+        assert!(equal(&completed.acceptance_events, &s.observe().unwrap().acceptance_events));
+        // A report without the issued probe cannot make another device refuse.
+        ready(&mut s, "L1-D02", 1, at(start, 6));
+        s.tick(at(start, 7)).unwrap();
+        let mut invalid = observation(&s, "L1-D02", 2);
+        invalid.accept_new_work = false;
+        invalid.observation_probe_id = None;
+        let admission = s.apply_observation(id("unproved-maintenance"), stamp(), invalid, at(start, 7)).unwrap();
+        assert!(matches!(admission.decision, ReceiptAdmissionDecision::Rejected));
+        assert!(!s.cloud_work().items.iter().any(|w| matches!(w, CloudWorkItem::WithdrawCommand { .. })));
     }
     #[test]
     fn publication_barrier_preserves_unknown_work_until_positive_cloud_withdrawal() {
@@ -2221,7 +2287,15 @@ impl ExecutionSession {
         let observation = self.observe()?;
         for attempt in &observation.attempts {
             let continuing = observation.jobs.iter().any(|job| job.id == attempt.command.attempt.logical_job_id && job.started_at_ms.is_some());
-            let disabled = !self.devices[&attempt.command.device_id].operator_accept
+            let slot = &self.devices[&attempt.command.device_id];
+            // Device maintenance and operator acceptance are independent. Only
+            // an admitted, still-fresh refusal can request safe withdrawal;
+            // the cloud's positive proof remains the reassignment barrier.
+            let device_refuses = slot.latest.as_ref().is_some_and(|latest|
+                observation.elapsed_ms <= latest.observation_probe.expires_at_host_ms.value()
+                    && !latest.observation.accept_new_work);
+            let disabled = !slot.operator_accept
+                || device_refuses && !continuing
                 || matches!(self.phase, ExecutionSnapshotLifecycleState::Draining) && !continuing;
             let command_id = &attempt.command.attempt.command_id;
             if disabled && matches!(attempt.state, ExternalAttemptState::Published | ExternalAttemptState::Accepted)
@@ -2619,6 +2693,7 @@ impl ExecutionSession {
         }
         self.reconcile_lifecycle()?;
         self.refresh_probes(elapsed)?;
+        self.withdraw_disabled_commands()?;
         if schedule_needed {
             self.schedule(elapsed)?;
         }
