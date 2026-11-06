@@ -521,7 +521,7 @@
       ],
       "gate": "FV1_closed",
       "plan": "docs/06_v2.0设计与开发控制/完整版工作包与阶段分工.md",
-      "status": "remaining_packages_dispatched_a_control_detailed",
+      "status": "remaining_packages_dispatched_a_independent_baseline_verified",
       "base": "95f411d8e37cffbde227f59c679a66ee8489d5b8",
       "issues": {
         "A": "https://github.com/JunyeFu/openatom/issues/17",
@@ -552,7 +552,7 @@
           "role": "A",
           "owner": "JunyeFu",
           "hours": 18,
-          "state": "control_detailed_implementation_and_acceptance_pending",
+          "state": "independent_baseline_verified_waiting_B_candidates",
           "scope": "三批公共契约、公共消费者适配及集成接收"
         },
         {
@@ -612,20 +612,36 @@
         "mapping_note": "仅公共契约、共同消费者接点与集成控制；业务实施沿B#18/#19/#20，不另开原包",
         "design_state": "file_and_symbol_locations_and_six_views_detailed",
         "implementation_started": false,
-        "behavior_validation_started": false,
+        "behavior_validation_started": true,
+        "baseline_validation": {
+          "date": "2026-11-06",
+          "source_commit": "a8227d3587eee67894bb172bceed8e8441e9fbb7",
+          "product_code_base": "95f411d8e37cffbde227f59c679a66ee8489d5b8",
+          "state": "independent_contract_baseline_passed_not_batch_acceptance",
+          "passed": 40,
+          "failed": 0,
+          "ignored": 3,
+          "counts": {"domain": 8, "public_commands": 5, "cloud_read": 7, "execution_exports": 9, "agent_catalog_lib": 3, "shared_adapter": 8},
+          "planner_typecheck": "passed",
+          "generated_contract_diff": "none_after_actual_export",
+          "new_test": "tests/engineering/cloud-shared-contract.test.mjs",
+          "runtime_changes": "none_required_at_observed_baseline",
+          "ignored_scope": "实际服务、FV1五事件reader及保留PG用例未执行；不计通过",
+          "pending": "B#18/#19/#20同提交候选与C#12对应专项；无Native/生产云/性能整包接收结论"
+        },
         "sequence": "A17.1与B#18并行；A17.2按真实缺口与A17.3三批接收交错；最后A17.4。B不等待空泛接口批准。",
         "steps": [
           {
             "id": "A17.1",
             "hours": 3,
-            "state": "source_locations_detailed_behavior_baseline_pending",
+            "state": "independent_contract_baseline_completed",
             "input": "95f411d8、冻结输入、三张B卡及现有契约",
             "output": "来源、字段单位、权限与任务语义的接点结论及真实缺口"
           },
           {
             "id": "A17.2",
             "hours": 5,
-            "state": "pending_observed_required_gap",
+            "state": "no_runtime_change_required_at_baseline_pending_candidate_differences",
             "per_batch_planned_hours": {
               "18": 2,
               "19": 2,
