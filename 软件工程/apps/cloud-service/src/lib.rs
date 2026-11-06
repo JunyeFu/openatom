@@ -214,7 +214,7 @@ pub async fn run() -> std::result::Result<(), Box<dyn std::error::Error>> {
         migrate(&pool, &bindings)
             .await
             .map_err(|_| "migration failed")?;
-        println!("schema version 2 ready");
+        println!("schema version 3 ready");
         return Ok(());
     }
     let app = Arc::new(App {
@@ -391,12 +391,16 @@ async fn migrate(pool: &Pool, b: &Bindings) -> Result<()> {
         }
         t.execute("INSERT INTO schema_migrations(version) VALUES(1)", &[])
             .await?;
-    } else if !matches!(versions.iter().map(|row| row.get::<_, i32>(0)).collect::<Vec<_>>().as_slice(), [1] | [1, 2]) {
+    } else if !matches!(versions.iter().map(|row| row.get::<_, i32>(0)).collect::<Vec<_>>().as_slice(), [1] | [1, 2] | [1, 2, 3]) {
         return Err(Fault::invalid("unsupported database schema version"));
     }
     if !versions.iter().any(|row| row.get::<_, i32>(0) == 2) {
         t.batch_execute(include_str!("../migrations/002_transport_observations.sql")).await?;
         t.execute("INSERT INTO schema_migrations(version) VALUES(2)", &[]).await?;
+    }
+    if !versions.iter().any(|row| row.get::<_, i32>(0) == 3) {
+        t.batch_execute(include_str!("../migrations/003_telemetry_query_cover.sql")).await?;
+        t.execute("INSERT INTO schema_migrations(version) VALUES(3)", &[]).await?;
     }
     // A running deployment cannot silently consume a different fixed catalog.
     catalog_matches(&t, b).await?;
@@ -554,7 +558,7 @@ async fn handle(State(app): State<Arc<App>>, req: Request) -> Response {
             let t = c.transaction().await?;
             let r = t
                 .query_one(
-                    "SELECT (SELECT array_agg(version ORDER BY version)=ARRAY[1,2] FROM schema_migrations),1",
+                    "SELECT (SELECT array_agg(version ORDER BY version)=ARRAY[1,2,3] FROM schema_migrations),1",
                     &[],
                 )
                 .await?;
