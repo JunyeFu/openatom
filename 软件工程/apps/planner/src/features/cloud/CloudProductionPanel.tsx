@@ -317,6 +317,18 @@ export function CloudProductionPanel(props: CloudProductionPanelProps) {
         if (identityKey(value.snapshot.identity) !== identityKey(next.identity) || value.delivery.read_origin !== next.origin
           || (next.selection.kind === 'revision' && value.snapshot.execution_revision !== next.selection.execution_revision)) throw new CloudProductionError('source_mismatch', '读取结果与当前固定来源不符。');
         setEnvelope(value);
+        // Only a live local source may advance the current-session summary.
+        // Reading a pinned or cloud snapshot must not roll the catalog back.
+        if (next.origin === 'host' && next.selection.kind === 'latest') {
+          const current = value.snapshot;
+          setCatalog(entries => entries.map(entry => entry.active_owner
+            && identityKey(entry.identity) === identityKey(current.identity)
+            && current.execution_revision >= entry.execution_revision
+            ? { ...entry, execution_revision: current.execution_revision,
+              observed_until_host_ms: current.coverage.observed_until_host_ms,
+              clock_started: current.coverage.clock_started, lifecycle_state: current.lifecycle.state,
+              goal_at_snapshot: current.goal_at_snapshot } : entry));
+        }
         if (!viewTimeEdited.current) setViewSeconds(millisecondsToSeconds(value.snapshot.coverage.observed_until_host_ms));
         setUntilSeconds(old => old || millisecondsToSeconds(executionQueryEnd(value.snapshot.coverage.observed_until_host_ms)));
       }
@@ -382,7 +394,7 @@ export function CloudProductionPanel(props: CloudProductionPanelProps) {
     const lease = begin('mutation'); const original = envelope; const generation = sourceGeneration.current; setError('');
     try {
       await controlExecution(context, original, action, currentLatest);
-      if (lease.live()) { setMessage(({ run: '已启动生产。', pause_dispatch: '已暂停新任务分派，正在加工的任务继续收尾。', resume_dispatch: '已恢复新任务分派。', stop_dispatch: '已停止新任务分派，正在等待已准入任务收尾。', request_reconciliation: '已请求核对原指令。', set_device_acceptance: '已更新设备接单设置。' })[action.kind]); if (generation === sourceGeneration.current) await refreshSource(); }
+      if (lease.live()) { setMessage(({ run: '已启动生产。', pause_dispatch: '已暂停新任务分派，正在加工的任务继续收尾。', resume_dispatch: '已恢复新任务分派。', stop_dispatch: '已接纳停止新任务分派请求。当前执行状态请查看所选记录。', request_reconciliation: '已请求核对原指令。', set_device_acceptance: '已更新设备接单设置。' })[action.kind]); if (generation === sourceGeneration.current) await refreshSource(); }
     } catch (e) { fail(lease, e); if (lease.live() && generation === sourceGeneration.current) void refreshSource(); }
     finally { finish(lease); }
   }
