@@ -139,7 +139,7 @@ with cloud.Server():
     assert result('POST','/v2/sessions/'+sid+'/release-slot',dict(contract_version=cloud.VERSION,identity=create['identity'],expected_published_revision=final_revision))['released']
     checks.append('stopped multistage session releases its real retired boot and settled command slot')
     cloud.run([str(cloud.EXE),'migrate'],env=cloud.environment())
-    assert cloud.sql('SELECT string_agg(version::text,\',\' ORDER BY version) FROM schema_migrations;').strip()=='1,2'
+    assert cloud.sql('SELECT string_agg(version::text,\',\' ORDER BY version) FROM schema_migrations;').strip()=='1,2,3'
     checks.append('schema 2 migration is repeatable and retains transport rows')
 (out/'receipt.json').write_text(json.dumps(dict(passed=True,checks=checks,database=database,scope='real local HTTP/PostgreSQL component proof; no Native whole-factory claim'),indent=2),encoding='utf-8')
 print('Actual HTTP/PostgreSQL factory checks passed:',len(checks))

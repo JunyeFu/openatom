@@ -1,5 +1,7 @@
 # 超级工厂 v2 云服务
 
+当前数据库迁移到 schema version 3：保留原表和数据，新增 `telemetry_query_cover` 部分覆盖索引，供固定数据集／设备／时间／前沿的原始查询和分钟聚合使用。`migrate` 在既有 advisory lock 与事务内升级空库、version 1 或 version 2；重复执行不重复建索引，未知版本拒绝。升级期间停止服务，先运行新版本 `migrate`，再启动同版本服务；健康检查要求完整版本序列 `[1,2,3]`。首次建立索引会扫描现存事件表并占用额外磁盘，不应把迁移耗时算入查询性能。游标、数据来源和聚合单位不变。
+
 独立 Axum / PostgreSQL 组件，wire 为 `sf.execution/2.0-draft11`。使用 `sf_domain::cloud_execution` 的严格请求、响应和游标 DTO；不链接 simulation、commands 或 Native，不运行 Engine、不产生库存或 Host 接纳事实。
 
 ## 构建与启动
