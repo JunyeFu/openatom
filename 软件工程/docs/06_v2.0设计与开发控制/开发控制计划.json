@@ -552,7 +552,7 @@
           "role": "A",
           "owner": "JunyeFu",
           "hours": 18,
-          "state": "independent_baseline_verified_waiting_B_candidates",
+          "state": "b18_review_completed_two_ui_failures_pending",
           "scope": "三批公共契约、公共消费者适配及集成接收"
         },
         {
@@ -560,7 +560,7 @@
           "role": "B",
           "owner": "wwl-ww",
           "hours": 18,
-          "state": "dispatched_ready",
+          "state": "native_core_passed_two_ui_failures_pending",
           "depends_on": [],
           "scope": "原B1数据查询+B7整厂工艺维护改派"
         },
@@ -621,7 +621,14 @@
           "passed": 40,
           "failed": 0,
           "ignored": 3,
-          "counts": {"domain": 8, "public_commands": 5, "cloud_read": 7, "execution_exports": 9, "agent_catalog_lib": 3, "shared_adapter": 8},
+          "counts": {
+            "domain": 8,
+            "public_commands": 5,
+            "cloud_read": 7,
+            "execution_exports": 9,
+            "agent_catalog_lib": 3,
+            "shared_adapter": 8
+          },
           "planner_typecheck": "passed",
           "generated_contract_diff": "none_after_actual_export",
           "new_test": "tests/engineering/cloud-shared-contract.test.mjs",
@@ -641,7 +648,7 @@
           {
             "id": "A17.2",
             "hours": 5,
-            "state": "no_runtime_change_required_at_baseline_pending_candidate_differences",
+            "state": "b18_no_public_contract_change_required_later_candidates_pending",
             "per_batch_planned_hours": {
               "18": 2,
               "19": 2,
@@ -653,7 +660,7 @@
           {
             "id": "A17.3",
             "hours": 6,
-            "state": "awaiting_three_candidate_deliveries",
+            "state": "b18_native_review_completed_two_ui_failures_open_b19_b20_queued",
             "per_batch_planned_hours": 2,
             "order": [
               18,
@@ -689,10 +696,91 @@
         "evidence_policy": "未受影响的已接收证据复用；改动按影响选择既有测试和有限真实消费者路线。预期不作通过记录。",
         "desktop_validation": "本机主屏，UIA或脚本工具；取消真人体验",
         "exit_gate": "三包接收、公共源及消费者一致、C#12相关专项已交并接收、无本阶段未解决阻断项。未验不标通过。",
-        "protected_scope": "公开v2.0.1及已提交链接；不发布、不部署新云、不安排赛事PDF/视频、不启动FV03/FV04"
+        "protected_scope": "公开v2.0.1及已提交链接；不发布、不部署新云、不安排赛事PDF/视频、不启动FV03/FV04",
+        "latest_batch_review": {
+          "date": "2026-11-09",
+          "issue": 18,
+          "pr": 22,
+          "source_commit": "f32c6f81af87f5fee4424e171df7fd69b050addf",
+          "state": "native_core_passed_two_ui_failures_pending_not_batch_acceptance",
+          "evidence_comment": "https://github.com/JunyeFu/openatom/issues/18#issuecomment-6731569839",
+          "a_comment": "https://github.com/JunyeFu/openatom/issues/17#issuecomment-6731573974",
+          "asset": "FV02-A18-f32c6f81-Native-20261109.zip",
+          "asset_bytes": 975289,
+          "method": "Playwright_CLI_actual_Tauri_WebView2_CDP_and_real_OS_file_pickers",
+          "query": {
+            "rows": 405,
+            "pages": 9,
+            "frontier": 405,
+            "aggregation_count": 405,
+            "passed": true
+          },
+          "execution": {
+            "session_id": "desktop-host-32044-1794193265944214500:execution:1:24",
+            "R": 110,
+            "F": 113,
+            "T_ms": 117935,
+            "output_items": 2,
+            "remaining_input_items": 4,
+            "commands": 3,
+            "closed_commands": 3,
+            "unresolved": 0,
+            "pending_output": 0,
+            "reserved": 0,
+            "state": "stopped",
+            "goal_satisfied": false,
+            "maintenance_alternative_and_restore_observed": true,
+            "specific_pre_delivery_withdrawal_native_interleaving": "not_forced_Host_regression_kept_separate",
+            "transport_in_native_input": false
+          },
+          "save_reopen": {
+            "passed": true,
+            "writer_pid": 32044,
+            "reader_pid": 3844,
+            "readonly": true,
+            "database_and_archive_business_facts_equal": true,
+            "old_runs": 3,
+            "old_run_files_byte_equal": 12
+          },
+          "independent_Host_checks": {
+            "passed": 37,
+            "full_factory_20_command": "not_run_missing_input",
+            "scope": "execution_session_archive_stop_save_not_a_Native_substitute"
+          },
+          "B_performance": {
+            "accepted_report_and_recomputed_p95": true,
+            "raw_p95_ms": 47,
+            "aggregate_p95_ms": 1172,
+            "independent_million_rerun": false
+          },
+          "failed": [
+            {
+              "id": "NATIVE-18-U1",
+              "file": "apps/planner/src/features/cloud/CloudProductionPanel.tsx",
+              "line": 581,
+              "actual": "live_catalog_retains_prepared_R2_0s_while_source_R110_stopped",
+              "owner": "B"
+            },
+            {
+              "id": "NATIVE-18-U2",
+              "file": "apps/planner/src/features/cloud/CloudProductionPanel.tsx",
+              "line": 385,
+              "actual": "stop_acknowledgement_remains_waiting_after_stopped_zero_zero_zero",
+              "owner": "B"
+            }
+          ],
+          "pending": [
+            "B处理U1/U2并交同提交候选，复验相应Native反馈",
+            "PR22草稿未合入；B19/B20与C对应专项继续排队；A17.4待后续接收"
+          ],
+          "cleanup": "Native正常退出，原连接恢复，专属服务/隧道/数据库容器停止且数据保留，23280/23281/23282释放",
+          "protected_release_changed": false,
+          "product_source_changed_by_A_this_run": false,
+          "next_stage_started": false
+        }
       }
     },
-    "status_updated_on": "2026-11-06"
+    "status_updated_on": "2026-11-09"
   },
   "date": "2026-10-27",
   "current_product_track": "v2_implementation",
@@ -4032,8 +4120,8 @@
       "independent_PG_formula_verified": true,
       "queries_passed": 60,
       "query_p95_ms": {
-        "raw": 63.0,
-        "aggregate": 1641.0
+        "raw": 63,
+        "aggregate": 1641
       },
       "real_smoke_10_children_clean": true,
       "formal1800_acceptance": true,
@@ -4050,8 +4138,8 @@
       "raw_queries": 30,
       "aggregate_queries": 30,
       "p95_ms": {
-        "raw": 63.0,
-        "aggregate": 1641.0
+        "raw": 63,
+        "aggregate": 1641
       },
       "all_query_rows_match_independent_expected": true,
       "query_started_after_formal_telemetry_launch": true,
@@ -5302,8 +5390,8 @@
       "raw_queries": 30,
       "aggregate_queries": 30,
       "p95_ms": {
-        "raw": 63.0,
-        "aggregate": 1641.0
+        "raw": 63,
+        "aggregate": 1641
       },
       "all_query_rows_match_independent_expected": true,
       "query_started_after_formal_telemetry_launch": true
@@ -7963,7 +8051,7 @@
       "not_closed": 9,
       "active_or_partial_or_failed": 7,
       "open": 2,
-      "closed_item_ratio_percent": 40.0,
+      "closed_item_ratio_percent": 40,
       "ratio_meaning": "仅15项等权关闭率；不是总开发量、需求完成率或整厂验收率",
       "verified_ids": [
         "V2-07-G02",
@@ -7975,7 +8063,7 @@
       ],
       "connected_devices": 92,
       "modeled_devices": 92,
-      "connected_device_ratio_percent": 100.0,
+      "connected_device_ratio_percent": 100,
       "remaining_independent_cells": 0,
       "whole_factory_accepted": false,
       "whole_factory_cloud_verified": false,
