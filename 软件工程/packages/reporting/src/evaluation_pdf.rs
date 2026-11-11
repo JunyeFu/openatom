@@ -194,10 +194,10 @@ pub(crate) fn pdf(
     p.y -= 8.;
     p.line(
         &format!(
-            "报告 {} · 工程 {} · 导出修订 {}",
-            report.data.id.as_str(),
-            report.data.project_id.as_str(),
-            report.data.project_revision.0.value()
+            "{} · 导出修订 {} · {} 条运行记录",
+            if report.data.run_refs.is_empty() { "设计说明" } else { "实际运行评估" },
+            report.data.project_revision.0.value(),
+            report.data.run_refs.len()
         ),
         11.,
     );
@@ -309,5 +309,8 @@ pub(crate) fn pdf(
         },
         10.5,
     );
+    p.section("报告来源标识");
+    p.row("报告编号", report.data.id.as_str());
+    p.row("工程编号", report.data.project_id.as_str());
     Ok(p.finish())
 }

@@ -1,3 +1,5 @@
+import { readFrozenRunScenario } from '../comparison/frozenRunNames';
+import type { ScenarioInput } from '../../../../../packages/commands/generated/typescript/ScenarioInput';
 import { runRecordLabel, runStatusLabel } from '../../services/workbenchLabels';
 import { useEffect, useState } from 'react';
 import type { MetricKey } from '../../../../../packages/commands/generated/typescript/MetricKey';
@@ -16,6 +18,7 @@ export function DeliveryWorkspace({ workspace, services, initialTab = 'compariso
   const project = workspace.project;
   const [tab, setTab] = useState(initialTab);
   const [runIds, setRunIds] = useState<string[]>([]);
+  const [runNames, setRunNames] = useState<{ project: string; values: Record<string, ScenarioInput>; failed: boolean }>({ project: '', values: {}, failed: false });
   const [evidence, setEvidence] = useState<RunEvidence[]>([]);
   const [loading, setLoading] = useState(false); const [failure, setFailure] = useState('');
   const [failureDetail, setFailureDetail] = useState<unknown>(null);
@@ -35,6 +38,26 @@ export function DeliveryWorkspace({ workspace, services, initialTab = 'compariso
     }).catch(error => { if (live) { setFailure(errorText(error)); setFailureDetail(errorDetail(error)); } }).finally(() => { if (live) setLoading(false); });
     return () => { live = false; };
   }, [project?.id, selectionKey, services.readEvidence]);
+  const nameKey = JSON.stringify((workspace.context.run_summaries ?? []).map(run => [run.run_id, run.input]));
+  useEffect(() => {
+    let live = true;
+    if (!project) return;
+    setRunNames({ project: project.id, values: {}, failed: false });
+    const summaries = (workspace.context.run_summaries ?? []).filter(run => run.input.project_id === project.id);
+    void (async () => {
+      for (const summary of summaries) {
+        try {
+          const scenario = await readFrozenRunScenario(project.id, summary);
+          if (!live) return;
+          setRunNames(previous => ({ ...previous, values: { ...previous.values, [summary.run_id]: scenario } }));
+        } catch {
+          if (!live) return;
+          setRunNames(previous => ({ ...previous, failed: true }));
+        }
+      }
+    })();
+    return () => { live = false; };
+  }, [project?.id, nameKey]);
   if (!project) return <section className="delivery-workspace"><h2>请先创建或打开工程</h2><button onClick={onClose}>返回工作台</button></section>;
   const runs = (workspace.context.run_summaries ?? []).filter(r => r.input.project_id === project.id);
   const ready = !loading && evidenceMatches(project.id, runIds, evidence);
@@ -44,7 +67,8 @@ export function DeliveryWorkspace({ workspace, services, initialTab = 'compariso
   return <section className="delivery-workspace" aria-label="方案评估与交接工作区">
     <header className="delivery-title"><div><small>{project.title}</small><details><summary>工程信息</summary><p>工程编号：{project.id}；工程版本：{project.revision}。</p></details><h1>方案评估与交接</h1></div><button disabled={task.active} onClick={onClose}>返回流水线工作台</button></header>
     <nav className="delivery-tabs" aria-label="评估与交付任务">{(['comparison', 'reporting', 'handoff'] as const).map(t => <button key={t} aria-pressed={tab === t} onClick={() => setTab(t)}>{{ comparison: '方案比较', reporting: '评估报告', handoff: '可编辑交接与贡献' }[t]}</button>)}</nav>
-    <div className="delivery-content"><aside className="delivery-selection"><h2>选择运行记录</h2><p>选择一次运行导出报告；需要比较时可选两次。</p>{runs.map((r,index) => <label className="delivery-run-choice" key={r.run_id}><input type="checkbox" checked={runIds.includes(r.run_id)} disabled={task.active || !runIds.includes(r.run_id) && runIds.length >= 2} onChange={e => setRunIds(e.target.checked ? [...runIds, r.run_id] : runIds.filter(id => id !== r.run_id))} /><span><strong>{runRecordLabel(r,index,workspace.scenarios,evidence.find(e=>e.run.id===r.run_id)?.scenario)}</strong><small>{runStatusLabel[r.computation_status]} · {r.whole_window_computed ? '完整窗口' : '前缀'} · 接受量 {r.accepted ? quantityText(r.accepted) : '未知'}</small></span></label>)}{!runs.length && <p>{workspace.context.run_summaries === undefined ? '宿主未提供运行列表。' : '尚无实际运行。'}</p>}
+    <div className="delivery-content"><aside className="delivery-selection"><h2>选择运行记录</h2><p>选择一次运行导出报告；需要比较时可选两次。</p>{runs.map((r,index) => <label className="delivery-run-choice" key={r.run_id}><input type="checkbox" checked={runIds.includes(r.run_id)} disabled={task.active || !runIds.includes(r.run_id) && runIds.length >= 2} onChange={e => setRunIds(e.target.checked ? [...runIds, r.run_id] : runIds.filter(id => id !== r.run_id))} /><span><strong>{runRecordLabel(r,index,workspace.scenarios,evidence.find(e=>e.run.id===r.run_id)?.scenario ?? (runNames.project === project.id ? runNames.values[r.run_id] : undefined))}</strong><small>{runStatusLabel[r.computation_status]} · {r.whole_window_computed ? '完整窗口' : '前缀'} · 接受量 {r.accepted ? quantityText(r.accepted) : '未知'}</small></span></label>)}{!runs.length && <p>{workspace.context.run_summaries === undefined ? '宿主未提供运行列表。' : '尚无实际运行。'}</p>}
+      {runNames.project === project.id && runNames.failed && <p role="status">部分记录的冻结方案名称未能读取；记录身份保留，请选择该记录查看具体来源。</p>}
       {loading && <p role="status">正在读取所选运行记录…</p>}{failure && <p role="alert" className="delivery-error">{failure}</p>}{failureDetail != null && <JsonDetails label="冻结输入读取错误与字段定位" value={failureDetail} />}
       <fieldset disabled={task.active}><legend>指标</legend>{(Object.keys(metricLabels) as MetricKey[]).map(k => <label key={k}><input type="checkbox" checked={keys.includes(k)} onChange={e => setKeys(e.target.checked ? [...keys, k] : keys.filter(v => v !== k))} />{metricLabels[k]}</label>)}</fieldset>
       <fieldset disabled={task.active}><legend>接受口径</legend><p>不选时按宿主已声明范围分别列出；多个产品不合成一个单位成本。</p>{scopes.map(s => <label key={scopeKey(s)}><input type="checkbox" checked={scopeIds.includes(scopeKey(s))} onChange={e => setScopeIds(e.target.checked ? [...scopeIds, scopeKey(s)] : scopeIds.filter(v => v !== scopeKey(s)))} />{scopeText(s)}</label>)}</fieldset>
