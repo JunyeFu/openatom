@@ -521,7 +521,7 @@
       ],
       "gate": "FV1_closed",
       "plan": "docs/06_v2.0设计与开发控制/完整版工作包与阶段分工.md",
-      "status": "b18_accepted_b19_in_progress_awaiting_delivery_b20_queued",
+      "status": "b18_accepted_b19_native_export_failed_changes_required_b20_queued",
       "base": "95f411d8e37cffbde227f59c679a66ee8489d5b8",
       "issues": {
         "A": "https://github.com/JunyeFu/openatom/issues/17",
@@ -552,7 +552,7 @@
           "role": "A",
           "owner": "JunyeFu",
           "hours": 18,
-          "state": "b18_accepted_awaiting_b19_delivery_b20_and_C",
+          "state": "b18_accepted_b19_review_complete_changes_required_b20_and_C_pending",
           "scope": "三批公共契约、公共消费者适配及集成接收"
         },
         {
@@ -569,13 +569,16 @@
           "role": "B",
           "owner": "wwl-ww",
           "hours": 19,
-          "state": "in_progress_awaiting_delivery",
+          "state": "draft_delivered_A_review_changes_required_native_export_failed",
           "depends_on": [
             18
           ],
           "scope": "原B2大报告+B3预测实际比较",
           "start_comment": "https://github.com/JunyeFu/openatom/issues/19#issuecomment-6740276537",
-          "source_base": "8416a03c17cc2a4b7cefc0a2b32e6aeff1c64bf5"
+          "source_base": "8416a03c17cc2a4b7cefc0a2b32e6aeff1c64bf5",
+          "source_commit": "64592e54fb68491962816870f041062b401013c6",
+          "pr": 23,
+          "review_comment": "https://github.com/JunyeFu/openatom/issues/19#issuecomment-6800543881"
         },
         {
           "issue": 20,
@@ -650,7 +653,7 @@
           {
             "id": "A17.2",
             "hours": 5,
-            "state": "b18_no_public_contract_change_required_later_candidates_pending",
+            "state": "b18_b19_no_public_contract_change_required_native_render_failure_to_B",
             "per_batch_planned_hours": {
               "18": 2,
               "19": 2,
@@ -662,7 +665,7 @@
           {
             "id": "A17.3",
             "hours": 6,
-            "state": "b18_accepted_awaiting_b19_delivery_b20_queued",
+            "state": "b18_accepted_b19_reviewed_not_accepted_native_failure_b20_queued",
             "per_batch_planned_hours": 2,
             "order": [
               18,
@@ -829,9 +832,60 @@
           "cleanup": "Native正常关闭，用户云配置恢复，专属服务/隧道/PG容器停止且数据保留，23280/23281/23282释放",
           "protected_release_changed": false,
           "next_stage_started": false
+        },
+        "b19_review": {
+          "date": "2026-11-11",
+          "source_commit": "64592e54fb68491962816870f041062b401013c6",
+          "pr": 23,
+          "decision": "changes_required_not_accepted_not_merged",
+          "evidence_comment": "https://github.com/JunyeFu/openatom/issues/19#issuecomment-6800543881",
+          "a_comment": "https://github.com/JunyeFu/openatom/issues/17#issuecomment-6800552802",
+          "asset_url": "https://github.com/JunyeFu/openatom/releases/download/untagged-65a481ce993d4d2d636c/FV02-A19-64592e54-review-20261111.zip",
+          "passed": {
+            "typecheck": true,
+            "web_build": true,
+            "reporting_tests": 93,
+            "reporting_ignored": 1,
+            "actual_native_comparison_cases": 3,
+            "unchanged_case_project_files": 81,
+            "library_consumer_waits": 38849,
+            "library_csv_tables": 15,
+            "offline_html_actions": 20,
+            "offline_html_feedback_p95_ms": 80.206,
+            "offline_html_heading_first_paint_ms": 220.862,
+            "pdf_first_last_pages_only": true
+          },
+          "failed": [
+            {
+              "id": "A19-F1",
+              "severity": "P1",
+              "error": "Ready viewport does not match the real task window",
+              "scope": "ordinary Native four-format export, small comparable and original38849 inputs, dpr1.25, also fresh plain CDP viewport=null",
+              "locations": [
+                "apps/planner/src-tauri/src/native_render.rs:548",
+                "apps/planner/src/features/render-surface/RenderTaskSurface.tsx:39"
+              ],
+              "root_cause_and_regression_origin": "not_established"
+            },
+            {
+              "id": "A19-T1",
+              "severity": "P2",
+              "scope": "unknown comparison reasons retain English and metric_not_comparable code"
+            }
+          ],
+          "pending": [
+            "fixed-candidate Native successful four-format export and actual output file opening",
+            "Native full 38849 filtering pagination object location and PF09",
+            "C12 same-candidate report/comparison tool review",
+            "full PDF visual review not performed"
+          ],
+          "evidence_boundary": "report-library-generated files and offline HTML do not replace successful Native export or Native PF09",
+          "cleanup": "owned Native instances19160 and14548 exited normally; no product source edits or production cloud operation",
+          "protected_release_changed": false,
+          "next_stage_started": false
         }
       },
-      "progress_updated_on": "2026-11-10"
+      "progress_updated_on": "2026-11-11"
     },
     "status_updated_on": "2026-11-09"
   },
