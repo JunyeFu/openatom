@@ -123,7 +123,7 @@ fn accepted(i: &FrozenInput, scope: &AcceptanceScope, completion: bool) -> Metri
         }
         return if completion {
             unknown(
-                "Declared acceptance target is unfinished; completion time is unknown",
+                "声明的接受目标尚未完成，完整接受时刻未知",
                 None,
             )
         } else {
@@ -519,7 +519,7 @@ pub(crate) fn build(
                 let comparable=!matches!(p.status,ComparisonStatus::SideBySideOnly)&&diff.is_some();
                 MetricPairDifference{baseline_run_id:p.baseline_run_id.clone(),candidate_run_id:p.candidate_run_id.clone(),comparable,
                     difference:if comparable{diff.as_ref().map(|d|d.0.clone())}else{None},change_percent:if comparable{diff.and_then(|d|d.1)}else{None},
-                    conditions:if comparable{vec![]}else{vec![issue("metric_not_comparable","Different/incomplete conditions, unknown value or incompatible unit; no numeric improvement is asserted",object.clone())]}}
+                    conditions:if comparable{vec![]}else{vec![issue("metric_not_comparable","比较条件不同或不完整、指标值未知，或单位不兼容，因此不作数值改善结论",object.clone())]}}
             }).collect();
             result.push(MetricComparison {
                 metric: key.clone(),
