@@ -1,10 +1,14 @@
 import { scenarioName } from '../../services/workbenchLabels';
 import type { ComparisonConditionKey } from '../../../../../packages/commands/generated/typescript/ComparisonConditionKey';
+import type { MetricValue } from '../../../../../packages/commands/generated/typescript/MetricValue';
 import type {RunComparison} from '../../../../../packages/commands/generated/typescript/RunComparison';
 import type {RunEvidence,DeliveryWorkspaceProps} from './types';
 import {differenceText,metricLabels,metricText,scopeText} from './model';
 import {IssueList,JsonDetails} from './Shared';
 const conditionNames: Record<ComparisonConditionKey, string> = { time_reference: '时间基准', observation_window: '观察窗口', acceptance_scope: '产品、单位与接受位置', demand: '需求、释放时点与交期', selected_scope: '执行对象范围', initial_conditions: '初始库存与资源条件', supported_capabilities: '完整计算与模块能力', explained_changes: '输入变化说明' };
+function MetricReading({ value }: { value: MetricValue | undefined }) {
+ return <>{value ? metricText(value) : '未返回该Run指标'}{value?.kind === 'unknown' && <JsonDetails label="查看未知原因来源" value={value.data} />}</>;
+}
 /** The actual comparison result, also used by the ordinary comparison panel. */
 export function ComparisonResult({value,evidence,onLocate,embedded=false}:{value:RunComparison;evidence:readonly RunEvidence[];onLocate?:DeliveryWorkspaceProps['onLocate'];embedded?:boolean}){
  const runIds=value.run_ids;
@@ -17,7 +21,7 @@ export function ComparisonResult({value,evidence,onLocate,embedded=false}:{value
         <h3>输入变化与来源</h3>{!pair.input_changes.length && <p>宿主没有列出输入变化。</p>}
         <div className="delivery-table-scroll"><table><thead><tr><th>对象／字段</th><th>基准输入</th><th>候选输入</th><th>来源与理由</th><th>定位</th></tr></thead><tbody>{pair.input_changes.map((c, n) => <tr key={`${c.target.id}:${c.path}:${n}`}><td>{c.target.kind}:{c.target.id}<br /><code>{c.path}</code><br />{c.kind}</td><td><JsonDetails label="展开原值" value={c.before ?? null} /></td><td><JsonDetails label="展开新值" value={c.after ?? null} /></td><td>{c.basis ?? '来源未知'}<br />{c.reason ?? '未声明理由'}</td><td>{onLocate ? <><button onClick={() => onLocate(pair.baseline_run_id, c.target)}>基准定位</button><button onClick={() => onLocate(pair.candidate_run_id, c.target)}>候选定位</button></> : '只读来源'}</td></tr>)}</tbody></table></div>
       </section>)}
-      <h3>宿主计算的同口径指标</h3><div className="delivery-table-scroll"><table><thead><tr><th>指标与范围</th>{runIds.map(id => <th key={id}>{runName(id)}<small>{id}</small></th>)}<th>差值与限制</th></tr></thead><tbody>{value.metrics.map((m, n) => <tr key={`${m.metric}:${n}`}><td>{metricLabels[m.metric]}{m.object_ref && (onLocate ? <button onClick={() => onLocate(runIds[0], m.object_ref!)}>{m.object_ref.kind}:{m.object_ref.id}</button> : <span>{m.object_ref.kind}:{m.object_ref.id}</span>)}{m.acceptance_scope && <small>{scopeText(m.acceptance_scope)}</small>}</td>{runIds.map(id => <td key={id}>{m.values.find(v => v.run_id === id) ? metricText(m.values.find(v => v.run_id === id)!.value) : '未返回该Run指标'}</td>)}<td>{m.pair_differences.map((d, i) => <div key={i}>{d.comparable ? differenceText(d.difference) : '不可比，不显示改善量'}{d.comparable && d.change_percent != null && <span> · 相对变化 {d.change_percent}%</span>}<IssueList readable issues={d.conditions} /></div>)}</td></tr>)}</tbody></table></div>
+      <h3>宿主计算的同口径指标</h3><div className="delivery-table-scroll"><table><thead><tr><th>指标与范围</th>{runIds.map(id => <th key={id}>{runName(id)}<small>{id}</small></th>)}<th>差值与限制</th></tr></thead><tbody>{value.metrics.map((m, n) => <tr key={`${m.metric}:${n}`}><td>{metricLabels[m.metric]}{m.object_ref && (onLocate ? <button onClick={() => onLocate(runIds[0], m.object_ref!)}>{m.object_ref.kind}:{m.object_ref.id}</button> : <span>{m.object_ref.kind}:{m.object_ref.id}</span>)}{m.acceptance_scope && <small>{scopeText(m.acceptance_scope)}</small>}</td>{runIds.map(id => <td key={id}><MetricReading value={m.values.find(v => v.run_id === id)?.value} /></td>)}<td>{m.pair_differences.map((d, i) => <div key={i}>{d.comparable ? differenceText(d.difference) : '不可比，不显示改善量'}{d.comparable && d.change_percent != null && <span> · 相对变化 {d.change_percent}%</span>}<IssueList readable issues={d.conditions} /></div>)}</td></tr>)}</tbody></table></div>
       {value.conclusions.map((s, n) => <p key={n}>{s}</p>)}<IssueList readable issues={value.limitations} />
 
 

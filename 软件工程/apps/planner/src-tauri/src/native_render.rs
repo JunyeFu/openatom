@@ -388,6 +388,39 @@ pub struct ReadyPixels {
     css_height: f64,
     pixel_ratio: f64,
 }
+fn validate_viewport(
+    pixels: &ReadyPixels,
+    size: (u32, u32),
+    window_scale: f64,
+    geometry: crate::native_render_capture::ViewportGeometry,
+) -> Result<(), ApiError> {
+    let ratio = geometry.pixel_ratio();
+    // The physical client, controller, CSS conversion and final PNG must all
+    // agree. Compare DPR to the controller's actual scale, not monitor DPI.
+    if size.0 == 0 || size.1 == 0
+        || (geometry.width, geometry.height) != size
+        || (pixels.width, pixels.height) != size
+        || !ratio.is_finite() || ratio <= 0.
+        || !geometry.rasterization_scale.is_finite() || geometry.rasterization_scale <= 0.
+        || !geometry.zoom_factor.is_finite() || geometry.zoom_factor <= 0.
+        || !pixels.pixel_ratio.is_finite() || pixels.pixel_ratio <= 0.
+        || (ratio - pixels.pixel_ratio).abs() > ratio * 1e-6
+        || !pixels.css_width.is_finite() || pixels.css_width <= 0.
+        || !pixels.css_height.is_finite() || pixels.css_height <= 0.
+        || (pixels.css_width * ratio).round() as u32 != size.0
+        || (pixels.css_height * ratio).round() as u32 != size.1
+        || (pixels.css_width * pixels.pixel_ratio).round() as u32 != size.0
+        || (pixels.css_height * pixels.pixel_ratio).round() as u32 != size.1
+    {
+        return Err(failed(format!(
+            "Ready viewport does not match the real task window: window={}x{} window_scale={window_scale}; controller={}x{} rasterization_scale={} zoom_factor={}; ready={}x{} css={}x{} pixel_ratio={}",
+            size.0, size.1, geometry.width, geometry.height, geometry.rasterization_scale,
+            geometry.zoom_factor, pixels.width, pixels.height, pixels.css_width,
+            pixels.css_height, pixels.pixel_ratio
+        )));
+    }
+    Ok(())
+}
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct ReadyLimitation {
@@ -555,15 +588,9 @@ pub async fn native_render_ready(
         if window.is_minimized().map_err(|e| failed(e.to_string()))? {
             return Err(failed("Ready task window is minimized"));
         }
-        let pixels = &request.ready.pixels;
-        if size.width != pixels.width
-            || size.height != pixels.height
-            || scale != pixels.pixel_ratio
-            || (pixels.css_width as f64 * scale).round() as u32 != size.width
-            || (pixels.css_height as f64 * scale).round() as u32 != size.height
-        {
-            return Err(failed("Ready viewport does not match the real task window"));
-        }
+        let geometry = crate::native_render_capture::viewport_geometry(&window).await
+            .map_err(|e| failed(format!("{} HRESULT={:?}: {}", e.stage, e.hresult, e.message)))?;
+        validate_viewport(&request.ready.pixels, (size.width, size.height), scale, geometry)?;
         let bytes = crate::native_render_capture::capture_png(window.clone())
             .await
             .map_err(|e| {
@@ -674,6 +701,40 @@ fn failure_script(frame: &RenderFrame) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn actual_viewport_uses_webview_scale_and_preserves_physical_checks() {
+        use crate::native_render_capture::ViewportGeometry;
+        for (window_scale, rasterization_scale, zoom_factor) in [
+            (1., 1., 1.), (1.25, 1.25, 1.), (1.5, 1.5, 1.),
+            (1.5, 1.875, 1.), (1.25, 1.25, 1.2),
+        ] {
+            let geometry = ViewportGeometry { width: 1800, height: 1125, rasterization_scale, zoom_factor };
+            let ratio = geometry.pixel_ratio();
+            let pixels = ReadyPixels { width: 1800, height: 1125, css_width: 1800. / ratio, css_height: 1125. / ratio, pixel_ratio: ratio };
+            validate_viewport(&pixels, (1800, 1125), window_scale, geometry).unwrap();
+            assert!(validate_viewport(&pixels, (1800, 1126), window_scale, geometry).is_err());
+            let mut wrong = ReadyPixels { ..pixels };
+            wrong.pixel_ratio += 0.01;
+            assert!(validate_viewport(&wrong, (1800, 1125), window_scale, geometry).is_err());
+            wrong = ReadyPixels { pixel_ratio: ratio, ..wrong };
+            wrong.css_width += 1. / ratio;
+            assert!(validate_viewport(&wrong, (1800, 1125), window_scale, geometry).is_err());
+            wrong = ReadyPixels { css_width: 1800. / ratio, ..wrong };
+            wrong.width -= 1;
+            assert!(validate_viewport(&wrong, (1800, 1125), window_scale, geometry).is_err());
+        }
+    }
+    #[test]
+    fn actual_viewport_rejects_invalid_controller_or_browser_geometry() {
+        use crate::native_render_capture::ViewportGeometry;
+        let geometry = ViewportGeometry { width: 1800, height: 1125, rasterization_scale: 1.25, zoom_factor: 1. };
+        let pixels = ReadyPixels { width: 1800, height: 1125, css_width: 1440., css_height: 900., pixel_ratio: 1.25 };
+        for bad in [ViewportGeometry { width: 1799, ..geometry }, ViewportGeometry { rasterization_scale: f64::NAN, ..geometry }, ViewportGeometry { zoom_factor: 0., ..geometry }] {
+            assert!(validate_viewport(&pixels, (1800, 1125), 1.25, bad).is_err());
+        }
+        let invalid = ReadyPixels { css_width: f64::INFINITY, ..pixels };
+        assert!(validate_viewport(&invalid, (1800, 1125), 1.25, geometry).is_err());
+    }
     fn fixture() -> (RenderFrame, ReadyRequest) {
         // Original browser-produced complete frame; this is an admission unit
         // fixture, never evidence of a new Native capture.
