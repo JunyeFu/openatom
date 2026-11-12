@@ -76,7 +76,7 @@ export function DeliveryWorkspace({ workspace, services, initialTab = 'compariso
     </aside><div className="delivery-main">
       <TaskReceipt task={task} />
       <div hidden={tab !== 'comparison'}><ComparisonPanel projectId={project.id} evidence={ready ? evidence : []} scope={scope} services={services} busy={task.active || loading || !!failure} onInspectRun={onInspectRun} onLocate={onLocate} /></div>
-      <div hidden={tab !== 'reporting'}><ReportPanel workspace={workspace} services={services} evidence={ready ? evidence : []} scope={scope} ready={ready} task={task} onLocate={onLocate} /></div>
+      <div hidden={tab !== 'reporting'}><ReportPanel active={tab === 'reporting'} workspace={workspace} services={services} evidence={ready ? evidence : []} scope={scope} ready={ready} task={task} onLocate={onLocate} /></div>
       <div hidden={tab !== 'handoff'}><HandoffPanel workspace={workspace} services={services} task={task} onOpenPackage={onOpenPackage} onEditModule={onEditModule} /></div>
     </div></div>
     <footer className="delivery-footer">原运行记录和输入版本保持不变 · 报告不等于可编辑工程 · {task.active ? '任务仍在处理中，等待真实终态' : '数据由当前宿主提供'}</footer>

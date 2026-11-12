@@ -1,5 +1,5 @@
 import { runStatusLabel, scenarioName } from '../../services/workbenchLabels';
-import { useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode, type ComponentProps } from 'react';
 import { WaitingRecords } from './WaitingRecords';
 import type { MetricScope } from '../../../../../packages/commands/generated/typescript/MetricScope';
 import type { EvaluationFormat } from '../../../../../packages/commands/generated/typescript/EvaluationFormat';
@@ -11,8 +11,8 @@ import { quantityText, scenarioReferences, scopeText } from '../comparison/model
 import { IssueList, JsonDetails } from '../comparison/Shared';
 import type { DeliveryTask } from './useDeliveryTask';
 
-export function ReportPanel({ workspace, services, evidence, scope, ready, task, onLocate }: {
-  workspace: WorkspaceSnapshot; services: DeliveryServices; evidence: readonly RunEvidence[]; scope: MetricScope; ready: boolean; task: DeliveryTask; onLocate: DeliveryWorkspaceProps['onLocate'];
+export function ReportPanel({ workspace, services, evidence, scope, ready, task, onLocate, active }: {
+  workspace: WorkspaceSnapshot; services: DeliveryServices; evidence: readonly RunEvidence[]; scope: MetricScope; ready: boolean; task: DeliveryTask; onLocate: DeliveryWorkspaceProps['onLocate']; active: boolean;
 }) {
   const [mode, setMode] = useState<ReportMode>('simulation_evaluation');
   const [formats, setFormats] = useState<EvaluationFormat[]>(['pdf', 'html', 'csv', 'json']);
@@ -21,6 +21,10 @@ export function ReportPanel({ workspace, services, evidence, scope, ready, task,
   const scenarioRefs = mode === 'design_description' ? workspace.scenarios.filter(s => scenarios.includes(s.id)).map(s => ({ scenario_id: s.id, revision: s.revision })) : scenarioReferences(evidence);
   const disabledReason = !formats.length ? '至少选择一种输出格式。' : mode === 'simulation_evaluation' && (!ready || !evidence.length) ? '请先在左侧选择一条运行记录。尚未运行时，可选择导出设计说明。' : '';
   const output = task.result?.kind === 'evaluation' ? task.result.data : null;
+  const resultAnchor = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (active && output) resultAnchor.current?.querySelector('[aria-label="报告结果概览"]')?.scrollIntoView({ block: 'start' });
+  }, [active, output?.context.id]);
   return <section className="delivery-panel" aria-label="评估报告准备">
     <header><div><h2>导出评估报告</h2><p>一次生成所选格式的同一份报告。可先导出一次运行；调整后再比较两次运行。</p></div></header>
     <fieldset><legend>报告依据</legend><label><input type="radio" name="report-mode" checked={mode === 'simulation_evaluation'} onChange={() => setMode('simulation_evaluation')} />实际运行评估</label><label><input type="radio" name="report-mode" checked={mode === 'design_description'} onChange={() => setMode('design_description')} />尚未运行的设计说明</label></fieldset>
@@ -30,7 +34,7 @@ export function ReportPanel({ workspace, services, evidence, scope, ready, task,
     <details><summary>工程与运行来源</summary><dl><dt>当前工程</dt><dd>{project.title} · {project.id} r{project.revision}</dd><dt>实际Run引用</dt><dd>{mode === 'design_description' ? '不适用' : evidence.map(e => e.run.id).join('、') || '未选择'}</dd><dt>方案及版本</dt><dd>{scenarioRefs.map(s => `${s.scenario_id} r${s.revision}`).join('、') || '无'}</dd><dt>接受范围</dt><dd>{scope.acceptance.length ? scope.acceptance.map(scopeText).join('；') : '按宿主分别列出已声明范围；不暗分单位成本'}</dd></dl></details>
     <p>价格、币种、日历或计算边界缺失时保留未知；明确的零费率与“没有数据”分开。专业图、用途认可和绑定只取真实已有结果。</p>
     {disabledReason && <p className="delivery-hint">{disabledReason}</p>}<button className="primary" disabled={task.active || !!disabledReason} onClick={() => void task.start(() => services.startEvaluation({ revision: project.revision, report_mode: mode, scenario_refs: scenarioRefs, run_refs: mode === 'design_description' ? [] : evidence.map(e => e.run.id), metric_scope: scope, formats }), 'evaluation')}>选择目录并生成报告</button>
-    {output && <section><h3>上次任务返回的实际文件</h3><p>报告已生成，文件保存在刚才选择的目录中。以下是本次实际返回的主报告；完整资源与工程文件另列。</p><ul>{output.files.filter(file => /(?:^|[/\\])(report\.pdf|index\.html|report\.json)$/.test(file.path)).map(file => <li key={file.path}><strong>{file.path.endsWith('report.pdf') ? 'PDF 阅读报告' : file.path.endsWith('index.html') ? 'HTML 完整浏览报告' : 'JSON 完整数据'}</strong>：<code>{file.path}</code></li>)}</ul><OutputFiles key={output.context.id} files={output.files} /><IssueList issues={output.limitations} /><EvaluationView report={output.context} onLocate={onLocate} /></section>}
+    {output && <section><h3>上次任务返回的实际文件</h3><p>报告已生成，文件保存在刚才选择的目录中。以下是本次实际返回的主报告；完整资源与工程文件另列。</p><ul>{output.files.filter(file => /(?:^|[/\\])(report\.pdf|index\.html|report\.json)$/.test(file.path)).map(file => <li key={file.path}><strong>{file.path.endsWith('report.pdf') ? 'PDF 阅读报告' : file.path.endsWith('index.html') ? 'HTML 完整浏览报告' : 'JSON 完整数据'}</strong>：<code>{file.path}</code></li>)}</ul><OutputFiles key={output.context.id} files={output.files} /><IssueList issues={output.limitations} /><div ref={resultAnchor}><EvaluationView report={output.context} onLocate={onLocate} /></div></section>}
   </section>;
 }
 
@@ -42,6 +46,11 @@ function OutputFiles({ files }: { files: readonly { path: string; kind: string }
 function ReportDetails({ label, children }: { label: string; children: () => ReactNode }) {
   const [open, setOpen] = useState(false);
   return <details onToggle={event => setOpen(event.currentTarget.open)}><summary>{label}</summary>{open && children()}</details>;
+}
+
+function WaitingDetails(props: ComponentProps<typeof WaitingRecords>) {
+  const [loaded, setLoaded] = useState(false);
+  return <details onToggle={event => { if (event.currentTarget.open) setLoaded(true); }}><summary>等待记录与全表筛选 · 共 {props.waits.length.toLocaleString()} 条</summary>{loaded && <WaitingRecords {...props} />}</details>;
 }
 
 export function EvaluationView({ report, onLocate }: { report: EvaluationReport; onLocate?: DeliveryWorkspaceProps['onLocate'] }) {
@@ -58,7 +67,7 @@ export function EvaluationView({ report, onLocate }: { report: EvaluationReport;
       {!r.costs.inputs.length && <p>没有提供所选成本输入，不能据此声称完整成本为零。</p>}<IssueList issues={r.costs.missing_conditions} /><JsonDetails label="冻结费率、资源占用与来源" value={{ inputs: r.costs.inputs, lines: r.costs.lines, resources: r.resource_metrics }} />
       <ReportDetails label={`资源占用与等待明细 · ${r.resource_metrics.length} 项`}>{() => <div className="delivery-table-scroll"><table><caption>实际资源占用与等待（不相加为总工时）</caption><thead><tr><th>资源</th><th>占用／容量时间</th><th>可用容量时间</th><th>有效工作</th><th>等待</th><th>利用率</th><th>缺项</th></tr></thead><tbody>{r.resource_metrics.map(m => <tr key={m.resource_id}><td>{m.resource_id}</td><td>{m.any_busy_ms} ms／{m.occupied_capacity_ms} {m.capacity_unit}·ms</td><td>{m.available_capacity_ms == null ? '未知' : `${m.available_capacity_ms} ${m.capacity_unit}·ms`}</td><td>{m.effective_work_ms == null ? '未知' : `${m.effective_work_ms} ms`}</td><td>{m.waiting_ms == null ? '未知' : `${m.waiting_ms} ms`}</td><td>{m.utilization ?? '未知'}</td><td><IssueList issues={m.missing_conditions} /></td></tr>)}</tbody></table></div>}</ReportDetails>
       <IssueList issues={r.limitations} /><JsonDetails label="该Run的接受事件与参数来源" value={{ acceptance_events: r.acceptance_events, input_assumptions: r.input_assumptions }} />
-      {!!r.waits.length && <WaitingRecords key={`${report.id}:${r.run_id}`} runId={r.run_id} waits={r.waits} onLocate={onLocate} />}
+      {!!r.waits.length && <WaitingDetails key={`${report.id}:${r.run_id}`} runId={r.run_id} waits={r.waits} onLocate={onLocate} />}
     </section>)}<JsonDetails label="报告模块精确版本、素材权利与专业附件" value={{ modules: report.module_versions, rights: report.asset_rights, images: report.layout_and_schedule, editable_project: report.editable_project_ref }} /><p>报告JSON是评估数据；另行交付可编辑工程，才能重开修改。没有完整运行快照时从初始条件重跑。</p>
   </section>;
 }
