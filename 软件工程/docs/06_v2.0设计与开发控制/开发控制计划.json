@@ -521,7 +521,7 @@
       ],
       "gate": "FV1_closed",
       "plan": "docs/06_v2.0设计与开发控制/完整版工作包与阶段分工.md",
-      "status": "b18_accepted_b19_native_export_failed_changes_required_b20_queued",
+      "status": "b18_accepted_b19_native_export_data_interaction_passed_first_screen_changes_required_b20_queued",
       "base": "95f411d8e37cffbde227f59c679a66ee8489d5b8",
       "issues": {
         "A": "https://github.com/JunyeFu/openatom/issues/17",
@@ -552,7 +552,7 @@
           "role": "A",
           "owner": "JunyeFu",
           "hours": 18,
-          "state": "b18_accepted_b19_review_complete_changes_required_b20_and_C_pending",
+          "state": "b19_supplement_review_complete_partial_not_accepted_b20_and_C_pending",
           "scope": "三批公共契约、公共消费者适配及集成接收"
         },
         {
@@ -569,16 +569,16 @@
           "role": "B",
           "owner": "wwl-ww",
           "hours": 19,
-          "state": "draft_delivered_A_review_changes_required_native_export_failed",
+          "state": "A_source_build_native_partial_pass_first_screen_changes_required_same_commit_delivery_pending",
           "depends_on": [
             18
           ],
           "scope": "原B2大报告+B3预测实际比较",
           "start_comment": "https://github.com/JunyeFu/openatom/issues/19#issuecomment-6740276537",
           "source_base": "8416a03c17cc2a4b7cefc0a2b32e6aeff1c64bf5",
-          "source_commit": "64592e54fb68491962816870f041062b401013c6",
+          "source_commit": "003b4f24dbddbb4ff7cee7d28521e2048250027d",
           "pr": 23,
-          "review_comment": "https://github.com/JunyeFu/openatom/issues/19#issuecomment-6800543881"
+          "review_comment": "https://github.com/JunyeFu/openatom/issues/19#issuecomment-6817419599"
         },
         {
           "issue": 20,
@@ -653,7 +653,7 @@
           {
             "id": "A17.2",
             "hours": 5,
-            "state": "b18_b19_no_public_contract_change_required_native_render_failure_to_B",
+            "state": "no_public_contract_change_required_B_native_viewport_diff_reviewed_dpr1_25_retest_pending",
             "per_batch_planned_hours": {
               "18": 2,
               "19": 2,
@@ -665,7 +665,7 @@
           {
             "id": "A17.3",
             "hours": 6,
-            "state": "b18_accepted_b19_reviewed_not_accepted_native_failure_b20_queued",
+            "state": "b18_accepted_b19_supplement_review_complete_partial_not_accepted_b20_queued",
             "per_batch_planned_hours": 2,
             "order": [
               18,
@@ -882,10 +882,74 @@
           "evidence_boundary": "report-library-generated files and offline HTML do not replace successful Native export or Native PF09",
           "cleanup": "owned Native instances19160 and14548 exited normally; no product source edits or production cloud operation",
           "protected_release_changed": false,
-          "next_stage_started": false
+          "next_stage_started": false,
+          "historical_state_note": "64592e54原DPR1.25失败记录保留；最新补充范围见supplement_20261112，不用当前DPR1.5成功覆盖原环境待验。",
+          "supplement_20261112": {
+            "date": "2026-11-12",
+            "source_commit": "003b4f24dbddbb4ff7cee7d28521e2048250027d",
+            "decision": "partial_native_retest_passed_first_screen_changes_required_not_accepted_not_merged",
+            "method": "A_independent_source_release_build_actual_Native_main_screen_dpr1_5_original_unchanged_resources",
+            "evidence_comment": "https://github.com/JunyeFu/openatom/issues/19#issuecomment-6817419599",
+            "a_comment": "https://github.com/JunyeFu/openatom/issues/17#issuecomment-6817433210",
+            "asset_url": "https://github.com/JunyeFu/openatom/releases/download/untagged-65a481ce993d4d2d636c/FV02-A19-003b4f24-Native-supplement-20261112.zip",
+            "asset_bytes": 3431230,
+            "passed": {
+              "planner_web_build_and_typecheck": true,
+              "native_comparison_cases": 3,
+              "small_export_tasks": "9/9",
+              "large_export_tasks": "7/7",
+              "large_task_id": "desktop-host-39748-1794466865704678100:task:6",
+              "generation_and_publication_ms": 176950.4162,
+              "wait_rows": 38849,
+              "csv_tables": 15,
+              "pdf_pages": 325,
+              "pdf_visual_scope": "first_and_last_pages_only",
+              "actual_files": 6682,
+              "original_files_byte_equal": 6657,
+              "all_original_frozen_runs_byte_equal": true,
+              "active_project_generation_rotated_semantically_equal": true,
+              "native_actions": 20,
+              "native_feedback_p95_ms": 93.2187,
+              "native_cross_page_object_location": true,
+              "actual_native_html_actions": 20,
+              "html_feedback_p95_ms": 114.7339,
+              "html_heading_first_paint_ms": 430.6563,
+              "html_external_requests": 0,
+              "new_OS_process_exported_project_readonly_reopen": true,
+              "A19_T1": "passed_in_tested_native_scope"
+            },
+            "directory_os_error5": {
+              "commit_location": "packages/commands/src/project_store.rs:1989 MoveFileW",
+              "current_large_export": "success",
+              "controlled_probe": "normal_and_parent_handle_success_source_handle32_existing_target183_explicit_ACL_deny5_restore_success",
+              "original_failure_root_cause": "not_established_original_task_paths_and现场_required",
+              "B_original_8326_6660_counts": "not_independently_verified"
+            },
+            "failed": [
+              {
+                "id": "A19-U1",
+                "severity": "P2",
+                "location": "apps/planner/src/features/reporting/ReportPanel.tsx:33",
+                "actual": "output_limitations_before_EvaluationView_push_meaningful_overview_below_first_screen",
+                "owner": "B"
+              }
+            ],
+            "pending": [
+              "original_DPR1_25_environment_retest_A19_F1",
+              "Native_meaningful_first_screen_measured_from_valid_start_not_passed",
+              "B_original_os5_scene_and_original_result_attachments",
+              "B_final_same_commit_portable_handoff",
+              "C12_corresponding_same_candidate_tool_review"
+            ],
+            "evidence_boundary": "A source build differs from B portable handoff; DOM timing is not valid Host-reply timing; HTML heading alone is not meaningful overview; prior93 tests are prior evidence not rerun003b",
+            "cleanup": "writer39748_and_reader14684_normal_exit_owned23272_free_synthetic_ACL_restored",
+            "product_source_changed_by_A": false,
+            "protected_release_changed": false,
+            "next_stage_started": false
+          }
         }
       },
-      "progress_updated_on": "2026-11-11"
+      "progress_updated_on": "2026-11-12"
     },
     "status_updated_on": "2026-11-09"
   },
