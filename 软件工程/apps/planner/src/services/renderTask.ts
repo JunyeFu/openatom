@@ -49,7 +49,8 @@ export interface FrozenRenderInput {
   comparison_runs: { project: ProjectState; scenario: ScenarioInput; run: RunResult }[];
   assets: { source: ObjectSource; asset: AssetRef }[]; files: { file: FileRef }[]; issues: Issue[];
 }
-export interface NativeRenderInput { frame: RenderFrame; input: FrozenRenderInput }
+export interface NativeViewport { width: number; height: number; pixel_ratio: number }
+export interface NativeRenderInput { frame: RenderFrame; input: FrozenRenderInput; viewport: NativeViewport }
 export type RenderTaskReady = FactoryRenderFrame;
 export interface RenderTaskFailure { stage: string; message: string; object_ref: ObjectRef | null }
 export interface RenderTaskPorts {

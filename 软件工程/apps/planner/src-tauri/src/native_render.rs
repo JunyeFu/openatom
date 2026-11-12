@@ -328,9 +328,16 @@ impl RenderBackend for NativeRenderBackend {
 pub struct RenderInputReply {
     frame: RenderFrame,
     input: FrozenRenderInput,
+    viewport: NativeViewport,
+}
+#[derive(Serialize)]
+struct NativeViewport {
+    width: u32,
+    height: u32,
+    pixel_ratio: f64,
 }
 #[tauri::command]
-pub fn native_render_input(
+pub async fn native_render_input(
     window: WebviewWindow,
     state: tauri::State<'_, NativeRenderState>,
 ) -> Result<Option<RenderInputReply>, ApiError> {
@@ -339,9 +346,19 @@ pub fn native_render_input(
         return Ok(None);
     }
     let job = state.job(window.label())?;
+    let geometry = crate::native_render_capture::viewport_geometry(&window).await
+        .map_err(|e| failed(format!("{} HRESULT={:?}: {}", e.stage, e.hresult, e.message)))?;
+    let size = window.inner_size().map_err(|e| failed(e.to_string()))?;
+    if (geometry.width, geometry.height) != (size.width, size.height)
+        || size.width == 0 || size.height == 0
+        || !geometry.pixel_ratio().is_finite() || geometry.pixel_ratio() <= 0.
+    {
+        return Err(failed(format!("Task viewport is not ready: window={}x{} controller={geometry:?}", size.width, size.height)));
+    }
     Ok(Some(RenderInputReply {
         frame: job.frame,
         input: (*job.input).clone(),
+        viewport: NativeViewport { width: size.width, height: size.height, pixel_ratio: geometry.pixel_ratio() },
     }))
 }
 #[derive(Deserialize)]
@@ -734,6 +751,15 @@ mod tests {
         }
         let invalid = ReadyPixels { css_width: f64::INFINITY, ..pixels };
         assert!(validate_viewport(&invalid, (1800, 1125), 1.25, geometry).is_err());
+    }
+    #[test]
+    fn actual_viewport_still_rejects_the_observed_one_pixel_css_overflow() {
+        use crate::native_render_capture::ViewportGeometry;
+        let geometry = ViewportGeometry { width: 1444, height: 1350, rasterization_scale: 1.5, zoom_factor: 1. };
+        let overflow = ReadyPixels { width: 1445, height: 1350, css_width: 963.3333740234375, css_height: 900., pixel_ratio: 1.5 };
+        assert!(validate_viewport(&overflow, (1444, 1350), 1.5, geometry).is_err());
+        let fitted = ReadyPixels { width: 1444, css_width: 1444. / 1.5, ..overflow };
+        validate_viewport(&fitted, (1444, 1350), 1.5, geometry).unwrap();
     }
     fn fixture() -> (RenderFrame, ReadyRequest) {
         // Original browser-produced complete frame; this is an admission unit

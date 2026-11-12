@@ -8,6 +8,7 @@ import {ProcessViewport} from '../packaging/ProcessViewport';
 import {ManufacturingPreview} from '../packaging/ManufacturingPreview';
 import type {PackagingEvidence} from '../packaging/types';
 import {RunTimeline} from '../timeline/RunTimeline';
+import {nativeViewportStyle} from './nativeViewport';
 import {ComparisonResult} from '../comparison/ComparisonResult';
 import type {ObjectRef} from '../../../../../packages/commands/generated/typescript/ObjectRef';
 import {domPainted,type ReadonlyVisualCapture} from './visualCapture';
@@ -19,6 +20,7 @@ export interface RenderTaskSurfaceProps {task:NativeRenderInput;ports?:RenderTas
 /** One trusted immutable task. All nine kinds share the product's actual view components. */
 export function RenderTaskSurface({task,ports=nativeRenderPorts}:RenderTaskSurfaceProps){
   const {frame,input}=task,view=frame.request.view,key=renderTaskKey(frame);
+  const viewportStyle=nativeViewportStyle(task.viewport);
   const root=useRef<HTMLElement>(null),liveKey=useRef(key),complete=useRef(false),frameId=useRef(0);liveKey.current=key;
   const [loadedSource,setPrepared]=useState<{key:string;value:PreparedRenderTask}|null>(null),[error,setError]=useState('');
   const prepared=loadedSource?.key===key?loadedSource.value:null;
@@ -29,7 +31,8 @@ export function RenderTaskSurface({task,ports=nativeRenderPorts}:RenderTaskSurfa
   useEffect(()=>{
     let live=true;liveKey.current=key;complete.current=false;setPrepared(null);setError('');
     const assertCurrent=()=>{if(!live||liveKey.current!==key)throw new Error('Task已销毁或精确帧已切换；丢弃旧响应。');};
-    prepareRenderTask(task,ports,assertCurrent).then(value=>{if(live)setPrepared({key,value});},reason=>{if(live)fail('input',reason instanceof Error?reason.message:String(reason));});
+    if(!viewportStyle)fail('viewport','宿主未提供有效的实际物理视口，不能确认画面尺寸。');
+    else prepareRenderTask(task,ports,assertCurrent).then(value=>{if(live)setPrepared({key,value});},reason=>{if(live)fail('input',reason instanceof Error?reason.message:String(reason));});
     return()=>{live=false;if(liveKey.current===key)liveKey.current='';};
   },[key,task,ports,fail]);
   const ready=useCallback(async(value:{visible_objects:ObjectRef[];limitations:string[]}|FactorySceneFrame)=>{
@@ -71,5 +74,5 @@ export function RenderTaskSurface({task,ports=nativeRenderPorts}:RenderTaskSurfa
     else if(prepared.definition)content=<section className="render-task-declaration" data-render-declaration="missing-presentation"><h1>{prepared.definition.title}</h1><p>{prepared.definition.id}@{prepared.definition.version} · {prepared.definition.payload.category}</p>{prepared.limitations.map((message,index)=><p key={index}>{message}</p>)}{input.run?<p>冻结 Run {input.run.id} · {view.view_time_ms} ms · {input.active_job_id?'以下仅为原JobsAt返回的实际身份与字段，未绘制运动姿态':'冻结静态声明；未提供唯一实际活动Job，不生成阶段或进度'}</p>:<p>声明检查；未连接实际 Run</p>}{input.objects_at.flatMap(object=>object.kind==='job'&&object.data.id===input.active_job_id?[<p key={object.data.id} data-real-job-id={object.data.id}>实际 Job {object.data.id} · {object.data.state} · phase {object.data.phase_ref??'无当前阶段'} · 有效累计 {object.data.effective_progress_ms} ms</p>]:[])}<pre>{JSON.stringify(prepared.definition.payload,null,2)}</pre></section>;
     else content=<p role="alert">冻结输入缺少此视图的精确消费来源。</p>;
   }
-  return <main className={view.kind==='comparison'?'render-task-surface delivery-workspace':'render-task-surface'} ref={root} data-render-kind={view.kind} data-render-task={frame.task_id} data-render-key={key} aria-label="九视图同源只读渲染">{error?<p role="alert">{error}</p>:prepared?content:<p role="status">正在接收精确冻结渲染来源…</p>}</main>;
+  return <main className={view.kind==='comparison'?'render-task-surface delivery-workspace':'render-task-surface'} style={viewportStyle} ref={root} data-render-kind={view.kind} data-render-task={frame.task_id} data-render-key={key} aria-label="九视图同源只读渲染">{error?<p role="alert">{error}</p>:prepared?content:<p role="status">正在接收精确冻结渲染来源…</p>}</main>;
 }
