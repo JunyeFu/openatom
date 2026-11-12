@@ -9,8 +9,11 @@ const endNames = { resolved: '已解决', condition_changed: '条件变化', obs
 export function WaitingRecords({ runId, waits, onLocate }: { runId: string; waits: readonly WaitInterval[]; onLocate?: DeliveryWorkspaceProps['onLocate'] }) {
   const [query, setQuery] = useState('');
   const [page, setPage] = useState(0);
-  const indexed = useMemo(() => waits.map((wait, index) => ({ wait, index, text: `${JSON.stringify(wait)} ${wait.reasons.map(reason => reasonNames[reason.kind]).join(' ')} ${endNames[wait.end_cause]}`.toLocaleLowerCase() })), [waits]);
-  const filtered = useMemo(() => { const term = query.trim().toLocaleLowerCase(); return term ? indexed.filter(row => row.text.includes(term)) : indexed; }, [indexed, query]);
+  const indexed = useMemo(() => waits.map((wait, index) => ({ wait, index })), [waits]);
+  const term = query.trim().toLocaleLowerCase();
+  const hasQuery = term.length > 0;
+  const searchText = useMemo(() => indexed.map(({ wait }) => `${JSON.stringify(wait)} ${wait.reasons.map(reason => reasonNames[reason.kind]).join(' ')} ${endNames[wait.end_cause]}`.toLocaleLowerCase()), [indexed]);
+  const filtered = useMemo(() => hasQuery ? indexed.filter((_, index) => searchText[index].includes(term)) : indexed, [indexed, searchText, term, hasQuery]);
   const pages = Math.max(1, Math.ceil(filtered.length / 100));
   const currentPage = Math.min(page, pages - 1);
   return <section aria-label="等待记录明细">
