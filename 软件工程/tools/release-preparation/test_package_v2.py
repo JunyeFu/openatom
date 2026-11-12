@@ -3,13 +3,42 @@ import importlib.util
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import Mock
 
 spec = importlib.util.spec_from_file_location("package_v2", Path(__file__).with_name("package_v2.py"))
 package = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(package)
+native_spec = importlib.util.spec_from_file_location("native_delivery", Path(__file__).with_name("native_delivery.py"))
+native_delivery = importlib.util.module_from_spec(native_spec)
+native_spec.loader.exec_module(native_delivery)
 
 
 class CandidateClosureTests(unittest.TestCase):
+    def test_native_delivery_cannot_silently_omit_agent_bridge(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            (root / "superfactory.exe").write_bytes(b"MZfixture")
+            output = root / "portable"
+            with self.assertRaisesRegex(ValueError, "required candidate executable.*bridge"):
+                native_delivery.assemble(root, root, root, output, root / "candidate.zip", "source-fixture")
+            self.assertFalse(output.exists())
+
+    def test_real_resource_tree_on_python311(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            assets = root / "assets"
+            assets.mkdir()
+            member = assets / "image.bin"
+            member.write_bytes(b"actual bytes")
+            self.assertEqual(package.collect_tree(assets, root, Path("resources"), "asset"),
+                             [(member, Path("resources/image.bin"), "asset")])
+
+    def test_junction_tag_remains_rejected(self):
+        junction = Mock()
+        junction.is_symlink.return_value = False
+        junction.lstat.return_value.st_reparse_tag = package.stat.IO_REPARSE_TAG_MOUNT_POINT
+        self.assertTrue(package.linked(junction))
+
     def test_missing_bridge_rejects_before_creating_output(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)

@@ -8,6 +8,7 @@ import json
 from pathlib import Path, PureWindowsPath
 import re
 import shutil
+import stat
 import struct
 import zipfile
 
@@ -66,7 +67,7 @@ def admissible(relative):
 
 def collect_tree(source, source_boundary, destination, role):
     source = Path(source)
-    if source.is_symlink() or source.is_junction() or not source.resolve().is_relative_to(source_boundary):
+    if linked(source) or not source.resolve().is_relative_to(source_boundary):
         raise PackageError("resource escapes its declared source root")
     if source.is_file():
         members = [source]
@@ -74,7 +75,7 @@ def collect_tree(source, source_boundary, destination, role):
         # Do not silently drop an unexpected private file from a declared closure.
         members = []
         for member in source.rglob("*"):
-            if member.is_symlink() or member.is_junction() or not member.resolve().is_relative_to(source_boundary):
+            if linked(member) or not member.resolve().is_relative_to(source_boundary):
                 raise PackageError("linked resource is outside the trusted closure")
             if member.is_file():
                 members.append(member)
@@ -91,6 +92,12 @@ def collect_tree(source, source_boundary, destination, role):
         admissible(target)
         result.append((member, target, role))
     return result
+
+
+def linked(path):
+    # Path.is_junction was added in Python 3.12. Keep the existing no-junction
+    # boundary when using the delivery tools' Python 3.11 baseline.
+    return path.is_symlink() or getattr(path.lstat(), "st_reparse_tag", 0) == stat.IO_REPARSE_TAG_MOUNT_POINT
 
 
 def resource_closure(root, base, overlay=None, module_archives=(), project_states=()):

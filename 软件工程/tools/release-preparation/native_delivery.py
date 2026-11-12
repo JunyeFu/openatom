@@ -12,6 +12,9 @@ def read(path):
 
 def assemble(source, native, demos, output, archive, candidate, build_receipt=None):
     source, native, demos = source.resolve(), native.resolve(), demos.resolve()
+    for name in ('superfactory.exe', 'superfactory-mcp-bridge.exe'):
+        if not (native/name).is_file():
+            raise ValueError('required candidate executable is missing: ' + name)
     output.mkdir(parents=True, exist_ok=False)
     mapping = read(source/'apps/planner/src-tauri/tauri.conf.json')['bundle']['resources']
     copied = []
