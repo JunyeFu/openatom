@@ -21,6 +21,30 @@ class PackageError(ValueError):
     pass
 
 
+def require_materialized(source):
+    """A tracked LFS pointer is not a distributable runtime resource."""
+    with Path(source).open("rb") as stream:
+        first_line = stream.readline(200).rstrip(b"\r\n")
+        if first_line == b"version https://git-lfs.github.com/spec/v1":
+            raise PackageError("Git LFS resource is not materialized: " + str(source))
+
+
+def candidate_binaries(candidate):
+    planned = []
+    for source, destination in ((candidate, "superfactory.exe"),
+                                (candidate.parent / "superfactory-mcp-bridge.exe", "superfactory-mcp-bridge.exe")):
+        if not source.is_file():
+            raise PackageError("required candidate executable is missing: " + destination)
+        with source.open("rb") as stream:
+            if stream.read(2) != b"MZ":
+                raise PackageError("candidate is not a Windows executable: " + destination)
+        planned.append((source, Path(destination), "explicit_candidate_exe" if destination == "superfactory.exe" else "candidate_sidecar"))
+    loader = candidate.parent / "WebView2Loader.dll"
+    if loader.is_file():
+        planned.append((loader, Path(loader.name), "candidate_sidecar"))
+    return planned
+
+
 def safe_relative(value):
     windows = PureWindowsPath(value)
     path = Path(value)
@@ -300,11 +324,7 @@ def assemble(source_root, candidate_exe, device_resources, output, candidate_id,
     mappings = json.loads(config.read_text(encoding="utf-8-sig"))["bundle"]["resources"]
     if not isinstance(mappings, dict):
         raise PackageError("expected explicit Tauri resource mapping")
-    planned = [(candidate, Path("superfactory.exe"), "explicit_candidate_exe")]
-    for name in ["superfactory-mcp-bridge.exe", "WebView2Loader.dll"]:
-        sibling = candidate.parent / name
-        if sibling.is_file():
-            planned.append((sibling, Path(name), "candidate_sidecar"))
+    planned = candidate_binaries(candidate)
     closure = None
     if resource_base is not None:
         for source in [root, Path(resource_base), *([Path(resource_overlay)] if resource_overlay else []), *map(Path, module_archives)]:
@@ -343,7 +363,9 @@ def assemble(source_root, candidate_exe, device_resources, output, candidate_id,
         if guide.is_file():
             planned.append((guide, Path(f"操作指南.{suffix}"), "user_documentation"))
     destinations = set()
-    for _, destination, _ in planned:
+    for source, destination, _ in planned:
+        if not isinstance(source, bytes):
+            require_materialized(source)
         safe_relative(str(destination))
         normalized = str(destination).replace("\\", "/").lower()
         if normalized in destinations:
