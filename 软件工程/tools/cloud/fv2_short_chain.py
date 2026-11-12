@@ -1,0 +1,220 @@
+"""Bounded Agent -> actual MCP/Host production observation, stop and save.
+
+This entry never creates a Host, fabricates receipts, edits a database, replays an
+unknown request, or treats an old saved execution as a new production session.
+"""
+import argparse
+import copy
+import json
+import math
+from pathlib import Path
+import sys
+import time
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from integrations.agent.stdio_client import StdioClient
+from integrations.agent.workflow import ExecutionWorkflow, execution_response, unwrap
+
+
+def read(path):
+    return json.loads(Path(path).read_text(encoding='utf-8-sig'))
+
+
+def write(path, value):
+    path.write_text(json.dumps(value, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+
+
+def finish(flow, result, seconds):
+    deadline = time.monotonic() + seconds
+    while result['status'] == 'pending' and time.monotonic() < deadline:
+        time.sleep(.25)
+        result = flow.advance()
+    if result['status'] != 'completed':
+        raise RuntimeError('Original Task did not complete: ' + result['status'])
+    return result['data']
+
+
+def control(flow, identity, action):
+    flow.snapshot(identity, {'kind': 'latest'})
+    result = flow.control(action, confirmed=True)
+    if result['status'] != 'acknowledged':
+        raise RuntimeError('Control requires a new decision; action was not retried: ' + result['status'])
+    return result
+
+
+def observe(flow, identity, seconds, record, *, until_settled=False):
+    deadline = time.monotonic() + seconds
+    while True:
+        status = flow.exit_status(identity)
+        record(status)
+        if until_settled and status['terminal_and_settled']:
+            return status
+        if time.monotonic() >= deadline:
+            if until_settled:
+                raise RuntimeError('Stop observation budget exhausted; actual obligations remain in status.json')
+            return status
+        time.sleep(.25)
+
+
+def save(client, project_id, selection_file, seconds):
+    # The desktop Agent panel copies an actual token for this currently open
+    # connection. The filesystem here transports that token, never a raw path.
+    deadline = time.monotonic() + seconds
+    while not selection_file.is_file() and time.monotonic() < deadline:
+        time.sleep(.25)
+    if not selection_file.is_file():
+        raise RuntimeError('Current-connection Native save directory token was not supplied')
+    selected = read(selection_file)
+    if set(selected) != {'selection_id', 'purpose'} or selected['purpose'] != 'save_project' or not selected['selection_id']:
+        raise ValueError('Only the actual current-connection save_project token is accepted')
+    context = client.request(project_id, 'get_context', {'selection': []})['context']
+    response = client.request(project_id, 'save_project', {'revision': context['project_revision'],
+                              'selected_directory_ref': selected})
+    handle = unwrap(response)
+    deadline = time.monotonic() + seconds
+    while True:
+        state = unwrap(client.request(project_id, 'get_task', {'task_id': handle['id']}))
+        if state['originating_operation'] != 'save_project' or state['originating_request_id'] != response['request_id'] or any(
+                state['task'][key] != handle[key] for key in ('id', 'scope', 'kind', 'input_revision')):
+            raise ValueError('Save Task differs from original admission')
+        if state['task']['state'] == 'completed':
+            return state
+        if state['task']['state'] in ('failed', 'cancelled') or time.monotonic() >= deadline:
+            raise RuntimeError('Original save Task is ' + state['task']['state'] + '; no save resubmitted')
+        time.sleep(.25)
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('phase', choices=('inspect', 'execute', 'readback', 'recover'))
+    parser.add_argument('--bridge', type=Path, required=True)
+    parser.add_argument('--host-pipe', required=True)
+    parser.add_argument('--host-instance-id', required=True)
+    parser.add_argument('--project-id', required=True)
+    parser.add_argument('--output', type=Path, required=True, help='New directory for actual requests/results')
+    parser.add_argument('--scenario-id')
+    parser.add_argument('--scenario-revision', type=int)
+    parser.add_argument('--policy', type=Path, help='Actual explicitly chosen ExecutionPolicy, unchanged')
+    parser.add_argument('--confirm-prepare-run-stop', action='store_true')
+    parser.add_argument('--run-seconds', type=float, default=10)
+    parser.add_argument('--wait-seconds', type=float, default=60)
+    parser.add_argument('--maintenance-device', help='Explicitly withdraw then restore this device acceptance')
+    parser.add_argument('--save-selection-file', type=Path, help='New file containing the token copied from the current Native Agent panel')
+    parser.add_argument('--identity', type=Path, help='Readback only: original exact ExecutionIdentity')
+    parser.add_argument('--expected-inputs', type=Path, help='Readback only: compare the prior complete frozen inputs')
+    parser.add_argument('--pending-state', type=Path, help='recover only: prior status.json with the original pending request')
+    parser.add_argument('--run-id', action='append', default=[], help='Old Run IDs to read before/after, never execute')
+    args = parser.parse_args()
+    if not all(math.isfinite(value) and value > 0 for value in (args.run_seconds, args.wait_seconds)):
+        parser.error('Observation and wait budgets must be positive')
+    if args.phase == 'execute' and (not args.confirm_prepare_run_stop or args.policy is None or args.identity):
+        parser.error('execute requires an explicit policy and prepare/run/stop authorization; old identity is forbidden')
+    if args.phase == 'readback' and args.identity is None:
+        parser.error('readback requires the original identity')
+    if args.phase in ('inspect', 'execute') and (args.scenario_id is None or args.scenario_revision is None):
+        parser.error('inspect/execute require the actual Scenario ID and revision')
+    if args.phase == 'recover' and args.pending_state is None:
+        parser.error('recover requires the original pending status.json')
+    if args.save_selection_file and args.save_selection_file.exists():
+        parser.error('save token file must be new, issued after authorizing this connection')
+    args.output.mkdir(parents=True, exist_ok=False)
+    state = {'phase': args.phase, 'completed': False, 'pending': None}
+    flow = None
+    with (args.output / 'bridge.stderr.txt').open('wb') as stderr, (args.output / 'calls.jsonl').open('w', encoding='utf-8') as calls:
+        try:
+            with StdioClient(args.bridge, args.host_pipe, args.host_instance_id, timeout=args.wait_seconds, stderr=stderr) as client:
+                raw_send = client.send
+                def send(request):
+                    calls.write(json.dumps({'request': request}, ensure_ascii=False) + '\n'); calls.flush()
+                    reply = raw_send(request)
+                    calls.write(json.dumps({'response': execution_response(reply)}, ensure_ascii=False) + '\n'); calls.flush()
+                    return reply
+                client.send = send
+                context = client.request(args.project_id, 'get_context', {'selection': []})
+                catalog = unwrap(client.request(None, 'describe_capabilities', {}))
+                tools = client.rpc('tools/list', {})
+                if tools.get('nextCursor'):
+                    raise ValueError('Unexpected paginated Host tools; no partial catalog assumed complete')
+                advertised = {tool['name'] for tool in tools['tools']}
+                catalog = copy.deepcopy(catalog)
+                catalog['implemented_operations'] = [row for row in catalog['implemented_operations']
+                    if 'superfactory_' + row['operation'] in advertised]
+                if context['context']['host_instance_id'] != args.host_instance_id or context['context']['project_id'] != args.project_id:
+                    raise ValueError('Actual Host/project does not match selected connection')
+                flow = ExecutionWorkflow(send, context['context'], catalog)
+                state['context'] = context['context']
+                write(args.output / 'context.json', context)
+                write(args.output / 'catalog.json', catalog)
+                write(args.output / 'tools.json', tools)
+                print(json.dumps({'authorized_context': context['context']}, ensure_ascii=False), flush=True)
+                if args.phase == 'recover':
+                    previous = read(args.pending_state)
+                    if previous['context']['host_instance_id'] != context['context']['host_instance_id'] or previous['context']['project_id'] != args.project_id:
+                        raise ValueError('Original request belongs to another Host or project; it cannot be recovered here')
+                    if not previous.get('pending'):
+                        raise ValueError('No original pending execution Task in the supplied status')
+                    flow.pending = copy.deepcopy(previous['pending'])
+                    recovered = flow.advance() if flow.pending['handle'] is not None else flow.recover()
+                    if recovered['status'] == 'pending':
+                        finish(flow, recovered, args.wait_seconds)
+                        recovered = {'status': 'completed', 'note': 'Original Task observed; no production request submitted'}
+                    state['recovery'] = recovered
+                    state['completed'] = recovered['status'] in ('completed', 'failed', 'cancelled')
+                    return 0 if state['completed'] else 1
+                def old_runs():
+                    return {identity: unwrap(client.request(args.project_id, 'get_run',
+                        {'run_id': identity, 'query': {'kind': 'full_result'}})) for identity in args.run_id}
+                original_runs = old_runs()
+                write(args.output / 'old-runs-before.json', original_runs)
+                if args.phase == 'readback':
+                    identity = read(args.identity)
+                else:
+                    selection = {'kind': 'configuration', 'base_revision': context['context']['project_revision'],
+                                 'scenario_id': args.scenario_id, 'scenario_revision': args.scenario_revision}
+                    configuration = finish(flow, flow.cloud(selection), args.wait_seconds)
+                    write(args.output / 'configuration.json', configuration)
+                    if args.phase == 'inspect':
+                        state['completed'] = True
+                        return 0
+                    prepared = finish(flow, flow.prepare(read(args.policy), confirmed=True), args.wait_seconds)
+                    identity = prepared['identity']
+                    write(args.output / 'prepared.json', prepared)
+                write(args.output / 'identity.json', identity)
+                frozen = flow.view({'kind': 'inputs', 'identity': identity})
+                write(args.output / 'frozen-inputs.json', frozen)
+                if args.expected_inputs and frozen != read(args.expected_inputs):
+                    raise ValueError('New-process frozen input readback differs')
+                def record(status):
+                    state['last_observation'] = status
+                    write(args.output / 'status.json', state)
+                if args.phase == 'execute':
+                    if args.maintenance_device:
+                        control(flow, identity, {'kind': 'set_device_acceptance', 'device_id': args.maintenance_device, 'accept_new_work': False})
+                    control(flow, identity, {'kind': 'run'})
+                    observe(flow, identity, args.run_seconds, record)
+                    if args.maintenance_device:
+                        control(flow, identity, {'kind': 'set_device_acceptance', 'device_id': args.maintenance_device, 'accept_new_work': True})
+                        observe(flow, identity, args.run_seconds, record)
+                    if not state['last_observation']['terminal_and_settled']:
+                        control(flow, identity, {'kind': 'stop_dispatch'})
+                    observe(flow, identity, args.wait_seconds, record, until_settled=True)
+                else:
+                    record(flow.exit_status(identity))
+                if args.save_selection_file:
+                    state['save'] = save(client, args.project_id, args.save_selection_file, args.wait_seconds)
+                if original_runs != old_runs():
+                    raise ValueError('An original frozen Run changed')
+                state['old_runs_unchanged'] = list(original_runs)
+                state['completed'] = True
+                return 0
+        except Exception as error:
+            state['error'] = {'type': type(error).__name__, 'message': str(error)}
+            print(json.dumps(state['error'], ensure_ascii=False), file=sys.stderr)
+            return 1
+        finally:
+            state['pending'] = copy.deepcopy(flow.pending) if flow else None
+            write(args.output / 'status.json', state)
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())
