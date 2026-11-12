@@ -69,7 +69,7 @@ fn accepted(i: &FrozenInput, scope: &AcceptanceScope, completion: bool) -> Metri
     if let Some(goal) = saved_goal(i) {
         let scopes = declared_scopes(i);
         if !scopes.iter().any(|s| same(s, scope)) {
-            return unknown("This scope is not the Run's frozen acceptance goal", None);
+            return unknown("所选口径不是该运行冻结的接受目标", None);
         }
         if scopes.iter().any(|s| {
             s.unit == scope.unit
@@ -78,20 +78,20 @@ fn accepted(i: &FrozenInput, scope: &AcceptanceScope, completion: bool) -> Metri
                 && !same(&s.product_ref, &scope.product_ref)
         }) {
             return unknown(
-                "Acceptance events have no product identity for overlapping product scopes",
+                "接受口径覆盖多个产品，但接受事件缺少产品身份，无法确定归属",
                 None,
             );
         }
         if completion && scopes.iter().any(|s| !same(s, scope)) {
             return unknown(
-                "The shared acceptance target has no declared per-scope allocation",
+                "共享接受目标未声明各口径的分配量",
                 None,
             );
         }
         let target = if completion {
             match &goal.accepted_quantity_per_day {
                 Some(q) if q.unit == scope.unit && scaled(q) > 0 => Some(scaled(q)),
-                _ => return unknown("No positive declared completion target", None),
+                _ => return unknown("未声明大于零的完整接受目标", None),
             }
         } else {
             None
@@ -114,7 +114,7 @@ fn accepted(i: &FrozenInput, scope: &AcceptanceScope, completion: bool) -> Metri
         let mut total = 0u128;
         for event in events {
             if event.quantity.unit != scope.unit {
-                return unknown("Actual acceptance quantity has a different unit", None);
+                return unknown("实际接受量的单位与所选口径不同", None);
             }
             total += scaled(&event.quantity);
             if target.is_some_and(|t| total >= t) {
@@ -128,7 +128,7 @@ fn accepted(i: &FrozenInput, scope: &AcceptanceScope, completion: bool) -> Metri
             )
         } else {
             quantity(total, &scope.unit).map_or_else(
-                || unknown("Exact sum exceeds shared quantity representation", None),
+                || unknown("精确合计超出公共数量类型的表示范围", None),
                 MetricValue::Quantity,
             )
         };
@@ -140,7 +140,7 @@ fn accepted(i: &FrozenInput, scope: &AcceptanceScope, completion: bool) -> Metri
             .collect();
     if orders.is_empty() {
         return unknown(
-            "No matching declared demand for this acceptance scope",
+            "所选接受口径没有匹配的已声明需求",
             None,
         );
     }
@@ -148,16 +148,16 @@ fn accepted(i: &FrozenInput, scope: &AcceptanceScope, completion: bool) -> Metri
         let mut last = i.3.window.start_ms.0.value();
         for order in orders {
             let Some(outcome) = i.3.orders.iter().find(|o| o.order_id == order.id) else {
-                return unknown("Actual order outcome is absent", None);
+                return unknown("缺少实际订单结果", None);
             };
             if scaled(&outcome.outstanding) > 0 {
                 return unknown(
-                    "Demand is unfinished; a completion time cannot be inferred",
+                    "需求尚未完成，不能推断完整接受时刻",
                     None,
                 );
             }
             let Some(at) = outcome.completion_ms.as_ref() else {
-                return unknown("Completion boundary is not known", None);
+                return unknown("完整接受的时间边界未知", None);
             };
             last = last.max(at.0.value());
         }
@@ -181,15 +181,15 @@ fn accepted(i: &FrozenInput, scope: &AcceptanceScope, completion: bool) -> Metri
             .is_some_and(|id| orders.iter().any(|o| &o.id == id))
         {
             if event.quantity.unit != scope.unit {
-                return unknown("Actual acceptance quantity has a different unit", None);
+                return unknown("实际接受量的单位与所选口径不同", None);
             }
             total += scaled(&event.quantity);
         } else if event.order_id.is_none() {
-            return unknown("Acceptance event has no order/product identity", None);
+            return unknown("接受事件缺少订单或产品身份", None);
         }
     }
     quantity(total, &scope.unit).map_or_else(
-        || unknown("Exact sum exceeds shared quantity representation", None),
+        || unknown("精确合计超出公共数量类型的表示范围", None),
         MetricValue::Quantity,
     )
 }
@@ -205,7 +205,7 @@ fn waiting(i: &FrozenInput, object: &ObjectRef) -> MetricValue {
     };
     if !exists {
         return unknown(
-            "Waiting object is absent from this Run's frozen inputs and actual result",
+            "该运行的冻结输入和实际结果中没有所选等待对象",
             Some(object),
         );
     }
@@ -217,7 +217,7 @@ fn waiting(i: &FrozenInput, object: &ObjectRef) -> MetricValue {
     duration(union_duration(intervals)).map_or_else(
         || {
             unknown(
-                "Waiting duration exceeds shared representation",
+                "等待时长超出公共时长类型的表示范围",
                 Some(object),
             )
         },
@@ -227,15 +227,15 @@ fn waiting(i: &FrozenInput, object: &ObjectRef) -> MetricValue {
 fn utilization(i: &FrozenInput, object: &ObjectRef) -> MetricValue {
     if !matches!(object.kind, ObjectKind::Resource) {
         return unknown(
-            "Resource utilization requires an actual Resource object",
+            "资源利用率需要选择实际资源对象",
             Some(object),
         );
     }
     let Some(resource) = i.0.resources.iter().find(|r| r.id == object.id) else {
-        return unknown("Resource is absent from frozen input", Some(object));
+        return unknown("冻结输入中没有所选资源", Some(object));
     };
     let Some(calendar) = i.0.calendars.iter().find(|c| c.id == resource.calendar_id) else {
-        return unknown("Resource availability calendar is absent", Some(object));
+        return unknown("缺少资源可用日历", Some(object));
     };
     let open: Vec<_> = calendar
         .intervals
@@ -245,7 +245,7 @@ fn utilization(i: &FrozenInput, object: &ObjectRef) -> MetricValue {
     let available = union_duration(open.clone());
     let capacity = scaled(&resource.capacity);
     if available == 0 || capacity == 0 {
-        return unknown("No positive calendar/capacity denominator", Some(object));
+        return unknown("日历与容量未提供大于零的利用率计算基数", Some(object));
     }
     let mut used = 0u128;
     let mut seen = BTreeMap::new();
@@ -257,7 +257,7 @@ fn utilization(i: &FrozenInput, object: &ObjectRef) -> MetricValue {
         if let Some(previous) = seen.insert(claim.id.as_str(), value(claim)) {
             if previous != value(claim) {
                 return unknown(
-                    "Same Claim identity contains conflicting actual records",
+                    "同一资源占用身份存在相互冲突的实际记录",
                     Some(object),
                 );
             }
@@ -290,13 +290,13 @@ fn metric(
     acceptance: Option<&AcceptanceScope>,
 ) -> MetricValue {
     if i.3.computed_until_ms.is_none() {
-        return unknown("No computed prefix", object);
+        return unknown("没有已计算的运行前缀", object);
     }
     match key {
         MetricKey::AcceptedQuantity | MetricKey::CompletionTime => acceptance.map_or_else(
             || {
                 unknown(
-                    "A product/unit/destination/stage acceptance scope is required",
+                    "需要指定产品、单位、接受位置和阶段口径",
                     object,
                 )
             },
@@ -305,28 +305,28 @@ fn metric(
         MetricKey::WaitingTime => object.map_or_else(
             || {
                 unknown(
-                    "Select an actual waiting object; waiting is not factory elapsed time",
+                    "请选择实际等待对象；等待时间不能替代整厂经过时间",
                     None,
                 )
             },
             |o| waiting(i, o),
         ),
         MetricKey::ResourceUtilization => object.map_or_else(
-            || unknown("Select an actual resource", None),
+            || unknown("请选择实际资源", None),
             |o| utilization(i, o),
         ),
         MetricKey::ReworkQuantity => {
             let Some(o) = object else {
                 return unknown(
-                    "Select a tracked item; unlike item types are not aggregated",
+                    "请选择被追踪物品；不同类型的物品不合并统计",
                     None,
                 );
             };
             if !matches!(o.kind, ObjectKind::Item) {
-                return unknown("Rework quantity requires a tracked Item identity", Some(o));
+                return unknown("返工数量需要被追踪物品的实际身份", Some(o));
             }
             let Some(item) = i.3.final_items.iter().find(|x| x.id == o.id) else {
-                return unknown("Tracked item is absent from actual results", Some(o));
+                return unknown("实际结果中没有所选被追踪物品", Some(o));
             };
             let individual = i.0.item_types.iter().any(|t| {
                 t.id == item.item_type_ref.id && matches!(t.tracking, TrackingKind::Individual)
@@ -335,7 +335,7 @@ fn metric(
             if !individual || i.3.events.is_empty() || item.completed_reworks.value() > 0 && !event
             {
                 return unknown(
-                    "Actual unique rework quantity is not established by event history for an individual tracked item; attempts and batch quantity are not substituted",
+                    "单个被追踪物品的事件历史不能确定实际去重返工数量；不以尝试次数或批次数量代替",
                     Some(o),
                 );
             }
@@ -350,7 +350,7 @@ fn metric(
             .map_or_else(
                 || {
                     unknown(
-                        "Exact rework quantity exceeds shared representation",
+                        "精确返工数量超出公共数量类型的表示范围",
                         Some(o),
                     )
                 },
@@ -358,7 +358,7 @@ fn metric(
             )
         }
         MetricKey::UnitCost => unknown(
-            "No frozen measured cost result is available; declared prices alone do not establish actual unit cost",
+            "缺少冻结的实际成本测量结果，仅凭声明价格不能确定实际单位成本",
             object,
         ),
     }
