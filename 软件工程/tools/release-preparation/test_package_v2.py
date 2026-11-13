@@ -3,6 +3,8 @@ import importlib.util
 from pathlib import Path
 import tempfile
 import unittest
+import json
+import zipfile
 from unittest.mock import Mock
 
 spec = importlib.util.spec_from_file_location("package_v2", Path(__file__).with_name("package_v2.py"))
@@ -13,7 +15,66 @@ native_delivery = importlib.util.module_from_spec(native_spec)
 native_spec.loader.exec_module(native_delivery)
 
 
+def portable_fixture(root):
+    source, native, runtime = (root / name for name in ("source", "native", "runtime"))
+    for directory in (source, native, runtime):
+        directory.mkdir()
+    for name in ("superfactory.exe", "superfactory-mcp-bridge.exe"):
+        (native / name).write_bytes(b"MZfixture")
+    config = source / "apps/planner/src-tauri/tauri.conf.json"
+    config.parent.mkdir(parents=True)
+    config.write_text(json.dumps({"bundle": {"resources": {}}}), encoding="utf-8")
+    for relative in package.AGENT_ENTRY_FILES:
+        entry = source / relative
+        entry.parent.mkdir(parents=True, exist_ok=True)
+        entry.write_text("fixture source: " + relative, encoding="utf-8")
+    for relative in ("runtime.json", "python/python.exe", "python/python314.dll", "python/python314.zip",
+                     "licenses/PYTHON-LICENSE.txt"):
+        entry = runtime / relative
+        entry.parent.mkdir(parents=True, exist_ok=True)
+        entry.write_bytes(b"fixture")
+    (runtime / "python/python314._pth").write_text("python314.zip\n.\n../scripts\n", encoding="ascii")
+    (runtime / "scripts").mkdir()
+    for name in package.RUNTIME_SCRIPTS:
+        (runtime / "scripts" / name).write_text("fixture", encoding="utf-8")
+    return source, native / "superfactory.exe", runtime
+
+
 class CandidateClosureTests(unittest.TestCase):
+    def test_agent_entry_survives_actual_portable_zip_roundtrip(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source, native, runtime = portable_fixture(root)
+            output, archive = root / "portable", root / "fixture.zip"
+            result = package.assemble(source, native, runtime, output, "fixture", fixture=True, zip_output=archive)
+            self.assertTrue(result["fixture_only"])
+            with zipfile.ZipFile(archive) as stream:
+                self.assertIsNone(stream.testzip())
+                for relative in package.AGENT_ENTRY_FILES:
+                    target = "agent-entry/" + relative
+                    self.assertEqual(stream.read(target), (source / relative).read_bytes())
+                    self.assertTrue(any(row["path"] == target and row["role"] == "agent_consumer_source" for row in result["files"]))
+
+    def test_missing_agent_entry_rejected_before_output(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source, native, runtime = portable_fixture(root)
+            (source / "integrations/agent/stdio_client.py").unlink()
+            with self.assertRaisesRegex(package.PackageError, "Agent consumer source is missing"):
+                package.assemble(source, native, runtime, root / "portable", "fixture", fixture=True)
+            self.assertFalse((root / "portable").exists())
+
+    def test_lfs_resource_rejected_before_any_portable_output(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source, native, runtime = portable_fixture(root)
+            config = source / "apps/planner/src-tauri/tauri.conf.json"
+            config.write_text(json.dumps({"bundle": {"resources": {"font.bin": "report-resources/font.bin"}}}), encoding="utf-8")
+            config.with_name("font.bin").write_bytes(b"version https://git-lfs.github.com/spec/v1\noid sha256:fixture\nsize 5\n")
+            with self.assertRaisesRegex(package.PackageError, "LFS resource is not materialized"):
+                package.assemble(source, native, runtime, root / "portable", "fixture", fixture=True)
+            self.assertFalse((root / "portable").exists())
+
     def test_native_delivery_cannot_silently_omit_agent_bridge(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)

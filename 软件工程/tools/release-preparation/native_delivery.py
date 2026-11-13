@@ -5,6 +5,9 @@ from pathlib import Path
 import shutil
 import zipfile
 
+AGENT_ENTRY_FILES = ("integrations/agent/workflow.py", "integrations/agent/stdio_client.py",
+                     "integrations/agent/FV02接点.md", "tools/cloud/fv2_short_chain.py", "tools/cloud/FV02联验入口.md")
+
 
 def read(path):
     return json.loads(path.read_text(encoding='utf-8-sig'))
@@ -15,6 +18,10 @@ def assemble(source, native, demos, output, archive, candidate, build_receipt=No
     for name in ('superfactory.exe', 'superfactory-mcp-bridge.exe'):
         if not (native/name).is_file():
             raise ValueError('required candidate executable is missing: ' + name)
+    for relative in AGENT_ENTRY_FILES:
+        entry = source/relative
+        if not entry.is_file() or not entry.resolve().is_relative_to(source):
+            raise ValueError('required Agent consumer source is missing or outside source root: ' + relative)
     output.mkdir(parents=True, exist_ok=False)
     mapping = read(source/'apps/planner/src-tauri/tauri.conf.json')['bundle']['resources']
     copied = []
@@ -28,6 +35,8 @@ def assemble(source, native, demos, output, archive, candidate, build_receipt=No
         src = native/name
         if src.is_file():
             copy(src, output/name, 'linked_native_binary')
+    for relative in AGENT_ENTRY_FILES:
+        copy(source/relative, output/'agent-entry'/relative, 'agent_consumer_source')
     native_manifest = source/'apps/planner/src-tauri'
     resources = []
     for relative, destination in mapping.items():

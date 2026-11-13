@@ -5,16 +5,23 @@ from pathlib import Path
 def build(frozen,cloud_project_id,owner_scope_ref,telemetry_dataset_id,load_dataset_id,source_mode):
     assert frozen['document_kind']=='execution_frozen_inputs' and frozen['contract_version']=='sf.execution/2.0-draft11'
     assert frozen['identity']['project_id']==frozen['project']['id']==frozen['project_input_ref']['project_id']
-    project=dict(cloud_project_id=cloud_project_id,local_project_id=frozen['project']['id'],owner_scope_ref=owner_scope_ref)
-    devices={d['id']:d for d in frozen['project']['devices']}
-    definitions={(d['id'],d['version']) for d in frozen['execution_definitions']}
-    definitions.update((m['definition']['id'],m['definition']['version']) for m in frozen['modules'])
+    return build_model(frozen['project'],frozen['scenario'],frozen['execution_definitions'],frozen['modules'],
+                       frozen['candidate_bindings'],cloud_project_id,owner_scope_ref,telemetry_dataset_id,load_dataset_id,source_mode)
+
+
+def build_model(model_project,scenario,execution_definitions,modules,candidate_bindings,
+                cloud_project_id,owner_scope_ref,telemetry_dataset_id,load_dataset_id,source_mode):
+    """Map Engine-derived declarations before H01; creates no execution identity."""
+    project=dict(cloud_project_id=cloud_project_id,local_project_id=model_project['id'],owner_scope_ref=owner_scope_ref)
+    devices={d['id']:d for d in model_project['devices']}
+    definitions={(d['id'],d['version']) for d in execution_definitions}
+    definitions.update((m['definition']['id'],m['definition']['version']) for m in modules)
     bindings=[];seen_bindings=set();groups={}
-    for b in frozen['candidate_bindings']:
+    for b in candidate_bindings:
         assert b['binding_id'] not in seen_bindings
         seen_bindings.add(b['binding_id'])
         if b.get('transport_supply_id'):
-            supply=next(s for s in frozen['scenario']['supplies'] if s['id']==b['transport_supply_id'])
+            supply=next(s for s in scenario['supplies'] if s['id']==b['transport_supply_id'])
             assert supply['resources']['carrier']==b['device_id'] and supply['transport_ref']==b['operation_ref']
         else:
             assert devices[b['device_id']]['module_ref']==b['device_module_ref']

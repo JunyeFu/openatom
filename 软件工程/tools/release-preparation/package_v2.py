@@ -16,6 +16,8 @@ FORBIDDEN_PARTS = {".git", ".work", ".env", "node_modules", "target", "__pycache
                    ".venv", "venv", "webview2", "ebwebview", "credentials", "secrets"}
 FORBIDDEN_SUFFIXES = {".sqlite", ".sqlite3", ".db", ".journal", ".pyc", ".pyo", ".pem", ".key", ".pfx"}
 RUNTIME_SCRIPTS = {"virtual_device.py", "journal.py", "protocol.py", "devices.demo.json"}
+AGENT_ENTRY_FILES = ("integrations/agent/workflow.py", "integrations/agent/stdio_client.py",
+                     "integrations/agent/FV02接点.md", "tools/cloud/fv2_short_chain.py", "tools/cloud/FV02联验入口.md")
 
 
 class PackageError(ValueError):
@@ -332,6 +334,10 @@ def assemble(source_root, candidate_exe, device_resources, output, candidate_id,
     if not isinstance(mappings, dict):
         raise PackageError("expected explicit Tauri resource mapping")
     planned = candidate_binaries(candidate)
+    for relative in AGENT_ENTRY_FILES:
+        if not (root / relative).is_file():
+            raise PackageError("required Agent consumer source is missing: " + relative)
+        planned.extend(collect_tree(root / relative, root, Path("agent-entry") / relative, "agent_consumer_source"))
     closure = None
     if resource_base is not None:
         for source in [root, Path(resource_base), *([Path(resource_overlay)] if resource_overlay else []), *map(Path, module_archives)]:
