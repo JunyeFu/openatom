@@ -11,6 +11,30 @@ spec.loader.exec_module(entry)
 
 
 class ObserverTests(unittest.TestCase):
+    def test_authority_wait_reads_until_explicit_action_and_device_grants_without_controls(self):
+        def state(devices):
+            return {'lifecycle_state': 'prepared', 'actual': {'delivery': {'read_origin': 'host'},
+                'access': {'ownership': 'current_host_owner', 'allowed_session_controls': ['run', 'stop_dispatch'],
+                           'device_acceptance_control_ids': devices}}}
+        flow = Mock(); flow.exit_status.side_effect = [state([]), state(['selected-device'])]
+        observed = []
+        with patch.object(entry.time, 'monotonic', side_effect=[0, .1, .2]), patch.object(entry.time, 'sleep'):
+            result = entry.await_execution_authority(flow, {'session_id': 'original'}, 1, 'selected-device', observed.append)
+        self.assertEqual(result, observed[-1]); self.assertEqual(len(observed), 2)
+        flow.control.assert_not_called()
+
+    def test_authority_timeout_and_foreign_host_never_start_or_reprepare(self):
+        flow = Mock(); flow.exit_status.return_value = {'lifecycle_state': 'prepared', 'actual': {
+            'delivery': {'read_origin': 'host'}, 'access': {'ownership': 'current_host_owner',
+                'allowed_session_controls': [], 'device_acceptance_control_ids': []}}}
+        with patch.object(entry.time, 'monotonic', side_effect=[0, 1]):
+            with self.assertRaisesRegex(RuntimeError, 'no run submitted'):
+                entry.await_execution_authority(flow, {'session_id': 'original'}, 1, None, lambda value: None)
+        flow.exit_status.return_value['actual']['access']['ownership'] = 'other_host'
+        with self.assertRaisesRegex(ValueError, 'archived sources stay read-only'):
+            entry.await_execution_authority(flow, {'session_id': 'original'}, 1, None, lambda value: None)
+        flow.control.assert_not_called(); flow.prepare.assert_not_called()
+
     def test_new_host_catalog_enables_control_without_resetting_pending(self):
         flow = entry.ExecutionWorkflow(Mock(), {'project_id': 'project'}, {'implemented_operations': []})
         original = {'request': {'request_id': 'original'}, 'handle': None, 'status': 'registration_unknown'}

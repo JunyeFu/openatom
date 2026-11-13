@@ -6,6 +6,8 @@ import type { ModuleRef } from '../../../../packages/commands/generated/typescri
 import type { OperationName } from '../../../../packages/commands/generated/typescript/OperationName';
 import type { SelectedFileRef } from '../../../../packages/commands/generated/typescript/SelectedFileRef';
 import type { TaskScope } from '../../../../packages/commands/generated/typescript/TaskScope';
+import type { ExecutionIdentity } from '../../../../packages/commands/generated/typescript/ExecutionIdentity';
+import type { ExecutionReadAccessAllowedSessionControlsItem } from '../../../../packages/commands/generated/typescript/ExecutionReadAccessAllowedSessionControlsItem';
 
 /** Private main-window adapter DTOs, matching agent_pipe.rs; not public API grants. */
 export interface AgentFieldChoice { pointer: string; element_id: string | null }
@@ -42,6 +44,13 @@ export const updateAgentAuthority = (sessionId: string, choice: AgentAuthorityCh
 export const revokeAgent = (sessionId: string) => invoke<void>('agent_revoke_connection', { sessionId });
 export const grantAgentTask = (sessionId: string, taskId: string, allowControls: boolean) =>
   invoke<void>('agent_grant_task_access', { sessionId, taskId, allowControls });
+export interface AgentExecutionAuthority {
+  identity: ExecutionIdentity;
+  session_controls: ExecutionReadAccessAllowedSessionControlsItem[];
+  device_acceptance_control_ids: string[];
+}
+export const grantAgentExecution = (sessionId: string, choice: AgentExecutionAuthority) =>
+  invoke<void>('agent_grant_execution_controls', { sessionId, choice });
 export const selectAgentDirectory = (sessionId: string, purpose: FilePurpose) =>
   invoke<SelectedFileRef>('agent_select_directory', { sessionId, purpose });
 

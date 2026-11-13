@@ -68,6 +68,26 @@ def observe(flow, identity, seconds, record, *, until_settled=False):
         time.sleep(.25)
 
 
+def await_execution_authority(flow, identity, seconds, maintenance_device, record):
+    """Wait for explicit Native approval; this function never submits controls."""
+    deadline = time.monotonic() + seconds
+    while True:
+        status = flow.exit_status(identity)
+        record(status)
+        actual = status['actual']
+        if actual['delivery']['read_origin'] != 'host' or actual['access']['ownership'] != 'current_host_owner':
+            raise ValueError('Execution authority requires the original current Host; archived sources stay read-only')
+        if status['lifecycle_state'] != 'prepared':
+            raise ValueError('Original execution is no longer prepared; no run action submitted')
+        if time.monotonic() >= deadline:
+            raise RuntimeError('Native execution authority was not supplied within the selected wait budget; no run submitted')
+        access = actual['access']
+        if {'run', 'stop_dispatch'} <= set(access['allowed_session_controls']) and (
+                maintenance_device is None or maintenance_device in access['device_acceptance_control_ids']):
+            return status
+        time.sleep(.25)
+
+
 def save(client, project_id, selection_file, seconds):
     # The desktop Agent panel copies an actual token for this currently open
     # connection. The filesystem here transports that token, never a raw path.
@@ -113,6 +133,7 @@ def main():
     parser.add_argument('--confirm-prepare', action='store_true', help='prepare only: explicitly authorize H01 without run or stop')
     parser.add_argument('--confirm-run-stop', action='store_true', help='resume-prepared only: authorize run and stop, without new preparation')
     parser.add_argument('--await-terminal', action='store_true', help='observe only: wait for the Native operator to stop and settle; sends no controls')
+    parser.add_argument('--await-execution-authority', action='store_true', help='execute/resume-prepared: wait for explicit Native action/device grants; never grants authority itself')
     parser.add_argument('--run-seconds', type=float, default=10)
     parser.add_argument('--wait-seconds', type=float, default=60)
     parser.add_argument('--maintenance-device', help='Explicitly withdraw then restore this device acceptance')
@@ -132,6 +153,8 @@ def main():
         parser.error('readback/observe require the original identity')
     if args.phase == 'resume-prepared' and (args.identity is None or not args.confirm_run_stop or args.policy is not None):
         parser.error('resume-prepared requires the original identity and explicit run/stop authorization; policy cannot be replaced')
+    if args.await_execution_authority and args.phase not in ('execute', 'resume-prepared'):
+        parser.error('--await-execution-authority is only valid for execute/resume-prepared')
     if args.phase in ('inspect', 'prepare', 'execute') and (args.scenario_id is None or args.scenario_revision is None):
         parser.error('inspect/execute require the actual Scenario ID and revision')
     if args.phase == 'recover' and args.pending_state is None:
@@ -210,6 +233,15 @@ def main():
                     if identity['host_context_session_id'] != context['context']['host_instance_id'] or actual['snapshot']['lifecycle']['state'] != 'prepared':
                         raise ValueError('Only this Host original prepared session may continue; no run action submitted')
                 if args.phase in ('execute', 'resume-prepared'):
+                    if args.await_execution_authority:
+                        print(json.dumps({'awaiting_native_execution_authority': identity,
+                                          'required_session_controls': ['run', 'stop_dispatch'],
+                                          'required_device': args.maintenance_device}, ensure_ascii=False), flush=True)
+                        await_execution_authority(flow, identity, args.wait_seconds, args.maintenance_device, record)
+                        catalog, tools = discover(client)
+                        flow.refresh_catalog(catalog)
+                        write(args.output / 'catalog-after-authority.json', catalog)
+                        write(args.output / 'tools-after-authority.json', tools)
                     if args.maintenance_device:
                         control(flow, identity, {'kind': 'set_device_acceptance', 'device_id': args.maintenance_device, 'accept_new_work': False})
                     control(flow, identity, {'kind': 'run'})
