@@ -1985,18 +1985,7 @@ pub(crate) fn write_evaluation_directory(
         let source = wide(&stage);
         let target = wide(&destination);
         check_cancelled(cancelled)?;
-        // MoveFileW refuses an existing destination, including an empty directory.
-        if unsafe { MoveFileW(source.as_ptr(), target.as_ptr()) } == 0 {
-            let cause = std::io::Error::last_os_error();
-            return Err(failure(
-                ErrorCode::IoFailure,
-                &format!(
-                    "Evaluation publication MoveFileW failed: {} -> {}: {cause}; uncommitted candidate retained at {}",
-                    stage.display(), destination.display(), stage.display()
-                ),
-                report_directory,
-            ));
-        }
+        publish_evaluation_stage(&stage, &destination, &source, &target, cancelled)?;
     }
     #[cfg(not(windows))]
     {
@@ -2008,6 +1997,40 @@ pub(crate) fn write_evaluation_directory(
     }
     // Rename is the commit point. A racing cancellation cannot undo success.
     Ok(())
+}
+
+#[cfg(windows)]
+fn publish_evaluation_stage(
+    stage: &Path,
+    destination: &Path,
+    source: &[u16],
+    target: &[u16],
+    cancelled: &AtomicBool,
+) -> Result<(), ApiError> {
+    // A reader may briefly retain a directory/descendant
+    // after our writers close. Retry only Windows access/locking errors, without
+    // changing permissions, replacing destinations, or rebuilding report bytes.
+    // A permanent denial remains a failure and retains the original stage.
+    for attempt in 0..6 {
+        check_cancelled(cancelled)?;
+        // MoveFileW is deliberately no-replace, including on every retry.
+        if unsafe { MoveFileW(source.as_ptr(), target.as_ptr()) } != 0 {
+            return Ok(());
+        }
+        let cause = std::io::Error::last_os_error();
+        if attempt == 5 || !matches!(cause.raw_os_error(), Some(5 | 32 | 33)) {
+            return Err(failure(
+                ErrorCode::IoFailure,
+                &format!(
+                    "Evaluation publication MoveFileW failed after {} attempt(s): {} -> {}: {cause}; uncommitted candidate retained at {}",
+                    attempt + 1, stage.display(), destination.display(), stage.display()
+                ),
+                &destination.file_name().expect("checked report directory name").to_string_lossy(),
+            ));
+        }
+        std::thread::sleep(std::time::Duration::from_millis(50 << attempt));
+    }
+    unreachable!("bounded publication attempts return success or failure")
 }
 
 pub(crate) fn write_project_archive_with_additions(
@@ -2459,6 +2482,90 @@ mod tests {
         let reopened = read_project_archive(&moved.join("project")).unwrap();
         assert!(same(&original, &reopened.project));
         assert_eq!(fs::read(moved.join("report.json")).unwrap(), files[0].1);
+    }
+
+    fn publish_test_stage(stage: &Path, destination: &Path, cancelled: &AtomicBool) -> Result<(), ApiError> {
+        let wide = |path: &Path| path.as_os_str().encode_wide().chain(Some(0)).collect::<Vec<_>>();
+        super::publish_evaluation_stage(stage, destination, &wide(stage), &wide(destination), cancelled)
+    }
+
+    #[test]
+    fn evaluation_publication_retries_a_temporary_directory_lock() {
+        let directory = TempDirectory::new();
+        let stage = directory.path.join("stage");
+        let destination = directory.path.join("report");
+        fs::create_dir(&stage).unwrap();
+        fs::write(stage.join("report.json"), b"complete bytes").unwrap();
+        let held = open_directory(&stage).unwrap();
+        let release = std::thread::spawn(move || {
+            std::thread::sleep(std::time::Duration::from_millis(80));
+            drop(held);
+        });
+        publish_test_stage(&stage, &destination, &AtomicBool::new(false)).unwrap();
+        release.join().unwrap();
+        assert!(!stage.exists());
+        assert_eq!(fs::read(destination.join("report.json")).unwrap(), b"complete bytes");
+    }
+
+    #[test]
+    fn evaluation_publication_retries_access_denied_from_an_open_child() {
+        let directory = TempDirectory::new();
+        let stage = directory.path.join("stage");
+        let destination = directory.path.join("report");
+        fs::create_dir(&stage).unwrap();
+        fs::write(stage.join("report.json"), b"complete bytes").unwrap();
+        let held = File::open(stage.join("report.json")).unwrap();
+        let wide = |path: &Path| path.as_os_str().encode_wide().chain(Some(0)).collect::<Vec<_>>();
+        assert_eq!(unsafe { MoveFileW(wide(&stage).as_ptr(), wide(&destination).as_ptr()) }, 0);
+        assert_eq!(std::io::Error::last_os_error().raw_os_error(), Some(5));
+        let release = std::thread::spawn(move || {
+            std::thread::sleep(std::time::Duration::from_millis(80));
+            drop(held);
+        });
+        publish_test_stage(&stage, &destination, &AtomicBool::new(false)).unwrap();
+        release.join().unwrap();
+        assert_eq!(fs::read(destination.join("report.json")).unwrap(), b"complete bytes");
+    }
+
+    #[test]
+    fn evaluation_publication_keeps_stage_when_lock_does_not_clear() {
+        let directory = TempDirectory::new();
+        let stage = directory.path.join("stage");
+        let destination = directory.path.join("report");
+        fs::create_dir(&stage).unwrap();
+        fs::write(stage.join("report.json"), b"retained bytes").unwrap();
+        let held = File::open(stage.join("report.json")).unwrap();
+        let error = publish_test_stage(&stage, &destination, &AtomicBool::new(false)).unwrap_err();
+        assert!(error.message.contains("after 6 attempt(s)"));
+        assert_eq!(fs::read(stage.join("report.json")).unwrap(), b"retained bytes");
+        assert!(!destination.exists());
+        drop(held);
+    }
+
+    #[test]
+    fn evaluation_publication_cancellation_and_racing_destination_do_not_commit() {
+        let directory = TempDirectory::new();
+        let stage = directory.path.join("stage");
+        let destination = directory.path.join("report");
+        fs::create_dir(&stage).unwrap();
+        let held = open_directory(&stage).unwrap();
+        let cancelled = Arc::new(AtomicBool::new(false));
+        let signal = cancelled.clone();
+        let cancel = std::thread::spawn(move || {
+            std::thread::sleep(std::time::Duration::from_millis(10));
+            signal.store(true, Ordering::Release);
+        });
+        let error = publish_test_stage(&stage, &destination, &cancelled).unwrap_err();
+        assert!(matches!(error.code, ErrorCode::Cancelled));
+        cancel.join().unwrap();
+        drop(held);
+        assert!(stage.exists());
+        assert!(!destination.exists());
+        fs::create_dir(&destination).unwrap();
+        fs::write(destination.join("old.txt"), b"effective report").unwrap();
+        assert!(publish_test_stage(&stage, &destination, &AtomicBool::new(false)).is_err());
+        assert!(stage.exists());
+        assert_eq!(fs::read(destination.join("old.txt")).unwrap(), b"effective report");
     }
 
     #[test]
