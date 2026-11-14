@@ -25,7 +25,11 @@ export function useDeliveryTask(services: DeliveryServices, projectId: string) {
       if (identity.current !== project || local.signal.aborted) return;
       setNotice('');
       if (last.task.state === 'completed' && !completedOutput(last, kind)) setFailure('任务已结束，但未返回对应的实际文件结果；不能确认导出成功。');
-      else if (last.task.state === 'failed') setFailure(last.failure ? `${last.failure.code}: ${last.failure.message}` : last.task.failure?.message ?? '宿主任务失败。');
+      else if (last.task.state === 'failed') {
+        const original = last.failure ?? last.task.failure;
+        setFailure(original?.message && /[\u3400-\u9fff]/u.test(original.message) ? original.message : '交付任务失败，本次文件尚未确认完成。请展开错误来源核对原因。');
+        setDetail(original ?? null);
+      }
       else if (last.task.state === 'cancelled') setNotice('宿主确认任务已取消；不表示文件已导出。');
       else setNotice('宿主任务完成，已读取实际结果。');
     } catch (e) { if (!local.signal.aborted && identity.current === project) { setFailure(errorText(e)); setDetail(errorDetail(e)); } }
