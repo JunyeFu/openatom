@@ -10,7 +10,7 @@ export function fieldTime(scenario: ScenarioInput, field: InputField): number | 
   return (field.kind === 'order_due' ? order?.due_at_ms : order?.release_at_ms) ?? null;
 }
 export function inputProposal(project: ProjectState, scenario: ScenarioInput, fields: InputField[], delta: number): TimelineInputCommit {
-  if (scenario.project_revision !== project.revision) throw new Error('方案与工程修订不同，请刷新输入后重新应用。');
+  if (scenario.project_revision !== project.revision) throw new Error('方案与工程版本不匹配，请刷新后重新应用。');
   const unique = [...new Map(fields.map(f => [fieldKey(f), f])).values()];
   const changes = unique.map(field => {
     const before_ms = fieldTime(scenario, field);

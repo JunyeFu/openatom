@@ -21,7 +21,7 @@ export function nodeEditTarget(value: ProcessNodeSelection): NodeEditTarget | nu
   return null;
 }
 export function nodeEditLabel(target: NodeEditTarget): string {
-  if (target.frozen) return '从此冻结来源创作新版本';
+  if (target.frozen) return '从此历史版本创建新版本';
   if (target.kind === 'module_version') return '从此精确版本创作草稿';
   return target.kind === 'definition_draft' ? '编辑此定义草稿来源' : '编辑此实例表现来源';
 }

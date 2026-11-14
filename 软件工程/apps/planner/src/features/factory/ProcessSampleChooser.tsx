@@ -29,7 +29,7 @@ export function ProcessSampleChooser({ choice, onDismiss }: { choice: ProcessSam
       <h2 id="process-sample-choice-title">选择样例作业</h2>
       <p>Run {choice.run_id}</p>
       <p>{choice.definition_ref.id}@{choice.definition_ref.version} · 草稿 r{choice.draft_revision}</p>
-      <fieldset disabled={busy} style={{ minWidth: 0 }}><legend>此精确来源有多个实际作业，请明确选择观看对象。</legend>
+      <fieldset disabled={busy} style={{ minWidth: 0 }}><legend>有多个作业，请选择要查看的作业。</legend>
         {choice.jobs.map(job => <label className="check-label" key={job.id}>
           <input type="radio" name="process-sample-job" value={job.id} checked={jobId === job.id} onChange={() => { setJobId(job.id); setError(''); }} />
           <span style={{ overflowWrap: 'anywhere' }}><strong>{job.id}</strong><br />任务 {job.task_ref} · {states[job.state]}<br />
@@ -37,7 +37,7 @@ export function ProcessSampleChooser({ choice, onDismiss }: { choice: ProcessSam
         </label>)}
       </fieldset>
       {error && <p role="alert" className="error-message">{error}</p>}
-      <p className="form-hint">选择只打开此 Run 的实际过程，不重新运行或改变库存。取消后原 Run 仍保留。</p>
+      <p className="form-hint">查看所选运行的过程。不会重新运行或改变库存，取消后记录仍保留。</p>
       <footer><button type="button" autoFocus disabled={busy} onClick={onDismiss}>取消选择</button>
         <button type="submit" disabled={!jobId || busy}>{busy ? '核对来源…' : '查看所选作业'}</button></footer>
     </form>

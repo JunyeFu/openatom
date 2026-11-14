@@ -17,7 +17,7 @@ export function SiteConstraintsEditor({ value, onChange }: {
     <h3>净距与静态区域</h3>
     <label>设备间最小净距 / m<input type="number" min="0" step="any" value={value.clearance}
       onChange={event => onChange({ ...value, clearance: event.target.value })} placeholder="未提供" /></label>
-    <p className="form-hint">坐标为所选场地的厂房 X/Y，单位米。顶点按边界顺序填写，末点自动连回首点。净距留空表示未提供，填写 0 才明确声明零净距。</p>
+    <p className="form-hint">按边界顺序填写顶点坐标（米），末点自动闭合。净距留空表示未填写，0表示无需净距。</p>
     {!value.regions.length && <p>尚未声明可用区、禁入区或静态通道；检查将保留对应缺项。</p>}
     {value.regions.map((region, index) => <fieldset key={index} aria-label={`静态区域 ${index + 1}`}>
       <legend>区域 {index + 1}</legend>

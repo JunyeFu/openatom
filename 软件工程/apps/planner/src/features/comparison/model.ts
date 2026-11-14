@@ -68,7 +68,7 @@ export function errorDetail(error: unknown): unknown {
 export function prepareScenarioFork(project: ProjectState, evidence: RunEvidence,
   request: Parameters<NonNullable<DeliveryServices['cloneScenario']>>[0]): ApplyCommandsParams {
   if (request.source_run_id !== evidence.run.id || !evidenceMatches(project.id, [request.source_run_id], [evidence])) {
-    throw new Error('创建方案必须使用同工程该Run的真实冻结输入。');
+    throw new Error('请使用当前工程中该次运行保存的输入创建方案。');
   }
   const id = request.new_scenario_id.trim(), title = request.title.trim();
   if (!id || !title) throw new Error('请填写新方案ID与标题。');

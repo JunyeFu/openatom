@@ -153,15 +153,15 @@ export function projectFactoryItemSlots(project: ProjectState, items: RuntimeIte
       const execution = found[0].execution_ref;
       if (execution.kind !== 'project_device') { fail('unavailable · 实际holder不是设备执行。'); continue; }
       const device = project.devices.find(device => device.id === execution.data.device_id);
-      if (!device) { fail('unavailable · 实际holder设备不在冻结Project。'); continue; }
+      if (!device) { fail('该次运行的工程中没有物品所在设备。'); continue; }
       owner = { kind: 'device', id: device.id }; layout = device.item_layout;
     } else if (item.holder.kind === 'location') {
       const location = project.locations.find(location => location.id === item.holder.id);
-      if (!location?.hall_id || !project.halls.some(hall => hall.id === location.hall_id)) { fail('unavailable · 实际Location缺少冻结厂房/位置来源。'); continue; }
+      if (!location?.hall_id || !project.halls.some(hall => hall.id === location.hall_id)) { fail('物品所在库位缺少当次厂房或位置信息。'); continue; }
       owner = { kind: 'location', id: location.id }; layout = location.item_layout;
     } else {
       const parent = itemsById(items).get(item.holder.id);
-      if (!parent?.contents.includes(item.id)) { fail('unavailable · container缺少双向contents/holder；composition不是contents。'); continue; }
+      if (!parent?.contents.includes(item.id)) { fail('容器与内装物的位置记录不完整。'); continue; }
       const seen = new Set([item.id]); let cursor: RuntimeItem | undefined = parent, issue: string | null = null;
       while (cursor) {
         if (seen.has(cursor.id)) { issue = '容器父链存在循环'; break; } seen.add(cursor.id);
@@ -173,7 +173,7 @@ export function projectFactoryItemSlots(project: ProjectState, items: RuntimeIte
       }
       if (issue) { fail(`unavailable · ${issue}。`); continue; }
       const type = itemType(parent);
-      if (!type) { fail('unavailable · 父容器精确type@revision不在冻结Project。'); continue; }
+      if (!type) { fail('该次运行的工程中缺少父容器版本。'); continue; }
       owner = { kind: 'item', id: parent.id }; layout = type.contents_layout;
     }
     const key = JSON.stringify([owner.kind, owner.id, item.item_type_ref.id, item.item_type_ref.revision]);
@@ -187,7 +187,7 @@ export function projectFactoryItemSlots(project: ProjectState, items: RuntimeIte
     const groupIssue = !layout ? '未声明持久化展示布局' : ordered.length > slots.length ? `${ordered.length} identities / ${slots.length} declared display slots；整组不绘制` : null;
     ordered.forEach((item, index) => {
       const slot = slots[index];
-      const unavailable = groupIssue ?? (owner.kind === 'location' || owner.kind === 'transport' ? slot.anchor_role != null ? '库位/运输展示槽anchor_role必须为null' : null : !slot.anchor_role ? '设备/容器展示槽缺少明确命名anchor_role' : null);
+      const unavailable = groupIssue ?? (owner.kind === 'location' || owner.kind === 'transport' ? slot.anchor_role != null ? '库位/运输展示槽anchor_role必须为null' : null : !slot.anchor_role ? '设备或容器的摆放位置缺少锚点名称' : null);
       result.set(item.id, { attachment: unavailable ? null : { owner_ref: owner, slot }, unavailable: unavailable ? `unavailable · ${unavailable}。` : null });
     });
   }
@@ -219,7 +219,7 @@ export function createFactoryPresentation(current: () => FactoryPresentationCont
       const view = context.view;
       const full: RunView = context.preparedRun ? { kind: 'full', data: context.preparedRun.run }
         : await request<RunView>({ operation: 'get_run', params: { run_id: view.run_id, query: { kind: 'full_result' } } });
-      if (full.kind !== 'full' || full.data.id !== view.run_id || full.data.input_ref.project_id !== context.project_id) throw new ProcessUnavailable('主画布没有取得本工程的精确Run。');
+      if (full.kind !== 'full' || full.data.id !== view.run_id || full.data.input_ref.project_id !== context.project_id) throw new ProcessUnavailable('未能读取当前工程的运行记录，请重新选择。');
       run = full.data;
       scenario = context.preparedRun?.scenario ?? null;
       if (!scenario && run.transport.length) {
@@ -228,13 +228,13 @@ export function createFactoryPresentation(current: () => FactoryPresentationCont
         if (frozen.kind !== 'scenario' || frozen.data.id !== run.input_ref.scenario_id || frozen.data.revision !== run.input_ref.scenario_revision) throw new ProcessUnavailable('运输画面未取得本次运行保存的生产场景。');
         scenario = frozen.data;
       }
-      if (run.computed_until_ms == null || view.at_ms < run.window.start_ms || view.at_ms > run.computed_until_ms || view.at_ms > run.window.end_ms) throw new ProcessUnavailable('观看时点超出实际Run前沿，不补画实际阶段。');
+      if (run.computed_until_ms == null || view.at_ms < run.window.start_ms || view.at_ms > run.computed_until_ms || view.at_ms > run.window.end_ms) throw new ProcessUnavailable('所选时间点尚未计算，请选择已计算的时间。');
       const pages = async (objects: { kind: 'job'; id: string }[], target: RunObjectsPage[]) => {
         let after_index: number | null = null;
         do {
           const page: RunView = await request<RunView>({ operation: 'get_run', params: { run_id: view.run_id,
             query: { kind: 'objects_at', data: { at_ms: view.at_ms, objects, page: { after_index, limit: 200 } } } } });
-          if (page.kind !== 'objects' || page.data.run_id !== view.run_id || page.data.at_ms !== view.at_ms) throw new ProcessUnavailable('主画布对象页的Run或时点不匹配。');
+          if (page.kind !== 'objects' || page.data.run_id !== view.run_id || page.data.at_ms !== view.at_ms) throw new ProcessUnavailable('对象数据与所选运行记录或时间点不匹配。');
           if (page.data.next_index !== null && page.data.next_index <= (after_index ?? -1)) throw new ProcessUnavailable('主画布实际分页没有前进。');
           target.push(page.data); after_index = page.data.next_index;
         } while (after_index !== null);
@@ -244,7 +244,7 @@ export function createFactoryPresentation(current: () => FactoryPresentationCont
         const page = await ports.readObservation({ session_id: context.session_id, project_id: context.project_id,
           scope: context.scope, scope_revision: context.scope_revision, ...view });
         assertCurrent();
-        if (page.run_id !== view.run_id || page.at_ms !== view.at_ms || page.next_index !== null) throw new ProcessUnavailable('主画布完整观察的Run、时点或完整性不匹配。');
+        if (page.run_id !== view.run_id || page.at_ms !== view.at_ms || page.next_index !== null) throw new ProcessUnavailable('画面数据尚未完整匹配所选记录，请刷新。');
         job_pages.push({ ...page, objects: page.objects.filter(object => object.kind === 'job') });
         item_pages.push({ ...page, objects: page.objects.filter(object => object.kind === 'item') });
       } else {
@@ -256,10 +256,10 @@ export function createFactoryPresentation(current: () => FactoryPresentationCont
       if (!context.preparedRun) {
         const frozen = await request<DomainObject>({ operation: 'get_object', params: { object_id: { kind: 'project', id: context.project_id },
           source: { kind: 'run_snapshot', data: { run_id: view.run_id, at_ms: view.at_ms } }, node_index: null } });
-        if (frozen.kind !== 'project') throw new ProcessUnavailable('主画布未取得Run冻结工程。');
+        if (frozen.kind !== 'project') throw new ProcessUnavailable('未能读取该次运行保存的工程。');
         project = frozen.data;
       }
-      if (project.id !== context.project_id || project.revision !== run.input_ref.project_revision) throw new ProcessUnavailable('主画布未取得Run冻结工程修订。');
+      if (project.id !== context.project_id || project.revision !== run.input_ref.project_revision) throw new ProcessUnavailable('未能读取该次运行使用的工程版本。');
       observation = { run_id: run.id, at_ms: view.at_ms, next_index: null, objects: [
         ...job_pages.flatMap(page => page.objects), ...item_pages.flatMap(page => page.objects),
         ...project.resources.map(data => ({ kind: 'resource' as const, data })),
@@ -323,11 +323,11 @@ export async function projectFactoryPresentation(context: FactoryPresentationCon
         source: context.view ? { kind: 'run_module_version' as const, data: { ...context.view, module_ref: ref } } : { kind: 'module_version' as const, data: { module_ref: ref } } } };
       const assertSource = (source: MediaAssetReadRequest['source']) => {
         assertCurrent();
-        if (context.view ? source.kind !== 'run_module_version' || source.data.run_id !== context.view.run_id || source.data.at_ms !== context.view.at_ms : source.kind !== 'module_version') throw new ProcessUnavailable('媒体字节或依赖改变了已绑定Run/时点/来源。');
+        if (context.view ? source.kind !== 'run_module_version' || source.data.run_id !== context.view.run_id || source.data.at_ms !== context.view.at_ms : source.kind !== 'module_version') throw new ProcessUnavailable('素材或依赖与所选运行记录或时间点不匹配。');
       };
       return { presentation, rights, binding, async readAsset(request) {
         assertSource(request.source);
-        if (request.project_id !== context.project_id || JSON.stringify(request.scope) !== JSON.stringify(context.scope) || request.scope_revision !== context.scope_revision) throw new ProcessUnavailable('媒体字节改变了已绑定工程或Scope修订。');
+        if (request.project_id !== context.project_id || JSON.stringify(request.scope) !== JSON.stringify(context.scope) || request.scope_revision !== context.scope_revision) throw new ProcessUnavailable('素材与当前工程版本不匹配。');
         const key = JSON.stringify([request.source, request.asset]);
         let pending = assetReads.get(key);
         if (!pending) {
@@ -372,9 +372,9 @@ export async function projectFactoryPresentation(context: FactoryPresentationCon
           if (sameRef(job.operation_ref, device.module_ref) && payload.data.behavior?.selected === 'inline' && payload.data.behavior.inline) operation = payload.data.behavior.inline;
           else {
             const declared = payload.data.behavior.selected === 'operation_ref' ? payload.data.behavior.operation_ref : null;
-            if (![declared, device.operation_binding, ...(device.route_operation_refs ?? [])].some(ref => ref != null && sameRef(ref, job.operation_ref))) throw new ProcessUnavailable('实际Job的operation不匹配冻结设备声明。');
+            if (![declared, device.operation_binding, ...(device.route_operation_refs ?? [])].some(ref => ref != null && sameRef(ref, job.operation_ref))) throw new ProcessUnavailable('作业工艺与该次运行使用的设备版本不匹配。');
             const operationPackage = await module(job.operation_ref);
-            if (operationPackage.definition.payload.category !== 'operations') throw new ProcessUnavailable('实际operation精确模块类型不匹配。');
+            if (operationPackage.definition.payload.category !== 'operations') throw new ProcessUnavailable('作业工艺的模块类型不匹配。');
             operation = operationPackage.definition.payload.data;
           }
           frame = { run, snapshot: observation, job_id: job.id, operation };
@@ -396,10 +396,10 @@ export async function projectFactoryPresentation(context: FactoryPresentationCon
       let media: FactoryActualItem['media'] = null;
       const unavailable = (reason: string): FactoryActualItem => ({ item, anchor_ref, attachment: null, media, unavailable: reason });
       const itemType = project.item_types.find(type => type.id === item.item_type_ref.id && type.revision === item.item_type_ref.revision);
-      if (!itemType?.module_ref) return unavailable('unavailable · 冻结ItemType没有精确Items模块来源，不从名称/spec_ref/module_refs猜测。');
+      if (!itemType?.module_ref) return unavailable('该次运行的物品类型缺少对应模块版本。');
       try {
         const pkg = await module(itemType.module_ref), payload = pkg.definition.payload;
-        if (payload.category !== 'items' || !payload.data.presentation_or_media_ref) return unavailable('精确Items模块没有物品媒体声明。');
+        if (payload.category !== 'items' || !payload.data.presentation_or_media_ref) return unavailable('所选物品模块没有显示素材。');
         media = boundMedia(itemType.module_ref, payload.data.presentation_or_media_ref, pkg.rights);
       } catch (error) { assertCurrent(); if (!(error instanceof ProcessUnavailable)) throw error; return unavailable(error.message); }
       const projected = attachments.get(item.id)!;
@@ -418,7 +418,7 @@ export async function projectFactoryPresentation(context: FactoryPresentationCon
           worker_status: { kind: !observation ? 'unobserved' : held.length ? 'claimed' : 'available', job_ids: held.map(job => job.id) } };
       }
       const pkg = await module(resource.definition_ref);
-      if (pkg.definition.payload.category !== 'resources') throw new ProcessUnavailable('资源精确模块不是Resources定义。');
+      if (pkg.definition.payload.category !== 'resources') throw new ProcessUnavailable('所选模块不是资源定义。');
       return { resource, media: boundMedia(resource.definition_ref, resource.presentation!, pkg.rights), unavailable: null };
     }));
     assertCurrent();

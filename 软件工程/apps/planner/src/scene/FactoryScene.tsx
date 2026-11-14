@@ -556,7 +556,7 @@ export function FactoryScene({ project: inputProject, canvas, hallId, selection,
         submittedFrame = { key: capture.key, frame_id: ++submitted, camera: capture.camera, lod: current,
           pixels: { width: pixels.x, height: pixels.y, css_width: node.clientWidth, css_height: node.clientHeight, pixel_ratio: renderer.getPixelRatio() },
           visible_objects: visibleFactoryObjects(scene, camera), limitations: [
-            ...(halls.length === 0 ? [{ object_ref: null, message: '冻结工程未声明当前画布的厂房，物理画布为空。' }] : []),
+            ...(halls.length === 0 ? [{ object_ref: null, message: '该次运行的工程版本没有当前厂房，暂无画面。' }] : []),
             ...(connections?.limitations ?? []),
             ...(project?.devices.filter(device => halls.some(hall => hall.id === device.hall_id) && !anchors.has(`device:${device.id}`)) ?? []).map(device => ({ object_ref: { kind: 'device' as const, id: device.id }, message: '实际布局父级缺失，未在猜测的位置绘制设备。' })),
             ...mediaSlots.filter(slot => slot.group.visible && !slot.instance && current !== 'region').map(slot => ({ object_ref: { kind: 'device' as const, id: slot.device.id }, message: `仅实际占地/定位标记：${slot.input?.unavailable ?? (slot.input?.media ? '精确素材装载中' : '表现素材未连接')}` })),

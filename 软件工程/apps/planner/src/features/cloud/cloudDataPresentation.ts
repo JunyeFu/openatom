@@ -11,14 +11,14 @@ const fields: Record<string, [string, string]> = {
   device_id: ['设备标识', '—'], device_ref: ['设备标识', '—'], source_mode: ['数据来源', '—'],
   source_purpose: ['数据用途', '—'], device_timestamp: ['设备自报时间', '原设备表示'],
   device_sequence: ['设备上报序号', '—'], device_boot_id: ['设备启动标识', '—'],
-  session_id: ['执行会话', '—'], execution_epoch_id: ['执行轮次', '—'], execution_revision: ['执行修订', '—'],
+  session_id: ['执行会话', '—'], execution_epoch_id: ['执行轮次', '—'], execution_revision: ['生产记录版本', '—'],
   accept_new_work: ['允许接收新工作', '—'], device_state: ['设备状态', '—'], active_command_id: ['当前命令', '—'],
-  observation_probe_id: ['观测请求', '—'], contract_version: ['契约版本', '—'],
+  observation_probe_id: ['观测请求', '—'], contract_version: ['接口版本', '—'],
   count: ['记录数量', '条'], quantity: ['数量', '值内附单位'], observed_at: ['观测时间', 'UTC'],
   metric: ['指标', '—'], value: ['指标值', '依指标定义'], reason: ['等待原因', '—'],
   known_host_ms: ['已知等待时长', 'ms'], missing_conditions: ['缺失条件', '—'],
   logical_job_id: ['逻辑作业', '—'], state: ['状态', '—'], destination: ['接受去向', '—'],
-  acceptance_stage: ['接受阶段', '—'], project_id: ['工程标识', '—'], host_context_session_id: ['Host会话', '—'],
+  acceptance_stage: ['接受阶段', '—'], project_id: ['工程标识', '—'], host_context_session_id: ['本机连接', '—'],
 };
 const sourceModes: Readonly<Record<string, string>> = { software_in_loop: '软件在环', physical_device: '物理设备', generated_load: '生成负载' };
 export const sourceModeText = (mode: string) => sourceModes[mode] ?? mode;

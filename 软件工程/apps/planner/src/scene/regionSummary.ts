@@ -32,7 +32,7 @@ export function regionSummary(project: ProjectState, line: LineGroup, source: Fa
       value.port.port_id === port.port_id && value.port.module_ref.id === port.module_ref.id && value.port.module_ref.version === port.module_ref.version);
     return { port, label: output?.status === 'available'
       ? '做完 ' + decimalText(output.completed_output.value) + ' ' + output.completed_output.unit + ' · 移交 ' + decimalText(output.accepted_output.value) + ' ' + output.accepted_output.unit
-      : output?.status === 'unavailable' ? output.message : '未读到此精确边界口的实际数量' };
+      : output?.status === 'unavailable' ? output.message : '尚未读取此边界端口的数量' };
   });
   return { members, boundary, resources, ports, actual: !!actual,
     state: actual ? '已读作业 ' + jobs.length + (states.size ? ' · ' + [...states].map(([state, count]) => labels[state] + count).join(' / ') : '')

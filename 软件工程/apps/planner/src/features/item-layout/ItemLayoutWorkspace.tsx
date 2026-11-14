@@ -46,12 +46,12 @@ export function ItemLayoutWorkspace(props: ItemLayoutWorkspaceProps) {
   }
   useEffect(() => { if (!dirty && !saving && sameProject && project && owner && project.revision !== base?.revision) reset(project, owner); }, [project?.revision, project?.id, dirty, saving, sameProject]);
   useEffect(() => {
-    let active = true; setRoles({ key: rolesKey, names: [], message: object?.kind === 'location' ? '摆放位置以库位坐标为起点，不使用模型支承点。' : !ref ? '尚未提供可读取的模型，支承点暂不可选，原输入仍保留。' : '正在读取当前模型的支承点…' });
+    let active = true; setRoles({ key: rolesKey, names: [], message: object?.kind === 'location' ? '摆放位置以库位坐标为起点，不使用模型支承点。' : !ref ? '请先选择可读取的模型。当前输入已保留。' : '正在读取当前模型的支承点…' });
     if (!context) return;
     host.read(context).then(async value => {
       const reader = host.media(context, value.binding), resolved = await resolveMedia({ ...reader, presentation: value.presentation, binding: value.binding, rights: value.rights, lod, mode: 'asset_inspection' });
       const names = Object.entries(resolved.presentation.anchor_roles).filter(([, anchor]) => anchor.kind === 'scene_node' && resolved.presentation.nodes[anchor.data] != null).map(([name]) => name);
-      if (active) setRoles({ key: rolesKey, names, message: names.length ? '下列支承点来自当前模型，选择物品应放置的位置。' : '当前模型未提供可用支承点；保留缺项时，这部分物品不会显示在画面中。' });
+      if (active) setRoles({ key: rolesKey, names, message: names.length ? '下列支承点来自当前模型，选择物品应放置的位置。' : '模型没有可用支承点，相关物品暂无法显示。' });
     }, reason => { if (active) setRoles({ key: rolesKey, names: [], message: String(reason) }); }).catch(reason => { if (active) setRoles({ key: rolesKey, names: [], message: String(reason) }); });
     return () => { active = false; };
   }, [host, rolesKey]);
@@ -77,11 +77,11 @@ export function ItemLayoutWorkspace(props: ItemLayoutWorkspaceProps) {
   return <section className="sf-item-layout" aria-label="物品展示槽创作">
     <header><h2>物品展示槽</h2><button disabled={saving || props.busy} onClick={() => dirty ? setConfirm('close') : props.onClose()}>关闭展示槽</button></header>
     {confirm && <div role="alertdialog" aria-label="保留展示槽输入"><p>展示槽有未应用输入。保留编辑，或明确放弃后{confirm === 'close' ? '关闭' : '切换拥有者'}。</p><button onClick={() => setConfirm(null)}>保留编辑</button><button onClick={() => { if (confirm === 'close') props.onClose(); else if (project) reset(project, confirm); }}>放弃输入并{confirm === 'close' ? '关闭' : '切换'}</button></div>}
-    <p>为设备、库位或容器中的物品设置画面上的摆放位置。同一位置内的同类物品按编号顺序摆放。这里的槽位数量不会改变库存或业务容量；未声明的位置不绘制物品。</p>
+    <p>设置设备、库位或容器中物品的显示位置，不改变库存或容量。未设置位置的物品不会显示。</p>
     <label>摆放对象 <select aria-label="展示槽拥有者" disabled={saving || props.busy || !sameProject} value={owner ? ownerKey(owner) : ''} onChange={e => { if (e.target.value) { const [kind,id] = JSON.parse(e.target.value); choose({ kind, id }); } }}><option value="">选择设备、库位或物品类型</option>{owners.map(v => <option key={ownerKey(v)} value={ownerKey(v)}>{ownerName(v)}</option>)}</select></label>
-    {!sameProject && <p role="alert">工程或Host会话已切换；原输入保留，不能提交到新工程。</p>}
+    {!sameProject && <p role="alert">工程连接已切换，输入已保留。请返回原工程后再应用。</p>}
     {base && owner && <details><summary>对象编号与工程来源</summary><p>工程：{base.title}；编辑版本：{base.revision}；工程编号：{base.id}；对象编号：{owner.kind} / {owner.id}。</p>{owner.kind === 'location' && object?.kind === 'location' && <p>业务容量：{object.data.capacity ? JSON.stringify(object.data.capacity) : '未声明'}</p>}</details>}
-    {owner && <><fieldset disabled={saving || props.busy}><legend>布局声明</legend><label><input type="radio" name="layout-presence" checked={!input.declared} onChange={() => setInput(v => ({ ...v, declared: false }))}/>未声明布局</label><label><input type="radio" name="layout-presence" checked={input.declared} onChange={() => setInput(v => ({ ...v, declared: true }))}/>明确声明布局（可为空）</label>
+    {owner && <><fieldset disabled={saving || props.busy}><legend>布局声明</legend><label><input type="radio" name="layout-presence" checked={!input.declared} onChange={() => setInput(v => ({ ...v, declared: false }))}/>未声明布局</label><label><input type="radio" name="layout-presence" checked={input.declared} onChange={() => setInput(v => ({ ...v, declared: true }))}/>自定义布局（可留空）</label>
       {input.declared && <><label>分配方式 <select aria-label="展示槽分配方式" value={input.assignment} onChange={e => setInput(v => ({ ...v, assignment: e.target.value as LayoutInput['assignment'] }))}><option value="">选择分配规则</option><option value="item_id_order">按物品编号排序</option></select></label><button onClick={() => setInput(v => ({ ...v, slots: [...v.slots, blankSlot()] }))}>添加摆放点</button></>}
     </fieldset>
     {input.declared && <><label>模型细节 <select aria-label="角色核对档位" value={lod} onChange={e => setLod(e.target.value as typeof lod)}><option value="detailed">详细</option><option value="simplified">简化</option></select></label><p role="status">{roles.key === rolesKey ? roles.message : '正在读取模型支承点…'}</p>

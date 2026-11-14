@@ -352,13 +352,13 @@ export function Workbench() {
     const current = workspaceRef.current;
     if (!current?.project || !authoringIO || !packagingScope || packagingRevision === undefined || !packagingReadKey) throw new Error('请在当前实际专业Scope重新读取制造成果。');
     const assertCurrent = () => {
-      if (packagingReadKeyRef.current !== packagingReadKey) throw new Error('制造图所属工程、Scope或修订已变化；丢弃旧响应。');
+      if (packagingReadKeyRef.current !== packagingReadKey) throw new Error('工程或版本已变化，请重新读取制造图。');
     };
     const checkHost = async () => {
       const actual = await authoringIO.dispatch<ProjectContext>(authoringRequest(current.project!.id, packagingScope, 'get_context', { selection: [] }));
       assertCurrent();
       const revision = packagingScope.kind === 'definition_draft' ? actual.definition?.revision : actual.project?.revision;
-      if (actual.host.session_id !== current.context.host.session_id || actual.project?.id !== current.project!.id || actual.project.revision !== current.project!.revision || revision !== packagingRevision) throw new Error('实际Host的制造图来源已变化，请重读当前成果。');
+      if (actual.host.session_id !== current.context.host.session_id || actual.project?.id !== current.project!.id || actual.project.revision !== current.project!.revision || revision !== packagingRevision) throw new Error('制造图来源已变化，请重新读取当前成果。');
     };
     await checkHost();
     const bytes = await readStoredManufacturingFile({ project_id: current.project.id, scope: packagingScope, scope_revision: packagingRevision, artifact_id: evidence.artifact.id, file });
@@ -402,7 +402,7 @@ export function Workbench() {
     if (source === 'run') {
       if (!run || atMs === null || !actual || actual.projection === 'unavailable' || actual.unavailable) throw new Error(actual?.unavailable ?? '尚未读取所选设备此时点的真实冻结来源。');
       if (actual.projection === 'active') {
-        if (!actual.frame?.job_id) throw new Error('此时点活动作业缺少精确Job身份，不能打开实际过程。');
+        if (!actual.frame?.job_id) throw new Error('当前时点缺少作业记录，暂时无法打开过程。');
         selection = { kind: 'actual_run', run_id: run.id, job_id: actual.frame.job_id, at_ms: atMs };
       } else selection = { kind: 'frozen_device', run_id: run.id, device_id: selectedDevice.id, at_ms: atMs };
     }
@@ -427,7 +427,7 @@ export function Workbench() {
   async function receiveProcessSample(value: RunResult) {
     const current = deviceProcessRef.current, draft = current?.draft;
     if (!current || !draft || value.input_ref.project_id !== workspaceRef.current?.project?.id) return;
-    if (!authoringIO || value.computed_until_ms == null) throw new Error('实际样例未提供原Host读取入口或计算边界。');
+    if (!authoringIO || value.computed_until_ms == null) throw new Error('样例缺少读取入口或计算范围，暂时无法查看。');
     const sessionId = workspaceRef.current.context.host.session_id;
     const scope: ProcessScope['scope'] = { kind: 'definition_draft', data: draft.summary.draft_id };
     function assertSampleOrigin() {
@@ -443,7 +443,7 @@ export function Workbench() {
       assertSampleOrigin();
       if (actual.host.session_id !== sessionId || actual.project?.id !== value.input_ref.project_id
         || actual.definition?.draft_id !== draft!.summary.draft_id || actual.definition.revision !== draft!.summary.revision) {
-        throw new Error(`实际样例 ${value.id} 已产生，但Host中的原定义草稿修订已变化；请重读来源，原输入保留。`);
+        throw new Error(`样例${value.id}已生成，但定义草稿已更新。请重新读取；原输入已保留。`);
       }
     }
     await checkSampleDraft();
@@ -454,7 +454,7 @@ export function Workbench() {
     assertSampleOrigin();
     await checkSampleDraft();
     if (frozen.kind !== 'project' || frozen.data.id !== value.input_ref.project_id || frozen.data.revision !== value.input_ref.project_revision) {
-      throw new Error('Host未返回此实际样例的冻结工程，不能按当前实例猜测作业归属。');
+      throw new Error('未能读取该样例运行时保存的工程，请重新打开样例。');
     }
     const matches = (reference: ModuleRef) => reference.id === draft.definition.id && reference.version === draft.definition.version;
     const jobs = value.jobs.filter(item => item.execution_ref.kind === 'definition_cycle' ? matches(item.execution_ref.data.module_ref)
@@ -483,18 +483,18 @@ export function Workbench() {
       const captured = deviceProcess?.id, draft = deviceProcess?.draft, scenario = snapshot?.scenarios.find(value => value.id === scenarioId);
       if (!draft || !scenario || processSamples.status !== 'available' || !authoringIO || !project) throw new Error(processSamples.status === 'unavailable' ? processSamples.reason : '请先保存真实草稿并选择适用方案。');
       const state = await processSamples.run(draft, scenario);
-      if (state.result?.kind !== 'run') throw new Error('样例未返回实际 Run，不能以观看动画代替。');
+      if (state.result?.kind !== 'run') throw new Error('样例尚未生成可查看的运行记录。');
       const value = await authoringIO.dispatch<RunView>({ api_version: '0.1', request_id: `process-sample-${crypto.randomUUID()}`, project_id: project.id, scope: { kind: 'definition_draft', data: draft.summary.draft_id }, operation: 'get_run', params: { run_id: state.result.data.run_id, query: { kind: 'full_result' } } });
       if (value.kind !== 'full') throw new Error('未读到此实际样例的完整结果。');
       if (deviceProcessRef.current?.id === captured) await receiveProcessSample(value.data);
       await refreshLatest.current();
-      return { message: '实际隔离周期已完成，读取原 Task 和冻结 Run。' };
+      return { message: '样例运行已完成，正在读取结果。' };
   }
   async function inspectSavedProcessDraft(request: { project_id: string; draft_id: string; draft_revision: number }) {
     const captured = deviceProcess?.id;
     if (!authoringIO || request.project_id !== project?.id) throw new Error('工程已切换，请重新选择草稿。');
     const actual = await readDraft(authoringIO, request.project_id, request.draft_id);
-    if (actual.summary.revision !== request.draft_revision) throw new Error('草稿修订已变化；原输入保留，请重读并核对冲突。');
+    if (actual.summary.revision !== request.draft_revision) throw new Error('草稿已更新，输入已保留。请刷新后核对冲突。');
     if (deviceProcessRef.current?.id !== captured) throw new Error('过程入口已关闭，不打开旧响应。');
     returnToAuthoring(actual);
     return { message: '已打开同一实际草稿的参数与来源详情。' };
@@ -522,7 +522,7 @@ export function Workbench() {
         || current.project?.id !== context.project_id || revision !== context.scope_revision
         || JSON.stringify(active.scope) !== JSON.stringify(context.scope)
         || JSON.stringify(active.selection) !== JSON.stringify(context.selection)) {
-        throw new Error('节点所属工程、修订或观察来源已变化，请在当前来源重新选择；不打开旧响应。');
+        throw new Error('节点来源已变化，请重新选择当前工程中的节点。');
       }
     }
     async function checkHost() {
@@ -530,7 +530,7 @@ export function Workbench() {
       assertOrigin();
       const revision = context.scope.kind === 'definition_draft' ? actual.definition?.revision : actual.project?.revision;
       if (actual.host.session_id !== context.session_id || actual.project?.id !== context.project_id || revision !== context.scope_revision) {
-        throw new Error('实际 Host 的节点来源修订已变化，请重读后再创作。');
+        throw new Error('节点版本已更新，请重新读取后编辑。');
       }
     }
     assertOrigin();
@@ -543,7 +543,7 @@ export function Workbench() {
         draft = await readDraft(io, context.project_id, request.target.draft_id);
         assertOrigin();
         if (context.scope.kind !== 'definition_draft' || context.scope.data !== draft.summary.draft_id || draft.summary.revision !== context.scope_revision) {
-          throw new Error('节点不属于当前定义草稿修订，不能跳到其他草稿编辑。');
+          throw new Error('节点不属于当前草稿，请在正确的草稿中编辑。');
         }
       } else {
         const owner = request.selection.owner;
@@ -554,7 +554,7 @@ export function Workbench() {
         let definition: ModuleDefinition;
         if (request.target.kind === 'module_version' && object.kind === 'module') {
           if (object.data.definition.id !== request.target.module_ref.id || object.data.definition.version !== request.target.module_ref.version) {
-            throw new Error('Host 未返回所选节点的精确模块版本。');
+            throw new Error('未读取到所选节点的模块版本。');
           }
           definition = object.data.definition;
         } else if (request.target.kind === 'definition_draft' && request.target.frozen && object.kind === 'definition'
@@ -570,7 +570,7 @@ export function Workbench() {
           assertOrigin();
           if (module.kind !== 'module' || module.data.definition.payload.category !== 'devices'
             || module.data.definition.id !== object.data.module_ref.id || module.data.definition.version !== object.data.module_ref.version) {
-            throw new Error('未读到同一冻结实例的精确设备定义；不借当前定义补齐。');
+            throw new Error('未能读取该次运行使用的设备版本，请补齐原模块。');
           }
           definition = { ...module.data.definition, payload: { category: 'devices', data: {
             ...module.data.definition.payload.data, presentation: object.data.presentation_override,
@@ -582,7 +582,7 @@ export function Workbench() {
         }));
         creationCommit = commit;
         assertOrigin();
-        if (commit.scope.kind !== 'definition_draft') throw new Error('Host 未返回新定义草稿 Scope。');
+        if (commit.scope.kind !== 'definition_draft') throw new Error('未读取到新定义草稿的编辑范围。');
         draft = await readDraft(io, context.project_id, commit.scope.data.id, commit.history, commit.new_revision);
         assertOrigin();
         rememberCommit(commit);
@@ -592,7 +592,7 @@ export function Workbench() {
       setDeviceProcess(null); setDeliveryTab(null); setLibraryOpen(false); setSource('draft');
       setAuthoringDraft(draft); setAuthoringPresentation(null);
       setAuthoring({ id: crypto.randomUUID(), draft });
-      setMessage(request.target.frozen ? '已从所选冻结来源创建可编辑草稿；采用须明确操作，旧运行保持原输入。' : '已打开所选节点的实际定义草稿。');
+      setMessage(request.target.frozen ? '已从所选历史版本创建草稿。编辑后需另行应用，已有运行记录不变。' : '已打开所选节点的实际定义草稿。');
     } catch (error) {
       if (creationCommit?.scope.kind === 'definition_draft') {
         const failure = new Error(`已在工程 ${creationCommit.project_id} 创建定义草稿 ${creationCommit.scope.data.id} / r${creationCommit.new_revision}；后续读取或导航未完成。请在原工程读取此草稿，不要重复创建。原因为：${error instanceof Error ? error.message : String(error)}`, { cause: error });
@@ -607,7 +607,7 @@ export function Workbench() {
       if (request.device_id) {
         const current = await refreshLatest.current();
         const device = current.project?.devices.find(value => value.id === request.device_id && value.module_ref.id === request.module_ref.id && value.module_ref.version === request.module_ref.version);
-        if (!device) throw new Error('当前工程已不是该精确实例版本；历史结果保留，请明确选择当前实例后编辑。');
+        if (!device) throw new Error('设备版本已变化，历史结果保留。请选择当前设备后编辑。');
         setDeviceProcess(null); closeAuthoring(); setSource('draft'); setEditor({ base: current, target: { kind: 'device', value: device } });
       } else if (deviceProcess?.draft) returnToAuthoring(deviceProcess.draft);
       else throw new Error('没有实际实例或定义草稿可配置。');
@@ -650,7 +650,7 @@ export function Workbench() {
       closeAuthoring(); setLibraryModule(reference); setLibraryOpen(true); return;
     }
     if (category === 'devices') {
-      if (!next.modules.has(host.moduleKey(reference))) throw new Error('此精确设备版本尚未采用到工程，请先在创作面板选择实例并核对采用。');
+      if (!next.modules.has(host.moduleKey(reference))) throw new Error('此设备版本尚未应用到工程，请先在创作面板选择并应用。');
       if (!next.project.halls.length) throw new Error('请先创建实际厂房，再明确创建设备实例。');
       closeAuthoring(); setEditor({ base: next, target: { kind: 'device', moduleRef: reference } }); return;
     }
@@ -659,23 +659,23 @@ export function Workbench() {
     };
     const section = businessSections[category];
     if (section) {
-      if (!next.modules.has(host.moduleKey(reference))) throw new Error('此精确版本尚未采用到工程，请先在创作面板明确核对采用。');
+      if (!next.modules.has(host.moduleKey(reference))) throw new Error('此版本尚未应用到工程，请先在创作面板选择并应用。');
       closeAuthoring(); setBusinessEditIntent({ id: crypto.randomUUID(), section }); setBusinessOpen(true);
       setMessage(`已进入业务分区；来源定义 ${reference.id} @ ${reference.version}，实例与方案仍须明确选择。`); return;
     }
     if (category === 'media') {
       const object = await authoringIO!.dispatch<DomainObject>({ api_version: '0.1', request_id: `authoring-consumer-${crypto.randomUUID()}`, project_id: next.project.id, scope: { kind: 'project' }, operation: 'get_object', params: { object_id: { kind: 'module', id: reference.id }, source: { kind: 'module_version', data: { module_ref: reference } }, node_index: null } });
-      if (object.kind !== 'module' || object.data.definition.payload.category !== 'media') throw new Error('Host 未返回此精确表现版本。');
+      if (object.kind !== 'module' || object.data.definition.payload.category !== 'media') throw new Error('未读取到所选表现版本。');
       setAuthoringPresentation({ presentation: object.data.definition.payload.data, source: authoringPresentationSource(next, null, object.data, object.data.rights) }); return;
     }
     if (category === 'professional') {
-      if (!next.modules.has(host.moduleKey(reference))) throw new Error('此精确专业版本尚未采用到工程，请先在创作面板明确核对采用。');
+      if (!next.modules.has(host.moduleKey(reference))) throw new Error('此专业模块版本尚未应用到工程，请先在创作面板应用。');
       const object = await authoringIO!.dispatch<DomainObject>({ api_version: '0.1', request_id: `authoring-consumer-${crypto.randomUUID()}`, project_id: next.project.id, scope: { kind: 'project' }, operation: 'get_object', params: { object_id: { kind: 'module', id: reference.id }, source: { kind: 'module_version', data: { module_ref: reference } }, node_index: null } });
-      if (object.kind !== 'module') throw new Error('Host 未返回此精确专业定义。');
+      if (object.kind !== 'module') throw new Error('未读取到所选专业定义版本。');
       assertPackagingDefinition(object.data.definition);
       await openPackaging(); return;
     }
-    throw new Error('本类定义可在当前面板明确核对采用；独立业务消费者入口尚未接入，当前输入仍保留。');
+    throw new Error('可在当前面板应用此定义；此类型暂不支持直接运行，输入已保留。');
   }
 
   async function action(work: () => Promise<unknown>) {
@@ -692,7 +692,7 @@ export function Workbench() {
     setRunToRestore(null);
     void action(async () => {
       const restored = await chooseRun(runToRestore.runId, undefined, 'draft');
-      if (restored) setMessage('已读取保存的运行记录；当前仍为工程草稿，可点击“运行回看”查看原冻结输入和结果。');
+      if (restored) setMessage('运行记录已加载，点击“运行回看”可查看当次输入和结果。');
     });
   }, [snapshot, runToRestore]);
 
@@ -709,7 +709,7 @@ export function Workbench() {
   async function saveCurrentProject() {
     if (!project) return;
     const result = await host.saveProject(project, await host.selectDirectory('save_project'), setTaskState);
-    if (result.kind !== 'save') throw new Error('Host 未返回保存结果。');
+    if (result.kind !== 'save') throw new Error('尚未收到保存结果，请核对保存目录。');
     setMessage(`已保存 r${result.data.saved_revision}${result.data.still_dirty ? '；当前仍有新修订未保存' : ''}。`);
     await refresh();
   }
@@ -728,7 +728,7 @@ export function Workbench() {
     }
     const actual = await refresh();
     if (actual.project?.id !== leavingProjectId) throw new Error('保存期间工程已切换，未继续离开。');
-    if (actual.context.project?.dirty !== false) throw new Error('工程仍有未保存更改，未继续离开。请先核对当前修订。');
+    if (actual.context.project?.dirty !== false) throw new Error('工程仍有未保存修改，未离开。请先保存或放弃修改。');
     return 'already_saved';
   }
   function beginProject(intent: 'empty' | 'template' | 'demonstration', reuseEmpty: boolean) {
@@ -746,8 +746,8 @@ export function Workbench() {
     try {
       rememberCommit(await host.applyCommands(base, commandsToApply));
       const next = await refresh();
-      if (!next.project || next.project.id !== base.id) throw new Error('展示槽已提交，但活动工程已切换，请在原工程重读实际修订。');
-      setMessage('展示槽已应用到工程草稿；新运行读取新布局，旧运行保留冻结来源。');
+      if (!next.project || next.project.id !== base.id) throw new Error('摆放位置已应用到原工程，请返回核对。');
+      setMessage('摆放位置已应用；新运行将使用新布局，已有记录不变。');
       return next.project;
     } finally { actionCount.current--; setBusy(actionCount.current > 0); }
   }
@@ -757,7 +757,7 @@ export function Workbench() {
       if (workspaceRef.current?.project?.id !== base.id) throw new Error('布局输入所属工程已切换，请返回原工程核对。');
       rememberCommit(await host.applyCommands(base, commandsToApply));
       const next = await refreshLatest.current();
-      if (next.project?.id !== base.id) throw new Error('布局已提交，活动工程已切换，请在原工程重读实际修订。');
+      if (next.project?.id !== base.id) throw new Error('布局已应用到原工程，请返回核对。');
       setMessage('布局已应用到工程草稿，可在本会话撤销。');
     } finally { actionCount.current--; setBusy(actionCount.current > 0); }
   }
@@ -786,8 +786,8 @@ export function Workbench() {
     try {
       rememberCommit(await host.applyCommands(base, commandsToApply));
       const next = await refresh();
-      if (!next.project || next.project.id !== base.id) throw new Error('节点已提交，但活动工程已切换，请在原工程重读实际修订。');
-      setMessage('所选节点已应用到工程草稿；旧运行保持原冻结表现。');
+      if (!next.project || next.project.id !== base.id) throw new Error('节点修改已应用到原工程，请返回核对。');
+      setMessage('节点修改已应用，已有运行记录不变。');
       return next.project;
     } finally { actionCount.current--; setBusy(actionCount.current > 0); }
   }
@@ -802,7 +802,7 @@ export function Workbench() {
     try {
       const next = await refreshLatest.current();
       if (!next.project || next.project.id !== previous.base.project!.id || next.context.host.session_id !== previous.base.context.host.session_id) {
-        throw new Error('工程或 Host 已切换，原表单输入保留；请返回原工程重新选择对象。');
+        throw new Error('工程连接已切换，输入已保留。请返回原工程重新选择对象。');
       }
       let target = previous.target;
       if (target.value) {
@@ -897,12 +897,12 @@ export function Workbench() {
     const projectId = currentProject.id, epoch = ++observation.current;
     comparisonEpoch.current++;
     pendingRun.current = id;
-    setMessage('正在读取所选运行记录及其冻结输入，请稍候。');
+    setMessage('正在读取所选运行记录及当次输入…');
     const view = await host.getRun(projectId, id, { kind: 'full_result' });
     if (!ownsObservation(epoch, projectId, id)) return null;
-    if (view.kind !== 'full') throw new Error('Host 未返回完整 Run。');
+    if (view.kind !== 'full') throw new Error('未读取到完整运行记录。');
     const frontier = view.data.computed_until_ms;
-    if (frontier == null) throw new Error('该 Run 尚无已计算边界，不能显示实际状态。');
+    if (frontier == null) throw new Error('此记录尚无计算结果，暂时无法回看。');
     const time = requestedTime ?? frontier;
     const frozen = await host.readRunInputs(projectId, view.data, frontier, true);
     if (!ownsObservation(epoch, projectId, id)) return null;
@@ -928,8 +928,8 @@ export function Workbench() {
     const owns = () => epoch === comparisonEpoch.current && projectIdentity.current === projectId && primaryRun.current === primary;
     const view = await host.getRun(projectId, id, { kind: 'full_result' });
     if (!owns()) return;
-    if (view.kind !== 'full') throw new Error('Host 未返回比较 Run 的完整结果。');
-    if (view.data.computed_until_ms == null) throw new Error('比较 Run 尚无已计算边界，不能解释实际轨道。');
+    if (view.kind !== 'full') throw new Error('未读取到用于比较的完整运行记录。');
+    if (view.data.computed_until_ms == null) throw new Error('比较记录尚无计算结果，暂时无法显示时间轴。');
     const frozen = await host.readRunInputs(projectId, view.data, view.data.computed_until_ms);
     if (owns()) setComparison({ project: frozen.project, run: view.data, scenario: frozen.scenario });
   }
@@ -980,7 +980,7 @@ export function Workbench() {
       const committed = next.scenarios.find(value => value.id === proposal.scenario_id);
       if (!committed) throw new Error('提交后未读到该方案，不能将预览标为已提交。');
       setTimelineSelection(null);
-      setMessage('时间轴输入已提交；原 Run 继续保留原冻结输入。');
+      setMessage('时间轴修改已应用，已有运行记录不变。');
       return { ok: true, scenario: committed };
     } catch (error) {
       if (error instanceof host.HostFailure) return { ok: false, error: { ...error.detail, message: error.message } };
@@ -1008,7 +1008,7 @@ export function Workbench() {
     setBusy(true); setMessage(''); setFailure(null);
     try {
       const result = await host.runScenario(project, scenario, setTaskState);
-      if (result.kind !== 'run') throw new Error('Host 未返回实际 Run。');
+      if (result.kind !== 'run') throw new Error('未读取到运行结果。');
       await showFinishedRun(result.data.run_id, project.id); setBusinessOpen(false);
     } finally { setBusy(false); }
   }
@@ -1059,8 +1059,8 @@ export function Workbench() {
   async function readDeliveryEvidence(runId: string) {
     const projectId = deliveryProjectId();
     const value = await host.getRun(projectId, runId, { kind: 'full_result' });
-    if (value.kind !== 'full') throw new Error('Host 未返回完整 Run。');
-    if (value.data.computed_until_ms == null) throw new Error('该 Run 缺少已计算边界，冻结输入尚不能由此读取入口解释。');
+    if (value.kind !== 'full') throw new Error('未读取到完整运行记录。');
+    if (value.data.computed_until_ms == null) throw new Error('此记录缺少计算范围，暂时无法读取当次输入。');
     const frozen = await host.readRunInputs(projectId, value.data, value.data.computed_until_ms);
     if (projectIdentity.current !== projectId) throw new Error('读取期间工程已切换，请重新打开交付面板。');
     return { project: frozen.project, scenario: frozen.scenario, run: value.data };
@@ -1197,7 +1197,7 @@ export function Workbench() {
       </div></details>
       <details><summary>编辑</summary><div className="menu-popup"><button disabled={!project || busy || editing || !commands.includes('undo') || history?.can_undo === false} onClick={() => void action(() => edit([{ kind: 'undo' }]))}>撤销</button><button disabled={!project || busy || editing || !commands.includes('redo') || history?.can_redo === false} onClick={() => void action(() => edit([{ kind: 'redo' }]))}>重做</button><button disabled={!project || busy || editing || source !== 'draft' || !commands.includes('put_object')} onClick={() => setItemLayout({ initialOwner: selection && (selection.kind === 'device' || selection.kind === 'location' || selection.kind === 'item_type') ? { kind: selection.kind, id: selection.id } : undefined })}>物品展示槽…</button></div></details>
       <details><summary>视图</summary><div className="menu-popup">{(['line_canvas', 'multi_hall_canvas'] as const).map(value => <button key={value} onClick={() => setCanvas(value)}>{canvas === value ? '✓ ' : ''}{value === 'line_canvas' ? '流水线画布' : '多厂房画布'}</button>)}{[1, 1.5, 2].map(scale => <button key={scale} onClick={() => setPropertyTextScale(scale)}>{propertyTextScale === scale ? '✓ ' : ''}属性文字 {scale * 100}%</button>)}<button onClick={() => setResetKey(value => value + 1)}>复位为斜视</button>{(['detailed', 'simplified', 'region'] as LodMode[]).map(value => <button key={value} onClick={() => { setAutoLod(false); setLod(value); }}>{lod === value && !autoLod ? '✓ ' : ''}{({ detailed: '详细', simplified: '简化', region: '区域' })[value]}</button>)}<button onClick={() => setAutoLod(value => !value)}>{autoLod ? '✓ ' : ''}自动呈现档位</button></div></details>
-      <details><summary>Agent</summary><div className="menu-popup"><button disabled={!snapshot || busy || editing} onClick={() => { switchSource('draft'); setAgentEditorState(null); setAgentOpen(true); }}>连接、权限与任务…</button></div></details><details><summary>模块</summary><div className="menu-popup"><button disabled={!project || busy || editing} onClick={() => void action(() => openAuthoring())}>新建定义…</button>{definitionDraftIds.map(id => <button key={id} disabled={!project || busy || editing} onClick={() => void action(() => openAuthoring(undefined, id))}>继续定义草稿 · {id}</button>)}{!definitionDraftIds.length && <span className="form-hint">当前 Host 没有可读取的定义草稿</span>}</div></details><details><summary>设备过程</summary><div className="menu-popup"><button disabled={!authoringDraft || busy || deviceProcess !== null} onClick={() => navigateFromAuthoring("打开当前定义的图片过程", () => void action(openDraftProcess))}>当前定义的图片过程与标签…</button><button disabled={!selectedDevice || !exactModule || busy || editing} onClick={() => void action(async () => openDeviceProcess())}>所选设备的过程…</button></div></details><details><summary>专业工程</summary><div className="menu-popup"><button disabled={!project || busy || editing} onClick={() => void action(() => openPackaging())}>纸包装 · 结构与过程…</button>{authoringDraft?.definition.payload.category === 'professional' && <button disabled={busy} onClick={() => navigateFromAuthoring('打开当前专业定义的计算页', () => void action(() => openPackaging({ kind: 'definition_draft', data: authoringDraft.summary.draft_id })))}>在当前专业定义草稿中计算…</button>}</div></details><details><summary>评审与交付</summary><div className="menu-popup">{(['comparison', 'reporting', 'handoff'] as const).map(tab => <button key={tab} disabled={!project || busy || editing} onClick={() => void action(async () => { await refresh(); setDeliveryTab(tab); })}>{({ comparison: '方案比较', reporting: '评估报告', handoff: '工程交接' })[tab]}</button>)}</div></details><details><summary>窗口</summary><div className="menu-popup">{[['对象树', leftVisible, setLeftVisible], ['属性', rightVisible, setRightVisible], ['时间轴', timelineVisible, setTimelineVisible], ['事件描述', descriptionVisible, setDescriptionVisible]].map(([label, visible, update]) => <button key={String(label)} onClick={() => (update as (value: boolean) => void)(!visible)}>{visible ? '✓ ' : ''}{String(label)}</button>)}<button onClick={() => { setCanvasFocused(false); setLeftVisible(true); setRightVisible(true); setTimelineVisible(true); setDescriptionVisible(true); setLeftWidth(256); setRightWidth(400); setDockHeight(160); }}>恢复默认布局</button></div></details>
+      <details><summary>Agent</summary><div className="menu-popup"><button disabled={!snapshot || busy || editing} onClick={() => { switchSource('draft'); setAgentEditorState(null); setAgentOpen(true); }}>连接、权限与任务…</button></div></details><details><summary>模块</summary><div className="menu-popup"><button disabled={!project || busy || editing} onClick={() => void action(() => openAuthoring())}>新建定义…</button>{definitionDraftIds.map(id => <button key={id} disabled={!project || busy || editing} onClick={() => void action(() => openAuthoring(undefined, id))}>继续定义草稿 · {id}</button>)}{!definitionDraftIds.length && <span className="form-hint">当前没有可读取的定义草稿</span>}</div></details><details><summary>设备过程</summary><div className="menu-popup"><button disabled={!authoringDraft || busy || deviceProcess !== null} onClick={() => navigateFromAuthoring("打开当前定义的图片过程", () => void action(openDraftProcess))}>当前定义的图片过程与标签…</button><button disabled={!selectedDevice || !exactModule || busy || editing} onClick={() => void action(async () => openDeviceProcess())}>所选设备的过程…</button></div></details><details><summary>专业工程</summary><div className="menu-popup"><button disabled={!project || busy || editing} onClick={() => void action(() => openPackaging())}>纸包装 · 结构与过程…</button>{authoringDraft?.definition.payload.category === 'professional' && <button disabled={busy} onClick={() => navigateFromAuthoring('打开当前专业定义的计算页', () => void action(() => openPackaging({ kind: 'definition_draft', data: authoringDraft.summary.draft_id })))}>在当前专业定义草稿中计算…</button>}</div></details><details><summary>评审与交付</summary><div className="menu-popup">{(['comparison', 'reporting', 'handoff'] as const).map(tab => <button key={tab} disabled={!project || busy || editing} onClick={() => void action(async () => { await refresh(); setDeliveryTab(tab); })}>{({ comparison: '方案比较', reporting: '评估报告', handoff: '工程交接' })[tab]}</button>)}</div></details><details><summary>窗口</summary><div className="menu-popup">{[['对象树', leftVisible, setLeftVisible], ['属性', rightVisible, setRightVisible], ['时间轴', timelineVisible, setTimelineVisible], ['事件描述', descriptionVisible, setDescriptionVisible]].map(([label, visible, update]) => <button key={String(label)} onClick={() => (update as (value: boolean) => void)(!visible)}>{visible ? '✓ ' : ''}{String(label)}</button>)}<button onClick={() => { setCanvasFocused(false); setLeftVisible(true); setRightVisible(true); setTimelineVisible(true); setDescriptionVisible(true); setLeftWidth(256); setRightWidth(400); setDockHeight(160); }}>恢复默认布局</button></div></details>
       <span className="menu-divider" /><button className="menu-action" disabled={!connected || busy || editing || source !== 'draft'} onClick={() => void action(async () => { await refresh(); setLibraryModule(undefined); setLibraryCategory(undefined); setLibraryOpen(true); })}>模块与模板库</button><button className="menu-action" disabled={!project || busy || source !== 'draft' || editing} onClick={() => openEditor({ kind: 'hall' })}>新建厂房</button><button className="menu-action" disabled={!project?.halls.length || busy || source !== 'draft' || editing} onClick={() => openEditor({ kind: 'device' })}>添加设备</button><button className="menu-action" disabled={!project?.halls.length || busy || source !== 'draft' || editing} onClick={() => openEditor({ kind: 'line' })}>新建线组</button><button className="menu-action" disabled={!project || busy || source !== 'draft' || editing} onClick={() => { if (snapshot) setConnectionEditor({ base: snapshot }); }}>连接物料</button>
       <button className="menu-action" disabled={!project || !snapshot?.hostContext || busy || editing} onClick={() => {
         switchSource('draft'); setCloudOpen(true);
@@ -1246,51 +1246,51 @@ export function Workbench() {
           onClose={closeCloud} onRefresh={async () => { await refreshLatest.current(); }}
           onLocateDevice={deviceId => { selectObject({ kind: 'device', id: deviceId }); setMessage('已定位当前工程设备；生产事实以云端生产所选来源为准。'); }}
           onLocateExecutionObject={() => setMessage('已选中执行记录中的对象。状态与详情见当前观察页。')}
-        /> : agentOpen && snapshot ? <AgentWorkspace key={agentEditorIdentity(snapshot)} workspace={snapshot} onRefresh={() => refreshLatest.current()} onClose={() => setAgentOpen(false)} onEditorStateChanged={receiveAgentEditorState} /> : checkOpen && project && snapshot ? <FactoryCheckWorkspace project={project} supported={snapshot.capabilities.implemented_operations.some(value => value.operation === 'check_factory_draft')} selection={selections} busy={busy} onDirtyChange={setCheckDirty} onClose={() => setCheckOpen(false)} onLocate={selectObject} /> : transformProposal ? <LayoutTransformProposal proposal={transformProposal} busy={busy} onApply={applyTransform} onReload={reloadLayout} onClose={() => setTransformProposal(null)} onDirtyChange={setLayoutDirty} /> : layoutEditor ? <LayoutSelectionEditor project={layoutEditor.project} selection={layoutEditor.selection} mode={layoutEditor.mode} busy={busy} onDirtyChange={setLayoutDirty} onApply={async (commands, base) => { await commitLayout(commands, base); setLayoutEditor(null); }} onReload={reloadLayout} onClose={() => setLayoutEditor(null)} /> : itemLayout && snapshot ? <ItemLayoutWorkspace onDirtyChange={setItemLayoutDirty} workspace={snapshot} initialOwner={itemLayout.initialOwner} busy={busy} onApply={commitItemLayout} onClose={() => setItemLayout(null)} /> : deviceProcess && snapshot && processAuthoringIO && processProjectRevision !== undefined ? <DeviceProcessWorkspace key={deviceProcess.id} workspace={snapshot} scope={deviceProcess.scope} scopeRevision={deviceProcess.scope.kind === 'definition_draft' ? deviceProcess.draft!.summary.revision : processProjectRevision} selection={deviceProcess.selection} actions={processActions} editor={{ onEditorStateChanged: receiveProcessEditorState, draft: deviceProcess.draft, source: deviceProcess.module, io: processAuthoringIO, samples: processSamples, scenario: snapshot.scenarios.find(value => value.id === scenarioId) ?? null, actions: { configure: inspectSavedProcessDraft, inspect: inspectSavedProcessDraft, preview_cycle: runProcessCycle }, run: deviceProcess.selection.kind === 'actual_run' && deviceProcess.scope.kind === 'project' && run?.id === deviceProcess.selection.run_id ? run : null, observation: deviceProcess.selection.kind === 'actual_run' && observationPage?.run_id === deviceProcess.selection.run_id ? observationPage : null, instance: selectedDevice ? { id: selectedDevice.id, module_ref: selectedDevice.module_ref } : null, onDraftChanged: receiveProcessDraft, onCommitted: async commit => { rememberCommit(commit); await refreshLatest.current(); }, onSampleRun: receiveProcessSample, onAdoptionRequested: reference => { setDeviceProcess(null); void action(() => openAuthoring(reference)); }, onImportPackageRequested: () => returnToAuthoring(deviceProcess.draft) }} onSelectionChanged={value => { setDeviceProcess(current => current ? { ...current, selection: value } : current); if (deviceProcess.scope.kind === 'project' && (value.kind === 'actual_run' || value.kind === 'frozen_device') && run?.id === value.run_id) void action(() => seekRun(value.run_id, value.at_ms)); }} onReturnToAuthoring={returnToAuthoring} onInspectItem={inspectProcessItem} onApplyNode={commitProcessNode} onEditNodeSource={editProcessNodeSource} onNodeDirtyChange={receiveNodeDirty} onClose={() => setDeviceProcess(null)} /> : packagingScope && packagingWorkspace && project && authoringIO && packagingRevision !== undefined ? <PackagingWorkspace onEditorStateChanged={receivePackagingEditorState} key={JSON.stringify([snapshot?.context.host.session_id, project.id, packagingScope])} workspace={packagingWorkspace} scope={packagingScope} scopeRevision={packagingRevision} io={authoringIO} manufacturingExport={{ status: 'available', start: startManufacturingPackageExport }} readManufacturingFile={readManufacturingFile} storedArtifacts={{ status: 'available', list: async () => listStoredPackaging(await packagingReadIdentity()), read: async artifactId => { const current = workspaceRef.current; if (!current?.project || current.project.id !== project.id) throw new Error('工程已切换，请在当前工程重新读取成果。'); const context = await readPackagingContext(current, packagingScope); const revision = packagingScope.kind === 'definition_draft' ? context.definition?.revision : current.project.revision; if (revision === undefined) throw new Error('未读取到此实际专业 Scope 修订。'); const value = await readStoredPackaging({ project_id: current.project.id, scope: packagingScope, scope_revision: revision, artifact_id: artifactId }); return { ...value, inputReadIssue: null }; } }} onCommitted={async commit => { rememberCommit(commit); await refreshPackaging(); }} onRefresh={refreshPackaging} onClose={() => { setPackagingScope(null); setPackagingContext(null); }} /> : authoring && snapshot && authoringIO && authoringTemplates ? <div className={`module-authoring-integrated ${authoringPresentation ? 'has-preview' : ''}`}><ModuleAuthoringWorkspace onDirtyChange={setDefinitionDirty} key={`${snapshot.context.host.session_id}:${project?.id}:${authoring.id}`} workspace={snapshot} busy={busy} io={authoringIO} samples={authoringSamples} templates={authoringTemplates} initialModule={authoring.module} initialDraft={authoring.draft} onNavigationGuard={registerAuthoringNavigation} onDraftChanged={setAuthoringDraft} onCommitted={async commit => { rememberCommit(commit); await refreshLatest.current(); }} onPreviewChange={(presentation, source) => setAuthoringPresentation(presentation ? { presentation, source: source ?? null } : null)} onConsumerRequested={(category, reference) => void action(() => openAuthoringConsumer(category, reference))} onClose={closeAuthoring} />{authoringPresentation && <AuthoringPresentationPreview value={authoringPresentation} />}</div> : deliveryTab && snapshot ? <DeliveryWorkspace key={`${project?.id}:${deliveryTab}`} workspace={snapshot} services={deliveryServices} initialTab={deliveryTab} onClose={() => setDeliveryTab(null)} onInspectRun={id => { setDeliveryTab(null); void action(() => chooseRun(id)); }} onLocate={(id, object) => { setDeliveryTab(null); void action(async () => { const selected = await chooseRun(id); if (selected) selectObject(object); }); }} onOpenPackage={() => { setDeliveryTab(null); void action(() => openPackage('file')); }} onEditModule={reference => void action(() => openAuthoring(reference))} /> : businessOpen && snapshot ? <BusinessEditor onDirtyChange={setBusinessDirty} editIntent={businessEditIntent} project={project} scenarios={snapshot.scenarios} modules={snapshot.modules} scenarioId={scenarioId || null} history={history} run={run} frozenProject={runProject} frozenScenario={runInputs?.scenario ?? null} observation={observationPage} atMs={atMs} busy={busy} canEditSetupPolicies onCommit={commitBusiness} onRefresh={async () => { await refresh(); }} onRun={runBusiness} onScenarioChange={setScenarioId} onLocate={locateBusiness} onClose={() => setBusinessOpen(false)} /> : libraryOpen ? <ModuleLibrary onDirtyChange={setLibraryDirty} key={libraryModule ? host.moduleKey(libraryModule) : 'library'} initialModule={libraryModule} initialCategory={libraryCategory} onTemplate={async (base, preview) => { setBusy(true); setMessage(''); setFailure(null); try { rememberCommit(await host.applyTemplate(base, preview)); const next = await refresh(); const created = preview.command?.explicit_new_scenario_seed; if (created && next.scenarios.some(value => value.id === created.id)) setScenarioId(created.id); setLibraryOpen(false); setMessage('模板工厂已创建。下一步点击“配置订单”，核对供料和生产任务，再运行方案。'); } finally { setBusy(false); } }} project={project} busy={busy} onClose={() => setLibraryOpen(false)} onAdopt={async (base, reference) => { setBusy(true); setMessage(''); setFailure(null); try { rememberCommit(await host.adoptDefinition(base, reference)); await refresh(); setLibraryOpen(false); setMessage('定义已添加。可在画布中添加设备，或在业务输入中配置相应数据。'); } finally { setBusy(false); } }} /> : connectionEditor && connectionEditor.base.project ? <ConnectionEditor onDirtyChange={setConnectionDirty} project={connectionEditor.base.project} modules={connectionEditor.base.modules} value={connectionEditor.value} busy={busy} onClose={() => setConnectionEditor(null)} onApply={async values => { setBusy(true); setMessage(''); setFailure(null); try { await edit(values, connectionEditor.base.project); setConnectionEditor(null); } finally { setBusy(false); } }} /> : editor && editor.base.project ? <ObjectEditor onDirtyChange={setObjectDirty} key={`${editor.target.kind}-${editor.target.value?.id ?? 'new'}-${editor.base.project.revision}`} onReload={reloadObjectEditor} project={editor.base.project} modules={editor.base.modules} target={editor.target} busy={busy} onClose={() => setEditor(null)} onApply={async values => { setBusy(true); setMessage(''); setFailure(null); try { await edit(values, editor.base.project); setEditor(null); } finally { setBusy(false); } }} /> : <><FactoryScene project={displayedProject} modules={displayedModules} canvas={canvas} hallId={hallId} selection={selection} selections={selections} layoutControl={layoutControl} onTransform={transformLayout} onSelect={selectObject} onSelectMany={source === 'draft' && layoutMode === 'select' && !busy && !editing ? selectObjects : undefined} lod={lod} autoLod={autoLod} resetKey={resetKey} run={source === 'run' ? run : null} observation={source === 'run' ? observationPage : null} mediaSource={visibleFactorySource} />{factoryViewPending && <div role="status" style={{ position: 'absolute', inset: 0, zIndex: 5, background: '#ffffff70', display: 'grid', placeItems: 'center' }}><span style={{ background: '#fff', padding: '10px 16px', border: '1px solid #c7d4e2' }}>正在读取运行画面 · 当前画面 {visibleFactorySource?.observation ? visibleFactorySource.observation.at_ms / 1000 : '—'} 秒</span></div>}</>}{(!project || !project.halls.length && !project.devices.length) && !editing && <section className="project-start" aria-label="工程开始方式"><header><img className="project-start-mark" src="/superfactory-icon.png" alt="超级工厂" width="64" height="64" /><h2>选择开始方式</h2></header><div>{([['demonstration', '展示任务', '打开展示任务工程目录，核对其精确模块与实际输入。'], ['template', project ? '在当前工程使用模板' : '从模板开始', '浏览实际模板，明确采用的对象与精确版本。'], ['empty', project ? '继续当前空布局' : '空工程', project ? '在当前工程添加厂房；如需新建，使用“文件 → 新建空工程”。' : '从厂房与设备开始，逐步补齐必要参数。']] as const).map(([intent, title, detail]) => <button id={`start-${intent}`} key={intent} disabled={!connected || busy} onClick={() => beginProject(intent, true)}><strong>{title}</strong><span>{detail}</span></button>)}</div></section>}</div>
-        <div className="canvas-status" style={{ display: cloudOpen ? 'none' : undefined }}><span>{currentHall?.title ?? '未选择厂房'} · {source === 'run' ? '只读结果' : '布局编辑'}</span><span>{source === 'run' ? `实际对象 ${runObjects.length}` : '占地与高度取工程声明'}</span></div>
+        /> : agentOpen && snapshot ? <AgentWorkspace key={agentEditorIdentity(snapshot)} workspace={snapshot} onRefresh={() => refreshLatest.current()} onClose={() => setAgentOpen(false)} onEditorStateChanged={receiveAgentEditorState} /> : checkOpen && project && snapshot ? <FactoryCheckWorkspace project={project} supported={snapshot.capabilities.implemented_operations.some(value => value.operation === 'check_factory_draft')} selection={selections} busy={busy} onDirtyChange={setCheckDirty} onClose={() => setCheckOpen(false)} onLocate={selectObject} /> : transformProposal ? <LayoutTransformProposal proposal={transformProposal} busy={busy} onApply={applyTransform} onReload={reloadLayout} onClose={() => setTransformProposal(null)} onDirtyChange={setLayoutDirty} /> : layoutEditor ? <LayoutSelectionEditor project={layoutEditor.project} selection={layoutEditor.selection} mode={layoutEditor.mode} busy={busy} onDirtyChange={setLayoutDirty} onApply={async (commands, base) => { await commitLayout(commands, base); setLayoutEditor(null); }} onReload={reloadLayout} onClose={() => setLayoutEditor(null)} /> : itemLayout && snapshot ? <ItemLayoutWorkspace onDirtyChange={setItemLayoutDirty} workspace={snapshot} initialOwner={itemLayout.initialOwner} busy={busy} onApply={commitItemLayout} onClose={() => setItemLayout(null)} /> : deviceProcess && snapshot && processAuthoringIO && processProjectRevision !== undefined ? <DeviceProcessWorkspace key={deviceProcess.id} workspace={snapshot} scope={deviceProcess.scope} scopeRevision={deviceProcess.scope.kind === 'definition_draft' ? deviceProcess.draft!.summary.revision : processProjectRevision} selection={deviceProcess.selection} actions={processActions} editor={{ onEditorStateChanged: receiveProcessEditorState, draft: deviceProcess.draft, source: deviceProcess.module, io: processAuthoringIO, samples: processSamples, scenario: snapshot.scenarios.find(value => value.id === scenarioId) ?? null, actions: { configure: inspectSavedProcessDraft, inspect: inspectSavedProcessDraft, preview_cycle: runProcessCycle }, run: deviceProcess.selection.kind === 'actual_run' && deviceProcess.scope.kind === 'project' && run?.id === deviceProcess.selection.run_id ? run : null, observation: deviceProcess.selection.kind === 'actual_run' && observationPage?.run_id === deviceProcess.selection.run_id ? observationPage : null, instance: selectedDevice ? { id: selectedDevice.id, module_ref: selectedDevice.module_ref } : null, onDraftChanged: receiveProcessDraft, onCommitted: async commit => { rememberCommit(commit); await refreshLatest.current(); }, onSampleRun: receiveProcessSample, onAdoptionRequested: reference => { setDeviceProcess(null); void action(() => openAuthoring(reference)); }, onImportPackageRequested: () => returnToAuthoring(deviceProcess.draft) }} onSelectionChanged={value => { setDeviceProcess(current => current ? { ...current, selection: value } : current); if (deviceProcess.scope.kind === 'project' && (value.kind === 'actual_run' || value.kind === 'frozen_device') && run?.id === value.run_id) void action(() => seekRun(value.run_id, value.at_ms)); }} onReturnToAuthoring={returnToAuthoring} onInspectItem={inspectProcessItem} onApplyNode={commitProcessNode} onEditNodeSource={editProcessNodeSource} onNodeDirtyChange={receiveNodeDirty} onClose={() => setDeviceProcess(null)} /> : packagingScope && packagingWorkspace && project && authoringIO && packagingRevision !== undefined ? <PackagingWorkspace onEditorStateChanged={receivePackagingEditorState} key={JSON.stringify([snapshot?.context.host.session_id, project.id, packagingScope])} workspace={packagingWorkspace} scope={packagingScope} scopeRevision={packagingRevision} io={authoringIO} manufacturingExport={{ status: 'available', start: startManufacturingPackageExport }} readManufacturingFile={readManufacturingFile} storedArtifacts={{ status: 'available', list: async () => listStoredPackaging(await packagingReadIdentity()), read: async artifactId => { const current = workspaceRef.current; if (!current?.project || current.project.id !== project.id) throw new Error('工程已切换，请在当前工程重新读取成果。'); const context = await readPackagingContext(current, packagingScope); const revision = packagingScope.kind === 'definition_draft' ? context.definition?.revision : current.project.revision; if (revision === undefined) throw new Error('未读取到此实际专业 Scope 修订。'); const value = await readStoredPackaging({ project_id: current.project.id, scope: packagingScope, scope_revision: revision, artifact_id: artifactId }); return { ...value, inputReadIssue: null }; } }} onCommitted={async commit => { rememberCommit(commit); await refreshPackaging(); }} onRefresh={refreshPackaging} onClose={() => { setPackagingScope(null); setPackagingContext(null); }} /> : authoring && snapshot && authoringIO && authoringTemplates ? <div className={`module-authoring-integrated ${authoringPresentation ? 'has-preview' : ''}`}><ModuleAuthoringWorkspace onDirtyChange={setDefinitionDirty} key={`${snapshot.context.host.session_id}:${project?.id}:${authoring.id}`} workspace={snapshot} busy={busy} io={authoringIO} samples={authoringSamples} templates={authoringTemplates} initialModule={authoring.module} initialDraft={authoring.draft} onNavigationGuard={registerAuthoringNavigation} onDraftChanged={setAuthoringDraft} onCommitted={async commit => { rememberCommit(commit); await refreshLatest.current(); }} onPreviewChange={(presentation, source) => setAuthoringPresentation(presentation ? { presentation, source: source ?? null } : null)} onConsumerRequested={(category, reference) => void action(() => openAuthoringConsumer(category, reference))} onClose={closeAuthoring} />{authoringPresentation && <AuthoringPresentationPreview value={authoringPresentation} />}</div> : deliveryTab && snapshot ? <DeliveryWorkspace key={`${project?.id}:${deliveryTab}`} workspace={snapshot} services={deliveryServices} initialTab={deliveryTab} onClose={() => setDeliveryTab(null)} onInspectRun={id => { setDeliveryTab(null); void action(() => chooseRun(id)); }} onLocate={(id, object) => { setDeliveryTab(null); void action(async () => { const selected = await chooseRun(id); if (selected) selectObject(object); }); }} onOpenPackage={() => { setDeliveryTab(null); void action(() => openPackage('file')); }} onEditModule={reference => void action(() => openAuthoring(reference))} /> : businessOpen && snapshot ? <BusinessEditor onDirtyChange={setBusinessDirty} editIntent={businessEditIntent} project={project} scenarios={snapshot.scenarios} modules={snapshot.modules} scenarioId={scenarioId || null} history={history} run={run} frozenProject={runProject} frozenScenario={runInputs?.scenario ?? null} observation={observationPage} atMs={atMs} busy={busy} canEditSetupPolicies onCommit={commitBusiness} onRefresh={async () => { await refresh(); }} onRun={runBusiness} onScenarioChange={setScenarioId} onLocate={locateBusiness} onClose={() => setBusinessOpen(false)} /> : libraryOpen ? <ModuleLibrary onDirtyChange={setLibraryDirty} key={libraryModule ? host.moduleKey(libraryModule) : 'library'} initialModule={libraryModule} initialCategory={libraryCategory} onTemplate={async (base, preview) => { setBusy(true); setMessage(''); setFailure(null); try { rememberCommit(await host.applyTemplate(base, preview)); const next = await refresh(); const created = preview.command?.explicit_new_scenario_seed; if (created && next.scenarios.some(value => value.id === created.id)) setScenarioId(created.id); setLibraryOpen(false); setMessage('模板工厂已创建。下一步点击“配置订单”，核对供料和生产任务，再运行方案。'); } finally { setBusy(false); } }} project={project} busy={busy} onClose={() => setLibraryOpen(false)} onAdopt={async (base, reference) => { setBusy(true); setMessage(''); setFailure(null); try { rememberCommit(await host.adoptDefinition(base, reference)); await refresh(); setLibraryOpen(false); setMessage('定义已添加。可在画布中添加设备，或在业务输入中配置相应数据。'); } finally { setBusy(false); } }} /> : connectionEditor && connectionEditor.base.project ? <ConnectionEditor onDirtyChange={setConnectionDirty} project={connectionEditor.base.project} modules={connectionEditor.base.modules} value={connectionEditor.value} busy={busy} onClose={() => setConnectionEditor(null)} onApply={async values => { setBusy(true); setMessage(''); setFailure(null); try { await edit(values, connectionEditor.base.project); setConnectionEditor(null); } finally { setBusy(false); } }} /> : editor && editor.base.project ? <ObjectEditor onDirtyChange={setObjectDirty} key={`${editor.target.kind}-${editor.target.value?.id ?? 'new'}-${editor.base.project.revision}`} onReload={reloadObjectEditor} project={editor.base.project} modules={editor.base.modules} target={editor.target} busy={busy} onClose={() => setEditor(null)} onApply={async values => { setBusy(true); setMessage(''); setFailure(null); try { await edit(values, editor.base.project); setEditor(null); } finally { setBusy(false); } }} /> : <><FactoryScene project={displayedProject} modules={displayedModules} canvas={canvas} hallId={hallId} selection={selection} selections={selections} layoutControl={layoutControl} onTransform={transformLayout} onSelect={selectObject} onSelectMany={source === 'draft' && layoutMode === 'select' && !busy && !editing ? selectObjects : undefined} lod={lod} autoLod={autoLod} resetKey={resetKey} run={source === 'run' ? run : null} observation={source === 'run' ? observationPage : null} mediaSource={visibleFactorySource} />{factoryViewPending && <div role="status" style={{ position: 'absolute', inset: 0, zIndex: 5, background: '#ffffff70', display: 'grid', placeItems: 'center' }}><span style={{ background: '#fff', padding: '10px 16px', border: '1px solid #c7d4e2' }}>正在读取运行画面 · 当前画面 {visibleFactorySource?.observation ? visibleFactorySource.observation.at_ms / 1000 : '—'} 秒</span></div>}</>}{(!project || !project.halls.length && !project.devices.length) && !editing && <section className="project-start" aria-label="工程开始方式"><header><img className="project-start-mark" src="/superfactory-icon.png" alt="超级工厂" width="64" height="64" /><h2>选择开始方式</h2></header><div>{([['demonstration', '展示任务', '打开示例工程，查看其模块和输入。'], ['template', project ? '在当前工程使用模板' : '从模板开始', '选择模板，预览对象和版本后创建。'], ['empty', project ? '继续当前空布局' : '空工程', project ? '在当前工程添加厂房；如需新建，使用“文件 → 新建空工程”。' : '从厂房与设备开始，逐步补齐必要参数。']] as const).map(([intent, title, detail]) => <button id={`start-${intent}`} key={intent} disabled={!connected || busy} onClick={() => beginProject(intent, true)}><strong>{title}</strong><span>{detail}</span></button>)}</div></section>}</div>
+        <div className="canvas-status" style={{ display: cloudOpen ? 'none' : undefined }}><span>{currentHall?.title ?? '未选择厂房'} · {source === 'run' ? '只读结果' : '布局编辑'}</span><span>{source === 'run' ? `实际对象 ${runObjects.length}` : '占地与高度使用工程设置'}</span></div>
       </section>
       <div className="resize-handle" role="separator" aria-label="属性栏宽度" onPointerDown={event => resize(event, 'right')} />
       <aside className={`inspector ${rightVisible ? '' : 'collapsed'}`} aria-label="对象属性"><header><strong>{rightVisible ? '对象属性' : ''}</strong><button aria-label={rightVisible ? '收起属性栏' : '展开属性栏'} onClick={() => setRightVisible(value => !value)}>{rightVisible ? '›' : '‹'}</button></header>{rightVisible && <div className="inspector-scroll" style={{ zoom: propertyTextScale }}>{selected ? <>
-        <div className="object-heading"><small>{selection ? kindLabel[selection.kind] ?? selection.kind : ''}</small><h2>{selected.title}</h2><code>{selected.id}</code></div>
-        <section><h3>身份与来源</h3><dl><dt>当前来源</dt><dd>{source === 'run' ? selectedRunLabel : '工程草稿'}</dd><dt>修订</dt><dd>r{displayedProject?.revision}</dd>{selectedDevice && <><dt>定义</dt><dd>{selectedDevice.module_ref.id}</dd><dt>精确版本</dt><dd>{selectedDevice.module_ref.version}</dd><dt>行为来源</dt><dd>{exactModule?.definition.payload.category === 'devices' ? '精确设备定义' : '尚未读取'}</dd></>}</dl></section>
+        <div className="object-heading"><small>{selection ? kindLabel[selection.kind] ?? selection.kind : ''}</small><h2>{selected.title}</h2></div>
+        <details><summary>对象来源与版本</summary><dl><dt>对象编号</dt><dd>{selected.id}</dd><dt>当前来源</dt><dd>{source === 'run' ? selectedRunLabel : '工程草稿'}</dd><dt>修订</dt><dd>r{displayedProject?.revision}</dd>{selectedDevice && <><dt>定义</dt><dd>{selectedDevice.module_ref.id}</dd><dt>精确版本</dt><dd>{selectedDevice.module_ref.version}</dd><dt>行为来源</dt><dd>{exactModule?.definition.payload.category === 'devices' ? '所选设备定义' : '尚未读取'}</dd></>}</dl></details>
         {position && <section><h3>布局 · 厂房坐标</h3><dl>{(['x', 'y', 'z'] as const).map(key => <span className="dl-row" key={key}><dt>{key.toUpperCase()}</dt><dd>{position[key]} m</dd></span>)}<dt>设备高度</dt><dd>{selectedDevice?.height_m == null ? '未填写' : `${selectedDevice.height_m} m`}</dd><dt>占地轮廓</dt><dd>{selectedDevice?.footprint_m.length} 个顶点</dd></dl></section>}
         {selectedHall && <section><h3>场地</h3><dl><dt>宽 × 深</dt><dd>{selectedHall.width_m} × {selectedHall.depth_m} m</dd><dt>净高</dt><dd>{selectedHall.height_m == null ? '未填写' : `${selectedHall.height_m} m`}</dd></dl></section>}
         {selectedLine && <section><h3>编组</h3><p>{selectedLine.members.length} 个成员 · 移动组根保留成员局部布局</p>{displayedProject?.devices.filter(value => value.line_id === selectedLine.id || selectedLine.members.includes(value.id)).map(value => <button key={value.id} onClick={event => selectObject({ kind: 'device', id: value.id }, event.shiftKey || event.ctrlKey || event.metaKey)}>{value.title}</button>)}</section>}
-        {exactModule?.definition.payload.category === 'devices' && <section><h3>端口 · 精确版本</h3>{exactModule.definition.payload.data.ports.length ? exactModule.definition.payload.data.ports.map(port => <div className="port-row" key={port.id}><strong>{port.id}</strong><span>{port.direction} · {port.payload.kind}</span></div>) : <p className="muted">定义未声明端口。</p>}</section>}
-        {selectedResource && <section><h3>资源 · 真实声明</h3><dl><dt>定义</dt><dd>{selectedResource.definition_ref.id} @ {selectedResource.definition_ref.version}</dd><dt>种类 / 角色</dt><dd>{selectedResource.kind} / {selectedResource.role}</dd><dt>容量</dt><dd>{decimalText(selectedResource.capacity.value)} {selectedResource.capacity.unit}</dd><dt>日历</dt><dd>{selectedResource.calendar_id}</dd><dt>声明位置</dt><dd>{selectedResource.home_location ?? '未提供'}</dd></dl>{selectedResource.home_location && <button onClick={() => selectObject({ kind: 'location', id: selectedResource.home_location! })}>查看声明库位</button>}</section>}
-        {selectedTransport && <section aria-label="实际运输批次"><h3>实际运输 · {atMs == null ? '未知时点' : `${atMs / 1000}s`}</h3><dl><dt>当前阶段</dt><dd>{transportPhaseAt(selectedTransport, atMs)}</dd><dt>供货输入</dt><dd>{selectedTransport.supply_ref}</dd><dt>承运资源</dt><dd>{selectedTransport.carrier_id}</dd>{([['发出记录', selectedTransport.departed_ms], ['到达记录', selectedTransport.arrived_ms], ['接收记录', selectedTransport.received_ms], ['返库记录', selectedTransport.returned_ms]] as const).map(([label, time]) => <span className="dl-row" key={label}><dt>{label}</dt><dd>{time == null ? '未形成记录' : `${time / 1000}s`}</dd></span>)}<dt>空间位置</dt><dd>{visibleFactorySource?.transports?.find(value => value.trip.id === selectedTransport.id)?.pose ? '按本次运行阶段与已声明厂内路线显示（路线示意）' : visibleFactorySource?.transports?.find(value => value.trip.id === selectedTransport.id)?.unavailable ?? '此时点未提供可显示的运输位置'}</dd></dl><button onClick={() => selectObject({ kind: 'resource', id: selectedTransport.carrier_id })}>查看承运资源 {selectedTransport.carrier_id}</button><p>本次记录载货身份：{selectedTransport.cargo.length}</p>{selectedTransport.cargo.map(id => <button key={id} disabled={!items.some(item => item.id === id)} onClick={() => selectObject({ kind: 'item', id })}>查看货物 {id}</button>)}</section>}
+        {exactModule?.definition.payload.category === 'devices' && <section><h3>设备端口</h3>{exactModule.definition.payload.data.ports.length ? exactModule.definition.payload.data.ports.map(port => <div className="port-row" key={port.id}><strong>{port.id}</strong><span>{port.direction} · {port.payload.kind}</span></div>) : <p className="muted">定义未声明端口。</p>}</section>}
+        {selectedResource && <section><h3>资源配置</h3><dl><dt>定义</dt><dd>{selectedResource.definition_ref.id} @ {selectedResource.definition_ref.version}</dd><dt>种类 / 角色</dt><dd>{selectedResource.kind} / {selectedResource.role}</dd><dt>容量</dt><dd>{decimalText(selectedResource.capacity.value)} {selectedResource.capacity.unit}</dd><dt>日历</dt><dd>{selectedResource.calendar_id}</dd><dt>设置位置</dt><dd>{selectedResource.home_location ?? '未提供'}</dd></dl>{selectedResource.home_location && <button onClick={() => selectObject({ kind: 'location', id: selectedResource.home_location! })}>查看库位</button>}</section>}
+        {selectedTransport && <section aria-label="实际运输批次"><h3>实际运输 · {atMs == null ? '未知时点' : `${atMs / 1000}s`}</h3><dl><dt>当前阶段</dt><dd>{transportPhaseAt(selectedTransport, atMs)}</dd><dt>供货输入</dt><dd>{selectedTransport.supply_ref}</dd><dt>承运资源</dt><dd>{selectedTransport.carrier_id}</dd>{([['发出记录', selectedTransport.departed_ms], ['到达记录', selectedTransport.arrived_ms], ['接收记录', selectedTransport.received_ms], ['返库记录', selectedTransport.returned_ms]] as const).map(([label, time]) => <span className="dl-row" key={label}><dt>{label}</dt><dd>{time == null ? '未形成记录' : `${time / 1000}s`}</dd></span>)}<dt>空间位置</dt><dd>{visibleFactorySource?.transports?.find(value => value.trip.id === selectedTransport.id)?.pose ? '按本次运行阶段和设置的厂内路线显示' : visibleFactorySource?.transports?.find(value => value.trip.id === selectedTransport.id)?.unavailable ?? '此时点未提供可显示的运输位置'}</dd></dl><button onClick={() => selectObject({ kind: 'resource', id: selectedTransport.carrier_id })}>查看承运资源 {selectedTransport.carrier_id}</button><p>本次载货物品：{selectedTransport.cargo.length}</p>{selectedTransport.cargo.map(id => <button key={id} disabled={!items.some(item => item.id === id)} onClick={() => selectObject({ kind: 'item', id })}>查看货物 {id}</button>)}</section>}
         {selectedConnection?.kind === 'material' && <section><h3>物料交接</h3><dl><dt>物品</dt><dd>{selectedConnection.data.item_type}</dd><dt>单位</dt><dd>{selectedConnection.data.unit}</dd><dt>源端点</dt><dd>{selectedConnection.data.source.kind === 'location' ? selectedConnection.data.source.data : `${selectedConnection.data.source.data.instance_id} / ${selectedConnection.data.source.data.port_id}`}</dd><dt>目的端点</dt><dd>{selectedConnection.data.destination.kind === 'location' ? selectedConnection.data.destination.data : `${selectedConnection.data.destination.data.instance_id} / ${selectedConnection.data.destination.data.port_id}`}</dd><dt>接收库位</dt><dd>{selectedConnection.data.destination_store}</dd></dl><button disabled={source !== 'draft' || busy || editing} onClick={() => { if (snapshot) setConnectionEditor({ base: snapshot, value: selectedConnection.data }); }}>编辑物料连接</button></section>}
-        {selectedItem && <section><h3>{factoryItemTitle(displayedProject, selectedItem)}</h3><dl><dt>数量</dt><dd>{decimalText(selectedItem.quantity.value)}{factoryUnitLabel(selectedItem.quantity.unit)}</dd><dt>当前位置</dt><dd>{factoryItemPlace(displayedProject, selectedItem, run, items)}</dd><dt>生产状态</dt><dd>{factoryLifecycleLabel[selectedItem.lifecycle]}</dd><dt>质量</dt><dd>{factoryQualityLabel[selectedItem.quality]}</dd><dt>内装物</dt><dd>{selectedItem.contents.length} 项</dd></dl><details><summary>物品编号与空间详情</summary><p>编号：{selectedItem.id}<br />类型：{selectedItem.item_type_ref.id}@{selectedItem.item_type_ref.revision}<br />位置编号：{selectedItem.holder.kind} / {selectedItem.holder.id}<br />{visibleFactorySource?.items.find(value => value.item.id === selectedItem.id)?.attachment ? '画面依此时点的实际持有者与已声明展示槽定位。' : run && itemAnchor(selectedItem, items, run) ? '已知实际持有者，尚未提供可绘制的展示槽。' : '此时点无可用空间位置。'}</p></details>{selectedItem.contents.map(id => <button key={id} onClick={() => selectObject({ kind: 'item', id })}>查看内装物 {items.some(item => item.id === id) ? factoryItemTitle(displayedProject, items.find(item => item.id === id)!) : id}</button>)}</section>}
+        {selectedItem && <section><h3>{factoryItemTitle(displayedProject, selectedItem)}</h3><dl><dt>数量</dt><dd>{decimalText(selectedItem.quantity.value)}{factoryUnitLabel(selectedItem.quantity.unit)}</dd><dt>当前位置</dt><dd>{factoryItemPlace(displayedProject, selectedItem, run, items)}</dd><dt>生产状态</dt><dd>{factoryLifecycleLabel[selectedItem.lifecycle]}</dd><dt>质量</dt><dd>{factoryQualityLabel[selectedItem.quality]}</dd><dt>内装物</dt><dd>{selectedItem.contents.length} 项</dd></dl><details><summary>物品编号与空间详情</summary><p>编号：{selectedItem.id}<br />类型：{selectedItem.item_type_ref.id}@{selectedItem.item_type_ref.revision}<br />位置编号：{selectedItem.holder.kind} / {selectedItem.holder.id}<br />{visibleFactorySource?.items.find(value => value.item.id === selectedItem.id)?.attachment ? '画面依此时点的实际持有者与已声明展示槽定位。' : run && itemAnchor(selectedItem, items, run) ? '物品位置已记录，尚未设置画面摆放位置。' : '此时点无可用空间位置。'}</p></details>{selectedItem.contents.map(id => <button key={id} onClick={() => selectObject({ kind: 'item', id })}>查看内装物 {items.some(item => item.id === id) ? factoryItemTitle(displayedProject, items.find(item => item.id === id)!) : id}</button>)}</section>}
         <section><h3>问题与缺项</h3>{displayedProject?.issues.map((issue, i) => <p className="issue-row" key={i}>{issue.message}</p>)}{(source === 'run' ? runInputs?.moduleIssues : snapshot?.moduleIssues)?.map(issue => <p className="issue-row" key={host.moduleKey(issue.ref)}>{issue.ref.id} @ {issue.ref.version}：{issue.error.message}</p>)}{source === 'draft' && snapshot?.scenarioIssues.map(issue => <p className="issue-row" key={issue.id}>方案 {issue.id}：{issue.error.message}</p>)}<button disabled={source !== 'draft' || busy || editing} onClick={() => setCheckOpen(true)}>检查工程草稿…</button></section>
         {selectedDevice && <button disabled={!exactModule || busy || editing} onClick={() => void action(async () => openDeviceProcess())}>查看设备过程 / 图片编辑</button>}
         <button disabled={source !== 'draft' || busy || editing || !['device', 'hall', 'line'].includes(selection?.kind ?? '')} onClick={() => { if (selectedDevice) openEditor({ kind: 'device', value: selectedDevice }); else if (selectedLine) openEditor({ kind: 'line', value: selectedLine }); else if (selectedHall) openEditor({ kind: 'hall', value: selectedHall }); }}>打开详情编辑</button>
-      </> : <div className="inspector-empty"><h2>选择一个对象</h2><p>在画布或对象树中单击，查看设备、厂房和流水线属性。</p><p className="muted">缩放只改变画布呈现。</p></div>}{source === 'run' && observationPage && <section className="runtime-items"><h3>物品记录 · {atMs == null ? '未知时点' : `${atMs / 1000}秒`}</h3>{items.map(item => <button key={item.id} title={item.id} className={same(selection, { kind: 'item', id: item.id }) ? 'selected' : ''} onClick={() => selectObject({ kind: 'item', id: item.id })}><strong>{factoryItemTitle(displayedProject, item)}</strong><span>{decimalText(item.quantity.value)}{factoryUnitLabel(item.quantity.unit)} · {factoryLifecycleLabel[item.lifecycle]} · {factoryQualityLabel[item.quality]}</span><small>{factoryItemPlace(displayedProject, item, run, items)}</small></button>)}{!items.length && <p className="muted">该时点无物品记录。</p>}</section>}</div>}</aside>
+      </> : <div className="inspector-empty"><h2>选择一个对象</h2><p>在画布或对象树中单击，查看设备、厂房和流水线属性。</p></div>}{source === 'run' && observationPage && <section className="runtime-items"><h3>物品记录 · {atMs == null ? '未知时点' : `${atMs / 1000}秒`}</h3>{items.map(item => <button key={item.id} title={item.id} className={same(selection, { kind: 'item', id: item.id }) ? 'selected' : ''} onClick={() => selectObject({ kind: 'item', id: item.id })}><strong>{factoryItemTitle(displayedProject, item)}</strong><span>{decimalText(item.quantity.value)}{factoryUnitLabel(item.quantity.unit)} · {factoryLifecycleLabel[item.lifecycle]} · {factoryQualityLabel[item.quality]}</span><small>{factoryItemPlace(displayedProject, item, run, items)}</small></button>)}{!items.length && <p className="muted">该时点无物品记录。</p>}</section>}</div>}</aside>
     </div>
     <div className="toolstrip"><button className={layoutMode === 'select' ? 'active' : ''} title="V：选择；Shift 左拖框选；Shift/Ctrl 单击增减多选；M：移动；R：旋转；G：编组；Ctrl+D：复制" onClick={() => setLayoutMode('select')}>↖ 选择</button>{(['translate', 'rotate'] as const).map(mode => <button key={mode} className={layoutMode === mode ? 'active' : ''} disabled={(!selectedDevice && !selectedLine && !(selectedHall && canvas === 'multi_hall_canvas')) || source !== 'draft' || busy || editing} onClick={() => setLayoutMode(mode)}>{mode === 'translate' ? '↔ 移动手柄' : '⟳ 旋转手柄'}</button>)}
       <label className="check-label"><input type="checkbox" checked={snapLayout} onChange={event => setSnapLayout(event.target.checked)} />网格吸附</label><label>步长 / m <input aria-label="网格步长" type="number" min="0.01" step="any" value={snapStep} onChange={event => setSnapStep(event.target.value)} style={{ width: 65 }} /></label>{snapLayout && !snapValid && <small role="alert">步长须大于0</small>}
-      <button disabled={!selectedLayout?.devices.length || source !== 'draft' || busy || editing} onClick={() => { if (project) setLayoutEditor({ mode: 'group', project, selection: selections }); }}>编组所选</button><button disabled={!selectedLayout?.lines.length || source !== 'draft' || busy || editing} onClick={() => { if (project) void action(() => commitLayout(ungroupLayoutSelection(project, selections), project)); }}>解组</button><button disabled={!selectedLayout?.devices.length || source !== 'draft' || busy || editing} onClick={() => { if (project) setLayoutEditor({ mode: 'copy', project, selection: selections }); }}>复制为新ID</button>
+      <button disabled={!selectedLayout?.devices.length || source !== 'draft' || busy || editing} onClick={() => { if (project) setLayoutEditor({ mode: 'group', project, selection: selections }); }}>编组所选</button><button disabled={!selectedLayout?.lines.length || source !== 'draft' || busy || editing} onClick={() => { if (project) void action(() => commitLayout(ungroupLayoutSelection(project, selections), project)); }}>解组</button><button disabled={!selectedLayout?.devices.length || source !== 'draft' || busy || editing} onClick={() => { if (project) setLayoutEditor({ mode: 'copy', project, selection: selections }); }}>复制对象</button>
       <button disabled={!project || source !== 'draft' || busy || editing} onClick={() => setCheckOpen(true)}>草稿检查</button><button onClick={() => setResetKey(value => value + 1)}>⌂ 复位视图</button><span /><small>{selections.length > 1 ? `已选 ${selections.length} 项 · ` : ''}布局 m · 时间 s</small></div>
     {(timelineVisible || descriptionVisible) && <div className="dock-resizer" role="separator" aria-label="底部停靠高度" onPointerDown={event => resize(event, 'bottom')} />}
     <div className="bottom-dock" style={!timelineVisible && !descriptionVisible && !canvasFocused ? { display: 'none' } : undefined}>
-      {descriptionVisible && <section className={`description ${timelineVisible ? '' : 'fill'}`}><header><strong>事件描述</strong><button aria-label="隐藏事件描述" onClick={() => setDescriptionVisible(false)}>×</button></header><div>{timelineSelection ? <><strong>{timelineSelection.label}</strong>{selectedTimelineJob && <button disabled={source !== 'run' || atMs === null || busy || editing} onClick={() => void action(async () => openTimelineJobProcess())}>查看所选作业过程</button>}<p>{timelineSelection.source === 'actual' ? `实际 · Run ${timelineSelection.run_id}` : timelineSelection.source === 'input' ? '可编辑输入' : '人工期望参考'}</p><p>{timelineSelection.object.kind} · {timelineSelection.object.id}</p>{timelineSelection.true_interval && <p>原始区间 {timelineSelection.true_interval.start_ms / 1000}–{timelineSelection.true_interval.end_ms / 1000}s</p>}<dl>{timelineSelection.fields.map((field, index) => <span className="dl-row" key={index}><dt>{field.label}</dt><dd>{field.value}</dd></span>)}</dl>{timelineSelection.related_objects.map(value => <button key={`${value.kind}-${value.id}`} onClick={() => selectObject(value)}>{kindLabel[value.kind] ?? value.kind} · {value.id}</button>)}</> : selection ? <><strong>{selected?.title ?? selection.id}</strong><p>{kindLabel[selection.kind] ?? selection.kind}</p><details><summary>对象编号</summary><p>{selection.id}</p></details><p>{source === 'run' ? `${selectedRunLabel} · ${atMs == null ? '未知时点' : `${atMs / 1000} 秒`}` : '工程草稿 · 尚非生产结果'}</p></> : <p className="muted">选择对象或实际阶段，查看其来源与时点。</p>}</div></section>}
+      {descriptionVisible && <section className={`description ${timelineVisible ? '' : 'fill'}`}><header><strong>事件描述</strong><button aria-label="隐藏事件描述" onClick={() => setDescriptionVisible(false)}>×</button></header><div>{timelineSelection ? <><strong>{timelineSelection.label}</strong>{selectedTimelineJob && <button disabled={source !== 'run' || atMs === null || busy || editing} onClick={() => void action(async () => openTimelineJobProcess())}>查看所选作业过程</button>}<p>{timelineSelection.source === 'actual' ? `运行记录 · ${timelineSelection.run_id}` : timelineSelection.source === 'input' ? '可编辑输入' : '人工期望参考'}</p><p>{timelineSelection.object.kind} · {timelineSelection.object.id}</p>{timelineSelection.true_interval && <p>原始区间 {timelineSelection.true_interval.start_ms / 1000}–{timelineSelection.true_interval.end_ms / 1000}s</p>}<dl>{timelineSelection.fields.map((field, index) => <span className="dl-row" key={index}><dt>{field.label}</dt><dd>{field.value}</dd></span>)}</dl>{timelineSelection.related_objects.map(value => <button key={`${value.kind}-${value.id}`} onClick={() => selectObject(value)}>{kindLabel[value.kind] ?? value.kind} · {value.id}</button>)}</> : selection ? <><strong>{selected?.title ?? selection.id}</strong><p>{kindLabel[selection.kind] ?? selection.kind}</p><details><summary>对象编号</summary><p>{selection.id}</p></details><p>{source === 'run' ? `${selectedRunLabel} · ${atMs == null ? '未知时点' : `${atMs / 1000} 秒`}` : '工程草稿'}</p></> : <p className="muted">选择对象或实际阶段，查看其来源与时点。</p>}</div></section>}
       <RunTimeline {...timelineProps} hidden={!timelineVisible && !canvasFocused || cloudOpen} inputTextScale={propertyTextScale} />
     </div>
-    <footer className="app-status"><span>{connected ? '桌面 Host' : '浏览器预览'} · {busy ? '正在处理' : '就绪'}</span><span>{hasUnappliedInput ? `本地输入未应用${snapshot?.context.project?.dirty ? ' · 有未保存修订' : ''}` : source === 'run' ? '回看不改变工程库存' : snapshot?.context.project?.dirty ? '有未保存修订' : '工程状态'}</span></footer>
+    <footer className="app-status"><span>{connected ? '本机服务已连接' : '浏览器预览'} · {busy ? '正在处理' : '就绪'}</span><span>{hasUnappliedInput ? `修改尚未应用${snapshot?.context.project?.dirty ? ' · 有未保存修改' : ''}` : source === 'run' ? '回看不改变工程库存' : snapshot?.context.project?.dirty ? '有未保存修改' : '工程状态'}</span></footer>
     {newDialog && <WorkbenchModal labelId="new-project-title" busy={busy} onDismiss={() => setNewDialog(false)}><form className="modal" onSubmit={event => { event.preventDefault(); void action(async () => { const decision = await prepareDeparture(); if (!decision) return; rememberCommit(await host.createProject(newTitle, decision)); await refresh(); setNewDialog(false); setMessage(`已创建工程“${newTitle.trim()}”。${startIntent === 'empty' ? '下一步添加厂房与设备。' : '下一步选择模板。'}`); if (startIntent !== 'empty') { setLibraryModule(undefined); setLibraryCategory('templates'); setLibraryOpen(true); } }); }}><h2 id="new-project-title">{({ empty: '新建空工程', template: '从模板开始', demonstration: '从展示任务开始' })[startIntent]}</h2><label>工程名称<input value={newTitle} onChange={event => setNewTitle(event.target.value)} required autoFocus /></label>{departureChoice()}{!newTitle.trim() && <p role="status">请填写工程名称后创建。</p>}<footer><button type="button" disabled={busy} onClick={() => setNewDialog(false)}>取消</button><button className="primary" disabled={busy || !newTitle.trim() || !!project && departure === 'stay'}>创建</button></footer></form></WorkbenchModal>}
-    {opening && <WorkbenchModal labelId="open-project-title" busy={busy} onDismiss={() => setOpening(null)}><section className="modal"><h2 id="open-project-title">打开工程 · 采纳前核对</h2><p>{opening.draft.proposed_objects.length} 个对象 · {opening.draft.proposed_definitions.length} 个精确模块版本</p>{[...opening.draft.missing, ...opening.draft.conflicts].map((issue, i) => <p className="issue-row" key={i}>{issue.message}</p>)}{opening.draft.required_human_choices.map((choice, i) => <p key={i}>{project ? choice : choice.replace('及当前工程的离开方式', '')}</p>)}{opening.draft.missing.length > 0 && <label className="check-label"><input type="checkbox" checked={allowMissing} onChange={event => setAllowMissing(event.target.checked)} />保留缺项，以可编辑草稿打开</label>}{departureChoice()}{opening.draft.missing.length > 0 && !allowMissing && <p role="status">请先确认是否保留缺项，以可编辑草稿打开。</p>}<footer><button disabled={busy} onClick={() => setOpening(null)}>取消</button><button className="primary" disabled={busy || !!project && departure === 'stay' || opening.draft.missing.length > 0 && !allowMissing} onClick={() => void action(async () => { const decision = await prepareDeparture(); if (!decision) return; rememberCommit(await host.adoptOpen(opening.task, opening.draft, decision, allowMissing)); await refresh(true); setOpening(null); })}>确认打开</button></footer></section></WorkbenchModal>}
+    {opening && <WorkbenchModal labelId="open-project-title" busy={busy} onDismiss={() => setOpening(null)}><section className="modal"><h2 id="open-project-title">确认打开工程</h2><p>{opening.draft.proposed_objects.length} 个对象 · {opening.draft.proposed_definitions.length} 个模块版本</p>{[...opening.draft.missing, ...opening.draft.conflicts].map((issue, i) => <p className="issue-row" key={i}>{issue.message}</p>)}{opening.draft.required_human_choices.map((choice, i) => <p key={i}>{project ? choice : choice.replace('及当前工程的离开方式', '')}</p>)}{opening.draft.missing.length > 0 && <label className="check-label"><input type="checkbox" checked={allowMissing} onChange={event => setAllowMissing(event.target.checked)} />保留缺项，以可编辑草稿打开</label>}{departureChoice()}{opening.draft.missing.length > 0 && !allowMissing && <p role="status">请先确认是否保留缺项，以可编辑草稿打开。</p>}<footer><button disabled={busy} onClick={() => setOpening(null)}>取消</button><button className="primary" disabled={busy || !!project && departure === 'stay' || opening.draft.missing.length > 0 && !allowMissing} onClick={() => void action(async () => { const decision = await prepareDeparture(); if (!decision) return; rememberCommit(await host.adoptOpen(opening.task, opening.draft, decision, allowMissing)); await refresh(true); setOpening(null); })}>确认打开</button></footer></section></WorkbenchModal>}
     {processSampleChoice && <ProcessSampleChooser key={`${processSampleChoice.run_id}:${processSampleChoice.draft_revision}`} choice={processSampleChoice} onDismiss={() => setProcessSampleChoice(null)} />}
     {cloudClosePrompt && <WorkbenchModal labelId="cloud-close-title" busy={false} onDismiss={() => setCloudClosePrompt(false)}><section className="modal">
       <h2 id="cloud-close-title">准备表单尚未提交</h2>
-      <p>返回画布会丢弃这份表单输入。已登记的准备或导出任务继续，生产不会因此停止。</p>
+      <p>返回画布将放弃此表单输入，已开始的任务与生产仍会继续。</p>
       <footer><button autoFocus onClick={() => setCloudClosePrompt(false)}>保留输入并返回</button><button onClick={() => {
         setCloudClosePrompt(false); setCloudDirty(false); setCloudOpen(false);
       }}>丢弃表单并返回画布</button></footer>
     </section></WorkbenchModal>}
     {windowClosePrompt && <WorkbenchModal labelId="window-close-title" busy={false} onDismiss={() => decideWindowClose('stay')}><section className="modal">
       <h2 id="window-close-title">关闭工程 · 尚有未保存内容</h2>
-      <p>保存工程成功后再关闭，或明确放弃本次会话的未保存内容。</p>
+      <p>请先保存再关闭，或放弃未保存的修改。</p>
       {hasUnappliedInput && <p>仍有未应用的编辑输入。请先留在当前窗口，应用或丢弃这些输入，再保存工程。</p>}
-      <p>未提交的定义草稿须先在对应工作区提交；保存工程不会替你提交定义。</p>
+      <p>还有未提交的定义草稿，请先到对应工作区提交。保存工程不会提交定义草稿。</p>
       <footer><button autoFocus onClick={() => decideWindowClose('stay')}>留在当前窗口</button><button disabled={!project || hasUnappliedInput} onClick={() => decideWindowClose('save')}>保存工程后关闭</button><button onClick={() => decideWindowClose('discard')}>放弃未保存内容并关闭</button></footer>
     </section></WorkbenchModal>}
   </main>;
@@ -1299,7 +1299,7 @@ export function Workbench() {
     return <button key={id} className={`tree-leaf ${selections.some(ref => same(ref, { kind: 'device', id })) ? 'selected' : ''}`} onClick={event => selectObject({ kind: 'device', id }, event.shiftKey || event.ctrlKey || event.metaKey)}>▣ {title}</button>;
   }
   function departureChoice() {
-    return project && <><p>保存工程不会提交定义草稿。未提交的定义草稿须先在对应工作区提交，再确认离开。</p><label>离开当前工程<select value={departure} onChange={event => setDeparture(event.target.value as DepartureDecision | 'save_before_leave')}><option value="stay">留在当前工程</option>{!snapshot?.context.project?.dirty && <option value="already_saved">工程无未保存更改，继续</option>}<option value="save_before_leave">保存工程后继续</option><option value="discard_after_tasks_terminal">任务结束后明确放弃当前未保存更改</option></select></label>{departure === 'stay' && <p role="status">已选择留在当前工程，创建或打开操作暂不可用。点击“取消”返回，或选择保存后继续、明确放弃。</p>}</>;
+    return project && <><p>请先提交定义草稿，再确认离开。保存工程不会提交定义草稿。</p><label>离开当前工程<select value={departure} onChange={event => setDeparture(event.target.value as DepartureDecision | 'save_before_leave')}><option value="stay">留在当前工程</option>{!snapshot?.context.project?.dirty && <option value="already_saved">工程无未保存更改，继续</option>}<option value="save_before_leave">保存工程后继续</option><option value="discard_after_tasks_terminal">任务结束后放弃未保存的修改</option></select></label>{departure === 'stay' && <p role="status">当前选择为留在本工程。可点击“取消”返回，或选择保存后继续、放弃修改。</p>}</>;
   }
 }
 

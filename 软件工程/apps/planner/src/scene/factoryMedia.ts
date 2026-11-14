@@ -71,7 +71,7 @@ async function prepare(input: FactoryMediaInput, lod: LodLevel) {
   }
   const clip = point ? activeClip(resolved.presentation, point) : null;
   const asset = mediaAsset(resolved, clip);
-  if (!('device_id' in input) && resolved.locator?.kind !== 'native_scene' && asset?.kind !== 'glb') throw new UnsupportedMedia('物品或资源附件只支持已声明GLB或原生场景，不补物理尺寸。');
+  if (!('device_id' in input) && resolved.locator?.kind !== 'native_scene' && asset?.kind !== 'glb') throw new UnsupportedMedia('物品和资源素材仅支持已配置的GLB或内置场景，尺寸需另行设置。');
   return { resolved, source, asset, point, clip, owner: ownerKey(input, source) };
 }
 const reusable = (before: Awaited<ReturnType<typeof prepare>>, next: Awaited<ReturnType<typeof prepare>>) =>

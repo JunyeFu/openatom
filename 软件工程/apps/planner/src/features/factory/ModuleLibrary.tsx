@@ -77,6 +77,6 @@ export function ModuleLibrary({ project, busy, initialModule, initialCategory, o
         {!base && <p className="muted">先创建工程，再添加模板或模块。</p>}
         {base && selected.category === 'templates' && <TemplatePreparation onDirtyChange={setTemplateDirty} key={moduleKey(selected.module_ref)} project={base} moduleRef={selected.module_ref} busy={busy} onApply={onTemplate} />}
       </> : <p className="muted">从左侧选择模板或模块，查看用途和需要填写的内容。</p>}</div></div>
-    {leaving && <section role="dialog" aria-label="放弃模板准备输入"><p>模板配置尚未采纳。请返回保留输入，或明确放弃后离开。</p><button onClick={() => setLeaving(false)}>返回保留模板输入</button><button onClick={onClose}>明确放弃模板输入</button></section>}
+    {leaving && <section role="dialog" aria-label="放弃模板准备输入"><p>模板配置尚未应用。可返回继续编辑，或放弃后离开。</p><button onClick={() => setLeaving(false)}>返回保留模板输入</button><button onClick={onClose}>明确放弃模板输入</button></section>}
   </section>;
 }

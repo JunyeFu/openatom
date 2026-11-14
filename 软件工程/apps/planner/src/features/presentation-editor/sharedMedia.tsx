@@ -20,12 +20,12 @@ export function createImageTimelineMedia(options:ImageTimelineMediaOptions):Pres
     fields:options.actual&&point?mediaDataFields({mode:'actual_run',frame:options.actual.frame,point}):MEDIA_DATA_FIELD_CATALOG,
     resolveData(binding,mode){
       if(mode==='isolated_view')return resolveMediaData(binding,{mode:'declared_preview'});
-      if(!options.actual||!point)return {status:'unavailable',reason:'unknown_frame',message:options.unavailable_reason??'尚未取得所选Run的实际快照'};
+      if(!options.actual||!point)return {status:'unavailable',reason:'unknown_frame',message:options.unavailable_reason??'请先加载所选运行记录'};
       return resolveMediaData(binding,{mode:'actual_run',frame:options.actual.frame,point});
     },
     render(input){
       const actual=input.mode==='actual_run'?options.actual:null;
-      if(input.mode==='actual_run'&&!actual)return <p role="status">{options.unavailable_reason??'正在读取实际Run、历史作业和冻结表现…'}</p>;
+      if(input.mode==='actual_run'&&!actual)return <p role="status">{options.unavailable_reason??'正在加载运行记录、作业和当次画面配置…'}</p>;
       const presentation=actual?.presentation??input.presentation;
       const actionTags=presentation.tags.filter(tag=>tag.payload.kind==='action');
       const unavailable=actionTags.filter(tag=>!input.canAction(tag));

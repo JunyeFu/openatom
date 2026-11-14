@@ -4,7 +4,7 @@ import type { DeliveryWorkspaceProps } from '../comparison/types';
 import { JsonDetails } from '../comparison/Shared';
 
 const reasonNames = { missing_material: '缺少物料', resource_busy: '资源占用', calendar: '日历限制', preparation: '准备条件', quality: '质量条件', output_capacity: '出料容量', receiver_capacity: '接收容量' };
-const endNames = { resolved: '已解决', condition_changed: '条件变化', observation_end: '观察结束', computed_boundary: '已计算边界' };
+const endNames = { resolved: '已解决', condition_changed: '条件变化', observation_end: '观察结束', computed_boundary: '已计算至' };
 
 export function WaitingRecords({ runId, waits, onLocate }: { runId: string; waits: readonly WaitInterval[]; onLocate?: DeliveryWorkspaceProps['onLocate'] }) {
   const [query, setQuery] = useState('');

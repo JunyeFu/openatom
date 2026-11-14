@@ -73,7 +73,7 @@ export function MediaPresentationView(props:MediaPresentationProps) {
         let viewport:ModelViewport;
         try{viewport=new ModelViewport(localHost,rig,index=>{
           if(!live||currentStamp.current!==stamp||!latest.current.onSelectNode)return;
-          if(!resolved!.owner){setError(new Error('此画面尚未提供精确节点父拥有者，不能猜用字节来源。'));return;}
+          if(!resolved!.owner){setError(new Error('画面缺少所属对象信息，暂时无法读取素材。'));return;}
           latest.current.onSelectNode({owner:resolved!.owner,node_index:index,rendered_node_id:p.nodes[index]?.id,lod:props.lod,asset:asset??null,byte_source:resolved!.source});
         },projectAnchors,capture,id=>latest.current.onInspectItem?.(id),()=>new Map(itemLayer.current?.renderState().objects.map(item=>[item.root,item.ref.id])??[]));}catch(error){rig.dispose();throw error;}
         model.current={rig,viewport,presentation:p};

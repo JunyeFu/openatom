@@ -19,7 +19,7 @@ export function captureCompleteSeed(subset: TemplateSubset, scenario: ScenarioIn
 }
 export function clearCompositionSeed(subset: TemplateSubset) { return { subset: { ...subset, seed: null }, source_scenario: null }; }
 export function compositionInput(projectId: string, value: TemplateCompositionState, definition: ModuleDefinition, draft: AuthoringDraft | null): TemplateCompositionInput {
-  if (value.subset.seed && !value.source_scenario) throw new Error('此历史种子没有实际来源引用。请明确选择真实方案并重新附带完整声明种子，或清除种子后再保存；不会按正文猜测来源。');
+  if (value.subset.seed && !value.source_scenario) throw new Error('方案输入缺少来源。请重新选择并附带来源方案，或清除方案输入后再保存。');
   return { project_id: projectId, base_revision: value.base_revision, definition, draft, subset: { ...value.subset, adoption: null }, ...(value.subset.seed ? { source_scenario: value.source_scenario } : {}) };
 }
 

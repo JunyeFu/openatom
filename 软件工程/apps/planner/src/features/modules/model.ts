@@ -13,15 +13,15 @@ import type { AuthoringDraft, AuthoringIO } from './types';
 
 export type Category = ModulePayload['category'];
 export const categories: { id: Category; title: string; heading: string; boundary: string }[] = [
-  { id: 'items', title: '物品', heading: '规格、单位与属性', boundary: '定义物品规格；数量和当前位置属于工程输入与实例。' },
-  { id: 'devices', title: '固定设备', heading: '设备、端口与行为', boundary: '只选择一处行为来源；外观与动作不生成产量。' },
-  { id: 'resources', title: '资源', heading: '角色、容量与日历', boundary: '容量属于定义；当前占用由实际运行维护。' },
-  { id: 'tasks', title: '任务', heading: '前置、步骤与声明效果', boundary: '准备任务改变就绪状态；制造产出交给工艺规则。' },
-  { id: 'operations', title: '工艺规则', heading: '配比、阶段与资源', boundary: '明确工时、单位与来源；未提供的工时保持缺项。' },
-  { id: 'transport', title: '物流与供应', heading: '批次、装卸与接受', boundary: '运输定义不带在途货物；采用时绑定实际起讫库位。' },
-  { id: 'templates', title: '布局与工厂模板', heading: '组合文件与适用条件', boundary: '引用相对工程文件；种子供料和订单另行确认。' },
-  { id: 'professional', title: '专业计算', heading: '输入输出与计算范围', boundary: '声明的模式不等于实际可用提供者；认可与绑定分别完成。' },
-  { id: 'media', title: '表现素材', heading: '部件、锚点与命名动作', boundary: '画面只消费状态；不写库存、占用或实际结果。' },
+  { id: 'items', title: '物品', heading: '规格、单位与属性', boundary: '设置物品规格和单位，数量和位置在工程中配置。' },
+  { id: 'devices', title: '固定设备', heading: '设备、端口与行为', boundary: '选择设备行为来源，并配置端口与显示素材。' },
+  { id: 'resources', title: '资源', heading: '角色、容量与日历', boundary: '设置资源容量、资质和日历，使用情况可在运行结果中查看。' },
+  { id: 'tasks', title: '任务', heading: '前置、步骤与声明效果', boundary: '设置准备步骤及其完成效果，生产工艺请单独配置。' },
+  { id: 'operations', title: '工艺规则', heading: '配比、阶段与资源', boundary: '填写工时、单位和来源，未提供的工时保持未知。' },
+  { id: 'transport', title: '物流与供应', heading: '批次、装卸与接受', boundary: '设置运输工时和批量，应用时选择起点与终点库位。' },
+  { id: 'templates', title: '布局与工厂模板', heading: '组合文件与适用条件', boundary: '选择组合对象，按需附带初始供料和订单。' },
+  { id: 'professional', title: '专业计算', heading: '输入输出与计算范围', boundary: '选择可用的计算模式，计算后确认用途并绑定工位。' },
+  { id: 'media', title: '表现素材', heading: '部件、锚点与命名动作', boundary: '编辑显示部件、锚点和动作，不改变生产数据。' },
 ];
 const payloadTypes: Record<Category, string> = { items: 'ItemDefinition', devices: 'DeviceDefinition', resources: 'ResourceDefinition', tasks: 'TaskDefinition', operations: 'OperationDefinition', transport: 'TransportDefinition', templates: 'TemplateDefinition', professional: 'ProfessionalDefinition', media: 'Presentation' };
 export const payloadSchema = (category: Category) => formSchemas[payloadTypes[category]];
@@ -34,9 +34,9 @@ export function assertPackagingDefinition(definition: ModuleDefinition): void {
 }
 export function definitionSourceText(draft: AuthoringDraft | null, source: ModuleDefinition | null, selected: ModuleRef | null): string {
   if (source) return `${source.id} @ ${source.version}`;
-  if (draft) return '已读取定义草稿；库中来源尚未读取';
+  if (draft) return '草稿已加载，库中来源尚未加载';
   if (selected) return `已选择 ${selected.id} @ ${selected.version}；精确库内容尚未读取`;
-  return '新建定义（尚未保存到 Host）';
+  return '新定义（未保存）';
 }
 export function resolve(schema: FormSchema): FormSchema {
   return schema.$ref ? formSchemas[schema.$ref.slice('#/$defs/'.length)] : schema;
@@ -164,7 +164,7 @@ export async function readDraft(io: AuthoringIO, projectId: string, draftId: str
   const scope: ApiScope = { kind: 'definition_draft', data: draftId };
   const context = await io.dispatch<ProjectContext>(authoringRequest(projectId, scope, 'get_context', { selection: [] }));
   const object = await io.dispatch<DomainObject>(authoringRequest(projectId, scope, 'get_object', { object_id: { kind: 'definition_draft', id: draftId }, source: { kind: 'draft' }, node_index: null }));
-  if (object.kind !== 'definition' || !context.definition) throw new Error('Host 未返回所选定义草稿。');
+  if (object.kind !== 'definition' || !context.definition) throw new Error('未读取到所选定义草稿。');
   const current = await io.dispatch<ProjectContext>(authoringRequest(projectId, scope, 'get_context', { selection: [] }));
   if (current.definition?.draft_id !== draftId || current.definition.revision !== context.definition.revision) throw new Error('读取期间共同定义已变化，请明确刷新后继续。');
   return { summary: current.definition, definition: object.data, history: current.definition.history ?? (current.definition.revision === historyRevision ? history : null) };

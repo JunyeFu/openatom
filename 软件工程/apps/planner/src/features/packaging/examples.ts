@@ -9,7 +9,7 @@ import { packagingSchemas } from './schemas';
 /** These are original self-built declaration inputs, never computed results or material approval. */
 export const packagingExamples = [
   { title: '受限折叠容器', raw: folded }, { title: '外盒与多件内衬', raw: multi },
-  { title: '罩 / 滑套明确候选', raw: sleeve }, { title: '空白受限结构', raw: blank },
+  { title: '罩 / 滑套候选示例', raw: sleeve }, { title: '空白受限结构', raw: blank },
 ].map(({ title, raw }) => {
   const document: { schema_version: string; data: PackageStructureJob } = JSON.parse(raw);
   const issues = shapeIssues(packagingSchemas.PackageStructureJob, document.data);

@@ -23,7 +23,7 @@ export function historyBoundaryLabel(reason: string): string {
   const labels: Record<string, string> = {
     'No active project history': '当前尚无工程编辑历史。',
     'No reversible draft edits in this session': '本次打开工程后，还没有可撤销的草稿编辑。',
-    'Professional facts, human acknowledgment and explicit binding are outside ordinary undo': '专业计算事实、人工确认和明确绑定不能通过草稿撤销更改。',
+    'Professional facts, human acknowledgment and explicit binding are outside ordinary undo': '专业计算结果、用途认可和绑定不能通过撤销草稿回退。',
   };
   return labels[reason] ?? (/[\u3400-\u9fff]/.test(reason) ? reason : '当前更改超出可撤销范围，原始原因见历史详情。');
 }

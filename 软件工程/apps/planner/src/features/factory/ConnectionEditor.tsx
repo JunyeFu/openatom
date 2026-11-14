@@ -94,7 +94,7 @@ export function ConnectionEditor({ project, modules, value, busy, onApply, onClo
     requestClose();
   }}>
     <header><div><small>工程草稿 · r{project.revision}</small><h2>{value ? '编辑' : '新建'}物料连接</h2></div><button type="button" autoFocus disabled={busy} onClick={requestClose}>返回画布</button></header>
-    <p className="form-hint">端口取设备的精确版本定义。连接表达物料交接；生产工艺、资源及运输时间仍使用方案中的实际声明。</p>
+    <p className="form-hint">选择设备端口以连接物料流向。工艺和运输时间在生产方案中设置。</p>
     {staleOriginal.map(({ label, endpoint }) => <p className="error-message" role="alert" key={label}>原{label}端点 {endpoint.kind === 'location' ? endpoint.data : `${endpoint.data.instance_id} / ${endpoint.data.port_id} · ${endpoint.data.module_ref.id}@${endpoint.data.module_ref.version}`} 已不在当前精确端点中。请明确重新选择；不会按名称自动接线。</p>)}
     <fieldset disabled={busy}>
       <label>物品类型<select value={typeId} onChange={event => setTypeId(event.target.value)} required><option value="">请选择</option>{project.item_types.map(item => <option key={item.id} value={item.id}>{item.title} · {item.id} · {item.unit}</option>)}</select></label>

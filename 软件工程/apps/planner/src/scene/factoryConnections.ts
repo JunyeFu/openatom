@@ -31,11 +31,11 @@ export function createFactoryConnectionLayer(project: ProjectState, modules: Rea
       const title = `${device?.title ?? reference.instance_id} / ${reference.port_id}`;
       const ref = { kind: 'device' as const, id: reference.instance_id };
       if (!device || device.module_ref.id !== reference.module_ref.id || device.module_ref.version !== reference.module_ref.version) {
-        return { ref, title, problem: '设备或精确模块版本与端点不一致。' };
+        return { ref, title, problem: '设备或模块版本与端口不匹配。' };
       }
       const definition = modules?.get(JSON.stringify([device.module_ref.id, device.module_ref.version]))?.definition;
       const payload = definition?.id === device.module_ref.id && definition.version === device.module_ref.version ? definition.payload : null;
-      if (payload?.category !== 'devices') return { ref, title, problem: '精确设备端口定义尚未读取。' };
+      if (payload?.category !== 'devices') return { ref, title, problem: '尚未读取设备端口，请先加载模块。' };
       const port = payload.data.ports.find(port => port.id === reference.port_id);
       const routeBindsItem = () => {
         if (!port || port.payload.kind !== 'material') return false;
@@ -60,7 +60,7 @@ export function createFactoryConnectionLayer(project: ProjectState, modules: Rea
             && (step.item_bindings[role] ?? device.role_bindings.item_types[role]) === value.item_type);
         }));
       };
-      const problem = !port || port.payload.kind !== 'material' ? '该精确版本没有此物料端口。'
+      const problem = !port || port.payload.kind !== 'material' ? '所选版本中没有此物料端口。'
         : port.direction !== direction && port.direction !== 'bidirectional' ? '物料端口方向不相容。'
         : port.payload.data.unit !== value.unit || (device.role_bindings.item_types[port.payload.data.item_role] !== value.item_type && !routeBindsItem())
           ? '物料角色绑定或单位不相容。' : null;

@@ -244,7 +244,7 @@ export function ExecutionObservationView(props: ExecutionObservationViewProps) {
     {current && <p className="execution-view-complete" role="status">当前时点共 {current.value.objects.length} 条对象记录。设备动作按上报阶段显示，物品位置按实际持有者显示；没有进度报告的设备保持静态。</p>}
     <div className="execution-view-filter">
       <label>对象类别<select aria-label="观察对象类别" value={kind} onChange={e => setKind(e.target.value)}><option value="all">全部对象</option>{Object.entries(kinds).map(([value, title]) => <option key={value} value={value}>{title}</option>)}</select></label>
-      <details><summary>按编号精确查找</summary><label>对象编号<input aria-label="观察对象编号" value={objectId} onChange={e => setObjectId(e.target.value)}/></label></details>
+      <details><summary>按编号查找</summary><label>对象编号<input aria-label="观察对象编号" value={objectId} onChange={e => setObjectId(e.target.value)}/></label></details>
       <button type="button" onClick={() => { setKind('all'); setObjectId(''); }}>清除筛选</button>
     </div>
     <div className="execution-view-table execution-object-table"><table>

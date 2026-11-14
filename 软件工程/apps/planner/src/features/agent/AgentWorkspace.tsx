@@ -149,26 +149,26 @@ export function AgentWorkspace({ workspace, onRefresh, onClose, onEditorStateCha
             <label>连接程序路径<input value={bridgePath} onChange={event => setBridgePath(event.target.value)} placeholder="实际发布包中的 superfactory-mcp-bridge.exe" /></label>
             <p>把以下配置复制到要使用的客户端，即可连接当前桌面工程。</p>
             <details><summary>查看客户端连接配置</summary><textarea readOnly aria-label="Codex MCP连接配置" value={configuration} rows={6} /></details>
-            <button disabled={!configuration} onClick={() => void action(async valid => { await navigator.clipboard.writeText(configuration); if (valid()) setNotice('已复制当前 Host 的临时连接配置。Host 重启后需重新读取。'); })}>复制连接配置</button>
+            <button disabled={!configuration} onClick={() => void action(async valid => { await navigator.clipboard.writeText(configuration); if (valid()) setNotice('连接配置已复制。重启程序后请重新复制。'); })}>复制连接配置</button>
             <button onClick={() => void action(async valid => { const next = await readAgentConnections(); if (valid()) setInfo(next); })}>重新读取连接</button>
             <label>本机已连接的客户端<select value={session} onChange={event => { setSession(event.target.value); setDirectory(null); }}>
-              <option value="">明确选择连接</option>{info?.connections.map((value,index) => <option key={value.session_id} value={value.session_id}>连接 {index+1} · 进程 {value.pid} · {value.revoked ? '已撤销' : value.authorized ? '已授权' : '等待确认'}</option>)}
+              <option value="">选择连接</option>{info?.connections.map((value,index) => <option key={value.session_id} value={value.session_id}>连接 {index+1} · 进程 {value.pid} · {value.revoked ? '已撤销' : value.authorized ? '已授权' : '等待确认'}</option>)}
             </select></label>
             {!info?.connections.length && <p>尚无客户端连接。启动客户端后，在这里选择连接并确认权限。</p>}
           </fieldset>
-          <fieldset disabled={busy || !authorized || authorized.revoked}><legend>2 · 明确本次允许的范围</legend>
+          <fieldset disabled={busy || !authorized || authorized.revoked}><legend>2 · 设置操作权限</legend>
             <p>下列为待提交选择，默认只读。授权对应工程“{workspace.project?.title ?? '未打开工程'}”；切换工程后必须重新核对。</p>
             <div className="agent-operations">{available.map(operation => <label key={operation}><input type="checkbox" checked={operations.includes(operation)} onChange={() => setOperations(values => values.includes(operation) ? values.filter(value => value !== operation) : [...values, operation])} />{label[operation]}</label>)}</div>
             <details><summary>操作技术名称</summary><ul>{available.map(operation=><li key={operation}>{label[operation]} · <code>{operation}</code></li>)}</ul></details>
             {!!definitionScopes.length && <details><summary>可授权的真实定义草稿</summary>{definitionScopes.map(id => <label key={id}><input type="checkbox" checked={drafts.includes(id)} onChange={() => setDrafts(values => values.includes(id) ? values.filter(value => value !== id) : [...values, id])} />{id}</label>)}</details>}
             <label><input type="checkbox" checked={viewControl} onChange={event => setViewControl(event.target.checked)} />允许主动切换主窗口视图；未选中时仅捕获独立反馈画面</label>
             <details><summary>对象、字段、新增数量与复用资源权限</summary>
-              <p>按客户端提出的具体清单核对编辑范围、操作、字段路径、新增数量上限、模块版本与资源编号；不能用整个对象提交绕过字段限制。空数组不允许编辑。</p>
+              <p>按清单选择可编辑字段、操作和数量上限。未选择的字段不可编辑。</p>
               <textarea aria-label="编辑权限JSON" value={grants} rows={12} onChange={event => setGrants(event.target.value)} />
               <button disabled={!workspace.project} onClick={addGrantExample}>填入仅修改当前工程标题的权限示例</button>
             </details>
-            <button onClick={() => void action(async valid => { if (!authorized) throw new Error('请选择当前实际连接。'); const next = choice(); if (authorized.authorized) await updateAgentAuthority(session, next); else await authorizeAgent(session, next); if (!valid()) return; const nextInfo = await readAgentConnections(); if (!valid()) return; setAcceptedForm(form); setInfo(nextInfo); setNotice('所选范围已提交给当前 Native Host；后续请求仍由 Host 逐项检查。'); })}>{authorized?.authorized ? '提交新的授权范围' : '确认并授权此连接'}</button>
-            <button disabled={!authorized?.authorized} onClick={() => void action(async valid => { await revokeAgent(session); if (!valid()) return; setInfo(await readAgentConnections()); setDirectory(null); setNotice('连接已撤销；已接收的 Host 任务仍由同一 Host 管理，不自动重放。'); })}>撤销此连接</button>
+            <button onClick={() => void action(async valid => { if (!authorized) throw new Error('请选择当前实际连接。'); const next = choice(); if (authorized.authorized) await updateAgentAuthority(session, next); else await authorizeAgent(session, next); if (!valid()) return; const nextInfo = await readAgentConnections(); if (!valid()) return; setAcceptedForm(form); setInfo(nextInfo); setNotice('权限已更新，连接只能在所选范围内操作。'); })}>{authorized?.authorized ? '提交新的授权范围' : '确认并授权此连接'}</button>
+            <button disabled={!authorized?.authorized} onClick={() => void action(async valid => { await revokeAgent(session); if (!valid()) return; setInfo(await readAgentConnections()); setDirectory(null); setNotice('连接已撤销，已有任务不会因此自动取消。'); })}>撤销此连接</button>
           </fieldset>
         </div>
         <div>
@@ -187,15 +187,15 @@ export function AgentWorkspace({ workspace, onRefresh, onClose, onEditorStateCha
             {directory !== null && <><details><summary>目录授权详情</summary><pre>{pretty(directory)}</pre></details><button onClick={() => void action(async valid => { await navigator.clipboard.writeText(pretty(directory)); if (valid()) setNotice('已复制本连接的目录令牌。'); })}>复制目录令牌</button></>}
             <label>选择要共享给此连接的任务<select value={taskId} onChange={event => setTaskId(event.target.value)}><option value="">请选择任务</option>{(observedContext?.tasks ?? workspace.context.tasks).map((task,index) => <option key={task.id} value={task.id}>任务 {index+1} · {taskStateLabel[task.state]}</option>)}</select></label>
             <label><input type="checkbox" checked={taskControls} onChange={event => setTaskControls(event.target.checked)} />同时允许该任务实际支持的控制</label>
-            <button disabled={!taskId} onClick={() => void action(async valid => { await grantAgentTask(session, taskId, taskControls); if (valid()) setNotice('已授权读取所选实际任务；不会重新执行任务或恢复旧文件权限。'); })}>确认任务授权</button>
+            <button disabled={!taskId} onClick={() => void action(async valid => { await grantAgentTask(session, taskId, taskControls); if (valid()) setNotice('已允许读取所选任务；不会重新执行或恢复文件权限。'); })}>确认任务授权</button>
           </fieldset>
           <ExecutionAuthority key={`${identity}:${info?.host_instance_id}:${session}`} workspace={workspace} hostInstanceId={info?.host_instance_id ?? null} sessionId={session}
             enabled={!!authorized?.authorized && !authorized.revoked} busy={busy} action={action} notice={setNotice} onDirtyChange={setExecutionDirty} />
-          <details><summary>如何交付与人工接手</summary><p>保存可编辑工程并导出 PDF、HTML、CSV、JSON。缺项保留草稿；不将目标数、动画或假设当作已完成产量。生成定义、提交版本、采用模块、运行和导出是独立命令。原运行记录的输入保持不变，后续编辑进入下一方案。</p></details>
+          <details><summary>如何交付与人工接手</summary><p>保存工程或导出报告。需要修改输入时，请生成新方案并重新运行；已有运行记录保留。</p></details>
         </div>
       </div>
     </>}
     {error && <p role="alert" className="agent-error">{error}</p>}{notice && <p role="status">{notice}</p>}
-    {closing && <div className="modal-backdrop"><section className="modal" role="alertdialog" aria-modal="true" aria-label="未提交Agent输入"><h2>未提交的 Agent 输入</h2><p>连接路径、任务说明或授权选择仍有未提交更改。已授予的连接权限不会随关闭工作台自动撤销。</p><footer><button autoFocus onClick={() => setClosing(false)}>保留输入，返回</button><button onClick={() => { observer.current?.({ identity, dirty: false, busy: false }); onClose(); }}>丢弃本地输入并关闭</button></footer></section></div>}
+    {closing && <div className="modal-backdrop"><section className="modal" role="alertdialog" aria-modal="true" aria-label="未提交Agent输入"><h2>未提交的 Agent 输入</h2><p>还有未提交的连接设置。关闭此页不会撤销已有权限。</p><footer><button autoFocus onClick={() => setClosing(false)}>保留输入，返回</button><button onClick={() => { observer.current?.({ identity, dirty: false, busy: false }); onClose(); }}>丢弃本地输入并关闭</button></footer></section></div>}
   </section>;
 }

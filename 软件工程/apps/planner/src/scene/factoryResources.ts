@@ -26,7 +26,7 @@ export function createFactoryResourceLayer(resources: FactoryResourceMedia[], lo
   function reconcile() {
     if (!live || lod === 'region') return;
     for (const state of states) {
-      if (state.input.unavailable || !state.input.media && !state.input.worker_status) { state.instance?.root.removeFromParent(); state.message = state.input.unavailable ?? 'unavailable · 没有精确资源媒体。'; continue; }
+      if (state.input.unavailable || !state.input.media && !state.input.worker_status) { state.instance?.root.removeFromParent(); state.message = state.input.unavailable ?? '没有可用的资源素材。'; continue; }
       const parent = state.input.resource.home_location ? location(state.input.resource.home_location) : null;
       if (!parent) { state.message = 'unavailable · 资源home_location没有实际空间节点。'; continue; }
       if (state.instance) { parent.add(state.instance.root); state.parent = parent; continue; }
@@ -47,7 +47,7 @@ export function createFactoryResourceLayer(resources: FactoryResourceMedia[], lo
         if (!live || ticket !== state.ticket) { instance.dispose(); return; }
         instance.root.traverse(object => { object.userData.ref = { kind: 'resource', id: state.input.resource.id }; });
         parent.add(instance.root); state.instance = instance; state.parent = parent;
-        state.pending = false; state.message = '已按精确Resources媒体及声明home_location附着。'; changed();
+        state.pending = false; state.message = '按所选资源素材和设置的位置显示。'; changed();
       }, error => {
         if (!live || ticket !== state.ticket) return;
         state.pending = false; state.failed = true;

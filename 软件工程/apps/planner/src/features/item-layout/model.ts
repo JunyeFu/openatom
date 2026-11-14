@@ -32,7 +32,7 @@ export interface LayoutInput { declared: boolean; assignment: '' | 'item_id_orde
 export const layoutInput = (layout: ItemSlotLayout | null | undefined): LayoutInput => ({ declared: layout != null, assignment: layout?.assignment ?? '', slots: layout?.slots.map(slotInput) ?? [] });
 export function parseLayout(input: LayoutInput, owner: ItemLayoutOwner): ItemSlotLayout | null {
   if (!input.declared) return null;
-  if (input.assignment !== 'item_id_order') throw new Error('请明确选择item_id_order时点展示分配。');
+  if (input.assignment !== 'item_id_order') throw new Error('请选择按物品编号排列的摆放方式。');
   const number = (s: string, field: string) => { if (!s.trim() || !Number.isFinite(Number(s))) throw new Error(`${field}须明确填写有限数值。`); return Number(s); };
   const slots: ItemDisplaySlot[] = input.slots.map((slot, i) => {
     if (!slot.item) throw new Error(`槽${i + 1}须选择精确子类型@revision。`);

@@ -98,7 +98,7 @@ type ReadOperation = 'get_context' | 'get_object' | 'get_run';
 type ReadRequest = { [O in ReadOperation]: { operation: O; params: Extract<ApiRequest, { operation: O }>['params'] } }[ReadOperation];
 
 export class ProcessSourceChanged extends Error {
-  constructor() { super('工程、会话、Scope修订或观看来源已切换；旧响应已丢弃，本地编辑输入保留。'); this.name = 'ProcessSourceChanged'; }
+  constructor() { super('工程连接、版本或观看来源已切换，输入已保留。请重新选择对象。'); this.name = 'ProcessSourceChanged'; }
 }
 export class ProcessUnavailable extends Error {
   constructor(message: string) { super(message); this.name = 'ProcessUnavailable'; }
@@ -122,8 +122,8 @@ export async function readActualPortOutputs(context: ProcessScope,
         scope_revision: context.scope_revision, run_id: actual.run_id, at_ms: actual.at_ms, port: reference });
       assertCurrent();
       if (value.run_id !== actual.run_id || value.at_ms !== actual.at_ms || value.port.instance_id !== reference.instance_id
-        || value.port.port_id !== reference.port_id || !sameRef(value.port.module_ref, reference.module_ref)) throw new ProcessUnavailable('实际端口数量回包改变了Run、时点或精确PortRef。');
-      if (value.completed_output.unit !== unit || value.accepted_output.unit !== unit) throw new ProcessUnavailable('实际端口数量单位不匹配冻结物料输出端口。');
+        || value.port.port_id !== reference.port_id || !sameRef(value.port.module_ref, reference.module_ref)) throw new ProcessUnavailable('端口数量与所选记录、时间点或端口不匹配。');
+      if (value.completed_output.unit !== unit || value.accepted_output.unit !== unit) throw new ProcessUnavailable('端口数量的单位与该次运行的输出端口不匹配。');
       output.ports.push({ ...value, status: 'available', unit });
     } catch (failure) {
       assertCurrent();
@@ -161,7 +161,7 @@ export function createPresentationHost(current: () => ProcessReadContext | null,
       : { kind: 'module_version', data: { module_ref: ref } };
     const module = async (ref: ModuleRef): Promise<ModulePackage> => {
       const result = await request<DomainObject>({ operation: 'get_object', params: { object_id: { kind: 'module', id: ref.id }, source: source(ref), node_index: null } });
-      if (result.kind !== 'module' || !sameRef(result.data.definition, ref)) throw new ProcessUnavailable('Host没有返回所选Scope中的精确模块版本。');
+      if (result.kind !== 'module' || !sameRef(result.data.definition, ref)) throw new ProcessUnavailable('未能读取所选范围内的模块版本。');
       return result.data;
     };
     const binding = (ref: ModuleRef): ProcessMediaBinding => ({ session_id: context.session_id, request: {
@@ -177,10 +177,10 @@ export function createPresentationHost(current: () => ProcessReadContext | null,
       let device: DeviceInstance | null = null;
       const checkProject = async () => {
         const current = await bound.request<ProjectContext>({ operation: 'get_context', params: { selection: [] } });
-        if (current.host.session_id !== context.session_id || current.project?.id !== context.project_id || current.project.revision !== context.scope_revision) throw new ProcessUnavailable('当前设备声明的会话/工程/Scope修订已变化。');
+        if (current.host.session_id !== context.session_id || current.project?.id !== context.project_id || current.project.revision !== context.scope_revision) throw new ProcessUnavailable('设备所属工程或版本已变化，请重新选择设备。');
       };
       if (selected.device_id !== undefined) {
-        if (context.scope.kind !== 'project') throw new ProcessUnavailable('当前设备实例声明只适用于原Project Scope；Draft或库定义不借实例覆盖。');
+        if (context.scope.kind !== 'project') throw new ProcessUnavailable('设备参数仅适用于原工程，请在对应工程中编辑。');
         await checkProject();
         const object = await bound.request<DomainObject>({ operation: 'get_object', params: { object_id: { kind: 'device', id: selected.device_id }, source: { kind: 'draft' }, node_index: null } });
         if (object.kind !== 'device' || object.data.id !== selected.device_id || !sameRef(object.data.module_ref, selected.module_ref)) throw new ProcessUnavailable('所选当前实例与精确设备模块不匹配。');
@@ -196,7 +196,7 @@ export function createPresentationHost(current: () => ProcessReadContext | null,
           || before.definition.draft_id !== context.scope.data || after.definition.draft_id !== context.scope.data
           || before.definition.revision !== context.scope_revision || after.definition.revision !== context.scope_revision
           || !sameRef(after.definition.definition_ref, selected.module_ref) || !sameRef(object.data, selected.module_ref)) {
-          throw new ProcessUnavailable('实际定义草稿或Scope修订已变化；请重读原Draft，本地输入保留。');
+          throw new ProcessUnavailable('定义草稿已更新，输入已保留。请重新读取原草稿。');
         }
         const presentation = presentationOf(object.data);
         if (!presentation) throw new ProcessUnavailable('此实际定义草稿没有过程表现声明。');
@@ -207,26 +207,26 @@ export function createPresentationHost(current: () => ProcessReadContext | null,
       }
       const module = await bound.module(selected.module_ref), presentation = device?.presentation_override ?? presentationOf(module.definition);
       if (device) await checkProject();
-      if (!presentation) throw new ProcessUnavailable('此精确版本没有可呈现的设备过程声明。');
+      if (!presentation) throw new ProcessUnavailable('此设备版本没有可查看的过程画面。');
       return { module, definition: module.definition, rights: module.rights, module_ref: selected.module_ref, presentation, binding: bound.binding(selected.module_ref),
         node_owner: device?.presentation_override ? { object_id: { kind: 'device', id: device.id }, source: { kind: 'draft' } }
           : { object_id: { kind: 'module', id: selected.module_ref.id }, source: bound.source(selected.module_ref) }, ...(device ? { device } : {}) };
     }
     const result = await bound.request<RunView>({ operation: 'get_run', params: { run_id: selected.run_id, query: { kind: 'full_result' } } });
     if (result.kind !== 'full' || result.data.id !== selected.run_id || result.data.input_ref.project_id !== context.project_id) {
-      throw new ProcessUnavailable('Host没有返回本工程所选Run的完整原结果。');
+      throw new ProcessUnavailable('未能完整读取所选运行结果，请重新加载。');
     }
     const run = result.data, at = selected.at_ms;
     if (run.computed_until_ms == null || at < run.window.start_ms || at > run.window.end_ms || at > run.computed_until_ms) {
-      throw new ProcessUnavailable('此时点超出Run已知计算边界；停止实际呈现，不补为空闲。');
+      throw new ProcessUnavailable('所选时间点尚未计算，画面暂停。请选择已计算的时间。');
     }
     async function pages(objects: { kind: 'job'; id: string }[]): Promise<RunObjectsPage[]> {
       const output: RunObjectsPage[] = [];
       let after_index: number | null = null;
       do {
         const value: RunView = await bound.request<RunView>({ operation: 'get_run', params: { run_id: run.id, query: { kind: 'objects_at', data: { at_ms: at, objects, page: { after_index, limit: 200 } } } } });
-        if (value.kind !== 'objects' || value.data.run_id !== run.id || value.data.at_ms !== at) throw new ProcessUnavailable('Host对象页不属于所选Run或时点。');
-        if (value.data.next_index !== null && value.data.next_index <= (after_index ?? -1)) throw new ProcessUnavailable('Host分页游标没有前进，不能把不完整页当完整快照。');
+        if (value.kind !== 'objects' || value.data.run_id !== run.id || value.data.at_ms !== at) throw new ProcessUnavailable('对象数据与所选记录或时间点不匹配。');
+        if (value.data.next_index !== null && value.data.next_index <= (after_index ?? -1)) throw new ProcessUnavailable('数据未能完整加载，请刷新后重试。');
         output.push(value.data); after_index = value.data.next_index;
       } while (after_index !== null);
       return output;
@@ -235,19 +235,19 @@ export function createPresentationHost(current: () => ProcessReadContext | null,
     // its original Item page meaning; Run.jobs is never used as a history fallback.
     const job_pages = await pages([{ kind: 'job', id: selected.job_id }]);
     const found = job_pages.flatMap(page => page.objects).filter(object => object.kind === 'job' && object.data.id === selected.job_id);
-    if (found.length !== 1 || found[0].kind !== 'job') throw new ProcessUnavailable('所选时点没有唯一实际Job历史；不能从最终Run.jobs反推。');
+    if (found.length !== 1 || found[0].kind !== 'job') throw new ProcessUnavailable('所选时间点没有唯一的作业记录，暂时无法回看。');
     const job = found[0].data, item_pages = await pages([]);
     const projectObject = await bound.request<DomainObject>({ operation: 'get_object', params: {
       object_id: { kind: 'project', id: context.project_id }, source: { kind: 'run_snapshot', data: { run_id: run.id, at_ms: at } }, node_index: null,
     } });
     if (projectObject.kind !== 'project' || projectObject.data.id !== context.project_id || projectObject.data.revision !== run.input_ref.project_revision) {
-      throw new ProcessUnavailable('Host没有返回此Run冻结输入修订的工程。');
+      throw new ProcessUnavailable('未能读取该次运行使用的工程版本。');
     }
     const frozen = projectObject.data;
     const execution = job.execution_ref;
     const device = execution.kind === 'project_device'
       ? frozen.devices.find(device => device.id === execution.data.device_id) ?? null : null;
-    if (job.execution_ref.kind === 'project_device' && !device) throw new ProcessUnavailable('此作业的实际设备不在Run冻结工程内。');
+    if (job.execution_ref.kind === 'project_device' && !device) throw new ProcessUnavailable('该次运行的工程中没有此作业使用的设备。');
     const reference = device?.module_ref ?? (job.execution_ref.kind === 'definition_cycle' ? job.execution_ref.data.module_ref : null);
     if (!reference) throw new ProcessUnavailable('作业没有受支持的冻结执行来源。');
     const module = await bound.module(reference), payload = module.definition.payload;
@@ -279,7 +279,7 @@ export function createPresentationHost(current: () => ProcessReadContext | null,
     const expected = bound.binding(sourceRef(binding.request.source));
     if (binding.session_id !== expected.session_id || binding.request.project_id !== expected.request.project_id
       || binding.request.scope_revision !== expected.request.scope_revision || scopeKey(binding.request.scope) !== scopeKey(expected.request.scope)
-      || !sameSource(binding.request.source, expected.request.source)) throw new ProcessUnavailable('媒体请求不属于当前会话、Scope修订或精确来源。');
+      || !sameSource(binding.request.source, expected.request.source)) throw new ProcessUnavailable('素材请求与当前连接或版本不匹配，请重新选择来源。');
     return {
       async readAsset(request: MediaAssetReadRequest) {
         bound.assertCurrent();
@@ -290,14 +290,14 @@ export function createPresentationHost(current: () => ProcessReadContext | null,
       },
       async resolveModule(source: ProcessAssetSource) {
         const expectedSource = bound.source(sourceRef(source));
-        if (!sameSource(source, expectedSource)) throw new ProcessUnavailable('媒体依赖改变了Run/时点或精确来源类型。');
+        if (!sameSource(source, expectedSource)) throw new ProcessUnavailable('素材依赖与所选记录或时间点不匹配。');
         return bound.module(sourceRef(source));
       },
     };
   }
   async function action(context: ProcessReadContext, value: ProcessDefinition | ActualProcessObservation,
     selected: DeviceAction, actions: ProcessActions) {
-    if (context.selection.kind === 'frozen_device' || context.selection.kind === 'frozen_definition') throw new ProcessUnavailable('冻结静态声明只供检查与明确来源创作，不执行设备操作或样例。');
+    if (context.selection.kind === 'frozen_device' || context.selection.kind === 'frozen_definition') throw new ProcessUnavailable('历史静态记录仅供查看或创建新版本，不能直接操作设备或运行样例。');
     const bound = capture(context), payload = value.definition.payload, port = actions[selected];
     if (payload.category !== 'devices' || !payload.data.operations.includes(selected) || !port) {
       throw new ProcessUnavailable(`${selected} unavailable：当前精确声明与Root实际操作入口未同时具备。`);
@@ -327,9 +327,9 @@ export async function resolveProcessOperation(definition: ModuleDefinition, refe
     } else {
       const declared = payload.category === 'devices' && payload.data.behavior.selected === 'operation_ref' ? payload.data.behavior.operation_ref : null;
       const allowed = [declared, device?.operation_binding, ...(device?.route_operation_refs ?? [])].some(ref => ref != null && sameRef(ref, job.operation_ref));
-      if (!allowed) throw new ProcessUnavailable('Job的冻结工艺不匹配此设备已选inline/operation_ref或显式实例工艺绑定；不猜其它规则。');
+      if (!allowed) throw new ProcessUnavailable('作业使用的工艺与该次运行的设备绑定不匹配。');
       operationModule = await readModule(job.operation_ref);
-      if (operationModule.definition.payload.category !== 'operations') throw new ProcessUnavailable('此冻结工艺类别尚未接入设备过程呈现。');
+      if (operationModule.definition.payload.category !== 'operations') throw new ProcessUnavailable('此工艺类型暂不支持过程画面。');
       operation = operationModule.definition.payload.data;
     }
     return { operation, operation_module: operationModule };

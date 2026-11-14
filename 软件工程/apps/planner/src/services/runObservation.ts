@@ -15,7 +15,7 @@ export async function readRunObservation({session_id, ...request}: RunObservatio
   try {
     const reply = await invoke<ObservationFrameReply>('project_read_run_observation_delta', {request, baseFrame: base?.frame ?? null});
     const value = decodeObservationFrame(base, reply);
-    if (value.page.run_id !== request.run_id || value.page.at_ms !== request.at_ms || value.page.next_index !== null) throw new Error('实际观察的Run、时点或完整性不匹配。');
+    if (value.page.run_id !== request.run_id || value.page.at_ms !== request.at_ms || value.page.next_index !== null) throw new Error('运行记录或时间点不匹配，或数据尚未完整加载。');
     if (serial === readSerial) previous = {key, value};
     return value.page;
   }

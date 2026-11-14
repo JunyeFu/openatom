@@ -53,8 +53,8 @@ export function LayoutSelectionEditor({ project, selection, mode, busy, onApply,
     <fieldset disabled={blocked}>
       {mode === 'group' ? <><label>新线组ID<input value={groupId} onChange={event => setGroupId(event.target.value)} required /></label>
         <label>线组名称<input value={title} onChange={event => setTitle(event.target.value)} required /></label>
-        <p>保留设备在厂房中的位置和完整朝向；原线组其余成员保持。线组原点取所选设备中心，区域仅按已有占地形成显示边界。</p></> : <>
-        <p>请核对每个新ID。复制保留设备参数和局部布局，角色、边界端口及连接需要重新绑定；不会复制物料供给、在制、订单或专业认可。</p>
+        <p>以所选设备中心创建线组，设备位置和朝向保持不变。</p></> : <>
+        <p>请核对新编号。复制保留设备参数和布局；角色、端口及连接需重新设置，物料、订单和专业认可不复制。</p>
         {[...chosen.lines, ...chosen.devices].map(object => <label key={object.id}>{object.title} · {object.id} → 新ID<input value={ids[object.id] ?? ''} onChange={event => setIds({ ...ids, [object.id]: event.target.value })} required /></label>)}
         <div className="numeric-row"><label>X位移 / m<input type="number" step="any" value={x} onChange={event => setX(event.target.value)} required /></label>
           <label>Y位移 / m<input type="number" step="any" value={y} onChange={event => setY(event.target.value)} required /></label>

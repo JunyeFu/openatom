@@ -48,7 +48,7 @@ export function readScopeContext(io: AuthoringIO, target: PackagingTarget) {
   return io.dispatch<ProjectContext>({ ...targetHeader(target), operation: 'get_context', params: { selection: [] } });
 }
 export function commitProfessionalDefinitionVersion(io: AuthoringIO, target: PackagingTarget, version: string) {
-  if (target.scope.kind !== 'definition_draft' || !version.trim()) throw new Error('仅在明确的 DefinitionDraft 输入版本后提交。');
+  if (target.scope.kind !== 'definition_draft' || !version.trim()) throw new Error('请先选择定义草稿的输入版本。');
   return io.dispatch<EditCommit>({ ...targetHeader(target), operation: 'apply_commands', params: { base_revision: target.revision, commands: [{ kind: 'commit_definition_version', data: { version: version.trim() } }] } });
 }
 export function assertTaskTarget(task: TaskHandle, target: PackagingTarget) {
@@ -56,7 +56,7 @@ export function assertTaskTarget(task: TaskHandle, target: PackagingTarget) {
   if (task.input_revision !== target.revision || scope.kind !== 'edit'
     || (target.scope.kind === 'project' ? scope.data.kind !== 'project' || scope.data.data !== target.projectId
       : scope.data.kind !== 'definition_draft' || scope.data.data.id !== target.scope.data || scope.data.data.revision !== target.revision)) {
-    throw new Error('Host Task 的工程、Scope 或输入修订与此次请求不同，停止观察。');
+    throw new Error('返回任务与所选工程或输入版本不匹配，已停止读取。');
   }
 }
 export function cancelPackagingTask(io: AuthoringIO, target: PackagingTarget, task: TaskHandle) {
@@ -70,7 +70,7 @@ export async function computeJob(io: AuthoringIO, target: PackagingTarget, job: 
   try {
     const output = await io.awaitTask(task, state => {
       assertTaskTarget(state.task, target);
-      if (state.task.id !== task.id) throw new Error('Host 返回另一任务，停止展示。');
+      if (state.task.id !== task.id) throw new Error('返回结果与当前任务不符，已停止展示。');
       terminalState = ['completed', 'failed', 'cancelled'].includes(state.task.state) ? state : null;
       onState(state);
     });
@@ -83,14 +83,14 @@ export async function computeJob(io: AuthoringIO, target: PackagingTarget, job: 
 }
 export async function readTaskEvidence(io: AuthoringIO, target: PackagingTarget, result: PackagingResult): Promise<PackagingEvidence> {
   const object = await io.dispatch<DomainObject>({ ...targetHeader(target), operation: 'get_object', params: { object_id: { kind: 'artifact', id: result.artifact_id }, source: { kind: 'draft' }, node_index: null } });
-  if (object.kind !== 'artifact' || object.data.id !== result.artifact_id || !sameInput(object.data.subject_ref, result.subject_ref)) throw new Error('Host 未返回此结果的精确 Artifact。');
+  if (object.kind !== 'artifact' || object.data.id !== result.artifact_id || !sameInput(object.data.subject_ref, result.subject_ref)) throw new Error('未能读取该计算成果，请重新选择结果。');
   const input = await io.dispatch<DomainObject>({ ...targetHeader(target), operation: 'get_object', params: { object_id: { kind: 'packaging_job', id: result.job_ref.id }, source: { kind: 'draft' }, node_index: null } });
   const exact = input.kind === 'packaging_job' && input.data.id === result.job_ref.id && input.data.revision === result.job_ref.revision;
   return { result, artifact: object.data, input: exact && input.kind === 'packaging_job' ? input.data : null,
-    inputReadIssue: exact ? null : `Host 当前读取未返回结果所用的 ${result.job_ref.id}@r${result.job_ref.revision}；保留成果，但不以其他修订绘制过程。` };
+    inputReadIssue: exact ? null : `未读取到此结果使用的输入${result.job_ref.id}@r${result.job_ref.revision}。成果已保留，过程画面暂不可用。` };
 }
 export function acknowledgmentCommand(evidence: PackagingEvidence, purposes: string[], statement: string): ArtifactAcknowledgment {
-  if (!statement.trim() || !purposes.length || purposes.some(value => !evidence.artifact.supported_scope.includes(value))) throw new Error('请明确选择该成果支持的认可用途并填写人类认可说明。');
+  if (!statement.trim() || !purposes.length || purposes.some(value => !evidence.artifact.supported_scope.includes(value))) throw new Error('请选择此成果支持的用途，并填写认可说明。');
   return { id: `ack-${crypto.randomUUID()}`, artifact_ref: evidence.artifact.id, accepted_subject: evidence.artifact.subject_ref,
     accepted_scope: purposes, decision_source: { kind: 'human_statement', data: statement.trim() }, conditions: [] };
 }
@@ -132,8 +132,8 @@ export async function exportEvidence(io: AuthoringIO, target: PackagingTarget, e
   const moduleRefs = [];
   if (target.scope.kind === 'definition_draft') {
     const context = await readScopeContext(io, target);
-    if (context.definition?.draft_id !== target.scope.data) throw new Error('Host 未返回当前专业定义草稿，不能猜测要导出的模块版本。');
-    if (context.definition.issues.some(issue => issue.code === 'definition.unsaved_changes')) throw new Error('实际专业定义仍有未提交变更；请先明确提交定义版本，再导出含成果的模块工程包。');
+    if (context.definition?.draft_id !== target.scope.data) throw new Error('未能读取当前定义草稿，请刷新后再选择导出版本。');
+    if (context.definition.issues.some(issue => issue.code === 'definition.unsaved_changes')) throw new Error('定义还有未提交修改，请先提交版本再导出成果包。');
     moduleRefs.push(context.definition.definition_ref);
   }
   const selected = await io.pickDirectory('export_package');
@@ -171,12 +171,12 @@ export async function exportDeclaredManufacturingEvidence(
   guard();
   if (!producer || producer.status !== 'available') throw new Error(producer?.reason ?? '制造文件声明导出尚未接入真实宿主。');
   const frozen = structuredClone({ target, evidence, declarations });
-  if (!manufacturingDeclarationsReady(frozen.evidence, frozen.declarations, confirmed)) throw new Error('请逐文件填写当前成果的来源和许可，并明确确认本次携带；不能使用其他成果、缺项或重复文件的声明。');
+  if (!manufacturingDeclarationsReady(frozen.evidence, frozen.declarations, confirmed)) throw new Error('请逐项填写当前成果文件的来源与许可，并确认本次导出；不要使用其他成果或重复文件的许可记录。');
   const moduleRefs: ModuleRef[] = [];
   if (frozen.target.scope.kind === 'definition_draft') {
     const context = await readScopeContext(io, frozen.target); guard();
-    if (context.definition?.draft_id !== frozen.target.scope.data || context.definition.revision !== frozen.target.revision) throw new Error('专业 Scope 或修订已变化，请刷新后重新核对当前成果声明。');
-    if (context.definition.issues.some(issue => issue.code === 'definition.unsaved_changes')) throw new Error('请先明确提交定义版本，再导出该草稿的专业成果。');
+    if (context.definition?.draft_id !== frozen.target.scope.data || context.definition.revision !== frozen.target.revision) throw new Error('成果版本已变化，请刷新后核对文件许可。');
+    if (context.definition.issues.some(issue => issue.code === 'definition.unsaved_changes')) throw new Error('请先提交定义版本，再导出专业成果。');
     moduleRefs.push(context.definition.definition_ref);
   }
   const selected = await io.pickDirectory('export_package'); guard();
@@ -189,7 +189,7 @@ export async function exportDeclaredManufacturingEvidence(
   guard(); assertTaskTarget(task, frozen.target);
   const output = await io.awaitTask(task, state => {
     guard(); assertTaskTarget(state.task, frozen.target);
-    if (state.task.id !== task.id || state.originating_operation !== 'export_package') throw new Error('Host 返回另一导出任务，停止展示旧响应。');
+    if (state.task.id !== task.id || state.originating_operation !== 'export_package') throw new Error('返回的导出任务不匹配，请先刷新操作状态。');
     onState(state);
   });
   guard();

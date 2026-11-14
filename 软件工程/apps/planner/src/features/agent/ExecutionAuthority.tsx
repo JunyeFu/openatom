@@ -32,7 +32,7 @@ export function ExecutionAuthority({ workspace, hostInstanceId, sessionId, enabl
     && source.snapshot.identity.host_context_session_id === context?.hostContextId;
   function resetSelection() { setSource(null); setActions([]); setDevices([]); setAccepted('[[],[]]'); }
   return <fieldset disabled={busy || !enabled || !context}><legend>5 · 本次生产记录的执行权限</legend>
-    <p>先在操作范围中允许“控制生产派工”，再明确选择记录、动作和设备。默认不授权执行；此处不会开始或停止生产。</p>
+    <p>先允许“控制生产派工”，再选择记录、动作和设备。授权不会立即启动或停止生产。</p>
     <button onClick={() => void action(async current => {
       if (!context) return;
       const result = await readLocalView(context, { kind: 'catalog' });
@@ -48,7 +48,7 @@ export function ExecutionAuthority({ workspace, hostInstanceId, sessionId, enabl
         const actual = await readExecution(context, entry.identity, { kind: 'latest' });
         if (current()) setSource(actual);
       });
-    }}><option value="">明确选择一条记录</option>{entries.map((entry, index) =>
+    }}><option value="">选择运行记录</option>{entries.map((entry, index) =>
       <option key={entry.identity.session_id} value={entry.identity.session_id}
         disabled={!entry.active_owner || entry.identity.host_context_session_id !== context?.hostContextId}>
         记录 {index + 1} · {states[entry.lifecycle_state] ?? '状态待核对'} · {entry.active_owner ? '当前桌面' : '历史只读'}
@@ -70,7 +70,7 @@ export function ExecutionAuthority({ workspace, hostInstanceId, sessionId, enabl
       })}
       <button disabled={!allowedSource} onClick={() => void action(async current => {
         await grantAgentExecution(sessionId, { identity: source.snapshot.identity, session_controls: actions, device_acceptance_control_ids: devices });
-        if (current()) { setAccepted(JSON.stringify([actions, devices])); notice('已向所选连接提交此记录的明确执行权限；Agent仍须读取实际权限后操作。'); }
+        if (current()) { setAccepted(JSON.stringify([actions, devices])); notice('已授予所选连接执行权限。'); }
       })}>确认此记录的执行权限</button>
       <button disabled={!allowedSource} onClick={() => void action(async current => {
         await grantAgentExecution(sessionId, { identity: source.snapshot.identity, session_controls: [], device_acceptance_control_ids: [] });

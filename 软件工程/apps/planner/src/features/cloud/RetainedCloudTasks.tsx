@@ -38,9 +38,9 @@ export function RetainedCloudTasks(props: Props) {
     }
   }
 
-  return <aside className="cloud-retained-tasks" aria-label="原修订任务">
+  return <aside className="cloud-retained-tasks" aria-label="已登记任务">
     <details><summary>原修订的准备与导出任务（{records.length}）</summary>
-      <p>按原输入修订查询已有任务。停止观察或返回画布不会停止生产，也不会重复准备或导出。</p>
+      <p>查看已登记任务。停止观察或返回画布后，生产与已开始的任务仍会继续。</p>
       {records.map(record => <div className="cloud-record" key={record.request_id}>
         <strong>工程 r{record.context.projectRevision}</strong> · {record.operation} · {record.status}
         <small>{record.request_id} · {record.task?.id ?? '登记回执尚未确认'}</small>

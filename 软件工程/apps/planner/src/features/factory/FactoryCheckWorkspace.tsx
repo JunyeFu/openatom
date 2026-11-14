@@ -40,7 +40,7 @@ export function FactoryCheckWorkspace({ project, supported, selection, busy, onC
       const hall = project.halls.find(value => value.id === site);
       if (!actualProduct || !item) throw new Error('请明确选择已有产品及其实际物品修订。');
       if (!industry.trim() || !family.trim()) throw new Error('请填写行业与产品族。');
-      if (!start.trim() || !end.trim() || !Number.isSafeInteger(Number(start)) || !Number.isSafeInteger(Number(end)) || Number(start) < 0 || Number(end) <= Number(start)) throw new Error('请填写明确的观察窗口，结束毫秒须大于开始毫秒。');
+      if (!start.trim() || !end.trim() || !Number.isSafeInteger(Number(start)) || !Number.isSafeInteger(Number(end)) || Number(start) < 0 || Number(end) <= Number(start)) throw new Error('请填写观察时段，结束时间必须晚于开始时间。');
       if (!project.locations.some(value => value.id === destination)) throw new Error('请明确选择验收目的库位。');
       if (!(site === 'saved' && saved) && !hall) throw new Error('请明确选择已有场地。');
       const sameProduct = saved?.acceptance_scope.product_ref.id === actualProduct.id && saved.acceptance_scope.product_ref.revision === actualProduct.revision;
@@ -60,11 +60,11 @@ export function FactoryCheckWorkspace({ project, supported, selection, busy, onC
   return <form className="object-editor" aria-label="工程草稿检查" onSubmit={check}>
     <header><h2>工程草稿检查</h2><button type="button" disabled={busy || checking} onClick={() => dirty ? setLeaving(true) : onClose()}>返回画布</button></header>
     <p>检查基础 r{project.revision}。静态结果不替代生产运行；未提供的净距、工时与日产目标保持未知。</p>
-    {!supported && <p role="alert">当前 Host 未提供工程草稿检查能力。</p>}
+    {!supported && <p role="alert">本机服务暂不支持检查工程草稿。</p>}
     <fieldset disabled={busy || checking}>
       <div className="field-grid"><label>行业<input value={industry} onChange={event => setIndustry(event.target.value)} required /></label><label>产品族<input value={family} onChange={event => setFamily(event.target.value)} required /></label></div>
       <label>产品修订<select value={product} onChange={event => setProduct(event.target.value)} required><option value="">明确选择产品</option>{project.products.map(value => <option key={`${value.id}@${value.revision}`} value={`${value.id}@${value.revision}`}>{value.id}@{value.revision}</option>)}</select></label>
-      {!project.products.length && <p>工程尚未声明产品修订，请在业务输入中补齐后检查。</p>}
+      {!project.products.length && <p>尚未设置产品版本，请先在业务输入中补齐。</p>}
       <div className="field-grid"><label>验收目的库位<select value={destination} onChange={event => setDestination(event.target.value)} required><option value="">明确选择库位</option>{project.locations.map(value => <option key={value.id} value={value.id}>{value.title}</option>)}</select></label><label>验收阶段<select value={stage} onChange={event => setStage(event.target.value as AcceptanceStage)}><option value="factory_released">工厂放行</option><option value="received">目的地接收</option><option value="unloaded_and_released">卸货并放行</option></select></label></div>
       {!!saved?.additional_acceptance_scopes?.length && <section aria-label="已保存的附加接受范围"><h3>附加接受范围 · 已保存，只读</h3>{saved.additional_acceptance_scopes.map((scope, index) => <p key={index}><strong>{scope.product_ref.id}@{scope.product_ref.revision}</strong> · {scope.unit} · {scope.destination} · {({ factory_released: '工厂放行', received: '目的地接收', unloaded_and_released: '卸货并放行' })[scope.stage]}</p>)}</section>}
       <div className="field-grid"><label>观察开始 / ms<input type="number" min="0" step="1" value={start} onChange={event => setStart(event.target.value)} required /></label><label>观察结束 / ms<input type="number" min="1" step="1" value={end} onChange={event => setEnd(event.target.value)} required /></label></div>
