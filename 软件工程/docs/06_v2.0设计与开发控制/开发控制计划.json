@@ -3,7 +3,7 @@
   "next_full_version_plan": {
     "date": "2026-10-31",
     "authority": "用户授权同步方案与任务卡、建立五阶段和FV0三张Issue；人员按角色标注；不影响已提交发布链接。 用户已授权执行角色A第一卡。",
-    "state": "fv03_six_cards_dispatched_fv04_queued_planning_only",
+    "state": "fv03_A_code_checkpoint_and_B_source_merged_candidate_C_final_acceptance_pending",
     "spec_ref": "docs/06_v2.0设计与开发控制/入围后完整版制作与验收方案.md",
     "task_cards_ref": "docs/06_v2.0设计与开发控制/入围后完整版任务卡.md",
     "source_packages": "V2-00至V2-11保持，FV0至FV4为下一轮执行批次，ST01至ST08历史验收不改",
@@ -291,15 +291,15 @@
     "a_task_queue": {
       "updated_on": "2026-11-14",
       "owner": "JunyeFu",
-      "authority": "本窗口只规划和派单；FV03 A9h/B9h/临时C原9h上限，FV04每人2–3h排队，实际任务由负责人后续接手。",
+      "authority": "用户本轮明确完成FV03角色A；实施和源码接收已完成，最终整卡仍受B/C候选结果约束；FV04未启动。",
       "coordination_issue": "https://github.com/JunyeFu/openatom/issues/25",
       "next_implementation": {
         "stage": "FV3",
         "issue": "https://github.com/JunyeFu/openatom/issues/25",
-        "state": "handoff_to_role_owner_not_this_planning_window",
+        "state": "wait_for_B_candidate_C_report_then_A_intake",
         "owner": "JunyeFu"
       },
-      "b_dispatch": "https://github.com/JunyeFu/openatom/issues/5",
+      "b_dispatch": "https://github.com/JunyeFu/openatom/issues/26",
       "receive_then_freeze": [
         "FV0 已收口。A 已接收 B 的诊断及 C 经授权的 UIA 复测，并冻结验收目标。"
       ],
@@ -352,7 +352,7 @@
       "current_primary": {
         "stage": "FV3",
         "issue": "https://github.com/JunyeFu/openatom/issues/25",
-        "state": "assigned_pending_execution",
+        "state": "independent_done_final_intake_waiting_B_C",
         "owner": "JunyeFu"
       },
       "default_stage_order": [
@@ -363,8 +363,8 @@
         "FV4"
       ],
       "fv0_exit": "FV0 已收口。A 已接收 B 的诊断及 C 经授权的 UIA 复测，并冻结验收目标。",
-      "waiting_work": "FV03三卡与FV04三张排队卡已派发；A/B由独立任务实施，本机临时C收到候选后另行启动。B PR28部分交付待审；本窗口不审查、不测试、不合并。",
-      "early_implementation_exception": "只有B本人已报告FV03部分实现；A25待执行、C27待候选；FV04未启动，本窗口未开始产品实施。"
+      "waiting_work": "A代码检查点已合入，B PR28源码已批准并合入。B26交含A/B的唯一候选和完整指南，临时C27按该候选短复验，A再接收；没有Native结果不关闭25或FV03。",
+      "early_implementation_exception": "本轮用户授权A实施；FV04三卡继续排队，不因源码已合入而启动。"
     },
     "fv0_intake_contract": {
       "date": "2026-11-01",
@@ -1593,7 +1593,7 @@
     },
     "status_updated_on": "2026-11-14",
     "from_fv3": {
-      "state": "planned_and_dispatched",
+      "state": "A_code_and_B_source_merged_waiting_integrated_candidate",
       "authority": "2026-11-14用户：大作业只完成开发和前端缺口，取消持续运行与压力，本机代C，每阶段子Agent review",
       "base": "fd4378e386aa093ba10cee220e80388b76e0d1de",
       "product_candidate": "344be249a30e0b6c7f752b718560a916a51ca961",
@@ -1638,25 +1638,32 @@
           "role": "A",
           "owner": "JunyeFu",
           "issue": 25,
-          "state": "assigned_pending_execution",
+          "state": "independent_done_waiting_B_C_final_acceptance",
           "scope": "Q18业务导航、公共决定、集成接收",
           "write": [
             "apps/planner/src/features/business",
             "相关局部测试/指南/原控制"
-          ]
+          ],
+          "source_commit": "650f7bd90cf6779b80b53ff1e810b17e7619f45d",
+          "pr": 32,
+          "merge_commit": "08dffc44bca0dad2a2e48ad89a4f9cb8f2ed2c99",
+          "code_checkpoint": "merged_ready_for_B"
         },
         {
           "role": "B",
           "owner": "wwl-ww",
           "issue": 26,
-          "state": "B_reported_PR28_partial_implementation_delivered_A_not_reviewed",
+          "state": "code_review_approved_merged_final_candidate_pending",
           "scope": "报告比较可读性、默认PDF、一次制包",
           "implementation_dependency": "可立即改自己目录",
           "delivery_dependency": "A的Q18代码审查合入检查点；不等A整卡关闭",
           "reported_pr": 28,
           "reported_delivery_comment": "https://github.com/JunyeFu/openatom/issues/26#issuecomment-6875824586",
-          "final_candidate": "not_delivered_waits_A25_code_checkpoint",
-          "acceptance": "not_reviewed_not_accepted"
+          "final_candidate": "not_delivered_A_code_dependency_satisfied",
+          "acceptance": "source_review_only_Native_and_final_candidate_pending",
+          "reviewed_commit": "4bab87e4c04f5a674301a2fe6b9e159a0ac45425",
+          "merge_commit": "5c105495852bad8cbbf958a055972b5d9a062717",
+          "review": "https://github.com/JunyeFu/openatom/pull/28#pullrequestreview-5903942530"
         },
         {
           "role": "temporary_C",
@@ -1692,13 +1699,14 @@
         }
       ],
       "stage_complete": false,
-      "current_window_scope": "缺口/方案/GitHub派单；不执行产品开发",
-      "implementation_started_by_this_window": false,
+      "current_window_scope": "本轮用户明确授权执行角色A25：Q18实现、三阶段审查、局部验证、代码合入及B源码接收；B制包与临时C实际Native仍分派执行",
+      "implementation_started_by_this_window": true,
       "premature_local_candidate": {
         "state": "unadopted_not_task_delivery",
         "product_commit": false,
         "worktree_own2files_restored": true,
-        "prior_cleanup_entries_untouched": 1785
+        "prior_cleanup_entries_untouched": 1785,
+        "later_authorized_A25_adoption": "650f7bd90cf6779b80b53ff1e810b17e7619f45d"
       },
       "planning_handoff_complete": true,
       "dispatch_detail": {
@@ -1728,6 +1736,64 @@
         "a_code_checkpoint": "A25代码审查合入后即可给B制包，不等A25整卡关闭",
         "closing_gate": "B26最终候选与C27同候选工具结果经A在25接收，才确认FV03完成",
         "guide_owner": "A/B各自受影响段，B在26统一完整指南，临时C交差异"
+      },
+      "a25_execution": {
+        "state": "independent_development_and_code_checkpoint_completed_final_acceptance_pending",
+        "source_commit": "650f7bd90cf6779b80b53ff1e810b17e7619f45d",
+        "pr": 32,
+        "merge_commit": "08dffc44bca0dad2a2e48ad89a4f9cb8f2ed2c99",
+        "integration_product_commit": "5c105495852bad8cbbf958a055972b5d9a062717",
+        "scope": [
+          "BusinessEditor.tsx分组/存在条数/重复定位/空方案标题入口",
+          "business.css局部样式",
+          "FV03业务输入导航说明.md"
+        ],
+        "verification": {
+          "planner_typecheck": "passed",
+          "component_browser": {
+            "passed": 12,
+            "total": 12,
+            "viewports": [
+              [
+                1366,
+                768
+              ],
+              [
+                1920,
+                1080
+              ]
+            ],
+            "page_errors": 0,
+            "console_errors": 0,
+            "source": "真实React组件；既有F1小输入；未连接Host",
+            "confirm_commit": "仅精确回调和适配器拒绝后保留草稿，不是Host写入成功"
+          },
+          "actual_native": "pending_B26_C27",
+          "save_reopen": "pending_same_candidate"
+        },
+        "evidence": "https://github.com/JunyeFu/openatom/releases/download/untagged-65a481ce993d4d2d636c/FV03-A25-Q18-650f7bd9-evidence.zip",
+        "evidence_bytes": 249350,
+        "guide": "docs/06_v2.0设计与开发控制/FV03业务输入导航说明.md",
+        "stage_reviews": [
+          {
+            "stage": "准备/设计",
+            "state": "passed_after_correction"
+          },
+          {
+            "stage": "实现",
+            "state": "passed"
+          },
+          {
+            "stage": "短验证与交付",
+            "state": "passed_component_scope"
+          }
+        ],
+        "pending": [
+          "B26最终同提交内部包/完整指南/短结果",
+          "临时C27实际同候选Native短复验",
+          "A25最终接收"
+        ],
+        "protected_release_changed": false
       }
     },
     "from_fv4": {
