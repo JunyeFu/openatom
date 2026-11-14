@@ -3,7 +3,7 @@
   "next_full_version_plan": {
     "date": "2026-10-31",
     "authority": "用户授权同步方案与任务卡、建立五阶段和FV0三张Issue；人员按角色标注；不影响已提交发布链接。 用户已授权执行角色A第一卡。",
-    "state": "fv3_planned_and_dispatched_this_window_no_implementation",
+    "state": "fv03_six_cards_dispatched_fv04_queued_planning_only",
     "spec_ref": "docs/06_v2.0设计与开发控制/入围后完整版制作与验收方案.md",
     "task_cards_ref": "docs/06_v2.0设计与开发控制/入围后完整版任务卡.md",
     "source_packages": "V2-00至V2-11保持，FV0至FV4为下一轮执行批次，ST01至ST08历史验收不改",
@@ -291,7 +291,7 @@
     "a_task_queue": {
       "updated_on": "2026-11-14",
       "owner": "JunyeFu",
-      "authority": "FV1 已验收；本批授权 FV02 按调整后分工，每人一张 16–20 人时卡。",
+      "authority": "本窗口只规划和派单；FV03 A9h/B9h/临时C原9h上限，FV04每人2–3h排队，实际任务由负责人后续接手。",
       "coordination_issue": "https://github.com/JunyeFu/openatom/issues/25",
       "next_implementation": {
         "stage": "FV3",
@@ -363,8 +363,8 @@
         "FV4"
       ],
       "fv0_exit": "FV0 已收口。A 已接收 B 的诊断及 C 经授权的 UIA 复测，并冻结验收目标。",
-      "waiting_work": "方案和三卡已派发；A/B由各自负责人接手实施，本机C收到新候选后另行启动。本窗口不继续开发。",
-      "early_implementation_exception": "仅FV03当前开发已启动，FV04只规划"
+      "waiting_work": "FV03三卡与FV04三张排队卡已派发；A/B由独立任务实施，本机临时C收到候选后另行启动。B PR28部分交付待审；本窗口不审查、不测试、不合并。",
+      "early_implementation_exception": "只有B本人已报告FV03部分实现；A25待执行、C27待候选；FV04未启动，本窗口未开始产品实施。"
     },
     "fv0_intake_contract": {
       "date": "2026-11-01",
@@ -1700,10 +1700,38 @@
         "worktree_own2files_restored": true,
         "prior_cleanup_entries_untouched": 1785
       },
-      "planning_handoff_complete": true
+      "planning_handoff_complete": true,
+      "dispatch_detail": {
+        "updated_on": "2026-11-14",
+        "scope": "planning_dispatch_only_no_product_execution",
+        "budget_breakdown": {
+          "A": {
+            "design": 1.5,
+            "implementation": 4,
+            "local_verification": 1.5,
+            "review_integration": 2
+          },
+          "B": {
+            "reproduction_design": 1,
+            "implementation": 3.5,
+            "local_verification": 1.5,
+            "candidate_guide": 2,
+            "review_delivery": 1
+          },
+          "temporary_C": {
+            "preparation": 1.5,
+            "short_tool_flow": 4,
+            "guide": 1.5,
+            "review_report": 2
+          }
+        },
+        "a_code_checkpoint": "A25代码审查合入后即可给B制包，不等A25整卡关闭",
+        "closing_gate": "B26最终候选与C27同候选工具结果经A在25接收，才确认FV03完成",
+        "guide_owner": "A/B各自受影响段，B在26统一完整指南，临时C交差异"
+      }
     },
     "from_fv4": {
-      "state": "planned_not_started",
+      "state": "dispatched_queued_not_started",
       "scope": "源码/内部运行包/示例/完整指南对应与交接",
       "hours_each_role": [
         2,
@@ -1714,7 +1742,61 @@
         9
       ],
       "dependencies": "FV03当前开发和短验证通过",
-      "excluded": "无持续运行/压力、无赛事PDF视频、无公开替换"
+      "excluded": "无持续运行/压力、无赛事PDF视频、无公开替换",
+      "issues": {
+        "A": 31,
+        "B": 29,
+        "C": 30
+      },
+      "packages": [
+        {
+          "role": "B",
+          "owner": "wwl-ww",
+          "issue": 29,
+          "hours": [
+            2,
+            3
+          ],
+          "state": "queued_not_started",
+          "input": "FV03最终接收、26唯一候选/源码/指南、27结果",
+          "scope": "内部候选与材料核对",
+          "acceptance": "唯一入口、源码/包/指南对应、小输入目录准确；A接收清单"
+        },
+        {
+          "role": "temporary_C",
+          "owner": "JunyeFu",
+          "issue": 30,
+          "hours": [
+            2,
+            3
+          ],
+          "state": "queued_not_started",
+          "input": "FV03最终接收、同候选指南与27结果、B29材料清单",
+          "scope": "接手入口与指南终检",
+          "acceptance": "GitHub材料可接手；相同候选复用27，实际变化或缺步才补短检查；A接收"
+        },
+        {
+          "role": "A",
+          "owner": "JunyeFu",
+          "issue": 31,
+          "hours": [
+            2,
+            3
+          ],
+          "state": "queued_not_started",
+          "input": "FV03最终接收和B29/C30交付",
+          "scope": "最终内部接收与原控制收口",
+          "acceptance": "必需功能无失败/待验，B/C接收，源码/唯一内部包/指南与原控制一致"
+        }
+      ],
+      "sequence": [
+        "FV03正式接收",
+        "B29与C30核对并行；B清单供C核对，不等A31关闭",
+        "A31接收B/C交付并收口"
+      ],
+      "reuse_policy": "同候选不重复制包或整套Native验证；入口/指南变化或缺项才补受影响检查",
+      "stage_review": "准备/核对/交付每阶段子Agent review，包含在2–3h预算",
+      "implementation_started_by_this_window": false
     },
     "current_all_stage_budget": {
       "total": [
@@ -1723,6 +1805,24 @@
       ],
       "kind": "plan_not_actual_spend",
       "change": "旧242–294，FV03总27不变，FV04旧27改6–9"
+    },
+    "remaining_stage_budget": {
+      "FV03": 27,
+      "FV04": [
+        6,
+        9
+      ],
+      "combined": [
+        33,
+        36
+      ],
+      "each_role": [
+        11,
+        12
+      ],
+      "kind": "full_round_plan_not_actual_remaining",
+      "actual_remaining_unknown": "B已发生部分工作，未登记实际人时，不从评论时间推算",
+      "machine_wait": "separate"
     }
   },
   "date": "2026-10-27",
