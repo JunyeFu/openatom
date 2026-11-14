@@ -34,7 +34,7 @@ function replaceGroup(value:Presentation,phase:string|null,next:TimelineClip[]):
 }
 function distribute(clips:TimelineClip[]):TimelineClip[]{
  const weights=clips.map(c=>c.end_progress-c.start_progress),total=weights.reduce((a,b)=>a+b,0);if(!clips.length)return [];
- if(weights.some(w=>!Number.isFinite(w)||w<=0)||!Number.isFinite(total))throw new Error('各片段需要明确的正持续比例。');
+ if(weights.some(w=>!Number.isFinite(w)||w<=0)||!Number.isFinite(total))throw new Error('每个片段的持续比例须大于0。');
  let start=0;return clips.map((c,i)=>{const end=i===clips.length-1?1:start+weights[i]/total,result={...c,start_progress:start,end_progress:end};start=end;return result;});
 }
 export function reorder(value:Presentation,id:string,target:number):Presentation{

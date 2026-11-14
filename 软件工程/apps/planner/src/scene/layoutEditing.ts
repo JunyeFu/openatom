@@ -25,7 +25,7 @@ function matrixPose(matrix: Matrix4, original: Pose): Pose {
   matrix.decompose(position, rotation, scale);
   const restored = new Matrix4().compose(position, rotation, scale);
   if (matrix.elements.some((value, i) => Math.abs(value - restored.elements[i]) > 1e-8 * Math.max(1, Math.abs(value)))) {
-    throw new Error('该布局包含不能保存为当前姿态的剪切；请先调整线组比例或朝向。');
+    throw new Error('布局存在剪切变形，无法应用。请先调整线组比例或朝向。');
   }
   return { ...original, translation: { x: position.x, y: position.y, z: position.z },
     rotation: { x: rotation.x, y: rotation.y, z: rotation.z, w: rotation.w }, scale: { x: scale.x, y: scale.y, z: scale.z } };

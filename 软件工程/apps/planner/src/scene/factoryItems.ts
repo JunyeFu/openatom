@@ -51,7 +51,7 @@ export function createFactoryItemLayer(items: FactoryActualItem[], lod: LodLevel
       attached = false;
       for (const state of states) {
         const { input } = state;
-        if (input.unavailable || !input.attachment || !input.media) { state.attachment?.removeFromParent(); state.message = input.unavailable ?? 'unavailable · 没有合法空间或精确媒体。'; continue; }
+        if (input.unavailable || !input.attachment || !input.media) { state.attachment?.removeFromParent(); state.message = input.unavailable ?? '暂无可用位置或素材，物品无法显示。'; continue; }
         const selected = target(input);
         if (!selected) { state.message = 'unavailable · 实际holder模型/节点尚未提供，未绘制物品几何。'; continue; }
         if (typeof selected === 'string') { state.message = selected; continue; }
@@ -59,7 +59,7 @@ export function createFactoryItemLayer(items: FactoryActualItem[], lod: LodLevel
           state.attachment.rotation.x = selected.zUp ? Math.PI / 2 : 0;
           applyPose(state.offset, input.attachment.slot.offset);
           if (state.attachment.parent !== selected.parent) { selected.parent.add(state.attachment); attached = true; }
-          state.message = '已按冻结展示槽、实际holder及当前LOD命名节点附着（时点代表布局）。'; continue;
+          state.message = '按该次运行保存的位置和物品当前持有者显示。'; continue;
         }
         if (state.attempted || state.pending) continue;
         const ticket = ++state.ticket;
@@ -75,7 +75,7 @@ export function createFactoryItemLayer(items: FactoryActualItem[], lod: LodLevel
           const offset = new THREE.Group(); applyPose(offset, input.attachment!.slot.offset); attachment.add(offset);
           const basis = new THREE.Group(); basis.rotation.x = -Math.PI / 2; offset.add(basis); basis.add(instance.root);
           attachment.traverse(object => { object.userData.ref = { kind: 'item', id: input.item.id }; });
-          selected.parent.add(attachment); state.instance = instance; state.attachment = attachment; state.offset = offset; state.message = '已按冻结展示槽、实际holder及当前LOD命名节点附着（时点代表布局）。';
+          selected.parent.add(attachment); state.instance = instance; state.attachment = attachment; state.offset = offset; state.message = '按该次运行保存的位置和物品当前持有者显示。';
           reconcile(); changed();
         }, reason => { if (live && ticket === state.ticket) { state.pending = false; state.failed = true; state.message = `unavailable · ${reason instanceof Error ? reason.message : String(reason)}`; reconcile(); changed(); } });
       }

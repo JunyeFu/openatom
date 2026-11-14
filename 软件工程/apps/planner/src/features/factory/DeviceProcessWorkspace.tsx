@@ -167,7 +167,7 @@ export function DeviceProcessWorkspace(props: DeviceProcessWorkspaceProps) {
       rights: effectiveEditorDraft?.definition.contribution.assets ?? editorInput?.editor.source?.rights ?? [] },
     actual: editorActual && reader && mediaInput ? { binding: mediaInput.value.binding, readAsset: reader.readAsset, resolveModule: reader.resolveModule,
       rights: mediaInput.value.rights, presentation: mediaInput.value.presentation, frame: editorActual.frame, nodeOwner: mediaInput.value.node_owner } : null,
-    unavailable_reason: '尚未取得此Run同源的实际Job历史、完整物品页与冻结表现；不借最终Job或当前草稿补画。',
+    unavailable_reason: '该次运行的过程数据尚未加载完整，请刷新后重试。',
     onActualSeek: at_ms => { setPlayback(value => ({ ...value, playing: false })); seekTo(at_ms); },
     onInspectItem: props.onInspectItem ? item_id => { void inspectItem(item_id); } : undefined,
     onSelectNode: selected => selectNode(selected, 'editor'),
@@ -339,9 +339,9 @@ export function DeviceProcessWorkspace(props: DeviceProcessWorkspaceProps) {
         : { mode: 'declared_preview', preview: { phase_ref: displayPhase, view_u: u }, onPreviewSeek: preview => { setPlayback(value => ({ ...value, playing: false })); setPhase(preview.phase_ref); setU(preview.view_u); } }} />}
     {nodePanel}
     <div className="sf-device-process-foot"><aside><h3>声明操作与实际入口</h3>{(Object.keys(actionNames) as DeviceAction[]).map(action => <p key={action}><strong>{actionNames[action]}</strong><span>{declared.includes(action) && props.actions[action] ? '可使用' : '暂不可用：缺少操作定义或可用入口'}</span></p>)}
-      <p>{staticSelection ? '静态外观用于查看节点和创建新定义，此处不提供加工进度或产量。' : '配置参数、定位设备或运行独立工艺样例请使用上方操作；观看过程不会派工。'}</p></aside>
+      <p>{staticSelection ? '静态外观用于查看节点和创建新定义，此处不提供加工进度或产量。' : '使用上方按钮设置参数、定位设备或运行样例。回看过程不会启动生产。'}</p></aside>
       {frozen && <details><summary>冻结静态输入来源</summary><p>原Run {frozen.run.id}；冻结Project r{frozen.raw_static.frozen_project.revision}；元数据拥有者 {frozen.node_owner.object_id.kind}/{frozen.node_owner.object_id.id}。未读取或创建Job帧。</p><pre>{JSON.stringify(frozen.raw_static.frozen_owner, null, 2)}</pre></details>}
-      {actual && <details><summary>原始读取与只读视图来源</summary><dl><dt>原始Run</dt><dd>{actual.raw.run.id} · 原完整结果保留</dd><dt>显式Job ObjectsAt</dt><dd>{actual.raw.job_pages.length} 页 · {actual.job.id} @ {actual.view_snapshot.at_ms} ms</dd><dt>原空对象查询</dt><dd>{actual.raw.item_pages.length} 页 · 只消费实际Item</dd><dt>冻结Project</dt><dd>{actual.raw.frozen_project.id} r{actual.raw.frozen_project.revision} · {actual.raw.frozen_project.resources.length} 条原资源声明</dd><dt>呈现快照</dt><dd>本服务只读组合，非Host原始单页；资源占用只取Run.resource_claims和此刻Job持有。</dd></dl>
+      {actual && <details><summary>原始读取与只读视图来源</summary><dl><dt>原始Run</dt><dd>{actual.raw.run.id} · 原完整结果保留</dd><dt>显式Job ObjectsAt</dt><dd>{actual.raw.job_pages.length} 页 · {actual.job.id} @ {actual.view_snapshot.at_ms} ms</dd><dt>原空对象查询</dt><dd>{actual.raw.item_pages.length} 页 · 只消费实际Item</dd><dt>冻结Project</dt><dd>{actual.raw.frozen_project.id} r{actual.raw.frozen_project.revision} · {actual.raw.frozen_project.resources.length} 条原资源声明</dd><dt>呈现快照</dt><dd>此页只读，显示所选运行记录在当前时点的资源占用。</dd></dl>
         <details><summary>原始Job页</summary><pre>{JSON.stringify(actual.raw.job_pages, null, 2)}</pre></details>
         <details><summary>原始Item页</summary><pre>{JSON.stringify(actual.raw.item_pages, null, 2)}</pre></details>
       </details>}

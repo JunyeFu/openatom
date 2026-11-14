@@ -43,32 +43,32 @@ export async function prepareRenderTask(task:NativeRenderInput,ports:RenderTaskP
   const target=frame.request.object_id??view.object_ref??null;
   const output:PreparedRenderTask={context,observation,target,limitations:[]};
   assertCurrent();
-  if(input.project.id!==frame.project_id||input.project.revision!==view.project_revision)throw new ProcessUnavailable('Task冻结工程与完整RenderFrame不一致。');
-  if(input.run&&(view.run_id!==input.run.id||!context.view||input.run.input_ref.project_revision!==input.project.revision||input.run.computed_until_ms==null||context.view.at_ms<input.run.window.start_ms||context.view.at_ms>input.run.computed_until_ms||context.view.at_ms>input.run.window.end_ms))throw new ProcessUnavailable('Task实际Run/时点与冻结输入或计算前沿不一致。');
+  if(input.project.id!==frame.project_id||input.project.revision!==view.project_revision)throw new ProcessUnavailable('任务保存的工程与画面数据不匹配。');
+  if(input.run&&(view.run_id!==input.run.id||!context.view||input.run.input_ref.project_revision!==input.project.revision||input.run.computed_until_ms==null||context.view.at_ms<input.run.window.start_ms||context.view.at_ms>input.run.computed_until_ms||context.view.at_ms>input.run.window.end_ms))throw new ProcessUnavailable('任务画面与所选运行记录、时间点或输入不匹配。');
   const module=async(reference:ModuleRef):Promise<ModulePackage>=>{
     assertCurrent();const found=input.modules.filter(value=>sameRef(value.definition,reference));
-    if(found.length!==1)throw new ProcessUnavailable('Task闭包中没有唯一精确模块版本。');return found[0];
+    if(found.length!==1)throw new ProcessUnavailable('任务来源中没有唯一的模块版本。');return found[0];
   };
   const readAsset=async(request:MediaAssetReadRequest)=>{
-    assertCurrent();if(request.project_id!==context.project_id||request.scope_revision!==context.scope_revision||!same(request.scope,scope)||!same(request.source,renderModuleSource(task,request.source.data.module_ref)))throw new ProcessUnavailable('Task媒体请求改变了工程/Scope修订/Run精确来源。');
+    assertCurrent();if(request.project_id!==context.project_id||request.scope_revision!==context.scope_revision||!same(request.scope,scope)||!same(request.source,renderModuleSource(task,request.source.data.module_ref)))throw new ProcessUnavailable('任务素材与所选工程版本或运行记录不匹配。');
     if(!input.assets.some(value=>same(value.source,request.source)&&same(value.asset,request.asset)))throw new ProcessUnavailable('Task素材不在真实冻结字节闭包。');
     const bytes=await ports.asset({source:request.source,asset:request.asset});assertCurrent();return bytes;
   };
   const readPortOutput=async(request:Parameters<NonNullable<import('./presentationHost').PresentationReadPorts['readPortOutput']>>[0])=>{
     assertCurrent();
-    if(request.project_id!==context.project_id||request.scope_revision!==context.scope_revision||!same(request.scope,scope)||request.run_id!==input.run?.id||request.run_id!==context.view?.run_id||request.at_ms!==context.view?.at_ms)throw new ProcessUnavailable('Task端口请求改变了工程/Scope修订/Run或精确时点。');
+    if(request.project_id!==context.project_id||request.scope_revision!==context.scope_revision||!same(request.scope,scope)||request.run_id!==input.run?.id||request.run_id!==context.view?.run_id||request.at_ms!==context.view?.at_ms)throw new ProcessUnavailable('任务端口与所选工程、运行记录或时间点不匹配。');
     const value=input.port_output_summaries.find(value=>value.run_id===request.run_id&&value.at_ms===request.at_ms&&same(value.port,request.port));
     if(value)return value;
     const failure=input.port_output_failures?.find(([port])=>same(port,request.port));
     if(failure)throw {detail:failure[1]};
     const issue=input.issues.find(issue=>['render.port_output_not_applicable','render.missing_port_output_history'].includes(issue.code));
     if(issue)throw {detail:{code:'UnsupportedCapability',message:`${issue.code}: ${issue.message}`}};
-    throw new ProcessUnavailable('真实Render输入没有此精确端口累计量，不把空列表当零。');
+    throw new ProcessUnavailable('缺少此端口的累计数量，结果保持未知。');
   };
   const factory=async(project:ProjectState)=>projectFactoryPresentation({...context,project},{project,run:input.run,scenario:input.scenarios.find(s=>s.id===input.run?.input_ref.scenario_id),observation,jobs:input.objects_at.flatMap(object=>object.kind==='job'?[object.data]:[]),items:input.objects_at.flatMap(object=>object.kind==='item'?[object.data]:[]),raw:{job_pages:[],item_pages:[],frozen_task:frame.task_id}},{module,readAsset,readPortOutput},assertCurrent);
   if(view.kind==='line_canvas'||view.kind==='multi_hall_canvas'){output.factory=await factory(input.project);return output;}
   if((view.kind==='packaging_workbench'||view.kind==='packaging_manufacturing')&&!input.packaging)throw new ProcessUnavailable('Task缺少实际Artifact/Result/Job三元组。');
-  if(view.kind==='comparison'&&(!input.comparison||input.comparison_runs.length!==input.comparison.run_ids.length||!input.comparison.run_ids.every(id=>input.comparison_runs.some(value=>value.run.id===id))))throw new ProcessUnavailable('Task比较缺少原compare_runs及每个Run的冻结工程/方案输入。');
+  if(view.kind==='comparison'&&(!input.comparison||input.comparison_runs.length!==input.comparison.run_ids.length||!input.comparison.run_ids.every(id=>input.comparison_runs.some(value=>value.run.id===id))))throw new ProcessUnavailable('缺少比较任务或该次运行保存的工程、方案输入。');
   if(view.kind!=='device_detail'&&view.kind!=='device_cycle_preview'&&view.kind!=='module_preview')return output;
   let definition:ModuleDefinition,reference:ModuleRef,pkg:ModulePackage|null=null;
   let device:ProjectState['devices'][number]|null=null;
@@ -79,10 +79,10 @@ export async function prepareRenderTask(task:NativeRenderInput,ports:RenderTaskP
   }else{
     if(target?.kind==='definition_draft'){
       const identity=frame.source.kind==='definition_draft'?frame.source.data:frame.source.kind==='run'?frame.source.data.definition:null;
-      if(!identity||identity.id!==target.id||!input.definition)throw new ProcessUnavailable('预览不是原opaque Draft/Run的精确定义。');
+      if(!identity||identity.id!==target.id||!input.definition)throw new ProcessUnavailable('预览与所选草稿或运行记录使用的定义不匹配。');
       definition=input.definition;reference={id:definition.id,version:definition.version};
-      if(view.kind==='module_preview'&&(!frame.request.module_ref||!sameRef(definition,frame.request.module_ref)))throw new ProcessUnavailable('模块预览缺少原Host规范化的精确ModuleRef。');
-    }else{const ref=frame.request.module_ref;if(!ref)throw new ProcessUnavailable('模块预览缺少精确ModuleRef。');reference=ref;pkg=await module(ref);definition=pkg.definition;}
+      if(view.kind==='module_preview'&&(!frame.request.module_ref||!sameRef(definition,frame.request.module_ref)))throw new ProcessUnavailable('模块预览缺少对应的模块版本。');
+    }else{const ref=frame.request.module_ref;if(!ref)throw new ProcessUnavailable('模块预览缺少模块版本。');reference=ref;pkg=await module(ref);definition=pkg.definition;}
   }
   output.definition=definition;
   if(definition.payload.category==='templates'){
@@ -90,7 +90,7 @@ export async function prepareRenderTask(task:NativeRenderInput,ports:RenderTaskP
     const subset=input.template_subset;
     const projected={...input.project,halls:subset.halls,lines:subset.lines,devices:subset.devices,locations:subset.locations,connections:subset.connections,module_refs:subset.module_refs,item_types:subset.item_types,resources:[]};
     output.template=await projectFactoryPresentation({...context,project:projected},{project:projected,run:null,observation:null,jobs:[],items:[],raw:{job_pages:[],item_pages:[],frozen_task:frame.task_id}},{module,readAsset,readPortOutput},assertCurrent);
-    output.limitations.push('只读显示精确TemplateSubset；未实例化、采用角色、供料或库存；即使来源为旧Run，也不把该Run库存附着到模板。');return output;
+    output.limitations.push('只读预览模板配置，不创建实例、供料或库存。');return output;
   }
   const presentation=device?.presentation_override??presentationOf(definition);
   if(!presentation){output.limitations.push(`精确定义类别 ${definition.payload.category} 没有可显示的Presentation；仅展示真实声明。`);return output;}
@@ -117,6 +117,6 @@ export async function prepareRenderTask(task:NativeRenderInput,ports:RenderTaskP
     }};
   }else if(frame.request.preview?.progress!=null||frame.request.preview?.phase_id!=null){
     output.media={...common,mode:'declared_preview',preview:{phase_ref:frame.request.preview.phase_id??'cycle',view_u:frame.request.preview.progress??0}};
-  }else output.media={...common,mode:'asset_inspection',inspectionLabel:frame.request.preview?.pose_name?`声明命名姿态 ${frame.request.preview.pose_name} · 无实际Run`:input.run?'Run冻结静态声明 · 非运行时世界姿态':'精确源声明静态检查'};
+  }else output.media={...common,mode:'asset_inspection',inspectionLabel:frame.request.preview?.pose_name?`声明命名姿态 ${frame.request.preview.pose_name} · 无实际Run`:input.run?'该次运行保存的静态位置，不随播放变化':'精确源声明静态检查'};
   assertCurrent();return output;
 }

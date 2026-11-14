@@ -28,14 +28,14 @@ function transformed(value: Matrix4, original: Pose): Pose {
 }
 function compatible(nodes: SceneNode[]): void {
   if (nodes.some(node => [...Object.values(node.transform.translation), ...Object.values(node.transform.rotation), ...Object.values(node.transform.scale)].some(value => !Number.isFinite(value)))) throw new Error('先补齐有限的位置、角度和缩放数值。');
-  if (nodes.some(node => node.transform.unit !== nodes[0].transform.unit || node.transform.coordinate_frame !== nodes[0].transform.coordinate_frame)) throw new Error('先明确统一所选部件的单位与坐标系，再编组。');
+  if (nodes.some(node => node.transform.unit !== nodes[0].transform.unit || node.transform.coordinate_frame !== nodes[0].transform.coordinate_frame)) throw new Error('请先统一所选部件的单位和坐标系，再编组。');
   if (nodes.some(node => Object.values(node.transform.scale).some(value => value === 0))) throw new Error('缩放为零的部件不能作为编组变换。');
 }
 /** Parent the remaining selection to its first member, preserving world pose. */
 export function groupParts(nodes: SceneNode[], selection: number[]): SceneNode[] {
   if (selection.length < 2) throw new Error('至少选择两个部件。');
   const selected = selection.map(index => nodes[index]); compatible(selected);
-  if (selected.some(node => (node.parent_index ?? null) !== (selected[0].parent_index ?? null))) throw new Error('先选择同一父级下的部件；不会自动跨层重绑。');
+  if (selected.some(node => (node.parent_index ?? null) !== (selected[0].parent_index ?? null))) throw new Error('请选择同一父级下的部件后编组。');
   const inverse = matrix(selected[0].transform).invert();
   return nodes.map((node, index) => selection.includes(index) && index !== selection[0] ? { ...node, parent_index: selection[0], transform: transformed(inverse.clone().multiply(matrix(node.transform)), node.transform) } : node);
 }

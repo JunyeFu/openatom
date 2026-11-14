@@ -263,7 +263,7 @@ export function calendarInputProjection(project: ProjectState, scenario: Scenari
     return { key, row: `input:calendar:${calendar.id}`, label: calendar.title, kind: 'calendar' as const, source: 'input' as const,
       run_id: null, object, interval, known_end: true, selection: { key, source: 'input' as const, run_id: null, object,
         label: `班次 · ${calendar.title}`, true_interval: interval,
-        fields: [{ label: '开放区间', value: `${timeText(interval.start_ms)}—${timeText(interval.end_ms)}` }, { label: '编辑', value: '通过编辑班次表单修改；拖动输入不会移动日历' }], related_objects: [] } };
+        fields: [{ label: '开放区间', value: `${timeText(interval.start_ms)}—${timeText(interval.end_ms)}` }, { label: '编辑', value: '请在班次表单中修改，日历不支持拖动' }], related_objects: [] } };
   }));
 }
 export interface SummaryBand { interval: TimeWindow; busy: number; waiting: number; occupied: number; total: number }
@@ -336,7 +336,7 @@ export function resolveFollowedItemSelection(selected: TimelineSelection | null,
       { label: '持有者', value: `${item.holder.kind} ${item.holder.id}` },
       { label: '生命周期', value: item.lifecycle }, { label: '质量', value: item.quality },
       { label: '数量', value: quantityText(item.quantity) },
-    ] : [{ label: '物品状态', value: items === null ? '正在读取同Run时点物品；暂不显示持有者。' : '此时点无该身份；不沿用其他时点库存。' }],
+    ] : [{ label: '物品状态', value: items === null ? '正在加载当前时间点的物品位置…' : '此时点无该身份；不沿用其他时点库存。' }],
     related_objects: item ? [holderObject(item.holder)] : [],
   };
 }

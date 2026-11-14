@@ -8,6 +8,6 @@ export async function readFrozenRunScenario(projectId: string, summary: RunSumma
   const object = await dispatch<DomainObject>({ api_version: '0.1', request_id: crypto.randomUUID(), project_id: projectId, scope: { kind: 'project' }, operation: 'get_object', params: {
     object_id: { kind: 'scenario', id: summary.input.scenario_id }, source: { kind: 'run_snapshot', data: { run_id: summary.run_id, at_ms: summary.computed_until_ms ?? summary.window.start_ms } }, node_index: null,
   } });
-  if (object.kind !== 'scenario' || object.data.id !== summary.input.scenario_id || object.data.revision !== summary.input.scenario_revision || object.data.project_revision !== summary.input.project_revision) throw new Error('运行记录名称的冻结方案来源不一致。');
+  if (object.kind !== 'scenario' || object.data.id !== summary.input.scenario_id || object.data.revision !== summary.input.scenario_revision || object.data.project_revision !== summary.input.project_revision) throw new Error('运行记录名称与其保存的方案来源不匹配。');
   return object.data;
 }

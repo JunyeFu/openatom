@@ -83,7 +83,7 @@ function Json({ value, label = '完整原始字段' }: { value: unknown; label?:
   return <details className="cloud-json"><summary>{label}</summary><pre>{JSON.stringify(value, null, 2)}</pre></details>;
 }
 function safeInteger(raw: string, label: string, positive = false) {
-  if (!/^\d+$/.test(raw) || !Number.isSafeInteger(Number(raw)) || (positive && Number(raw) === 0)) throw new CloudProductionError('input', `${label}需为${positive ? '正' : '非负'}安全整数。`);
+  if (!/^\d+$/.test(raw) || !Number.isSafeInteger(Number(raw)) || (positive && Number(raw) === 0)) throw new CloudProductionError('input', `${label}请输入${positive ? '大于0' : '不小于0'}的整数。`);
   return Number(raw);
 }
 function Notice({ children }: { children: ReactNode }) { return <p className="cloud-notice">{children}</p>; }
@@ -569,7 +569,7 @@ export function CloudProductionPanel(props: CloudProductionPanelProps) {
     <div className="cloud-source" aria-label="当前来源">
       <span>工厂：<strong>{project?.title ?? '尚未打开工厂'}</strong></span>
       <span>云连接：{connectionStatus}</span>
-      <span>{snapshot ? `${source?.origin === 'cloud' ? '云端存档（只读）' : currentLatest ? '当前本机会话' : source?.selection.kind === 'latest' ? '其他本机会话（只读）' : '本机历史记录（只读）'} · 快照修订 R${snapshot.execution_revision}` : source ? '正在读取所选生产记录' : '尚未选择生产记录'}</span>
+      <span>{snapshot ? `${source?.origin === 'cloud' ? '云端存档（只读）' : currentLatest ? '当前本机会话' : source?.selection.kind === 'latest' ? '其他本机会话（只读）' : '本机历史记录（只读）'} · 数据版本 R${snapshot.execution_revision}` : source ? '正在读取所选生产记录' : '尚未选择生产记录'}</span>
       <span>{snapshot ? `观察记录前沿 F${snapshot.observation_frontier} · 可回看至 ${elapsed(snapshot.coverage.observed_until_host_ms)}` : '选择记录后可查看生产状态'}</span>
       {envelope && <span>{({ synced: '已同步云端', publication_pending: '正在等待云端同步', unknown: '云端同步状态未确认' })[envelope.delivery.relation]}</span>}
       {snapshot && <details><summary>来源技术详情</summary><dl>{Object.entries(snapshot.identity).map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
@@ -600,7 +600,7 @@ export function CloudProductionPanel(props: CloudProductionPanelProps) {
         <details className="cloud-version-options"><summary>版本选项</summary><div>
           <button type="button" disabled={!source || !snapshot} onClick={() => { if (source && snapshot) void chooseSource({ identity: source.identity, origin: source.origin, selection: { kind: 'revision', execution_revision: snapshot.execution_revision } }); }}>固定当前版本</button>
           <button type="button" disabled={!selectedActiveOwner || !available('get_execution_snapshot')} onClick={() => { if (selectedActiveOwner) void chooseSource({ identity: selectedActiveOwner.identity, origin: 'host', selection: { kind: 'latest' } }); }}>跟随本机会话</button>
-          <label className="cloud-revision">快照修订 R<input aria-label="快照修订" inputMode="numeric" value={revisionDraft} onChange={e => setRevisionDraft(e.target.value)}/></label>
+          <label className="cloud-revision">数据版本 R<input aria-label="数据版本" inputMode="numeric" value={revisionDraft} onChange={e => setRevisionDraft(e.target.value)}/></label>
           <button type="button" disabled={!source} onClick={() => { if (!source) return; try { const r = safeInteger(revisionDraft, '记录版本'); void chooseSource({ identity: source.identity, origin: source.origin, selection: { kind: 'revision', execution_revision: r } }); } catch (e) { showError(e); } }}>读取这个版本</button>
         </div></details>
       </div>
@@ -611,11 +611,11 @@ export function CloudProductionPanel(props: CloudProductionPanelProps) {
       <div role="tabpanel" id={`${id}-panel-${tab}`} aria-labelledby={`${id}-${tab}`} tabIndex={0} className="cloud-tab-content">
       {tab === 'devices' && <>
         <div className="cloud-section-heading"><h3>设备与接单状态</h3><button type="button" disabled={mutationBusy} onClick={() => void (async () => { const lease=begin('mutation'); setError(''); try { const count=await invoke<number|null>('project_import_cloud_connection'); if(lease.live() && count!==null)setMessage(`已校验并保存 ${count} 台设备的连接。请保存工程、退出并重新打开应用后使用新连接；当前生产连接未切换。`); } catch(e) { if(lease.live())showError(typeof e==='object' && e && 'message' in e ? new Error(String(e.message)) : e); } finally { finish(lease); } })()}>导入连接文件…</button><button type="button" disabled={!available('read_cloud_production')} onClick={() => void configuration()}>刷新连接配置</button></div>
-        {!available('read_cloud_production') && <Notice>当前程序尚未提供云端读取功能；已保存的本机生产记录仍可选择回看。</Notice>}
+        {!available('read_cloud_production') && <Notice>当前无法读取云端数据。可选择已保存的本机记录。</Notice>}
         {available('read_cloud_production') && !scenario && <Notice>请选择当前方案后读取连接配置。已保存记录可以独立回看。</Notice>}
         {available('read_cloud_production') && scenario && configStatus === 'loading' && <Notice>正在读取本机连接配置。已保存记录可以独立回看。</Notice>}
         {available('read_cloud_production') && configStatus === 'error' && <Notice>连接配置未能读取；请查看上方错误并刷新配置。不能据此判断本机是否已配置。</Notice>}
-        {available('read_cloud_production') && configStatus === 'ready' && !configured && <Notice>本机尚未配置云连接。可导入连接文件，保存工程并重启应用；已保存记录仍可只读回看。</Notice>}
+        {available('read_cloud_production') && configStatus === 'ready' && !configured && <Notice>尚未配置云连接。请导入连接文件，保存工程后重启程序。已保存记录仍可查看。</Notice>}
         <div className="cloud-table-scroll"><table><thead><tr><th>设备与工序</th><th>调度设置</th><th>设备上报</th><th>报告状态</th><th>当前能否接单</th><th>操作</th></tr></thead><tbody>
           {[...new Map((snapshot?.devices ?? []).map(d => [d.binding.device_id,d])).values()].map(d => <tr key={d.binding.device_id}>
             <td><strong>{bindingCaption(d.binding, true)}</strong><Json value={d.binding} label="绑定技术详情"/></td>
@@ -652,11 +652,11 @@ export function CloudProductionPanel(props: CloudProductionPanelProps) {
               {queryDeviceIds.length === 0 && <p>首次查询后可读取这个数据集的设备清单，再按名称筛选。</p>}
               <button type="button" disabled={deviceFilter.length === 0} onClick={() => invalidateQuery(() => setDeviceFilter([]))}>清除设备筛选</button>
             </fieldset>
-            <details className="cloud-precise-time"><summary>精确 UTC 时间</summary><div>
-              <label>UTC 起点（含）<input aria-label="精确UTC起点" value={utcFrom} onChange={e => invalidateQuery(() => setUtcFrom(e.target.value))}/></label>
-              <label>UTC 终点（不含）<input aria-label="精确UTC终点" value={utcUntil} onChange={e => invalidateQuery(() => setUtcUntil(e.target.value))}/></label>
-            </div><p>可保留六位小数的微秒精度；日历控件显示到毫秒，查看日历不会改写这里的精确值。</p></details>
-            {[utcFrom,utcUntil].some(value => /\.\d{4,6}Z$/.test(value)) && <p className="cloud-filter-hint">当前筛选保留微秒精度，精确值见“精确 UTC 时间”；日历显示到毫秒。</p>}
+            <details className="cloud-precise-time"><summary>UTC时间</summary><div>
+              <label>UTC 起点（含）<input aria-label="UTC起点" value={utcFrom} onChange={e => invalidateQuery(() => setUtcFrom(e.target.value))}/></label>
+              <label>UTC 终点（不含）<input aria-label="UTC终点" value={utcUntil} onChange={e => invalidateQuery(() => setUtcUntil(e.target.value))}/></label>
+            </div><p>支持微秒精度，日历显示到毫秒。</p></details>
+            {[utcFrom,utcUntil].some(value => /\.\d{4,6}Z$/.test(value)) && <p className="cloud-filter-hint">筛选保留微秒精度，可在“UTC时间”中查看。</p>}
           </>}
           <button type="submit" disabled={!dataSet || !available('read_cloud_production') || busy.includes('query')}>查询并固定结果</button>
         </form>
@@ -666,7 +666,7 @@ export function CloudProductionPanel(props: CloudProductionPanelProps) {
           <Json value={{ query: page.query, selection: page.pin }} label="完整筛选与固定来源"/>
           <QueryFactsTable page={page} deviceTitle={(id,execution) => execution ? deviceName(id,true) : queryDeviceName(id)} locationTitle={locationName}/>
           <details className="cloud-data-technical"><summary>字段、显示列与当前页趋势</summary><CloudDataExplorer result={page.result} pageNumber={page.number}/></details>
-          {page.result.rows.length === 0 && <Notice>这个筛选范围内没有记录。空结果仍有明确来源，可以导出。</Notice>}
+          {page.result.rows.length === 0 && <Notice>没有符合筛选条件的记录，可导出空结果。</Notice>}
           {page.result.data_quality_issues.length > 0 && <Json value={page.result.data_quality_issues} label={`数据质量说明（${page.result.data_quality_issues.length} 项）`}/>}
           <button type="button" disabled={page.result.next_cursor === null || busy.includes('query')} onClick={() => void queryData(true)}>下一页记录</button>
         </>}
@@ -674,7 +674,7 @@ export function CloudProductionPanel(props: CloudProductionPanelProps) {
       </>}
       {tab === 'execution' && <>
         <div className="cloud-section-heading"><h3>{historyReadOnly ? '只读生产记录' : '准备与运行生产'}</h3><span>{historyReadOnly ? '只读回看' : dirty ? '表单有待提交输入' : '准备完成后仍需手动启动'}</span></div>
-        {historyReadOnly && <Notice>所选记录不是当前可控制的本机会话，仅供查看；这里不发送准备、启动或设备控制命令。需要新建生产会话时，先退出只读回看。</Notice>}
+        {historyReadOnly && <Notice>正在只读查看历史记录。要开始新生产，请先退出回看。</Notice>}
         {source && !envelope && !historyReadOnly && <Notice>正在确认所选会话的来源与操作权限；读取完成后再提供生产操作。</Notice>}
         {canPresentProduction && scenario && <form className="cloud-prepare" onSubmit={e => { e.preventDefault(); void prepare(); }}>
           <fieldset disabled={mutationBusy}><legend>新建生产会话 · {scenario.title}</legend>
@@ -687,7 +687,7 @@ export function CloudProductionPanel(props: CloudProductionPanelProps) {
             <p>方案预测范围：0 至 {elapsed(scenario.window.end_ms)}。{scenario.production_tasks.length === 1 && `本方案投产数量：${quantityText(scenario.production_tasks[0].planned_quantity)}。`}</p>
             <details><summary>查看方案投产任务（{scenario.production_tasks.length} 项）</summary><ul>{scenario.production_tasks.map((task,index) => <li key={task.id}>任务 {index+1}：{quantityText(task.planned_quantity)}</li>)}</ul></details>
             <div className="cloud-bindings">
-              {bindingGroups.some(g => g.items.length > 1) && <p>整厂软件演示设备按名义工时的 1/30 执行，每阶段至少 1 秒。生产时间、阶段进度与产出以真实回执为准；此模式不代表实体设备产能。</p>}
+              {bindingGroups.some(g => g.items.length > 1) && <p>软件演示按名义工时的1/30运行，每阶段至少1秒；不用于估算实体设备产能。</p>}
               <button type="button" disabled={!config?.candidate_bindings.length} onClick={() => changeForm(() => setBindings(config?.candidate_bindings.map(b => b.binding_id) ?? []))}>选择全部设备</button>
               <details open={bindingGroups.length <= 4 ? true : undefined}><summary>设备与阶段（已选 {bindingGroups.filter(g => g.items.every(b => bindings.includes(b.binding_id))).length} / {bindingGroups.length}）</summary>
               {bindingGroups.map(({deviceId,items}) => <div className="cloud-binding-choice" key={deviceId}><label><input type="checkbox" checked={items.every(b => bindings.includes(b.binding_id))} ref={el => {if(el) el.indeterminate = items.some(b => bindings.includes(b.binding_id)) && !items.every(b => bindings.includes(b.binding_id));}} onChange={e => changeForm(() => setBindings(old => e.target.checked ? [...new Set([...old,...items.map(b => b.binding_id)])] : old.filter(id => !items.some(b => b.binding_id === id))))}/><span>{deviceName(deviceId)}<small>{items.length} 个加工或运输阶段</small></span></label><details><summary>查看阶段与参考工时</summary>{items.map(b => <div key={b.binding_id}>{bindingCaption(b)} · {elapsed(b.nominal_work_ms)}<Json value={b} label="技术详情"/></div>)}</details></div>)}
@@ -703,12 +703,12 @@ export function CloudProductionPanel(props: CloudProductionPanelProps) {
           {snapshot.lifecycle.state === 'draining' && snapshot.lifecycle.reason && <Notice>{snapshot.lifecycle.reason}</Notice>}
           <details className="cloud-execution-details"><summary>执行明细与诊断</summary>
           <Json value={snapshot.business_facts} label="完整物品、占用与接收事实"/>
-          <h4>同R接受事件（{snapshot.business_facts.acceptance_events.length}）</h4><div className="cloud-table-scroll"><table><thead><tr><th>Host时间</th><th>接受量</th><th>去向</th><th>阶段</th></tr></thead><tbody>{snapshot.business_facts.acceptance_events.map((a, i) => <tr key={i}><td>{a.at_ms}ms</td><td>{formatQuantity(a.quantity)}</td><td>{a.destination}</td><td>{a.acceptance_stage}</td></tr>)}</tbody></table></div>
-          <h4>逻辑工作与派工理由（{snapshot.logical_work.length}）</h4>{snapshot.logical_work.map(w => <div className="cloud-record" key={w.logical_job_id}><strong>{w.logical_job_id}</strong> · {w.state} · 工单 {w.production_task_id} / 周期 {w.cycle}<Json value={w.latest_dispatch_decision} label="Host派工理由与候选"/></div>)}
+          <h4>本次生产接收记录（{snapshot.business_facts.acceptance_events.length}）</h4><div className="cloud-table-scroll"><table><thead><tr><th>本机记录时间</th><th>接受量</th><th>去向</th><th>阶段</th></tr></thead><tbody>{snapshot.business_facts.acceptance_events.map((a, i) => <tr key={i}><td>{a.at_ms}ms</td><td>{formatQuantity(a.quantity)}</td><td>{a.destination}</td><td>{a.acceptance_stage}</td></tr>)}</tbody></table></div>
+          <h4>逻辑工作与派工理由（{snapshot.logical_work.length}）</h4>{snapshot.logical_work.map(w => <div className="cloud-record" key={w.logical_job_id}><strong>{w.logical_job_id}</strong> · {w.state} · 工单 {w.production_task_id} / 周期 {w.cycle}<Json value={w.latest_dispatch_decision} label="派工原因与候选设备"/></div>)}
           <h4>尝试与命令（{snapshot.attempts.length}）</h4>{snapshot.attempts.map(a => <div className="cloud-record" key={a.attempt.command_id}><strong>{a.attempt.command_id}</strong> · {a.device_id} · {a.state}<small>{a.attempt.logical_job_id} / 第{a.attempt.attempt_ordinal}次尝试</small><Json value={a} label="尝试及调度事实"/><button type="button" disabled={!available('read_cloud_production')} onClick={() => void inspectCommand(a.attempt.command_id)}>查看命令与云原始回执</button></div>)}
-          <Json value={snapshot.receipt_admissions} label={`同R Host接纳决定（${snapshot.receipt_admissions.length}）；与云原始回执分列`}/>
-          <h4>同R工时（缺测保持未知）</h4><div className="cloud-table-scroll"><table><thead><tr><th>工单 / 命令</th><th>名义ms</th><th>Host预留ms</th><th>Host占用ms</th><th>设备自报ms</th><th>物理有效ms</th></tr></thead><tbody>{snapshot.timings.map(t => <tr key={`${t.job_id}:${t.command_id}`}><td>{t.job_id}<small>{t.command_id}</small><Json value={t.missing_conditions} label="缺失条件"/></td><td>{text(t.nominal_work_ms)}</td><td>{text(t.host_confirmed_reservation_ms)}</td><td>{text(t.host_confirmed_occupation_ms)}</td><td>{text(t.device_reported_duration_ms)}</td><td>{text(t.physical_effective_work_ms)}</td></tr>)}</tbody></table></div>
-          {command && <Json value={command} label={`原始命令与投递/Host确认：${command.command.attempt.command_id}`}/>}
+          <Json value={snapshot.receipt_admissions} label={`本次生产的接纳记录（${snapshot.receipt_admissions.length}）`}/>
+          <h4>本次生产工时</h4><div className="cloud-table-scroll"><table><thead><tr><th>工单 / 命令</th><th>名义ms</th><th>预留（毫秒）</th><th>占用（毫秒）</th><th>设备自报ms</th><th>物理有效ms</th></tr></thead><tbody>{snapshot.timings.map(t => <tr key={`${t.job_id}:${t.command_id}`}><td>{t.job_id}<small>{t.command_id}</small><Json value={t.missing_conditions} label="缺失条件"/></td><td>{text(t.nominal_work_ms)}</td><td>{text(t.host_confirmed_reservation_ms)}</td><td>{text(t.host_confirmed_occupation_ms)}</td><td>{text(t.device_reported_duration_ms)}</td><td>{text(t.physical_effective_work_ms)}</td></tr>)}</tbody></table></div>
+          {command && <Json value={command} label={`命令投递与确认详情：${command.command.attempt.command_id}`}/>}
           {receipts && <div className="cloud-record"><h4>云原始回执 · F{receipts.visible_frontier} · 第{receiptPages}页</h4><p>这是独立云流前缀，非同R接纳结果；{receipts.next_cursor ? '还有后续页' : '该前缀已到末页'}。</p><Json value={receipts.rows} label={`当前页${receipts.rows.length}条原始回执`}/><button type="button" disabled={!receipts.next_cursor || busy.includes('receipts')} onClick={() => void inspectCommand(receipts.command_id, true)}>下一页原始回执</button></div>}
           </details>
           <div className="cloud-view-action"><label>回看时间（秒）<input aria-label="回看时间（秒）" inputMode="decimal" value={viewSeconds} onChange={e => { viewTimeEdited.current = true; setViewSeconds(e.target.value); }}/></label><button type="button" onClick={inspectView}>回看执行画布与时间轴</button></div>

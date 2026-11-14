@@ -112,7 +112,7 @@ export function ObjectEditor({ project, modules, target, busy, onApply, onReload
 
   return <form className="object-editor" onSubmit={submit}>
     <header><div><small>工程草稿 · r{project.revision}</small><h2>{value ? '编辑' : '新建'}{({ hall: '厂房', line: '流水线组', device: '设备' })[target.kind]}</h2></div><button type="button" onClick={() => changed ? setLeaving(true) : onClose()} disabled={busy}>返回画布</button></header>
-    <p className="form-hint">应用会形成工程新修订。尚未应用的字段只保留在此表单中。</p>
+    <p className="form-hint">修改后点击“应用”；未应用的内容仅保留在此表单。</p>
     <fieldset disabled={busy || reloading}>
       <label>名称<input value={title} onChange={event => setTitle(event.target.value)} required /></label>
       {target.kind !== 'hall' && <><label>所属厂房<select value={hallId} onChange={event => setHallId(event.target.value)} disabled={!!value} required><option value="">请选择</option>{project.halls.map(hall => <option key={hall.id} value={hall.id}>{hallOptionLabel(project.halls, hall)}</option>)}</select></label>{hallId && <details><summary>所选厂房编号</summary><code>{hallId}</code></details>}</>}
@@ -127,7 +127,7 @@ export function ObjectEditor({ project, modules, target, busy, onApply, onReload
     </fieldset>
     {error && <p className="error-message" role="alert">{error}</p>}
     <footer><button type="submit" className="primary" disabled={busy || reloading || revisionConflict || !changed}>应用到工程</button><button type="button" disabled={busy || reloading || !changed} onClick={onClose}>放弃更改</button>{revisionConflict && <button type="button" disabled={busy || reloading} onClick={() => setConfirmReload(true)}>重新读取当前对象</button>}</footer>
-    {confirmReload && <div className="modal-backdrop"><section className="modal" role="dialog" aria-modal="true" aria-label="重新读取对象"><h2>重新读取当前对象</h2><p>读取最新草稿将丢弃本表单中未应用的字段。请先保留需要重新填写的内容；不会覆盖已提交的工程更改。</p><footer><button type="button" autoFocus disabled={reloading} onClick={() => setConfirmReload(false)}>返回保留输入</button><button type="button" disabled={reloading} onClick={() => void reload()}>丢弃本地输入并重新读取</button></footer></section></div>}
+    {confirmReload && <div className="modal-backdrop"><section className="modal" role="dialog" aria-modal="true" aria-label="重新读取对象"><h2>重新读取当前对象</h2><p>读取最新数据将放弃此表单中未应用的修改。已应用的工程更改不受影响。</p><footer><button type="button" autoFocus disabled={reloading} onClick={() => setConfirmReload(false)}>返回保留输入</button><button type="button" disabled={reloading} onClick={() => void reload()}>丢弃本地输入并重新读取</button></footer></section></div>}
     {leaving && <div className="modal-backdrop"><section className="modal" role="dialog" aria-modal="true" aria-label="未应用字段"><h2>尚有未应用字段</h2><p>选择应用后返回，或明确放弃本次表单更改。</p><footer><button type="button" onClick={() => setLeaving(false)}>留在当前</button><button type="button" onClick={onClose}>丢弃并返回</button><button type="submit" className="primary" disabled={revisionConflict}>应用后返回</button></footer></section></div>}
   </form>;
 }

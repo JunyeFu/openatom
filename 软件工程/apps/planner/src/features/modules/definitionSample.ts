@@ -20,11 +20,11 @@ function sameInput(left: RunInputRef, right: RunInputRef) {
 export async function readDefinitionSampleRun(io: AuthoringIO, projectId: string, task: TaskState, isCurrent: () => boolean): Promise<RunResult | null> {
   if (!isCurrent() || task.task.state !== 'completed' || task.result?.kind !== 'run') return null;
   const scope = task.task.scope;
-  if (scope.kind !== 'edit' || scope.data.kind !== 'definition_draft' || scope.data.data.revision !== task.task.input_revision) throw new Error('此任务未保留同一精确定义草稿输入，不能改写为工程 Scope 读取结果。');
+  if (scope.kind !== 'edit' || scope.data.kind !== 'definition_draft' || scope.data.data.revision !== task.task.input_revision) throw new Error('未能读取此任务使用的定义草稿，请重新选择任务。');
   const summary = task.result.data;
   const view = await io.dispatch<RunView>(authoringRequest(projectId, { kind: 'definition_draft', data: scope.data.data.id }, 'get_run', { run_id: summary.run_id, query: { kind: 'full_result' } }));
   if (!isCurrent()) return null;
-  if (view.kind !== 'full' || view.data.id !== summary.run_id || !sameInput(view.data.input_ref, summary.input)) throw new Error('Host 未返回此任务的完整冻结 Run 与原输入引用；不会用摘要或另一个 Run 代替。');
+  if (view.kind !== 'full' || view.data.id !== summary.run_id || !sameInput(view.data.input_ref, summary.input)) throw new Error('此任务的运行结果或输入尚未完整加载，请重新读取。');
   // DraftR and Run.input_ref.project_revision are different revision spaces.
   return view.data;
 }

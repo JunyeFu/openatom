@@ -20,7 +20,7 @@ export type AuthoringWorkspaceReader = () => WorkspaceSnapshot | null;
 
 function binding(current: AuthoringWorkspaceReader) {
   const initial = current();
-  if (!initial) throw new Error('尚未取得实际 Host 上下文，请先连接工程。');
+  if (!initial) throw new Error('请先连接并打开工程。');
   const sessionId = initial.context.host.session_id;
   const projectId = initial.project?.id ?? null;
   return {
@@ -28,12 +28,12 @@ function binding(current: AuthoringWorkspaceReader) {
     assertCurrent() {
       const next = current();
       if (!next || next.context.host.session_id !== sessionId || (next.project?.id ?? null) !== projectId) {
-        throw new Error('Host 会话或工程已切换，请在当前工程重新打开定义创作；停止展示旧上下文结果，本地输入仍保留。');
+        throw new Error('工程连接已切换，输入已保留。请在当前工程重新打开定义编辑。');
       }
     },
     assertContext(context: ProjectContext) {
       if (context.host.session_id !== sessionId || (context.project?.id ?? null) !== projectId) {
-        throw new Error('Host 返回的会话或工程已切换，请刷新当前上下文后继续。');
+        throw new Error('工程连接已切换，请刷新后继续。');
       }
     },
     assertTask(task: TaskHandle) {
@@ -76,7 +76,7 @@ export function createModuleAuthoringIO(current: AuthoringWorkspaceReader): Auth
         bound.assertCurrent();
         if (state.task.id !== task.id || !sameTaskScope(state.task.scope, task.scope)
           || state.task.input_revision !== task.input_revision) {
-          throw new Error('Host 返回了不同任务、Scope 或输入修订；停止观察，原任务保持不变。');
+          throw new Error('返回任务与所选版本不匹配，已停止读取，原任务仍保留。');
         }
         onState?.(state);
       }, undefined, bound.projectId ?? undefined);
@@ -110,16 +110,16 @@ function unavailableReason(draft: AuthoringDraft | null): string {
   const payload = draft.definition.payload;
   switch (payload.category) {
     case 'items': return '物品定义使用规格、单位与跟踪检查；当前没有该草稿的实际生产周期映射。';
-    case 'resources': return '资源定义检查容量、资格与日历；实际运行消费明确采用后的资源实例，不隐式创建人员或覆盖实例。';
-    case 'templates': return '模板先保存实际组合并经真实准备/明确采用；供应和订单单独确认，本入口不隐式复制。';
-    case 'professional': return '纸包装使用实际专业输入与 compute_packaging；其他提供者只按 Host 的真实能力显示。';
-    case 'media': return '表现使用部件、锚点与动作预览；外观不会创建生产 Run 或库存。';
+    case 'resources': return '请先配置并应用资源实例，再运行方案。人员、容量和日历需单独设置。';
+    case 'templates': return '先保存组合并预览应用，供料和订单需分别确认。';
+    case 'professional': return '纸包装需先保存专业输入；其他计算取决于当前可用的提供者。';
+    case 'media': return '编辑并预览部件、锚点和动作，不改变生产和库存。';
     case 'tasks':
       if (payload.data.kind === 'deferred_maintenance' || payload.data.kind === 'deferred_construction') {
         return '维修和施工任务保持执行后置，可保存与检查定义，当前没有可调用周期。';
       }
   }
-  return '当前 Host 未为这个精确 DefinitionDraft Scope 提供可调用样例；请明确准备真实实例/角色/库位映射和方案输入。';
+  return '当前定义没有可直接运行的样例，请先设置实例、角色、库位和方案输入。';
 }
 
 function request<O extends ApiRequest['operation']>(projectId: string | null,
@@ -133,7 +133,7 @@ function request<O extends ApiRequest['operation']>(projectId: string | null,
 export function createAuthoringSamples(current: AuthoringWorkspaceReader,
   draft: AuthoringDraft | null, io?: AuthoringIO): AuthoringSamples {
   const snapshot = current();
-  if (!snapshot?.project) return { status: 'unavailable', reason: '请先打开实际工程，样例需要明确的工程实例、资源和库位映射。' };
+  if (!snapshot?.project) return { status: 'unavailable', reason: '请先打开工程，并为样例设置设备、资源和库位。' };
   if (!draft || !sampleScopeListed(snapshot.capabilities, draft.summary.draft_id)) {
     return { status: 'unavailable', reason: unavailableReason(draft) };
   }
@@ -157,7 +157,7 @@ export function createAuthoringSamples(current: AuthoringWorkspaceReader,
       if (task.scope.kind !== 'edit' || task.scope.data.kind !== 'definition_draft'
         || task.scope.data.data.id !== draftId || task.scope.data.data.revision !== selected.summary.revision
         || task.input_revision !== selected.summary.revision) {
-        throw new Error('Host 未返回所选定义修订的真实样例任务；不改写 Task Scope 或输入修订。');
+        throw new Error('未能确认此定义版本的样例任务，请刷新任务状态。');
       }
       const observed: { terminal: TaskState | null } = { terminal: null };
       const observe = (state: TaskState) => {
@@ -189,7 +189,7 @@ export class TemplateCompositionSaveFailure extends Error {
 
 /** Use when the currently connected Host lacks the actual composition command. */
 export function unavailableAuthoringTemplates(): Extract<AuthoringTemplates, { status: 'unavailable' }> {
-  return { status: 'unavailable', reason: '当前 Host 未提供实际模板组合保存命令；可保留组合输入，连接支持此能力的 Host 后继续。' };
+  return { status: 'unavailable', reason: '当前连接不支持保存模板组合，输入已保留。请使用支持此功能的程序继续。' };
 }
 
 export function createAuthoringTemplates(current: AuthoringWorkspaceReader, io?: AuthoringIO): AuthoringTemplates {
@@ -204,7 +204,7 @@ export function createAuthoringTemplates(current: AuthoringWorkspaceReader, io?:
     status: 'available',
     async save(input) {
       bound.assertCurrent();
-      if (input.project_id !== projectId) throw new Error('组合来源工程已变化，请在原工程刷新后重新选择；不会改写为当前工程。');
+      if (input.project_id !== projectId) throw new Error('组合来源工程已变化，请返回原工程刷新并重新选择。');
       const catalog = await actualIO.dispatch<CapabilityCatalog>(request(null, { kind: 'workspace' }, 'describe_capabilities', {}));
       if (!catalog.available_command_kinds.includes('put_template_composition')) throw new Error(unavailableAuthoringTemplates().reason);
       let active = input.draft;
@@ -214,7 +214,7 @@ export function createAuthoringTemplates(current: AuthoringWorkspaceReader, io?:
           base_revision: input.base_revision,
           commands: [{ kind: 'create_definition_draft', data: input.definition }],
         }));
-        if (creation.scope.kind !== 'definition_draft') throw new Error('Host 未返回实际新建定义草稿 Scope。');
+        if (creation.scope.kind !== 'definition_draft') throw new Error('尚未确认定义草稿是否创建，请刷新状态。');
         active = await readDraft(actualIO, projectId, creation.scope.data.id, creation.history, creation.new_revision);
       }
       const composition: TemplateComposition = {
@@ -237,7 +237,7 @@ export function createAuthoringTemplates(current: AuthoringWorkspaceReader, io?:
         throw failure;
       }
       if (commit.scope.kind !== 'definition_draft' || commit.scope.data.id !== active.summary.draft_id) {
-        throw new Error('Host 未返回所选模板定义的实际组合提交 Scope。');
+        throw new Error('尚未确认模板组合的保存结果，请刷新状态。');
       }
       const saved = await readDraft(actualIO, projectId, active.summary.draft_id, commit.history, commit.new_revision);
       bound.assertCurrent();
@@ -262,7 +262,7 @@ export async function readAuthoringTemplatePreview(current: AuthoringWorkspaceRe
   bound.assertCurrent();
   if (object.kind !== 'template_preview' || object.data.project_id !== bound.projectId
     || object.data.module_ref.id !== reference.id || object.data.module_ref.version !== reference.version) {
-    throw new Error('Host 未返回此精确定义草稿的真实模板准备预览。');
+    throw new Error('未能读取此草稿的模板预览，请重新加载。');
   }
   return object.data;
 }

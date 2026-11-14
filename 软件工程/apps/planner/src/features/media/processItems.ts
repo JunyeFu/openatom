@@ -33,7 +33,7 @@ export async function readProcessItems(frame:ActualMediaFrame,binding:MediaPrese
       object_id:{kind:'project',id:binding.request.project_id},source:{kind:'run_snapshot',data:view},node_index:null}});
   assertCurrent();
   if(project.kind!=='project'||project.data.id!==frame.run.input_ref.project_id||project.data.revision!==frame.run.input_ref.project_revision)
-    throw new ProcessUnavailable('物品附件没有取得本Run的冻结工程修订。');
+    throw new ProcessUnavailable('未能读取该次运行的工程版本，暂时无法显示物品。');
   const context={session_id:binding.session_id,project_id:binding.request.project_id,scope:binding.request.scope,
     scope_revision:binding.request.scope_revision,project:project.data,view,preparedRun:{run:frame.run,modules:new Map()}};
   const source=await createFactoryPresentation(()=>current()?context:null,ports).read(context);

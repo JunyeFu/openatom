@@ -45,7 +45,7 @@ export function InlineNodeEditor(props: InlineNodeEditorProps) {
   return <form aria-label="实例自有节点编辑" onSubmit={event => { event.preventDefault(); void apply(); }}>
     <h3>编辑实例自有节点 · canonical {captured.inspection.selection.node_index}</h3><p>仅修改此节点字段；其它节点、Presentation声明、设备及许可保留。提交使用Project r{captured.base.revision}的原PutObject。</p>
     {!current && <p role="alert">原会话/Scope/实例来源已变化；编辑输入保留，不能提交。请关闭后重新读取实际来源。</p>}
-    {!editable && <p role="alert">只有当前Project中明确选中实例的自有override节点可在此修改；冻结Run、Draft和发布模块沿原定义创作入口。</p>}
+    {!editable && <p role="alert">这里只能修改当前工程中所选实例的节点。历史版本、定义草稿和模块请从定义编辑入口修改。</p>}
     <label>部件名称<input required value={fields.name} disabled={disabled} onChange={event => change({ ...fields, name: event.target.value })}/></label>
     <PoseEditor value={fields.transform} disabled={disabled} onChange={transform => change({ ...fields, transform })}/>
     {fields.geometry && <SchemaField schema={{ oneOf: variants(formSchemas.SceneGeometry).filter(schema => tagOf(schema)?.value !== 'imported_node') }} value={fields.geometry} name="geometry" disabled={disabled} onChange={geometry => change({ ...fields, geometry: geometry as InlineNodeFields['geometry'] })}/>}

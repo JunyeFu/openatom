@@ -25,17 +25,17 @@ export interface FactoryRenderSurfaceProps {
 
 export function factoryRenderInputIssue(context: FactoryPresentationContext, source: FactoryPresentationSource, view: RenderViewSpec, target: ObjectRef | null = view.object_ref ?? null): string | null {
   if (context.scope.kind !== 'project') return '厂房捕获需要真实Project Scope。';
-  if (source.key !== factoryContextKey(context) || context.project_id !== source.project.id) return '捕获来源不属于请求的工程/Scope修订。';
-  if (view.kind !== 'line_canvas' && view.kind !== 'multi_hall_canvas' || view.canvas !== view.kind) return '厂房RenderView的kind与canvas必须精确匹配。';
-  if (view.project_revision !== source.project.revision) return 'RenderView工程修订与冻结厂房来源不一致。';
-  if (target && (view.kind === 'line_canvas' ? target.kind !== 'line' || !source.project.lines.some(line => line.id === target.id && line.hall_id === view.hall_id) : target.kind !== 'project' || target.id !== source.project.id)) return '画布目标必须为同一冻结厂房的明确产线，或同一冻结工程。';
+  if (source.key !== factoryContextKey(context) || context.project_id !== source.project.id) return '截图来源与所选工程版本不匹配。';
+  if (view.kind !== 'line_canvas' && view.kind !== 'multi_hall_canvas' || view.canvas !== view.kind) return '截图类型与所选画布不匹配。';
+  if (view.project_revision !== source.project.revision) return '画面与该次运行保存的厂房版本不匹配。';
+  if (target && (view.kind === 'line_canvas' ? target.kind !== 'line' || !source.project.lines.some(line => line.id === target.id && line.hall_id === view.hall_id) : target.kind !== 'project' || target.id !== source.project.id)) return '请选择该次运行保存的厂房产线或工程。';
   if (view.object_ref && (!target || view.object_ref.kind !== target.kind || view.object_ref.id !== target.id)) return '画布的两处精确目标不一致。';
-  if (view.canvas === 'line_canvas' ? source.project.halls.length ? !view.hall_id || !source.project.halls.some(hall => hall.id === view.hall_id) : view.hall_id != null || target != null : view.hall_id != null) return '流水线画布需明确已有厂房；空工程允许空厂房；多厂房画布不筛选单厂房。';
+  if (view.canvas === 'line_canvas' ? source.project.halls.length ? !view.hall_id || !source.project.halls.some(hall => hall.id === view.hall_id) : view.hall_id != null || target != null : view.hall_id != null) return '请为产线视图选择厂房；多厂房视图无需选择单个厂房。';
   if (context.view) {
-    if (source.run?.id !== context.view.run_id || view.run_id !== source.run.id || view.view_time_ms !== context.view.at_ms || source.observation?.at_ms !== context.view.at_ms || source.observation.run_id !== source.run.id || source.observation.next_index !== null || source.run.input_ref.project_revision !== source.project.revision || source.run.computed_until_ms == null || context.view.at_ms < source.run.window.start_ms || context.view.at_ms > source.run.computed_until_ms || context.view.at_ms > source.run.window.end_ms) return '捕获Run/观看时点与完整实际冻结来源或已计算前沿不一致。';
-  } else if (source.run || source.observation || view.run_id != null || view.view_time_ms != null) return '草稿捕获不得混入另一Run或观看时点。';
+    if (source.run?.id !== context.view.run_id || view.run_id !== source.run.id || view.view_time_ms !== context.view.at_ms || source.observation?.at_ms !== context.view.at_ms || source.observation.run_id !== source.run.id || source.observation.next_index !== null || source.run.input_ref.project_revision !== source.project.revision || source.run.computed_until_ms == null || context.view.at_ms < source.run.window.start_ms || context.view.at_ms > source.run.computed_until_ms || context.view.at_ms > source.run.window.end_ms) return '所选运行记录或时间点与截图来源不匹配。';
+  } else if (source.run || source.observation || view.run_id != null || view.view_time_ms != null) return '草稿截图不能包含其他运行记录的画面。';
   const { camera } = view;
-  if (!['meter', 'millimeter'].includes(camera.unit) || !['right_handed_z_up', 'right_handed_y_up'].includes(camera.coordinate_frame) || ![...Object.values(camera.eye), ...Object.values(camera.target), camera.zoom].every(Number.isFinite) || !(camera.zoom > 0) || Object.keys(camera.eye).every(axis => camera.eye[axis as keyof typeof camera.eye] === camera.target[axis as keyof typeof camera.target])) return '捕获相机需要明确单位/坐标系、非重合eye/target及正zoom。';
+  if (!['meter', 'millimeter'].includes(camera.unit) || !['right_handed_z_up', 'right_handed_y_up'].includes(camera.coordinate_frame) || ![...Object.values(camera.eye), ...Object.values(camera.target), camera.zoom].every(Number.isFinite) || !(camera.zoom > 0) || Object.keys(camera.eye).every(axis => camera.eye[axis as keyof typeof camera.eye] === camera.target[axis as keyof typeof camera.target])) return '请设置相机单位和坐标系；位置与目标不能重合，缩放须大于0。';
   return null;
 }
 

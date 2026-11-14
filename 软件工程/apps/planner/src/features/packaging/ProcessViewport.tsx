@@ -55,5 +55,5 @@ export function ProcessViewport({ job, sample,capture }: { job: PackageStructure
     return () => {live=false;serial++;resize.disconnect(); controls.dispose(); geometries.forEach(item => item.dispose()); materials.forEach(item => item.dispose());renderer.domElement.removeEventListener('webglcontextlost',contextLost);renderer.dispose();renderer.forceContextLoss(); renderer.domElement.remove(); };
   }, [job, sample,capture]);
   const supported = job.unit === 'millimeter' && job.coordinate_frame === 'right_handed_z_up';
-  return <div><p>{sample ? `实际样本 ${sample.step_id} · u=${sample.progress}` : '输入平面结构（不是计算过程样本）'}；毫米 / 右手 Z 向上。{capture?'只读捕获，使用请求相机与固定时点。':'右键环绕、中键平移、滚轮缩放。'}橙线为声明连接锚点参考，连接激活与干涉以实际检查为准。</p>{supported ? <div ref={container} className="packaging-viewport" aria-label="真实板片与实际样本三维回看" /> : <p role="status">此近景仅消费当前核心的 millimeter / right_handed_z_up；其他单位坐标仍保留原输入，不作猜测换算。</p>}</div>;
+  return <div><p>{sample ? `实际样本 ${sample.step_id} · u=${sample.progress}` : '输入平面结构（不是计算过程样本）'}；毫米 / 右手 Z 向上。{capture?'只读捕获，使用请求相机与固定时点。':'右键环绕、中键平移、滚轮缩放。'}橙线为声明连接锚点参考，连接激活与干涉以实际检查为准。</p>{supported ? <div ref={container} className="packaging-viewport" aria-label="真实板片与实际样本三维回看" /> : <p role="status">当前视图支持毫米、Z轴向上的坐标系。其他单位或坐标系暂无法显示，原输入保留。</p>}</div>;
 }

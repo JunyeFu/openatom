@@ -47,7 +47,7 @@ export function buildModulePresentation(value: Presentation): ModulePresentation
   if (value.source.kind === 'asset') missing(value.source.data, '尚未接入此源素材的实际授权字节');
   if (value.source.kind === 'image_sequence') value.source.data.forEach(asset => missing(asset, '尚未接入序列图片的实际授权字节'));
   if (value.source.kind === 'media_ref') diagnostics.push({ code: 'missing_asset', message: `尚未解析精确媒体版本 ${value.source.data.id}@${value.source.data.version}，不以原生几何代替其素材。` });
-  if (value.actions.length || value.timeline.length) diagnostics.push({ code: 'static_preview', message: '当前显示声明的初始静态姿态；命名动作与片段尚未执行，不代表生产周期。' });
+  if (value.actions.length || value.timeline.length) diagnostics.push({ code: 'static_preview', message: '当前为初始静态预览，尚未播放动作。' });
   const duplicateIds = new Set(value.nodes.filter((node, index) => value.nodes.some((other, position) => position !== index && other.id === node.id)).map(node => node.id));
   const groups: (THREE.Group | null)[] = value.nodes.map(node => {
     if (duplicateIds.has(node.id)) { diagnostics.push({ code: 'duplicate_id', node_id: node.id, message: `部件 ID ${node.id} 重复，须先明确修正。` }); return null; }
@@ -78,7 +78,7 @@ export function buildModulePresentation(value: Presentation): ModulePresentation
     if (!material.color_rgba.every(number => Number.isFinite(number) && number >= 0 && number <= 1) || ![material.metallic, material.roughness].every(number => Number.isFinite(number) && number >= 0 && number <= 1)) {
       diagnostics.push({ code: 'invalid_material', node_id: node.id, message: `${node.name} 的颜色、透明度、金属度与粗糙度须在0至1之间，未绘制此部件。` }); return;
     }
-    if (material.texture) missing(material.texture, '原生部件仅显示声明底色，纹理字节尚未接入', node.id);
+    if (material.texture) missing(material.texture, '部件暂只显示底色，不支持纹理预览', node.id);
     const geometry = node.geometry; let shape: THREE.BufferGeometry | null = null;
     switch (geometry.kind) {
       case 'box': if (finitePositive(geometry.data.x, geometry.data.y, geometry.data.z)) shape = new THREE.BoxGeometry(geometry.data.x * unit, geometry.data.y * unit, geometry.data.z * unit); break;

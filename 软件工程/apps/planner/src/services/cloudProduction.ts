@@ -84,7 +84,7 @@ function header(c: CloudContext) {
 }
 function checkIdentity(context: CloudContext, expected: ExecutionIdentity, actual: ExecutionIdentity) {
   if (expected.project_id !== context.projectId || identityKey(expected) !== identityKey(actual)) {
-    throw new CloudProductionError('source_mismatch', 'Host结果与原工程/session/epoch不一致，未替换当前来源。');
+    throw new CloudProductionError('source_mismatch', '返回数据与当前工程连接不匹配，请刷新后重新选择记录。');
   }
 }
 function assertTask(record: CloudTaskRecord, task: AsyncHandle) {
@@ -93,7 +93,7 @@ function assertTask(record: CloudTaskRecord, task: AsyncHandle) {
   if (task.kind !== kind || task.scope.kind !== 'edit' || task.scope.data.kind !== 'project'
     || task.scope.data.data !== record.context.projectId || task.input_revision !== record.context.projectRevision
     || (record.task !== null && task.id !== record.task.id)) {
-    throw new CloudProductionError('task_mismatch', '任务不属于原工程、类型或修订，未消费该结果。');
+    throw new CloudProductionError('task_mismatch', '返回任务与所选工程或版本不匹配，请先刷新操作状态。');
   }
 }
 async function taskState(record: CloudTaskRecord): Promise<AsyncState> {
@@ -128,7 +128,7 @@ async function awaitOutput(record: CloudTaskRecord, options: CloudObserveOptions
       const state = await taskState(record);
       options.signal?.throwIfAborted();
       options.onTask?.({ ...record, task: state.task, status: state.task.state });
-      if (state.task.state === 'failed') throw new CloudProductionError(state.failure?.code ?? 'task_failed', state.failure?.message ?? 'Host任务失败，未取得交付结果。');
+      if (state.task.state === 'failed') throw new CloudProductionError(state.failure?.code ?? 'task_failed', state.failure?.message ?? '任务失败，未生成交付结果。');
       if (state.task.state === 'cancelled') throw new CloudProductionError('task_cancelled', '该任务已取消。');
       if (state.task.state === 'completed') {
         const result = state.result;
@@ -168,7 +168,7 @@ export async function recoverRegisteredCloudTask(record: CloudTaskRecord, option
   options.signal?.throwIfAborted();
   const result = await readLocalView(record.context, { kind: 'request', originating_request_id: record.request_id });
   options.signal?.throwIfAborted();
-  if (result.kind !== 'request') throw new CloudProductionError('request_mismatch', 'Host未返回原请求登记，未消费其他来源。');
+  if (result.kind !== 'request') throw new CloudProductionError('request_mismatch', '未能读取本次操作记录，请刷新操作状态。');
   if (!result.data.task) {
     options.onTask?.({ ...record, status: 'rejected' });
     return null;
@@ -193,7 +193,7 @@ export async function prepareExecution(context: CloudContext, params: HostStartR
   const result = await registered<StartupTaskHandle>(context, request, options);
   if (result.kind !== 'execution_session' || result.data.state !== 'prepared'
     || result.data.identity.project_id !== context.projectId || result.data.identity.host_context_session_id !== context.hostContextId) {
-    throw new CloudProductionError('preparation_mismatch', '准备结果不属于原Host/工程或不是prepared。');
+    throw new CloudProductionError('preparation_mismatch', '尚未确认生产准备结果，请先刷新操作状态。');
   }
   return result.data; // Never sends run.
 }
@@ -201,7 +201,7 @@ export async function readExecution(context: CloudContext, identity: ExecutionId
   const request: HostReadRequest = { ...header(context), operation: 'get_execution_snapshot', params: { execution_contract_version: EXECUTION_CONTRACT, identity, selection } };
   const result = await dispatch<ExecutionReadEnvelope>(request);
   if (!result?.snapshot || !result.delivery || !result.access || result.delivery.read_origin !== 'host')
-    throw new CloudProductionError('snapshot_mismatch', 'Host未返回本机执行快照。');
+    throw new CloudProductionError('snapshot_mismatch', '未能读取本机生产状态，请刷新。');
   checkIdentity(context, identity, result.snapshot.identity);
   if (selection.kind === 'revision' && result.snapshot.execution_revision !== selection.execution_revision) throw new CloudProductionError('revision_mismatch', '快照不是原固定修订。');
   return result;
@@ -231,7 +231,7 @@ export async function readLocalView(context: CloudContext, selection: HostExecut
   if (result.kind === 'catalog' && result.data.project_id !== context.projectId) throw new CloudProductionError('source_mismatch', '执行目录属于其他工程。');
   if (selection.kind === 'request' && result.kind === 'request'
     && (result.data.originating_request_id !== selection.originating_request_id || result.data.host_context_session_id !== context.hostContextId)) {
-    throw new CloudProductionError('request_mismatch', '原请求索引不属于当前Host与请求。');
+    throw new CloudProductionError('request_mismatch', '操作记录与当前连接不匹配，请刷新操作状态。');
   }
   return result;
 }
@@ -262,7 +262,7 @@ export function formatQuantity(q: Quantity) {
 export function parseQuantity(text: string, unit: string): Quantity {
   if (!/^\d+(\.\d{1,9})?$/.test(text) || !unit) throw new CloudProductionError('target', '目标需为非负十进制数量（最多9位小数）及真实单位。');
   const [whole, fraction = ''] = text.split('.'); const value = BigInt(whole + fraction);
-  if (value > BigInt(Number.MAX_SAFE_INTEGER)) throw new CloudProductionError('target', '目标超出精确安全整数范围。');
+  if (value > BigInt(Number.MAX_SAFE_INTEGER)) throw new CloudProductionError('target', '目标数量过大，请减小后重试。');
   return { value: { coefficient: Number(value), decimal_places: fraction.length }, unit };
 }
 function utcMicrosecondText(s: string) {
@@ -292,7 +292,7 @@ export function validateQueryPage(query: DaaSQuery, result: DaaSQueryResult, pre
     }
   } else if (query.dataset === 'execution' && result.dataset === 'execution') {
     if (query.selection.kind !== 'revision' || result.selected_execution_revision !== query.selection.execution_revision
-      || result.selected_epoch !== query.identity.execution_epoch_id) throw new CloudProductionError('query_revision', '执行查询必须保持精确epoch/revision。');
+      || result.selected_epoch !== query.identity.execution_epoch_id) throw new CloudProductionError('query_revision', '查询版本已变化，请重新选择数据版本。');
     selection = { dataset: 'execution', identity: query.identity, execution_revision: result.selected_execution_revision };
     for (const row of result.rows) {
       if (identityKey(row.identity) !== identityKey(query.identity) || row.execution_revision !== result.selected_execution_revision) throw new CloudProductionError('row_source', '执行行不属于该固定来源。');

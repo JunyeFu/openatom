@@ -16,7 +16,7 @@ export function ManufacturingPreview({evidence,readFile,capture}:ManufacturingPr
   useEffect(()=>{
     let live=true;const urls:string[]=[];setImages([]);setError('');
     async function load(){
-      if(!readFile)throw new Error('宿主尚未接入此Artifact精确制造文件的只读字节入口。');
+      if(!readFile)throw new Error('当前无法预览此成果的制造文件。');
       const values=[];
       for(const file of evidence.result.manufacturing_files){
         const bytes=await readFile(evidence,file.file);if(!live)return;

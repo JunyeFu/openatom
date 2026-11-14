@@ -59,7 +59,7 @@ export function validateForm(schema: Schema, value: unknown, catalog: SchemaCata
     const valid = matches.filter(issues => !issues.length);
     if (s.oneOf ? valid.length === 1 : valid.length > 0) return [];
     const selected = branchFor(s, value, catalog);
-    return selected ? validateForm(selected, value, catalog, path) : error('请选择明确的类型并填写其字段');
+    return selected ? validateForm(selected, value, catalog, path) : error('请选择类型并填写对应字段');
   }
   if (s.const !== undefined && value !== s.const) return error('类型标记与当前字段不符');
   if (s.enum && !s.enum.includes(value)) return error('请从当前声明的选项中选择');

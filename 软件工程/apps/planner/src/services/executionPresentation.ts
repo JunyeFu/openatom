@@ -48,11 +48,11 @@ function assertIdentity(a: ExecutionIdentity, b: ExecutionIdentity) {
 function matchPage(f: ExecutionFrozenSource, page: Pick<ExecutionObservationPage, 'identity' | 'execution_revision' | 'observation_frontier'>) {
   assertIdentity(f.identity, page.identity);
   if (page.execution_revision !== f.revision || page.observation_frontier !== f.envelope.snapshot.observation_frontier)
-    throw new CloudProductionError('execution_prefix_mismatch', '执行修订或观察前沿不一致，未拼接不完整场景。');
+    throw new CloudProductionError('execution_prefix_mismatch', '生产版本或观察范围已变化，请刷新画面。');
 }
 function validTime(f: ExecutionFrozenSource, at: number) {
   if (!Number.isSafeInteger(at) || at < 0 || at > f.envelope.snapshot.coverage.observed_until_host_ms)
-    throw new CloudProductionError('time_not_observed', '时点超出该R的实际Host观察前沿。');
+    throw new CloudProductionError('time_not_observed', '此时间点尚无可用的生产数据，请选择已记录的时间。');
   if (!f.envelope.snapshot.coverage.clock_started && at !== 0)
     throw new CloudProductionError('clock_not_started', 'prepared尚未启动时钟，只能观察T=0初始化。');
 }
@@ -77,7 +77,7 @@ async function readSourceView(context: CloudContext, origin: ExecutionReadOrigin
 export async function readExecutionFrozenSource(context: CloudContext, identity: ExecutionIdentity, revision: number,
   origin: ExecutionReadOrigin, options: ReadGuard = {}): Promise<ExecutionFrozenSource> {
   guard(options);
-  if (origin !== 'host' && origin !== 'cloud') throw new CloudProductionError('execution_origin', '必须明确选择host或cloud来源；没有自动换源。');
+  if (origin !== 'host' && origin !== 'cloud') throw new CloudProductionError('execution_origin', '请选择本机或云端数据来源。');
   if (identity.project_id !== context.projectId || !Number.isSafeInteger(revision) || revision < 0)
     throw new CloudProductionError('execution_source', '工程身份或执行修订无效。');
   const [snapshot, result] = await Promise.all([
@@ -89,13 +89,13 @@ export async function readExecutionFrozenSource(context: CloudContext, identity:
   const envelope = snapshot.data;
   assertIdentity(identity, envelope.snapshot.identity);
   if (envelope.delivery.read_origin !== origin || envelope.snapshot.execution_revision !== revision)
-    throw new CloudProductionError('execution_source_mismatch', '快照不是原来源或精确R；未切换来源补齐。');
+    throw new CloudProductionError('execution_source_mismatch', '返回的生产数据版本不匹配，请重新选择记录。');
   if (result.kind !== 'inputs') throw new CloudProductionError('inputs_missing', '没有取得所选来源的执行冻结输入。');
   const inputs = result.data; assertIdentity(identity, inputs.identity);
   if (!same(inputs.project_input_ref, envelope.snapshot.project_input_ref)
     || inputs.project.id !== identity.project_id || inputs.project.revision !== inputs.project_input_ref.project_revision
     || inputs.scenario.id !== inputs.project_input_ref.scenario_id || inputs.scenario.revision !== inputs.project_input_ref.scenario_revision)
-    throw new CloudProductionError('frozen_input_mismatch', '冻结文档与同R输入引用不一致；不使用当前草稿补齐。');
+    throw new CloudProductionError('frozen_input_mismatch', '生产记录与其保存的输入不匹配，请重新读取。');
   return { read_origin: origin, context: { ...context }, identity, revision, inputs, envelope };
 }
 export async function readCompleteExecutionObservation(frozen: ExecutionFrozenSource, at: number, options: ReadGuard = {}): Promise<CompleteExecutionObservation> {
@@ -106,7 +106,7 @@ export async function readCompleteExecutionObservation(frozen: ExecutionFrozenSo
     const result = await readSourceView(frozen.context, frozen.read_origin, { kind: 'observations', query: { contract_version: EXECUTION_CONTRACT, identity: frozen.identity,
       execution_revision: frozen.revision, at_host_ms: at, objects: [], page: { limit: 200, cursor } } }, options);
     guard(options);
-    if (result.kind !== 'observations') throw new CloudProductionError('observation_missing', 'Host未返回执行时点对象页。');
+    if (result.kind !== 'observations') throw new CloudProductionError('observation_missing', '未读取到该生产时点的对象。');
     const page = result.data; matchPage(frozen, page);
     if (page.at_host_ms !== at || page.clock_started !== frozen.envelope.snapshot.coverage.clock_started)
       throw new CloudProductionError('observation_time_mismatch', '对象页不属于原T或clock_started。');
@@ -132,7 +132,7 @@ export async function readCompleteExecutionHistory(frozen: ExecutionFrozenSource
     const result = await readSourceView(frozen.context, frozen.read_origin, { kind: 'history', query: { contract_version: EXECUTION_CONTRACT, identity: frozen.identity,
       execution_revision: frozen.revision, host_from_ms: from, host_until_ms: until, objects: [], page: { limit: 200, cursor } } }, options);
     guard(options);
-    if (result.kind !== 'history') throw new CloudProductionError('history_missing', 'Host未返回执行历史页。');
+    if (result.kind !== 'history') throw new CloudProductionError('history_missing', '未读取到生产历史。');
     const page = result.data; matchPage(frozen, page);
     if (page.host_from_ms !== from || page.host_until_ms !== until) throw new CloudProductionError('history_range_mismatch', '历史页区间改变。');
     for (const record of page.records) {
@@ -196,7 +196,7 @@ export async function createExecutionPresentation(frozen: ExecutionFrozenSource,
       || request.scope_revision !== frozen.inputs.project.revision) throw new ProcessUnavailable('执行媒体描述符改变了冻结来源。');
     const reference = request.source.data.module_ref, pkg = await module(reference);
     if (!pkg.assets.some(a => same(a, request.asset)) || !frozen.inputs.asset_bindings.some(b => same(b.module_ref, reference) && same(b.asset, request.asset)))
-      throw new ProcessUnavailable('素材不属于该执行冻结模块/AssetRef绑定。');
+      throw new ProcessUnavailable('素材不属于该次生产使用的模块版本。');
     if (!readAsset) throw new ProcessUnavailable('执行归档媒体字节端口尚未接入；未回退到当前模块或任意URL。');
     const bytes = await readAsset({ identity: frozen.identity, execution_revision: frozen.revision, module_ref: reference, asset: request.asset });
     guard(options); return bytes;
@@ -219,7 +219,7 @@ export async function createExecutionPresentation(frozen: ExecutionFrozenSource,
   source.items = source.items.map(input => input.item.holder.kind === 'job'
     ? { ...input, holder_observed_phase: holders.get(input.item.holder.id) } : input);
   if (!readAsset) {
-    const reason = '执行归档媒体字节端口未接入；仅显示冻结声明布局，物理进度未测。';
+    const reason = '当前仅能显示该次生产保存的布局，暂无法读取动态素材或设备进度。';
     source.devices = source.devices.map(d => ({ ...d, media: null, unavailable: reason, projection: 'unavailable' }));
     source.items = source.items.map(item => ({ ...item, media: null, unavailable: item.unavailable ?? reason }));
     source.resources = source.resources?.map(r => ({ ...r, media: null, unavailable: r.unavailable ?? reason }));

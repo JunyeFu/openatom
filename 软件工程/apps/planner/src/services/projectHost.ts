@@ -64,7 +64,7 @@ export async function dispatch<T>(request: ApiRequest): Promise<T> {
 }
 async function dispatchWithContext<T>(request: ApiRequest) {
   const response = await dispatchResult<T>(request);
-  if (!response.context || response.request_id !== request.request_id) throw new Error('Host未返回当前请求的实际会话上下文。');
+  if (!response.context || response.request_id !== request.request_id) throw new Error('未能读取当前工程连接，请重新连接。');
   return { data: response.data, context: response.context };
 }
 
@@ -97,7 +97,7 @@ export async function readWorkspace(): Promise<WorkspaceSnapshot> {
   const object = await dispatch<DomainObject>({ ...header(projectId), operation: 'get_object', params: {
     object_id: { kind: 'project', id: context.project.id }, source: { kind: 'draft' }, node_index: null,
   } });
-  if (object.kind !== 'project') throw new Error('Host 未返回工程对象。');
+  if (object.kind !== 'project') throw new Error('未读取到工程数据。');
   const project = object.data;
   if (project.revision !== context.project.revision) throw new Error('读取期间工程已变化，请刷新后继续。');
   const [moduleObjects, scenarioObjects] = await Promise.all([
@@ -117,7 +117,7 @@ export async function readWorkspace(): Promise<WorkspaceSnapshot> {
       return;
     }
     const value = result.value;
-    if (value.kind !== 'module') throw new Error('Host 未返回精确版本模块。');
+    if (value.kind !== 'module') throw new Error('未读取到指定模块版本。');
     modules.set(moduleKey(project.module_refs[i]), value.data);
   });
   const scenarios: ScenarioInput[] = [];
@@ -129,7 +129,7 @@ export async function readWorkspace(): Promise<WorkspaceSnapshot> {
       return;
     }
     const value = result.value;
-    if (value.kind !== 'scenario') throw new Error('Host 未返回方案对象。');
+    if (value.kind !== 'scenario') throw new Error('未读取到方案数据。');
     scenarios.push(value.data);
   });
   // A second context is a consistency boundary, never an automatic retry or overwrite.
@@ -169,7 +169,7 @@ export async function previewTemplate(project: ProjectState, moduleRef: ModuleRe
       module_ref: moduleRef, base_revision: project.revision, choices, seed,
     } }, node_index: null,
   } });
-  if (object.kind !== 'template_preview') throw new Error('Host 未返回模板的真实准备预览。');
+  if (object.kind !== 'template_preview') throw new Error('未能读取模板预览，请重新加载。');
   return object.data;
 }
 
@@ -215,7 +215,7 @@ export async function selectFile(purpose: 'import_package' | 'export_package') {
 function taskHeader(task: TaskHandle, definitionProjectId?: string) {
   if (task.scope.kind === 'workspace') return header(null);
   if (task.scope.data.kind === 'project') return header(task.scope.data.data);
-  if (!definitionProjectId) throw new Error('定义任务需要其实际所属工程，不能借当前工程观察。');
+  if (!definitionProjectId) throw new Error('请在任务所属工程中查看此定义任务。');
   return { ...header(definitionProjectId), scope: { kind: 'definition_draft' as const, data: task.scope.data.data.id } };
 }
 
@@ -228,7 +228,7 @@ export async function awaitTask(task: TaskHandle,
     onState?.(state);
     if (state.task.state === 'failed') {
       if (state.failure) throw new HostFailure(state.failure);
-      throw new Error('计算失败，Host 未提供失败详情。');
+      throw new Error('计算失败，未返回详细原因。');
     }
     if (state.task.state === 'cancelled') throw new Error('任务已取消。');
     if (state.task.state === 'completed') {
@@ -332,7 +332,7 @@ export async function readRunProject(projectId: string, runId: string, atMs: num
   const object = await dispatch<DomainObject>({ ...header(projectId), operation: 'get_object', params: {
     object_id: { kind: 'project', id: projectId }, source: { kind: 'run_snapshot', data: { run_id: runId, at_ms: atMs } }, node_index: null,
   } });
-  if (object.kind !== 'project') throw new Error('Host 未返回该 Run 的冻结工程。');
+  if (object.kind !== 'project') throw new Error('未能读取该次运行保存的工程。');
   return object.data;
 }
 
@@ -358,7 +358,7 @@ export async function readRunInputs(projectId: string, run: RunResult, atMs: num
     object_id: { kind: 'scenario', id: run.input_ref.scenario_id },
     source: { kind: 'run_snapshot', data: { run_id: run.id, at_ms: atMs } }, node_index: null,
   } });
-  if (scenarioObject.kind !== 'scenario') throw new Error('Host 未返回该 Run 的冻结方案。');
+  if (scenarioObject.kind !== 'scenario') throw new Error('未能读取该次运行保存的方案。');
   const references = factoryView ? factoryViewModules(project) : project.module_refs;
   const moduleObjects = await readModuleBatch(references, ref => dispatch<DomainObject>({
     ...header(projectId), operation: 'get_object', params: {
@@ -374,7 +374,7 @@ export async function readRunInputs(projectId: string, run: RunResult, atMs: num
       moduleIssues.push({ ref: references[i], error: result.reason.detail });
       return;
     }
-    if (result.value.kind !== 'module') throw new Error('Host 未返回该 Run 的精确版本模块。');
+    if (result.value.kind !== 'module') throw new Error('未能读取该次运行使用的模块版本。');
     modules.set(moduleKey(references[i]), result.value.data);
   });
   return { project, scenario: scenarioObject.data, modules, moduleIssues };

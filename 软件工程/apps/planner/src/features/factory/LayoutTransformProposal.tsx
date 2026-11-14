@@ -34,7 +34,7 @@ export function LayoutTransformProposal({ proposal, busy, onApply, onReload, onC
   return <section className="object-editor" aria-label="保留的布局变换">
     <header><h2>保留的布局变换</h2><button disabled={busy || loading} onClick={() => setLeaving(true)}>返回画布</button></header>
     <p>{proposal.object.kind} / {proposal.object.id} · 提交基础 r{base.revision}</p>
-    <p>变换尚未应用。核对当前修订后可重读基础，保留同一父坐标下的完整姿态再次提交。</p>
+    <p>变换未应用。请刷新并核对当前位置后重试。</p>
     <pre>{JSON.stringify(proposal.pose, null, 2)}</pre>
     {error && <p role="alert" className="error-text">{error} 变换输入保留。</p>}
     <div className="form-actions"><button disabled={busy || loading} onClick={() => void reload()}>重读基础并保留变换</button><button disabled={busy || loading} onClick={() => void apply()}>应用保留的变换</button></div>
