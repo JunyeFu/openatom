@@ -17,6 +17,14 @@ import { previewCommands } from './preview';
 import { historyBoundaryLabel, scenarioName } from '../../services/workbenchLabels';
 import './business.css';
 
+const navigationItems = [{id:'scenario',title:'方案与观察窗'},...sections,{id:'stages',title:'设备阶段与参数'},{id:'actual',title:'实际接受与等待'}];
+const navigationGroups = [
+  {id:'production',title:'本次生产',description:'先核对订单与观察范围，再查看运行结果。',items:['orders','scenario','actual']},
+  {id:'process',title:'产品与工艺',description:'查看产品用料、生产任务和设备工艺。',items:['products','boms','routes','tasks','device_bindings','stages','items','setup']},
+  {id:'resources',title:'供料与资源',description:'核对原料、运输、人员、班次与库位。',items:['initial','arrivals','supplies','resources','calendars','allocations','locations']},
+  {id:'other',title:'质量与其他设置',description:'按设计需要查看质量、参数、成本和来源。',items:['quality','decisions','overrides','costs','sources']},
+];
+
 export function BusinessEditor(props: BusinessEditorProps) {
   if (!props.project) return <section className="sf-business" aria-label="业务输入"><h2>业务输入</h2><p>先创建或打开工程，再配置业务输入。</p><button onClick={props.onClose}>关闭面板</button></section>;
   return <BusinessSession key={props.project.id} {...props} project={props.project} />;
@@ -27,6 +35,7 @@ function BusinessSession(props: BusinessEditorProps & {project:NonNullable<Busin
   const [base,setBase]=useState<BusinessSnapshot>({project:props.project,scenarios:[...props.scenarios]}),[draft,setDraft]=useState(base);
   const [dirty,setDirty]=useState(false),[catalog,setCatalog]=useState<SchemaCatalog|null>(null),[schemaError,setSchemaError]=useState('');
   const [section,setSection]=useState('orders'),[rowIndex,setRowIndex]=useState<Record<string,number>>({}),[query,setQuery]=useState('');
+  const [expandedGroups,setExpandedGroups]=useState(['production']);
   const [selectedScenarioId,setSelectedScenarioId]=useState<string|null>(props.scenarioId??props.scenarios[0]?.id??null);
   const [proposal,setProposal]=useState<BusinessCommitProposal|null>(null),[issues,setIssues]=useState<FormIssue[]>([]),[failure,setFailure]=useState<ApiError|null>(null),[notice,setNotice]=useState('');
   const [pending,setPending]=useState(false),[closing,setClosing]=useState(false),[history,setHistory]=useState<EditCommit|null>(null);
@@ -49,6 +58,10 @@ function BusinessSession(props: BusinessEditorProps & {project:NonNullable<Busin
   },[base,draft,latest,mergeChoices,parameterCommands]);
   const busy=pending||props.busy;
   useEffect(()=>{
+    const group=navigationGroups.find(group=>group.items.includes(section))!;
+    setExpandedGroups(current=>current.includes(group.id)?current:[...current,group.id]);
+  },[section]);
+  useEffect(()=>{
     const request=++schemaRequest.current;loadBusinessSchema().then(value=>{if(request===schemaRequest.current)setCatalog(value);},error=>{if(request===schemaRequest.current)setSchemaError((error as Error).message);});
     return()=>{schemaRequest.current++;};
   },[]);
@@ -57,6 +70,8 @@ function BusinessSession(props: BusinessEditorProps & {project:NonNullable<Busin
   useEffect(()=>{if(selectedScenarioId===null&&draft.scenarios[0])setSelectedScenarioId(draft.scenarios[0].id);},[selectedScenarioId,draft.scenarios]);
   useEffect(()=>{
     const intent=props.editIntent;if(!intent)return;setSection(intent.section);setQuery('');
+    const group=navigationGroups.find(group=>group.items.includes(intent.section))!;
+    setExpandedGroups(current=>current.includes(group.id)?current:[...current,group.id]);
     const section=sections.find(s=>s.id===intent.section);
     if(section){const input=!dirty&&!pending?latest:draft,selected=input.scenarios.findIndex(s=>s.id===(props.scenarioId??selectedScenarioId)),path=section.owner==='project'?['project',...section.path]:['scenarios',selected,...section.path],values=(getPath(input,path)??[]) as {id?:string}[];if(section.owner==='scenario'&&props.scenarioId!==null)setSelectedScenarioId(props.scenarioId);setRowIndex(current=>({...current,[intent.section]:intent.object_id?values.findIndex(v=>v.id===intent.object_id):Math.max(0,current[intent.section]??0)}));}
   },[props.editIntent?.id]);
@@ -114,6 +129,15 @@ function BusinessSession(props: BusinessEditorProps & {project:NonNullable<Busin
   const scenarioShape=catalog?resolve(fieldSchema('ScenarioInput',catalog),catalog):null;
   const scenarioFields=['id','title','time_reference','window','scope','acceptance_goal'];
   const generalSchema:Schema={type:'object',properties:Object.fromEntries(scenarioFields.map(key=>[key,scenarioShape?.properties?.[key]??{}])),required:scenarioFields.filter(key=>scenarioShape?.required?.includes(key))};
+  function navigationStatus(id:string) {
+    if(id==='scenario')return activeScenario?'已选择方案':'需先选择方案';
+    if(id==='actual')return props.run?'有运行记录':'暂无运行记录';
+    if(id==='stages')return `${draft.project.devices.length} 台设备`;
+    const item=sections.find(item=>item.id===id)!;
+    if(item.owner==='scenario'&&!activeScenario)return '需先选择方案';
+    const rows=getPath(draft,item.owner==='project'?['project',...item.path]:['scenarios',scenarioIndex,...item.path]) as unknown[]|undefined;
+    return rows?.length?`已有 ${rows.length} 条`:'尚未提供';
+  }
   return <section className="sf-business" aria-label="业务输入" onKeyDown={event=>{
     if(busy||event.nativeEvent.isComposing)return;
     const text=event.target instanceof HTMLInputElement||event.target instanceof HTMLTextAreaElement||(event.target instanceof HTMLElement&&event.target.isContentEditable);
@@ -127,14 +151,29 @@ function BusinessSession(props: BusinessEditorProps & {project:NonNullable<Busin
     {(stale||failure?.code==='RevisionConflict')&&<div role="alert" className="sf-business-warning">当前工程已变化；保留表单，不覆盖新状态。<button onClick={()=>void refresh()}>读取当前工程</button><button onClick={rebase}>基于当前输入重新预览</button></div>}
     {availability?.boundary_reason&&<div className="sf-business-note">{historyBoundaryLabel(availability.boundary_reason)}<details><summary>历史详情</summary><p>{availability.boundary_reason}</p></details></div>}{!availability&&<p className="sf-business-note">尚未读取到当前编辑历史。输入仍可编辑，应用变更后可查看撤销和重做状态。</p>}
     {schemaError&&<p role="alert">{schemaError}</p>}
-    <fieldset className="sf-business-body" disabled={!!busy}><nav aria-label="业务面板分类">{[{id:'scenario',title:'方案与观察窗'},...sections,{id:'stages',title:'设备阶段与参数'},{id:'actual',title:'实际接受与等待'}].map(s=><button key={s.id} aria-pressed={section===s.id} onClick={()=>{setSection(s.id);setQuery('');}}>{s.title}</button>)}</nav>
+    <fieldset className="sf-business-body" disabled={!!busy}><nav aria-label="业务面板分类" aria-describedby="business-navigation-note">
+      <p id="business-navigation-note" className="sf-business-navigation-note">已有条数表示已提供输入，不代表已通过生产检查。</p>
+      {navigationGroups.map(group=>{
+        const expanded=expandedGroups.includes(group.id);
+        return <section className="sf-business-navigation-group" key={group.id}>
+          <button type="button" className="sf-business-group-toggle" aria-expanded={expanded} aria-controls={`business-navigation-${group.id}`} onClick={()=>setExpandedGroups(current=>expanded?current.filter(id=>id!==group.id):[...current,group.id])}><span aria-hidden="true">{expanded?'▾':'▸'}</span>{group.title}</button>
+          <div id={`business-navigation-${group.id}`} hidden={!expanded}>
+            <p className="sf-business-group-description">{group.description}</p>
+            {group.items.map(id=>{
+              const item=navigationItems.find(item=>item.id===id)!;
+              return <button type="button" key={id} aria-label={item.title} aria-describedby={`business-navigation-status-${id}`} aria-pressed={section===id} onClick={()=>{setSection(id);setQuery('');}}><span>{item.title}</span><small id={`business-navigation-status-${id}`}>{navigationStatus(id)}</small></button>;
+            })}
+          </div>
+        </section>;
+      })}
+    </nav>
       <main className="sf-business-content">
         {!catalog&&!schemaError&&<p>正在读取当前公共字段规范…</p>}
         {catalog&&section==='scenario'&&activeScenario&&<><h2>方案与观察窗</h2><p>方案 r{activeScenario.revision} · 共同时间基准 {draft.project.time_reference.label}；不会修改旧结果。</p><SchemaField schema={generalSchema} catalog={catalog} value={Object.fromEntries(scenarioFields.filter(key=>Object.hasOwn(activeScenario,key)).map(key=>[key,(activeScenario as unknown as Record<string,unknown>)[key]]))} snapshot={draft} immutableId={base.scenarios.some(s=>s.id===activeScenario.id)} label="方案输入" onChange={value=>change(setPath(draft,['scenarios',scenarioIndex],{...activeScenario,...value as object}))}/><SchemaField schema={resolve(fieldSchema('InitialConditions',catalog),catalog).properties!.initial_setup_families} catalog={catalog} value={activeScenario.initial_conditions.initial_setup_families} snapshot={draft} label="明确初始家族" path="/initial_setup_families" onChange={value=>change(setPath(draft,['scenarios',scenarioIndex,'initial_conditions','initial_setup_families'],value))}/></>}
         {catalog&&spec&&<><h2>{spec.title}</h2><p>{spec.note}</p>{spec.detail&&<details><summary>订单规则说明</summary><p>{spec.detail}</p></details>}{spec.id==='setup'&&!props.canEditSetupPolicies&&<p role="status">当前环境只能查看换型规则，尚未提供修改入口。</p>}{spec.owner==='scenario'&&!activeScenario?<p>先新建或选择方案。</p>:<><div className="sf-business-row-tools"><input aria-label="查找业务记录" placeholder="按身份/名称查找" value={query} onChange={e=>setQuery(e.target.value)}/><select aria-label="业务记录" value={values.length&&index>=0?index:''} onChange={e=>setRowIndex({...rowIndex,[section]:Number(e.target.value)})}><option value="" disabled>{index<0?'未找到指定记录':'尚无记录'}</option>{visible.map(v=><option key={v.index} value={v.index}>{recordLabel(v.value,v.index)}</option>)}{values.length&&index>=0&&!visible.some(v=>v.index===index)?<option value={index}>{recordLabel(record,index)}</option>:null}</select><button disabled={busy||sectionReadOnly} onClick={()=>newRow()}>新增记录</button><button disabled={record===undefined||busy||sectionReadOnly} onClick={()=>newRow(true)}>复制记录</button><button disabled={record===undefined||busy||sectionReadOnly} onClick={()=>change(setPath(draft,path,values.filter((_,i)=>i!==index)))}>移除记录</button>{sectionReadOnly&&values.length>0&&<button disabled={busy} onClick={()=>change(setPath(draft,path,[]))}>清除不受支持的方案覆盖</button>}<span>共{values.length}行；完整ID可查找</span></div>{index<0&&<p role="status">当前分区未找到指定记录，请选择已有记录。</p>}{record!==undefined&&<SchemaField key={`${section}:${index}`} schema={fieldSchema(spec.type,catalog)} readOnly={sectionReadOnly} catalog={catalog} value={record} onChange={editRecord} snapshot={draft} immutableId={immutable} label={spec.title} hidden={spec.id==='device_bindings'?['configuration','pose','footprint_m','height_m','presentation_override','module_ref','hall_id','line_id']:undefined} path={`/${spec.id}/${index}`}/>}</>}</>}
         {catalog&&section==='stages'&&<DeclaredParameters selectedDeviceId={props.editIntent?.section==='stages'?props.editIntent.object_id:undefined} snapshot={draft} modules={props.modules} catalog={catalog} commands={parameterCommands} onChange={value=>{setParameterCommands(value);setDirty(true);setProposal(null);}} onRemove={(deviceId,parameterId)=>{const next={...parameterCommands};delete next[JSON.stringify([deviceId,parameterId])];setParameterCommands(next);change(removeInstanceOverride(draft,deviceId,parameterId));}} onLocate={props.onLocate}/>}
         {section==='actual'&&<BusinessRuntime {...props}/>}
-        {catalog&&section==='scenario'&&!activeScenario&&<p>{draft.scenarios.length?'未找到所选方案，请选择当前工程中的方案。':'尚无方案。新建空白方案后明确观察窗，或从已有方案复制。'}</p>}
+        {catalog&&section==='scenario'&&!activeScenario&&<><h2>方案与观察窗</h2><p>{draft.scenarios.length?'未找到所选方案，请先在顶部选择当前工程中的方案，再设置观察范围。':'尚无方案。先点击顶部“新建空白方案”，再设置观察范围。'}</p></>}
       </main>
     </fieldset>
     {issues.length>0&&<div role="alert" className="sf-business-errors">{issues.map((issue,i)=><p key={i}>{issue.path.split('/').map(s=>labels[s]??s).join(' / ')}：{issue.message}</p>)}</div>}
