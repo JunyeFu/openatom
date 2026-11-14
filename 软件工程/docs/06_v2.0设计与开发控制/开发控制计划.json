@@ -3,7 +3,7 @@
   "next_full_version_plan": {
     "date": "2026-10-31",
     "authority": "用户授权同步方案与任务卡、建立五阶段和FV0三张Issue；人员按角色标注；不影响已提交发布链接。 用户已授权执行角色A第一卡。",
-    "state": "fv2_completed_next_stage_not_started",
+    "state": "fv3_planned_and_dispatched_this_window_no_implementation",
     "spec_ref": "docs/06_v2.0设计与开发控制/入围后完整版制作与验收方案.md",
     "task_cards_ref": "docs/06_v2.0设计与开发控制/入围后完整版任务卡.md",
     "source_packages": "V2-00至V2-11保持，FV0至FV4为下一轮执行批次，ST01至ST08历史验收不改",
@@ -52,13 +52,13 @@
       },
       {
         "number": 4,
-        "title": "FV3 整厂与独立使用",
+        "title": "FV3 开发与前端收尾",
         "state": "open",
         "html_url": "https://github.com/JunyeFu/openatom/milestone/4"
       },
       {
         "number": 5,
-        "title": "FV4 正式交付",
+        "title": "FV4 内部交付核对",
         "state": "open",
         "html_url": "https://github.com/JunyeFu/openatom/milestone/5"
       }
@@ -292,10 +292,11 @@
       "updated_on": "2026-11-14",
       "owner": "JunyeFu",
       "authority": "FV1 已验收；本批授权 FV02 按调整后分工，每人一张 16–20 人时卡。",
-      "coordination_issue": "https://github.com/JunyeFu/openatom/issues/17",
+      "coordination_issue": "https://github.com/JunyeFu/openatom/issues/25",
       "next_implementation": {
         "stage": "FV3",
-        "state": "not_started_await_user_authorization",
+        "issue": "https://github.com/JunyeFu/openatom/issues/25",
+        "state": "handoff_to_role_owner_not_this_planning_window",
         "owner": "JunyeFu"
       },
       "b_dispatch": "https://github.com/JunyeFu/openatom/issues/5",
@@ -304,7 +305,7 @@
       ],
       "next_business_priority": {
         "stage": "FV3",
-        "gate": "须用户另行明确授权启动"
+        "gate": "完成已定位开发/前端与短功能验证，无长跑压力门槛"
       },
       "owner_decisions_pending": [
         "实际投入与交付日期",
@@ -349,9 +350,9 @@
         ]
       },
       "current_primary": {
-        "stage": "FV2",
-        "issue": "https://github.com/JunyeFu/openatom/issues/17",
-        "state": "completed",
+        "stage": "FV3",
+        "issue": "https://github.com/JunyeFu/openatom/issues/25",
+        "state": "assigned_pending_execution",
         "owner": "JunyeFu"
       },
       "default_stage_order": [
@@ -362,8 +363,8 @@
         "FV4"
       ],
       "fv0_exit": "FV0 已收口。A 已接收 B 的诊断及 C 经授权的 UIA 复测，并冻结验收目标。",
-      "waiting_work": "FV02完成；A/B/临时C本阶段无待交项。FV03/FV04未启动，等待用户另行指令。",
-      "early_implementation_exception": "FV02出口完成不自动启动FV03/FV04"
+      "waiting_work": "方案和三卡已派发；A/B由各自负责人接手实施，本机C收到新候选后另行启动。本窗口不继续开发。",
+      "early_implementation_exception": "仅FV03当前开发已启动，FV04只规划"
     },
     "fv0_intake_contract": {
       "date": "2026-11-01",
@@ -1590,7 +1591,139 @@
       "guide_ref": "docs/06_v2.0设计与开发控制/FV02操作指南.md",
       "closeout_plan_ref": "docs/06_v2.0设计与开发控制/FV02本机收口方案.md"
     },
-    "status_updated_on": "2026-11-14"
+    "status_updated_on": "2026-11-14",
+    "from_fv3": {
+      "state": "planned_and_dispatched",
+      "authority": "2026-11-14用户：大作业只完成开发和前端缺口，取消持续运行与压力，本机代C，每阶段子Agent review",
+      "base": "fd4378e386aa093ba10cee220e80388b76e0d1de",
+      "product_candidate": "344be249a30e0b6c7f752b718560a916a51ca961",
+      "plan": "docs/06_v2.0设计与开发控制/FV03大作业收尾方案.md",
+      "issues": {
+        "A": 25,
+        "B": 26,
+        "C": 27
+      },
+      "budget": {
+        "A": 9,
+        "B": 9,
+        "C": 9,
+        "total": 27,
+        "kind": "plan_not_actual_spend",
+        "redistribution": "原FV03 B2+B1共18h改为A9+B9；C原9h上限不扩"
+      },
+      "scope": {
+        "development": [
+          "Q18业务输入分组/真实数据提示",
+          "FE01_FE06报告比较业务说明与技术来源折叠",
+          "Q8默认PDF且其他格式可选",
+          "受影响指南与一次集成候选"
+        ],
+        "required_verification": "局部类型/有意义行为检查，短小例预览取消应用/比较/小报告/保存重开，未改证据复用",
+        "cancelled": [
+          "two_hour_sustained_run",
+          "93_endpoint_all_orders_scale_acceptance",
+          "stress_load_tests",
+          "performance_sample_quotas",
+          "long_history_stress",
+          "full_DPI_matrix"
+        ],
+        "cancelled_state": "cancelled_by_user_not_passed_not_pending_gate",
+        "human_experience": "cancelled",
+        "public_release_changes": false,
+        "production_deployment": false,
+        "competition_pdf_video": false
+      },
+      "packages": [
+        {
+          "role": "A",
+          "owner": "JunyeFu",
+          "issue": 25,
+          "state": "assigned_pending_execution",
+          "scope": "Q18业务导航、公共决定、集成接收",
+          "write": [
+            "apps/planner/src/features/business",
+            "相关局部测试/指南/原控制"
+          ]
+        },
+        {
+          "role": "B",
+          "owner": "wwl-ww",
+          "issue": 26,
+          "state": "B_reported_PR28_partial_implementation_delivered_A_not_reviewed",
+          "scope": "报告比较可读性、默认PDF、一次制包",
+          "implementation_dependency": "可立即改自己目录",
+          "delivery_dependency": "A的Q18代码审查合入检查点；不等A整卡关闭",
+          "reported_pr": 28,
+          "reported_delivery_comment": "https://github.com/JunyeFu/openatom/issues/26#issuecomment-6875824586",
+          "final_candidate": "not_delivered_waits_A25_code_checkpoint",
+          "acceptance": "not_reviewed_not_accepted"
+        },
+        {
+          "role": "temporary_C",
+          "owner": "JunyeFu",
+          "issue": 27,
+          "state": "assigned_waiting_for_B_candidate_and_explicit_local_start",
+          "scope": "同候选短工具流程与指南",
+          "authority": "本机继续与C同等，实际账号JunyeFu"
+        }
+      ],
+      "sequence": [
+        "A/B独立开发并行",
+        "A Q18 review并合入",
+        "B一次制集成候选",
+        "本机临时C短验证",
+        "A接收"
+      ],
+      "stage_reviews": [
+        {
+          "stage": 1,
+          "name": "方案与缺口",
+          "state": "passed"
+        },
+        {
+          "stage": 2,
+          "name": "GitHub派发与控制",
+          "state": "passed"
+        },
+        {
+          "stage": 3,
+          "name": "派单交接与只规划边界复核",
+          "state": "passed"
+        }
+      ],
+      "stage_complete": false,
+      "current_window_scope": "缺口/方案/GitHub派单；不执行产品开发",
+      "implementation_started_by_this_window": false,
+      "premature_local_candidate": {
+        "state": "unadopted_not_task_delivery",
+        "product_commit": false,
+        "worktree_own2files_restored": true,
+        "prior_cleanup_entries_untouched": 1785
+      },
+      "planning_handoff_complete": true
+    },
+    "from_fv4": {
+      "state": "planned_not_started",
+      "scope": "源码/内部运行包/示例/完整指南对应与交接",
+      "hours_each_role": [
+        2,
+        3
+      ],
+      "total_hours": [
+        6,
+        9
+      ],
+      "dependencies": "FV03当前开发和短验证通过",
+      "excluded": "无持续运行/压力、无赛事PDF视频、无公开替换"
+    },
+    "current_all_stage_budget": {
+      "total": [
+        221,
+        276
+      ],
+      "kind": "plan_not_actual_spend",
+      "change": "旧242–294，FV03总27不变，FV04旧27改6–9"
+    }
   },
   "date": "2026-10-27",
   "current_product_track": "v2_implementation",
@@ -6211,7 +6344,7 @@
     "local_technical_delivery_acceptance": true,
     "final_release_receipt_ref": ".work/v2-release-20261027/receipt.json"
   },
-  "status_updated_at_utc": "2026-11-14T09:15:15.291Z",
+  "status_updated_at_utc": "2026-11-14T10:19:06.001Z",
   "control_layers": {
     "plan": {
       "human_ref": "docs/06_v2.0设计与开发控制/开发控制设计.md",
