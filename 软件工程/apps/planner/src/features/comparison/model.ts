@@ -7,6 +7,7 @@ import type { ScenarioReference } from '../../../../../packages/commands/generat
 import type { DeliveryServices, RunEvidence } from './types';
 import type { ApplyCommandsParams } from '../../../../../packages/commands/generated/typescript/ApplyCommandsParams';
 import type { ProjectState } from '../../../../../packages/commands/generated/typescript/ProjectState';
+import { issueMessage } from './issueReading';
 
 export const metricLabels: Record<MetricKey, string> = { accepted_quantity: '实际接受量', completion_time: '完整接受时刻', waiting_time: '等待时间', resource_utilization: '资源利用率', unit_cost: '单位成本', rework_quantity: '返工数量' };
 export function quantityText(q: Quantity): string {
@@ -20,7 +21,7 @@ export function metricText(v: MetricValue): string {
     case 'duration': return `${v.data} ms`;
     case 'scalar': return `${v.data.value} ${v.data.unit}`;
     case 'money_per_unit': return `${v.data.amount} ${v.data.currency}/${v.data.unit}`;
-    case 'unknown': return `未知：${v.data.message}`;
+    case 'unknown': return `未知：${issueMessage(v.data)}`;
   }
 }
 export function differenceText(v: NumericDifference | null | undefined): string {
@@ -55,10 +56,12 @@ export function evidenceMatches(projectId: string, runIds: readonly string[], ev
   return evidence.length === runIds.length && runIds.every(id => evidence.some(e => e.run.id === id && e.run.evidence_origin === 'actual_software' && e.run.input_ref.project_id === projectId && e.project.id === projectId && e.project.revision === e.run.input_ref.project_revision && e.scenario.id === e.run.input_ref.scenario_id && e.scenario.revision === e.run.input_ref.scenario_revision));
 }
 export function errorText(error: unknown): string {
-  return error instanceof Error ? `${error.name}: ${error.message}` : String(error);
+  const message = error instanceof Error ? error.message : typeof error === 'string' ? error : '';
+  return /[\u3400-\u9fff]/u.test(message) ? message : '请求未完成，请展开原始错误核对原因；当前不作为成功结果。';
 }
 export function errorDetail(error: unknown): unknown {
-  return typeof error === 'object' && error !== null && 'detail' in error ? error.detail : null;
+  if (typeof error === 'object' && error !== null && 'detail' in error) return error.detail;
+  return error instanceof Error ? { name: error.name, message: error.message } : error ?? null;
 }
 
 /** Prepare the existing edit operation; the caller must submit it and read the committed Scenario. */
