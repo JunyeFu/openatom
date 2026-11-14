@@ -7,6 +7,10 @@ use std::{cell::RefCell, fmt, rc::Rc};
 
 use tauri::{WebviewWindow, webview::PlatformWebview};
 use tokio::sync::oneshot;
+use webview2_com::Microsoft::Web::WebView2::Win32::{
+    COREWEBVIEW2_BOUNDS_MODE, COREWEBVIEW2_BOUNDS_MODE_USE_RASTERIZATION_SCALE,
+    COREWEBVIEW2_BOUNDS_MODE_USE_RAW_PIXELS, ICoreWebView2Controller3,
+};
 use webview2_com::{
     CapturePreviewCompletedHandler,
     Microsoft::Web::WebView2::Win32::COREWEBVIEW2_CAPTURE_PREVIEW_IMAGE_FORMAT_PNG,
@@ -18,6 +22,69 @@ use windows::Win32::{
         StructuredStorage::CreateStreamOnHGlobal,
     },
 };
+use windows::core::Interface;
+
+#[derive(Clone, Copy, Debug)]
+pub(crate) struct ViewportGeometry {
+    pub width: u32,
+    pub height: u32,
+    pub rasterization_scale: f64,
+    pub zoom_factor: f64,
+}
+impl ViewportGeometry {
+    pub fn pixel_ratio(self) -> f64 {
+        self.rasterization_scale * self.zoom_factor
+    }
+}
+
+/// Read the WebView's actual scale on its STA. Window DPI alone does not
+/// include the WebView's rasterization/text scale or content zoom.
+pub(crate) async fn viewport_geometry(
+    window: &WebviewWindow,
+) -> Result<ViewportGeometry, CaptureError> {
+    let (sender, receiver) = oneshot::channel();
+    window
+        .with_webview(move |webview| {
+            let result = (|| -> Result<ViewportGeometry, windows::core::Error> {
+                let controller = webview.controller();
+                let scaled: ICoreWebView2Controller3 = controller.cast()?;
+                let mut bounds = windows::Win32::Foundation::RECT::default();
+                let mut mode = COREWEBVIEW2_BOUNDS_MODE::default();
+                let mut rasterization_scale = 0.;
+                let mut zoom_factor = 0.;
+                unsafe {
+                    controller.Bounds(&mut bounds)?;
+                    controller.ZoomFactor(&mut zoom_factor)?;
+                    scaled.RasterizationScale(&mut rasterization_scale)?;
+                    scaled.BoundsMode(&mut mode)?;
+                }
+                let multiplier = if mode == COREWEBVIEW2_BOUNDS_MODE_USE_RAW_PIXELS {
+                    1.
+                } else if mode == COREWEBVIEW2_BOUNDS_MODE_USE_RASTERIZATION_SCALE {
+                    rasterization_scale
+                } else {
+                    return Err(windows::core::Error::from_hresult(windows::core::HRESULT(
+                        0x80070057u32 as i32,
+                    )));
+                };
+                Ok(ViewportGeometry {
+                    width: ((bounds.right - bounds.left) as f64 * multiplier).round() as u32,
+                    height: ((bounds.bottom - bounds.top) as f64 * multiplier).round() as u32,
+                    rasterization_scale,
+                    zoom_factor,
+                })
+            })()
+            .map_err(|error| CaptureError::com("read_viewport", error));
+            let _ = sender.send(result);
+        })
+        .map_err(|error| CaptureError::new("schedule_viewport", error.to_string()))?;
+    receiver.await.map_err(|_| {
+        CaptureError::new(
+            "viewport_callback_dropped",
+            "WebView viewport callback dropped",
+        )
+    })?
+}
 
 /// An owned error that can leave the WebView's STA without a COM interface.
 #[derive(Clone, Debug, PartialEq, Eq)]

@@ -124,7 +124,7 @@ fn a_shared_target_does_not_invent_per_sink_completion_quotas() {
         let MetricValue::Unknown(issue) = &value.value else {
             panic!("invented per-sink quota")
         };
-        assert!(issue.message.contains("per-scope allocation"));
+        assert!(issue.message.contains("未声明各口径的分配量"));
     }
 }
 
@@ -152,7 +152,7 @@ fn overlapping_products_without_event_product_identity_are_unknown() {
         let MetricValue::Unknown(issue) = &value.value else {
             panic!("ambiguous product attribution")
         };
-        assert!(issue.message.contains("no product identity"));
+        assert!(issue.message.contains("接受事件缺少产品身份"));
     }
 }
 

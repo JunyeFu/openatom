@@ -174,42 +174,42 @@ pub fn compare_runs(
             c(
                 ComparisonConditionKey::TimeReference,
                 same(&a.1.time_reference, &b.1.time_reference),
-                "Different time references",
+                "时间基准不同，不能将两个结果直接解释为改善。",
             ),
             c(
                 ComparisonConditionKey::ObservationWindow,
                 same(&a.3.window, &b.3.window),
-                "Different actual observation windows",
+                "实际观察窗口不同；各自已知结果仍可并列读取。",
             ),
             c(
                 ComparisonConditionKey::AcceptanceScope,
                 acceptance_signature(a) == acceptance_signature(b),
-                "Different product revision/unit/destination/acceptance stage",
+                "产品版本、单位、目的位置或接受阶段不同。",
             ),
             c(
                 ComparisonConditionKey::Demand,
                 demand_signature(a) == demand_signature(b),
-                "Different order demand/release/due conditions or saved acceptance targets",
+                "订单需求、释放时点、交期或保存的接受目标不同；差值不能当作效率改善。",
             ),
             c(
                 ComparisonConditionKey::SelectedScope,
                 sorted(&a.3.scope) == sorted(&b.3.scope),
-                "Different selected execution scopes",
+                "所选执行对象范围不同。",
             ),
             c(
                 ComparisonConditionKey::InitialConditions,
                 a.0.id == b.0.id && same(&a.1.initial_conditions, &b.1.initial_conditions),
-                "Initial stock/setup/quality/allocation differs; review explicit changes",
+                "初始库存、准备、质量或分配条件不同，请先核对列出的输入变化。",
             ),
             c(
                 ComparisonConditionKey::SupportedCapabilities,
                 complete(a) && complete(b) && !conflicting_definition,
-                "Full-window execution/capabilities incomplete or immutable same-ID/version definitions conflict; known prefixes remain readable",
+                "完整窗口计算或模块能力不完整，或同一标识和版本的模块定义冲突；已计算前缀仍可读取。",
             ),
             c(
                 ComparisonConditionKey::ExplainedChanges,
                 true,
-                "Complete frozen input differences listed",
+                "已列出完整冻结输入差异。",
             ),
         ];
         let hard = a.0.id == b.0.id
@@ -244,18 +244,18 @@ pub fn compare_runs(
         .iter()
         .map(|p| match p.status {
             ComparisonStatus::Strict => format!(
-                "{} / {}: same frozen business conditions; actual results can be compared",
+                "{} / {}：冻结业务条件一致，可以比较实际软件运行结果。",
                 p.baseline_run_id.as_str(),
                 p.candidate_run_id.as_str()
             ),
             ComparisonStatus::ControlledChanges => format!(
-                "{} / {}: controlled comparison; review {} explicit input changes first",
+                "{} / {}：受控变更比较；请先核对 {} 项明确输入变化。",
                 p.baseline_run_id.as_str(),
                 p.candidate_run_id.as_str(),
                 p.input_changes.len()
             ),
             ComparisonStatus::SideBySideOnly => format!(
-                "{} / {}: side-by-side evidence only; no improvement claim",
+                "{} / {}：仅并列展示各自证据，不作改善结论。",
                 p.baseline_run_id.as_str(),
                 p.candidate_run_id.as_str()
             ),
