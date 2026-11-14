@@ -650,6 +650,17 @@ impl ProjectApiState {
             .grant_external_task_access(&self.ui_session_id, session, task, allow_controls)
     }
 
+    pub(super) fn grant_external_execution_controls(
+        &self,
+        session: &ObjectId,
+        identity: &sf_domain::cloud_execution::ExecutionIdentity,
+        grant: sf_commands::ExecutionControlGrant,
+    ) -> Result<(), ApiError> {
+        self.host.lock()
+            .map_err(|_| host_error(ErrorCode::ComputationFailed, "Project Host state is poisoned"))?
+            .grant_execution_controls(&self.ui_session_id, session, identity, grant)
+    }
+
     pub(super) fn select_external_directory(
         &self,
         session: &ObjectId,

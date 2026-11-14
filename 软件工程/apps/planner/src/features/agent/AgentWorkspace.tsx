@@ -11,6 +11,7 @@ import {
   type AgentGrantChoice,
 } from '../../services/agentConnection';
 import './agent.css';
+import { ExecutionAuthority } from './ExecutionAuthority';
 
 export interface AgentEditorState { identity: string; dirty: boolean; busy: boolean }
 export const agentEditorIdentity = (workspace: WorkspaceSnapshot) =>
@@ -23,6 +24,8 @@ export interface AgentWorkspaceProps {
 }
 const readOnlyOperations: OperationName[] = ['describe_capabilities', 'get_context', 'get_object',
   'query_module_library', 'get_run', 'get_task'];
+const gatewayOnlyOperations = new Set<OperationName>(['apply_device_receipt', 'get_execution_cloud_work',
+  'acknowledge_execution_cloud_work', 'apply_device_observation']);
 const label: Record<OperationName, string> = {
   describe_capabilities: '能力发现', get_context: '当前工程', get_object: '读取对象',
   query_module_library: '模块与模板', get_run: '运行结果', get_task: '任务状态',
@@ -43,7 +46,8 @@ export function AgentWorkspace({ workspace, onRefresh, onClose, onEditorStateCha
   const [info, setInfo] = useState<AgentConnectionInfo | null>(null);
   const [observedContext, setObservedContext] = useState<ProjectContext | null>(null);
   const [session, setSession] = useState('');
-  const available = workspace.capabilities.implemented_operations.map(value => value.operation);
+  const available = workspace.capabilities.implemented_operations.map(value => value.operation)
+    .filter(operation => !gatewayOnlyOperations.has(operation));
   const [operations, setOperations] = useState<OperationName[]>(() => readOnlyOperations.filter(value => available.includes(value)));
   const [drafts, setDrafts] = useState<string[]>([]);
   const [viewControl, setViewControl] = useState(false);
@@ -58,11 +62,12 @@ export function AgentWorkspace({ workspace, onRefresh, onClose, onEditorStateCha
   const [taskId, setTaskId] = useState('');
   const [taskControls, setTaskControls] = useState(false);
   const [closing, setClosing] = useState(false);
+  const [executionDirty, setExecutionDirty] = useState(false);
   const defaultForm = useMemo(() => pretty({ operations: readOnlyOperations.filter(value => available.includes(value)),
     drafts: [], viewControl: false, grants: '[]' }), [available.join('|')]);
   const [acceptedForm, setAcceptedForm] = useState(defaultForm);
   const form = pretty({ operations, drafts, viewControl, grants });
-  const dirty = form !== acceptedForm || goal !== '' || bridgePath !== '';
+  const dirty = form !== acceptedForm || goal !== '' || bridgePath !== '' || executionDirty;
   const current = useRef(identity); current.current = identity;
   const refreshCurrent = useRef(onRefresh); refreshCurrent.current = onRefresh;
   const displayedRevision = useRef(workspace.project?.revision); displayedRevision.current = workspace.project?.revision;
@@ -184,6 +189,8 @@ export function AgentWorkspace({ workspace, onRefresh, onClose, onEditorStateCha
             <label><input type="checkbox" checked={taskControls} onChange={event => setTaskControls(event.target.checked)} />同时允许该任务实际支持的控制</label>
             <button disabled={!taskId} onClick={() => void action(async valid => { await grantAgentTask(session, taskId, taskControls); if (valid()) setNotice('已授权读取所选实际任务；不会重新执行任务或恢复旧文件权限。'); })}>确认任务授权</button>
           </fieldset>
+          <ExecutionAuthority key={`${identity}:${info?.host_instance_id}:${session}`} workspace={workspace} hostInstanceId={info?.host_instance_id ?? null} sessionId={session}
+            enabled={!!authorized?.authorized && !authorized.revoked} busy={busy} action={action} notice={setNotice} onDirtyChange={setExecutionDirty} />
           <details><summary>如何交付与人工接手</summary><p>保存可编辑工程并导出 PDF、HTML、CSV、JSON。缺项保留草稿；不将目标数、动画或假设当作已完成产量。生成定义、提交版本、采用模块、运行和导出是独立命令。原运行记录的输入保持不变，后续编辑进入下一方案。</p></details>
         </div>
       </div>

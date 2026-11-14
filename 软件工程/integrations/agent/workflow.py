@@ -225,13 +225,17 @@ class ExecutionWorkflow:
     def __init__(self, send, context, catalog, select_directory=None, pending=None):
         self.send = send
         self.context = copy.deepcopy(context)
-        self.operations = {row['operation'] for row in catalog['implemented_operations']
-                           if {'kind': 'project'} in row['allowed_scopes']} - _GATEWAY_ONLY
+        self.refresh_catalog(catalog)
         self.select_directory = select_directory
         self.pending = copy.deepcopy(pending)
         self.configuration = None
         self.last_snapshot = None
         self.query = None
+
+    def refresh_catalog(self, catalog):
+        """Consume newly discovered Host capabilities without changing pending work."""
+        self.operations = {row['operation'] for row in catalog['implemented_operations']
+                           if {'kind': 'project'} in row['allowed_scopes']} - _GATEWAY_ONLY
 
     def _request(self, operation, params):
         if operation not in self.operations:
@@ -553,5 +557,6 @@ class ExecutionWorkflow:
         return {'observing_stopped': True, 'production_stopped_by_this_call': False,
             'lifecycle_state': snapshot['lifecycle']['state'], 'goal_at_snapshot': snapshot['goal_at_snapshot'],
             'terminal_and_settled': snapshot['lifecycle']['state'] in ('completed', 'stopped', 'failed') and settled,
+            'publication_synchronized': actual['delivery']['relation'] == 'synced',
             'unsettled_obligations': unresolved, 'actual': actual,
             'pending_original_request': copy.deepcopy(self.pending)}

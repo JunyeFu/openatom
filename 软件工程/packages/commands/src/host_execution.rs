@@ -1097,6 +1097,45 @@ mod tests {
     }
 
     #[test]
+    fn execution_grant_keeps_project_device_revocation_and_fresh_peer_boundaries() {
+        let (mut host, ui, lease) = setup();
+        let identity = lease.identity.clone();
+        ready_native(&mut host, &lease);
+        let agent = external(&mut host, "explicit-agent");
+        let grant = || ExecutionControlGrant {
+            session_controls: vec![ExecutionReadAccessAllowedSessionControlsItem::Run],
+            device_acceptance_control_ids: vec![id("L1-D01")],
+        };
+        let mut unknown = grant();
+        unknown.device_acceptance_control_ids = vec![id("not-a-frozen-device")];
+        assert!(matches!(host.grant_execution_controls(&ui, &agent, &identity, unknown).unwrap_err().code, ErrorCode::PermissionDenied));
+        let mut foreign = identity.clone();
+        foreign.project_id = "other-project".to_owned().try_into().unwrap();
+        assert!(host.grant_execution_controls(&ui, &agent, &foreign, grant()).is_err());
+        assert!(host.grant_execution_controls(&agent, &agent, &identity, grant()).is_err());
+        assert!(read(&mut host, &agent, &identity, json!({"kind":"latest"})).access.allowed_session_controls.is_empty());
+        host.grant_execution_controls(&ui, &agent, &identity, grant()).unwrap();
+        let allowed = read(&mut host, &agent, &identity, json!({"kind":"latest"}));
+        assert_eq!(serde_json::to_value(&allowed.access.allowed_session_controls).unwrap(), json!(["run"]));
+        assert_eq!(allowed.access.device_acceptance_control_ids, vec![id("L1-D01")]);
+        host.grant_execution_controls(&ui, &agent, &identity, ExecutionControlGrant {
+            session_controls: vec![], device_acceptance_control_ids: vec![],
+        }).unwrap();
+        let revoked = read(&mut host, &agent, &identity, json!({"kind":"latest"}));
+        assert!(revoked.access.allowed_session_controls.is_empty() && revoked.access.device_acceptance_control_ids.is_empty());
+        host.grant_execution_controls(&ui, &agent, &identity, grant()).unwrap();
+        let mut downgraded = host.caller_context(&agent).unwrap().clone();
+        downgraded.allowed_operations.retain(|op| !matches!(op, OperationName::ControlExecutionSession));
+        host.update_external_session_authority(&ui, downgraded).unwrap();
+        assert!(read(&mut host, &agent, &identity, json!({"kind":"latest"})).access.allowed_session_controls.is_empty());
+        host.revoke_external_session(&agent).unwrap();
+        assert!(host.grant_execution_controls(&ui, &agent, &identity, grant()).is_err());
+        let fresh = external(&mut host, "fresh-explicit-agent");
+        let observed = read(&mut host, &fresh, &identity, json!({"kind":"latest"}));
+        assert!(observed.access.allowed_session_controls.is_empty() && observed.access.device_acceptance_control_ids.is_empty());
+    }
+
+    #[test]
     fn prepared_stop_keeps_clock_zero_and_close_waits_for_publication_and_native_cleanup() {
         let (mut host, ui, lease) = setup();
         let identity = lease.identity.clone();

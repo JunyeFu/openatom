@@ -92,6 +92,7 @@ pub fn run() {
             agent_pipe::agent_authorize_connection,
             agent_pipe::agent_update_connection_authority,
             agent_pipe::agent_grant_task_access,
+            agent_pipe::agent_grant_execution_controls,
             agent_pipe::agent_revoke_connection,
             agent_pipe::agent_select_directory
         ])

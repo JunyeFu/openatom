@@ -5,6 +5,7 @@ use serde::Deserialize;
 use serde_json::{Value, json};
 use sf_commands::*;
 use sf_domain::*;
+use sf_domain::cloud_execution::{ExecutionIdentity, ExecutionReadAccessAllowedSessionControlsItem};
 use std::{
     collections::BTreeMap,
     io,
@@ -40,6 +41,15 @@ pub struct AgentPipeState {
     pub(super) project: ProjectApiState,
     endpoint: String,
     connections: Arc<Mutex<BTreeMap<String, Connection>>>,
+}
+
+/// Main-window selections only. These fields never enter the MCP request schema.
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct ExecutionAuthorityChoice {
+    identity: ExecutionIdentity,
+    session_controls: Vec<ExecutionReadAccessAllowedSessionControlsItem>,
+    device_acceptance_control_ids: Vec<ObjectId>,
 }
 
 #[derive(Deserialize)]
@@ -392,6 +402,19 @@ impl AgentPipeState {
             )
             .map_err(|error| failure(&error.message))
     }
+    fn grant_execution_access(&self, session: &str, choice: ExecutionAuthorityChoice) -> io::Result<()> {
+        let connections = self.connections.lock().map_err(|_| failure("Connection registry poisoned"))?;
+        let connection = connections.get(session).ok_or_else(|| failure("Connected peer not found"))?;
+        if !connection.authorized || connection.revoked {
+            return Err(failure("Connection has no current native authorization"));
+        }
+        self.project.grant_external_execution_controls(
+            &ObjectId::try_from(session.to_owned()).map_err(io::Error::other)?,
+            &choice.identity,
+            ExecutionControlGrant { session_controls: choice.session_controls,
+                device_acceptance_control_ids: choice.device_acceptance_control_ids },
+        ).map_err(|error| failure(&error.message))
+    }
     fn revoke(&self, session: &str) -> io::Result<()> {
         let mut connections = self
             .connections
@@ -411,7 +434,10 @@ impl AgentPipeState {
     }
 }
 fn main_window(window: &tauri::WebviewWindow) -> Result<(), String> {
-    if window.label() == "main" {
+    main_window_label(window.label())
+}
+fn main_window_label(label: &str) -> Result<(), String> {
+    if label == "main" {
         Ok(())
     } else {
         Err("Only the main desktop window may administer Agent connections".to_owned())
@@ -461,6 +487,53 @@ pub fn agent_grant_task_access(
     state
         .grant_task_access(&session_id, &task_id, allow_controls)
         .map_err(|error| error.to_string())
+}
+#[tauri::command]
+pub fn agent_grant_execution_controls(
+    window: tauri::WebviewWindow,
+    state: tauri::State<'_, AgentPipeState>,
+    session_id: String,
+    choice: ExecutionAuthorityChoice,
+) -> Result<(), String> {
+    main_window(&window)?;
+    state.grant_execution_access(&session_id, choice).map_err(|error| error.to_string())
+}
+
+#[cfg(test)]
+mod execution_authority_tests {
+    use super::*;
+    fn choice() -> ExecutionAuthorityChoice {
+        serde_json::from_value(json!({"identity":{"session_id":"execution","execution_epoch_id":"epoch",
+            "project_id":"project","host_context_session_id":"host"},"session_controls":["run"],
+            "device_acceptance_control_ids":[]})).unwrap()
+    }
+    fn state() -> AgentPipeState {
+        AgentPipeState { project: ProjectApiState::new(), endpoint: "unit-only".into(),
+            connections: Arc::new(Mutex::new(BTreeMap::new())) }
+    }
+    #[test]
+    fn execution_authority_rejects_secondary_windows_and_unknown_choices() {
+        assert!(main_window_label("main").is_ok());
+        assert!(main_window_label("render-task-1").is_err());
+        let mut data=serde_json::to_value(&json!({"identity":{"session_id":"e","execution_epoch_id":"epoch",
+            "project_id":"p","host_context_session_id":"h"},"session_controls":[],"device_acceptance_control_ids":[]})).unwrap();
+        data["allow_everything"]=json!(true);
+        assert!(serde_json::from_value::<ExecutionAuthorityChoice>(data).is_err());
+    }
+    #[test]
+    fn execution_authority_requires_a_live_authorized_peer_before_the_host() {
+        let state=state();
+        assert!(state.grant_execution_access("peer",choice()).unwrap_err().to_string().contains("Connected peer"));
+        for (authorized,revoked) in [(false,false),(true,true)] {
+            state.connections.lock().unwrap().insert("peer".into(),Connection {
+                pid:std::process::id(),os_session:0,authorized,revoked,authorize:None,close:Arc::new(Notify::new()) });
+            assert!(state.grant_execution_access("peer",choice()).unwrap_err().to_string().contains("no current native authorization"));
+        }
+        state.connections.lock().unwrap().insert("peer".into(),Connection {
+            pid:std::process::id(),os_session:0,authorized:true,revoked:false,authorize:None,close:Arc::new(Notify::new()) });
+        // A registry flag is insufficient: the original Host must also know this caller.
+        assert!(state.grant_execution_access("peer",choice()).unwrap_err().to_string().contains("Caller is not registered"));
+    }
 }
 #[tauri::command]
 pub fn agent_revoke_connection(

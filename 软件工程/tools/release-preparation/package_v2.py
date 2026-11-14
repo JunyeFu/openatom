@@ -8,6 +8,7 @@ import json
 from pathlib import Path, PureWindowsPath
 import re
 import shutil
+import stat
 import struct
 import zipfile
 
@@ -15,10 +16,36 @@ FORBIDDEN_PARTS = {".git", ".work", ".env", "node_modules", "target", "__pycache
                    ".venv", "venv", "webview2", "ebwebview", "credentials", "secrets"}
 FORBIDDEN_SUFFIXES = {".sqlite", ".sqlite3", ".db", ".journal", ".pyc", ".pyo", ".pem", ".key", ".pfx"}
 RUNTIME_SCRIPTS = {"virtual_device.py", "journal.py", "protocol.py", "devices.demo.json"}
+AGENT_ENTRY_FILES = ("integrations/agent/workflow.py", "integrations/agent/stdio_client.py",
+                     "integrations/agent/FV02接点.md", "tools/cloud/fv2_short_chain.py", "tools/cloud/FV02联验入口.md")
 
 
 class PackageError(ValueError):
     pass
+
+
+def require_materialized(source):
+    """A tracked LFS pointer is not a distributable runtime resource."""
+    with Path(source).open("rb") as stream:
+        first_line = stream.readline(200).rstrip(b"\r\n")
+        if first_line == b"version https://git-lfs.github.com/spec/v1":
+            raise PackageError("Git LFS resource is not materialized: " + str(source))
+
+
+def candidate_binaries(candidate):
+    planned = []
+    for source, destination in ((candidate, "superfactory.exe"),
+                                (candidate.parent / "superfactory-mcp-bridge.exe", "superfactory-mcp-bridge.exe")):
+        if not source.is_file():
+            raise PackageError("required candidate executable is missing: " + destination)
+        with source.open("rb") as stream:
+            if stream.read(2) != b"MZ":
+                raise PackageError("candidate is not a Windows executable: " + destination)
+        planned.append((source, Path(destination), "explicit_candidate_exe" if destination == "superfactory.exe" else "candidate_sidecar"))
+    loader = candidate.parent / "WebView2Loader.dll"
+    if loader.is_file():
+        planned.append((loader, Path(loader.name), "candidate_sidecar"))
+    return planned
 
 
 def safe_relative(value):
@@ -42,7 +69,7 @@ def admissible(relative):
 
 def collect_tree(source, source_boundary, destination, role):
     source = Path(source)
-    if source.is_symlink() or source.is_junction() or not source.resolve().is_relative_to(source_boundary):
+    if linked(source) or not source.resolve().is_relative_to(source_boundary):
         raise PackageError("resource escapes its declared source root")
     if source.is_file():
         members = [source]
@@ -50,7 +77,7 @@ def collect_tree(source, source_boundary, destination, role):
         # Do not silently drop an unexpected private file from a declared closure.
         members = []
         for member in source.rglob("*"):
-            if member.is_symlink() or member.is_junction() or not member.resolve().is_relative_to(source_boundary):
+            if linked(member) or not member.resolve().is_relative_to(source_boundary):
                 raise PackageError("linked resource is outside the trusted closure")
             if member.is_file():
                 members.append(member)
@@ -67,6 +94,12 @@ def collect_tree(source, source_boundary, destination, role):
         admissible(target)
         result.append((member, target, role))
     return result
+
+
+def linked(path):
+    # Path.is_junction was added in Python 3.12. Keep the existing no-junction
+    # boundary when using the delivery tools' Python 3.11 baseline.
+    return path.is_symlink() or getattr(path.lstat(), "st_reparse_tag", 0) == stat.IO_REPARSE_TAG_MOUNT_POINT
 
 
 def resource_closure(root, base, overlay=None, module_archives=(), project_states=()):
@@ -300,11 +333,11 @@ def assemble(source_root, candidate_exe, device_resources, output, candidate_id,
     mappings = json.loads(config.read_text(encoding="utf-8-sig"))["bundle"]["resources"]
     if not isinstance(mappings, dict):
         raise PackageError("expected explicit Tauri resource mapping")
-    planned = [(candidate, Path("superfactory.exe"), "explicit_candidate_exe")]
-    for name in ["superfactory-mcp-bridge.exe", "WebView2Loader.dll"]:
-        sibling = candidate.parent / name
-        if sibling.is_file():
-            planned.append((sibling, Path(name), "candidate_sidecar"))
+    planned = candidate_binaries(candidate)
+    for relative in AGENT_ENTRY_FILES:
+        if not (root / relative).is_file():
+            raise PackageError("required Agent consumer source is missing: " + relative)
+        planned.extend(collect_tree(root / relative, root, Path("agent-entry") / relative, "agent_consumer_source"))
     closure = None
     if resource_base is not None:
         for source in [root, Path(resource_base), *([Path(resource_overlay)] if resource_overlay else []), *map(Path, module_archives)]:
@@ -343,7 +376,9 @@ def assemble(source_root, candidate_exe, device_resources, output, candidate_id,
         if guide.is_file():
             planned.append((guide, Path(f"操作指南.{suffix}"), "user_documentation"))
     destinations = set()
-    for _, destination, _ in planned:
+    for source, destination, _ in planned:
+        if not isinstance(source, bytes):
+            require_materialized(source)
         safe_relative(str(destination))
         normalized = str(destination).replace("\\", "/").lower()
         if normalized in destinations:
