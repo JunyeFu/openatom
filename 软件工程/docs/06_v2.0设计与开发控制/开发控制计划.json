@@ -3,7 +3,7 @@
   "next_full_version_plan": {
     "date": "2026-10-31",
     "authority": "用户授权同步方案与任务卡、建立五阶段和FV0三张Issue；人员按角色标注；不影响已提交发布链接。 用户已授权执行角色A第一卡。",
-    "state": "fv04_local_B_C_delivery_verification_in_progress",
+    "state": "fv04_internal_coursework_delivery_accepted_complete",
     "spec_ref": "docs/06_v2.0设计与开发控制/入围后完整版制作与验收方案.md",
     "task_cards_ref": "docs/06_v2.0设计与开发控制/入围后完整版任务卡.md",
     "source_packages": "V2-00至V2-11保持，FV0至FV4为下一轮执行批次，ST01至ST08历史验收不改",
@@ -59,7 +59,7 @@
       {
         "number": 5,
         "title": "FV4 内部交付核对",
-        "state": "open",
+        "state": "closed",
         "html_url": "https://github.com/JunyeFu/openatom/milestone/5"
       }
     ],
@@ -299,15 +299,15 @@
         "FV0 已收口。A 已接收 B 的诊断及 C 经授权的 UIA 复测，并冻结验收目标。"
       ],
       "next_business_priority": {
-        "stage": "FV4",
-        "gate": "同候选材料与指南终检后A接收，原三卡和里程碑同步收口"
+        "stage": "none",
+        "gate": "当前无必需阶段剩余，不自动开始新阶段"
       },
       "owner_decisions_pending": [
         "实际投入与交付日期",
         "下一赛段新通知与评委源码访问",
         "对应云卡开始前确认余额/规格/操作权限"
       ],
-      "simultaneous_implementation_cards": 1,
+      "simultaneous_implementation_cards": 0,
       "product_implementation_started": true,
       "formal_release_changed": false,
       "frontend_card": {
@@ -346,7 +346,7 @@
       "current_primary": {
         "stage": "FV4",
         "issue": "https://github.com/JunyeFu/openatom/issues/31",
-        "state": "in_progress_waiting_local_B_C_delivery",
+        "state": "accepted_completed",
         "owner": "JunyeFu"
       },
       "default_stage_order": [
@@ -357,8 +357,8 @@
         "FV4"
       ],
       "fv0_exit": "FV0 已收口。A 已接收 B 的诊断及 C 经授权的 UIA 复测，并冻结验收目标。",
-      "waiting_work": "用户授权本机代B/C完成FV04，材料清单与入口终检后A接收；不新构建或重复整套Native。",
-      "early_implementation_exception": "本轮执行FV04材料核对、接手终检及A最终接收；复用b1aac候选，不新增产品开发或后续阶段。"
+      "waiting_work": "FV0–FV04本轮已按当前大作业范围收口，无必需阶段剩余；后续新任务等待用户明确指令。",
+      "early_implementation_exception": "本轮FV04已接收完毕，现无活动实施任务；公开发布不变。"
     },
     "fv0_intake_contract": {
       "date": "2026-11-01",
@@ -1870,7 +1870,7 @@
       }
     },
     "from_fv4": {
-      "state": "in_progress_authorized_local_B_C",
+      "state": "accepted_complete",
       "scope": "源码/内部运行包/示例/完整指南对应与交接",
       "hours_each_role": [
         2,
@@ -1896,12 +1896,13 @@
             2,
             3
           ],
-          "state": "in_progress",
+          "state": "accepted_completed",
           "input": "FV03最终接收、26唯一候选/源码/指南、27结果",
           "scope": "内部候选与材料核对",
           "acceptance": "唯一入口、源码/包/指南对应、小输入目录准确；A接收清单",
           "historical_owner": "wwl-ww",
-          "execution_role": "本机代B"
+          "execution_role": "本机代B",
+          "delivery": "https://github.com/JunyeFu/openatom/issues/29#issuecomment-6892877187"
         },
         {
           "role": "temporary_C",
@@ -1911,10 +1912,11 @@
             2,
             3
           ],
-          "state": "in_progress",
+          "state": "accepted_completed",
           "input": "FV03最终接收、同候选指南与27结果、B29材料清单",
           "scope": "接手入口与指南终检",
-          "acceptance": "GitHub材料可接手；相同候选复用27，实际变化或缺步才补短检查；A接收"
+          "acceptance": "GitHub材料可接手；相同候选复用27，实际变化或缺步才补短检查；A接收",
+          "delivery": "https://github.com/JunyeFu/openatom/issues/30#issuecomment-6892938042"
         },
         {
           "role": "A",
@@ -1924,10 +1926,11 @@
             2,
             3
           ],
-          "state": "in_progress",
+          "state": "accepted_completed",
           "input": "FV03最终接收和B29/C30交付",
           "scope": "最终内部接收与原控制收口",
-          "acceptance": "必需功能无失败/待验，B/C接收，源码/唯一内部包/指南与原控制一致"
+          "acceptance": "必需功能无失败/待验，B/C接收，源码/唯一内部包/指南与原控制一致",
+          "acceptance_result": "https://github.com/JunyeFu/openatom/issues/31#issuecomment-6892938256"
         }
       ],
       "sequence": [
@@ -1939,7 +1942,70 @@
       "stage_review": "准备/核对/交付每阶段子Agent review，包含在2–3h预算",
       "implementation_started_by_this_window": true,
       "authority": "2026-11-15用户：进入FV04，本机代B/C，每阶段子Agent review，完整完成FV04",
-      "source_candidate": "b1aac2eab3cb7e81f946f4de5cc561ff455341dc"
+      "source_candidate": "b1aac2eab3cb7e81f946f4de5cc561ff455341dc",
+      "stage_complete": true,
+      "final_acceptance": {
+        "date": "2026-11-15",
+        "scope": "用户收紧后的大作业内部交付，不代表已取消全规模验证通过",
+        "roles": {
+          "A": "JunyeFu",
+          "temporary_B": "JunyeFu",
+          "temporary_C": "JunyeFu",
+          "historical_B": "wwl-ww"
+        },
+        "source_candidate": "b1aac2eab3cb7e81f946f4de5cc561ff455341dc",
+        "product_merge": "a0107186215c68374ef827d0d0b376ab7de847e9",
+        "material_commit": "1ef3451991e1a2547c98d426c6cf8c0f54088478",
+        "package": "https://github.com/JunyeFu/openatom/releases/download/untagged-65a481ce993d4d2d636c/SF-2.0.1-b1aac2eab3cb-portable.zip",
+        "guide": "https://github.com/JunyeFu/openatom/blob/codex/full-version-integration-20261101/软件工程/docs/06_v2.0设计与开发控制/FV02操作指南.md",
+        "checklist": "https://github.com/JunyeFu/openatom/blob/codex/full-version-integration-20261101/软件工程/docs/06_v2.0设计与开发控制/FV04内部交付清单.md",
+        "B_result": "https://github.com/JunyeFu/openatom/issues/29#issuecomment-6892877187",
+        "C_result": "https://github.com/JunyeFu/openatom/issues/30#issuecomment-6892938042",
+        "A_result": "https://github.com/JunyeFu/openatom/issues/31#issuecomment-6892938256",
+        "evidence": "https://github.com/JunyeFu/openatom/releases/download/untagged-65a481ce993d4d2d636c/FV04-Local-ABC-closeout-20261115-evidence.zip",
+        "checks": {
+          "asset_HEAD_passed": 4,
+          "required_files_present": 17,
+          "guide_instruction_files_equal": 4,
+          "C_entry_steps": 10,
+          "required_failed": 0,
+          "required_pending": 0
+        },
+        "new_native_run": false,
+        "new_build": false,
+        "new_full_download": false,
+        "new_hash": false,
+        "reuse": "#27评论6890823315的18项Native；FV02 #17评论6874945498未改格式/权限范围",
+        "nonblocking_observations": [
+          "旧历史读取notice残留",
+          "NOTICE旧resources前缀已在交付材料映射为portable实际v2-devices/licenses"
+        ],
+        "public_release_changed": false,
+        "budget_hours": [
+          6,
+          9
+        ],
+        "actual_person_hours": null,
+        "actual_hours_note": "仅有预算，实际人时未登记",
+        "stage_reviews": [
+          {
+            "stage": "准备/方案",
+            "state": "passed"
+          },
+          {
+            "stage": "本机代B材料核对",
+            "state": "passed_after_current_queue_correction"
+          },
+          {
+            "stage": "本机代C接手终检",
+            "state": "passed"
+          },
+          {
+            "stage": "A原控制/最终远端",
+            "state": "local_final_draft_for_review_remote_result_in_issue31"
+          }
+        ]
+      }
     },
     "current_all_stage_budget": {
       "total": [
@@ -1964,15 +2030,10 @@
         12
       ],
       "kind": "full_round_plan_not_actual_remaining",
-      "actual_remaining_unknown": "B已发生部分工作，未登记实际人时，不从评论时间推算",
+      "actual_remaining_unknown": "原预算保留为历史计划，本轮必需阶段已完成；实际总人时未登记，不从文件/评论时间倒算。",
       "machine_wait": "separate",
-      "current_remaining_stages": {
-        "FV04": [
-          6,
-          9
-        ],
-        "kind": "plan_not_actual_spend"
-      }
+      "current_remaining_stages": {},
+      "current_required_stages_remaining": 0
     }
   },
   "date": "2026-10-27",
@@ -1985,7 +2046,7 @@
     "last_verified_baseline_manifest": "0.1.0",
     "current_core_release_manifest_verified": "2.0.1"
   },
-  "v2_phase": "full_target_implementation_in_progress",
+  "v2_phase": "coursework_internal_delivery_accepted",
   "v2_implementation_allowed": true,
   "v2_execution_started": true,
   "v1_acceptance_complete": true,
@@ -6594,7 +6655,7 @@
     "local_technical_delivery_acceptance": true,
     "final_release_receipt_ref": ".work/v2-release-20261027/receipt.json"
   },
-  "status_updated_at_utc": "2026-11-15T10:15:16.477Z",
+  "status_updated_at_utc": "2026-11-15T10:26:32.889Z",
   "control_layers": {
     "plan": {
       "human_ref": "docs/06_v2.0设计与开发控制/开发控制设计.md",
