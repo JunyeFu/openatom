@@ -892,6 +892,7 @@ export function Workbench() {
       comparisonEpoch.current++;
       switchSource(display);
       rememberRunSelection(currentProject.id, id);
+      setMessage('');
       return run;
     }
     const projectId = currentProject.id, epoch = ++observation.current;
@@ -918,6 +919,7 @@ export function Workbench() {
     setRun(view.data); setRunProject(frozen.project); setRunInputs(frozen); setAtMs(time); setObservationPage(presentation.observation); setTimelineSelection(current => current?.run_id === id ? current : null); setSource(display);
     const graph = display === 'run' ? frozen.project : currentProject;
     setHallId(current => graph.halls.some(hall => hall.id === current) ? current : graph.halls[0]?.id ?? null);
+    setMessage('');
     return view.data;
   }
   async function chooseComparison(id: string) {
